@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "github.copilot.enable": {
+    "*": true
+  },
+  "github.copilot.advanced": {}
+}

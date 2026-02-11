@@ -1,0 +1,454 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { CustomButton, LoadingSpinner } from '../src/components/ui/UIComponents';
+import { useTheme } from '../src/context/ThemeContext';
+
+interface WorkoutSession {
+  id: string;
+  name: string;
+  duration: number;
+  exerciseCount: number;
+  estimatedCalories: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  completedExercises: number;
+  totalExercises: number;
+  exercises?: Array<{
+    id: string;
+    name: string;
+    completed: boolean;
+    status: 'completed' | 'in_progress' | 'not_started';
+  }>;
+}
+
+// Mock active workout
+const mockWorkout: WorkoutSession = {
+  id: 'workout-1',
+  name: 'Full Body Strength',
+  duration: 45,
+  exerciseCount: 8,
+  estimatedCalories: 320,
+  difficulty: 'medium',
+  completedExercises: 3,
+  totalExercises: 8,
+  exercises: [
+    {
+      id: '1',
+      name: 'Bench Press',
+      completed: true,
+      status: 'completed',
+    },
+    {
+      id: '2',
+      name: 'Squats',
+      completed: false,
+      status: 'in_progress',
+    },
+    {
+      id: '3',
+      name: 'Deadlifts',
+      completed: false,
+      status: 'not_started',
+    },
+    {
+      id: '4',
+      name: 'Pull-ups',
+      completed: false,
+      status: 'not_started',
+    },
+    {
+      id: '5',
+      name: 'Dumbbell Rows',
+      completed: false,
+      status: 'not_started',
+    },
+    {
+      id: '6',
+      name: 'Shoulder Press',
+      completed: false,
+      status: 'not_started',
+    },
+    {
+      id: '7',
+      name: 'Barbell Curls',
+      completed: false,
+      status: 'not_started',
+    },
+    {
+      id: '8',
+      name: 'Tricep Dips',
+      completed: false,
+      status: 'not_started',
+    },
+  ],
+};
+
+const getDifficultyColor = (difficulty: string, theme: any) => {
+  switch (difficulty) {
+    case 'easy':
+      return theme.colors.success;
+    case 'medium':
+      return theme.colors.warning;
+    case 'hard':
+      return theme.colors.error;
+    default:
+      return theme.colors.accent;
+  }
+};
+
+export default function WorkoutScreen() {
+  const { theme } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [activeWorkout, setActiveWorkout] = useState<WorkoutSession>(mockWorkout);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const progress = activeWorkout
+    ? (activeWorkout.completedExercises / activeWorkout.totalExercises) * 100
+    : 0;
+
+  const handleStartWorkout = async () => {
+    try {
+      setIsSubmitting(true);
+      setIsRunning(true);
+      Alert.alert('Workout Started', `Great! You started "${activeWorkout.name}"`);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to start workout. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCompleteExercise = async () => {
+    try {
+      setIsSubmitting(true);
+      const currentIndex = activeWorkout.exercises?.findIndex(e => e.status === 'in_progress') ?? -1;
+      
+      if (currentIndex !== -1 && activeWorkout.exercises) {
+        const updatedExercises = [...activeWorkout.exercises];
+        updatedExercises[currentIndex].status = 'completed';
+        updatedExercises[currentIndex].completed = true;
+        
+        if (currentIndex + 1 < updatedExercises.length) {
+          updatedExercises[currentIndex + 1].status = 'in_progress';
+        }
+        
+        setActiveWorkout(prev => ({
+          ...prev,
+          exercises: updatedExercises,
+          completedExercises: prev.completedExercises + 1,
+        }));
+        Alert.alert('Exercise Completed', 'Great work! Moving to the next exercise.');
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to complete exercise. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleFinishWorkout = async () => {
+    try {
+      setIsSubmitting(true);
+      Alert.alert(
+        'Workout Complete! 🎉',
+        `You burned approximately ${activeWorkout.estimatedCalories} calories and completed ${activeWorkout.exerciseCount} exercises!`,
+        [{ text: 'OK', onPress: () => setIsRunning(false) }]
+      );
+    } catch (err) {
+      Alert.alert('Error', 'Failed to finish workout. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {loading ? (
+          <View style={styles.centerContent}>
+            <ActivityIndicator size="large" color={theme.colors.accent} />
+            <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>Loading your workout...</Text>
+          </View>
+        ) : activeWorkout ? (
+          <>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={[styles.title, { color: theme.colors.text }]}>{activeWorkout.name}</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
+                {activeWorkout.exerciseCount} exercises • {activeWorkout.duration} min
+              </Text>
+            </View>
+
+            {/* Difficulty Badge */}
+            <View style={styles.badgeContainer}>
+              <View
+                style={[
+                  styles.difficultyBadge,
+                  { backgroundColor: getDifficultyColor(activeWorkout.difficulty, theme) },
+                ]}
+              >
+                <Text style={[styles.difficultyText, { color: '#fff' }]}>
+                  {activeWorkout.difficulty.toUpperCase()}
+                </Text>
+              </View>
+            </View>
+
+            {/* Progress Section */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Progress</Text>
+              <View style={[styles.progressContainer, { backgroundColor: theme.colors.surface }]}>
+                <View style={[styles.progressBar, { backgroundColor: theme.colors.border }]}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${progress}%`, backgroundColor: theme.colors.accent },
+                    ]}
+                  />
+                </View>
+                <View style={styles.progressStats}>
+                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                    {activeWorkout.completedExercises} / {activeWorkout.totalExercises} exercises
+                  </Text>
+                  <Text style={[styles.caloriesBurned, { color: theme.colors.accent }]}>
+                    🔥 ~{activeWorkout.estimatedCalories} calories
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Stats Section */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Workout Stats</Text>
+              <View style={styles.statsGrid}>
+                <View style={[styles.stat, { backgroundColor: theme.colors.surface }]}>
+                  <Text style={styles.statValue}>⏱️</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{activeWorkout.duration}m</Text>
+                </View>
+                <View style={[styles.stat, { backgroundColor: theme.colors.surface }]}>
+                  <Text style={styles.statValue}>💪</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{activeWorkout.exerciseCount}</Text>
+                </View>
+                <View style={[styles.stat, { backgroundColor: theme.colors.surface }]}>
+                  <Text style={styles.statValue}>🔥</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{activeWorkout.estimatedCalories}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Exercise List */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Exercises</Text>
+              {activeWorkout.exercises && activeWorkout.exercises.length > 0 ? (
+                activeWorkout.exercises.map((exercise) => (
+                  <View key={exercise.id} style={[styles.exerciseItem, { backgroundColor: theme.colors.surface }]}>
+                    <Text style={[styles.exerciseText, { color: theme.colors.text }]}>
+                      {exercise.status === 'completed'
+                        ? '✅'
+                        : exercise.status === 'in_progress'
+                        ? '▶️'
+                        : '⭕'}{' '}
+                      {exercise.name}
+                    </Text>
+                    <Text style={[styles.exerciseSubtext, { color: theme.colors.textMuted }]}>
+                      {exercise.status === 'completed'
+                        ? 'Completed'
+                        : exercise.status === 'in_progress'
+                        ? 'In progress'
+                        : 'Not started'}
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No exercises in this workout</Text>
+              )}
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.buttonSection}>
+              {!isRunning ? (
+                <CustomButton
+                  label={isSubmitting ? 'Starting...' : 'Start Workout'}
+                  onPress={handleStartWorkout}
+                  color="primary"
+                  size="large"
+                  disabled={isSubmitting}
+                />
+              ) : (
+                <>
+                  <CustomButton
+                    label={isSubmitting ? 'Completing...' : 'Complete Current Exercise'}
+                    onPress={handleCompleteExercise}
+                    color="primary"
+                    size="large"
+                    disabled={isSubmitting}
+                  />
+                  <View style={styles.spacer} />
+                  <CustomButton
+                    label={isSubmitting ? 'Finishing...' : 'Finish Workout'}
+                    onPress={handleFinishWorkout}
+                    variant="outlined"
+                    size="large"
+                    disabled={isSubmitting}
+                  />
+                </>
+              )}
+            </View>
+          </>
+        ) : (
+          <View style={styles.centerContent}>
+            <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No active workout</Text>
+            <Text style={[styles.emptySubtext, { color: theme.colors.textMuted }]}>Start a new workout to begin</Text>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  loadingText: {
+    fontSize: 14,
+    marginTop: 8,
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  errorSubtext: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    paddingVertical: 12,
+  },
+  emptySubtext: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  subtitle: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  badgeContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  difficultyBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+  },
+  difficultyText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  section: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  progressContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+  },
+  progressStats: {
+    marginTop: 8,
+  },
+  progressText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  caloriesBurned: {
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  stat: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
+  },
+  statLabel: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  exerciseItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  exerciseText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  exerciseSubtext: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  buttonSection: {
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  spacer: {
+    height: 8,
+  },
+});

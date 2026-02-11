@@ -1,0 +1,237 @@
+/**
+ * FitQuest Design System
+ * 
+ * Philosophy:
+ * - Dark Mode: Emotion, immersion, focus (glowing accents, visual drama)
+ * - Light Mode: Speed, analysis, accuracy (clinical, sharp, zero glare)
+ */
+
+// ============================================================================
+// COLOR SYSTEM
+// ============================================================================
+
+// ONE accent color: Green (#10B981) for all primary actions
+// Warnings: Amber (#F4A427) / Red (#EF4444)
+// Everything else: Grayscale
+
+export const colorSystem = {
+  dark: {
+    // Base
+    background: '#0A0E17', // Matte black (primary background)
+    surface: '#121820', // Slightly elevated surface
+    surfaceVariant: '#1A1F2B', // Secondary surface (cards)
+    
+    // Text
+    text: '#F5F7FB', // Primary text (almost white)
+    textSecondary: '#A8B0BD', // Secondary text
+    textMuted: '#6B7280', // Tertiary/meta text
+    
+    // Dividers
+    border: '#2A2F3B', // Hairline borders (subtle)
+    divider: '#1F2330', // Internal dividers
+    
+    // Single accent color - GREEN for all primary actions
+    accent: '#10B981',
+    
+    // Semantic
+    error: '#EF4444',
+    warning: '#F4A427',
+    success: '#10B981',
+    
+    // Backward compatibility aliases (use warning/success instead)
+    accent2: '#F4A427', // → use warning
+    accent3: '#10B981', // → use success/accent
+  },
+  
+  light: {
+    // Base
+    background: '#F4F5F7', // Soft neutral gray (no pure white)
+    surface: '#FFFFFF', // Primary surface (cards)
+    surfaceVariant: '#ECEEF2', // Secondary surface
+    
+    // Text
+    text: '#121316', // Primary text (almost black)
+    textSecondary: '#4B4F58', // Secondary text
+    textMuted: '#7A7F89', // Tertiary/meta text
+    
+    // Dividers
+    border: '#DADDE3', // Hairline borders (1px max, very soft)
+    divider: '#E5E7EB', // Internal dividers
+    
+    // Single accent color - GREEN for all primary actions
+    accent: '#10B981',
+    
+    // Semantic
+    error: '#DC2626',
+    warning: '#F4A427',
+    success: '#10B981',
+    
+    // Backward compatibility aliases (use warning/success instead)
+    accent2: '#F4A427', // → use warning
+    accent3: '#10B981', // → use success/accent
+  },
+};
+
+// ============================================================================
+// TYPOGRAPHY
+// ============================================================================
+
+export const typography = {
+  sizes: {
+    h1: 32,
+    h2: 24,
+    h3: 20,
+    h4: 18,
+    body: 16,
+    bodySmall: 14,
+    label: 13,
+    caption: 12,
+  },
+  
+  weights: {
+    regular: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+  },
+  
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.75,
+  },
+};
+
+// ============================================================================
+// SPACING
+// ============================================================================
+
+export const spacing = {
+  px: 1,
+  0: 0,
+  1: 4,
+  2: 8,
+  3: 12,
+  4: 16,
+  5: 20,
+  6: 24,
+  8: 32,
+  10: 40,
+  12: 48,
+};
+
+// ============================================================================
+// BORDER RADIUS
+// ============================================================================
+
+export const radius = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  full: 9999,
+};
+
+// ============================================================================
+// SHADOWS
+// ============================================================================
+
+export const shadows = {
+  dark: {
+    none: 'none',
+    sm: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    md: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    lg: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.15,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+  },
+  light: {
+    none: 'none',
+    sm: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 3,
+      elevation: 1,
+    },
+    md: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      elevation: 2,
+    },
+    lg: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+  },
+};
+
+// ============================================================================
+// ANIMATION / MOTION
+// ============================================================================
+
+export const motion = {
+  dark: {
+    fast: 150,
+    base: 250,
+    slow: 350,
+    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Material easing
+  },
+  light: {
+    fast: 150,
+    base: 200, // Shorter, more snappy
+    slow: 300, // Motion is quieter
+    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  },
+};
+
+// ============================================================================
+// COMPLETE THEME OBJECTS
+// ============================================================================
+
+export const createTheme = (mode: 'dark' | 'light') => {
+  const colors = colorSystem[mode];
+  const animationConfig = motion[mode];
+  const shadowConfig = shadows[mode];
+
+  return {
+    colors,
+    typography,
+    spacing,
+    radius,
+    shadows: shadowConfig,
+    motion: animationConfig,
+    
+    // Utilities for theme switching
+    isDark: mode === 'dark',
+    isLight: mode === 'light',
+  };
+};
+
+// Export default theme (dark mode by default)
+export const darkTheme = createTheme('dark');
+export const lightTheme = createTheme('light');
+
+export type Theme = ReturnType<typeof createTheme>;

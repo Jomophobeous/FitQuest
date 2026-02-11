@@ -1,0 +1,657 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  ZoomIn,
+} from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../src/context/ThemeContext';
+import {
+  GlassCard,
+  SectionHeader,
+  ProgressRing,
+  AnimatedListItem,
+} from '../src/components/ui/GlassUI';
+
+// ─── SCREEN WIDTH ──────────────────────────────────────────────
+const { width: SCREEN_W } = Dimensions.get('window');
+
+// ─── MOCK DATA (easy to swap for real DB later) ────────────────
+const MOCK_WEEKLY_WORKOUTS = [
+  { day: 'Mon', count: 2 },
+  { day: 'Tue', count: 1 },
+  { day: 'Wed', count: 3 },
+  { day: 'Thu', count: 0 },
+  { day: 'Fri', count: 2 },
+  { day: 'Sat', count: 4 },
+  { day: 'Sun', count: 1 },
+];
+
+const MOCK_MONTHLY_WORKOUTS = [
+  { day: 'W1', count: 8 },
+  { day: 'W2', count: 11 },
+  { day: 'W3', count: 6 },
+  { day: 'W4', count: 14 },
+];
+
+const MOCK_WEEKLY_XP = [120, 200, 350, 310, 480, 520, 600];
+const MOCK_MONTHLY_XP = [1800, 2400, 1950, 3100];
+
+const MOCK_MUSCLE_GROUPS: { name: string; sessions: number; icon: string }[] = [
+  { name: 'Chest', sessions: 12, icon: 'arm-flex' },
+  { name: 'Back', sessions: 10, icon: 'human-handsup' },
+  { name: 'Legs', sessions: 15, icon: 'walk' },
+  { name: 'Shoulders', sessions: 8, icon: 'weight-lifter' },
+  { name: 'Arms', sessions: 14, icon: 'arm-flex-outline' },
+  { name: 'Core', sessions: 18, icon: 'meditation' },
+  { name: 'Glutes', sessions: 9, icon: 'run-fast' },
+  { name: 'Cardio', sessions: 20, icon: 'heart-pulse' },
+];
+
+const MOCK_STEP_STATS = {
+  weekly: { steps: 52_430, distance: 38.2, calories: 2_870, avgDaily: 7_490 },
+  monthly: { steps: 218_700, distance: 159.4, calories: 11_940, avgDaily: 7_290 },
+};
+
+const MOCK_JOG_STATS = {
+  weekly: { runs: 3, totalKm: 14.6, avgPace: '5:42', longestRun: 6.2 },
+  monthly: { runs: 11, totalKm: 56.3, avgPace: '5:51', longestRun: 8.1 },
+};
+
+// Days the user was active this month (1-indexed)
+const MOCK_ACTIVE_DAYS = [1, 2, 3, 5, 6, 8, 10, 11, 12, 14, 15, 17, 19, 20, 21, 23, 25, 26, 28, 30];
+
+const MOCK_PERSONAL_RECORDS = [
+  { exercise: 'Bench Press', value: '100 kg', date: '28 Jan 2026', icon: 'dumbbell' },
+  { exercise: 'Squat', value: '140 kg', date: '12 Jan 2026', icon: 'weight-lifter' },
+  { exercise: 'Deadlift', value: '180 kg', date: '04 Feb 2026', icon: 'arm-flex' },
+  { exercise: '5K Run', value: '23:14', date: '30 Jan 2026', icon: 'run-fast' },
+  { exercise: 'Plank Hold', value: '4:12', date: '01 Feb 2026', icon: 'meditation' },
+];
+
+const MOCK_STREAK = {
+  currentStreak: 12,
+  longestStreak: 34,
+  totalWorkouts: 187,
+  consistencyPct: 78,
+  thisWeek: 5,
+  thisMonth: 22,
+};
+
+// ─── HELPERS ───────────────────────────────────────────────────
+function getMonthCalendar(year: number, month: number) {
+  const firstDay = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startWeekday = firstDay.getDay(); // 0=Sun
+  return { daysInMonth, startWeekday };
+}
+
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+// ─── COMPONENT ─────────────────────────────────────────────────
+export default function AnalyticsScreen() {
+  const { theme } = useTheme();
+  const [range, setRange] = useState<'weekly' | 'monthly'>('weekly');
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const today = now.getDate();
+  const { daysInMonth, startWeekday } = useMemo(
+    () => getMonthCalendar(year, month),
+    [year, month],
+  );
+
+  // Derived data based on range
+  const workoutBars = range === 'weekly' ? MOCK_WEEKLY_WORKOUTS : MOCK_MONTHLY_WORKOUTS;
+  const xpData = range === 'weekly' ? MOCK_WEEKLY_XP : MOCK_MONTHLY_XP;
+  const stepStats = range === 'weekly' ? MOCK_STEP_STATS.weekly : MOCK_STEP_STATS.monthly;
+  const jogStats = range === 'weekly' ? MOCK_JOG_STATS.weekly : MOCK_JOG_STATS.monthly;
+
+  const maxBarCount = Math.max(...workoutBars.map((b) => b.count), 1);
+  const maxXP = Math.max(...xpData, 1);
+  const maxMuscleSessions = Math.max(...MOCK_MUSCLE_GROUPS.map((g) => g.sessions), 1);
+
+  // ── styles that depend on theme ──
+  const s = styles(theme);
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 16 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ─── HEADER ─────────────────────────────── */}
+        <Animated.View entering={FadeInDown.delay(50).duration(150)} style={s.header}>
+          <Text style={s.heroTitle}>Analytics</Text>
+          <Text style={s.heroSub}>Your performance at a glance</Text>
+        </Animated.View>
+
+        {/* ─── RANGE TOGGLE ───────────────────────── */}
+        <Animated.View entering={FadeInDown.delay(100).duration(150)}>
+          <GlassCard style={s.toggleRow}>
+            {(['weekly', 'monthly'] as const).map((r) => (
+              <TouchableOpacity
+                key={r}
+                activeOpacity={0.7}
+                onPress={() => setRange(r)}
+                style={[
+                  s.toggleBtn,
+                  range === r && { backgroundColor: theme.colors.accent + '30' },
+                ]}
+              >
+                <Text
+                  style={[
+                    s.toggleLabel,
+                    range === r && { color: theme.colors.accent, fontWeight: '700' },
+                  ]}
+                >
+                  {r === 'weekly' ? 'Weekly' : 'Monthly'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </GlassCard>
+        </Animated.View>
+
+        {/* ─── WORKOUT FREQUENCY BAR CHART ─────────── */}
+        <SectionHeader title="Workout Frequency" delay={150} />
+        <Animated.View entering={FadeInDown.delay(200).duration(150)}>
+          <GlassCard gradient glowColor={theme.colors.accent} style={s.chartCard}>
+            <View style={s.barRow}>
+              {workoutBars.map((bar, i) => {
+                const pct = bar.count / maxBarCount;
+                return (
+                  <View key={bar.day} style={s.barCol}>
+                    <Text style={[s.barValue, { color: theme.colors.text }]}>{bar.count}</Text>
+                    <View style={s.barTrack}>
+                      <Animated.View
+                        entering={FadeInUp.delay(250 + i * 60).duration(150)}
+                        style={[
+                          s.barFill,
+                          {
+                            height: `${Math.max(pct * 100, 4)}%`,
+                            backgroundColor: theme.colors.accent,
+                            opacity: 0.5 + pct * 0.5,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text style={[s.barLabel, { color: theme.colors.textMuted }]}>{bar.day}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </GlassCard>
+        </Animated.View>
+
+        {/* ─── XP TREND LINE ──────────────────────── */}
+        <SectionHeader title="XP Progress" delay={300} />
+        <Animated.View entering={FadeInDown.delay(350).duration(150)}>
+          <GlassCard gradient glowColor={theme.colors.accent3} style={s.chartCard}>
+            <View style={s.trendContainer}>
+              {/* Y-axis labels */}
+              <View style={s.trendYAxis}>
+                <Text style={[s.axisLabel, { color: theme.colors.textMuted }]}>{maxXP}</Text>
+                <Text style={[s.axisLabel, { color: theme.colors.textMuted }]}>{Math.round(maxXP / 2)}</Text>
+                <Text style={[s.axisLabel, { color: theme.colors.textMuted }]}>0</Text>
+              </View>
+              {/* Chart area */}
+              <View style={s.trendChart}>
+                {/* Horizontal grid lines */}
+                {[0, 1, 2].map((idx) => (
+                  <View
+                    key={idx}
+                    style={[
+                      s.gridLine,
+                      {
+                        top: `${idx * 50}%`,
+                        backgroundColor: theme.colors.border,
+                      },
+                    ]}
+                  />
+                ))}
+                {/* Data points + connecting segments */}
+                <View style={s.trendPointsRow}>
+                  {xpData.map((val, i) => {
+                    const pct = val / maxXP;
+                    return (
+                      <View key={i} style={s.trendCol}>
+                        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                          <Animated.View
+                            entering={ZoomIn.delay(400 + i * 80).duration(150)}
+                            style={[
+                              s.trendDot,
+                              {
+                                marginBottom: `${pct * 85}%`,
+                                backgroundColor: theme.colors.accent3,
+                              },
+                            ]}
+                          />
+                        </View>
+                        <Text style={[s.trendLabel, { color: theme.colors.textMuted }]}>
+                          {range === 'weekly'
+                            ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]
+                            : `W${i + 1}`}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+                {/* Trend area fill */}
+                <View style={s.trendAreaRow} pointerEvents="none">
+                  {xpData.map((val, i) => {
+                    const pct = val / maxXP;
+                    return (
+                      <View key={i} style={s.trendAreaCol}>
+                        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+                          <LinearGradient
+                            colors={[theme.colors.accent3 + '40', theme.colors.accent3 + '05']}
+                            style={{
+                              height: `${pct * 85}%`,
+                              borderTopLeftRadius: 4,
+                              borderTopRightRadius: 4,
+                            }}
+                          />
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            </View>
+            <View style={s.xpSummaryRow}>
+              <View style={s.xpSummaryItem}>
+                <Text style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
+                  {xpData.reduce((a, b) => a + b, 0).toLocaleString()}
+                </Text>
+                <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>Total XP</Text>
+              </View>
+              <View style={s.xpSummaryItem}>
+                <Text style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
+                  {Math.round(xpData.reduce((a, b) => a + b, 0) / xpData.length).toLocaleString()}
+                </Text>
+                <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>Avg / Period</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </Animated.View>
+
+        {/* ─── MUSCLE GROUP HEATMAP ───────────────── */}
+        <SectionHeader title="Muscle Group Heatmap" delay={450} />
+        <Animated.View entering={FadeInDown.delay(500).duration(150)}>
+          <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: 16 }}>
+            <View style={s.muscleGrid}>
+              {MOCK_MUSCLE_GROUPS.map((mg, i) => {
+                const intensity = mg.sessions / maxMuscleSessions;
+                const bgColor =
+                  intensity >= 0.8
+                    ? theme.colors.success
+                    : intensity >= 0.5
+                    ? theme.colors.accent3
+                    : intensity >= 0.3
+                    ? theme.colors.warning
+                    : theme.colors.textMuted;
+                return (
+                  <AnimatedListItem key={mg.name} index={i} style={s.muscleBadge}>
+                    <LinearGradient
+                      colors={[bgColor + Math.round(intensity * 200 + 55).toString(16).padStart(2, '0'), bgColor + '20']}
+                      style={s.muscleBadgeInner}
+                    >
+                      <MaterialCommunityIcons
+                        name={mg.icon as any}
+                        size={22}
+                        color="#fff"
+                        style={{ opacity: 0.5 + intensity * 0.5 }}
+                      />
+                      <Text style={s.muscleName}>{mg.name}</Text>
+                      <Text style={[s.muscleCount, { color: '#fff', opacity: 0.7 + intensity * 0.3 }]}>
+                        {mg.sessions}×
+                      </Text>
+                    </LinearGradient>
+                  </AnimatedListItem>
+                );
+              })}
+            </View>
+            <View style={s.legendRow}>
+              {[
+                { label: 'Low', color: theme.colors.textMuted },
+                { label: 'Med', color: theme.colors.warning },
+                { label: 'High', color: theme.colors.accent3 },
+                { label: 'Max', color: theme.colors.success },
+              ].map((l) => (
+                <View key={l.label} style={s.legendItem}>
+                  <View style={[s.legendDot, { backgroundColor: l.color }]} />
+                  <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{l.label}</Text>
+                </View>
+              ))}
+            </View>
+          </GlassCard>
+        </Animated.View>
+
+        {/* ─── STEP & JOG STATS ───────────────────── */}
+        <SectionHeader title="Steps & Jogging" delay={550} />
+        <Animated.View entering={FadeInDown.delay(600).duration(150)}>
+          <View style={s.statsRow}>
+            {/* Steps card */}
+            <GlassCard gradient glowColor={theme.colors.success} style={s.statCard}>
+              <MaterialCommunityIcons name="shoe-print" size={26} color={theme.colors.success} />
+              <Text style={[s.statHero, { color: theme.colors.text }]}>
+                {stepStats.steps.toLocaleString()}
+              </Text>
+              <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>Total Steps</Text>
+              <View style={s.statDivider} />
+              <View style={s.miniStatRow}>
+                <View style={s.miniStat}>
+                  <Text style={[s.miniStatVal, { color: theme.colors.success }]}>{stepStats.distance} km</Text>
+                  <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Distance</Text>
+                </View>
+                <View style={s.miniStat}>
+                  <Text style={[s.miniStatVal, { color: theme.colors.accent2 }]}>
+                    {stepStats.calories.toLocaleString()}
+                  </Text>
+                  <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>kcal</Text>
+                </View>
+              </View>
+              <Text style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
+                Avg {stepStats.avgDaily.toLocaleString()} / day
+              </Text>
+            </GlassCard>
+
+            {/* Jog card */}
+            <GlassCard gradient glowColor={theme.colors.accent} style={s.statCard}>
+              <MaterialCommunityIcons name="run-fast" size={26} color={theme.colors.accent} />
+              <Text style={[s.statHero, { color: theme.colors.text }]}>{jogStats.runs}</Text>
+              <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>Runs</Text>
+              <View style={s.statDivider} />
+              <View style={s.miniStatRow}>
+                <View style={s.miniStat}>
+                  <Text style={[s.miniStatVal, { color: theme.colors.accent }]}>{jogStats.totalKm} km</Text>
+                  <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Total</Text>
+                </View>
+                <View style={s.miniStat}>
+                  <Text style={[s.miniStatVal, { color: theme.colors.accent3 }]}>{jogStats.avgPace}</Text>
+                  <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Avg Pace</Text>
+                </View>
+              </View>
+              <Text style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
+                Longest: {jogStats.longestRun} km
+              </Text>
+            </GlassCard>
+          </View>
+        </Animated.View>
+
+        {/* ─── CALENDAR HEATMAP ───────────────────── */}
+        <SectionHeader title={`${MONTH_NAMES[month]} ${year}`} delay={650} />
+        <Animated.View entering={FadeInDown.delay(700).duration(150)}>
+          <GlassCard gradient glowColor={theme.colors.success} style={s.calendarCard}>
+            {/* Day headers */}
+            <View style={s.calendarRow}>
+              {DAY_LABELS.map((d) => (
+                <View key={d} style={s.calendarCell}>
+                  <Text style={[s.calDayHeader, { color: theme.colors.textMuted }]}>{d}</Text>
+                </View>
+              ))}
+            </View>
+            {/* Calendar grid */}
+            {(() => {
+              const rows: React.ReactNode[] = [];
+              let dayNum = 1;
+              const totalSlots = startWeekday + daysInMonth;
+              const numRows = Math.ceil(totalSlots / 7);
+              for (let row = 0; row < numRows; row++) {
+                const cells: React.ReactNode[] = [];
+                for (let col = 0; col < 7; col++) {
+                  const slot = row * 7 + col;
+                  if (slot < startWeekday || dayNum > daysInMonth) {
+                    cells.push(<View key={col} style={s.calendarCell} />);
+                  } else {
+                    const d = dayNum;
+                    const isActive = MOCK_ACTIVE_DAYS.includes(d);
+                    const isToday = d === today;
+                    cells.push(
+                      <View key={col} style={s.calendarCell}>
+                        <View
+                          style={[
+                            s.calDay,
+                            {
+                              backgroundColor: isActive
+                                ? theme.colors.success + (isToday ? 'FF' : '90')
+                                : theme.isDark
+                                ? '#1a1f2e'
+                                : '#e2e4e8',
+                              borderWidth: isToday ? 2 : 0,
+                              borderColor: isToday ? '#fff' : 'transparent',
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              s.calDayText,
+                              {
+                                color: isActive ? '#fff' : theme.colors.textMuted,
+                                fontWeight: isToday ? '800' : '600',
+                              },
+                            ]}
+                          >
+                            {d}
+                          </Text>
+                        </View>
+                      </View>,
+                    );
+                    dayNum++;
+                  }
+                }
+                rows.push(
+                  <View key={row} style={s.calendarRow}>
+                    {cells}
+                  </View>,
+                );
+              }
+              return rows;
+            })()}
+            {/* Legend */}
+            <View style={[s.legendRow, { marginTop: 12 }]}>
+              <View style={s.legendItem}>
+                <View style={[s.legendDot, { backgroundColor: theme.isDark ? '#1a1f2e' : '#e2e4e8' }]} />
+                <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Rest</Text>
+              </View>
+              <View style={s.legendItem}>
+                <View style={[s.legendDot, { backgroundColor: theme.colors.success + '90' }]} />
+                <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Active</Text>
+              </View>
+              <View style={s.legendItem}>
+                <View style={[s.legendDot, { backgroundColor: theme.colors.success, borderWidth: 2, borderColor: '#fff' }]} />
+                <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Today</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </Animated.View>
+
+        {/* ─── PERSONAL RECORDS ───────────────────── */}
+        <SectionHeader title="Personal Records 🏆" delay={750} />
+        {MOCK_PERSONAL_RECORDS.map((pr, i) => (
+          <AnimatedListItem key={pr.exercise} index={i}>
+            <GlassCard
+              glowColor={i === 0 ? theme.colors.warning : undefined}
+              style={s.prCard}
+            >
+              <View style={s.prLeft}>
+                <View style={[s.prIconWrap, { backgroundColor: theme.colors.accent + '20' }]}>
+                  <MaterialCommunityIcons name={pr.icon as any} size={22} color={theme.colors.accent} />
+                </View>
+                <View style={{ marginLeft: 12, flex: 1 }}>
+                  <Text style={[s.prExercise, { color: theme.colors.text }]}>{pr.exercise}</Text>
+                  <Text style={[s.prDate, { color: theme.colors.textMuted }]}>{pr.date}</Text>
+                </View>
+              </View>
+              <Text style={[s.prValue, { color: theme.colors.warning }]}>{pr.value}</Text>
+            </GlassCard>
+          </AnimatedListItem>
+        ))}
+
+        {/* ─── STREAK & CONSISTENCY ───────────────── */}
+        <SectionHeader title="Streak & Consistency" delay={850} />
+        <Animated.View entering={FadeInDown.delay(900).duration(150)}>
+          <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: 20 }}>
+            {/* Top hero row */}
+            <View style={s.streakHeroRow}>
+              <View style={s.streakHeroItem}>
+                <ProgressRing progress={MOCK_STREAK.consistencyPct / 100} size={90} color={theme.colors.accent} strokeWidth={8}>
+                  <Text style={[s.ringValue, { color: theme.colors.accent }]}>
+                    {MOCK_STREAK.consistencyPct}%
+                  </Text>
+                </ProgressRing>
+                <Text style={[s.streakHeroLabel, { color: theme.colors.textMuted }]}>Consistency</Text>
+              </View>
+              <View style={s.streakHeroItem}>
+                <View style={s.streakFireWrap}>
+                  <MaterialCommunityIcons name="fire" size={44} color={theme.colors.accent2} />
+                  <Text style={[s.streakNumber, { color: theme.colors.text }]}>
+                    {MOCK_STREAK.currentStreak}
+                  </Text>
+                </View>
+                <Text style={[s.streakHeroLabel, { color: theme.colors.textMuted }]}>Day Streak</Text>
+              </View>
+            </View>
+
+            {/* Stat tiles */}
+            <View style={s.streakTilesRow}>
+              {[
+                { label: 'Longest Streak', value: `${MOCK_STREAK.longestStreak} days`, icon: 'trophy-outline', color: theme.colors.warning },
+                { label: 'Total Workouts', value: `${MOCK_STREAK.totalWorkouts}`, icon: 'dumbbell', color: theme.colors.accent3 },
+                { label: 'This Week', value: `${MOCK_STREAK.thisWeek}`, icon: 'calendar-week', color: theme.colors.accent },
+                { label: 'This Month', value: `${MOCK_STREAK.thisMonth}`, icon: 'calendar-month', color: theme.colors.success },
+              ].map((t, i) => (
+                <AnimatedListItem key={t.label} index={i} style={s.streakTile}>
+                  <MaterialCommunityIcons name={t.icon as any} size={20} color={t.color} />
+                  <Text style={[s.tileValue, { color: theme.colors.text }]}>{t.value}</Text>
+                  <Text style={[s.tileLabel, { color: theme.colors.textMuted }]}>{t.label}</Text>
+                </AnimatedListItem>
+              ))}
+            </View>
+          </GlassCard>
+        </Animated.View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+// ─── STYLES ────────────────────────────────────────────────────
+const styles = (theme: any) =>
+  StyleSheet.create({
+    // Header
+    header: { marginTop: 8, marginBottom: 16 },
+    heroTitle: { fontSize: 30, fontWeight: '800', color: theme.colors.text },
+    heroSub: { fontSize: 14, fontWeight: '500', color: theme.colors.textMuted, marginTop: 2 },
+
+    // Toggle
+    toggleRow: { flexDirection: 'row', padding: 4, borderRadius: 14, marginBottom: 8 },
+    toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center' },
+    toggleLabel: { fontSize: 14, fontWeight: '600', color: theme.colors.textMuted },
+
+    // Bar chart
+    chartCard: { paddingVertical: 16, paddingHorizontal: 12 },
+    barRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 140 },
+    barCol: { alignItems: 'center', flex: 1 },
+    barValue: { fontSize: 12, fontWeight: '700', marginBottom: 4 },
+    barTrack: {
+      width: 22,
+      height: 100,
+      borderRadius: 11,
+      backgroundColor: theme.colors.border + '40',
+      justifyContent: 'flex-end',
+      overflow: 'hidden',
+    },
+    barFill: { width: '100%', borderRadius: 11 },
+    barLabel: { fontSize: 11, fontWeight: '600', marginTop: 6 },
+
+    // XP trend
+    trendContainer: { flexDirection: 'row', height: 140 },
+    trendYAxis: { width: 36, justifyContent: 'space-between', alignItems: 'flex-end', paddingRight: 6, paddingVertical: 2 },
+    axisLabel: { fontSize: 9, fontWeight: '600' },
+    trendChart: { flex: 1, position: 'relative' },
+    gridLine: { position: 'absolute', left: 0, right: 0, height: StyleSheet.hairlineWidth },
+    trendPointsRow: { flexDirection: 'row', flex: 1, zIndex: 2 },
+    trendCol: { flex: 1, alignItems: 'center' },
+    trendDot: { width: 10, height: 10, borderRadius: 5 },
+    trendLabel: { fontSize: 11, fontWeight: '600', marginTop: 4 },
+    trendAreaRow: { ...StyleSheet.absoluteFillObject, flexDirection: 'row', zIndex: 1, paddingBottom: 18 },
+    trendAreaCol: { flex: 1, paddingHorizontal: 2 },
+    xpSummaryRow: { flexDirection: 'row', marginTop: 14, justifyContent: 'space-around' },
+    xpSummaryItem: { alignItems: 'center' },
+    xpSummaryValue: { fontSize: 18, fontWeight: '800' },
+    xpSummaryLabel: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+
+    // Muscle heatmap
+    muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, paddingHorizontal: 8 },
+    muscleBadge: { width: (SCREEN_W - 80) / 4, marginBottom: 4 },
+    muscleBadgeInner: { alignItems: 'center', paddingVertical: 10, borderRadius: 14 },
+    muscleName: { fontSize: 11, fontWeight: '700', color: '#fff', marginTop: 4 },
+    muscleCount: { fontSize: 12, fontWeight: '800', marginTop: 2 },
+    legendRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 8 },
+    legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    legendDot: { width: 10, height: 10, borderRadius: 5 },
+    legendLabel: { fontSize: 10, fontWeight: '600' },
+
+    // Step / jog stats
+    statsRow: { flexDirection: 'row', gap: 10 },
+    statCard: { flex: 1, alignItems: 'center', paddingVertical: 16 },
+    statHero: { fontSize: 24, fontWeight: '800', marginTop: 8 },
+    statLabel: { fontSize: 12, fontWeight: '600', marginTop: 2 },
+    statDivider: { width: '60%', height: StyleSheet.hairlineWidth, backgroundColor: theme.colors.border, marginVertical: 10 },
+    miniStatRow: { flexDirection: 'row', gap: 14 },
+    miniStat: { alignItems: 'center' },
+    miniStatVal: { fontSize: 14, fontWeight: '700' },
+    miniStatLbl: { fontSize: 10, fontWeight: '600', marginTop: 1 },
+    avgLabel: { fontSize: 11, fontWeight: '500', marginTop: 8 },
+
+    // Calendar heatmap
+    calendarCard: { paddingVertical: 14, paddingHorizontal: 8 },
+    calendarRow: { flexDirection: 'row' },
+    calendarCell: { flex: 1, alignItems: 'center', paddingVertical: 3 },
+    calDayHeader: { fontSize: 10, fontWeight: '700', marginBottom: 4 },
+    calDay: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    calDayText: { fontSize: 12 },
+
+    // Personal records
+    prCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, paddingHorizontal: 14, marginBottom: 6 },
+    prLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+    prIconWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+    prExercise: { fontSize: 14, fontWeight: '700' },
+    prDate: { fontSize: 11, fontWeight: '500', marginTop: 2 },
+    prValue: { fontSize: 18, fontWeight: '800' },
+
+    // Streak & consistency
+    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 },
+    streakHeroItem: { alignItems: 'center' },
+    ringValue: { fontSize: 16, fontWeight: '800' },
+    streakFireWrap: { alignItems: 'center', justifyContent: 'center', height: 90 },
+    streakNumber: { fontSize: 28, fontWeight: '800', marginTop: -4 },
+    streakHeroLabel: { fontSize: 12, fontWeight: '600', marginTop: 6 },
+    streakTilesRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8, paddingHorizontal: 8 },
+    streakTile: {
+      width: '47%' as any,
+      backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+      borderRadius: 14,
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      alignItems: 'center',
+    },
+    tileValue: { fontSize: 18, fontWeight: '800', marginTop: 6 },
+    tileLabel: { fontSize: 10, fontWeight: '600', marginTop: 2, textAlign: 'center' },
+  });

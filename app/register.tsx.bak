@@ -1,0 +1,196 @@
+import React, { useState } from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  Alert,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link, useRouter } from 'expo-router';
+import { useAuth } from '../src/context/AuthContext';
+import { CustomButton } from '../src/components/ui/UIComponents';
+import { lightColors } from '../src/theme/theme';
+
+export default function RegisterScreen() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { signUp } = useAuth();
+  const router = useRouter();
+
+  const handleRegister = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await signUp(email, password, name);
+      router.replace('/dashboard');
+    } catch (err: any) {
+      Alert.alert('Registration Failed', err.message || 'Unable to register');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.title}>FitQuest</Text>
+          <Text style={styles.subtitle}>Create your account</Text>
+        </View>
+
+        <View style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your full name"
+              placeholderTextColor={lightColors.textSecondary}
+              value={name}
+              onChangeText={setName}
+              editable={!isLoading}
+              autoCapitalize="words"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              placeholderTextColor={lightColors.textSecondary}
+              value={email}
+              onChangeText={setEmail}
+              editable={!isLoading}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Create a password"
+              placeholderTextColor={lightColors.textSecondary}
+              value={password}
+              onChangeText={setPassword}
+              editable={!isLoading}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm your password"
+              placeholderTextColor={lightColors.textSecondary}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              editable={!isLoading}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+          </View>
+
+          <CustomButton
+            label={isLoading ? 'Creating account...' : 'Sign Up'}
+            onPress={handleRegister}
+            color="primary"
+            size="large"
+            disabled={isLoading}
+          />
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have an account? </Text>
+          <Link href="/login" asChild>
+            <Text style={styles.link}>Sign in</Text>
+          </Link>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: lightColors.background,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 32,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: lightColors.primary,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: lightColors.textSecondary,
+    marginTop: 8,
+  },
+  form: {
+    marginBottom: 24,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: lightColors.text,
+    marginBottom: 8,
+  },
+  input: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    backgroundColor: lightColors.surface,
+    borderRadius: 8,
+    borderColor: lightColors.border,
+    borderWidth: 1,
+    fontSize: 14,
+    color: lightColors.text,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  footerText: {
+    fontSize: 14,
+    color: lightColors.textSecondary,
+  },
+  link: {
+    fontSize: 14,
+    color: lightColors.primary,
+    fontWeight: '600',
+  },
+});

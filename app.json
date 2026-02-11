@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "mobile",
+    "slug": "fitquest",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hugelet.fitquest"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.hugelet.fitquest"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "permissions": [
+      "CAMERA",
+      "NOTIFICATIONS"
+    ],
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 30000,
+      "url": "https://u.expo.dev/5952667d-bab3-4bce-9cb0-be0106c98d01"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5952667d-bab3-4bce-9cb0-be0106c98d01"
+      }
+    },
+    "assetBundlePatterns": [
+      "assets/models/**/*",
+      "assets/images/*"
+    ],
+    "owner": "hugelet",
+    "scheme": "fitquest",
+    "plugins": [
+      "expo-router",
+      "expo-updates"
+    ]
+  }
+}

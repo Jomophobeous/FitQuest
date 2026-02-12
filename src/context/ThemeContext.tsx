@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { darkTheme, lightTheme, type Theme } from '../design/theme-system';
 
 interface ThemeContextType {
@@ -22,7 +22,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const saved = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        const saved = await SecureStore.getItemAsync(THEME_STORAGE_KEY);
         if (saved === 'light' || saved === 'dark') {
           setModeState(saved);
         } else if (systemColorScheme) {
@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setMode = async (newMode: 'dark' | 'light') => {
     setModeState(newMode);
     try {
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, newMode);
+      await SecureStore.setItemAsync(THEME_STORAGE_KEY, newMode);
     } catch (e) {
       console.warn('Failed to save theme preference:', e);
     }

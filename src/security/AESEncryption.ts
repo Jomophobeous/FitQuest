@@ -22,27 +22,31 @@
 
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
+import { gcm } from '@noble/ciphers/aes';
 
 // ============================================
 // TYPES
 // ============================================
 
-export interface EncryptedPayload {
-  /** Version tag for future migration */
+export interface EncryptedPayloadV2 {
   v: 2;
-  /** Base64 ciphertext */
   ct: string;
-  /** Hex IV (128-bit) */
   iv: string;
-  /** Hex HMAC-SHA256 authentication tag */
   tag: string;
-  /** Hex salt used for key derivation */
   salt: string;
 }
 
+export interface EncryptedPayloadV3 {
+  v: 3;
+  ct: string;
+  iv: string;
+  salt: string;
+}
+
+export type EncryptedPayload = EncryptedPayloadV2 | EncryptedPayloadV3;
+
 // ============================================
 // CONSTANTS
-// ============================================
 
 /** PBKDF2 iteration count — OWASP minimum for SHA-256 */
 const PBKDF2_ITERATIONS = 100_000;
@@ -240,7 +244,7 @@ export async function getOrCreateMasterKey(): Promise<string> {
 export async function encryptV2(
   plaintext: string,
   masterKey: string
-): Promise<EncryptedPayload> {
+): Promise<EncryptedPayloadV2> {
   // 1. Generate random IV and per-message salt
   const ivBytes = await Crypto.getRandomBytesAsync(IV_LENGTH_BYTES);
   const iv = bytesToHex(ivBytes);
@@ -274,6 +278,31 @@ export async function encryptV2(
 }
 
 /**
+ * Encrypt plaintext with AES-256-GCM (v3 payload).
+ */
+export async function encryptV3(
+  plaintext: string,
+  masterKey: string
+): Promise<EncryptedPayloadV3> {
+  // GCM nonce is typically 12 bytes
+  const ivBytes = await Crypto.getRandomBytesAsync(12);
+  const iv = bytesToHex(ivBytes);
+
+  const saltBytes = await Crypto.getRandomBytesAsync(SALT_LENGTH_BYTES);
+  const salt = bytesToHex(saltBytes);
+
+  // Derive a v3 key distinct from v2 enc/auth keys (context separation)
+  const keyHex = await deriveMessageKey(masterKey, salt, 'aesgcm');
+  const keyBytes = hexToBytes(keyHex);
+
+  const plaintextBytes = stringToBytes(plaintext);
+  const cipherBytes = gcm(keyBytes, ivBytes).encrypt(plaintextBytes);
+  const ct = bytesToBase64(cipherBytes);
+
+  return { v: 3, ct, iv, salt };
+}
+
+/**
  * Decrypt and verify an encrypted payload.
  * 
  * Process:
@@ -285,7 +314,7 @@ export async function encryptV2(
  * Throws on authentication failure (tamper detection).
  */
 export async function decryptV2(
-  payload: EncryptedPayload,
+  payload: EncryptedPayloadV2,
   masterKey: string
 ): Promise<string> {
   if (payload.v !== 2) {
@@ -318,6 +347,25 @@ export async function decryptV2(
   return bytesToString(plaintextBytes);
 }
 
+/**
+ * Decrypt AES-256-GCM v3 payload.
+ */
+export async function decryptV3(
+  payload: EncryptedPayloadV3,
+  masterKey: string
+): Promise<string> {
+  if (payload.v !== 3) {
+    throw new Error(`[Crypto] Unsupported payload version: ${payload.v}`);
+  }
+
+  const ivBytes = hexToBytes(payload.iv);
+  const keyHex = await deriveMessageKey(masterKey, payload.salt, 'aesgcm');
+  const keyBytes = hexToBytes(keyHex);
+  const cipherBytes = base64ToBytes(payload.ct);
+  const plaintextBytes = gcm(keyBytes, ivBytes).decrypt(cipherBytes);
+  return bytesToString(plaintextBytes);
+}
+
 // ============================================
 // LEGACY MIGRATION: v1 → v2
 // ============================================
@@ -328,6 +376,14 @@ export async function decryptV2(
 export function isV1Payload(payload: any): boolean {
   // v1 had: { ciphertext, iv, hash } — no 'v' or 'tag' fields
   return payload && !payload.v && payload.hash !== undefined && payload.ciphertext !== undefined;
+}
+
+export function isV2Payload(payload: any): payload is EncryptedPayloadV2 {
+  return payload?.v === 2 && payload.ct && payload.iv && payload.tag && payload.salt;
+}
+
+export function isV3Payload(payload: any): payload is EncryptedPayloadV3 {
+  return payload?.v === 3 && payload.ct && payload.iv && payload.salt;
 }
 
 /**
@@ -384,6 +440,22 @@ function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
+}
+
+function hexToBytes(hex: string): Uint8Array {
+  const normalized = hex.trim().toLowerCase().replace(/^0x/, '');
+  if (normalized.length % 2 !== 0) {
+    throw new Error('[Crypto] Invalid hex string length');
+  }
+  const bytes = new Uint8Array(normalized.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    const byte = parseInt(normalized.slice(i * 2, i * 2 + 2), 16);
+    if (Number.isNaN(byte)) {
+      throw new Error('[Crypto] Invalid hex string');
+    }
+    bytes[i] = byte;
+  }
+  return bytes;
 }
 
 function bytesToBase64(bytes: Uint8Array): string {

@@ -8,8 +8,9 @@
  * with a local SQLite fallback for development/testing.
  */
 
-import { Platform } from 'react-native';
-import { getDatabase } from '../database';
+import { getTrialState, upsertTrialState, updateTrialConverted } from '../database/service';
+import * as SecureStore from 'expo-secure-store';
+import { safeWarn } from '../services/logger';
 
 // ============================================
 // TYPES
@@ -28,6 +29,8 @@ export interface SubscriptionState {
   expiresDate: number | null;
   willRenew: boolean;
   productIdentifier: string | null; // 'fitquest_monthly' | 'fitquest_annual'
+  verificationSource?: 'revenuecat' | 'local' | 'offline_grace';
+  lastVerifiedAt?: number | null;
 }
 
 export interface SubscriptionOfferings {
@@ -40,15 +43,14 @@ export interface SubscriptionOfferings {
 // ============================================
 
 const TRIAL_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
+const OFFLINE_GRACE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const ENTITLEMENT_ID = 'full_access';
 const PRODUCT_MONTHLY = 'fitquest_monthly';
 const PRODUCT_ANNUAL = 'fitquest_annual';
 
-// RevenuCat API keys — replace with real keys for production
-const RC_API_KEYS = {
-  ios: 'appl_YOUR_IOS_KEY',
-  android: 'goog_YOUR_ANDROID_KEY',
-};
+const RC_PUBLIC_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY;
+const SUBSCRIPTION_CACHE_KEY = 'fitquest_subscription_cache_v1';
+const SUBSCRIPTION_LAST_VERIFIED_KEY = 'fitquest_subscription_last_verified_at';
 
 // ============================================
 // SUBSCRIPTION MANAGER
@@ -68,6 +70,8 @@ export class SubscriptionManager {
       expiresDate: null,
       willRenew: false,
       productIdentifier: null,
+      verificationSource: 'local',
+      lastVerifiedAt: null,
     };
   }
 
@@ -82,21 +86,14 @@ export class SubscriptionManager {
   // ── Initialization ──
 
   private async initialize(): Promise<void> {
-    // Ensure trial_state table exists
-    await this.ensureTrialTable();
-
     // Try to initialize RevenueCat
     try {
       const Purchases = await this.getRevenueCatModule();
       if (Purchases) {
-        const apiKey = Platform.select({
-          ios: RC_API_KEYS.ios,
-          android: RC_API_KEYS.android,
-          default: RC_API_KEYS.android,
-        });
+        const apiKey = RC_PUBLIC_API_KEY;
 
-        if (apiKey && !apiKey.includes('YOUR_')) {
-          Purchases.configure({ apiKey });
+        if (apiKey && !apiKey.includes('your_key_here')) {
+          Purchases.configure({ apiKey: apiKey.trim() });
           this.revenueCatAvailable = true;
 
           // Listen for purchase events
@@ -122,20 +119,6 @@ export class SubscriptionManager {
     }
   }
 
-  private async ensureTrialTable(): Promise<void> {
-    const db = await getDatabase();
-    await db.runAsync(`
-      CREATE TABLE IF NOT EXISTS trial_state (
-        user_id TEXT PRIMARY KEY,
-        started_at INTEGER NOT NULL,
-        ends_at INTEGER NOT NULL,
-        converted INTEGER DEFAULT 0,
-        product_identifier TEXT,
-        notifications_sent TEXT DEFAULT '[]'
-      )
-    `);
-  }
-
   // ── Core State Management ──
 
   async refresh(): Promise<SubscriptionState> {
@@ -151,34 +134,38 @@ export class SubscriptionManager {
       if (!Purchases) return this.refreshFromLocal();
 
       const info = await Purchases.getCustomerInfo();
-      const state = this.parseCustomerInfo(info);
+      const state = this.parseCustomerInfo(info, 'revenuecat');
       this.updateState(state);
+      await this.persistVerifiedState(state);
       return state;
     } catch {
+      const graceState = await this.getOfflineGraceState();
+      if (graceState) {
+        this.updateState(graceState);
+        return graceState;
+      }
       return this.refreshFromLocal();
     }
   }
 
   private async refreshFromLocal(): Promise<SubscriptionState> {
-    const db = await getDatabase();
     const userId = 'user_local_001';
 
-    const trial = await db.getFirstAsync<{
-      started_at: number;
-      ends_at: number;
-      converted: number;
-      product_identifier: string | null;
-    }>('SELECT * FROM trial_state WHERE user_id = ?', [userId]);
+    const trial = await getTrialState(userId);
 
     if (!trial) {
       // First launch — start trial
       const now = Date.now();
       const trialEnd = now + TRIAL_DURATION_MS;
-      
-      await db.runAsync(
-        `INSERT INTO trial_state (user_id, started_at, ends_at, converted) VALUES (?, ?, ?, 0)`,
-        [userId, now, trialEnd]
-      );
+
+      await upsertTrialState({
+        user_id: userId,
+        started_at: now,
+        ends_at: trialEnd,
+        converted: 0,
+        product_identifier: null,
+        notifications_sent: '[]',
+      });
 
       const state: SubscriptionState = {
         status: 'TRIAL',
@@ -187,6 +174,8 @@ export class SubscriptionManager {
         expiresDate: trialEnd,
         willRenew: false,
         productIdentifier: null,
+        verificationSource: 'local',
+        lastVerifiedAt: null,
       };
       this.updateState(state);
       return state;
@@ -200,6 +189,8 @@ export class SubscriptionManager {
         expiresDate: null, // Ongoing
         willRenew: true,
         productIdentifier: trial.product_identifier,
+        verificationSource: 'local',
+        lastVerifiedAt: null,
       };
       this.updateState(state);
       return state;
@@ -214,6 +205,8 @@ export class SubscriptionManager {
         expiresDate: trial.ends_at,
         willRenew: false,
         productIdentifier: null,
+        verificationSource: 'local',
+        lastVerifiedAt: null,
       };
       this.updateState(state);
       return state;
@@ -227,12 +220,18 @@ export class SubscriptionManager {
       expiresDate: trial.ends_at,
       willRenew: false,
       productIdentifier: null,
+      verificationSource: 'local',
+      lastVerifiedAt: null,
     };
     this.updateState(state);
     return state;
   }
 
-  private parseCustomerInfo(info: any): SubscriptionState {
+  private parseCustomerInfo(
+    info: any,
+    source: 'revenuecat' | 'local' = 'local'
+  ): SubscriptionState {
+    const now = Date.now();
     const entitlement = info?.entitlements?.active?.[ENTITLEMENT_ID];
 
     if (!entitlement) {
@@ -243,6 +242,8 @@ export class SubscriptionManager {
         expiresDate: null,
         willRenew: false,
         productIdentifier: null,
+        verificationSource: source,
+        lastVerifiedAt: source === 'revenuecat' ? now : null,
       };
     }
 
@@ -258,7 +259,50 @@ export class SubscriptionManager {
       expiresDate,
       willRenew: entitlement.willRenew ?? false,
       productIdentifier: entitlement.productIdentifier ?? null,
+      verificationSource: source,
+      lastVerifiedAt: source === 'revenuecat' ? now : null,
     };
+  }
+
+  private async persistVerifiedState(state: SubscriptionState): Promise<void> {
+    if (state.verificationSource !== 'revenuecat') return;
+    const now = Date.now();
+    await Promise.all([
+      SecureStore.setItemAsync(SUBSCRIPTION_CACHE_KEY, JSON.stringify(state)),
+      SecureStore.setItemAsync(SUBSCRIPTION_LAST_VERIFIED_KEY, String(now)),
+    ]);
+  }
+
+  private async getOfflineGraceState(): Promise<SubscriptionState | null> {
+    try {
+      const [rawState, rawVerifiedAt] = await Promise.all([
+        SecureStore.getItemAsync(SUBSCRIPTION_CACHE_KEY),
+        SecureStore.getItemAsync(SUBSCRIPTION_LAST_VERIFIED_KEY),
+      ]);
+
+      if (!rawState || !rawVerifiedAt) return null;
+
+      const lastVerifiedAt = Number(rawVerifiedAt);
+      if (!Number.isFinite(lastVerifiedAt)) return null;
+
+      if (Date.now() - lastVerifiedAt > OFFLINE_GRACE_MS) {
+        return null;
+      }
+
+      const parsed = JSON.parse(rawState) as SubscriptionState;
+      if (parsed.status !== 'ACTIVE' && parsed.status !== 'TRIAL') {
+        return null;
+      }
+
+      return {
+        ...parsed,
+        willRenew: false,
+        verificationSource: 'offline_grace',
+        lastVerifiedAt,
+      };
+    } catch {
+      return null;
+    }
   }
 
   // ── Purchase Methods ──
@@ -310,13 +354,9 @@ export class SubscriptionManager {
 
   private async purchaseLocal(productId: string): Promise<boolean> {
     // Local purchase simulation for development
-    const db = await getDatabase();
     const userId = 'user_local_001';
 
-    await db.runAsync(
-      `UPDATE trial_state SET converted = 1, product_identifier = ? WHERE user_id = ?`,
-      [productId, userId]
-    );
+    await updateTrialConverted(userId, productId);
 
     const state: SubscriptionState = {
       status: 'ACTIVE',
@@ -325,6 +365,8 @@ export class SubscriptionManager {
       expiresDate: null,
       willRenew: true,
       productIdentifier: productId,
+      verificationSource: 'local',
+      lastVerifiedAt: null,
     };
     this.updateState(state);
     return true;
@@ -341,7 +383,9 @@ export class SubscriptionManager {
           return state;
         }
       } catch (error) {
-        console.error('[SubscriptionManager] Restore failed:', error);
+        safeWarn('[SubscriptionManager] Restore failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
     return this.refresh();
@@ -422,7 +466,8 @@ export class SubscriptionManager {
   }
 
   private handleCustomerInfoUpdate(info: any): void {
-    const state = this.parseCustomerInfo(info);
+    const state = this.parseCustomerInfo(info, 'revenuecat');
     this.updateState(state);
+    void this.persistVerifiedState(state);
   }
 }

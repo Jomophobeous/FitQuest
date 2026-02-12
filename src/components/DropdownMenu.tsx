@@ -11,6 +11,8 @@ import {
   StyleSheet,
   Text,
   Pressable,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -56,7 +58,7 @@ const MENU_ITEMS: MenuItem[] = [
     label: 'Exercise Library',
     icon: 'book-open-variant',
     route: '/exercises',
-    category: 'knowledge',
+    category: 'movement',
   },
   {
     id: 'progress',
@@ -67,12 +69,11 @@ const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'coach',
-    label: 'AI Coach (Soon)',
+    label: 'AI Coach (Beta)',
     icon: 'robot-happy',
     route: '/coach',
     category: 'knowledge',
     color: '#8B5CF6',
-    disabled: true,
   },
   {
     id: 'analytics',
@@ -81,6 +82,14 @@ const MENU_ITEMS: MenuItem[] = [
     route: '/analytics',
     category: 'knowledge',
     color: '#4ECDC4',
+  },
+  {
+    id: 'nutrition-calc',
+    label: 'Nutrition Calculator',
+    icon: 'calculator-variant',
+    route: '/nutrition-calculator',
+    category: 'knowledge',
+    color: '#F97316',
   },
   {
     id: 'meal-prep',
@@ -101,9 +110,16 @@ const MENU_ITEMS: MenuItem[] = [
     id: 'subscription',
     label: 'Subscription',
     icon: 'crown',
-    route: '/profile',
+    route: '/paywall',
     category: 'system',
     color: '#F4A427',
+  },
+  {
+    id: 'backups',
+    label: 'Backup & Restore',
+    icon: 'backup-restore',
+    route: '/backups',
+    category: 'system',
   },
   {
     id: 'about',
@@ -283,7 +299,13 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
             </LinearGradient>
 
             {/* Menu Items */}
-            <View style={styles.menuList}>
+            <ScrollView
+              style={styles.menuList}
+              contentContainerStyle={styles.menuListContent}
+              showsVerticalScrollIndicator={true}
+              bounces={false}
+              nestedScrollEnabled
+            >
               {MENU_ITEMS.map((item, index, array) => {
                 const isDisabled = item.disabled || (isWorkoutActive && item.category !== 'system');
                 const isLastInCategory =
@@ -301,7 +323,7 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
                   />
                 );
               })}
-            </View>
+            </ScrollView>
           </Animated.View>
         </Animated.View>
       </Modal>
@@ -360,6 +382,9 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   menuList: {
+    maxHeight: Dimensions.get('window').height * 0.55,
+  },
+  menuListContent: {
     paddingVertical: 6,
   },
   menuItem: {

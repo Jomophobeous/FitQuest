@@ -9,7 +9,6 @@
  * Core Principle: Fatigue is the hidden weapon. Don't overcomplicate it.
  */
 
-import { getDatabase } from '../database/schema';
 import {
   getMuscleFatigue,
   updateMuscleFatigue,
@@ -17,8 +16,10 @@ import {
   getRecentSessions,
   getAppState,
   setAppState,
+  getMuscleFatigueLevel,
 } from '../database/service';
 import type { TargetMuscle, MuscleFatigue, WorkoutSession } from '../database/types';
+import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
 
 // ============================================
 // CONFIGURATION
@@ -168,12 +169,7 @@ export async function accumulateFatigue(
 }
 
 async function getCurrentFatigue(userId: string, muscle: TargetMuscle): Promise<number> {
-  const db = await getDatabase();
-  const result = await db.getFirstAsync<{ fatigue_level: number }>(
-    `SELECT fatigue_level FROM muscle_fatigue WHERE user_id = ? AND muscle = ?`,
-    [userId, muscle]
-  );
-  return result?.fatigue_level ?? 0;
+  return getMuscleFatigueLevel(userId, muscle);
 }
 
 // ============================================
@@ -188,6 +184,7 @@ export async function applyDailyRecoveryTick(
   isRestDay = false,
   goodSleep = false
 ): Promise<void> {
+  const adaptive = await getAdaptiveTrainingProfile(userId);
   let recoveryRate = RECOVERY_CONFIG.daily_recovery_rate;
 
   if (isRestDay) {
@@ -197,6 +194,8 @@ export async function applyDailyRecoveryTick(
   if (goodSleep) {
     recoveryRate += RECOVERY_CONFIG.sleep_recovery_bonus;
   }
+
+  recoveryRate = Math.round(recoveryRate * adaptive.fatigueSensitivity);
 
   await applyDailyRecovery(userId, recoveryRate);
 
@@ -225,31 +224,43 @@ export async function needsRecoveryTick(userId: string): Promise<boolean> {
  * Check if user should enter deload
  */
 export async function checkDeloadStatus(userId: string): Promise<DeloadStatus> {
+  const adaptive = await getAdaptiveTrainingProfile(userId);
   const reasons: string[] = [];
   let severity: 'none' | 'suggested' | 'recommended' | 'required' = 'none';
 
+  const adjustedAvgFatigueTrigger = Math.round(
+    RECOVERY_CONFIG.avg_fatigue_deload_trigger / adaptive.fatigueSensitivity
+  );
+  const adjustedCriticalThreshold = Math.round(
+    RECOVERY_CONFIG.fatigue_critical_threshold / adaptive.fatigueSensitivity
+  );
+  const adjustedFailureTrigger = Math.max(
+    1,
+    Math.round(RECOVERY_CONFIG.consecutive_failures_trigger / adaptive.fatigueSensitivity)
+  );
+
   // 1. Check average fatigue
   const avgFatigue = await getAverageFatigue(userId);
-  if (avgFatigue >= RECOVERY_CONFIG.avg_fatigue_deload_trigger) {
-    reasons.push(`Average fatigue (${avgFatigue}%) exceeds threshold (${RECOVERY_CONFIG.avg_fatigue_deload_trigger}%)`);
+  if (avgFatigue >= adjustedAvgFatigueTrigger) {
+    reasons.push(`Average fatigue (${avgFatigue}%) exceeds threshold (${adjustedAvgFatigueTrigger}%, adaptive)`);
     severity = 'recommended';
   }
 
   // 2. Check for critical muscles
   const snapshot = await getFatigueSnapshot(userId);
-  const criticalMuscles = snapshot.filter(s => s.status === 'critical');
+  const criticalMuscles = snapshot.filter(s => s.level >= adjustedCriticalThreshold);
   if (criticalMuscles.length >= 3) {
-    reasons.push(`${criticalMuscles.length} muscle groups at critical fatigue`);
+    reasons.push(`${criticalMuscles.length} muscle groups at critical fatigue (adaptive threshold)`);
     severity = 'required';
   } else if (criticalMuscles.length >= 1) {
-    reasons.push(`${criticalMuscles.length} muscle group(s) at critical fatigue`);
+    reasons.push(`${criticalMuscles.length} muscle group(s) at critical fatigue (adaptive threshold)`);
     if (severity === 'none') severity = 'suggested';
   }
 
   // 3. Check consecutive failures
   const failureCount = await getConsecutiveFailures(userId);
-  if (failureCount >= RECOVERY_CONFIG.consecutive_failures_trigger) {
-    reasons.push(`${failureCount} consecutive workout failures`);
+  if (failureCount >= adjustedFailureTrigger) {
+    reasons.push(`${failureCount} consecutive workout failures (adaptive threshold ${adjustedFailureTrigger})`);
     severity = severity === 'none' ? 'recommended' : 'required';
   }
 

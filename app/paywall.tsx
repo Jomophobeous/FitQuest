@@ -6,7 +6,7 @@
  * and handles purchase flow.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -28,10 +28,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useSubscription } from '../src/purchases/SubscriptionContext';
-import {
-  GlassCard,
-  GradientButton,
-} from '../src/components/ui/GlassUI';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -44,6 +40,203 @@ const FEATURES = [
   { icon: 'shield-lock' as const, title: 'Encrypted & Private', desc: 'Military-grade encryption, always on-device' },
   { icon: 'sync' as const, title: 'Cloud Backup', desc: 'Secure encrypted backup & restore' },
 ];
+
+const withAlpha = (hex: string, alpha: number): string => {
+  const normalized = hex.replace('#', '');
+  if (normalized.length !== 6) return hex;
+  const channel = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0');
+  return `#${normalized}${channel}`;
+};
+
+const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: string) => {
+  const closeSize = theme.spacing[8] + theme.spacing[1];
+  const heroGlowHeight = theme.spacing[10] * 3;
+  const heroGlowRadius = heroGlowHeight / 2;
+
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: theme.colors.background },
+    scrollContent: { paddingBottom: theme.spacing[10] },
+
+    closeBtn: {
+      position: 'absolute',
+      top: theme.spacing[2],
+      right: theme.spacing[4],
+      width: closeSize,
+      height: closeSize,
+      borderRadius: closeSize / 2,
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 10,
+      backgroundColor: withAlpha(theme.colors.text, theme.isDark ? 0.06 : 0.08),
+    },
+
+    // Hero
+    hero: {
+      alignItems: 'center',
+      paddingTop: theme.spacing[6],
+      paddingBottom: theme.spacing[6],
+      marginBottom: theme.spacing[2],
+    },
+    heroGlow: {
+      position: 'absolute',
+      top: 0,
+      left: SCREEN_W * 0.2,
+      right: SCREEN_W * 0.2,
+      height: heroGlowHeight,
+      borderRadius: heroGlowRadius,
+    },
+    logoWrap: {
+      width: theme.spacing[10] * 2,
+      height: theme.spacing[10] * 2,
+      borderRadius: theme.borderRadius.xl,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: theme.spacing[5],
+      backgroundColor: withAlpha(accentColor, 0.12),
+    },
+    heroTitle: {
+      fontSize: 32,
+      fontWeight: '900',
+      textAlign: 'center',
+      letterSpacing: -0.5,
+      lineHeight: 38,
+      color: theme.colors.text,
+    },
+    heroSub: {
+      fontSize: 15,
+      fontWeight: '500',
+      marginTop: theme.spacing[2],
+      textAlign: 'center',
+      color: theme.colors.textMuted,
+    },
+
+    // Features
+    featureGrid: { paddingHorizontal: theme.spacing[4], gap: theme.spacing[2], marginBottom: theme.spacing[6] },
+    featureItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: theme.spacing[4],
+      borderRadius: theme.borderRadius.lg,
+      borderWidth: 1,
+      gap: theme.spacing[3],
+      backgroundColor: withAlpha(theme.colors.text, theme.isDark ? 0.03 : 0.04),
+      borderColor: withAlpha(theme.colors.text, theme.isDark ? 0.06 : 0.08),
+    },
+    featureIcon: {
+      width: theme.spacing[10],
+      height: theme.spacing[10],
+      borderRadius: theme.borderRadius.lg,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: withAlpha(accentColor, 0.12),
+    },
+    featureText: { flex: 1 },
+    featureTitle: { fontSize: 14, fontWeight: '700', color: theme.colors.text },
+    featureDesc: { fontSize: 12, marginTop: theme.spacing[1], color: theme.colors.textMuted },
+
+    // Plans
+    planSection: { paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[4] },
+    planSectionTitle: {
+      fontSize: 20,
+      fontWeight: '800',
+      marginBottom: theme.spacing[3],
+      textAlign: 'center',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      color: theme.colors.text,
+    },
+    planCard: {
+      borderRadius: theme.borderRadius.xl,
+      padding: theme.spacing[5],
+      marginBottom: theme.spacing[2],
+      overflow: 'hidden',
+    },
+    badge: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      paddingHorizontal: theme.spacing[3],
+      paddingVertical: theme.spacing[1],
+      borderBottomLeftRadius: theme.borderRadius.md,
+      backgroundColor: accentColor,
+    },
+    badgeText: {
+      color: theme.colors.background,
+      fontSize: 10,
+      fontWeight: '900',
+      letterSpacing: 0.5,
+    },
+    planRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    planInfo: { flex: 1 },
+    planName: { fontSize: 18, fontWeight: '800', textTransform: 'uppercase', color: theme.colors.text },
+    planDetail: { fontSize: 12, fontWeight: '500', marginTop: theme.spacing[1], color: theme.colors.textMuted },
+    planPriceWrap: { alignItems: 'flex-end', marginRight: theme.spacing[3] },
+    planPrice: { fontSize: 22, fontWeight: '900', color: theme.colors.text },
+    planPeriod: { fontSize: 11, fontWeight: '500', color: theme.colors.textMuted },
+    radio: {
+      width: theme.spacing[6],
+      height: theme.spacing[6],
+      borderRadius: theme.borderRadius.full,
+      borderWidth: 2,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    radioInner: {
+      width: theme.spacing[3],
+      height: theme.spacing[3],
+      borderRadius: theme.borderRadius.full,
+    },
+    saveBadge: {
+      marginTop: theme.spacing[3],
+      alignSelf: 'flex-start',
+      paddingHorizontal: theme.spacing[3],
+      paddingVertical: theme.spacing[1],
+      borderRadius: theme.borderRadius.full,
+      backgroundColor: withAlpha(accentColor, 0.12),
+    },
+    saveText: { fontSize: 12, fontWeight: '700', color: accentColor },
+
+    // CTA
+    ctaSection: { paddingHorizontal: theme.spacing[4], marginTop: theme.spacing[2] },
+    ctaBtn: {
+      paddingVertical: theme.spacing[4],
+      borderRadius: theme.borderRadius.lg,
+      alignItems: 'center',
+      backgroundColor: accentColor,
+    },
+    ctaText: { fontSize: 16, fontWeight: '800', color: theme.colors.background },
+    terms: { fontSize: 12, textAlign: 'center', marginTop: theme.spacing[3], color: theme.colors.textMuted },
+    restoreBtn: { alignSelf: 'center', marginTop: theme.spacing[2] },
+    restoreText: { fontSize: 13, fontWeight: '600', color: theme.colors.textSecondary },
+  });
+};
+
+const getPlanCardStyle = (
+  theme: ReturnType<typeof useTheme>['theme'],
+  accentColor: string,
+  selected: boolean
+) => ({
+  backgroundColor: theme.isDark
+    ? withAlpha(theme.colors.text, 0.04)
+    : theme.colors.surface,
+  borderColor: selected
+    ? accentColor
+    : withAlpha(theme.colors.text, theme.isDark ? 0.08 : 0.1),
+  borderWidth: selected ? 2 : 1,
+});
+
+const getRadioStyle = (
+  theme: ReturnType<typeof useTheme>['theme'],
+  accentColor: string,
+  selected: boolean
+) => ({
+  borderColor: selected ? accentColor : theme.colors.textMuted,
+});
 
 export default function PaywallScreen() {
   const { theme } = useTheme();
@@ -95,38 +288,53 @@ export default function PaywallScreen() {
     }
   };
 
-  const isDark = theme.isDark;
-  const accentColor = '#CCFF00'; // Figma-inspired lime accent
+  const accentColor = theme.colors.accent;
+  const styles = useMemo(() => createStyles(theme, accentColor), [theme, accentColor]);
+  const planCardAnnualStyle = useMemo(
+    () => getPlanCardStyle(theme, accentColor, selectedPlan === 'annual'),
+    [theme, accentColor, selectedPlan]
+  );
+  const planCardMonthlyStyle = useMemo(
+    () => getPlanCardStyle(theme, accentColor, selectedPlan === 'monthly'),
+    [theme, accentColor, selectedPlan]
+  );
+  const annualRadioStyle = useMemo(
+    () => getRadioStyle(theme, accentColor, selectedPlan === 'annual'),
+    [theme, accentColor, selectedPlan]
+  );
+  const monthlyRadioStyle = useMemo(
+    () => getRadioStyle(theme, accentColor, selectedPlan === 'monthly'),
+    [theme, accentColor, selectedPlan]
+  );
+  const radioInnerStyle = useMemo(() => ({ backgroundColor: accentColor }), [accentColor]);
+  const heroGlowColors = useMemo(
+    () => [withAlpha(accentColor, 0.12), 'transparent'] as const,
+    [accentColor]
+  );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0A0E17' : '#F4F5F7' }]}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Close Button ── */}
         <Animated.View entering={FadeIn.duration(150)}>
-          <TouchableOpacity
-            style={[styles.closeBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}
-            onPress={() => router.back()}
-          >
+          <TouchableOpacity style={styles.closeBtn} onPress={() => router.back()}>
             <MaterialCommunityIcons name="close" size={20} color={theme.colors.textMuted} />
           </TouchableOpacity>
         </Animated.View>
 
         {/* ── Hero Header ── */}
-        <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.hero}>
-          <LinearGradient
-            colors={[accentColor + '20', 'transparent']}
-            style={styles.heroGlow}
-          />
-          <View style={[styles.logoWrap, { backgroundColor: accentColor + '15' }]}>
-            <MaterialCommunityIcons name="lightning-bolt" size={40} color={accentColor} />
-          </View>
-          <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
+          <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.hero}>
+            <LinearGradient colors={heroGlowColors} style={styles.heroGlow} />
+            <View style={styles.logoWrap}>
+              <MaterialCommunityIcons name="lightning-bolt" size={40} color={accentColor} />
+            </View>
+            <Text style={styles.heroTitle}>
             Unlock Full{'\n'}FitQuest
           </Text>
-          <Text style={[styles.heroSub, { color: theme.colors.textMuted }]}>
+            <Text style={styles.heroSub}>
             {trialDaysRemaining > 0
               ? `${trialDaysRemaining} day${trialDaysRemaining !== 1 ? 's' : ''} left in your free trial`
               : 'Your trial has ended'}
@@ -140,19 +348,16 @@ export default function PaywallScreen() {
               <Animated.View
                 key={feat.title}
                 entering={FadeInUp.delay(250 + i * 60).duration(150)}
-                style={[styles.featureItem, {
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                  borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-                }]}
+                style={styles.featureItem}
               >
-                <View style={[styles.featureIcon, { backgroundColor: accentColor + '12' }]}>
+                <View style={styles.featureIcon}>
                   <MaterialCommunityIcons name={feat.icon} size={20} color={accentColor} />
                 </View>
                 <View style={styles.featureText}>
-                  <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
+                  <Text style={styles.featureTitle}>
                     {feat.title}
                   </Text>
-                  <Text style={[styles.featureDesc, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                  <Text style={styles.featureDesc} numberOfLines={1}>
                     {feat.desc}
                   </Text>
                 </View>
@@ -163,7 +368,7 @@ export default function PaywallScreen() {
 
         {/* ── Plan Selection ── */}
         <Animated.View entering={FadeInDown.delay(500).duration(150)} style={styles.planSection}>
-          <Text style={[styles.planSectionTitle, { color: theme.colors.text }]}>
+          <Text style={styles.planSectionTitle}>
             Choose Your Plan
           </Text>
 
@@ -173,42 +378,36 @@ export default function PaywallScreen() {
             onPress={() => setSelectedPlan('annual')}
             style={[
               styles.planCard,
-              {
-                backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                borderColor: selectedPlan === 'annual' ? accentColor : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-                borderWidth: selectedPlan === 'annual' ? 2 : 1,
-              },
+              planCardAnnualStyle,
             ]}
           >
             {/* Best Value badge */}
-            <View style={[styles.badge, { backgroundColor: accentColor }]}>
+            <View style={styles.badge}>
               <Text style={styles.badgeText}>BEST VALUE</Text>
             </View>
 
             <View style={styles.planRow}>
               <View style={styles.planInfo}>
-                <Text style={[styles.planName, { color: theme.colors.text }]}>Annual</Text>
-                <Text style={[styles.planDetail, { color: theme.colors.textMuted }]}>
+                <Text style={styles.planName}>Annual</Text>
+                <Text style={styles.planDetail}>
                   {offerings.annual?.pricePerMonth ?? '$6.67'}/month
                 </Text>
               </View>
               <View style={styles.planPriceWrap}>
-                <Text style={[styles.planPrice, { color: theme.colors.text }]}>
+                <Text style={styles.planPrice}>
                   {offerings.annual?.price ?? '$79.99'}
                 </Text>
-                <Text style={[styles.planPeriod, { color: theme.colors.textMuted }]}>/year</Text>
+                <Text style={styles.planPeriod}>/year</Text>
               </View>
-              <View style={[styles.radio, {
-                borderColor: selectedPlan === 'annual' ? accentColor : theme.colors.textMuted,
-              }]}>
+              <View style={[styles.radio, annualRadioStyle]}>
                 {selectedPlan === 'annual' && (
-                  <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, { backgroundColor: accentColor }]} />
+                  <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, radioInnerStyle]} />
                 )}
               </View>
             </View>
 
-            <View style={[styles.saveBadge, { backgroundColor: accentColor + '15' }]}>
-              <Text style={[styles.saveText, { color: accentColor }]}>Save 33%</Text>
+            <View style={styles.saveBadge}>
+              <Text style={styles.saveText}>Save 33%</Text>
             </View>
           </TouchableOpacity>
 
@@ -218,31 +417,25 @@ export default function PaywallScreen() {
             onPress={() => setSelectedPlan('monthly')}
             style={[
               styles.planCard,
-              {
-                backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                borderColor: selectedPlan === 'monthly' ? accentColor : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-                borderWidth: selectedPlan === 'monthly' ? 2 : 1,
-              },
+              planCardMonthlyStyle,
             ]}
           >
             <View style={styles.planRow}>
               <View style={styles.planInfo}>
-                <Text style={[styles.planName, { color: theme.colors.text }]}>Monthly</Text>
-                <Text style={[styles.planDetail, { color: theme.colors.textMuted }]}>
+                <Text style={styles.planName}>Monthly</Text>
+                <Text style={styles.planDetail}>
                   Flexible billing
                 </Text>
               </View>
               <View style={styles.planPriceWrap}>
-                <Text style={[styles.planPrice, { color: theme.colors.text }]}>
+                <Text style={styles.planPrice}>
                   {offerings.monthly?.price ?? '$9.99'}
                 </Text>
-                <Text style={[styles.planPeriod, { color: theme.colors.textMuted }]}>/month</Text>
+                <Text style={styles.planPeriod}>/month</Text>
               </View>
-              <View style={[styles.radio, {
-                borderColor: selectedPlan === 'monthly' ? accentColor : theme.colors.textMuted,
-              }]}>
+              <View style={[styles.radio, monthlyRadioStyle]}>
                 {selectedPlan === 'monthly' && (
-                  <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, { backgroundColor: accentColor }]} />
+                  <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, radioInnerStyle]} />
                 )}
               </View>
             </View>
@@ -255,10 +448,10 @@ export default function PaywallScreen() {
             activeOpacity={0.9}
             onPress={handleSubscribe}
             disabled={purchasing}
-            style={[styles.ctaBtn, { backgroundColor: accentColor, opacity: purchasing ? 0.6 : 1 }]}
+            style={[styles.ctaBtn, purchasing && { opacity: 0.6 }]}
           >
             {purchasing ? (
-              <ActivityIndicator color="#000" />
+              <ActivityIndicator color={theme.colors.background} />
             ) : (
               <Text style={styles.ctaText}>
                 {trialDaysRemaining > 0 ? 'Start Subscription' : 'Continue with Full Access'}
@@ -266,13 +459,13 @@ export default function PaywallScreen() {
             )}
           </TouchableOpacity>
 
-          <Text style={[styles.terms, { color: theme.colors.textMuted }]}>
+          <Text style={styles.terms}>
             Cancel anytime. No refunds for partial periods.
           </Text>
 
           {/* Restore Purchases */}
           <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
-            <Text style={[styles.restoreText, { color: theme.colors.textSecondary }]}>
+            <Text style={styles.restoreText}>
               Restore Purchases
             </Text>
           </TouchableOpacity>
@@ -282,162 +475,3 @@ export default function PaywallScreen() {
   );
 }
 
-// ============================================
-// STYLES
-// ============================================
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContent: { paddingBottom: 40 },
-
-  closeBtn: {
-    position: 'absolute',
-    top: 8,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-
-  // Hero
-  hero: { alignItems: 'center', paddingTop: 24, paddingBottom: 24, marginBottom: 8 },
-  heroGlow: {
-    position: 'absolute',
-    top: 0,
-    left: SCREEN_W * 0.2,
-    right: SCREEN_W * 0.2,
-    height: 120,
-    borderRadius: 60,
-  },
-  logoWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: '900',
-    textAlign: 'center',
-    letterSpacing: -0.5,
-    lineHeight: 38,
-  },
-  heroSub: {
-    fontSize: 15,
-    fontWeight: '500',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-
-  // Features
-  featureGrid: { paddingHorizontal: 16, gap: 8, marginBottom: 24 },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 12,
-  },
-  featureIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  featureText: { flex: 1 },
-  featureTitle: { fontSize: 14, fontWeight: '700' },
-  featureDesc: { fontSize: 12, marginTop: 2 },
-
-  // Plans
-  planSection: { paddingHorizontal: 16, marginBottom: 16 },
-  planSectionTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    marginBottom: 12,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  planCard: {
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  badge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderBottomLeftRadius: 10,
-  },
-  badgeText: {
-    color: '#000',
-    fontSize: 10,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  planRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  planInfo: { flex: 1 },
-  planName: { fontSize: 18, fontWeight: '800', textTransform: 'uppercase' },
-  planDetail: { fontSize: 12, fontWeight: '500', marginTop: 2 },
-  planPriceWrap: { alignItems: 'flex-end', marginRight: 14 },
-  planPrice: { fontSize: 22, fontWeight: '900' },
-  planPeriod: { fontSize: 11, fontWeight: '500' },
-  radio: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  saveBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  saveText: { fontSize: 12, fontWeight: '800' },
-
-  // CTA
-  ctaSection: { paddingHorizontal: 16, alignItems: 'center' },
-  ctaBtn: {
-    width: '100%',
-    paddingVertical: 18,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ctaText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  terms: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 12,
-  },
-  restoreBtn: { marginTop: 16, padding: 8 },
-  restoreText: { fontSize: 13, fontWeight: '600' },
-});

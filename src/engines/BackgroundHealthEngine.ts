@@ -26,7 +26,14 @@ import { encryptedDB } from '../security/EncryptedDatabase';
 import { AnomalyDetector, type MetricDataPoint } from './AnomalyDetector';
 import { SleepAnalysisEngine } from './SleepAnalysisEngine';
 import { RealisticHealthEngine } from './RealisticHealthEngine';
-import { getDatabase } from '../database/schema';
+import {
+  getAverageFatigueLevel,
+  getDailyStepsForDate,
+  getRecoveryScoresSince,
+  getStepHistory,
+  getWorkoutCountSince,
+  getWorkoutStreakCurrent,
+} from '../database/service';
 
 // ============================================
 // TYPES
@@ -231,27 +238,16 @@ export class BackgroundHealthEngine {
 
     try {
       // Read from existing health data in SQLite
-      const db = await getDatabase();
-
       // Get today's step data
       const today = new Date().toISOString().split('T')[0];
-      const stepRow = await db.getFirstAsync<{ steps: number }>(
-        `SELECT steps FROM daily_steps WHERE date = ?`,
-        [today]
-      );
+      const stepRow = await getDailyStepsForDate('user_local_001', today);
       if (stepRow) {
         this.todayData.steps = stepRow.steps;
       }
 
       // Get today's workout count
       const startOfDay = new Date(today).getTime();
-      const workoutRow = await db.getFirstAsync<{ cnt: number }>(
-        `SELECT COUNT(*) as cnt FROM workout_sessions WHERE started_at >= ?`,
-        [startOfDay]
-      );
-      if (workoutRow) {
-        this.todayData.workoutsCompleted = workoutRow.cnt;
-      }
+      this.todayData.workoutsCompleted = await getWorkoutCountSince(startOfDay);
 
       // Estimate active calories from steps + workouts
       this.todayData.calories = this.estimateActiveCalories(
@@ -275,6 +271,13 @@ export class BackgroundHealthEngine {
   recordHeartRate(bpm: number): void {
     if (bpm >= 30 && bpm <= 220) {
       this.todayData.heartRateReadings.push(bpm);
+      encryptedDB.storeHealthData('heart_rate', {
+        bpm,
+        source: 'MANUAL',
+        recorded_at: Date.now(),
+      }).catch((error) => {
+        console.warn('[BackgroundHealth] Failed to store heart rate:', error);
+      });
     }
   }
 
@@ -322,13 +325,10 @@ export class BackgroundHealthEngine {
     steps: MetricDataPoint[];
     recovery: MetricDataPoint[];
   }> {
-    const db = await getDatabase();
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
     // Get recent daily step data
-    const stepRows = await db.getAllAsync<{ date: string; steps: number }>(
-      `SELECT date, steps FROM daily_steps ORDER BY date DESC LIMIT 14`
-    );
+    const stepRows = await getStepHistory('user_local_001', 14);
     const steps: MetricDataPoint[] = stepRows.map((r) => ({
       value: r.steps,
       timestamp: new Date(r.date).getTime(),
@@ -346,10 +346,7 @@ export class BackgroundHealthEngine {
     }
 
     // Recovery scores from muscle fatigue
-    const fatigueRows = await db.getAllAsync<{ recovery_score: number; updated_at: number }>(
-      `SELECT (100 - fatigue_level) as recovery_score, updated_at FROM muscle_fatigue WHERE updated_at > ? ORDER BY updated_at DESC LIMIT 30`,
-      [sevenDaysAgo]
-    );
+    const fatigueRows = await getRecoveryScoresSince(sevenDaysAgo);
     const recovery: MetricDataPoint[] = fatigueRows.map((r) => ({
       value: r.recovery_score,
       timestamp: r.updated_at,
@@ -378,11 +375,8 @@ export class BackgroundHealthEngine {
 
     // Recovery score (0-25)
     try {
-      const db = await getDatabase();
-      const fatigue = await db.getFirstAsync<{ avg_fatigue: number }>(
-        `SELECT AVG(fatigue_level) as avg_fatigue FROM muscle_fatigue`
-      );
-      const recoveryScore = 100 - (fatigue?.avg_fatigue || 50);
+      const avgFatigue = await getAverageFatigueLevel();
+      const recoveryScore = 100 - (avgFatigue ?? 50);
       score += (recoveryScore / 100) * (SCORE_WEIGHTS.RECOVERY * 100);
     } catch {
       score += 50 * (SCORE_WEIGHTS.RECOVERY / 100); // Default
@@ -399,11 +393,8 @@ export class BackgroundHealthEngine {
 
     // Consistency score (0-15) — based on workout streak
     try {
-      const db = await getDatabase();
-      const streak = await db.getFirstAsync<{ current_streak: number }>(
-        `SELECT current_streak FROM workout_streaks WHERE user_id = 'user_local_001'`
-      );
-      const consistencyScore = Math.min(100, (streak?.current_streak || 0) * 15);
+      const currentStreak = await getWorkoutStreakCurrent('user_local_001');
+      const consistencyScore = Math.min(100, currentStreak * 15);
       score += (consistencyScore / 100) * (SCORE_WEIGHTS.CONSISTENCY * 100);
     } catch {
       score += 0;

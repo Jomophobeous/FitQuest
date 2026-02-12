@@ -21,7 +21,7 @@
 
 ### Component Violations (Auto-Reject)
 - **NEVER** use `bg-white`, `bg-gray-50`, or light backgrounds — dark theme requires `bg-slate-900` or `bg-zinc-900`
-- **NEVER** wrap file paths in backticks — use proper markdown links: `[file.ts](file.ts#L10)`
+- **NEVER** wrap file paths in backticks — use proper markdown links: `[src/design/theme-system.ts](../src/design/theme-system.ts)`
 - **NEVER** create new Button components — use `GradientButton` from `src/components/ui/GlassUI.tsx`
 - **NEVER** use inline styles for theme values — extract to theme system first
 - **NEVER** import `ThemedText` as a named import — it's a DEFAULT export
@@ -88,7 +88,7 @@
 
 ### FitMind Module Errors
 ❌ **Bug**: Querying `fitmind_documents` before FitMind init  
-✅ **Fix**: Check `FitMindService.isInitialized` or call `initializeFitMindSchema()` first
+✅ **Fix**: Ensure `initializeDatabase()` has run before any FitMind reads/writes
 
 ❌ **Bug**: Storing document content in `file_path` column  
 ✅ **Fix**: Large content goes in `content` TEXT column, file path is just a reference
@@ -98,7 +98,7 @@
 
 ---
 
-## 📊 EMBEDDED SCHEMA — SCHEMA VERSION 8
+## 📊 EMBEDDED SCHEMA — SCHEMA VERSION 9
 
 Below is the **canonical SQL schema** (auto-generated from `src/database/schema.ts`). When generating queries, ONLY reference columns that exist below:
 
@@ -241,6 +241,15 @@ CREATE TABLE subscription_state (
   grace_period_start TEXT,
   receipt_data TEXT,
   FOREIGN KEY (user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+);
+
+CREATE TABLE trial_state (
+  user_id TEXT PRIMARY KEY,
+  started_at INTEGER NOT NULL,
+  ends_at INTEGER NOT NULL,
+  converted INTEGER DEFAULT 0,
+  product_identifier TEXT,
+  notifications_sent TEXT DEFAULT '[]'
 );
 
 CREATE TABLE app_state (
@@ -517,7 +526,7 @@ Fully client-side React Native app (Expo SDK 54, Expo Router v6, New Architectur
 ThemeProvider → LanguageProvider → DatabaseProvider → ApolloProvider → ThemedTabs
 ```
 
-**Data layer**: SQLite (`expo-sqlite`) is the single source of truth. Schema version 8 (auto-migrating). All new data work MUST use `src/database/service.ts` for core fitness data, `src/security/EncryptedDatabase.ts` for sensitive health/AI data, and `src/fitmind/schema.ts` for cognitive fitness data. Apollo Client is a legacy facade — do NOT add new Apollo queries.
+**Data layer**: SQLite (`expo-sqlite`) is the single source of truth. Schema version 9 (auto-migrating). All new data work MUST use `src/database/service.ts` for core fitness data, `src/security/EncryptedDatabase.ts` for sensitive health/AI data, and `src/fitmind/schema.ts` for cognitive fitness data. Apollo Client is a legacy facade — do NOT add new Apollo queries.
 
 **Design reference**: The `Figma UI/` workspace folder contains the target UI design (Figma-to-code export). When building or refining screens, reference `Figma UI/src/App.tsx` for layout patterns, spacing, and visual hierarchy — then adapt to React Native using the theme system below.
 
@@ -529,7 +538,7 @@ ThemeProvider → LanguageProvider → DatabaseProvider → ApolloProvider → T
 | `src/components/` | Shared themed components (Button, Card, ThemedText, DropdownMenu, etc.) |
 | `src/components/ui/` | Premium glass-morphism UI (GlassUI.tsx, FitnessComponents.tsx) |
 | `src/context/` | React Context providers (Theme, Language, Database, Auth) |
-| `src/database/` | SQLite schema (v8), CRUD service, types, seed data — **the canonical data layer** |
+| `src/database/` | SQLite schema (v9), CRUD service, types, seed data — **the canonical data layer** |
 | `src/engines/` | Workout algorithm + sensor fusion + health analytics + health monitor + anomaly detection + sleep analysis + background health + intent routing |
 | `src/security/` | Encrypted DB, biometric auth, secure storage migration |
 | `src/fitmind/` | Cognitive fitness module — document library, reader, dual AI, flashcards |
@@ -559,17 +568,17 @@ Canonical tokens: `src/design/theme-system.ts` (NOT `tokens.ts` — that file ha
 - Typography: use `ThemedText` (DEFAULT export) with `variant` (h1–caption) and `color` (primary/secondary/muted/accent) props.
 - `GradientButton` props: `title` (string), `variant` ('primary'|'success'|'warning'), `size` ('sm'|'md'|'lg'), `style?` (ViewStyle).
 
-## Data Layer — SQLite First (Schema v8)
+## Data Layer — SQLite First (Schema v9)
 
 All data operations go through `src/database/`:
-- **Schema**: `schema.ts` — versioned tables with auto-migration (v8: core + encrypted + FitMind + health monitoring)
+- **Schema**: `schema.ts` — versioned tables with auto-migration (v9: adds `trial_state`)
 - **Service**: `service.ts` — CRUD module (exercises, profiles, fatigue, sessions, streaks, progress, app state)
-- **Types**: `types.ts` — canonical enums (`Category`, `Difficulty`, `TargetMuscle`, `EquipmentItem`, etc.) + `SCHEMA_VERSION = 8`
+- **Types**: `types.ts` — canonical enums (`Category`, `Difficulty`, `TargetMuscle`, `EquipmentItem`, etc.) + `SCHEMA_VERSION = 9`
 - **Seed**: `seed.ts` — exercise catalogue seeded on first run
-- **Init**: `index.ts` — `initializeDatabase()` creates all tables + seeds exercises + inits FitMind + inits encrypted DB
+- **Init**: `index.ts` — `initializeDatabase()` creates all tables + seeds exercises + inits encrypted DB
 
 Tables by module:
-- **Core**: exercises, exercise_muscles, exercise_equipment, exercise_training_types, user_profile, user_equipment, user_injuries, muscle_fatigue, workout_sessions, session_exercises, progress_records, subscription_state, app_state, workout_streaks, daily_steps, jog_sessions, audio_settings, body_craft_algorithms
+- **Core**: exercises, exercise_muscles, exercise_equipment, exercise_training_types, user_profile, user_equipment, user_injuries, muscle_fatigue, workout_sessions, session_exercises, progress_records, subscription_state, trial_state, app_state, workout_streaks, daily_steps, jog_sessions, audio_settings, body_craft_algorithms
 - **Encrypted (v7)**: encrypted_health_data, encrypted_ai_conversations, encrypted_notes, health_alerts
 - **FitMind (v7)**: fitmind_documents, fitmind_reading_sessions, fitmind_annotations, fitmind_flashcards, fitmind_reading_goals, fitmind_reading_streaks
 - **Health Monitoring (v8)**: heart_rate_readings, anomaly_log, daily_health_summaries, document_content_hashes
@@ -578,10 +587,10 @@ XP is persisted via `src/services/xpService.ts` using the `app_state` SQLite tab
 
 ## Security Layer (`src/security/`)
 
-- **AESEncryption.ts** — Production-grade authenticated encryption: PBKDF2-SHA256 (100K iterations) key derivation, CTR-mode cipher via SHA-256 key stream, HMAC-SHA256 Encrypt-then-MAC. Per-message random IV + salt. Exports: `encryptV2()`, `decryptV2()`, `isV1Payload()`, `decryptV1Legacy()`, `getOrCreateMasterKey()`. Master key in SecureStore (`fitquest_master_key_v2`).
-- **EncryptedDatabase.ts** — v2 rewrite: auto-migrates v1 XOR-encrypted data to v2 on read. Singleton: `encryptedDB`. Methods: `storeHealthData()`, `getHealthData()`, `getRecentHealthData()`, `storeAIConversation()`, `createHealthAlert()`, `acknowledgeAlert()`, `getActiveAlerts()`, `migrateAllToV2()`, `shouldRotateKey()`, `secureDelete()`.
+- **AESEncryption.ts** — Versioned payload crypto: v2 (legacy CTR+HMAC), v3 (AES-256-GCM). Exports: `encryptV2()`, `decryptV2()`, `encryptV3()`, `decryptV3()`, `isV1Payload()`, `isV2Payload()`, `isV3Payload()`, `decryptV1Legacy()`, `getOrCreateMasterKey()`.
+- **EncryptedDatabase.ts** — v3 encrypted storage service: writes v3 AES-GCM and auto-migrates v1/v2 blobs to v3 on read. Singleton: `encryptedDB`. Methods: `storeHealthData()`, `getHealthData()`, `getRecentHealthData()`, `storeAIConversation()`, `createHealthAlert()`, `acknowledgeAlert()`, `getActiveAlerts()`, `migrateAllToV3()`, `shouldRotateKey()`, `secureDelete()`.
 - **BiometricAuth.ts** — Biometric-first auth with expo-local-authentication. 5-attempt lockout with exponential backoff, 30-minute session expiry. PBKDF2-hardened passcode (1000 JS iterations), constant-time comparison, emergency wipe after 15 failures. Singleton: `bioAuth`.
-- **StorageMigration.ts** — One-time AsyncStorage → SecureStore migration for auth tokens.
+- **StorageMigration.ts** — SecureStore-backed credential helpers (no AsyncStorage).
 - **AuthContext.tsx** — Rewired to use SecureStore + BiometricAuth. Exposes `authenticateWithBiometrics()`, `setupPasscode()`, `isSessionValid()`. Default user: `user_local_001`.
 
 ## Workout Engine (Core Domain)

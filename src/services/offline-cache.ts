@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apolloClient } from './apollo-client';
+import { deleteAppStateByPrefix, getAppState, setAppState } from '../database/service';
 
 const CACHE_PREFIX = 'apollo_cache_';
 
@@ -7,7 +7,7 @@ export class OfflineCacheManager {
   static async saveToOffline(key: string, data: any): Promise<void> {
     try {
       const cacheKey = `${CACHE_PREFIX}${key}`;
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
+      await setAppState(cacheKey, JSON.stringify(data));
     } catch (error) {
       console.error('Failed to save offline cache:', error);
     }
@@ -16,7 +16,7 @@ export class OfflineCacheManager {
   static async getFromOffline(key: string): Promise<any | null> {
     try {
       const cacheKey = `${CACHE_PREFIX}${key}`;
-      const data = await AsyncStorage.getItem(cacheKey);
+      const data = await getAppState(cacheKey);
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error('Failed to retrieve offline cache:', error);
@@ -26,9 +26,7 @@ export class OfflineCacheManager {
 
   static async clearOfflineCache(): Promise<void> {
     try {
-      const keys = await AsyncStorage.getAllKeys();
-      const cacheKeys = keys.filter((key) => key.startsWith(CACHE_PREFIX));
-      await AsyncStorage.multiRemove(cacheKeys);
+      await deleteAppStateByPrefix(CACHE_PREFIX);
     } catch (error) {
       console.error('Failed to clear offline cache:', error);
     }

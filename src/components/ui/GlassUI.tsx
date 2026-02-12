@@ -14,6 +14,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  type StyleProp,
   ViewStyle,
   Dimensions,
   Platform,
@@ -31,7 +32,6 @@ import Animated, {
   SlideInDown,
   SlideInUp,
   ZoomIn,
-  Layout,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -45,7 +45,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface GlassCardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   delay?: number;
   gradient?: boolean; // kept for API compatibility but simplified
   gradientColors?: string[];
@@ -80,7 +80,6 @@ export function GlassCard({
   const cardContent = (
     <Animated.View
       entering={FadeInDown.delay(delay).duration(150)}
-      layout={Layout.duration(150)}
       style={[
         styles.glassCard,
         {
@@ -526,13 +525,15 @@ export function AnimatedListItem({ children, index, style, onPress }: AnimatedLi
     transform: [{ scale: scale.value }],
   }));
 
+  // Separate transform wrapper from layout animation to avoid Reanimated conflicts
   const content = (
-    <Animated.View
-      entering={FadeInRight.delay(index * 40).duration(150)}
-      layout={Layout.duration(150)}
-      style={[animatedStyle, style]}
-    >
-      {children}
+    <Animated.View style={animatedStyle}>
+      <Animated.View
+        entering={FadeInRight.delay(index * 40).duration(150)}
+        style={style}
+      >
+        {children}
+      </Animated.View>
     </Animated.View>
   );
 
@@ -562,7 +563,6 @@ export const Animations = {
   SlideInDown,
   SlideInUp,
   ZoomIn,
-  Layout,
 };
 
 // ============================================

@@ -12,9 +12,9 @@ Minimal Test Scripts (package.json)
 
 ```json
 "scripts": {
-  "test": "jest --runInBand",
-  "lint": "eslint . --ext .ts,.tsx",
-  "typecheck": "tsc --noEmit"
+  "lint": "npm run typecheck",
+  "typecheck": "tsc --noEmit",
+  "test": "vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic"
 }
 ```
 

@@ -20,6 +20,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -65,10 +66,10 @@ interface HealthData {
   workoutsGoal: number;
   streakDays: number;
   anomalyCount: number;
-  alerts: Alert[];
+  alerts: HealthAlert[];
 }
 
-interface Alert {
+interface HealthAlert {
   id: string;
   type: string;
   severity: string;
@@ -169,7 +170,7 @@ function AlertCard({
   theme,
   onDismiss,
 }: {
-  alert: Alert;
+  alert: HealthAlert;
   theme: any;
   onDismiss: (id: string) => void;
 }) {
@@ -679,14 +680,14 @@ export default function HealthDashboardScreen() {
               title="Log Heart Rate"
               variant="primary"
               size="sm"
-              onPress={() => {}}
+              onPress={() => Alert.alert('Coming Soon', 'Heart rate logging will be available in the next update.')}
               style={{ flex: 1, marginRight: 8 }}
             />
             <GradientButton
               title="Log Sleep"
               variant="primary"
               size="sm"
-              onPress={() => {}}
+              onPress={() => Alert.alert('Coming Soon', 'Sleep logging will be available in the next update.')}
               style={{ flex: 1, marginLeft: 8 }}
             />
           </View>

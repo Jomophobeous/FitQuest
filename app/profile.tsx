@@ -14,10 +14,12 @@ import {
   Switch,
   Modal,
   Pressable,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as FileSystem from 'expo-file-system/legacy';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -36,6 +38,10 @@ import { getUserProgress, getStreak, getUserProfile, updateUserProfile } from '.
 import { useRouter } from 'expo-router';
 import { getXPData, XPData } from '../src/services/xpService';
 import { GlassCard, GradientButton, ProgressRing, StatChip, SectionHeader } from '../src/components/ui/GlassUI';
+import { useAuth } from '../src/context/AuthContext';
+import { deleteMyUserData, exportMyUserData, recordConsentTimestamp } from '../src/services/authApi';
+import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../src/services/adaptiveTrainingService';
+import { getSocialLayerSettings, setSocialLayerEnabled, type SocialLayerSettings } from '../src/services/socialLayerService';
 
 // ============================================
 // THEMED PICKER MODAL
@@ -255,10 +261,16 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
 export default function ProfileScreen() {
   const { theme, toggleTheme } = useTheme();
   const { t, languageName } = useLanguage();
+  const { signOut } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [privacyBusy, setPrivacyBusy] = useState(false);
+  const [consentTimestamp, setConsentTimestamp] = useState<number | null>(null);
+  const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptiveTrainingProfile | null>(null);
+  const [socialSettings, setSocialSettings] = useState<SocialLayerSettings | null>(null);
+  const [socialBusy, setSocialBusy] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
   // Themed modal state
@@ -350,11 +362,13 @@ export default function ProfileScreen() {
 
   const loadData = useCallback(async () => {
     try {
-      const [userProfile, progress, streak, xp] = await Promise.all([
+      const [userProfile, progress, streak, xp, adaptive, social] = await Promise.all([
         getUserProfile('user_local_001'),
         getUserProgress(),
         getStreak('user_local_001'),
         getXPData(),
+        getAdaptiveTrainingProfile('user_local_001'),
+        getSocialLayerSettings('user_local_001'),
       ]);
 
       setProfile({
@@ -375,6 +389,9 @@ export default function ProfileScreen() {
         xpForNext: xp.xpToNextLevel,
         currentLevelXP: xp.currentLevelXP,
       });
+
+      setAdaptiveProfile(adaptive);
+      setSocialSettings(social);
     } catch (err) {
       console.error('[Profile] Load failed:', err);
     } finally {
@@ -394,9 +411,86 @@ export default function ProfileScreen() {
         { label: 'Log Out', value: 'logout' },
       ],
       destructiveIndex: 0,
-      onSelect: () => console.log('Logout'),
+      onSelect: async () => {
+        await signOut();
+        router.replace('/login');
+      },
     });
   };
+
+  const handleRecordConsent = useCallback(async () => {
+    if (privacyBusy) return;
+    setPrivacyBusy(true);
+    try {
+      const result = await recordConsentTimestamp();
+      setConsentTimestamp(result.consentTimestamp);
+      Alert.alert('Consent recorded', 'Your privacy consent timestamp has been saved.');
+    } catch (e: any) {
+      Alert.alert('Failed', e?.message ?? 'Could not record consent');
+    } finally {
+      setPrivacyBusy(false);
+    }
+  }, [privacyBusy]);
+
+  const handleExportData = useCallback(async () => {
+    if (privacyBusy) return;
+    setPrivacyBusy(true);
+    try {
+      const payload = await exportMyUserData();
+      const exportDir = `${FileSystem.documentDirectory}exports/`;
+      const dirInfo = await FileSystem.getInfoAsync(exportDir);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(exportDir, { intermediates: true });
+      }
+
+      const outUri = `${exportDir}fitquest_user_export_${Date.now()}.json`;
+      await FileSystem.writeAsStringAsync(outUri, JSON.stringify(payload, null, 2), {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+
+      Alert.alert('Export complete', `Saved to:\n${outUri}`);
+    } catch (e: any) {
+      Alert.alert('Export failed', e?.message ?? 'Could not export user data');
+    } finally {
+      setPrivacyBusy(false);
+    }
+  }, [privacyBusy]);
+
+  const handleDeleteCloudData = useCallback(() => {
+    if (privacyBusy) return;
+    setPickerModal({
+      visible: true,
+      title: 'Delete Cloud Data',
+      subtitle: 'This permanently deletes your account backups and cloud metadata.',
+      options: [{ label: 'Delete Permanently', value: 'delete' }],
+      destructiveIndex: 0,
+      onSelect: async () => {
+        setPrivacyBusy(true);
+        try {
+          await deleteMyUserData();
+          await signOut();
+          router.replace('/login');
+        } catch (e: any) {
+          Alert.alert('Delete failed', e?.message ?? 'Could not delete cloud data');
+        } finally {
+          setPrivacyBusy(false);
+        }
+      },
+    });
+  }, [privacyBusy, signOut, router]);
+
+  const handleSocialToggle = useCallback(async (enabled: boolean) => {
+    if (socialBusy) return;
+    setSocialBusy(true);
+    try {
+      const next = await setSocialLayerEnabled('user_local_001', enabled);
+      setSocialSettings(next);
+    } catch (e: any) {
+      Alert.alert('Update failed', e?.message ?? 'Could not update social settings');
+    } finally {
+      setSocialBusy(false);
+    }
+  }, [socialBusy]);
 
   if (loading) {
     return (
@@ -534,7 +628,7 @@ export default function ProfileScreen() {
           <MenuItem
             icon="target"
             label="Training Goal"
-            sublabel={goalInfo.label}
+            sublabel={`${goalInfo.label} — Sets your workout focus and exercise selection`}
             color={goalInfo.color}
             delay={440}
             onPress={handleGoalChange}
@@ -542,7 +636,7 @@ export default function ProfileScreen() {
           <MenuItem
             icon="calendar-week"
             label="Training Days"
-            sublabel={`${profile?.trainingDays || 3} days per week`}
+            sublabel={`${profile?.trainingDays || 3} days per week — How often you train`}
             color="#5F63FF"
             delay={460}
             onPress={handleTrainingDays}
@@ -550,7 +644,7 @@ export default function ProfileScreen() {
           <MenuItem
             icon="clock-outline"
             label="Session Length"
-            sublabel={`${profile?.sessionMinutes || 30} minutes`}
+            sublabel={`${profile?.sessionMinutes || 30} minutes — Duration of each workout`}
             color="#10B981"
             delay={480}
             onPress={handleSessionLength}
@@ -558,7 +652,7 @@ export default function ProfileScreen() {
           <MenuItem
             icon="signal-cellular-3"
             label="Experience"
-            sublabel={(profile?.experience || 'beginner').charAt(0).toUpperCase() + (profile?.experience || 'beginner').slice(1)}
+            sublabel={`${(profile?.experience || 'beginner').charAt(0).toUpperCase() + (profile?.experience || 'beginner').slice(1)} — Adjusts exercise difficulty`}
             color="#F4A427"
             delay={500}
             onPress={handleExperience}
@@ -566,16 +660,85 @@ export default function ProfileScreen() {
           <MenuItem
             icon="human-edit"
             label="Craft My Body"
-            sublabel="Personalized body transformation plan"
+            sublabel="Personalized body transformation plan with nutrition & training"
             color="#EC4899"
             delay={520}
             onPress={() => router.push('/craft-my-body')}
           />
         </View>
 
+        {/* ── ADAPTIVE PROFILE ── */}
+        <View style={styles.section}>
+          <SectionHeader title="Adaptive Training" delay={530} />
+          <GlassCard delay={560}>
+            <View style={styles.adaptiveRow}>
+              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>Fatigue sensitivity</Text>
+              <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                {adaptiveProfile ? adaptiveProfile.fatigueSensitivity.toFixed(2) : '1.00'}
+              </Text>
+            </View>
+            <View style={styles.adaptiveRow}>
+              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>Progression pace</Text>
+              <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                {adaptiveProfile ? adaptiveProfile.progressionAggressiveness.toFixed(2) : '1.00'}
+              </Text>
+            </View>
+            <View style={styles.adaptiveRow}>
+              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>Volume tolerance</Text>
+              <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                {adaptiveProfile ? adaptiveProfile.volumeTolerance.toFixed(2) : '1.00'}
+              </Text>
+            </View>
+
+            <View style={[styles.adaptiveConfidenceTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
+              <View
+                style={[
+                  styles.adaptiveConfidenceFill,
+                  {
+                    width: `${Math.round(((adaptiveProfile?.confidence ?? 0) * 100))}%` as any,
+                    backgroundColor: theme.colors.accent,
+                  },
+                ]}
+              />
+            </View>
+            <Text style={[styles.adaptiveConfidenceText, { color: theme.colors.textMuted }]}>
+              Confidence: {Math.round((adaptiveProfile?.confidence ?? 0) * 100)}% · Samples: {adaptiveProfile?.samples ?? 0}
+            </Text>
+
+            {adaptiveProfile?.rationale?.map((line, index) => (
+              <Text key={`${line}_${index}`} style={[styles.adaptiveReason, { color: theme.colors.textMuted }]}>
+                • {line}
+              </Text>
+            ))}
+          </GlassCard>
+        </View>
+
         {/* ── PREFERENCES ── */}
         <View style={styles.section}>
           <SectionHeader title="Preferences" delay={500} />
+          <MenuItem
+            icon="account-group-outline"
+            label="Social Layer (Opt-in)"
+            sublabel={socialSettings?.enabled
+              ? 'Enabled for future leaderboards/challenges'
+              : 'Disabled (solo mode preserved)'}
+            color="#3B82F6"
+            delay={535}
+            onPress={() => {
+              void handleSocialToggle(!(socialSettings?.enabled ?? false));
+            }}
+            rightContent={
+              <Switch
+                value={socialSettings?.enabled ?? false}
+                onValueChange={(next) => {
+                  void handleSocialToggle(next);
+                }}
+                disabled={socialBusy}
+                trackColor={{ false: '#ddd', true: '#3B82F660' }}
+                thumbColor={(socialSettings?.enabled ?? false) ? '#3B82F6' : '#f4f3f4'}
+              />
+            }
+          />
           <MenuItem
             icon={theme.isDark ? 'weather-night' : 'weather-sunny'}
             label="Dark Mode"
@@ -603,27 +766,67 @@ export default function ProfileScreen() {
           <MenuItem
             icon="bell-outline"
             label={t('profile.notifications')}
-            sublabel="Workout reminders"
+            sublabel="Set workout reminders and daily motivation alerts"
             color="#EC4899"
             delay={600}
           />
           <MenuItem
             icon="shield-check-outline"
             label="Privacy & Security"
+            sublabel="Manage data consent, encryption, and security settings"
             color="#10B981"
             delay={650}
           />
           <MenuItem
+            icon="check-decagram-outline"
+            label="Record Consent"
+            sublabel={consentTimestamp
+              ? `Saved ${new Date(consentTimestamp).toLocaleString()}`
+              : 'Tap to save privacy consent timestamp'}
+            color="#10B981"
+            delay={670}
+            onPress={() => {
+              void handleRecordConsent();
+            }}
+          />
+          <MenuItem
+            icon="file-export-outline"
+            label="Export My Data"
+            sublabel="Create local JSON export of cloud metadata + backups"
+            color="#5F63FF"
+            delay={690}
+            onPress={() => {
+              void handleExportData();
+            }}
+          />
+          <MenuItem
+            icon="trash-can-outline"
+            label="Delete Cloud Data"
+            sublabel="Permanently remove server-side account data"
+            color="#EF4444"
+            delay={710}
+            onPress={handleDeleteCloudData}
+          />
+          <MenuItem
             icon="help-circle-outline"
             label="Help & Support"
+            sublabel="FAQs, guides, and contact support"
             color="#F4A427"
-            delay={700}
+            delay={730}
           />
         </View>
 
         {/* ── APP INFO ── */}
         <View style={styles.section}>
           <SectionHeader title="App" delay={650} />
+          <MenuItem
+            icon="backup-restore"
+            label="Backup & Restore"
+            sublabel="Encrypted local backup files"
+            color={theme.colors.accent}
+            delay={680}
+            onPress={() => router.push('/backups')}
+          />
           <MenuItem
             icon="information-outline"
             label="About FitQuest"
@@ -835,6 +1038,41 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     marginTop: 2,
+    lineHeight: 16,
+  },
+
+  adaptiveRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  adaptiveLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  adaptiveValue: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  adaptiveConfidenceTrack: {
+    marginTop: 6,
+    height: 6,
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  adaptiveConfidenceFill: {
+    height: '100%',
+    borderRadius: 999,
+  },
+  adaptiveConfidenceText: {
+    marginTop: 8,
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  adaptiveReason: {
+    marginTop: 6,
+    fontSize: 12,
     lineHeight: 16,
   },
 

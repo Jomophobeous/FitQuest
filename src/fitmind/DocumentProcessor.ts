@@ -148,13 +148,13 @@ export class DocumentProcessor {
         tags: '[]',
         file_path: processed.filePath,
         file_size: processed.fileSize,
-        page_count: processed.pageCount,
+        total_pages: processed.pageCount,
         current_page: 0,
-        total_reading_time_ms: 0,
-        cover_image_uri: null,
-        summary: null,
-        difficulty_level: processed.difficultyLevel,
-        language: processed.language,
+        content: null,
+        word_count: processed.wordCount,
+        reading_level: String(processed.difficultyLevel),
+        estimated_minutes: processed.estimatedReadingTimeMinutes,
+        cover_color: null,
       });
 
       return { success: true, documentId: id, document: processed };
@@ -208,13 +208,13 @@ export class DocumentProcessor {
         tags: '[]',
         file_path: processed.filePath,
         file_size: processed.fileSize,
-        page_count: processed.pageCount,
+        total_pages: processed.pageCount,
         current_page: 0,
-        total_reading_time_ms: 0,
-        cover_image_uri: null,
-        summary: null,
-        difficulty_level: processed.difficultyLevel,
-        language: processed.language,
+        content: null,
+        word_count: processed.wordCount,
+        reading_level: String(processed.difficultyLevel),
+        estimated_minutes: processed.estimatedReadingTimeMinutes,
+        cover_color: null,
       });
 
       return { success: true, documentId: id, document: processed };
@@ -262,13 +262,13 @@ export class DocumentProcessor {
         tags: JSON.stringify([url]),
         file_path: destPath,
         file_size: rawContent.length,
-        page_count: Math.max(1, Math.ceil(analysis.wordCount / AVG_WORDS_PER_PAGE)),
+        total_pages: Math.max(1, Math.ceil(analysis.wordCount / AVG_WORDS_PER_PAGE)),
         current_page: 0,
-        total_reading_time_ms: 0,
-        cover_image_uri: null,
-        summary: null,
-        difficulty_level: analysis.difficultyLevel,
-        language: 'en',
+        content: null,
+        word_count: analysis.wordCount,
+        reading_level: String(analysis.difficultyLevel),
+        estimated_minutes: analysis.estimatedReadingTimeMinutes,
+        cover_color: null,
       });
 
       return {

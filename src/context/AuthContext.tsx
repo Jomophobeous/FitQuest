@@ -1,14 +1,23 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import * as Crypto from 'expo-crypto';
 import { BiometricAuthService, type BiometricCapability, type AuthResult } from '../security/BiometricAuth';
 import {
   migrateToSecureStorage,
   getAuthToken,
+  getRefreshToken,
   getUserProfile,
   setAuthCredentials,
   clearAuthCredentials,
 } from '../security/StorageMigration';
 import { encryptedDB } from '../security/EncryptedDatabase';
+import {
+  loginWithAppleIdToken,
+  loginWithEmail,
+  loginWithGoogleIdToken,
+  logoutEverywhere,
+  refreshWithStoredToken,
+  registerCurrentDeviceMigration,
+  registerWithEmail,
+} from '../services/authApi';
 
 // ============================================
 // TYPES
@@ -33,6 +42,10 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   /** Register new local account */
   signUp: (email: string, password: string, name: string) => Promise<void>;
+  /** Sign in with Google provider ID token */
+  signInWithGoogleToken: (idToken: string) => Promise<void>;
+  /** Sign in with Apple provider ID token */
+  signInWithAppleToken: (idToken: string) => Promise<void>;
   /** Sign out (clears session + SecureStore) */
   signOut: () => Promise<void>;
   /** Restore session from SecureStore on app launch */
@@ -51,6 +64,9 @@ interface AuthContextType {
   isSessionValid: () => Promise<boolean>;
   /** Refresh session expiry on user activity */
   touchSession: () => Promise<void>;
+
+  /** Resume server session using stored refresh token (requires valid biometric/passcode session) */
+  resumeSession: () => Promise<void>;
 }
 
 // ============================================
@@ -66,6 +82,8 @@ const AuthContext = createContext<AuthContextType>({
   biometricEnabled: false,
   signIn: async () => {},
   signUp: async () => {},
+  signInWithGoogleToken: async () => {},
+  signInWithAppleToken: async () => {},
   signOut: async () => {},
   restoreToken: async () => {},
   authenticateWithBiometrics: async () => ({ success: false, method: 'BIOMETRIC' }),
@@ -75,6 +93,7 @@ const AuthContext = createContext<AuthContextType>({
   setBiometricEnabled: async () => {},
   isSessionValid: async () => false,
   touchSession: async () => {},
+  resumeSession: async () => {},
 });
 
 export const useAuth = () => {
@@ -106,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
 
-      // Step 1: Migrate sensitive data from AsyncStorage → SecureStore (idempotent)
+      // Step 1: Ensure SecureStore-backed credentials are initialized
       await migrateToSecureStorage();
 
       // Step 2: Initialize biometric capabilities
@@ -123,19 +142,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Step 5: Check for valid session
       const hasSession = await bioAuth.isSessionValid();
 
-      // Step 6: Restore user data from SecureStore
-      const [storedToken, storedUser] = await Promise.all([
+      // Step 6: Restore user data + attempt to ensure access token (only if local session is valid)
+      const [storedToken, storedUser, storedRefresh] = await Promise.all([
         getAuthToken(),
         getUserProfile(),
+        getRefreshToken(),
       ]);
 
-      if (storedToken && storedUser && hasSession) {
-        setToken(storedToken);
+      if (storedUser) {
         setUser(storedUser as User);
-      } else if (storedToken && storedUser) {
-        // Credentials exist but session expired — user needs to re-authenticate
-        // Keep user data loaded but don't set token (isSignedIn = false)
-        setUser(storedUser as User);
+      }
+
+      if (hasSession && storedRefresh) {
+        // Best-effort refresh to ensure the access token is usable.
+        try {
+          const session = await refreshWithStoredToken();
+          setToken(session.accessToken);
+          setUser(session.user as User);
+          try {
+            await registerCurrentDeviceMigration();
+          } catch {
+            // Non-blocking: auth should continue even if migration registration fails.
+          }
+        } catch {
+          if (storedToken && storedUser) {
+            setToken(storedToken);
+          }
+        }
       }
     } catch (err) {
       console.log('[FitQuest Auth] Failed to restore session:', err);
@@ -160,34 +193,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Email and password are required');
       }
 
-      // Generate cryptographically secure token
-      const tokenBytes = await Crypto.getRandomBytesAsync(32);
-      const newToken = Array.from(tokenBytes)
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
-
-      const newUser: User = {
-        id: 'user_local_001', // Consistent with existing database user ID
-        email,
-        name: email.split('@')[0],
-      };
-
-      // Store in SecureStore (NOT AsyncStorage)
-      await setAuthCredentials(newToken, newUser);
-
-      // Create biometric session
-      const bioEnabled = await bioAuth.isBiometricEnabled();
-      if (bioEnabled && biometricCapability?.isAvailable) {
-        // Authenticate with biometrics to create session
-        const result = await bioAuth.authenticate('Verify identity to sign in');
-        if (!result.success) {
-          // Still allow sign in, just without biometric session
-          console.log('[FitQuest Auth] Biometric verification skipped during sign-in');
-        }
+      const session = await loginWithEmail({ email, password });
+      await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
+      await bioAuth.startCredentialSession();
+      setToken(session.accessToken);
+      setUser(session.user as User);
+      try {
+        await registerCurrentDeviceMigration();
+      } catch {
+        // Non-blocking
       }
-
-      setToken(newToken);
-      setUser(newUser);
     } catch (err: any) {
       throw new Error(err.message || 'Login failed');
     } finally {
@@ -207,23 +222,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Password must be at least 6 characters');
       }
 
-      // Generate cryptographically secure token
-      const tokenBytes = await Crypto.getRandomBytesAsync(32);
-      const newToken = Array.from(tokenBytes)
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
-
-      const newUser: User = {
-        id: 'user_local_001',
-        email,
-        name,
-      };
-
-      // Store in SecureStore
-      await setAuthCredentials(newToken, newUser);
-
-      setToken(newToken);
-      setUser(newUser);
+      const session = await registerWithEmail({ email, password, name });
+      await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
+      await bioAuth.startCredentialSession();
+      setToken(session.accessToken);
+      setUser(session.user as User);
+      try {
+        await registerCurrentDeviceMigration();
+      } catch {
+        // Non-blocking
+      }
     } catch (err: any) {
       throw new Error(err.message || 'Registration failed');
     } finally {
@@ -236,12 +244,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       // End biometric session
       await bioAuth.endSession();
-      // Clear SecureStore credentials
+
+      // Revoke server refresh token when possible.
+      // Falls back to local clear if network/server is unavailable.
+      await logoutEverywhere();
+
+      // Defensive clear in case logoutEverywhere throws before cleanup.
       await clearAuthCredentials();
       setToken(null);
       setUser(null);
     } catch (err) {
       console.log('[FitQuest Auth] Failed to sign out:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signInWithGoogleToken = async (idToken: string) => {
+    try {
+      setIsLoading(true);
+
+      const session = await loginWithGoogleIdToken({ idToken });
+      await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
+      await bioAuth.startCredentialSession();
+      setToken(session.accessToken);
+      setUser(session.user as User);
+      try {
+        await registerCurrentDeviceMigration();
+      } catch {
+        // Non-blocking
+      }
+    } catch (err: any) {
+      throw new Error(err.message || 'Google sign-in failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signInWithAppleToken = async (idToken: string) => {
+    try {
+      setIsLoading(true);
+
+      const session = await loginWithAppleIdToken({ idToken });
+      await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
+      await bioAuth.startCredentialSession();
+      setToken(session.accessToken);
+      setUser(session.user as User);
+      try {
+        await registerCurrentDeviceMigration();
+      } catch {
+        // Non-blocking
+      }
+    } catch (err: any) {
+      throw new Error(err.message || 'Apple sign-in failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resumeSession = async () => {
+    setIsLoading(true);
+    try {
+      const hasSession = await bioAuth.isSessionValid();
+      if (!hasSession) throw new Error('Session expired');
+      const session = await refreshWithStoredToken();
+      setToken(session.accessToken);
+      setUser(session.user as User);
+      try {
+        await registerCurrentDeviceMigration();
+      } catch {
+        // Non-blocking
+      }
     } finally {
       setIsLoading(false);
     }
@@ -293,6 +366,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     biometricEnabled,
     signIn,
     signUp,
+    signInWithGoogleToken,
+    signInWithAppleToken,
     signOut,
     restoreToken,
     authenticateWithBiometrics,
@@ -302,6 +377,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setBiometricEnabled,
     isSessionValid,
     touchSession,
+    resumeSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

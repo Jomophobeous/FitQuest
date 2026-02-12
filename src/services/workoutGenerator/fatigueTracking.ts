@@ -301,7 +301,7 @@ export function buildAnalytics(
 }
 
 // ============================================================================
-// PERSISTENCE LAYER (FOR ASYNCSTORAGE)
+// PERSISTENCE LAYER (WEB FALLBACK)
 // ============================================================================
 
 const STATE_STORAGE_KEY = 'fitquest_workout_state';
@@ -309,9 +309,7 @@ const HISTORY_STORAGE_KEY = 'fitquest_session_history';
 
 export async function saveState(state: WorkoutGeneratorState): Promise<void> {
   try {
-    // In React Native/Expo:
-    // import AsyncStorage from '@react-native-async-storage/async-storage';
-    // await AsyncStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(state));
+    // In React Native/Expo, persist via SQLite app_state or SecureStore.
     
     // For now, stub:
     localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(state));
@@ -322,7 +320,7 @@ export async function saveState(state: WorkoutGeneratorState): Promise<void> {
 
 export async function loadState(): Promise<WorkoutGeneratorState | null> {
   try {
-    // In React Native/Expo: await AsyncStorage.getItem(STATE_STORAGE_KEY);
+    // In React Native/Expo, load via SQLite app_state or SecureStore.
     const stored = localStorage.getItem(STATE_STORAGE_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch (err) {

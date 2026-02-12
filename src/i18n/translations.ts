@@ -14,6 +14,7 @@ const en = {
   'tab.profile': 'Profile',
 
   // Dashboard
+  'dashboard.welcomeBack': 'Welcome back',
   'dashboard.todaysGoal': "Today's Goal",
   'dashboard.startWorkout': 'Start Workout',
   'dashboard.recovery': 'Recovery',
@@ -25,6 +26,8 @@ const en = {
   'dashboard.level': 'Level',
   'dashboard.xp': 'XP',
   'dashboard.calories': 'Calories',
+  'dashboard.completed': 'Completed! 🎉',
+  'dashboard.keepPushing': 'Keep pushing — you got this!',
 
   // FitQuest/Train
   'train.generating': 'Generating workout…',

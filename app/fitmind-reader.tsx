@@ -52,6 +52,21 @@ export default function FitMindReaderScreen() {
   // Reading session tracking
   const sessionStartRef = useRef(Date.now());
   const sessionStartPageRef = useRef(1);
+  const currentPageRef = useRef(1);
+  const documentRef = useRef<FitMindDocument | null>(null);
+  const docIdRef = useRef<string | undefined>(docId);
+
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
+
+  useEffect(() => {
+    documentRef.current = document;
+  }, [document]);
+
+  useEffect(() => {
+    docIdRef.current = docId;
+  }, [docId]);
 
   useEffect(() => {
     loadDocument();
@@ -110,34 +125,34 @@ export default function FitMindReaderScreen() {
     await loadAnnotations(newPage);
 
     // Update progress in database
-    await FitMindService.updateProgress(docId!, newPage, 0);
+    await FitMindService.updateProgress(docId!, newPage);
   }, [currentPage, document, docId]);
 
   const saveReadingSession = async () => {
-    if (!docId || !document) return;
+    const activeDocId = docIdRef.current;
+    const activeDocument = documentRef.current;
+    const activePage = currentPageRef.current;
+
+    if (!activeDocId || !activeDocument) return;
     const duration = Date.now() - sessionStartRef.current;
     if (duration < 5000) return; // Skip if less than 5 seconds
 
-    const pagesRead = Math.abs(currentPage - sessionStartPageRef.current) + 1;
+    const pagesRead = Math.abs(activePage - sessionStartPageRef.current) + 1;
     const wordsRead = pagesRead * WORDS_PER_PAGE;
-    const durationMinutes = duration / 60000;
-    const speed = durationMinutes > 0 ? wordsRead / durationMinutes : 0;
+    const durationMinutes = Math.max(1, Math.round(duration / 60000));
 
     await FitMindService.recordSession({
-      document_id: docId,
+      document_id: activeDocId,
       start_page: sessionStartPageRef.current,
-      end_page: currentPage,
-      duration_ms: duration,
+      end_page: activePage,
+      duration_minutes: durationMinutes,
       words_read: wordsRead,
-      reading_speed_wpm: Math.round(speed),
       comprehension_score: null,
-      focus_score: 80, // TODO: derive from app focus events
-      started_at: sessionStartRef.current,
-      ended_at: Date.now(),
+      notes: null,
     });
 
     // Update reading streak
-    await FitMindService.updateReadingStreak(pagesRead, duration);
+    await FitMindService.updateReadingStreak(pagesRead, durationMinutes);
   };
 
   const handleAddBookmark = async () => {
@@ -148,8 +163,8 @@ export default function FitMindReaderScreen() {
       type: 'BOOKMARK',
       content: `Page ${currentPage}`,
       color: theme.colors.accent,
-      position_data: '{}',
-      ai_insight: null,
+      position_start: null,
+      position_end: null,
     });
     await loadAnnotations(currentPage);
   };
@@ -169,7 +184,7 @@ export default function FitMindReaderScreen() {
           documentTitle: document?.title,
           documentAuthor: document?.author,
           currentPage,
-          totalPages: document?.page_count,
+          totalPages: document?.total_pages,
           selectedText: undefined,
         },
       });
@@ -220,7 +235,7 @@ export default function FitMindReaderScreen() {
             {document.title}
           </ThemedText>
           <ThemedText variant="caption" color="muted">
-            Page {currentPage} of {document.page_count || '?'}
+            Page {currentPage} of {document.total_pages || '?'}
           </ThemedText>
         </View>
         <View style={styles.topActions}>
@@ -238,14 +253,14 @@ export default function FitMindReaderScreen() {
       </Animated.View>
 
       {/* Progress Bar */}
-      {document.page_count > 0 && (
+      {document.total_pages > 0 && (
         <View style={[styles.progressBar, { backgroundColor: theme.colors.border }]}>
           <View
             style={[
               styles.progressFill,
               {
                 backgroundColor: theme.colors.accent,
-                width: `${(currentPage / document.page_count) * 100}%`,
+                width: `${(currentPage / document.total_pages) * 100}%`,
               },
             ]}
           />
@@ -392,7 +407,7 @@ export default function FitMindReaderScreen() {
                 {currentPage}
               </ThemedText>
               <ThemedText variant="caption" color="muted">
-                / {document.page_count || '?'}
+                / {document.total_pages || '?'}
               </ThemedText>
             </View>
 

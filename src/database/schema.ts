@@ -69,8 +69,284 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
       console.log(`[FitQuest DB] Migrating v7 → v8: adding anomaly detection, sleep tracking, health monitoring tables`);
     }
 
+    // v8 → v9: trial_state table for subscription onboarding
+    if (currentVersion === 8) {
+      console.log(`[FitQuest DB] Migrating v8 → v9: adding trial state table`);
+    }
+
+    await migrateFitMindLegacyTables(database);
     await createTables(database);
     await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+  }
+}
+
+async function hasTableColumn(
+  database: SQLite.SQLiteDatabase,
+  tableName: string,
+  columnName: string
+): Promise<boolean> {
+  const columns = await database.getAllAsync<{ name: string }>(
+    `PRAGMA table_info(${tableName})`
+  );
+  return columns.some((column) => column.name === columnName);
+}
+
+async function migrateFitMindLegacyTables(database: SQLite.SQLiteDatabase): Promise<void> {
+  const legacyTableExists = await hasTableColumn(database, 'fitmind_documents', 'page_count');
+  if (!legacyTableExists) {
+    return;
+  }
+
+  console.log('[FitQuest DB] Migrating legacy FitMind schema to canonical v8+ tables');
+
+  await database.execAsync('BEGIN TRANSACTION');
+
+  try {
+    await database.execAsync(`
+      CREATE TABLE IF NOT EXISTS fitmind_documents_new (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        author TEXT NOT NULL DEFAULT 'Unknown',
+        type TEXT NOT NULL CHECK(type IN ('PDF', 'EPUB', 'ARTICLE', 'NOTE')),
+        status TEXT NOT NULL DEFAULT 'UNREAD' CHECK(status IN ('UNREAD', 'READING', 'COMPLETED', 'ARCHIVED')),
+        category TEXT NOT NULL DEFAULT 'General',
+        tags TEXT DEFAULT '[]',
+        file_path TEXT,
+        file_size INTEGER DEFAULT 0,
+        total_pages INTEGER DEFAULT 1,
+        current_page INTEGER DEFAULT 0,
+        content TEXT,
+        word_count INTEGER DEFAULT 0,
+        reading_level TEXT,
+        estimated_minutes INTEGER DEFAULT 0,
+        cover_color TEXT DEFAULT '#10B981',
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS fitmind_reading_sessions_new (
+        id TEXT PRIMARY KEY,
+        document_id TEXT NOT NULL,
+        start_page INTEGER NOT NULL,
+        end_page INTEGER NOT NULL,
+        duration_minutes INTEGER NOT NULL,
+        words_read INTEGER DEFAULT 0,
+        comprehension_score REAL,
+        notes TEXT,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (document_id) REFERENCES fitmind_documents_new(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS fitmind_annotations_new (
+        id TEXT PRIMARY KEY,
+        document_id TEXT NOT NULL,
+        page_number INTEGER NOT NULL,
+        type TEXT NOT NULL CHECK(type IN ('HIGHLIGHT', 'NOTE', 'BOOKMARK', 'QUESTION')),
+        content TEXT NOT NULL,
+        color TEXT DEFAULT '#10B981',
+        position_start INTEGER,
+        position_end INTEGER,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (document_id) REFERENCES fitmind_documents_new(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS fitmind_flashcards_new (
+        id TEXT PRIMARY KEY,
+        document_id TEXT NOT NULL,
+        front TEXT NOT NULL,
+        back TEXT NOT NULL,
+        difficulty REAL DEFAULT 2.5,
+        repetitions INTEGER DEFAULT 0,
+        interval_days INTEGER DEFAULT 1,
+        next_review INTEGER NOT NULL,
+        ease_factor REAL DEFAULT 2.5,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (document_id) REFERENCES fitmind_documents_new(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS fitmind_reading_goals_new (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL DEFAULT 'user_local_001',
+        type TEXT NOT NULL CHECK(type IN ('DAILY_MINUTES', 'WEEKLY_PAGES', 'MONTHLY_BOOKS')),
+        target INTEGER NOT NULL,
+        current INTEGER DEFAULT 0,
+        period_start INTEGER NOT NULL,
+        period_end INTEGER NOT NULL,
+        achieved INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS fitmind_reading_streaks_new (
+        user_id TEXT PRIMARY KEY DEFAULT 'user_local_001',
+        current_streak INTEGER DEFAULT 0,
+        longest_streak INTEGER DEFAULT 0,
+        last_read_date TEXT,
+        total_books_completed INTEGER DEFAULT 0,
+        total_minutes_read INTEGER DEFAULT 0,
+        total_pages_read INTEGER DEFAULT 0,
+        updated_at INTEGER NOT NULL
+      );
+    `);
+
+    await database.execAsync(`
+      INSERT INTO fitmind_documents_new (
+        id, title, author, type, status, category, tags, file_path, file_size,
+        total_pages, current_page, content, word_count, reading_level,
+        estimated_minutes, cover_color, created_at, updated_at
+      )
+      SELECT
+        id,
+        title,
+        author,
+        type,
+        status,
+        category,
+        tags,
+        file_path,
+        file_size,
+        CASE WHEN page_count IS NULL OR page_count < 1 THEN 1 ELSE page_count END,
+        current_page,
+        NULL,
+        0,
+        CASE WHEN difficulty_level IS NOT NULL THEN CAST(difficulty_level AS TEXT) ELSE NULL END,
+        0,
+        '#10B981',
+        COALESCE(added_at, strftime('%s', 'now') * 1000),
+        COALESCE(last_read_at, completed_at, added_at, strftime('%s', 'now') * 1000)
+      FROM fitmind_documents;
+    `);
+
+    await database.execAsync(`
+      INSERT INTO fitmind_reading_sessions_new (
+        id, document_id, start_page, end_page, duration_minutes,
+        words_read, comprehension_score, notes, created_at
+      )
+      SELECT
+        id,
+        document_id,
+        start_page,
+        end_page,
+        CASE
+          WHEN duration_ms IS NULL OR duration_ms < 60000 THEN 1
+          ELSE CAST((duration_ms + 59999) / 60000 AS INTEGER)
+        END,
+        words_read,
+        comprehension_score,
+        NULL,
+        COALESCE(ended_at, started_at, strftime('%s', 'now') * 1000)
+      FROM fitmind_reading_sessions;
+    `);
+
+    await database.execAsync(`
+      INSERT INTO fitmind_annotations_new (
+        id, document_id, page_number, type, content, color,
+        position_start, position_end, created_at
+      )
+      SELECT
+        id,
+        document_id,
+        page_number,
+        type,
+        content,
+        COALESCE(color, '#10B981'),
+        NULL,
+        NULL,
+        COALESCE(updated_at, created_at, strftime('%s', 'now') * 1000)
+      FROM fitmind_annotations;
+    `);
+
+    await database.execAsync(`
+      INSERT INTO fitmind_flashcards_new (
+        id, document_id, front, back, difficulty, repetitions,
+        interval_days, next_review, ease_factor, created_at
+      )
+      SELECT
+        id,
+        document_id,
+        front,
+        back,
+        CASE
+          WHEN typeof(difficulty) = 'text' THEN
+            CASE difficulty
+              WHEN 'EASY' THEN 2.8
+              WHEN 'MEDIUM' THEN 2.5
+              WHEN 'HARD' THEN 2.2
+              ELSE 2.5
+            END
+          ELSE difficulty
+        END,
+        repetitions,
+        interval_days,
+        COALESCE(next_review_at, strftime('%s', 'now') * 1000),
+        ease_factor,
+        COALESCE(created_at, strftime('%s', 'now') * 1000)
+      FROM fitmind_flashcards
+      WHERE document_id IS NOT NULL;
+    `);
+
+    await database.execAsync(`
+      INSERT INTO fitmind_reading_goals_new (
+        id, user_id, type, target, current, period_start, period_end, achieved, created_at
+      )
+      SELECT
+        id,
+        'user_local_001',
+        CASE type
+          WHEN 'DAILY_PAGES' THEN 'WEEKLY_PAGES'
+          WHEN 'WEEKLY_BOOKS' THEN 'MONTHLY_BOOKS'
+          ELSE type
+        END,
+        CASE type
+          WHEN 'DAILY_PAGES' THEN target * 7
+          WHEN 'WEEKLY_BOOKS' THEN target * 4
+          ELSE target
+        END,
+        current,
+        period_start,
+        period_end,
+        CASE WHEN achieved THEN 1 ELSE 0 END,
+        strftime('%s', 'now') * 1000
+      FROM fitmind_reading_goals;
+    `);
+
+    await database.execAsync(`
+      INSERT INTO fitmind_reading_streaks_new (
+        user_id, current_streak, longest_streak, last_read_date,
+        total_books_completed, total_minutes_read, total_pages_read, updated_at
+      )
+      SELECT
+        COALESCE(user_id, 'user_local_001'),
+        current_streak,
+        longest_streak,
+        last_read_date,
+        total_books_completed,
+        CAST((total_reading_time_ms + 59999) / 60000 AS INTEGER),
+        total_pages_read,
+        COALESCE(updated_at, created_at, strftime('%s', 'now') * 1000)
+      FROM fitmind_reading_streaks;
+    `);
+
+    await database.execAsync(`
+      DROP TABLE IF EXISTS fitmind_documents;
+      DROP TABLE IF EXISTS fitmind_reading_sessions;
+      DROP TABLE IF EXISTS fitmind_annotations;
+      DROP TABLE IF EXISTS fitmind_flashcards;
+      DROP TABLE IF EXISTS fitmind_reading_goals;
+      DROP TABLE IF EXISTS fitmind_reading_streaks;
+
+      ALTER TABLE fitmind_documents_new RENAME TO fitmind_documents;
+      ALTER TABLE fitmind_reading_sessions_new RENAME TO fitmind_reading_sessions;
+      ALTER TABLE fitmind_annotations_new RENAME TO fitmind_annotations;
+      ALTER TABLE fitmind_flashcards_new RENAME TO fitmind_flashcards;
+      ALTER TABLE fitmind_reading_goals_new RENAME TO fitmind_reading_goals;
+      ALTER TABLE fitmind_reading_streaks_new RENAME TO fitmind_reading_streaks;
+    `);
+
+    await database.execAsync('COMMIT');
+  } catch (error) {
+    await database.execAsync('ROLLBACK');
+    console.error('[FitQuest DB] FitMind legacy migration failed:', error);
+    throw error;
   }
 }
 
@@ -262,6 +538,15 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       grace_period_start TEXT,
       receipt_data TEXT,
       FOREIGN KEY (user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS trial_state (
+      user_id TEXT PRIMARY KEY,
+      started_at INTEGER NOT NULL,
+      ends_at INTEGER NOT NULL,
+      converted INTEGER DEFAULT 0,
+      product_identifier TEXT,
+      notifications_sent TEXT DEFAULT '[]'
     );
 
     CREATE TABLE IF NOT EXISTS app_state (

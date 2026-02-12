@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Tabs } from 'expo-router';
 import { ApolloProvider } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
-import { LanguageProvider } from '../src/context/LanguageContext';
+import { LanguageProvider, useLanguage } from '../src/context/LanguageContext';
 import { DatabaseProvider } from '../src/context/DatabaseContext';
 import { SubscriptionProvider } from '../src/purchases/SubscriptionContext';
 import { mockApolloClient } from '../src/services/mock-apollo-client';
 import { apolloClient } from '../src/services/apollo-client';
 import { DropdownMenu } from '../src/components/DropdownMenu';
+import { ErrorBoundary } from '../src/components/ErrorBoundary';
+import { logEvent, logPerf } from '../src/services/telemetry';
+import { initializeCrashReporting } from '../src/services/crashReporting';
+import { maybeAutoCloudBackupOncePerDay } from '../src/services/cloudBackupService';
+import { flushAnalyticsQueue } from '../src/services/analyticsIngestionService';
 
 // Toggle mock vs real API via EXPO_PUBLIC_USE_MOCK_API
 // Set to 'false' to use local SQLite database (recommended)
@@ -17,6 +22,7 @@ const client = useMockAPI ? mockApolloClient : apolloClient;
 
 function ThemedTabs() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tabs
@@ -36,8 +42,9 @@ function ThemedTabs() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
-          paddingTop: 8,
-          height: 60,
+          paddingTop: 6,
+          paddingBottom: 8,
+          height: 64,
         },
         tabBarActiveTintColor: theme.colors.accent,
         tabBarInactiveTintColor: theme.colors.textMuted,
@@ -53,7 +60,7 @@ function ThemedTabs() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Home',
+          title: t('tab.home'),
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="view-dashboard" size={22} color={color} />
           ),
@@ -64,7 +71,7 @@ function ThemedTabs() {
       <Tabs.Screen
         name="fitquest"
         options={{
-          title: 'Train',
+          title: t('tab.train'),
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="lightning-bolt" size={22} color={color} />
           ),
@@ -75,7 +82,7 @@ function ThemedTabs() {
       <Tabs.Screen
         name="move"
         options={{
-          title: 'Move',
+          title: t('tab.move'),
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="shoe-print" size={22} color={color} />
           ),
@@ -86,7 +93,7 @@ function ThemedTabs() {
       <Tabs.Screen
         name="fitmind-library"
         options={{
-          title: 'Mind',
+          title: t('tab.library'),
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="book-open-variant" size={22} color={color} />
           ),
@@ -97,7 +104,7 @@ function ThemedTabs() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tab.profile'),
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="account" size={22} color={color} />
           ),
@@ -209,6 +216,13 @@ function ThemedTabs() {
         }}
       />
       <Tabs.Screen
+        name="backups"
+        options={{
+          href: null,
+          title: 'Backup & Restore',
+        }}
+      />
+      <Tabs.Screen
         name="paywall"
         options={{
           href: null,
@@ -236,22 +250,77 @@ function ThemedTabs() {
           title: 'Exercises',
         }}
       />
+      <Tabs.Screen
+        name="nutrition-calculator"
+        options={{
+          href: null,
+          title: 'Nutrition Calculator',
+        }}
+      />
+      <Tabs.Screen
+        name="platform-studio"
+        options={{
+          href: null,
+          title: 'Platform Studio',
+        }}
+      />
+      <Tabs.Screen
+        name="autonomous-center"
+        options={{
+          href: null,
+          title: 'Autonomous Center',
+        }}
+      />
+      <Tabs.Screen
+        name="federation-hub"
+        options={{
+          href: null,
+          title: 'Federation Hub',
+        }}
+      />
+      <Tabs.Screen
+        name="enterprise-hardening"
+        options={{
+          href: null,
+          title: 'Enterprise Hardening',
+        }}
+      />
     </Tabs>
   );
 }
 
 export default function RootLayout() {
+  const appStartRef = useRef(Date.now());
+
+  useEffect(() => {
+    initializeCrashReporting();
+
+    const durationMs = Date.now() - appStartRef.current;
+    logPerf('app_launch', durationMs);
+    logEvent('app_launch');
+
+    // Phase 2: silent periodic backup (no-op unless EXPO_PUBLIC_BACKUP_API_BASE_URL is configured)
+    void maybeAutoCloudBackupOncePerDay();
+
+    // Phase 4: best-effort anonymized analytics flush (server enforces consent before ingest)
+    void flushAnalyticsQueue().catch(() => {
+      // best-effort only
+    });
+  }, []);
+
   return (
     <ThemeProvider>
-      <LanguageProvider>
-        <DatabaseProvider>
-          <SubscriptionProvider>
-            <ApolloProvider client={client}>
-              <ThemedTabs />
-            </ApolloProvider>
-          </SubscriptionProvider>
-        </DatabaseProvider>
-      </LanguageProvider>
+      <ErrorBoundary>
+        <LanguageProvider>
+          <DatabaseProvider>
+            <SubscriptionProvider>
+              <ApolloProvider client={client}>
+                <ThemedTabs />
+              </ApolloProvider>
+            </SubscriptionProvider>
+          </DatabaseProvider>
+        </LanguageProvider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }

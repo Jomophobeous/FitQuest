@@ -17,6 +17,7 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getUserProgress, getMuscleFatigue, getRecentSessions, getStreak } from '../src/database/service';
 import {
@@ -51,6 +52,7 @@ interface RecentWorkout {
 
 export default function DashboardScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any>(null);
@@ -184,10 +186,10 @@ export default function DashboardScreen() {
             <View style={styles.heroTop}>
               <View>
                 <Text style={[styles.greeting, { color: theme.colors.textSecondary }]}>
-                  Welcome back
+                  {t('dashboard.welcomeBack') || 'Welcome back'}
                 </Text>
                 <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
-                  Dashboard
+                  {t('tab.home')}
                 </Text>
               </View>
               {/* Stats row: Numbers visually heavier than labels */}
@@ -224,10 +226,10 @@ export default function DashboardScreen() {
               </View>
               <View style={styles.todayGoalRight}>
                 <Text style={[styles.todayGoalTitle, { color: theme.colors.text }]}>
-                  Today's Goal
+                  {t('dashboard.todaysGoal')}
                 </Text>
                 <Text style={[styles.todayGoalSub, { color: theme.colors.textSecondary }]}>
-                  {todayProgress >= 1 ? 'Completed! 🎉' : 'Keep pushing — you got this!'}
+                  {todayProgress >= 1 ? (t('dashboard.completed') || 'Completed! 🎉') : (t('dashboard.keepPushing') || 'Keep pushing — you got this!')}
                 </Text>
                 <View style={styles.todayGoalMeta}>
                   <View style={styles.metaItem}>
@@ -244,7 +246,7 @@ export default function DashboardScreen() {
                 {/* PRIMARY ACTION: Start Workout - MOST PROMINENT */}
                 <View style={styles.primaryActionContainer}>
                   <GradientButton
-                    title="Start Workout"
+                    title={t('dashboard.startWorkout')}
                     icon="lightning-bolt"
                     onPress={() => router.push('/fitquest')}
                     variant="primary"
@@ -317,7 +319,7 @@ export default function DashboardScreen() {
         {recentWorkout ? (
           <AnimatedListItem key={recentWorkout.id} index={0} style={styles.workoutItem}>
             <GlassCard
-              onPress={() => console.log('Selected:', recentWorkout.name)}
+              onPress={() => router.push('/saved-workouts')}
               style={styles.workoutCard}
             >
               <View style={styles.workoutRow}>

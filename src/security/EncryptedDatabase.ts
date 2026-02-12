@@ -18,11 +18,30 @@
 
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import { getDatabase } from '../database/schema';
+import {
+  acknowledgeHealthAlertRow,
+  getActiveHealthAlertRows,
+  getAllEncryptedAIConversationRows,
+  getAllEncryptedHealthRows,
+  getEncryptedAIConversations,
+  getEncryptedHealthRow,
+  getEncryptedHealthRowsByCategory,
+  getEncryptedNoteRow,
+  insertEncryptedAIConversationRow,
+  insertEncryptedHealthRow,
+  insertEncryptedNoteRow,
+  insertHealthAlertRow,
+  secureDeleteEncryptedRow,
+  updateEncryptedAIConversationRow,
+  updateEncryptedHealthRow,
+} from '../database/service';
 import {
   type EncryptedPayload,
-  encryptV2,
   decryptV2,
+  decryptV3,
+  encryptV3,
+  isV2Payload,
+  isV3Payload,
   isV1Payload,
   decryptV1Legacy,
   getOrCreateMasterKey,
@@ -83,58 +102,8 @@ export class EncryptedDatabaseService {
     // Load legacy v1 key for migration (if exists)
     this.legacyKey = await SecureStore.getItemAsync(LEGACY_KEY_ALIAS);
 
-    const db = await getDatabase();
-
-    // Create tables for encrypted data
-    await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS encrypted_health_data (
-        id TEXT PRIMARY KEY,
-        category TEXT NOT NULL,
-        data_blob TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS encrypted_ai_conversations (
-        id TEXT PRIMARY KEY,
-        ai_personality TEXT NOT NULL CHECK(ai_personality IN ('COACH', 'PROFESSOR')),
-        query_blob TEXT NOT NULL,
-        response_blob TEXT NOT NULL,
-        context_doc_ids TEXT,
-        model_version TEXT,
-        tokens_used INTEGER DEFAULT 0,
-        processing_time_ms INTEGER DEFAULT 0,
-        feedback_rating INTEGER,
-        created_at INTEGER NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS encrypted_notes (
-        id TEXT PRIMARY KEY,
-        reference_type TEXT NOT NULL,
-        reference_id TEXT,
-        content_blob TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS health_alerts (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL DEFAULT 'user_local_001',
-        alert_type TEXT NOT NULL,
-        severity TEXT NOT NULL CHECK(severity IN ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
-        data_blob TEXT NOT NULL,
-        location_blob TEXT,
-        acknowledged_at INTEGER,
-        created_at INTEGER NOT NULL
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_enc_health_category ON encrypted_health_data(category, created_at);
-      CREATE INDEX IF NOT EXISTS idx_enc_ai_personality ON encrypted_ai_conversations(ai_personality, created_at);
-      CREATE INDEX IF NOT EXISTS idx_health_alerts_type ON health_alerts(alert_type, created_at);
-    `);
-
     this.initialized = true;
-    console.log('[FitQuest Security] Encrypted database v2 initialized (HMAC-authenticated CTR mode)');
+    console.log('[FitQuest Security] Encrypted database v3 initialized (AES-256-GCM)');
   }
 
   // ============================================
@@ -143,7 +112,7 @@ export class EncryptedDatabaseService {
 
   private async encrypt(plaintext: string): Promise<string> {
     this.ensureInitialized();
-    const payload = await encryptV2(plaintext, this.masterKey!);
+    const payload = await encryptV3(plaintext, this.masterKey!);
     return JSON.stringify(payload);
   }
 
@@ -158,12 +127,20 @@ export class EncryptedDatabaseService {
       return decryptV1Legacy(payload, this.legacyKey);
     }
 
-    return decryptV2(payload, this.masterKey!);
+    if (isV3Payload(payload)) {
+      return decryptV3(payload, this.masterKey!);
+    }
+
+    if (isV2Payload(payload)) {
+      return decryptV2(payload, this.masterKey!);
+    }
+
+    throw new Error('[Security] Unsupported encrypted payload format');
   }
 
   private async migrateBlob(blob: string): Promise<string | null> {
     const payload = JSON.parse(blob);
-    if (!isV1Payload(payload)) return null;
+    if (!isV1Payload(payload) && !isV2Payload(payload)) return null;
 
     try {
       const plaintext = await this.decrypt(blob);
@@ -184,23 +161,20 @@ export class EncryptedDatabaseService {
     const encryptedBlob = await this.encrypt(JSON.stringify(data));
     const now = Date.now();
 
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT INTO encrypted_health_data (id, category, data_blob, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?)`,
-      [id, category, encryptedBlob, now, now]
-    );
+    await insertEncryptedHealthRow({
+      id,
+      category,
+      data_blob: encryptedBlob,
+      created_at: now,
+      updated_at: now,
+    });
 
     return id;
   }
 
   async getHealthData(id: string): Promise<object | null> {
     this.ensureInitialized();
-    const db = await getDatabase();
-    const row = await db.getFirstAsync<EncryptedRow>(
-      `SELECT * FROM encrypted_health_data WHERE id = ?`,
-      [id]
-    );
+    const row = await getEncryptedHealthRow(id);
 
     if (!row) return null;
 
@@ -208,10 +182,7 @@ export class EncryptedDatabaseService {
 
     const migrated = await this.migrateBlob(row.data_blob);
     if (migrated) {
-      await db.runAsync(
-        `UPDATE encrypted_health_data SET data_blob = ?, updated_at = ? WHERE id = ?`,
-        [migrated, Date.now(), id]
-      );
+      await updateEncryptedHealthRow({ id, data_blob: migrated, updated_at: Date.now() });
     }
 
     return JSON.parse(plaintext);
@@ -219,11 +190,7 @@ export class EncryptedDatabaseService {
 
   async getRecentHealthData(category: string, limit = 50): Promise<object[]> {
     this.ensureInitialized();
-    const db = await getDatabase();
-    const rows = await db.getAllAsync<EncryptedRow>(
-      `SELECT * FROM encrypted_health_data WHERE category = ? ORDER BY created_at DESC LIMIT ?`,
-      [category, limit]
-    );
+    const rows = await getEncryptedHealthRowsByCategory(category, limit);
 
     const results: object[] = [];
     for (const row of rows) {
@@ -233,10 +200,11 @@ export class EncryptedDatabaseService {
 
         const migrated = await this.migrateBlob(row.data_blob);
         if (migrated) {
-          await db.runAsync(
-            `UPDATE encrypted_health_data SET data_blob = ?, updated_at = ? WHERE id = ?`,
-            [migrated, Date.now(), row.id]
-          );
+          await updateEncryptedHealthRow({
+            id: row.id,
+            data_blob: migrated,
+            updated_at: Date.now(),
+          });
         }
       } catch (e) {
         console.warn(`[Security] Failed to decrypt health data ${row.id}:`, e);
@@ -267,23 +235,17 @@ export class EncryptedDatabaseService {
     const encQuery = await this.encrypt(query);
     const encResponse = await this.encrypt(response);
 
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT INTO encrypted_ai_conversations 
-       (id, ai_personality, query_blob, response_blob, context_doc_ids, model_version, tokens_used, processing_time_ms, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id,
-        personality,
-        encQuery,
-        encResponse,
-        metadata?.contextDocIds ? JSON.stringify(metadata.contextDocIds) : null,
-        metadata?.modelVersion || null,
-        metadata?.tokensUsed || 0,
-        metadata?.processingTimeMs || 0,
-        Date.now(),
-      ]
-    );
+    await insertEncryptedAIConversationRow({
+      id,
+      personality,
+      query_blob: encQuery,
+      response_blob: encResponse,
+      context_doc_ids: metadata?.contextDocIds ? JSON.stringify(metadata.contextDocIds) : null,
+      model_version: metadata?.modelVersion || null,
+      tokens_used: metadata?.tokensUsed || 0,
+      processing_time_ms: metadata?.processingTimeMs || 0,
+      created_at: Date.now(),
+    });
 
     return id;
   }
@@ -292,19 +254,7 @@ export class EncryptedDatabaseService {
     Array<{ id: string; query: string; response: string; created_at: number }>
   > {
     this.ensureInitialized();
-    const db = await getDatabase();
-    const rows = await db.getAllAsync<{
-      id: string;
-      query_blob: string;
-      response_blob: string;
-      created_at: number;
-    }>(
-      `SELECT id, query_blob, response_blob, created_at 
-       FROM encrypted_ai_conversations 
-       WHERE ai_personality = ? 
-       ORDER BY created_at DESC LIMIT ?`,
-      [personality, limit]
-    );
+    const rows = await getEncryptedAIConversations(personality, limit);
 
     const results: Array<{ id: string; query: string; response: string; created_at: number }> = [];
     for (const row of rows) {
@@ -339,41 +289,27 @@ export class EncryptedDatabaseService {
       encLocation = await this.encrypt(JSON.stringify(location));
     }
 
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT INTO health_alerts (id, alert_type, severity, data_blob, location_blob, created_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, alertType, severity, encData, encLocation, Date.now()]
-    );
+    await insertHealthAlertRow({
+      id,
+      alert_type: alertType,
+      severity,
+      data_blob: encData,
+      location_blob: encLocation,
+      created_at: Date.now(),
+    });
 
     return id;
   }
 
   async acknowledgeAlert(alertId: string): Promise<void> {
-    const db = await getDatabase();
-    await db.runAsync(
-      `UPDATE health_alerts SET acknowledged_at = ? WHERE id = ?`,
-      [Date.now(), alertId]
-    );
+    await acknowledgeHealthAlertRow(alertId, Date.now());
   }
 
   async getActiveAlerts(): Promise<
     Array<{ id: string; alertType: string; severity: string; data: object; created_at: number }>
   > {
     this.ensureInitialized();
-    const db = await getDatabase();
-    const rows = await db.getAllAsync<{
-      id: string;
-      alert_type: string;
-      severity: string;
-      data_blob: string;
-      created_at: number;
-    }>(
-      `SELECT id, alert_type, severity, data_blob, created_at 
-       FROM health_alerts 
-       WHERE acknowledged_at IS NULL 
-       ORDER BY created_at DESC`
-    );
+    const rows = await getActiveHealthAlertRows();
 
     const results = [];
     for (const row of rows) {
@@ -404,23 +340,21 @@ export class EncryptedDatabaseService {
     const encryptedBlob = await this.encrypt(content);
     const now = Date.now();
 
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT INTO encrypted_notes (id, reference_type, reference_id, content_blob, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, referenceType, referenceId, encryptedBlob, now, now]
-    );
+    await insertEncryptedNoteRow({
+      id,
+      reference_type: referenceType,
+      reference_id: referenceId,
+      content_blob: encryptedBlob,
+      created_at: now,
+      updated_at: now,
+    });
 
     return id;
   }
 
   async getNote(id: string): Promise<string | null> {
     this.ensureInitialized();
-    const db = await getDatabase();
-    const row = await db.getFirstAsync<{ content_blob: string }>(
-      `SELECT content_blob FROM encrypted_notes WHERE id = ?`,
-      [id]
-    );
+    const row = await getEncryptedNoteRow(id);
 
     if (!row) return null;
     return this.decrypt(row.content_blob);
@@ -441,23 +375,17 @@ export class EncryptedDatabaseService {
     return daysSinceRotation > 90;
   }
 
-  async migrateAllToV2(): Promise<{ migrated: number; errors: number }> {
+  async migrateAllToV3(): Promise<{ migrated: number; errors: number }> {
     this.ensureInitialized();
-    const db = await getDatabase();
     let migrated = 0;
     let errors = 0;
 
-    const healthRows = await db.getAllAsync<{ id: string; data_blob: string }>(
-      `SELECT id, data_blob FROM encrypted_health_data`
-    );
+    const healthRows = await getAllEncryptedHealthRows();
     for (const row of healthRows) {
       try {
         const newBlob = await this.migrateBlob(row.data_blob);
         if (newBlob) {
-          await db.runAsync(
-            `UPDATE encrypted_health_data SET data_blob = ?, updated_at = ? WHERE id = ?`,
-            [newBlob, Date.now(), row.id]
-          );
+          await updateEncryptedHealthRow({ id: row.id, data_blob: newBlob, updated_at: Date.now() });
           migrated++;
         }
       } catch {
@@ -465,18 +393,17 @@ export class EncryptedDatabaseService {
       }
     }
 
-    const convRows = await db.getAllAsync<{ id: string; query_blob: string; response_blob: string }>(
-      `SELECT id, query_blob, response_blob FROM encrypted_ai_conversations`
-    );
+    const convRows = await getAllEncryptedAIConversationRows();
     for (const row of convRows) {
       try {
         const newQuery = await this.migrateBlob(row.query_blob);
         const newResp = await this.migrateBlob(row.response_blob);
         if (newQuery || newResp) {
-          await db.runAsync(
-            `UPDATE encrypted_ai_conversations SET query_blob = ?, response_blob = ? WHERE id = ?`,
-            [newQuery || row.query_blob, newResp || row.response_blob, row.id]
-          );
+          await updateEncryptedAIConversationRow({
+            id: row.id,
+            query_blob: newQuery || row.query_blob,
+            response_blob: newResp || row.response_blob,
+          });
           migrated++;
         }
       } catch {
@@ -484,7 +411,7 @@ export class EncryptedDatabaseService {
       }
     }
 
-    console.log(`[Security] v1→v2 migration: ${migrated} migrated, ${errors} errors`);
+    console.log(`[Security] legacy→v3 migration: ${migrated} migrated, ${errors} errors`);
     return { migrated, errors };
   }
 
@@ -493,14 +420,24 @@ export class EncryptedDatabaseService {
   // ============================================
 
   async secureDelete(table: string, id: string): Promise<void> {
-    const db = await getDatabase();
-
     const randomBlob = Array.from(await Crypto.getRandomBytesAsync(128))
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
 
-    await db.runAsync(`UPDATE ${table} SET data_blob = ? WHERE id = ?`, [randomBlob, id]);
-    await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
+    if (
+      table !== 'encrypted_health_data' &&
+      table !== 'encrypted_ai_conversations' &&
+      table !== 'encrypted_notes' &&
+      table !== 'health_alerts'
+    ) {
+      throw new Error('[Security] secureDelete called with invalid table');
+    }
+
+    await secureDeleteEncryptedRow({
+      table,
+      id,
+      randomBlob,
+    });
   }
 
   // ============================================

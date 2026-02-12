@@ -29,6 +29,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { usePedometer, DailySteps, JogSession } from '../src/hooks/usePedometer';
 import { useSensorFusion, type ActivityType } from '../src/engines/SensorFusionEngine';
 import { awardJogXP, awardStepXP } from '../src/services/xpService';
@@ -52,6 +53,7 @@ interface JogCompletionData {
 
 export default function MoveScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const {
     todaySteps,
     isAvailable,

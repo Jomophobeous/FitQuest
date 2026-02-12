@@ -221,6 +221,7 @@ export const createTheme = (mode: 'dark' | 'light') => {
     typography,
     spacing,
     radius,
+    borderRadius: radius,
     shadows: shadowConfig,
     motion: animationConfig,
     

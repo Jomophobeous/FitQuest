@@ -1,11 +1,9 @@
 /**
  * FitQuest Meal Prep Screen
  * AI-powered meal suggestions with location-based food filtering
- * 
- * Food text filtered by location will be populated later by the user
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -25,6 +23,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import {
   GlassCard,
   SectionHeader,
@@ -44,13 +43,13 @@ import {
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack';
 
-const MEAL_TABS: { key: MealType; label: string; icon: string; color: string }[] = [
-  { key: 'breakfast', label: 'Breakfast', icon: 'weather-sunset-up', color: '#F4A427' },
-  { key: 'pre-workout', label: 'Pre-Workout', icon: 'lightning-bolt', color: '#5F63FF' },
-  { key: 'lunch', label: 'Lunch', icon: 'food', color: '#10B981' },
-  { key: 'post-workout', label: 'Post-Workout', icon: 'arm-flex', color: '#FF6B6B' },
-  { key: 'dinner', label: 'Dinner', icon: 'food-turkey', color: '#8B5CF6' },
-  { key: 'snack', label: 'Snack', icon: 'food-apple-outline', color: '#4ECDC4' },
+const MEAL_TABS: { key: MealType; label: string; icon: string }[] = [
+  { key: 'breakfast', label: 'Breakfast', icon: 'weather-sunset-up' },
+  { key: 'pre-workout', label: 'Pre-Workout', icon: 'lightning-bolt' },
+  { key: 'lunch', label: 'Lunch', icon: 'food' },
+  { key: 'post-workout', label: 'Post-Workout', icon: 'arm-flex' },
+  { key: 'dinner', label: 'Dinner', icon: 'food-turkey' },
+  { key: 'snack', label: 'Snack', icon: 'food-apple-outline' },
 ];
 
 const CATEGORY_ICONS: Record<FoodItem['category'], string> = {
@@ -63,15 +62,100 @@ const CATEGORY_ICONS: Record<FoodItem['category'], string> = {
   meal: 'food-variant',
 };
 
-const CATEGORY_COLORS: Record<FoodItem['category'], string> = {
-  protein: '#EF4444',
-  carb: '#F4A427',
-  fat: '#8B5CF6',
-  vegetable: '#10B981',
-  fruit: '#FF6B6B',
-  snack: '#4ECDC4',
-  meal: '#5F63FF',
+const withAlpha = (hex: string, alpha: number): string => {
+  const normalized = hex.replace('#', '');
+  if (normalized.length !== 6) return hex;
+  const channel = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0');
+  return `#${normalized}${channel}`;
 };
+
+const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: theme.colors.background },
+    scrollContent: { paddingBottom: theme.spacing[8] },
+    headerGradient: { paddingHorizontal: theme.spacing[5], paddingTop: theme.spacing[3], paddingBottom: theme.spacing[3] },
+    headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    headerTitle: { fontSize: 24, fontWeight: '800', color: theme.colors.text },
+    headerSpacer: { width: theme.spacing[6] },
+    locationBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing[2],
+      marginTop: theme.spacing[2],
+      paddingHorizontal: theme.spacing[3],
+      paddingVertical: theme.spacing[2],
+      borderRadius: theme.borderRadius.full,
+      borderWidth: 1,
+      alignSelf: 'flex-start',
+    },
+    locationText: { fontSize: 12, fontWeight: '500', color: theme.colors.textSecondary },
+    mealTabs: { flexGrow: 0, paddingHorizontal: theme.spacing[4], paddingVertical: theme.spacing[2] },
+    mealTab: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing[2],
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      borderRadius: theme.borderRadius.lg,
+      borderWidth: 1,
+      marginRight: theme.spacing[2],
+    },
+    mealTabText: { fontSize: 12 },
+    tipCard: { marginHorizontal: theme.spacing[4], marginTop: theme.spacing[2], padding: theme.spacing[4] },
+    tipRow: { flexDirection: 'row', alignItems: 'flex-start', gap: theme.spacing[3] },
+    tipText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 19, color: theme.colors.text },
+    emptyCard: { marginHorizontal: theme.spacing[4], padding: theme.spacing[6], alignItems: 'center' },
+    emptyText: { textAlign: 'center', fontSize: 13, marginTop: theme.spacing[3], lineHeight: 20, color: theme.colors.textMuted },
+    foodCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: theme.spacing[4],
+      borderRadius: theme.borderRadius.lg,
+      borderWidth: 1,
+      gap: theme.spacing[3],
+    },
+    foodIcon: {
+      width: theme.spacing[10],
+      height: theme.spacing[10],
+      borderRadius: theme.borderRadius.md,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    foodInfo: { flex: 1 },
+    foodName: { fontSize: 14, fontWeight: '600', color: theme.colors.text },
+    foodDesc: { fontSize: 11, marginTop: theme.spacing[1], lineHeight: 15, color: theme.colors.textMuted },
+    foodLocal: { fontSize: 11, marginTop: theme.spacing[1], fontStyle: 'italic', color: theme.colors.accent },
+    foodNutrition: { alignItems: 'flex-end' },
+    foodCal: { fontSize: 12, fontWeight: '700', color: theme.colors.warning },
+    foodProtein: { fontSize: 10, fontWeight: '500', marginTop: theme.spacing[1], color: theme.colors.accent2 },
+    compactFoodRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing[4],
+      paddingVertical: theme.spacing[3],
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      gap: theme.spacing[3],
+    },
+    categoryDot: { width: theme.spacing[2], height: theme.spacing[2], borderRadius: theme.borderRadius.full },
+    compactFoodName: { flex: 1, fontSize: 13, fontWeight: '600', color: theme.colors.text },
+    compactFoodCategory: { fontSize: 11, textTransform: 'capitalize', color: theme.colors.textMuted },
+    compactFoodCal: { fontSize: 11, fontWeight: '600', color: theme.colors.textSecondary },
+    locationInfo: {
+      marginHorizontal: theme.spacing[4],
+      marginTop: theme.spacing[4],
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: theme.spacing[3],
+      padding: theme.spacing[4],
+    },
+    locationInfoText: { flex: 1, fontSize: 12, lineHeight: 17, color: theme.colors.textMuted },
+    foodItemSpacing: { paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[2] },
+    compactItemSpacing: { paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[2] },
+    bottomSpacer: { height: theme.spacing[8] },
+  });
 
 // ============================================
 // SCREEN
@@ -79,6 +163,7 @@ const CATEGORY_COLORS: Record<FoodItem['category'], string> = {
 
 export default function MealPrepScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
   const [selectedMeal, setSelectedMeal] = useState<MealType>('breakfast');
   const [location, setLocation] = useState<UserLocation | null>(null);
@@ -101,35 +186,116 @@ export default function MealPrepScreen() {
   };
 
   const currentMealSuggestions = getMealSuggestions(selectedMeal, location);
-  const selectedTab = MEAL_TABS.find(t => t.key === selectedMeal)!;
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const mealTabColors = useMemo(
+    () => ({
+      breakfast: theme.colors.warning,
+      'pre-workout': theme.colors.accent,
+      lunch: theme.colors.success,
+      'post-workout': theme.colors.error,
+      dinner: theme.colors.accent2,
+      snack: theme.colors.textSecondary,
+    }),
+    [theme]
+  );
+  const categoryColors = useMemo(
+    () => ({
+      protein: theme.colors.error,
+      carb: theme.colors.warning,
+      fat: theme.colors.accent2,
+      vegetable: theme.colors.success,
+      fruit: theme.colors.accent,
+      snack: theme.colors.textSecondary,
+      meal: theme.colors.accent2,
+    }),
+    [theme]
+  );
+
+  const selectedTabColor = mealTabColors[selectedMeal];
+
+  const dynamicStyles = useMemo(() => {
+    const mealTabStyle = MEAL_TABS.reduce((acc, tab) => {
+      const isActive = selectedMeal === tab.key;
+      const color = mealTabColors[tab.key];
+      acc[tab.key] = {
+        backgroundColor: isActive
+          ? withAlpha(color, 0.2)
+          : withAlpha(theme.colors.text, theme.isDark ? 0.04 : 0.03),
+        borderColor: isActive ? withAlpha(color, 0.5) : theme.colors.border,
+      };
+      return acc;
+    }, {} as Record<MealType, { backgroundColor: string; borderColor: string }>);
+
+    const mealTabText = MEAL_TABS.reduce((acc, tab) => {
+      const isActive = selectedMeal === tab.key;
+      const color = mealTabColors[tab.key];
+      acc[tab.key] = {
+        color: isActive ? color : theme.colors.textMuted,
+        fontWeight: isActive ? '700' : '500',
+      };
+      return acc;
+    }, {} as Record<MealType, { color: string; fontWeight: '700' | '500' }>);
+
+    const categoryIcon = Object.keys(categoryColors).reduce((acc, key) => {
+      const category = key as FoodItem['category'];
+      acc[category] = { backgroundColor: withAlpha(categoryColors[category], 0.18) };
+      return acc;
+    }, {} as Record<FoodItem['category'], { backgroundColor: string }>);
+
+    const categoryDot = Object.keys(categoryColors).reduce((acc, key) => {
+      const category = key as FoodItem['category'];
+      acc[category] = { backgroundColor: categoryColors[category] };
+      return acc;
+    }, {} as Record<FoodItem['category'], { backgroundColor: string }>);
+
+    return {
+      headerGradientColors: theme.isDark
+        ? ([withAlpha(selectedTabColor, 0.2), 'transparent'] as const)
+        : ([withAlpha(selectedTabColor, 0.1), 'transparent'] as const),
+      locationBadge: {
+        backgroundColor: withAlpha(theme.colors.text, theme.isDark ? 0.06 : 0.04),
+        borderColor: withAlpha(theme.colors.text, theme.isDark ? 0.08 : 0.06),
+      },
+      mealTabStyle,
+      mealTabText,
+      foodCard: {
+        backgroundColor: theme.isDark
+          ? withAlpha(theme.colors.text, 0.04)
+          : withAlpha(theme.colors.surface, 0.9),
+        borderColor: withAlpha(theme.colors.text, theme.isDark ? 0.06 : 0.04),
+      },
+      compactFoodRow: {
+        backgroundColor: theme.isDark
+          ? withAlpha(theme.colors.text, 0.03)
+          : withAlpha(theme.colors.surface, 0.8),
+        borderColor: withAlpha(theme.colors.text, theme.isDark ? 0.05 : 0.03),
+      },
+      categoryIcon,
+      categoryDot,
+    };
+  }, [theme, selectedMeal, mealTabColors, categoryColors, selectedTabColor]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* ── HEADER ── */}
         <Animated.View entering={FadeIn.duration(150)}>
           <LinearGradient
-            colors={theme.isDark
-              ? [selectedTab.color + '20', 'transparent']
-              : [selectedTab.color + '10', 'transparent']
-            }
+            colors={dynamicStyles.headerGradientColors}
             style={styles.headerGradient}
           >
             <View style={styles.headerRow}>
               <TouchableOpacity onPress={() => router.back()}>
                 <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
               </TouchableOpacity>
-              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Meal Prep</Text>
-              <View style={{ width: 24 }} />
+              <Text style={styles.headerTitle}>Meal Prep</Text>
+              <View style={styles.headerSpacer} />
             </View>
 
             {/* Location Badge */}
             <TouchableOpacity
               onPress={loadLocation}
-              style={[styles.locationBadge, {
-                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-              }]}
+              style={[styles.locationBadge, dynamicStyles.locationBadge]}
             >
               <MaterialCommunityIcons
                 name={location ? 'map-marker-check' : 'map-marker-question'}
@@ -139,7 +305,7 @@ export default function MealPrepScreen() {
               {isLoadingLocation ? (
                 <ActivityIndicator size="small" color={theme.colors.accent} />
               ) : (
-                <Text style={[styles.locationText, { color: theme.colors.textSecondary }]}>
+                <Text style={styles.locationText}>
                   {location
                     ? (location.city && location.city !== 'Unknown'
                         ? `${location.city}${location.country && location.country !== 'Global' ? `, ${location.country}` : ''}`
@@ -158,27 +324,22 @@ export default function MealPrepScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealTabs}>
             {MEAL_TABS.map((tab, idx) => {
               const isActive = selectedMeal === tab.key;
+              const tabColor = mealTabColors[tab.key];
               return (
                 <TouchableOpacity
                   key={tab.key}
                   onPress={() => setSelectedMeal(tab.key)}
                   style={[
                     styles.mealTab,
-                    {
-                      backgroundColor: isActive ? tab.color + '20' : theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-                      borderColor: isActive ? tab.color + '50' : theme.colors.border,
-                    },
+                    dynamicStyles.mealTabStyle[tab.key],
                   ]}
                 >
                   <MaterialCommunityIcons
                     name={tab.icon as any}
                     size={18}
-                    color={isActive ? tab.color : theme.colors.textMuted}
+                    color={isActive ? tabColor : theme.colors.textMuted}
                   />
-                  <Text style={[styles.mealTabText, {
-                    color: isActive ? tab.color : theme.colors.textMuted,
-                    fontWeight: isActive ? '700' : '500',
-                  }]}>
+                  <Text style={[styles.mealTabText, dynamicStyles.mealTabText[tab.key]]}>
                     {tab.label}
                   </Text>
                 </TouchableOpacity>
@@ -188,10 +349,10 @@ export default function MealPrepScreen() {
         </Animated.View>
 
         {/* ── TIP CARD ── */}
-        <GlassCard style={styles.tipCard} delay={200} glowColor={selectedTab.color}>
+        <GlassCard style={styles.tipCard} delay={200} glowColor={selectedTabColor}>
           <View style={styles.tipRow}>
-            <MaterialCommunityIcons name="lightbulb-outline" size={20} color={selectedTab.color} />
-            <Text style={[styles.tipText, { color: theme.colors.text }]}>
+            <MaterialCommunityIcons name="lightbulb-outline" size={20} color={selectedTabColor} />
+            <Text style={styles.tipText}>
               {currentMealSuggestions.tip}
             </Text>
           </View>
@@ -201,43 +362,40 @@ export default function MealPrepScreen() {
         <SectionHeader title={currentMealSuggestions.title} delay={250} />
 
         {currentMealSuggestions.foods.length === 0 ? (
-          <GlassCard style={{ marginHorizontal: 16, padding: 24, alignItems: 'center' }}>
-            <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
-            <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
-              No foods available for this meal type yet.{'\n'}Location-specific foods will be added soon!
-            </Text>
-          </GlassCard>
+            <GlassCard style={styles.emptyCard}>
+              <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
+              <Text style={styles.emptyText}>
+                No foods available for this meal type right now.{'\n'}Try another meal tab or refresh location.
+              </Text>
+            </GlassCard>
         ) : (
           currentMealSuggestions.foods.map((food, idx) => (
-            <AnimatedListItem key={food.name} index={idx} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
-              <View style={[styles.foodCard, {
-                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.9)',
-                borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-              }]}>
-                <View style={[styles.foodIcon, { backgroundColor: CATEGORY_COLORS[food.category] + '18' }]}>
+            <AnimatedListItem key={`${food.name}-${idx}`} index={idx} style={styles.foodItemSpacing}>
+              <View style={[styles.foodCard, dynamicStyles.foodCard]}>
+                <View style={[styles.foodIcon, dynamicStyles.categoryIcon[food.category]]}>
                   <MaterialCommunityIcons
                     name={CATEGORY_ICONS[food.category] as any}
                     size={20}
-                    color={CATEGORY_COLORS[food.category]}
+                    color={categoryColors[food.category]}
                   />
                 </View>
                 <View style={styles.foodInfo}>
-                  <Text style={[styles.foodName, { color: theme.colors.text }]}>{food.name}</Text>
-                  <Text style={[styles.foodDesc, { color: theme.colors.textMuted }]}>{food.description}</Text>
+                  <Text style={styles.foodName}>{food.name}</Text>
+                  <Text style={styles.foodDesc}>{food.description}</Text>
                   {food.local_name && (
-                    <Text style={[styles.foodLocal, { color: theme.colors.accent }]}>
+                    <Text style={styles.foodLocal}>
                       Local: {food.local_name}
                     </Text>
                   )}
                 </View>
                 <View style={styles.foodNutrition}>
                   {food.calories_per_serving && (
-                    <Text style={[styles.foodCal, { color: theme.colors.warning }]}>
+                    <Text style={styles.foodCal}>
                       {food.calories_per_serving} cal
                     </Text>
                   )}
                   {food.protein_g && (
-                    <Text style={[styles.foodProtein, { color: theme.colors.accent2 }]}>
+                    <Text style={styles.foodProtein}>
                       {food.protein_g}g protein
                     </Text>
                   )}
@@ -251,18 +409,15 @@ export default function MealPrepScreen() {
         <SectionHeader title="📋 Full Food List" delay={400} />
 
         {allFoods.map((food, idx) => (
-          <AnimatedListItem key={`all-${food.name}`} index={idx} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
-            <View style={[styles.compactFoodRow, {
-              backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
-              borderColor: theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-            }]}>
-              <View style={[styles.categoryDot, { backgroundColor: CATEGORY_COLORS[food.category] }]} />
-              <Text style={[styles.compactFoodName, { color: theme.colors.text }]}>{food.name}</Text>
-              <Text style={[styles.compactFoodCategory, { color: theme.colors.textMuted }]}>
+          <AnimatedListItem key={`all-${food.name}-${idx}`} index={idx} style={styles.compactItemSpacing}>
+            <View style={[styles.compactFoodRow, dynamicStyles.compactFoodRow]}>
+              <View style={[styles.categoryDot, dynamicStyles.categoryDot[food.category]]} />
+              <Text style={styles.compactFoodName}>{food.name}</Text>
+              <Text style={styles.compactFoodCategory}>
                 {food.category}
               </Text>
               {food.calories_per_serving && (
-                <Text style={[styles.compactFoodCal, { color: theme.colors.textSecondary }]}>
+                <Text style={styles.compactFoodCal}>
                   {food.calories_per_serving} cal
                 </Text>
               )}
@@ -273,86 +428,16 @@ export default function MealPrepScreen() {
         {/* ── LOCATION INFO ── */}
         <GlassCard style={styles.locationInfo} delay={500}>
           <MaterialCommunityIcons name="information-outline" size={16} color={theme.colors.accent} />
-          <Text style={[styles.locationInfoText, { color: theme.colors.textMuted }]}>
+          <Text style={styles.locationInfoText}>
             {location
-              ? `Showing foods available in ${location.city && location.city !== 'Unknown' ? location.city : location.country && location.country !== 'Global' ? location.country : 'your area'}. Location-specific foods will be added in a future update.`
+              ? `Showing foods available in ${location.city && location.city !== 'Unknown' ? location.city : location.country && location.country !== 'Global' ? location.country : 'your area'}, including regional and global options.`
               : 'Enable location to see region-specific food suggestions. Tap the location badge above to retry.'}
           </Text>
         </GlassCard>
 
-        <View style={{ height: 32 }} />
+        <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// ============================================
-// STYLES
-// ============================================
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContent: { paddingBottom: 32 },
-  headerGradient: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  headerTitle: { fontSize: 24, fontWeight: '800' },
-  locationBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    alignSelf: 'flex-start',
-  },
-  locationText: { fontSize: 12, fontWeight: '500' },
-  mealTabs: { flexGrow: 0, paddingHorizontal: 16, paddingVertical: 8 },
-  mealTab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginRight: 8,
-  },
-  mealTabText: { fontSize: 12 },
-  tipCard: { marginHorizontal: 16, marginTop: 8, padding: 14 },
-  tipRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  tipText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 19 },
-  emptyText: { textAlign: 'center', fontSize: 13, marginTop: 12, lineHeight: 20 },
-  foodCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 12,
-  },
-  foodIcon: { width: 40, height: 40, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  foodInfo: { flex: 1 },
-  foodName: { fontSize: 14, fontWeight: '600' },
-  foodDesc: { fontSize: 11, marginTop: 2, lineHeight: 15 },
-  foodLocal: { fontSize: 11, marginTop: 2, fontStyle: 'italic' },
-  foodNutrition: { alignItems: 'flex-end' },
-  foodCal: { fontSize: 12, fontWeight: '700' },
-  foodProtein: { fontSize: 10, fontWeight: '500', marginTop: 2 },
-  compactFoodRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    gap: 10,
-  },
-  categoryDot: { width: 8, height: 8, borderRadius: 4 },
-  compactFoodName: { flex: 1, fontSize: 13, fontWeight: '600' },
-  compactFoodCategory: { fontSize: 11, textTransform: 'capitalize' },
-  compactFoodCal: { fontSize: 11, fontWeight: '600' },
-  locationInfo: { marginHorizontal: 16, marginTop: 16, flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14 },
-  locationInfoText: { flex: 1, fontSize: 12, lineHeight: 17 },
-});

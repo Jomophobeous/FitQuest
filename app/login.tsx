@@ -33,6 +33,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../src/context/AuthContext';
 import { useTheme } from '../src/context/ThemeContext';
 import {
@@ -44,11 +47,15 @@ const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
 type AuthMode = 'biometric' | 'passcode' | 'email';
 
+WebBrowser.maybeCompleteAuthSession();
+
 export default function LoginScreen() {
   const { theme } = useTheme();
   const router = useRouter();
   const {
     signIn,
+    signInWithGoogleToken,
+    signInWithAppleToken,
     isLoading,
     isSignedIn,
     biometricCapability,
@@ -56,6 +63,7 @@ export default function LoginScreen() {
     authenticateWithBiometrics,
     verifyPasscode,
     hasPasscode,
+    resumeSession,
   } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>('biometric');
@@ -65,7 +73,23 @@ export default function LoginScreen() {
   const [error, setError] = useState('');
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [socialSubmitting, setSocialSubmitting] = useState(false);
   const [hasExistingPasscode, setHasExistingPasscode] = useState(false);
+  const [appleSignInAvailable, setAppleSignInAvailable] = useState<boolean>(false);
+
+  const androidOnlyMode = String(process.env.EXPO_PUBLIC_OAUTH_ANDROID_ONLY || '').toLowerCase() === 'true';
+
+  const googleClientConfigReady = !!(
+    process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
+    process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
+    process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
+  );
+
+  const [, googleResponse, promptGoogleSignIn] = Google.useIdTokenAuthRequest({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  });
 
   const isDark = theme.isDark;
   const accentColor = '#CCFF00';
@@ -108,6 +132,49 @@ export default function LoginScreen() {
     }
   }, [isSignedIn]);
 
+  useEffect(() => {
+    const handleGoogleResponse = async () => {
+      if (googleResponse?.type !== 'success') return;
+      const idToken = (googleResponse as any)?.authentication?.idToken
+        || (googleResponse as any)?.params?.id_token;
+      if (!idToken || typeof idToken !== 'string') {
+        setError('Google sign-in did not return an ID token');
+        return;
+      }
+
+      setError('');
+      setSocialSubmitting(true);
+      try {
+        await signInWithGoogleToken(idToken);
+        router.replace('/dashboard');
+      } catch (err: any) {
+        setError(err.message || 'Google sign-in failed');
+        triggerShake();
+      } finally {
+        setSocialSubmitting(false);
+      }
+    };
+
+    handleGoogleResponse();
+  }, [googleResponse]);
+
+  useEffect(() => {
+    const detectAppleAvailability = async () => {
+      if (Platform.OS !== 'ios') {
+        setAppleSignInAvailable(false);
+        return;
+      }
+      try {
+        const available = await AppleAuthentication.isAvailableAsync();
+        setAppleSignInAvailable(available);
+      } catch {
+        setAppleSignInAvailable(false);
+      }
+    };
+
+    detectAppleAvailability();
+  }, []);
+
   // ── Biometric Prompt ──
   const promptBiometric = async () => {
     setError('');
@@ -118,9 +185,8 @@ export default function LoginScreen() {
 
     const result = await authenticateWithBiometrics('Unlock FitQuest');
     if (result.success) {
-      // Auto sign-in with local credentials
       try {
-        await signIn('user@fitquest.local', 'biometric-auth');
+        await resumeSession();
         router.replace('/dashboard');
       } catch {
         setError('Session expired. Please sign in again.');
@@ -147,7 +213,7 @@ export default function LoginScreen() {
     const result = await verifyPasscode(passcode);
     if (result.success) {
       try {
-        await signIn('user@fitquest.local', 'passcode-auth');
+        await resumeSession();
         router.replace('/dashboard');
       } catch {
         setError('Authentication failed');
@@ -185,6 +251,55 @@ export default function LoginScreen() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    if (!googleClientConfigReady) {
+      setError('Google sign-in is not configured');
+      return;
+    }
+
+    setError('');
+    setSocialSubmitting(true);
+    try {
+      const result = await promptGoogleSignIn();
+      if (result?.type !== 'success') {
+        setSocialSubmitting(false);
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Google sign-in failed');
+      setSocialSubmitting(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setError('');
+    setSocialSubmitting(true);
+    try {
+      const available = await AppleAuthentication.isAvailableAsync();
+      if (!available) throw new Error('Apple sign-in not available on this device');
+
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        ],
+      });
+
+      const idToken = credential.identityToken;
+      if (!idToken) throw new Error('Apple sign-in did not return an ID token');
+
+      await signInWithAppleToken(idToken);
+      router.replace('/dashboard');
+    } catch (err: any) {
+      const cancelled = err?.code === 'ERR_REQUEST_CANCELED';
+      if (!cancelled) {
+        setError(err.message || 'Apple sign-in failed');
+        triggerShake();
+      }
+    } finally {
+      setSocialSubmitting(false);
+    }
+  };
+
   const triggerShake = () => {
     shakeX.value = withSequence(
       withTiming(-10, { duration: 50 }),
@@ -194,6 +309,22 @@ export default function LoginScreen() {
       withTiming(0, { duration: 50 })
     );
   };
+
+  const oauthChecks = [
+    {
+      label: 'Google Android client ID',
+      ok: !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    },
+    {
+      label: 'Google web/iOS fallback ID',
+      ok: androidOnlyMode || !!(process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID),
+    },
+    {
+      label: 'Apple Sign-In availability',
+      ok: Platform.OS === 'ios' ? appleSignInAvailable : true,
+    },
+  ];
+  const hasOAuthConfigIssue = oauthChecks.some((item) => !item.ok);
 
   // ──────────────────────────────────
   // RENDER
@@ -415,6 +546,69 @@ export default function LoginScreen() {
                 )}
               </TouchableOpacity>
 
+              <View style={styles.socialWrap}>
+                <TouchableOpacity
+                  style={[
+                    styles.socialBtn,
+                    {
+                      backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
+                      borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+                      opacity: socialSubmitting ? 0.6 : 1,
+                    },
+                  ]}
+                  onPress={handleGoogleSignIn}
+                  disabled={socialSubmitting}
+                  activeOpacity={0.9}
+                >
+                  <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
+                  <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>Continue with Google</Text>
+                </TouchableOpacity>
+
+                {Platform.OS === 'ios' && (
+                  <TouchableOpacity
+                    style={[
+                      styles.socialBtn,
+                      {
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
+                        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+                        opacity: socialSubmitting ? 0.6 : 1,
+                      },
+                    ]}
+                    onPress={handleAppleSignIn}
+                    disabled={socialSubmitting}
+                    activeOpacity={0.9}
+                  >
+                    <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />
+                    <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>Continue with Apple</Text>
+                  </TouchableOpacity>
+                )}
+
+                <View
+                  style={[
+                    styles.oauthDiag,
+                    {
+                      borderColor: hasOAuthConfigIssue ? theme.colors.warning : theme.colors.border,
+                      backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : theme.colors.surface,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>OAuth readiness</Text>
+                  {oauthChecks.map((item) => (
+                    <Text
+                      key={item.label}
+                      style={[
+                        styles.oauthDiagLine,
+                        {
+                          color: item.ok ? theme.colors.success : theme.colors.warning,
+                        },
+                      ]}
+                    >
+                      {item.ok ? '✓' : '•'} {item.label}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+
               <View style={styles.registerRow}>
                 <Text style={[styles.registerText, { color: theme.colors.textMuted }]}>
                   Don't have an account?{' '}
@@ -530,6 +724,31 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   emailBtnText: { color: '#000', fontSize: 16, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
+
+  socialWrap: { width: '100%', gap: 10, marginTop: 8 },
+  socialBtn: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingVertical: 14,
+  },
+  socialBtnText: { fontSize: 14, fontWeight: '700' },
+
+  oauthDiag: {
+    width: '100%',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 2,
+    gap: 4,
+  },
+  oauthDiagTitle: { fontSize: 12, fontWeight: '700' },
+  oauthDiagLine: { fontSize: 12, fontWeight: '600' },
 
   registerRow: { flexDirection: 'row', marginTop: 16 },
   registerText: { fontSize: 14 },

@@ -280,6 +280,15 @@ export class BiometricAuthService {
   // ============================================
 
   /**
+   * Start a local session after a successful credential-based login.
+   * This does not prompt biometrics; it simply creates the same 30-minute session gate.
+   */
+  async startCredentialSession(): Promise<SessionInfo> {
+    await this.resetFailedAttempts();
+    return this.createSession('PASSCODE');
+  }
+
+  /**
    * Check if current session is still valid.
    */
   async isSessionValid(): Promise<boolean> {

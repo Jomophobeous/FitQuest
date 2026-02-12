@@ -1,15 +1,15 @@
 import { ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client';
 import { Observable } from '@apollo/client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuthToken } from '../security/StorageMigration';
 
-// This is now a LOCAL STORAGE backed Apollo Client - fully serverless
-// All data is stored in AsyncStorage on the device
+// Local-only Apollo Client for legacy features (serverless)
+// Auth token is stored in SecureStore
 // See mock-apollo-client.ts for all data operations
 
 // Auth link - manages local authentication tokens only
 const authLink = new ApolloLink((operation, forward) => {
   return new Observable((observer) => {
-    AsyncStorage.getItem('authToken')
+    getAuthToken()
       .then((token) => {
         if (token) {
           operation.setContext({

@@ -10,6 +10,29 @@ Last updated: 2026-02-08 (UTC)
 -   🔁 in-progress
 -   ⏳ planned / backlog
 
+## Future Tests
+
+-   ⏳ Full Phase 2 verification (`npm run verify:phase2`) — deferred due memory usage (typecheck + tests + smoke in one pass)
+-   ⏳ Full mobile regression run after stabilization (typecheck + tests + live device OAuth)
+-   ⏳ Extended server regression run (auth rotation edge cases + backup overwrite/read consistency)
+
+---
+
+## Deferred (saved for later) — 2026-02-12
+
+### Google OAuth live verification (Android device/emulator)
+
+-   ⏳ Start backend with OAuth env loaded (`server/.env` has `GOOGLE_CLIENT_ID`)
+-   ⏳ Start Expo app with root `.env` loaded (`EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID` set)
+-   ⏳ On login screen, tap **Continue with Google** and complete account picker flow
+-   ⏳ Verify app navigates to dashboard and user session is stored
+-   ⏳ Verify server accepts token exchange (`POST /auth/google`) without `401/501`
+-   ⏳ Negative check: remove client ID and confirm UI shows configuration error
+
+Notes saved:
+-   Current Android package in native build: `com.anonymous.mobile`
+-   Debug SHA-1 used for OAuth setup: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`
+
 ---
 
 ## Checklist (high-level)

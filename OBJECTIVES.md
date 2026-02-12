@@ -11,6 +11,12 @@ Phase 1 → Phase 2 → Phase 3
                    Phase 6
                       ↓
                    Phase 7
+                      ↓
+                   Phase 8
+                      ↓
+                   Phase 9
+                      ↓
+                   Phase 10
 
 Skipping Phase 2 (persistence) or Phase 4 (aggregation) will break later phases.
 
@@ -146,6 +152,51 @@ Capabilities
 
 Note
 - This is a company / product-stage change, not a build-stage change.
+
+---
+
+## Phase 8 — Autonomous Operations
+
+Objective
+- Add policy-driven automation loops for adaptation, rollout, and guardrails.
+
+Capabilities
+- Safety-mode policies for auto-adjustments
+- Decision audit trails with rationale
+- Human-review gates for risky changes
+
+Constraint
+- Never allow opaque fully autonomous progression changes without interpretable policy checks.
+
+---
+
+## Phase 9 — Ecosystem Federation
+
+Objective
+- Open FitQuest to partner integrations while preserving privacy and local-first guarantees.
+
+Capabilities
+- Scoped import/export contracts
+- Integration registry with certification tiers
+- Federation policy enforcement
+
+Constraint
+- Integrations cannot bypass consent, encryption, or schema governance.
+
+---
+
+## Phase 10 — Enterprise Hardening
+
+Objective
+- Reach enterprise-grade reliability, governance, and compliance posture.
+
+Capabilities
+- SLO/SLA targets and risk scoring
+- Control automation for key rotation, backup drills, privacy audits
+- Multi-tenant and operational governance foundations
+
+Constraint
+- Hardening must not degrade on-device usability or offline-first behavior.
 
 ---
 

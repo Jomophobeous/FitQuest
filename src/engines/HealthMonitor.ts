@@ -13,7 +13,7 @@
 
 import { SensorFusionEngine, type ActivityType, type StepData, type MotionSnapshot } from './SensorFusionEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
-import { getDatabase } from '../database/schema';
+import { getAppState, setAppState } from '../database/service';
 
 // ============================================
 // TYPES
@@ -210,11 +210,7 @@ export class HealthMonitorService {
 
   async setGoals(goals: Partial<HealthGoals>): Promise<void> {
     this.goals = { ...this.goals, ...goals };
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT OR REPLACE INTO app_state (key, value) VALUES (?, ?)`,
-      ['health_goals', JSON.stringify(this.goals)]
-    );
+    await setAppState('health_goals', JSON.stringify(this.goals));
   }
 
   /**
@@ -414,13 +410,9 @@ export class HealthMonitorService {
 
   private async loadGoals(): Promise<void> {
     try {
-      const db = await getDatabase();
-      const row = await db.getFirstAsync<{ value: string }>(
-        `SELECT value FROM app_state WHERE key = ?`,
-        ['health_goals']
-      );
-      if (row?.value) {
-        this.goals = { ...DEFAULT_GOALS, ...JSON.parse(row.value) };
+      const value = await getAppState('health_goals');
+      if (value) {
+        this.goals = { ...DEFAULT_GOALS, ...JSON.parse(value) };
       }
     } catch (e) {
       console.warn('[HealthMonitor] Failed to load goals, using defaults');

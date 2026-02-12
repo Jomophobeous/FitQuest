@@ -6,6 +6,7 @@
  */
 
 import * as Location from 'expo-location';
+import { REGIONAL_FOOD_DATABASE } from './foodDatabase';
 
 // ============================================
 // TYPES
@@ -141,8 +142,7 @@ export async function hasLocationPermission(): Promise<boolean> {
 // ============================================
 
 /**
- * Global food database - will be populated with location-specific food data later
- * Food text filtered by location will be provided by the user
+ * Global fallback foods available in all regions
  */
 const GLOBAL_FOODS: FoodItem[] = [
   // Universal foods available everywhere
@@ -163,34 +163,143 @@ const GLOBAL_FOODS: FoodItem[] = [
   { name: 'Whole Wheat Bread', category: 'carb', description: 'Whole grain bread slices', calories_per_serving: 128, protein_g: 5, available_regions: ['global'] },
 ];
 
-// ============================================
-// Placeholder for location-specific foods
-// Food text filtered by location will be provided later
-// ============================================
+const COUNTRY_TO_REGIONAL_GROUP: Record<string, string[]> = {
+  AU: ['AU', 'PAC'],
+  NZ: ['PAC', 'AU'],
+  ZA: ['ZA', 'MAF', 'NA'],
+  BW: ['ZA', 'MAF'],
+  NA: ['ZA', 'MAF'],
+  ZW: ['ZA', 'MAF'],
+  MZ: ['ZA', 'MAF'],
+  AO: ['MAF', 'ZA'],
+  CD: ['MAF'],
+  CG: ['MAF'],
+  CM: ['MAF'],
+  CF: ['MAF'],
+  GA: ['MAF'],
+  MA: ['NA', 'EME'],
+  DZ: ['NA', 'EME'],
+  TN: ['NA', 'EME'],
+  LY: ['NA', 'EME'],
+  EG: ['NA', 'EME'],
+  RU: ['EE', 'CAS'],
+  UA: ['EE'],
+  PL: ['EE'],
+  RO: ['EE'],
+  HU: ['EE'],
+  BG: ['EE'],
+  RS: ['EE'],
+  BR: ['SA'],
+  AR: ['SA'],
+  CL: ['SA'],
+  CO: ['SA'],
+  PE: ['SA'],
+  BO: ['SA'],
+  PY: ['SA'],
+  UY: ['SA'],
+  VE: ['SA'],
+  MX: ['SA'],
+  US: ['SA', 'EME'],
+  CA: ['SA', 'EE'],
+  ES: ['EME'],
+  PT: ['EME'],
+  IT: ['EME'],
+  GR: ['EME'],
+  FR: ['EME'],
+  TR: ['EME', 'CAS'],
+  IL: ['EME'],
+  LB: ['EME'],
+  JO: ['EME'],
+  SA: ['EME', 'CAS'],
+  AE: ['EME', 'CAS'],
+  QA: ['EME', 'CAS'],
+  KW: ['EME', 'CAS'],
+  IN: ['AS'],
+  CN: ['AS'],
+  JP: ['AS'],
+  KR: ['AS'],
+  TH: ['AS'],
+  VN: ['AS'],
+  PH: ['AS', 'PAC'],
+  ID: ['AS', 'PAC'],
+  MY: ['AS'],
+  SG: ['AS'],
+  PK: ['AS', 'CAS'],
+  BD: ['AS'],
+  LK: ['AS'],
+  NP: ['AS', 'CAS'],
+  KZ: ['CAS'],
+  UZ: ['CAS'],
+  KG: ['CAS'],
+  TM: ['CAS'],
+  TJ: ['CAS'],
+  AF: ['CAS', 'AS'],
+  FJ: ['PAC'],
+  WS: ['PAC'],
+  TO: ['PAC'],
+  PG: ['PAC'],
+  VU: ['PAC'],
+};
 
-const REGION_SPECIFIC_FOODS: FoodItem[] = [
-  // These will be populated when the user provides location-specific food data
-  // Example structure:
-  // { name: 'Pap', category: 'carb', description: 'Maize meal porridge', calories_per_serving: 180, protein_g: 3, available_regions: ['ZA'], local_name: 'Pap' },
-];
+function getRegionalGroupsForCountry(isoCountryCode?: string): string[] {
+  if (!isoCountryCode) {
+    return [];
+  }
+
+  const normalized = isoCountryCode.toUpperCase();
+  return COUNTRY_TO_REGIONAL_GROUP[normalized] || [];
+}
 
 /**
  * Get foods filtered by user's location
  * Returns global foods + region-specific foods for the user's country
+ * When location is unknown, returns ALL foods from the database
  */
 export function getFoodsByLocation(location: UserLocation | null): FoodItem[] {
   const globalFoods = GLOBAL_FOODS.filter(f => f.available_regions.includes('global'));
   
-  if (!location?.isoCountryCode) {
-    return globalFoods;
+  // If no location or GLOBAL fallback, return all foods from database + global
+  if (!location?.isoCountryCode || location.isoCountryCode === 'GLOBAL') {
+    const allRegionalFoods = REGIONAL_FOOD_DATABASE.map(food => ({
+      name: food.name,
+      category: food.category,
+      description: food.description,
+      calories_per_serving: food.calories_per_serving,
+      protein_g: food.protein_g,
+      available_regions: food.available_regions,
+      local_name: food.local_name,
+    }));
+    
+    const mergedFoods = [...allRegionalFoods, ...globalFoods];
+    const dedupedFoods = mergedFoods.filter((food, index, list) =>
+      list.findIndex((item) => item.name.toLowerCase() === food.name.toLowerCase()) === index
+    );
+    
+    return dedupedFoods;
   }
 
   const countryCode = location.isoCountryCode.toUpperCase();
-  const regionalFoods = REGION_SPECIFIC_FOODS.filter(f => 
-    f.available_regions.includes(countryCode)
+  const regionalGroups = getRegionalGroupsForCountry(countryCode);
+
+  const regionalFoods = REGIONAL_FOOD_DATABASE.filter(food => {
+    const foodRegion = food.available_regions[0];
+    return foodRegion === countryCode || regionalGroups.includes(foodRegion);
+  }).map(food => ({
+    name: food.name,
+    category: food.category,
+    description: food.description,
+    calories_per_serving: food.calories_per_serving,
+    protein_g: food.protein_g,
+    available_regions: food.available_regions,
+    local_name: food.local_name,
+  }));
+
+  const mergedFoods = [...regionalFoods, ...globalFoods];
+  const dedupedFoods = mergedFoods.filter((food, index, list) =>
+    list.findIndex((item) => item.name.toLowerCase() === food.name.toLowerCase()) === index
   );
 
-  return [...regionalFoods, ...globalFoods];
+  return dedupedFoods;
 }
 
 /**

@@ -9,9 +9,11 @@
  * Core Principle: APPEND-ONLY. Never rewrite history.
  */
 
-import { getDatabase } from '../database/schema';
-import { recordProgress, getProgressHistory } from '../database/service';
+import { recordProgress, getProgressExerciseIds, getProgressHistory } from '../database/service';
 import type { ProgressRecord, SessionExercise } from '../database/types';
+import { formatRepRange, parseReps, parseRepRange } from './progressionParsing';
+import { generateSecureId } from '../security/randomId';
+import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
 
 // ============================================
 // CONFIGURATION
@@ -163,10 +165,26 @@ export async function calculateProgression(
   goalType: 'strength' | 'hypertrophy' | 'endurance' | 'default' = 'default'
 ): Promise<ProgressionDecision> {
   const state = await analyzeExerciseProgression(userId, exerciseId);
+  const adaptive = await getAdaptiveTrainingProfile(userId);
 
   const repCeiling = PROGRESSION_CONFIG.rep_ceilings[goalType];
   const repFloor = PROGRESSION_CONFIG.rep_floors[goalType];
   const currentRepTarget = parseRepRange(currentReps).max;
+  const successesToProgress = Math.max(
+    1,
+    Math.round(
+      PROGRESSION_CONFIG.successes_to_progress / adaptive.progressionAggressiveness
+    )
+  );
+  const failuresToRegress = Math.max(
+    1,
+    Math.round(
+      PROGRESSION_CONFIG.failures_to_regress / adaptive.fatigueSensitivity
+    )
+  );
+  const repIncrement = adaptive.progressionAggressiveness >= 1.15
+    ? PROGRESSION_CONFIG.rep_increment + 1
+    : PROGRESSION_CONFIG.rep_increment;
 
   // Decision logic
   let action: 'progress' | 'maintain' | 'regress' = 'maintain';
@@ -175,15 +193,15 @@ export async function calculateProgression(
   let newReps = currentReps;
   let notes = '';
 
-  if (state.consecutive_successes >= PROGRESSION_CONFIG.successes_to_progress) {
+  if (state.consecutive_successes >= successesToProgress) {
     // PROGRESS
     action = 'progress';
 
     if (currentRepTarget < repCeiling) {
       // Increase reps first
-      const newMax = Math.min(currentRepTarget + PROGRESSION_CONFIG.rep_increment, repCeiling);
+      const newMax = Math.min(currentRepTarget + repIncrement, repCeiling);
       newReps = formatRepRange(newMax - 2, newMax);
-      reason = `${state.consecutive_successes} consecutive successes → +${PROGRESSION_CONFIG.rep_increment} reps`;
+      reason = `${state.consecutive_successes} consecutive successes → +${repIncrement} reps (adaptive)`;
       notes = 'Focus on form as reps increase';
     } else {
       // Rep ceiling hit → increase sets
@@ -193,7 +211,7 @@ export async function calculateProgression(
       reason = `Rep ceiling (${repCeiling}) reached → +${PROGRESSION_CONFIG.set_increment} set, reset reps`;
       notes = 'New set added. Reduce reps to build back up.';
     }
-  } else if (state.consecutive_failures >= PROGRESSION_CONFIG.failures_to_regress) {
+  } else if (state.consecutive_failures >= failuresToRegress) {
     // REGRESS
     action = 'regress';
 
@@ -201,7 +219,7 @@ export async function calculateProgression(
       // Reduce reps first
       const newMax = Math.max(currentRepTarget - 2, repFloor);
       newReps = formatRepRange(newMax - 2, newMax);
-      reason = `${state.consecutive_failures} consecutive failures → -2 reps`;
+      reason = `${state.consecutive_failures} consecutive failures → -2 reps (adaptive)`;
       notes = 'Reduce load to rebuild momentum';
     } else if (currentSets > 2) {
       // Rep floor hit → reduce sets
@@ -240,7 +258,7 @@ export async function recordExercisePerformance(
   performance: ExercisePerformance
 ): Promise<void> {
   const record: ProgressRecord = {
-    id: `progress_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    id: await generateSecureId('progress'),
     user_id: userId,
     exercise_id: performance.exercise_id,
     date: new Date().toISOString().split('T')[0],
@@ -287,46 +305,16 @@ export async function recordSessionPerformance(
 export async function getProgressionSummary(
   userId: string
 ): Promise<Map<string, ProgressionState>> {
-  const db = await getDatabase();
-
-  // Get all unique exercises the user has done
-  const exercises = await db.getAllAsync<{ exercise_id: string }>(
-    `SELECT DISTINCT exercise_id FROM progress_records WHERE user_id = ?`,
-    [userId]
-  );
+  const exercises = await getProgressExerciseIds(userId);
 
   const summary = new Map<string, ProgressionState>();
 
-  for (const { exercise_id } of exercises) {
-    const state = await analyzeExerciseProgression(userId, exercise_id);
-    summary.set(exercise_id, state);
+  for (const exerciseId of exercises) {
+    const state = await analyzeExerciseProgression(userId, exerciseId);
+    summary.set(exerciseId, state);
   }
 
   return summary;
-}
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-
-function parseReps(reps: string): number {
-  // Handle formats: "10", "8-12", "30s hold"
-  const match = reps.match(/(\d+)/);
-  return match ? parseInt(match[1], 10) : 0;
-}
-
-function parseRepRange(reps: string): { min: number; max: number } {
-  const parts = reps.match(/(\d+)(?:-(\d+))?/);
-  if (!parts) return { min: 8, max: 12 };
-
-  const min = parseInt(parts[1], 10);
-  const max = parts[2] ? parseInt(parts[2], 10) : min;
-  return { min, max };
-}
-
-function formatRepRange(min: number, max: number): string {
-  if (min === max) return `${min}`;
-  return `${min}-${max}`;
 }
 
 // ============================================

@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { translations, SUPPORTED_LANGUAGES } from '../i18n/translations';
 
 const LANGUAGE_STORAGE_KEY = 'fitquest.language';
@@ -25,7 +25,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const saved = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+        const saved = await SecureStore.getItemAsync(LANGUAGE_STORAGE_KEY);
         if (saved && translations[saved]) {
           setLanguageState(saved);
         }
@@ -39,7 +39,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (!translations[code]) return;
     setLanguageState(code);
     try {
-      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, code);
+      await SecureStore.setItemAsync(LANGUAGE_STORAGE_KEY, code);
     } catch (e) {
       console.warn('Failed to save language preference:', e);
     }
@@ -71,7 +71,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    // Return safe defaults if used outside provider (during initial render)
+    return {
+      language: 'en',
+      setLanguage: () => {},
+      t: (key: string) => {
+        const enStrings = translations.en;
+        return enStrings?.[key] || key;
+      },
+      languageName: 'English',
+    };
   }
   return context;
 }

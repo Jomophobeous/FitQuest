@@ -7,7 +7,6 @@
  * Produces: workout_sessions (planned), session_exercises (prescribed)
  */
 
-import { getDatabase } from '../database/schema';
 import {
   getExercises,
   getUserProfile,
@@ -17,7 +16,12 @@ import {
   getUserInjuries,
   createWorkoutSession,
   addSessionExercise,
+  getRecentExerciseIds,
+  getRecentlyTrainedMuscles,
+  getProgressHistory,
 } from '../database/service';
+import { generateSecureId } from '../security/randomId';
+import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
 import type {
   ExerciseWithDetails,
   UserProfile,
@@ -147,22 +151,11 @@ async function determineSessionIntent(
   recentSessions: WorkoutSession[],
   deloadFlag: boolean
 ): Promise<SessionIntent> {
-  const db = await getDatabase();
-
   // Get recently trained muscles from last 48h
   const recentlyTrained = new Set<TargetMuscle>();
   const cutoff = new Date(Date.now() - RECENCY_PENALTY_HOURS * 3600 * 1000).toISOString();
-
-  const recentExercises = await db.getAllAsync<{ muscle: string }>(
-    `SELECT DISTINCT em.muscle
-     FROM session_exercises se
-     JOIN workout_sessions ws ON se.session_id = ws.id
-     JOIN exercise_muscles em ON se.exercise_id = em.exercise_id
-     WHERE ws.user_id = ? AND ws.started_at > ? AND em.is_primary = 1`,
-    [userId, cutoff]
-  );
-
-  recentExercises.forEach(r => recentlyTrained.add(r.muscle as TargetMuscle));
+  const recentMuscles = await getRecentlyTrainedMuscles(userId, cutoff);
+  recentMuscles.forEach((muscle) => recentlyTrained.add(muscle as TargetMuscle));
 
   // Find freshest pattern (lowest avg fatigue, not recently trained)
   let bestPattern: keyof typeof PATTERN_REQUIREMENTS | null = null;
@@ -200,7 +193,8 @@ async function applyHardFilter(
   userId: string,
   profile: UserProfile,
   fatigueMap: Map<TargetMuscle, number>,
-  intent: SessionIntent
+  intent: SessionIntent,
+  adaptive: AdaptiveTrainingProfile
 ): Promise<ExerciseWithDetails[]> {
   // Get user's available equipment
   const userEquipment = await getUserEquipment(userId);
@@ -231,9 +225,12 @@ async function applyHardFilter(
     }
 
     // Fatigue check - skip if ANY primary muscle is over threshold
+    const fatigueThreshold = Math.round(
+      FATIGUE_THRESHOLD - (adaptive.fatigueSensitivity - 1) * 20
+    );
     for (const muscle of ex.primary_muscles) {
       const fatigue = fatigueMap.get(muscle) || 0;
-      if (fatigue > FATIGUE_THRESHOLD) return false;
+      if (fatigue > fatigueThreshold) return false;
     }
 
     return true;
@@ -292,8 +289,27 @@ async function scoreExercises(
       patternScore = matchesPattern ? 100 : 30;
     }
 
-    // 4. Progression potential (0-100) - simplified for now
-    const progressionScore = 70; // TODO: Use progress_records to determine
+    // 4. Progression potential (0-100)
+    const progressHistory = await getProgressHistory(userId, exercise.id, 6);
+    const progressionScore = (() => {
+      if (progressHistory.length < 2) return 65;
+      const newest = progressHistory[0];
+      const oldest = progressHistory[progressHistory.length - 1];
+      const newestSets = newest.sets_completed || 0;
+      const oldestSets = oldest.sets_completed || 0;
+      const newestReps = parseInt(String(newest.reps_achieved || '').match(/\d+/)?.[0] || '0', 10);
+      const oldestReps = parseInt(String(oldest.reps_achieved || '').match(/\d+/)?.[0] || '0', 10);
+
+      const setDelta = newestSets - oldestSets;
+      const repsDelta = newestReps - oldestReps;
+      const trend = setDelta * 12 + repsDelta * 4;
+
+      if (trend >= 16) return 92;
+      if (trend >= 8) return 84;
+      if (trend >= 0) return 74;
+      if (trend >= -6) return 58;
+      return 45;
+    })();
 
     // 5. Variety bonus (0-100) - penalty if recently used
     const varietyScore = recentExerciseIds.has(exercise.id) ? 20 : 80;
@@ -374,13 +390,16 @@ function selectExercises(
 function prescribeVolume(
   exercise: ExerciseWithDetails,
   profile: UserProfile,
-  isDeload: boolean
+  isDeload: boolean,
+  adaptive: AdaptiveTrainingProfile
 ): { sets: number; reps: string } {
   const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ||
     VOLUME_PRESETS.calisthenics.beginner;
 
   let sets = preset.sets;
   let reps = preset.reps;
+
+  sets = Math.max(2, Math.round(sets * adaptive.volumeTolerance));
 
   // Deload reduction
   if (isDeload) {
@@ -410,6 +429,8 @@ export async function generateWorkout(
     throw new Error('User profile not found');
   }
 
+  const adaptive = await getAdaptiveTrainingProfile(userId);
+
   const fatigueRecords = await getMuscleFatigue(userId);
   const fatigueMap = new Map<TargetMuscle, number>(
     fatigueRecords.map(f => [f.muscle as TargetMuscle, f.fatigue_level])
@@ -418,15 +439,12 @@ export async function generateWorkout(
   const recentSessions = await getRecentSessions(userId, 7);
 
   // Get recently used exercise IDs
-  const db = await getDatabase();
-  const recentExerciseRows = await db.getAllAsync<{ exercise_id: string }>(
-    `SELECT DISTINCT se.exercise_id
-     FROM session_exercises se
-     JOIN workout_sessions ws ON se.session_id = ws.id
-     WHERE ws.user_id = ? AND ws.started_at > datetime('now', '-7 days')`,
-    [userId]
+  const recentExerciseIds = new Set(
+    await getRecentExerciseIds(
+      userId,
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    )
   );
-  const recentExerciseIds = new Set(recentExerciseRows.map(r => r.exercise_id));
 
   // 2. Determine intent
   const intent = await determineSessionIntent(
@@ -438,7 +456,7 @@ export async function generateWorkout(
   );
 
   // 3. Hard filter
-  const candidates = await applyHardFilter(userId, profile, fatigueMap, intent);
+  const candidates = await applyHardFilter(userId, profile, fatigueMap, intent, adaptive);
 
   if (candidates.length < MIN_EXERCISES) {
     console.warn('Not enough exercises pass hard filter');
@@ -456,9 +474,9 @@ export async function generateWorkout(
   const selected = selectExercises(scored, intent, targetCount);
 
   // 6. Prescribe volume
-  const sessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const sessionId = await generateSecureId('session');
   const exercises = selected.map((s, index) => {
-    const volume = prescribeVolume(s.exercise, profile, intent.is_deload);
+    const volume = prescribeVolume(s.exercise, profile, intent.is_deload, adaptive);
     return {
       exercise: s.exercise,
       sets: volume.sets,

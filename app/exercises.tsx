@@ -30,6 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { getExercises } from '../src/database/service';
 import type { ExerciseWithDetails, Category, Difficulty } from '../src/database/types';
 import { GlassCard, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
@@ -59,6 +60,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 
 export default function ExercisesScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const [exercises, setExercises] = useState<ExerciseWithDetails[]>([]);

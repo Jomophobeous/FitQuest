@@ -8,7 +8,8 @@
  * - Jog session: 10 XP per 100m jogged
  * - Streak bonus: streak_days × 10 XP per workout
  * 
- * Level Formula: XP needed = 100 × level (level 1 = 100 XP, level 2 = 200 XP, etc.)
+ * Level Formula: XP needed = 250 × level (level 1 = 250 XP, level 2 = 500 XP, etc.)
+ * This ensures a single workout cannot inflate past level 2.
  */
 
 import { getAppState, setAppState } from '../database/service';
@@ -37,7 +38,7 @@ export interface XPGainResult {
 // XP CALCULATION
 // ============================================
 
-const XP_PER_LEVEL_MULTIPLIER = 100; // Level N needs N × 100 XP
+const XP_PER_LEVEL_MULTIPLIER = 250; // Level N needs N × 250 XP
 
 function xpNeededForLevel(level: number): number {
   return level * XP_PER_LEVEL_MULTIPLIER;

@@ -15,9 +15,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Pedometer } from 'expo-sensors';
 import { Platform } from 'react-native';
-import { getDatabase } from '../database/schema';
 import { DEFAULT_USER_ID } from '../context/DatabaseContext';
 import { SensorFusionEngine } from '../engines/SensorFusionEngine';
+import {
+  createJogSession,
+  endJogSession,
+  getDailyStepsForDate,
+  getJogHistory as fetchJogHistory,
+  getStepHistory as fetchStepHistory,
+  upsertDailySteps,
+} from '../database/service';
+import { generateSecureId } from '../security/randomId';
 
 // ============================================
 // TYPES
@@ -67,8 +75,8 @@ function getTodayDateString(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-function generateId(): string {
-  return `jog_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+async function generateId(): Promise<string> {
+  return generateSecureId('jog');
 }
 
 // ============================================
@@ -99,12 +107,8 @@ export function usePedometer(): UsePedometerReturn {
 
   const loadTodaySteps = async () => {
     try {
-      const db = await getDatabase();
       const today = getTodayDateString();
-      const result = await db.getFirstAsync<{ steps: number }>(
-        'SELECT steps FROM daily_steps WHERE user_id = ? AND date = ?',
-        [DEFAULT_USER_ID, today]
-      );
+      const result = await getDailyStepsForDate(DEFAULT_USER_ID, today);
       if (result) {
         setTodaySteps(result.steps);
         baseStepsRef.current = result.steps;
@@ -116,15 +120,8 @@ export function usePedometer(): UsePedometerReturn {
 
   const saveTodaySteps = async (steps: number) => {
     try {
-      const db = await getDatabase();
       const today = getTodayDateString();
-      
-      await db.runAsync(
-        `INSERT INTO daily_steps (id, user_id, date, steps, active_minutes)
-         VALUES (?, ?, ?, ?, ?)
-         ON CONFLICT(user_id, date) DO UPDATE SET steps = ?, active_minutes = active_minutes`,
-        [generateId(), DEFAULT_USER_ID, today, steps, 0, steps]
-      );
+      await upsertDailySteps(DEFAULT_USER_ID, today, steps, 0);
     } catch (error) {
       console.error('[Pedometer] Failed to save steps:', error);
     }
@@ -225,18 +222,18 @@ export function usePedometer(): UsePedometerReturn {
 
   const startJog = useCallback(async () => {
     const session: JogSession = {
-      id: generateId(),
+      id: await generateId(),
       startTime: new Date(),
       distanceMeters: 0,
     };
 
     try {
-      const db = await getDatabase();
-      await db.runAsync(
-        `INSERT INTO jog_sessions (id, user_id, start_time, distance_meters)
-         VALUES (?, ?, ?, ?)`,
-        [session.id, DEFAULT_USER_ID, session.startTime.toISOString(), 0]
-      );
+      await createJogSession({
+        id: session.id,
+        userId: DEFAULT_USER_ID,
+        startTime: session.startTime.getTime(),
+        distanceMeters: 0,
+      });
     } catch (error) {
       console.error('[Pedometer] Failed to start jog session:', error);
     }
@@ -270,13 +267,13 @@ export function usePedometer(): UsePedometerReturn {
     };
 
     try {
-      const db = await getDatabase();
-      await db.runAsync(
-        `UPDATE jog_sessions 
-         SET end_time = ?, distance_meters = ?, avg_pace_per_km = ?, calories_estimate = ?
-         WHERE id = ?`,
-        [endTime.toISOString(), distanceMeters, avgPacePerKm || null, caloriesEstimate, currentJog.id]
-      );
+      await endJogSession({
+        id: currentJog.id,
+        endTime: endTime.getTime(),
+        distanceMeters,
+        avgPacePerKm: avgPacePerKm || null,
+        caloriesEstimate,
+      });
     } catch (error) {
       console.error('[Pedometer] Failed to save jog session:', error);
     }
@@ -287,19 +284,7 @@ export function usePedometer(): UsePedometerReturn {
 
   const getStepHistory = useCallback(async (days: number): Promise<DailySteps[]> => {
     try {
-      const db = await getDatabase();
-      const results = await db.getAllAsync<{
-        date: string;
-        steps: number;
-        active_minutes: number;
-      }>(
-        `SELECT date, steps, active_minutes 
-         FROM daily_steps 
-         WHERE user_id = ? 
-         ORDER BY date DESC 
-         LIMIT ?`,
-        [DEFAULT_USER_ID, days]
-      );
+      const results = await fetchStepHistory(DEFAULT_USER_ID, days);
 
       return results.map(r => ({
         date: r.date,
@@ -314,21 +299,8 @@ export function usePedometer(): UsePedometerReturn {
 
   const getJogHistory = useCallback(async (limit: number): Promise<JogSession[]> => {
     try {
-      const db = await getDatabase();
-      const results = await db.getAllAsync<{
-        id: string;
-        start_time: string;
-        end_time: string | null;
-        distance_meters: number;
-        avg_pace_per_km: number | null;
-        calories_estimate: number | null;
-      }>(
-        `SELECT id, start_time, end_time, distance_meters, avg_pace_per_km, calories_estimate
-         FROM jog_sessions 
-         WHERE user_id = ? AND end_time IS NOT NULL
-         ORDER BY start_time DESC 
-         LIMIT ?`,
-        [DEFAULT_USER_ID, limit]
+      const results = (await fetchJogHistory(DEFAULT_USER_ID, limit)).filter(
+        (r) => r.end_time !== null
       );
 
       return results.map(r => ({

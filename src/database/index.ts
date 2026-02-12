@@ -18,7 +18,6 @@ export { seedExercises, getExerciseCount } from './seed';
 // Initialize database and seed on first load
 import { getDatabase } from './schema';
 import { seedExercises } from './seed';
-import { createFitMindSchema } from '../fitmind/schema';
 import { encryptedDB } from '../security/EncryptedDatabase';
 
 let initialized = false;
@@ -35,7 +34,6 @@ export async function initializeDatabase(): Promise<void> {
     await seedExercises();
 
     // Initialize new module schemas (idempotent — safe to call every start)
-    await createFitMindSchema();
     await encryptedDB.initialize();
 
     // Diagnostic: verify seeding actually worked

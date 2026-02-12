@@ -15,7 +15,11 @@
 
 import * as Speech from 'expo-speech';
 import { Vibration, Platform } from 'react-native';
-import { getDatabase } from '../database/schema';
+import {
+  createAudioSettingsRow,
+  getAudioSettingsRow,
+  updateAudioSettingsRow,
+} from '../database/service';
 
 // ============================================
 // TYPES
@@ -72,15 +76,7 @@ class AudioService {
     if (this.isInitialized) return;
 
     try {
-      const db = await getDatabase();
-      const result = await db.getFirstAsync<{
-        voice_enabled: number;
-        speech_rate: number;
-        countdown_cues_enabled: number;
-      }>(
-        'SELECT * FROM audio_settings WHERE user_id = ?',
-        [userId]
-      );
+      const result = await getAudioSettingsRow(userId);
 
       if (result) {
         this.settings = {
@@ -90,11 +86,12 @@ class AudioService {
         };
       } else {
         // Create default settings
-        await db.runAsync(
-          `INSERT INTO audio_settings (user_id, voice_enabled, speech_rate, countdown_cues_enabled)
-           VALUES (?, 1, 1.0, 1)`,
-          [userId]
-        );
+        await createAudioSettingsRow({
+          userId,
+          voiceEnabled: true,
+          speechRate: 1.0,
+          countdownCuesEnabled: true,
+        });
       }
 
       this.isInitialized = true;
@@ -111,18 +108,12 @@ class AudioService {
     this.settings = { ...this.settings, ...settings };
 
     try {
-      const db = await getDatabase();
-      await db.runAsync(
-        `UPDATE audio_settings 
-         SET voice_enabled = ?, speech_rate = ?, countdown_cues_enabled = ?, updated_at = datetime('now')
-         WHERE user_id = ?`,
-        [
-          this.settings.voiceEnabled ? 1 : 0,
-          this.settings.speechRate,
-          this.settings.countdownCuesEnabled ? 1 : 0,
-          userId,
-        ]
-      );
+      await updateAudioSettingsRow({
+        userId,
+        voiceEnabled: this.settings.voiceEnabled,
+        speechRate: this.settings.speechRate,
+        countdownCuesEnabled: this.settings.countdownCuesEnabled,
+      });
     } catch (error) {
       console.error('[AudioService] Failed to save settings:', error);
     }
@@ -272,9 +263,9 @@ class AudioService {
       Vibration.vibrate([0, 100, 50, 100]);
     }
     
-    // Verbal bell cue if voice is enabled
+    // Verbal bell cue if voice is enabled (queued to prevent overlap)
     if (this.settings.voiceEnabled) {
-      await this.speak('Ding!', 'complete');
+      await this.queueSpeak('Ding!', 'complete');
     }
   }
 
@@ -335,6 +326,7 @@ class AudioService {
   pause(): void {
     // expo-speech doesn't have pause, so we stop and clear queue
     Speech.stop();
+    this.queue = [];
     this.isSpeaking = false;
   }
 

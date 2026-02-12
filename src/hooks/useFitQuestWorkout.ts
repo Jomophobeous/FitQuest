@@ -35,6 +35,9 @@ import {
 } from '../database/service';
 
 import { awardWorkoutXP } from '../services/xpService';
+import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsIngestionService';
+import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
+import { evaluatePostWorkoutPolicyDecision } from '../services/autonomousPolicyRuntime';
 
 import type { TargetMuscle, ExerciseWithDetails } from '../database/types';
 
@@ -340,7 +343,69 @@ export function useFitQuestWorkout() {
         regressions
       ) + xpLine;
 
-      console.log('[FitQuest] Workout completed:', summary);
+      const difficultyValues = state.workout.exercises
+        .map((exercise) => exercise.difficulty)
+        .filter((value): value is number => typeof value === 'number');
+      const averageDifficulty = difficultyValues.length
+        ? difficultyValues.reduce((sum, value) => sum + value, 0) / difficultyValues.length
+        : 5;
+
+      const adaptive = await updateAdaptiveTrainingProfileFromSession(
+        DEFAULT_USER_ID,
+        {
+          completedCount,
+          totalCount: state.workout.exercises.length,
+          averageDifficulty,
+        }
+      );
+
+      const adaptiveLine = `\n🧠 Adaptive profile: fatigue ${adaptive.fatigueSensitivity.toFixed(2)} · progression ${adaptive.progressionAggressiveness.toFixed(2)} · volume ${adaptive.volumeTolerance.toFixed(2)}`;
+      const completionRatio = state.workout.exercises.length > 0
+        ? completedCount / state.workout.exercises.length
+        : 0;
+
+      const policyDecision = await evaluatePostWorkoutPolicyDecision(DEFAULT_USER_ID, {
+        completionRatio,
+        averageDifficulty,
+        isDeload: state.workout.isDeload,
+      });
+
+      const policyLine = `\n🤖 Policy decision: ${policyDecision.decision.action} (${Math.round(policyDecision.decision.confidence * 100)}%)`;
+      const finalSummary = summary + adaptiveLine + policyLine;
+
+      console.log('[FitQuest] Workout completed:', finalSummary);
+
+      try {
+        const durationSeconds = state.startTime
+          ? Math.max(0, Math.floor((Date.now() - state.startTime.getTime()) / 1000))
+          : 0;
+
+        for (const ex of state.workout.exercises) {
+          await queueAnalyticsEvent({
+            event_type: 'exercise_outcome',
+            goal: userProfile?.goal || 'unknown',
+            experience: userProfile?.experience || 'unknown',
+            exercise_id: ex.exerciseId,
+            success: ex.completed,
+            sets_completed: ex.completed ? ex.sets : 0,
+            duration_seconds: 0,
+          });
+        }
+
+        await queueAnalyticsEvent({
+          event_type: 'workout_session_completed',
+          goal: userProfile?.goal || 'unknown',
+          experience: userProfile?.experience || 'unknown',
+          exercise_id: 'all',
+          success: completedCount >= state.workout.exercises.length * 0.8,
+          sets_completed: state.workout.exercises.reduce((acc, ex) => acc + (ex.completed ? ex.sets : 0), 0),
+          duration_seconds: durationSeconds,
+        });
+
+        await flushAnalyticsQueue(120);
+      } catch (analyticsError) {
+        console.warn('[FitQuest] Analytics queue/flush failed:', analyticsError);
+      }
 
       // Reset state
       setState({
@@ -352,7 +417,7 @@ export function useFitQuestWorkout() {
       });
 
       return {
-        summary,
+        summary: finalSummary,
         progressions: progressionDecisions,
         streak,
       };
@@ -360,7 +425,7 @@ export function useFitQuestWorkout() {
       console.error('[FitQuest] Failed to finish workout:', err);
       return null;
     }
-  }, [state.workout, state.status]);
+  }, [state.workout, state.status, state.startTime, userProfile?.goal, userProfile?.experience]);
 
   /**
    * Cancel the current workout

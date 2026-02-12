@@ -5,7 +5,7 @@
  * notifications at key moments: Day 0, 3, 7, 12, 14.
  */
 
-import { getDatabase } from '../database';
+import { getTrialStartedAt, getTrialStats, upsertTrialState } from '../database/service';
 
 // ============================================
 // TYPES
@@ -33,17 +33,19 @@ export class TrialOnboarding {
   }
 
   async startTrialExperience(): Promise<void> {
-    const db = await getDatabase();
     const userId = 'user_local_001';
     const now = Date.now();
     const trialEnd = now + 14 * 24 * 60 * 60 * 1000;
 
     // Record trial start
-    await db.runAsync(`
-      INSERT OR REPLACE INTO trial_state 
-      (user_id, started_at, ends_at, converted, notifications_sent)
-      VALUES (?, ?, ?, 0, ?)
-    `, [userId, now, trialEnd, JSON.stringify(['day0'])]);
+    await upsertTrialState({
+      user_id: userId,
+      started_at: now,
+      ends_at: trialEnd,
+      converted: 0,
+      product_identifier: null,
+      notifications_sent: JSON.stringify(['day0']),
+    });
 
     // Schedule notifications via Expo Notifications
     await this.scheduleDay0();
@@ -54,88 +56,36 @@ export class TrialOnboarding {
   }
 
   async getTrialStats(): Promise<TrialStats> {
-    const db = await getDatabase();
     const userId = 'user_local_001';
-
-    const trial = await db.getFirstAsync<{ started_at: number }>(
-      'SELECT started_at FROM trial_state WHERE user_id = ?', [userId]
-    );
-    const startedAt = trial?.started_at ?? Date.now();
-
-    // Workouts since trial start
-    const workoutResult = await db.getFirstAsync<{ cnt: number }>(
-      `SELECT COUNT(*) as cnt FROM workout_sessions 
-       WHERE user_id = ? AND started_at >= ?`,
-      [userId, startedAt]
-    );
-
-    // Steps since trial start
-    const stepResult = await db.getFirstAsync<{ total: number }>(
-      `SELECT COALESCE(SUM(steps), 0) as total FROM daily_steps 
-       WHERE user_id = ? AND date >= ?`,
-      [userId, new Date(startedAt).toISOString().split('T')[0]]
-    );
-
-    // Reading sessions since trial
-    const readingResult = await db.getFirstAsync<{ pages: number }>(
-      `SELECT COALESCE(SUM(pages_read), 0) as pages FROM fitmind_reading_sessions 
-       WHERE started_at >= ?`,
-      [startedAt]
-    );
-
-    // Active days
-    const activeDays = await db.getFirstAsync<{ cnt: number }>(
-      `SELECT COUNT(DISTINCT date) as cnt FROM daily_steps 
-       WHERE user_id = ? AND date >= ? AND steps > 100`,
-      [userId, new Date(startedAt).toISOString().split('T')[0]]
-    );
-
-    return {
-      workouts: workoutResult?.cnt ?? 0,
-      pagesRead: readingResult?.pages ?? 0,
-      stepsTotal: stepResult?.total ?? 0,
-      daysActive: activeDays?.cnt ?? 0,
-    };
+    const startedAt = (await getTrialStartedAt(userId)) ?? Date.now();
+    return getTrialStats(userId, startedAt);
   }
 
   async getTrialDayNumber(): Promise<number> {
-    const db = await getDatabase();
-    const trial = await db.getFirstAsync<{ started_at: number }>(
-      'SELECT started_at FROM trial_state WHERE user_id = ?', ['user_local_001']
-    );
-    if (!trial) return 0;
-    return Math.floor((Date.now() - trial.started_at) / (1000 * 60 * 60 * 24));
+    const startedAt = await getTrialStartedAt('user_local_001');
+    if (!startedAt) return 0;
+    return Math.floor((Date.now() - startedAt) / (1000 * 60 * 60 * 24));
   }
 
   async hasFeatureBeenUsed(feature: 'workout' | 'fitmind' | 'health' | 'analytics'): Promise<boolean> {
-    const db = await getDatabase();
     const userId = 'user_local_001';
 
     switch (feature) {
       case 'workout': {
-        const r = await db.getFirstAsync<{ cnt: number }>(
-          'SELECT COUNT(*) as cnt FROM workout_sessions WHERE user_id = ?', [userId]
-        );
-        return (r?.cnt ?? 0) > 0;
+        const stats = await getTrialStats(userId, 0);
+        return stats.workouts > 0;
       }
       case 'fitmind': {
-        const r = await db.getFirstAsync<{ cnt: number }>(
-          'SELECT COUNT(*) as cnt FROM fitmind_documents'
-        );
-        return (r?.cnt ?? 0) > 0;
+        const stats = await getTrialStats(userId, 0);
+        return stats.pagesRead > 0;
       }
       case 'health': {
-        const r = await db.getFirstAsync<{ cnt: number }>(
-          'SELECT COUNT(*) as cnt FROM daily_health_summaries WHERE user_id = ?', [userId]
-        );
-        return (r?.cnt ?? 0) > 0;
+        const stats = await getTrialStats(userId, 0);
+        return stats.stepsTotal > 0;
       }
       case 'analytics': {
-        // Analytics is visited if we have step data
-        const r = await db.getFirstAsync<{ cnt: number }>(
-          'SELECT COUNT(*) as cnt FROM daily_steps WHERE user_id = ?', [userId]
-        );
-        return (r?.cnt ?? 0) > 3;
+        const stats = await getTrialStats(userId, 0);
+        return stats.stepsTotal > 0;
       }
       default:
         return false;

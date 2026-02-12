@@ -239,17 +239,14 @@ export class ReadingSessionTracker {
 
     // Only persist sessions longer than minimum threshold
     if (this.session.totalActiveMs >= MIN_SESSION_DURATION_MS) {
-      const sessionRecord: Omit<ReadingSession, 'id'> = {
+      const sessionRecord: Omit<ReadingSession, 'id' | 'created_at'> = {
         document_id: this.session.documentId,
         start_page: this.session.startPage,
         end_page: this.session.currentPage,
-        duration_ms: this.session.totalActiveMs,
+        duration_minutes: Math.max(1, Math.round(this.session.totalActiveMs / 60000)),
         words_read: this.session.wordsRead,
-        reading_speed_wpm: summary.readingSpeedWpm,
         comprehension_score: null,
-        focus_score: summary.focusScore,
-        started_at: this.session.startedAt,
-        ended_at: Date.now(),
+        notes: null,
       };
 
       const sessionId = await FitMindService.recordSession(sessionRecord);
@@ -257,7 +254,8 @@ export class ReadingSessionTracker {
 
       // Update reading streak
       const pagesRead = Math.max(0, this.session.currentPage - this.session.startPage);
-      await FitMindService.updateReadingStreak(pagesRead, this.session.totalActiveMs);
+      const minutesRead = Math.max(1, Math.round(this.session.totalActiveMs / 60000));
+      await FitMindService.updateReadingStreak(pagesRead, minutesRead);
 
       console.log(
         `[ReadingTracker] Session saved: ${pagesRead} pages, ${summary.readingSpeedWpm} WPM, focus: ${summary.focusScore}`

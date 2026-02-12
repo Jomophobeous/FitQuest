@@ -21,12 +21,12 @@ import Animated, {
   FadeInRight,
   ZoomIn,
   SlideInDown,
-  Layout,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { useFitQuestWorkout, WorkoutExerciseDisplay } from '../src/hooks/useFitQuestWorkout';
 import { useTimer, formatTime } from '../src/hooks/useTimer';
@@ -41,6 +41,7 @@ import {
 
 export default function FitQuestScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { isReady, isLoading: dbLoading, error: dbError, userProfile, resetAll } = useDatabase();
   const {
     status,
@@ -174,6 +175,13 @@ export default function FitQuestScreen() {
 
   // Workout rating state (shown after completion)
   const [workoutRating, setWorkoutRating] = useState<number | null>(null);
+
+  // Auto-trigger finish when workout reaches completed status
+  useEffect(() => {
+    if (status === 'completed' && workout && !completionResult) {
+      handleFinish();
+    }
+  }, [status, workout, completionResult]);
 
   const handleFinish = async () => {
     const result = await finishWorkout();
@@ -430,7 +438,6 @@ export default function FitQuestScreen() {
             <Animated.View
               key={exercise.id}
               entering={FadeInRight.delay(250 + index * 40).duration(150)}
-              layout={Layout.duration(150)}
               style={{ paddingHorizontal: 16, marginBottom: 8 }}
             >
               <View style={[
@@ -730,13 +737,6 @@ export default function FitQuestScreen() {
   }
 
   // ===== COMPLETED STATE (before processing) =====
-  // Auto-trigger finish when workout reaches completed status
-  useEffect(() => {
-    if (status === 'completed' && workout && !completionResult) {
-      handleFinish();
-    }
-  }, [status]);
-
   if (status === 'completed' && workout) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>

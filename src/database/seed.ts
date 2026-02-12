@@ -3,7 +3,17 @@
  * From FitQuest_Filters.docx - Calisthenics, Getting Taller, and more
  */
 
-import { getDatabase } from './schema';
+import {
+  beginSeedTransaction,
+  clearExerciseSeedData,
+  commitSeedTransaction,
+  getExerciseCount as getExerciseCountFromService,
+  insertSeedExercise,
+  insertSeedExerciseEquipment,
+  insertSeedExerciseMuscle,
+  insertSeedExerciseTrainingType,
+  rollbackSeedTransaction,
+} from './service';
 import type {
   Category,
   Difficulty,
@@ -1374,30 +1384,21 @@ function convertGeneratedExercise(exercise: GeneratedExercise): SeedExercise {
  * Seed all exercises into the database
  */
 export async function seedExercises(): Promise<void> {
-  const db = await getDatabase();
-
   // Check if already seeded
   // Minimum expected exercise count (handcrafted + generated)
   const MINIMUM_EXPECTED = 720; // If fewer than this, re-seed to include generated exercises
 
-  const count = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercises`
-  );
+  const count = await getExerciseCountFromService();
 
-  if (count && count.count >= MINIMUM_EXPECTED) {
-    console.log(`Database already seeded with ${count.count} exercises (above ${MINIMUM_EXPECTED} threshold)`);
+  if (count >= MINIMUM_EXPECTED) {
+    console.log(`Database already seeded with ${count} exercises (above ${MINIMUM_EXPECTED} threshold)`);
     return;
   }
 
   // Clear existing exercises if re-seeding (incomplete seed from before generator was added)
-  if (count && count.count > 0) {
-    console.log(`Re-seeding: found only ${count.count} exercises (below ${MINIMUM_EXPECTED} threshold)`);
-    await db.execAsync(`
-      DELETE FROM exercise_training_types;
-      DELETE FROM exercise_equipment;
-      DELETE FROM exercise_muscles;
-      DELETE FROM exercises;
-    `);
+  if (count > 0) {
+    console.log(`Re-seeding: found only ${count} exercises (below ${MINIMUM_EXPECTED} threshold)`);
+    await clearExerciseSeedData();
   }
 
   // Get handcrafted exercises
@@ -1429,87 +1430,85 @@ export async function seedExercises(): Promise<void> {
   console.log(`Seeding ${allExercises.length} exercises (${merged.length - allExercises.length} duplicates removed)...`);
 
   // Use a transaction for massive performance improvement (700+ exercises)
-  await db.execAsync('BEGIN TRANSACTION');
+  await beginSeedTransaction();
   
   try {
     for (const exercise of allExercises) {
-    // Insert exercise with audio fields
-    await db.runAsync(
-      `INSERT OR REPLACE INTO exercises (id, name, category, difficulty, equipment_level, 
-        impact_level, space_required, time_per_set_seconds, instructions, order_in_category,
-        audio_intro, audio_setup, audio_execution, audio_transition)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      // Insert exercise with audio fields
+      await insertSeedExercise({
+        id: exercise.id,
+        name: exercise.name,
+        category: exercise.category,
+        difficulty: exercise.difficulty,
+        equipment_level: exercise.equipment_level,
+        impact_level: exercise.impact_level,
+        space_required: exercise.space_required,
+        time_per_set_seconds: exercise.time_per_set_seconds,
+        instructions: exercise.instructions,
+        order_in_category: exercise.order_in_category,
+        audio_intro: exercise.audio_intro || generateDefaultAudioIntro(exercise),
+        audio_setup: exercise.audio_setup || generateDefaultAudioSetup(exercise),
+        audio_execution: exercise.audio_execution || generateDefaultAudioExecution(exercise),
+        audio_transition: exercise.audio_transition || '',
+      });
 
-      [
-        exercise.id,
-        exercise.name,
-        exercise.category,
-        exercise.difficulty,
-        exercise.equipment_level,
-        exercise.impact_level,
-        exercise.space_required,
-        exercise.time_per_set_seconds,
-        JSON.stringify(exercise.instructions),
-        exercise.order_in_category,
-        exercise.audio_intro || generateDefaultAudioIntro(exercise),
-        exercise.audio_setup || generateDefaultAudioSetup(exercise),
-        exercise.audio_execution || generateDefaultAudioExecution(exercise),
-        exercise.audio_transition || '',
-      ]
-    );
+      // Insert primary muscles (deduplicated)
+      const primaryMuscles = [...new Set(exercise.primary_muscles)];
+      for (const muscle of primaryMuscles) {
+        await insertSeedExerciseMuscle({
+          exerciseId: exercise.id,
+          muscle,
+          isPrimary: true,
+        });
+      }
 
-    // Insert primary muscles (deduplicated)
-    const primaryMuscles = [...new Set(exercise.primary_muscles)];
-    for (const muscle of primaryMuscles) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO exercise_muscles (exercise_id, muscle, is_primary) VALUES (?, ?, 1)`,
-        [exercise.id, muscle]
-      );
+      // Insert secondary muscles (deduplicated, skip if already primary)
+      const secondaryMuscles = [...new Set(exercise.secondary_muscles)].filter(m => !primaryMuscles.includes(m));
+      for (const muscle of secondaryMuscles) {
+        await insertSeedExerciseMuscle({
+          exerciseId: exercise.id,
+          muscle,
+          isPrimary: false,
+        });
+      }
+
+      // Insert required equipment (deduplicated)
+      const requiredEquip = [...new Set(exercise.equipment_required)];
+      for (const equip of requiredEquip) {
+        await insertSeedExerciseEquipment({
+          exerciseId: exercise.id,
+          equipment: equip,
+          isRequired: true,
+        });
+      }
+
+      // Insert optional equipment (deduplicated, skip if already required)
+      const optionalEquip = [...new Set(exercise.equipment_optional)].filter(e => !requiredEquip.includes(e));
+      for (const equip of optionalEquip) {
+        await insertSeedExerciseEquipment({
+          exerciseId: exercise.id,
+          equipment: equip,
+          isRequired: false,
+        });
+      }
+
+      // Insert training types (deduplicated by type)
+      const seenTypes = new Set<string>();
+      for (const tt of exercise.training_types) {
+        if (seenTypes.has(tt.type)) continue;
+        seenTypes.add(tt.type);
+        await insertSeedExerciseTrainingType({
+          exerciseId: exercise.id,
+          trainingType: tt.type,
+          effectiveness: tt.effectiveness,
+        });
+      }
     }
 
-    // Insert secondary muscles (deduplicated, skip if already primary)
-    const secondaryMuscles = [...new Set(exercise.secondary_muscles)].filter(m => !primaryMuscles.includes(m));
-    for (const muscle of secondaryMuscles) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO exercise_muscles (exercise_id, muscle, is_primary) VALUES (?, ?, 0)`,
-        [exercise.id, muscle]
-      );
-    }
-
-    // Insert required equipment (deduplicated)
-    const requiredEquip = [...new Set(exercise.equipment_required)];
-    for (const equip of requiredEquip) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO exercise_equipment (exercise_id, equipment, is_required) VALUES (?, ?, 1)`,
-        [exercise.id, equip]
-      );
-    }
-
-    // Insert optional equipment (deduplicated, skip if already required)
-    const optionalEquip = [...new Set(exercise.equipment_optional)].filter(e => !requiredEquip.includes(e));
-    for (const equip of optionalEquip) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO exercise_equipment (exercise_id, equipment, is_required) VALUES (?, ?, 0)`,
-        [exercise.id, equip]
-      );
-    }
-
-    // Insert training types (deduplicated by type)
-    const seenTypes = new Set<string>();
-    for (const tt of exercise.training_types) {
-      if (seenTypes.has(tt.type)) continue;
-      seenTypes.add(tt.type);
-      await db.runAsync(
-        `INSERT OR IGNORE INTO exercise_training_types (exercise_id, training_type, effectiveness) VALUES (?, ?, ?)`,
-        [exercise.id, tt.type, tt.effectiveness]
-      );
-    }
-    }
-
-    await db.execAsync('COMMIT');
+    await commitSeedTransaction();
     console.log(`Successfully seeded ${allExercises.length} exercises`);
   } catch (error) {
-    await db.execAsync('ROLLBACK');
+    await rollbackSeedTransaction();
     console.error(`Failed to seed exercises:`, error);
     throw error;
   }
@@ -1519,9 +1518,5 @@ export async function seedExercises(): Promise<void> {
  * Get total exercise count
  */
 export async function getExerciseCount(): Promise<number> {
-  const db = await getDatabase();
-  const result = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercises`
-  );
-  return result?.count ?? 0;
+  return getExerciseCountFromService();
 }

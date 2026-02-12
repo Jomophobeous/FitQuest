@@ -208,6 +208,83 @@ export interface WorkoutSession {
   notes?: string;
 }
 
+// ============================================
+// FITMIND TYPES (Cognitive Fitness)
+// ============================================
+
+export type DocumentType = 'PDF' | 'EPUB' | 'ARTICLE' | 'NOTE';
+export type DocumentStatus = 'UNREAD' | 'READING' | 'COMPLETED' | 'ARCHIVED';
+
+export interface FitMindDocument {
+  id: string;
+  title: string;
+  author: string;
+  type: DocumentType;
+  status: DocumentStatus;
+  category: string;
+  tags: string;
+  file_path: string | null;
+  file_size: number;
+  total_pages: number;
+  current_page: number;
+  content: string | null;
+  word_count: number;
+  reading_level: string | null;
+  estimated_minutes: number;
+  cover_color: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface ReadingSession {
+  id: string;
+  document_id: string;
+  start_page: number;
+  end_page: number;
+  duration_minutes: number;
+  words_read: number;
+  comprehension_score: number | null;
+  notes: string | null;
+  created_at: number;
+}
+
+export interface Annotation {
+  id: string;
+  document_id: string;
+  page_number: number;
+  type: 'HIGHLIGHT' | 'NOTE' | 'BOOKMARK' | 'QUESTION';
+  content: string;
+  color: string;
+  position_start: number | null;
+  position_end: number | null;
+  created_at: number;
+}
+
+export interface Flashcard {
+  id: string;
+  document_id: string;
+  front: string;
+  back: string;
+  difficulty: number;
+  repetitions: number;
+  interval_days: number;
+  next_review: number;
+  ease_factor: number;
+  created_at: number;
+}
+
+export interface ReadingGoal {
+  id: string;
+  user_id: string;
+  type: 'DAILY_MINUTES' | 'WEEKLY_PAGES' | 'MONTHLY_BOOKS';
+  target: number;
+  current: number;
+  period_start: number;
+  period_end: number;
+  achieved: number;
+  created_at: number;
+}
+
 export interface SessionExercise {
   id: string;
   session_id: string;
@@ -280,4 +357,4 @@ export interface ExerciseWithDetails extends Exercise {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 8; // v8: Advanced health monitoring, anomaly detection, sleep tracking
+export const SCHEMA_VERSION = 9; // v9: Trial state table + SQL governance cleanup

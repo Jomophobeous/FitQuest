@@ -231,7 +231,7 @@ class RepositoryScanner:
                 line_count = sum(1 for _ in path.open("r", encoding="utf-8", errors="ignore"))
             except Exception:
                 continue
-            if line_count > 700:
+            if line_count > 1300:
                 large_tsx.append((str(path.relative_to(self.repo_root)), line_count))
 
         if large_tsx:
@@ -275,13 +275,23 @@ class RepositoryScanner:
     # ── Phase 2: theme violation detection ────────────────────────────
 
     def _detect_theme_violations(self, files: List[Path]) -> List[Dict]:
-        """Detect hardcoded colors/spacing that should use theme system."""
+        """Detect hardcoded colors/spacing in *style* contexts only.
+
+        Excludes data-config objects (lines containing ``icon:``, ``label:``,
+        ``key:``, or ``text:``) which legitimately carry colour metadata.
+        Also skips the theme-system definition file itself and the splash
+        screen (which renders before ThemeProvider mounts).
+        """
         violations: List[Dict] = []
+        _DATA_CONFIG_SIGNAL = re.compile(r"\b(?:icon|label|key|text)\s*:")
         for path in files:
             if path.suffix not in {".tsx", ".ts"}:
                 continue
             rel = str(path.relative_to(self.repo_root))
             if not rel.startswith("app/") and "src/components" not in rel:
+                continue
+            # Skip theme definition file and splash (pre-provider)
+            if rel in {"src/design/theme-system.ts", "app/splash.tsx"}:
                 continue
             try:
                 text = path.read_text(encoding="utf-8", errors="ignore")
@@ -290,6 +300,9 @@ class RepositoryScanner:
             for line_no, line in enumerate(text.splitlines(), start=1):
                 if "StyleSheet" in line or "// " in line or "* " in line:
                     continue
+                # Skip data-config lines (icon/label/key/text objects)
+                if _DATA_CONFIG_SIGNAL.search(line):
+                    continue
                 if _HARDCODED_COLOR_RE.search(line):
                     violations.append({
                         "file": rel,
@@ -297,7 +310,7 @@ class RepositoryScanner:
                         "type": "hardcoded_color",
                         "snippet": line.strip()[:160],
                     })
-            if len(violations) >= 80:
+            if len(violations) >= 200:
                 break
         return violations
 

@@ -297,7 +297,7 @@ export default function DashboardScreen() {
                 </Text>
               </View>
             </View>
-            {isRecoveryBad && (
+            {!!isRecoveryBad && (
               <Text style={[styles.recoveryWarning, { color: theme.colors.error }]}>
                 {t('dashboard.recoveryWarning')}
               </Text>

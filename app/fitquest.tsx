@@ -300,7 +300,7 @@ export default function FitQuestScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
-              {workoutRating && (
+              {!!workoutRating && (
                 <Text style={[styles.ratingFeedback, { color: theme.colors.success }]}>
                   {workoutRating <= 2 ? t('fitquest.feedback.low') : workoutRating <= 3 ? t('fitquest.feedback.mid') : workoutRating === 4 ? t('fitquest.feedback.high') : t('fitquest.feedback.top')}
                 </Text>
@@ -372,11 +372,11 @@ export default function FitQuestScreen() {
             >
               <View style={styles.readyHeaderRow}>
                 <Text style={[styles.readyTitle, { color: theme.colors.text }]}>{t('fitquest.todaysWorkout')}</Text>
-                {workout.isDeload && (
+                {!!workout.isDeload && (
                   <View
                     style={[styles.deloadBadge, { backgroundColor: theme.colors.warning }]}
                   >
-                    <Text style={styles.deloadBadgeText}>{t('fitquest.deload')}</Text>
+                    <Text style={[styles.deloadBadgeText, { color: theme.colors.text }]}>{t('fitquest.deload')}</Text>
                   </View>
                 )}
               </View>
@@ -411,7 +411,7 @@ export default function FitQuestScreen() {
           )}
 
           {/* Deload Status */}
-          {deloadStatus && (
+          {!!deloadStatus && (
             <Animated.View entering={FadeInDown.delay(200).duration(150)}>
               <GlassCard style={{ marginHorizontal: 16, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <MaterialCommunityIcons
@@ -450,7 +450,7 @@ export default function FitQuestScreen() {
                 <View
                   style={[styles.exerciseNum, { backgroundColor: theme.colors.accent }]}
                 >
-                  <Text style={styles.exerciseNumText}>{index + 1}</Text>
+                  <Text style={[styles.exerciseNumText, { color: theme.colors.text }]}>{index + 1}</Text>
                 </View>
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
@@ -545,7 +545,7 @@ export default function FitQuestScreen() {
 
         <ScrollView contentContainerStyle={styles.exerciseContent} showsVerticalScrollIndicator={false}>
           {/* Rest Timer Overlay */}
-          {isResting && (
+          {!!isResting && (
             <Animated.View entering={SlideInDown.duration(180)}>
               <GlassCard style={styles.restTimerCard}>
                 <MaterialCommunityIcons name="timer-sand" size={28} color={theme.colors.warning} />
@@ -634,7 +634,7 @@ export default function FitQuestScreen() {
           )}
 
           {/* RPE Rating - shown AFTER tapping Complete/Finish */}
-          {showRPE && (
+          {!!showRPE && (
             <Animated.View entering={FadeInDown.duration(200)}>
               <Text style={[styles.diffPrompt, { color: theme.colors.text, fontWeight: '600', fontSize: 15 }]}>
                 {isLastExercise ? t('fitquest.rateAndFinish') : t('fitquest.rateThisSet')}
@@ -678,7 +678,7 @@ export default function FitQuestScreen() {
                         }
                       }}
                     >
-                      <Text style={styles.difficultyText}>{label}</Text>
+                      <Text style={[styles.difficultyText, { color: theme.colors.text }]}>{label}</Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -773,7 +773,7 @@ export default function FitQuestScreen() {
           {t('fitquest.idleSub')}
         </Animated.Text>
 
-        {userProfile && (
+        {!!userProfile && (
           <Animated.View entering={FadeInDown.delay(400).duration(150)} style={{ width: '100%', maxWidth: 280 }}>
             <GlassCard style={{ alignItems: 'center', padding: 16, marginTop: 20 }}>
               <Text style={[styles.profileLabel, { color: theme.colors.textMuted }]}>{t('fitquest.currentProfile')}</Text>
@@ -819,7 +819,7 @@ const styles = StyleSheet.create({
   readyHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   readyTitle: { fontSize: 24, fontWeight: '700' },
   deloadBadge: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8 },
-  deloadBadgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  deloadBadgeText: { fontSize: 11, fontWeight: '700' },
   hintIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
   explanationText: { flex: 1, fontSize: 14, lineHeight: 21 },
   warningText: { fontSize: 13, marginBottom: 4 },
@@ -833,7 +833,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   exerciseNum: { width: 30, height: 30, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  exerciseNumText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  exerciseNumText: { fontWeight: '700', fontSize: 14 },
   exercisePreviewName: { fontSize: 15, fontWeight: '600' },
   exercisePreviewMeta: { fontSize: 12, marginTop: 3, fontWeight: '400' },
   catBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
@@ -902,7 +902,7 @@ const styles = StyleSheet.create({
   diffPrompt: { textAlign: 'center', marginTop: 24, fontSize: 13 },
   difficultyRow: { flexDirection: 'row', justifyContent: 'center', gap: 10, marginTop: 10 },
   difficultyButton: { width: 46, height: 46, borderRadius: 23, justifyContent: 'center', alignItems: 'center' },
-  difficultyText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  difficultyText: { fontWeight: '700', fontSize: 15 },
   actionRow: { flexDirection: 'row', gap: 12, marginTop: 28 },
   skipButton: { flex: 1, paddingVertical: 14, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   idleIconWrap: { width: 120, height: 120, borderRadius: 40, justifyContent: 'center', alignItems: 'center' },

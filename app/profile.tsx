@@ -89,7 +89,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
           onPress={(e) => e.stopPropagation()}
         >
           <Text style={[modalStyles.title, { color: theme.colors.text }]}>{title}</Text>
-          {subtitle && (
+          {!!subtitle && (
             <Text style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>{subtitle}</Text>
           )}
 
@@ -270,7 +270,7 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
         </View>
         <View style={styles.menuTextWrap}>
           <Text style={[styles.menuLabel, { color: theme.colors.text }]}>{label}</Text>
-          {sublabel && (
+          {!!sublabel && (
             <Text style={[styles.menuSublabel, { color: theme.colors.textMuted }]}>{sublabel}</Text>
           )}
         </View>
@@ -695,7 +695,7 @@ export default function ProfileScreen() {
                         colors={[theme.colors.accent, '#4338CA'] as [string, string]}
                         style={styles.avatarGradient}
                       >
-                        <Text style={styles.avatarInitials}>
+                        <Text style={[styles.avatarInitials, { color: theme.colors.text }]}>
                           {(profile?.name || 'A').charAt(0).toUpperCase()}
                         </Text>
                       </LinearGradient>
@@ -1028,13 +1028,13 @@ export default function ProfileScreen() {
         <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.logoutSection}>
           <TouchableOpacity
             style={[styles.logoutBtn, {
-              backgroundColor: '#EF4444' + '10',
+              backgroundColor: theme.colors.error + '10',
             }]}
             onPress={handleLogout}
             activeOpacity={0.7}
           >
-            <MaterialCommunityIcons name="logout" size={18} color="#EF4444" />
-            <Text style={styles.logoutText}>{t('profile.logout')}</Text>
+            <MaterialCommunityIcons name="logout" size={18} color={theme.colors.error} />
+            <Text style={[styles.logoutText, { color: theme.colors.error }]}>{t('profile.logout')}</Text>
           </TouchableOpacity>
         </Animated.View>
 
@@ -1102,7 +1102,6 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#fff',
     letterSpacing: 1,
   },
   profileName: {
@@ -1280,6 +1279,5 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#EF4444',
   },
 });

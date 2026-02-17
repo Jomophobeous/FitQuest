@@ -386,7 +386,7 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
           : {},
       ]}
     >
-      {isCoach && (
+      {!!isCoach && (
         <View style={styles.coachAvatarRow}>
           <LinearGradient
             colors={[theme.colors.accent, '#4338CA'] as [string, string]}
@@ -408,7 +408,7 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
           end={{ x: 1, y: 1 }}
           style={styles.userBubbleGradient}
         >
-          <Text style={[styles.messageText, { color: '#fff' }]}>{message.text}</Text>
+          <Text style={[styles.messageText, { color: theme.colors.text }]}>{message.text}</Text>
         </LinearGradient>
       )}
       <Text style={[styles.timestamp, { color: theme.colors.textMuted }]}>
@@ -629,13 +629,13 @@ export default function CoachScreen() {
                 <View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Text style={[styles.headerTitle, { color: theme.colors.text }]}>AI Coach</Text>
-                    <View style={{ backgroundColor: '#F4A427' + '25', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
-                      <Text style={{ color: '#F4A427', fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>BETA</Text>
+                    <View style={{ backgroundColor: theme.colors.warning + '25', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+                      <Text style={{ color: theme.colors.warning, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>BETA</Text>
                     </View>
                   </View>
                   <View style={styles.headerStatusRow}>
-                    <PulseDot color="#10B981" size={6} />
-                    <Text style={[styles.headerStatus, { color: '#10B981' }]}>Online</Text>
+                    <PulseDot color={theme.colors.accent} size={6} />
+                    <Text style={[styles.headerStatus, { color: theme.colors.accent }]}>Online</Text>
                   </View>
                 </View>
               </View>

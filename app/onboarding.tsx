@@ -388,7 +388,7 @@ export default function OnboardingScreen() {
                       <Text style={[styles.equipLabel, { color: selected ? ACCENT : theme.colors.text }]}>
                         {eq.label}
                       </Text>
-                      {selected && (
+                      {!!selected && (
                         <View style={styles.equipCheck}>
                           <MaterialCommunityIcons name="check" size={14} color="#000" />
                         </View>

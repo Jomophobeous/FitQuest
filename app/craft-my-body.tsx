@@ -8,6 +8,8 @@
  */
 
 import React, { useState, useCallback } from 'react';
+
+const ACCENT_PURPLE = '#8B5CF6';
 import {
   View,
   ScrollView,
@@ -370,7 +372,7 @@ export default function CraftMyBodyScreen() {
                 <MaterialCommunityIcons name={mg.icon as any} size={28} color={cfg.color} />
                 <Text style={[styles.muscleLabel, { color: colors.text }]}>{mg.label}</Text>
                 <View style={[styles.priorityBadge, { backgroundColor: cfg.color }]}>
-                  <Text style={styles.priorityText}>{cfg.label}</Text>
+                  <Text style={[styles.priorityText, { color: colors.text }]}>{cfg.label}</Text>
                 </View>
               </GlassCard>
             </TouchableOpacity>
@@ -446,24 +448,24 @@ export default function CraftMyBodyScreen() {
 
           <View style={styles.macroRow}>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: '#EF4444' }]}>{algorithm.protein_g}g</Text>
+              <Text style={[styles.macroValue, { color: colors.error }]}>{algorithm.protein_g}g</Text>
               <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Protein ({proteinPct}%)</Text>
             </View>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: '#F4A427' }]}>{algorithm.carbs_g}g</Text>
+              <Text style={[styles.macroValue, { color: colors.warning }]}>{algorithm.carbs_g}g</Text>
               <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Carbs ({carbsPct}%)</Text>
             </View>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: '#8B5CF6' }]}>{algorithm.fats_g}g</Text>
+              <Text style={[styles.macroValue, { color: ACCENT_PURPLE }]}>{algorithm.fats_g}g</Text>
               <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Fats ({fatsPct}%)</Text>
             </View>
           </View>
 
           {/* Macro bar */}
           <View style={[styles.macroBar, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}>
-            <View style={{ flex: proteinPct, backgroundColor: '#EF4444', borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }} />
-            <View style={{ flex: carbsPct, backgroundColor: '#F4A427' }} />
-            <View style={{ flex: fatsPct, backgroundColor: '#8B5CF6', borderTopRightRadius: 4, borderBottomRightRadius: 4 }} />
+            <View style={{ flex: proteinPct, backgroundColor: colors.error, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }} />
+            <View style={{ flex: carbsPct, backgroundColor: colors.warning }} />
+            <View style={{ flex: fatsPct, backgroundColor: ACCENT_PURPLE, borderTopRightRadius: 4, borderBottomRightRadius: 4 }} />
           </View>
         </GlassCard>
 
@@ -617,7 +619,7 @@ const styles = StyleSheet.create({
   muscleCard: { width: '47%' as any, alignItems: 'center', padding: 16, borderRadius: 12, minWidth: 150 },
   muscleLabel: { fontSize: 13, fontWeight: '600', marginTop: 8, marginBottom: 8 },
   priorityBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-  priorityText: { fontSize: 10, fontWeight: '700', color: '#fff' },
+  priorityText: { fontSize: 10, fontWeight: '700' },
 
   // Results
   resultHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },

@@ -302,7 +302,7 @@ export default function FitMindReaderScreen() {
                 <ThemedText
                   variant="body"
                   color="primary"
-                  style={msg.role === 'user' ? { color: '#FFF' } : undefined}
+                  style={msg.role === 'user' ? { color: theme.colors.text } : undefined}
                 >
                   {msg.content}
                 </ThemedText>
@@ -324,7 +324,7 @@ export default function FitMindReaderScreen() {
               </Animated.View>
             ))}
 
-            {chatLoading && (
+            {!!chatLoading && (
               <View style={styles.typingIndicator}>
                 <ActivityIndicator size="small" color={theme.colors.accent} />
                 <ThemedText variant="caption" color="muted" style={{ marginLeft: 8 }}>

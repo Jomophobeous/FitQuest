@@ -389,7 +389,7 @@ export default function LoginScreen() {
               )}
 
               <View style={styles.altAuthRow}>
-                {hasExistingPasscode && (
+                {!!hasExistingPasscode && (
                   <TouchableOpacity
                     onPress={() => { setMode('passcode'); setError(''); }}
                     style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
@@ -544,7 +544,7 @@ export default function LoginScreen() {
                 {submitting ? (
                   <ActivityIndicator color="#000" />
                 ) : (
-                  <Text style={styles.emailBtnText}>{t('login.signIn')}</Text>
+                  <Text style={[styles.emailBtnText, { color: theme.isDark ? theme.colors.background : '#000' }]}>{t('login.signIn')}</Text>
                 )}
               </TouchableOpacity>
 
@@ -630,7 +630,7 @@ export default function LoginScreen() {
                     <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
                   </TouchableOpacity>
                 )}
-                {hasExistingPasscode && (
+                {!!hasExistingPasscode && (
                   <TouchableOpacity
                     onPress={() => { setMode('passcode'); setError(''); }}
                     style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
@@ -725,7 +725,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
-  emailBtnText: { color: '#000', fontSize: 16, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
+  emailBtnText: { fontSize: 16, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
 
   socialWrap: { width: '100%', gap: 10, marginTop: 8 },
   socialBtn: {

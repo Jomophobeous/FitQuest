@@ -417,7 +417,7 @@ export default function BackupsScreen() {
           </View>
         )}
 
-        {cloudEnabled && (
+        {!!cloudEnabled && (
           <>
             <View style={styles.sectionGap}>
               <SectionHeader title="Cloud Backups" />

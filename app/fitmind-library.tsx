@@ -51,7 +51,7 @@ export default function FitMindLibraryScreen() {
             <Text style={[styles.title, { color: theme.colors.text }]}>
               FitMind
             </Text>
-            <Text style={[styles.badge, { backgroundColor: '#F4A427' + '20', color: '#F4A427' }]}>
+            <Text style={[styles.badge, { backgroundColor: theme.colors.warning + '20', color: theme.colors.warning }]}>
               Coming Soon
             </Text>
           </Animated.View>

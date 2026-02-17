@@ -1,0 +1,94 @@
+{
+  "name": "alfred-agent",
+  "displayName": "Alfred — Autonomous Agent",
+  "description": "VS Code integration for the Alfred autonomous coding agent runtime",
+  "version": "0.1.0",
+  "publisher": "fitquest",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "workspaceContains:agents/alfred/orchestrator.py"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "alfred.scan",
+        "title": "Alfred: Scan Repository",
+        "icon": "$(search)"
+      },
+      {
+        "command": "alfred.runCycle",
+        "title": "Alfred: Run Cycle (Dry-Run)",
+        "icon": "$(play)"
+      },
+      {
+        "command": "alfred.runCycleLive",
+        "title": "Alfred: Run Cycle (Live)",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "alfred.autofix",
+        "title": "Alfred: Auto-Fix All Issues",
+        "icon": "$(wand)"
+      },
+      {
+        "command": "alfred.autofixPreview",
+        "title": "Alfred: Auto-Fix Preview (Dry-Run)",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "alfred.gatesSweep",
+        "title": "Alfred: Run All Verification Gates",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "alfred.showHealth",
+        "title": "Alfred: Show Health Score",
+        "icon": "$(heart)"
+      },
+      {
+        "command": "alfred.showMemory",
+        "title": "Alfred: Show Memory State",
+        "icon": "$(database)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "alfred-sidebar",
+          "title": "Alfred Agent",
+          "icon": "$(robot)"
+        }
+      ]
+    },
+    "views": {
+      "alfred-sidebar": [
+        {
+          "id": "alfred.healthView",
+          "name": "Health Score"
+        },
+        {
+          "id": "alfred.tasksView",
+          "name": "Task Queue"
+        },
+        {
+          "id": "alfred.signalsView",
+          "name": "Signals"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

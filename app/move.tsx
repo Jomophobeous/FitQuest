@@ -399,7 +399,7 @@ export default function MoveScreen() {
         </View>
 
         {/* ── HISTORY ── */}
-        {showHistory && (
+        {!!showHistory && (
           <Animated.View entering={FadeInDown.duration(150)}>
             <SectionHeader title={t('move.stepHistory')} delay={0} />
             {stepHistory.length === 0 ? (
@@ -493,7 +493,7 @@ export default function MoveScreen() {
                 {t('move.jogComplete')}
               </Text>
 
-              {jogCompletionData && (
+              {!!jogCompletionData && (
                 <View style={styles.statsGrid}>
                   <View style={[styles.statBox, { backgroundColor: theme.colors.accent + '12' }]}>
                     <MaterialCommunityIcons name="map-marker-distance" size={20} color={theme.colors.accent} />
@@ -531,7 +531,7 @@ export default function MoveScreen() {
                     style={styles.xpGradient}
                   >
                     <MaterialCommunityIcons name="star" size={16} color="#FFF" />
-                    <Text style={styles.xpText}>+{jogCompletionData.xpEarned} XP</Text>
+                    <Text style={[styles.xpText, { color: theme.colors.text }]}>+{jogCompletionData.xpEarned} XP</Text>
                   </LinearGradient>
                 </Animated.View>
               )}
@@ -543,7 +543,7 @@ export default function MoveScreen() {
                   setJogCompletionData(null);
                 }}
               >
-                <Text style={styles.modalButtonText}>{t('move.awesome')}</Text>
+                <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>{t('move.awesome')}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -674,7 +674,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   xpText: {
-    color: '#FFF',
     fontSize: 15,
     fontWeight: '700',
   },
@@ -684,7 +683,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   modalButtonText: {
-    color: '#FFF',
     fontSize: 16,
     fontWeight: '700',
   },

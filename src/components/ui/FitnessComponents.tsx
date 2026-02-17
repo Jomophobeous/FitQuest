@@ -54,12 +54,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {difficulty && <Badge label={difficulty} color={difficultyColor} size="small" />}
         </View>
 
-        {targetMuscle && (
+        {!!targetMuscle && (
           <Text style={styles.exerciseDetail}>
             <Text style={styles.label}>Target:</Text> {targetMuscle}
           </Text>
         )}
-        {equipment && (
+        {!!equipment && (
           <Text style={styles.exerciseDetail}>
             <Text style={styles.label}>Equipment:</Text> {equipment}
           </Text>

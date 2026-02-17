@@ -287,7 +287,7 @@ export default function WorkoutScreen() {
         </Animated.View>
 
         {/* ── CURRENT EXERCISE ── */}
-        {currentExercise && (
+        {!!currentExercise && (
           <Animated.View entering={SlideInDown.delay(150).duration(200)}>
             <GlassCard
               style={styles.currentCard}
@@ -315,7 +315,7 @@ export default function WorkoutScreen() {
               </View>
 
               {/* Category badge */}
-              {currentExercise.category && (
+              {!!currentExercise.category && (
                 <View style={styles.targetRow}>
                   <View style={[styles.targetPill, { backgroundColor: theme.colors.accent2 + '15' }]}>
                     <Text style={[styles.targetText, { color: theme.colors.accent2 }]}>
@@ -377,7 +377,7 @@ export default function WorkoutScreen() {
                   ) : isActive ? (
                     <PulseDot color={theme.colors.accent} size={8} />
                   ) : (
-                    <Text style={styles.exNumber}>{i + 1}</Text>
+                    <Text style={[styles.exNumber, { color: theme.colors.text }]}>{i + 1}</Text>
                   )}
                 </View>
 
@@ -453,7 +453,7 @@ export default function WorkoutScreen() {
                   onPress={handleCancel}
                   style={[styles.modalBtn, { backgroundColor: theme.colors.error }]}
                 >
-                  <Text style={[styles.modalBtnText, { color: '#FFF' }]}>Cancel</Text>
+                  <Text style={[styles.modalBtnText, { color: theme.colors.text }]}>Cancel</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  exNumber: { fontSize: 11, fontWeight: '700', color: '#FFF' },
+  exNumber: { fontSize: 11, fontWeight: '700' },
   exDetails: { flex: 1 },
   exName: { fontSize: 15, fontWeight: '600' },
   exNameDone: { textDecorationLine: 'line-through', opacity: 0.6 },

@@ -166,7 +166,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, a
         <Text style={styles.sectionTitle}>{title}</Text>
         {subtitle && <Text style={styles.sectionSubtitle}>{subtitle}</Text>}
       </View>
-      {action && (
+      {!!action && (
         <CustomButton label={action.label} onPress={action.onPress} variant="text" size="small" />
       )}
     </View>

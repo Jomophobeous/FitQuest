@@ -245,7 +245,7 @@ export default function ProgressScreen() {
           style={[styles.button, { backgroundColor: theme.colors.accent, margin: 16 }]}
           onPress={() => { setCompareMode(false); setComparePhotos([]); }}
         >
-          <Text style={styles.buttonText}>Done</Text>
+          <Text style={[styles.buttonText, { color: theme.colors.text }]}>Done</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -290,7 +290,7 @@ export default function ProgressScreen() {
         </View>
 
         {/* XP & Level Card */}
-        {xpData && (
+        {!!xpData && (
           <Card style={styles.xpCard}>
             <View style={styles.xpHeader}>
               <MaterialCommunityIcons name="star" size={28} color={theme.colors.warning} />
@@ -323,7 +323,7 @@ export default function ProgressScreen() {
         </View>
 
         {/* Compare mode instruction */}
-        {compareMode && (
+        {!!compareMode && (
           <Card style={[styles.compareInstr, { borderColor: theme.colors.accent }]}>
             <ThemedText variant="bodySmall" color="accent" style={{ textAlign: 'center' }}>
               Tap 2 photos to compare side by side ({comparePhotos.length}/2 selected)
@@ -338,7 +338,7 @@ export default function ProgressScreen() {
             onPress={handleTakePhoto}
           >
             <MaterialCommunityIcons name="camera" size={20} color="#fff" />
-            <Text style={styles.buttonText}>Take Photo</Text>
+            <Text style={[styles.buttonText, { color: theme.colors.text }]}>Take Photo</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, flex: 1 }]}
@@ -375,7 +375,7 @@ export default function ProgressScreen() {
                 >
                   <Image source={{ uri: photo.uri }} style={styles.photoImage} />
                   <View style={[styles.photoOverlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
-                    <Text style={styles.photoDate}>{photo.date}</Text>
+                    <Text style={[styles.photoDate, { color: theme.colors.text }]}>{photo.date}</Text>
                     {photo.label && <Text style={styles.photoLabel}>{photo.label}</Text>}
                   </View>
                 </TouchableOpacity>
@@ -437,7 +437,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   buttonText: {
-    color: '#fff',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -468,7 +467,6 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   photoDate: {
-    color: '#fff',
     fontSize: 12,
     fontWeight: '600',
   },

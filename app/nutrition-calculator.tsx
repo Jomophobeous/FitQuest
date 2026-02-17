@@ -5,6 +5,8 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
+
+const ACCENT_PURPLE = '#8B5CF6';
 import {
   View,
   ScrollView,
@@ -210,7 +212,7 @@ export default function NutritionCalculatorScreen() {
               </View>
               <View style={[styles.totalDivider, { backgroundColor: theme.colors.border }]} />
               <View style={styles.totalItem}>
-                <Text style={[styles.totalValue, { color: '#EF4444' }]}>
+                <Text style={[styles.totalValue, { color: theme.colors.error }]}>
                   {totals.protein}g
                 </Text>
                 <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>
@@ -219,7 +221,7 @@ export default function NutritionCalculatorScreen() {
               </View>
               <View style={[styles.totalDivider, { backgroundColor: theme.colors.border }]} />
               <View style={styles.totalItem}>
-                <Text style={[styles.totalValue, { color: '#8B5CF6' }]}>
+                <Text style={[styles.totalValue, { color: ACCENT_PURPLE }]}>
                   {mealEntries.length}
                 </Text>
                 <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>
@@ -456,7 +458,7 @@ export default function NutritionCalculatorScreen() {
                         </Text>
                       </View>
                       <View style={styles.breakdownItem}>
-                        <View style={[styles.breakdownIcon, { backgroundColor: '#EF4444' }]}>
+                        <View style={[styles.breakdownIcon, { backgroundColor: theme.colors.error }]}>
                           <MaterialCommunityIcons name="food-steak" size={18} color="#fff" />
                         </View>
                         <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>
@@ -467,7 +469,7 @@ export default function NutritionCalculatorScreen() {
                         </Text>
                       </View>
                       <View style={styles.breakdownItem}>
-                        <View style={[styles.breakdownIcon, { backgroundColor: '#F4A427' }]}>
+                        <View style={[styles.breakdownIcon, { backgroundColor: theme.colors.warning }]}>
                           <MaterialCommunityIcons name="silverware-fork-knife" size={18} color="#fff" />
                         </View>
                         <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>
@@ -483,11 +485,11 @@ export default function NutritionCalculatorScreen() {
                   {/* Clear All + Search More */}
                   <View style={styles.actionRow}>
                     <TouchableOpacity
-                      style={[styles.clearBtn, { borderColor: '#EF4444' + '40' }]}
+                      style={[styles.clearBtn, { borderColor: theme.colors.error + '40' }]}
                       onPress={clearAll}
                     >
-                      <MaterialCommunityIcons name="delete-outline" size={16} color="#EF4444" />
-                      <Text style={{ color: '#EF4444', fontWeight: '600', marginLeft: 6, fontSize: 13 }}>
+                      <MaterialCommunityIcons name="delete-outline" size={16} color={theme.colors.error} />
+                      <Text style={{ color: theme.colors.error, fontWeight: '600', marginLeft: 6, fontSize: 13 }}>
                         Clear All
                       </Text>
                     </TouchableOpacity>

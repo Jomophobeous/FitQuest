@@ -51,7 +51,7 @@ export default function StatRing({
   return (
     <View style={{ width: size, alignItems: 'center' }}>
       <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {isDark && (
+        {!!isDark && (
           <Defs>
             <RadialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
               <Stop offset="0%" stopColor={accentColor} stopOpacity="0.15" />
@@ -71,7 +71,7 @@ export default function StatRing({
         />
         
         {/* Glow effect in dark mode only */}
-        {isDark && (
+        {!!isDark && (
           <Circle
             cx={size / 2}
             cy={size / 2}
@@ -95,13 +95,13 @@ export default function StatRing({
         />
       </Svg>
       
-      {label && (
+      {!!label && (
         <Text style={[styles.label, { color: theme.colors.text, fontWeight: isDark ? '700' : '600' }]}>
           {label}
         </Text>
       )}
       
-      {sub && (
+      {!!sub && (
         <Text style={[styles.sub, { color: theme.colors.textMuted }]}>
           {sub}
         </Text>

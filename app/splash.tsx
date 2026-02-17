@@ -169,7 +169,7 @@ export default function Splash() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17',
+    backgroundColor: '#0A0E17', // Splash always dark — theme not available pre-mount
   },
   centerContent: {
     flex: 1,

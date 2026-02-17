@@ -84,7 +84,7 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
             {item.code.toUpperCase()}
           </Text>
         </View>
-        {isActive && (
+        {!!isActive && (
           <MaterialCommunityIcons
             name="check-circle"
             size={20}

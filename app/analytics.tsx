@@ -522,7 +522,7 @@ export default function AnalyticsScreen() {
           </GlassCard>
         </Animated.View>
 
-        {loading && (
+        {!!loading && (
           <View style={{ alignItems: 'center', paddingVertical: 32 }}>
             <ActivityIndicator size="large" color={theme.colors.accent} />
           </View>
@@ -823,7 +823,7 @@ export default function AnalyticsScreen() {
                     <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Active</Text>
                   </View>
                   <View style={s.legendItem}>
-                    <View style={[s.legendDot, { backgroundColor: theme.colors.success, borderWidth: 2, borderColor: '#fff' }]} />
+                    <View style={[s.legendDot, { backgroundColor: theme.colors.success, borderWidth: 2, borderColor: theme.colors.text }]} />
                     <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Today</Text>
                   </View>
                 </View>
@@ -952,7 +952,7 @@ const styles = (theme: any) =>
     muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, paddingHorizontal: 8 },
     muscleBadge: { width: (SCREEN_W - 80) / 4, marginBottom: 4 },
     muscleBadgeInner: { alignItems: 'center', paddingVertical: 10, borderRadius: 14 },
-    muscleName: { fontSize: 11, fontWeight: '700', color: '#fff', marginTop: 4 },
+    muscleName: { fontSize: 11, fontWeight: '700', color: theme.colors.text, marginTop: 4 },
     muscleCount: { fontSize: 12, fontWeight: '800', marginTop: 2 },
     legendRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 8 },
     legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },

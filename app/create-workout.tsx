@@ -260,14 +260,14 @@ export default function CreateWorkoutScreen() {
             />
             {activeFiltersCount > 0 && (
               <View style={[styles.filterBadge, { backgroundColor: theme.colors.error }]}>
-                <Text style={styles.filterBadgeText}>{activeFiltersCount}</Text>
+                <Text style={[styles.filterBadgeText, { color: theme.colors.text }]}>{activeFiltersCount}</Text>
               </View>
             )}
           </TouchableOpacity>
         </View>
 
         {/* Advanced Filters */}
-        {showFilters && (
+        {!!showFilters && (
           <View style={[styles.filtersPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
             <View style={styles.filterHeader}>
               <ThemedText variant="body" weight="600">Filters</ThemedText>
@@ -532,7 +532,7 @@ export default function CreateWorkoutScreen() {
           <Card key={item.exercise.id} style={styles.previewExercise}>
             <View style={styles.previewRow}>
               <View style={[styles.orderBadge, { backgroundColor: theme.colors.accent }]}>
-                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>{index + 1}</Text>
+                <Text style={{ color: theme.colors.text, fontWeight: '700', fontSize: 12 }}>{index + 1}</Text>
               </View>
               <View style={{ flex: 1, marginLeft: 12 }}>
                 <ThemedText variant="body" weight="600">{item.exercise.name}</ThemedText>
@@ -550,7 +550,7 @@ export default function CreateWorkoutScreen() {
           onPress={handleSaveWorkout}
         >
           <MaterialCommunityIcons name="content-save" size={20} color="#fff" />
-          <Text style={styles.saveButtonText}>Save Workout</Text>
+          <Text style={[styles.saveButtonText, { color: theme.colors.text }]}>Save Workout</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -608,7 +608,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterBadgeText: {
-    color: '#fff',
     fontSize: 10,
     fontWeight: '600',
   },
@@ -760,7 +759,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   saveButtonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },

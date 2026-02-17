@@ -320,7 +320,7 @@ export default function SavedWorkoutsScreen() {
             </View>
 
             {/* Status badge */}
-            {wasSuccessful && (
+            {!!wasSuccessful && (
               <View
                 style={[
                   styles.statusBadge,
@@ -383,7 +383,7 @@ export default function SavedWorkoutsScreen() {
           </View>
 
           {/* Expanded Area */}
-          {isExpanded && (
+          {!!isExpanded && (
             <Animated.View entering={FadeInDown.duration(150)} style={styles.expandedArea}>
               <View
                 style={[

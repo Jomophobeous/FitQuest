@@ -54,6 +54,14 @@ interface DropdownMenuProps {
 // MENU ITEMS
 // ============================================
 
+const ACCENT_PURPLE = '#8B5CF6';
+const ACCENT_TEAL = '#4ECDC4';
+const ACCENT_ORANGE = '#F97316';
+const ACCENT_GREEN = '#10B981';
+const ACCENT_RED = '#EF4444';
+const ACCENT_PINK = '#EC4899';
+const ACCENT_AMBER = '#F4A427';
+
 const MENU_ITEMS: MenuItem[] = [
   {
     id: 'exercise-library',
@@ -75,7 +83,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'robot-happy',
     route: '/coach',
     category: 'knowledge',
-    color: '#8B5CF6',
+    color: ACCENT_PURPLE,
   },
   {
     id: 'analytics',
@@ -83,7 +91,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'chart-bar',
     route: '/analytics',
     category: 'knowledge',
-    color: '#4ECDC4',
+    color: ACCENT_TEAL,
   },
   {
     id: 'nutrition-calc',
@@ -91,7 +99,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'calculator-variant',
     route: '/nutrition-calculator',
     category: 'knowledge',
-    color: '#F97316',
+    color: ACCENT_ORANGE,
   },
   {
     id: 'meal-prep',
@@ -99,7 +107,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'food-variant',
     route: '/meal-prep',
     category: 'knowledge',
-    color: '#10B981',
+    color: ACCENT_GREEN,
   },
   {
     id: 'health-dashboard',
@@ -107,7 +115,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'heart-pulse',
     route: '/health-dashboard',
     category: 'knowledge',
-    color: '#EF4444',
+    color: ACCENT_RED,
   },
   {
     id: 'craft-my-body',
@@ -115,7 +123,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'human-edit',
     route: '/craft-my-body',
     category: 'movement',
-    color: '#EC4899',
+    color: ACCENT_PINK,
   },
   {
     id: 'saved-workouts',
@@ -130,7 +138,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'crown',
     route: '/paywall',
     category: 'system',
-    color: '#F4A427',
+    color: ACCENT_AMBER,
   },
   {
     id: 'backups',
@@ -258,7 +266,7 @@ function AnimatedMenuItem({
           />
         </TouchableOpacity>
       </Animated.View>
-      {showDivider && (
+      {!!showDivider && (
         <View style={[styles.separator, { backgroundColor: theme.colors.border }]} />
       )}
     </Animated.View>
@@ -314,9 +322,9 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
               style={[styles.menuHeader, { borderBottomColor: theme.colors.border }]}
             >
               <Text style={[styles.menuTitle, { color: theme.colors.text }]}>More</Text>
-              {isWorkoutActive && (
+              {!!isWorkoutActive && (
                 <View style={[styles.workoutBadge, { backgroundColor: theme.colors.warning }]}>
-                  <Text style={styles.workoutBadgeText}>Active</Text>
+                  <Text style={[styles.workoutBadgeText, { color: theme.colors.text }]}>Active</Text>
                 </View>
               )}
             </LinearGradient>
@@ -402,7 +410,6 @@ const styles = StyleSheet.create({
   workoutBadgeText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#fff',
   },
   menuList: {
     maxHeight: Dimensions.get('window').height * 0.55,

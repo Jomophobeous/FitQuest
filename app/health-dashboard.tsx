@@ -12,6 +12,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+
+const ACCENT_PURPLE = '#8B5CF6';
 import {
   View,
   ScrollView,
@@ -470,9 +472,9 @@ export default function HealthDashboardScreen() {
               </ThemedText>
             </View>
             {healthData.anomalyCount > 0 && (
-              <View style={styles.alertBadge}>
-                <PulseDot color="#EF4444" size={8} />
-                <ThemedText variant="caption" style={{ color: '#EF4444', marginLeft: 4 }}>
+              <View style={[styles.alertBadge, { backgroundColor: theme.colors.error + '20' }]}>
+                <PulseDot color={theme.colors.error} size={8} />
+                <ThemedText variant="caption" style={{ color: theme.colors.error, marginLeft: 4 }}>
                   {healthData.anomalyCount} alert{healthData.anomalyCount > 1 ? 's' : ''}
                 </ThemedText>
               </View>
@@ -527,7 +529,7 @@ export default function HealthDashboardScreen() {
                     Workouts: {healthData.workoutsThisWeek}/{healthData.workoutsGoal}
                   </ThemedText>
                 </View>
-                {healthData.heartRate && (
+                {!!healthData.heartRate && (
                   <View style={styles.scoreDetailRow}>
                     <MaterialCommunityIcons name="heart-pulse" size={16} color="#EF4444" />
                     <ThemedText variant="caption" color="secondary" style={{ marginLeft: 6 }}>
@@ -653,9 +655,9 @@ export default function HealthDashboardScreen() {
               <MaterialCommunityIcons
                 name="moon-waning-crescent"
                 size={24}
-                color="#8B5CF6"
+                color={ACCENT_PURPLE}
               />
-              <ThemedText variant="h3" style={{ marginTop: 8, color: '#8B5CF6' }}>
+              <ThemedText variant="h3" style={{ marginTop: 8, color: ACCENT_PURPLE }}>
                 {healthData.sleepQuality !== null
                   ? `${healthData.sleepQuality}%`
                   : '—'}
@@ -729,7 +731,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: '#EF444420',
+    backgroundColor: 'transparent',
   },
   scoreCard: {
     marginBottom: 16,

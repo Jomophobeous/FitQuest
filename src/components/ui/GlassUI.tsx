@@ -142,14 +142,14 @@ export function GradientHeader({ title, subtitle, icon, rightContent }: Gradient
         ]}
       >
         <View style={styles.headerLeft}>
-          {icon && (
+          {!!icon && (
             <View style={[styles.headerIcon, { backgroundColor: theme.colors.accent + '15' }]}>
               <MaterialCommunityIcons name={icon} size={22} color={theme.colors.accent} />
             </View>
           )}
           <View>
             <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{title}</Text>
-            {subtitle && (
+            {!!subtitle && (
               <Text style={[styles.headerSubtitle, { color: theme.colors.textSecondary }]}>{subtitle}</Text>
             )}
           </View>
@@ -172,7 +172,7 @@ export function PulseDot({
   // No idle animations - static dot only
   return (
     <View style={styles.pulseDotContainer}>
-      {active && (
+      {!!active && (
         <View
           style={{
             width: size * 2,
@@ -335,10 +335,10 @@ export function GradientButton({
             },
           ]}
         >
-          {icon && (
-            <MaterialCommunityIcons name={icon} size={fontSize + 4} color="#fff" style={{ marginRight: 8 }} />
+          {!!icon && (
+            <MaterialCommunityIcons name={icon} size={fontSize + 4} color={theme.colors.text} style={{ marginRight: 8 }} />
           )}
-          <Text style={[styles.gradientButtonText, { fontSize }]}>{title}</Text>
+          <Text style={[styles.gradientButtonText, { fontSize, color: theme.colors.text }]}>{title}</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -408,7 +408,7 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
             >
               {day.getDate()}
             </Text>
-            {hasWorkout && (
+            {!!hasWorkout && (
               <View
                 style={[
                   styles.calendarDot,
@@ -640,7 +640,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   gradientButtonText: {
-    color: '#fff',
     fontWeight: '700',
   },
   weekCalendar: {

@@ -166,7 +166,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   // Initial scan on activation
-  runner.scan().then((result) => {
+  runner.scan().then((result: Record<string, unknown>) => {
     updateStatusBar(result);
     healthProvider.refresh();
     signalsProvider.refresh();

@@ -1,0 +1,10 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "python.analysis.extraPaths": [
+    "agents/alfred"
+  ],
+  "files.exclude": {
+    "agents/alfred/vscode-extension/out": true,
+    "agents/alfred/vscode-extension/node_modules": true
+  }
+}

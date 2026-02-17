@@ -6,5 +6,6 @@
     "allowJs": true,
     "moduleResolution": "bundler",
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["agents/alfred/vscode-extension"]
 }

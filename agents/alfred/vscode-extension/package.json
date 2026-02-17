@@ -68,15 +68,18 @@
       "alfred-sidebar": [
         {
           "id": "alfred.healthView",
-          "name": "Health Score"
+          "name": "Health Score",
+          "icon": "$(heart)"
         },
         {
           "id": "alfred.tasksView",
-          "name": "Task Queue"
+          "name": "Task Queue",
+          "icon": "$(tasklist)"
         },
         {
           "id": "alfred.signalsView",
-          "name": "Signals"
+          "name": "Signals",
+          "icon": "$(pulse)"
         }
       ]
     }

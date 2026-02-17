@@ -254,7 +254,8 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   return (
-    <Animated.View entering={FadeInRight.delay(delay).duration(150)} style={animStyle}>
+    <Animated.View entering={FadeInRight.delay(delay).duration(150)}>
+     <Animated.View style={animStyle}>
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={onPress}
@@ -278,6 +279,7 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
           <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
         )}
       </TouchableOpacity>
+     </Animated.View>
     </Animated.View>
   );
 }

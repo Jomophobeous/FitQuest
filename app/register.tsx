@@ -166,11 +166,13 @@ export default function RegisterScreen() {
 
           {/* Error message */}
           {errorMsg ? (
-            <Animated.View entering={FadeIn.duration(150)} style={shakeStyle}>
+            <Animated.View entering={FadeIn.duration(150)}>
+             <Animated.View style={shakeStyle}>
               <View style={[styles.errorBanner, { backgroundColor: theme.colors.error + '15' }]}>
                 <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
                 <Text style={[styles.errorText, { color: theme.colors.error }]}>{errorMsg}</Text>
               </View>
+             </Animated.View>
             </Animated.View>
           ) : null}
 

@@ -14,6 +14,8 @@ import { logEvent, logPerf } from '../src/services/telemetry';
 import { initializeCrashReporting } from '../src/services/crashReporting';
 import { maybeAutoCloudBackupOncePerDay } from '../src/services/cloudBackupService';
 import { flushAnalyticsQueue } from '../src/services/analyticsIngestionService';
+import { runReplayIfDue } from '../src/services/replayOrchestrator';
+import { reconcileNotificationReliability } from '../src/services/notificationReliabilityService';
 
 // Toggle mock vs real API via EXPO_PUBLIC_USE_MOCK_API
 // Set to 'false' to use local SQLite database (recommended)
@@ -258,6 +260,27 @@ function ThemedTabs() {
         }}
       />
       <Tabs.Screen
+        name="legal-center"
+        options={{
+          href: null,
+          title: 'Legal Center',
+        }}
+      />
+      <Tabs.Screen
+        name="privacy-policy"
+        options={{
+          href: null,
+          title: 'Privacy Policy',
+        }}
+      />
+      <Tabs.Screen
+        name="terms-of-service"
+        options={{
+          href: null,
+          title: 'Terms of Service',
+        }}
+      />
+      <Tabs.Screen
         name="platform-studio"
         options={{
           href: null,
@@ -301,6 +324,16 @@ export default function RootLayout() {
 
     // Phase 2: silent periodic backup (no-op unless EXPO_PUBLIC_BACKUP_API_BASE_URL is configured)
     void maybeAutoCloudBackupOncePerDay();
+
+    // P1: centralized deferred mutation replay
+    void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {
+      // best-effort only
+    });
+
+    // P1: keep local reminder schedule in sync with persisted reliability settings
+    void reconcileNotificationReliability('app_start').catch(() => {
+      // best-effort only
+    });
 
     // Phase 4: best-effort anonymized analytics flush (server enforces consent before ingest)
     void flushAnalyticsQueue().catch(() => {

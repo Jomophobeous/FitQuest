@@ -4,6 +4,7 @@ import { getApiBaseUrl } from './apiBaseUrl';
 import { fetchWithAuth } from './authApi';
 import { isCloudBackupConfigured, uploadLocalBackupToCloud } from './cloudBackupService';
 import { getAppState, getMuscleFatigue, getRecentSessions, getUserProfile, setAppState } from '../database/service';
+import { enqueueMutation } from './mutationQueueService';
 
 const SYNC_VERSION_KEY = 'sync.state.version';
 const SYNC_HASH_KEY = 'sync.state.hash';
@@ -180,24 +181,70 @@ export async function syncOnDemand(options?: {
   userId?: string;
   deviceId?: string;
 }): Promise<SyncDecision> {
+  const effectiveUserId = options?.userId || 'user_local_001';
+  const effectiveDeviceId = options?.deviceId || null;
+
   if (!isSyncConfigured()) {
     throw new Error('[Sync] EXPO_PUBLIC_API_BASE_URL is not configured');
   }
 
-  const local = await buildLocalStateMeta(options?.userId || 'user_local_001');
-  const remote = await getLatestStateMeta();
+  try {
+    const local = await buildLocalStateMeta(effectiveUserId);
+    const remote = await getLatestStateMeta();
 
-  if (!remote) {
-    let backupId: string | null = null;
-    if (isCloudBackupConfigured()) {
-      const uploaded = await uploadLocalBackupToCloud();
-      backupId = uploaded.id;
+    if (!remote) {
+      let backupId: string | null = null;
+      if (isCloudBackupConfigured()) {
+        const uploaded = await uploadLocalBackupToCloud();
+        backupId = uploaded.id;
+      }
+
+      const saved = await upsertStateMeta({
+        ...local,
+        backup_id: backupId,
+        device_id: effectiveDeviceId,
+      });
+
+      await setAppState(SYNC_VERSION_KEY, String(saved.version));
+      await setAppState(SYNC_HASH_KEY, saved.state_hash);
+
+      return {
+        action: 'upload_local',
+        local: saved,
+        remote: null,
+      };
+    }
+
+    if (remote.version > local.version) {
+      return {
+        action: 'server_newer',
+        local,
+        remote,
+      };
+    }
+
+    if (remote.version === local.version && remote.state_hash !== local.state_hash) {
+      return {
+        action: 'conflict',
+        local,
+        remote,
+      };
+    }
+
+    if (remote.version === local.version && remote.state_hash === local.state_hash) {
+      await setAppState(SYNC_VERSION_KEY, String(remote.version));
+      await setAppState(SYNC_HASH_KEY, remote.state_hash);
+      return {
+        action: 'noop',
+        local,
+        remote,
+      };
     }
 
     const saved = await upsertStateMeta({
       ...local,
-      backup_id: backupId,
-      device_id: options?.deviceId || null,
+      backup_id: remote.backup_id || null,
+      device_id: effectiveDeviceId || remote.device_id || null,
     });
 
     await setAppState(SYNC_VERSION_KEY, String(saved.version));
@@ -206,48 +253,14 @@ export async function syncOnDemand(options?: {
     return {
       action: 'upload_local',
       local: saved,
-      remote: null,
-    };
-  }
-
-  if (remote.version > local.version) {
-    return {
-      action: 'server_newer',
-      local,
       remote,
     };
+  } catch (error) {
+    await enqueueMutation(
+      'sync.on_demand',
+      { userId: effectiveUserId, deviceId: effectiveDeviceId },
+      { dedupeKey: `sync.on_demand.${effectiveUserId}.${effectiveDeviceId || 'default'}` },
+    );
+    throw error;
   }
-
-  if (remote.version === local.version && remote.state_hash !== local.state_hash) {
-    return {
-      action: 'conflict',
-      local,
-      remote,
-    };
-  }
-
-  if (remote.version === local.version && remote.state_hash === local.state_hash) {
-    await setAppState(SYNC_VERSION_KEY, String(remote.version));
-    await setAppState(SYNC_HASH_KEY, remote.state_hash);
-    return {
-      action: 'noop',
-      local,
-      remote,
-    };
-  }
-
-  const saved = await upsertStateMeta({
-    ...local,
-    backup_id: remote.backup_id || null,
-    device_id: options?.deviceId || remote.device_id || null,
-  });
-
-  await setAppState(SYNC_VERSION_KEY, String(saved.version));
-  await setAppState(SYNC_HASH_KEY, saved.state_hash);
-
-  return {
-    action: 'upload_local',
-    local: saved,
-    remote,
-  };
 }

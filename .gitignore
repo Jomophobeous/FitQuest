@@ -40,3 +40,10 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Alfred autonomous runtime state
+agents/alfred/state/*.json
+
+# Python cache artifacts
+__pycache__/
+*.pyc

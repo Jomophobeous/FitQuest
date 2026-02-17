@@ -1,0 +1,76 @@
+name: Feature request
+description: Propose a new user-facing feature or product improvement
+labels:
+  - feature-request
+  - triage-required
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to submit product improvements. Requests are triaged into the roadmap with status labels.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Problem summary
+      description: What problem are you trying to solve?
+      placeholder: "Users cannot ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+      description: Describe the expected behavior or feature outcome.
+      placeholder: "Add ... so users can ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: objective-track
+    attributes:
+      label: Objective track
+      description: Which delivery track does this request belong to?
+      options:
+        - P0 - Compliance and launch blockers
+        - P1 - Reliability and offline behavior
+        - P2 - Operations and scale
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: User impact
+      options:
+        - High (core flow blocked)
+        - Medium (major friction)
+        - Low (nice to have)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: List concrete criteria that define done.
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and risks
+      description: Mention compliance, privacy, performance, or platform constraints.
+      placeholder: "Must support offline mode and encrypted data requirements."
+
+  - type: textarea
+    id: telemetry
+    attributes:
+      label: Success metrics
+      description: How will we measure success after release?
+      placeholder: "Crash-free sessions, completion rate, adoption"

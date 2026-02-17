@@ -34,14 +34,26 @@ import Animated, {
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
-import { getUserProgress, getStreak, getUserProfile, updateUserProfile } from '../src/database/service';
+import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState } from '../src/database/service';
 import { useRouter } from 'expo-router';
 import { getXPData, XPData } from '../src/services/xpService';
 import { GlassCard, GradientButton, ProgressRing, StatChip, SectionHeader } from '../src/components/ui/GlassUI';
 import { useAuth } from '../src/context/AuthContext';
-import { deleteMyUserData, exportMyUserData, recordConsentTimestamp } from '../src/services/authApi';
+import { deleteMyUserData, exportMyUserData } from '../src/services/authApi';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../src/services/adaptiveTrainingService';
 import { getSocialLayerSettings, setSocialLayerEnabled, type SocialLayerSettings } from '../src/services/socialLayerService';
+import { acceptCurrentPolicies, getConsentRecord } from '../src/services/legalService';
+import { getCached, setCached } from '../src/services/cacheStoreService';
+import { runReplayIfDue } from '../src/services/replayOrchestrator';
+import {
+  disableDailyWorkoutReminder,
+  enableDailyWorkoutReminder,
+  formatReminderHourLabel,
+  getNotificationReliabilitySettings,
+  setNotificationReminderHour,
+  scheduleDailyWorkoutReminder,
+  type NotificationReliabilitySettings,
+} from '../src/services/notificationReliabilityService';
 
 // ============================================
 // THEMED PICKER MODAL
@@ -64,6 +76,7 @@ interface ThemedPickerModalProps {
 
 function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClose, destructiveIndex }: ThemedPickerModalProps) {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -114,7 +127,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
             onPress={onClose}
             activeOpacity={0.7}
           >
-            <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>Cancel</Text>
+            <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.cancel')}</Text>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -199,14 +212,29 @@ interface StatsData {
   currentLevelXP: number;
 }
 
-const GOAL_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-  calisthenics: { label: 'Calisthenics', icon: 'human-handsup', color: '#5F63FF' },
-  getting_taller: { label: 'Getting Taller', icon: 'human-male-height', color: '#10B981' },
-  faster: { label: 'Speed & Agility', icon: 'lightning-bolt', color: '#F4A427' },
-  flexible: { label: 'Flexibility', icon: 'yoga', color: '#EC4899' },
-  mental_clarity: { label: 'Mental Clarity', icon: 'head-snowflake', color: '#8B5CF6' },
-  building_muscle: { label: 'Muscle Building', icon: 'weight-lifter', color: '#EF4444' },
+interface ProfileCacheSnapshot {
+  profile: ProfileData;
+  stats: StatsData;
+  adaptiveProfile: AdaptiveTrainingProfile | null;
+  socialSettings: SocialLayerSettings | null;
+  mealRegionOverride: MealRegionValue;
+  consentTimestamp: number | null;
+  consentVersion: string | null;
+  consentSource: 'remote' | 'local' | null;
+  notifications: NotificationReliabilitySettings;
+}
+
+const GOAL_LABELS: Record<string, { icon: string; color: string }> = {
+  calisthenics: { icon: 'human-handsup', color: '#5F63FF' },
+  getting_taller: { icon: 'human-male-height', color: '#10B981' },
+  faster: { icon: 'lightning-bolt', color: '#F4A427' },
+  flexible: { icon: 'yoga', color: '#EC4899' },
+  mental_clarity: { icon: 'head-snowflake', color: '#8B5CF6' },
+  building_muscle: { icon: 'weight-lifter', color: '#EF4444' },
 };
+
+const MEAL_REGION_VALUES = ['AUTO', 'ZA', 'US', 'GB', 'IN', 'BR', 'AU'] as const;
+type MealRegionValue = (typeof MEAL_REGION_VALUES)[number];
 
 // ============================================
 // MENU ITEM COMPONENT
@@ -268,10 +296,20 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [privacyBusy, setPrivacyBusy] = useState(false);
   const [consentTimestamp, setConsentTimestamp] = useState<number | null>(null);
+  const [consentVersion, setConsentVersion] = useState<string | null>(null);
+  const [consentSource, setConsentSource] = useState<'remote' | 'local' | null>(null);
   const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptiveTrainingProfile | null>(null);
   const [socialSettings, setSocialSettings] = useState<SocialLayerSettings | null>(null);
   const [socialBusy, setSocialBusy] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [mealRegionOverride, setMealRegionOverride] = useState<MealRegionValue>('AUTO');
+  const [notificationSettings, setNotificationSettings] = useState<NotificationReliabilitySettings>({
+    enabled: false,
+    reminderHour: 20,
+    permission: 'unknown',
+    lastScheduledAt: null,
+    lastPromptAt: null,
+  });
 
   // Themed modal state
   const [pickerModal, setPickerModal] = useState<{
@@ -285,13 +323,18 @@ export default function ProfileScreen() {
 
   const closePicker = () => setPickerModal(prev => ({ ...prev, visible: false }));
 
+  const mealRegionLabel = useCallback((value: MealRegionValue) => {
+    const key = `profile.mealRegion.${value.toLowerCase()}`;
+    return t(key);
+  }, [t]);
+
   const handleTrainingDays = () => {
     setPickerModal({
       visible: true,
-      title: 'Training Days per Week',
-      subtitle: 'How many days do you train?',
+      title: t('profile.trainingDaysModalTitle'),
+      subtitle: t('profile.trainingDaysModalSub'),
       options: [1, 2, 3, 4, 5, 6, 7].map(d => ({
-        label: `${d} day${d > 1 ? 's' : ''}`,
+        label: `${d} ${d > 1 ? t('common.days') : t('common.day')}`,
         value: String(d),
       })),
       onSelect: async (val) => {
@@ -305,10 +348,10 @@ export default function ProfileScreen() {
   const handleSessionLength = () => {
     setPickerModal({
       visible: true,
-      title: 'Session Length',
-      subtitle: 'How long are your sessions?',
+      title: t('profile.sessionLengthModalTitle'),
+      subtitle: t('profile.sessionLengthModalSub'),
       options: [15, 20, 30, 45, 60, 90].map(m => ({
-        label: `${m} minutes`,
+        label: `${m} ${t('common.minutes')}`,
         value: String(m),
       })),
       onSelect: async (val) => {
@@ -322,12 +365,12 @@ export default function ProfileScreen() {
   const handleExperience = () => {
     setPickerModal({
       visible: true,
-      title: 'Experience Level',
-      subtitle: 'Select your fitness experience',
+      title: t('profile.experienceModalTitle'),
+      subtitle: t('profile.experienceModalSub'),
       options: [
-        { label: 'Beginner', value: 'beginner' },
-        { label: 'Intermediate', value: 'intermediate' },
-        { label: 'Advanced', value: 'advanced' },
+        { label: t('profile.level.beginner'), value: 'beginner' },
+        { label: t('profile.level.intermediate'), value: 'intermediate' },
+        { label: t('profile.level.advanced'), value: 'advanced' },
       ],
       onSelect: async (val) => {
         await updateUserProfile('user_local_001', { experience: val as any });
@@ -339,15 +382,15 @@ export default function ProfileScreen() {
   const handleGoalChange = () => {
     setPickerModal({
       visible: true,
-      title: 'Training Goal',
-      subtitle: 'What do you want to focus on?',
+      title: t('profile.goalModalTitle'),
+      subtitle: t('profile.goalModalSub'),
       options: [
-        { label: '💪 Calisthenics', value: 'calisthenics' },
-        { label: '📏 Getting Taller', value: 'getting_taller' },
-        { label: '⚡ Speed & Agility', value: 'faster' },
-        { label: '🧘 Flexibility', value: 'flexible' },
-        { label: '🧠 Mental Clarity', value: 'mental_clarity' },
-        { label: '🏋️ Muscle Building', value: 'building_muscle' },
+        { label: t('profile.goal.calisthenics'), value: 'calisthenics' },
+        { label: t('profile.goal.getting_taller'), value: 'getting_taller' },
+        { label: t('profile.goal.faster'), value: 'faster' },
+        { label: t('profile.goal.flexible'), value: 'flexible' },
+        { label: t('profile.goal.mental_clarity'), value: 'mental_clarity' },
+        { label: t('profile.goal.building_muscle'), value: 'building_muscle' },
       ],
       onSelect: async (val) => {
         await updateUserProfile('user_local_001', { goal: val as any });
@@ -356,19 +399,101 @@ export default function ProfileScreen() {
     });
   };
 
+  const handleMealRegion = () => {
+    setPickerModal({
+      visible: true,
+      title: t('profile.mealRegion.title'),
+      subtitle: t('profile.mealRegion.subtitle'),
+      options: MEAL_REGION_VALUES.map((value) => ({
+        label: mealRegionLabel(value),
+        value,
+      })),
+      onSelect: async (val) => {
+        const next = (MEAL_REGION_VALUES.includes(val as MealRegionValue)
+          ? (val as MealRegionValue)
+          : 'AUTO');
+        await setAppState('meal.region_override', next);
+        setMealRegionOverride(next);
+      },
+    });
+  };
+
+  const handleNotifications = () => {
+    setPickerModal({
+      visible: true,
+      title: t('profile.notifications'),
+      subtitle: t('profile.notificationsSub'),
+      options: [
+        { label: t('profile.notificationsAction.enable'), value: 'enable' },
+        { label: t('profile.notificationsAction.disable'), value: 'disable' },
+        { label: t('profile.notificationsAction.setReminderTime'), value: 'set_hour' },
+      ],
+      onSelect: async (value) => {
+        if (value === 'enable') {
+          await enableDailyWorkoutReminder(notificationSettings.reminderHour, 'profile');
+        } else if (value === 'disable') {
+          await disableDailyWorkoutReminder('profile');
+        } else if (value === 'set_hour') {
+          setPickerModal({
+            visible: true,
+            title: t('profile.notificationsAction.setReminderTime'),
+            subtitle: t('profile.notificationsAction.pickHour'),
+            options: Array.from({ length: 24 }, (_, i) => ({
+              label: formatReminderHourLabel(i),
+              value: String(i),
+            })),
+            onSelect: async (hourValue) => {
+              const hour = Number(hourValue);
+              if (Number.isFinite(hour)) {
+                await setNotificationReminderHour(hour);
+                const current = await getNotificationReliabilitySettings();
+                if (current.enabled) {
+                  await scheduleDailyWorkoutReminder(hour, 'profile');
+                }
+              }
+              const refreshed = await getNotificationReliabilitySettings();
+              setNotificationSettings(refreshed);
+            },
+          });
+          return;
+        }
+
+        const refreshed = await getNotificationReliabilitySettings();
+        setNotificationSettings(refreshed);
+      },
+    });
+  };
+
   useEffect(() => {
+    void runReplayIfDue({ reason: 'profile_load', cooldownMs: 45 * 1000 });
     loadData();
   }, []);
 
   const loadData = useCallback(async () => {
     try {
-      const [userProfile, progress, streak, xp, adaptive, social] = await Promise.all([
+      const cached = await getCached<ProfileCacheSnapshot>('profile', 'main');
+      if (cached.value) {
+        setProfile(cached.value.profile);
+        setStats(cached.value.stats);
+        setAdaptiveProfile(cached.value.adaptiveProfile);
+        setSocialSettings(cached.value.socialSettings);
+        setMealRegionOverride(cached.value.mealRegionOverride);
+        setConsentTimestamp(cached.value.consentTimestamp);
+        setConsentVersion(cached.value.consentVersion);
+        setConsentSource(cached.value.consentSource);
+        setNotificationSettings(cached.value.notifications);
+      }
+
+      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications] = await Promise.all([
         getUserProfile('user_local_001'),
         getUserProgress(),
         getStreak('user_local_001'),
         getXPData(),
         getAdaptiveTrainingProfile('user_local_001'),
         getSocialLayerSettings('user_local_001'),
+        getAppState('meal.region_override'),
+        getConsentRecord(),
+        getNotificationReliabilitySettings(),
       ]);
 
       setProfile({
@@ -392,6 +517,41 @@ export default function ProfileScreen() {
 
       setAdaptiveProfile(adaptive);
       setSocialSettings(social);
+      const normalizedMealRegion = MEAL_REGION_VALUES.includes((savedMealRegion || 'AUTO') as MealRegionValue)
+        ? ((savedMealRegion || 'AUTO') as MealRegionValue)
+        : 'AUTO';
+      setMealRegionOverride(normalizedMealRegion);
+      setConsentTimestamp(consentRecord.timestamp);
+      setConsentVersion(consentRecord.version);
+      setConsentSource(consentRecord.source);
+      setNotificationSettings(notifications);
+
+      await setCached('profile', 'main', {
+        profile: {
+          name: 'Athlete',
+          goal: userProfile?.goal || 'calisthenics',
+          experience: userProfile?.experience || 'beginner',
+          trainingDays: userProfile?.training_days_per_week || 3,
+          sessionMinutes: userProfile?.time_per_session_minutes || 30,
+        },
+        stats: {
+          totalWorkouts: progress.total_workouts,
+          totalCalories: progress.total_workouts * 280,
+          streak: streak.current,
+          longestStreak: streak.longest,
+          level: xp.level,
+          totalXP: xp.totalXP,
+          xpForNext: xp.xpToNextLevel,
+          currentLevelXP: xp.currentLevelXP,
+        },
+        adaptiveProfile: adaptive,
+        socialSettings: social,
+        mealRegionOverride: normalizedMealRegion,
+        consentTimestamp: consentRecord.timestamp,
+        consentVersion: consentRecord.version,
+        consentSource: consentRecord.source,
+        notifications,
+      } satisfies ProfileCacheSnapshot);
     } catch (err) {
       console.error('[Profile] Load failed:', err);
     } finally {
@@ -400,15 +560,16 @@ export default function ProfileScreen() {
   }, []);
 
   const goalInfo = GOAL_LABELS[profile?.goal || 'calisthenics'];
+  const goalLabel = t(`profile.goal.${profile?.goal || 'calisthenics'}`);
   const xpProgress = stats ? stats.currentLevelXP / stats.xpForNext : 0;
 
   const handleLogout = () => {
     setPickerModal({
       visible: true,
-      title: 'Log Out',
-      subtitle: 'Are you sure you want to log out?',
+      title: t('profile.logout'),
+      subtitle: t('profile.logoutConfirm'),
       options: [
-        { label: 'Log Out', value: 'logout' },
+        { label: t('profile.logout'), value: 'logout' },
       ],
       destructiveIndex: 0,
       onSelect: async () => {
@@ -422,15 +583,20 @@ export default function ProfileScreen() {
     if (privacyBusy) return;
     setPrivacyBusy(true);
     try {
-      const result = await recordConsentTimestamp();
-      setConsentTimestamp(result.consentTimestamp);
-      Alert.alert('Consent recorded', 'Your privacy consent timestamp has been saved.');
+      const result = await acceptCurrentPolicies();
+      setConsentTimestamp(result.timestamp);
+      setConsentVersion(result.version);
+      setConsentSource(result.source);
+      Alert.alert(
+        t('profile.alert.consentRecordedTitle'),
+        `${t('profile.alert.consentRecordedBody')}\n${t('profile.version')}: ${result.version}`,
+      );
     } catch (e: any) {
-      Alert.alert('Failed', e?.message ?? 'Could not record consent');
+      Alert.alert(t('common.error'), e?.message ?? t('profile.alert.consentFailed'));
     } finally {
       setPrivacyBusy(false);
     }
-  }, [privacyBusy]);
+  }, [privacyBusy, t]);
 
   const handleExportData = useCallback(async () => {
     if (privacyBusy) return;
@@ -448,21 +614,21 @@ export default function ProfileScreen() {
         encoding: FileSystem.EncodingType.UTF8,
       });
 
-      Alert.alert('Export complete', `Saved to:\n${outUri}`);
+      Alert.alert(t('profile.alert.exportCompleteTitle'), `${t('profile.alert.savedTo')}\n${outUri}`);
     } catch (e: any) {
-      Alert.alert('Export failed', e?.message ?? 'Could not export user data');
+      Alert.alert(t('profile.alert.exportFailedTitle'), e?.message ?? t('profile.alert.exportFailedBody'));
     } finally {
       setPrivacyBusy(false);
     }
-  }, [privacyBusy]);
+  }, [privacyBusy, t]);
 
   const handleDeleteCloudData = useCallback(() => {
     if (privacyBusy) return;
     setPickerModal({
       visible: true,
-      title: 'Delete Cloud Data',
-      subtitle: 'This permanently deletes your account backups and cloud metadata.',
-      options: [{ label: 'Delete Permanently', value: 'delete' }],
+      title: t('profile.menu.deleteCloudData'),
+      subtitle: t('profile.menu.deleteCloudDataConfirm'),
+      options: [{ label: t('profile.menu.deletePermanently'), value: 'delete' }],
       destructiveIndex: 0,
       onSelect: async () => {
         setPrivacyBusy(true);
@@ -471,13 +637,13 @@ export default function ProfileScreen() {
           await signOut();
           router.replace('/login');
         } catch (e: any) {
-          Alert.alert('Delete failed', e?.message ?? 'Could not delete cloud data');
+          Alert.alert(t('profile.alert.deleteFailedTitle'), e?.message ?? t('profile.alert.deleteFailedBody'));
         } finally {
           setPrivacyBusy(false);
         }
       },
     });
-  }, [privacyBusy, signOut, router]);
+  }, [privacyBusy, signOut, router, t]);
 
   const handleSocialToggle = useCallback(async (enabled: boolean) => {
     if (socialBusy) return;
@@ -486,11 +652,11 @@ export default function ProfileScreen() {
       const next = await setSocialLayerEnabled('user_local_001', enabled);
       setSocialSettings(next);
     } catch (e: any) {
-      Alert.alert('Update failed', e?.message ?? 'Could not update social settings');
+      Alert.alert(t('profile.alert.updateFailedTitle'), e?.message ?? t('profile.alert.updateSocialFailedBody'));
     } finally {
       setSocialBusy(false);
     }
-  }, [socialBusy]);
+  }, [socialBusy, t]);
 
   if (loading) {
     return (
@@ -547,7 +713,7 @@ export default function ProfileScreen() {
                 <Animated.View entering={FadeInDown.delay(80).duration(150)}>
                   <View style={[styles.goalBadge, { backgroundColor: goalInfo.color + '20' }]}>
                     <MaterialCommunityIcons name={goalInfo.icon as any} size={14} color={goalInfo.color} />
-                    <Text style={[styles.goalBadgeText, { color: goalInfo.color }]}>{goalInfo.label}</Text>
+                    <Text style={[styles.goalBadgeText, { color: goalInfo.color }]}>{goalLabel}</Text>
                   </View>
                 </Animated.View>
 
@@ -581,14 +747,14 @@ export default function ProfileScreen() {
 
         {/* ── STATS ROW ── */}
         <View style={styles.statsRow}>
-          <StatChip icon="fire" label="Streak" value={`${stats?.streak || 0}d`} color="#F4A427" delay={200} />
-          <StatChip icon="dumbbell" label="Workouts" value={`${stats?.totalWorkouts || 0}`} color={theme.colors.accent} delay={300} />
-          <StatChip icon="lightning-bolt" label="XP" value={`${stats?.totalXP || 0}`} color="#8B5CF6" delay={400} />
+          <StatChip icon="fire" label={t('dashboard.streak')} value={`${stats?.streak || 0}d`} color="#F4A427" delay={200} />
+          <StatChip icon="dumbbell" label={t('dashboard.workouts')} value={`${stats?.totalWorkouts || 0}`} color={theme.colors.accent} delay={300} />
+          <StatChip icon="lightning-bolt" label={t('dashboard.xp')} value={`${stats?.totalXP || 0}`} color="#8B5CF6" delay={400} />
         </View>
 
         {/* ── ACHIEVEMENTS CARD ── */}
         <View style={styles.section}>
-          <SectionHeader title="Achievements" delay={300} />
+          <SectionHeader title={t('profile.achievements')} delay={300} />
           <GlassCard gradient delay={350}>
             <View style={styles.achievementRow}>
               <View style={styles.achievementItem}>
@@ -598,7 +764,7 @@ export default function ProfileScreen() {
                 <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
                   {stats?.totalWorkouts || 0}/50
                 </Text>
-                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Workouts</Text>
+                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('dashboard.workouts')}</Text>
               </View>
               <View style={styles.achievementItem}>
                 <ProgressRing progress={Math.min((stats?.longestStreak || 0) / 30, 1)} size={56} strokeWidth={4} color="#F4A427">
@@ -607,7 +773,7 @@ export default function ProfileScreen() {
                 <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
                   {stats?.longestStreak || 0}/30
                 </Text>
-                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Best Streak</Text>
+                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('profile.bestStreak')}</Text>
               </View>
               <View style={styles.achievementItem}>
                 <ProgressRing progress={Math.min((stats?.level || 1) / 20, 1)} size={56} strokeWidth={4} color="#10B981">
@@ -616,7 +782,7 @@ export default function ProfileScreen() {
                 <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
                   LVL {stats?.level || 1}
                 </Text>
-                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Level</Text>
+                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('dashboard.level')}</Text>
               </View>
             </View>
           </GlassCard>
@@ -624,43 +790,43 @@ export default function ProfileScreen() {
 
         {/* ── TRAINING PROFILE ── */}
         <View style={styles.section}>
-          <SectionHeader title="Training Profile" delay={400} />
+          <SectionHeader title={t('profile.trainingProfile')} delay={400} />
           <MenuItem
             icon="target"
-            label="Training Goal"
-            sublabel={`${goalInfo.label} — Sets your workout focus and exercise selection`}
+            label={t('profile.trainingGoal')}
+            sublabel={`${goalLabel} — ${t('profile.trainingGoalSub')}`}
             color={goalInfo.color}
             delay={440}
             onPress={handleGoalChange}
           />
           <MenuItem
             icon="calendar-week"
-            label="Training Days"
-            sublabel={`${profile?.trainingDays || 3} days per week — How often you train`}
+            label={t('profile.trainingDays')}
+            sublabel={`${profile?.trainingDays || 3} ${t('profile.daysPerWeek')} — ${t('profile.trainingDaysSub')}`}
             color="#5F63FF"
             delay={460}
             onPress={handleTrainingDays}
           />
           <MenuItem
             icon="clock-outline"
-            label="Session Length"
-            sublabel={`${profile?.sessionMinutes || 30} minutes — Duration of each workout`}
+            label={t('profile.sessionLength')}
+            sublabel={`${profile?.sessionMinutes || 30} ${t('common.minutes')} — ${t('profile.sessionLengthSub')}`}
             color="#10B981"
             delay={480}
             onPress={handleSessionLength}
           />
           <MenuItem
             icon="signal-cellular-3"
-            label="Experience"
-            sublabel={`${(profile?.experience || 'beginner').charAt(0).toUpperCase() + (profile?.experience || 'beginner').slice(1)} — Adjusts exercise difficulty`}
+            label={t('profile.experience')}
+            sublabel={`${(profile?.experience || 'beginner').charAt(0).toUpperCase() + (profile?.experience || 'beginner').slice(1)} — ${t('profile.experienceSub')}`}
             color="#F4A427"
             delay={500}
             onPress={handleExperience}
           />
           <MenuItem
             icon="human-edit"
-            label="Craft My Body"
-            sublabel="Personalized body transformation plan with nutrition & training"
+            label={t('profile.craftMyBody')}
+            sublabel={t('profile.craftMyBodySub')}
             color="#EC4899"
             delay={520}
             onPress={() => router.push('/craft-my-body')}
@@ -669,22 +835,22 @@ export default function ProfileScreen() {
 
         {/* ── ADAPTIVE PROFILE ── */}
         <View style={styles.section}>
-          <SectionHeader title="Adaptive Training" delay={530} />
+          <SectionHeader title={t('profile.adaptiveTraining')} delay={530} />
           <GlassCard delay={560}>
             <View style={styles.adaptiveRow}>
-              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>Fatigue sensitivity</Text>
+              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.fatigueSensitivity')}</Text>
               <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
                 {adaptiveProfile ? adaptiveProfile.fatigueSensitivity.toFixed(2) : '1.00'}
               </Text>
             </View>
             <View style={styles.adaptiveRow}>
-              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>Progression pace</Text>
+              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.progressionPace')}</Text>
               <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
                 {adaptiveProfile ? adaptiveProfile.progressionAggressiveness.toFixed(2) : '1.00'}
               </Text>
             </View>
             <View style={styles.adaptiveRow}>
-              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>Volume tolerance</Text>
+              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.volumeTolerance')}</Text>
               <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
                 {adaptiveProfile ? adaptiveProfile.volumeTolerance.toFixed(2) : '1.00'}
               </Text>
@@ -702,7 +868,7 @@ export default function ProfileScreen() {
               />
             </View>
             <Text style={[styles.adaptiveConfidenceText, { color: theme.colors.textMuted }]}>
-              Confidence: {Math.round((adaptiveProfile?.confidence ?? 0) * 100)}% · Samples: {adaptiveProfile?.samples ?? 0}
+              {t('profile.confidence')}: {Math.round((adaptiveProfile?.confidence ?? 0) * 100)}% · {t('profile.samples')}: {adaptiveProfile?.samples ?? 0}
             </Text>
 
             {adaptiveProfile?.rationale?.map((line, index) => (
@@ -715,13 +881,13 @@ export default function ProfileScreen() {
 
         {/* ── PREFERENCES ── */}
         <View style={styles.section}>
-          <SectionHeader title="Preferences" delay={500} />
+          <SectionHeader title={t('profile.preferences')} delay={500} />
           <MenuItem
             icon="account-group-outline"
-            label="Social Layer (Opt-in)"
+            label={t('profile.socialLayer')}
             sublabel={socialSettings?.enabled
-              ? 'Enabled for future leaderboards/challenges'
-              : 'Disabled (solo mode preserved)'}
+              ? t('profile.socialLayerOn')
+              : t('profile.socialLayerOff')}
             color="#3B82F6"
             delay={535}
             onPress={() => {
@@ -741,8 +907,8 @@ export default function ProfileScreen() {
           />
           <MenuItem
             icon={theme.isDark ? 'weather-night' : 'weather-sunny'}
-            label="Dark Mode"
-            sublabel={theme.isDark ? 'Dark theme active' : 'Light theme active'}
+            label={t('profile.darkMode')}
+            sublabel={theme.isDark ? t('profile.darkModeOn') : t('profile.darkModeOff')}
             color="#8B5CF6"
             delay={550}
             onPress={toggleTheme}
@@ -764,75 +930,97 @@ export default function ProfileScreen() {
             onPress={() => setShowLanguageSelector(true)}
           />
           <MenuItem
+            icon="map-marker-radius-outline"
+            label={t('profile.mealRegion.title')}
+            sublabel={mealRegionLabel(mealRegionOverride)}
+            color="#10B981"
+            delay={590}
+            onPress={handleMealRegion}
+          />
+          <MenuItem
             icon="bell-outline"
             label={t('profile.notifications')}
-            sublabel="Set workout reminders and daily motivation alerts"
+            sublabel={`${notificationSettings.enabled ? t('profile.notificationsStatus.enabled') : t('profile.notificationsStatus.disabled')} · ${t('profile.notificationsStatus.permission')}: ${t(`profile.notificationsPermission.${notificationSettings.permission}`)} · ${formatReminderHourLabel(notificationSettings.reminderHour)}`}
             color="#EC4899"
             delay={600}
+            onPress={handleNotifications}
+          />
+        </View>
+
+        {/* ── PRIVACY & LEGAL ── */}
+        <View style={styles.section}>
+          <SectionHeader title={t('profile.privacyLegal')} delay={620} />
+          <MenuItem
+            icon="book-open-page-variant-outline"
+            label={t('profile.legalCenter')}
+            sublabel={t('profile.legalCenterSub')}
+            color="#3B82F6"
+            delay={630}
+            onPress={() => router.push('/legal-center')}
           />
           <MenuItem
             icon="shield-check-outline"
-            label="Privacy & Security"
-            sublabel="Manage data consent, encryption, and security settings"
+            label={t('profile.privacySecurity')}
+            sublabel={t('profile.privacySecuritySub')}
             color="#10B981"
-            delay={650}
+            delay={640}
           />
           <MenuItem
             icon="check-decagram-outline"
-            label="Record Consent"
+            label={t('profile.recordConsent')}
             sublabel={consentTimestamp
-              ? `Saved ${new Date(consentTimestamp).toLocaleString()}`
-              : 'Tap to save privacy consent timestamp'}
+              ? `${t('profile.saved')} ${new Date(consentTimestamp).toLocaleString()} · ${t('profile.version')} ${consentVersion || '-'} · ${t(`profile.consentSource.${consentSource || 'local'}`)}`
+              : t('profile.recordConsentSub')}
             color="#10B981"
-            delay={670}
+            delay={650}
             onPress={() => {
               void handleRecordConsent();
             }}
           />
           <MenuItem
             icon="file-export-outline"
-            label="Export My Data"
-            sublabel="Create local JSON export of cloud metadata + backups"
+            label={t('profile.exportData')}
+            sublabel={t('profile.exportDataSub')}
             color="#5F63FF"
-            delay={690}
+            delay={660}
             onPress={() => {
               void handleExportData();
             }}
           />
           <MenuItem
             icon="trash-can-outline"
-            label="Delete Cloud Data"
-            sublabel="Permanently remove server-side account data"
+            label={t('profile.menu.deleteCloudData')}
+            sublabel={t('profile.deleteCloudDataSub')}
             color="#EF4444"
-            delay={710}
+            delay={670}
             onPress={handleDeleteCloudData}
-          />
-          <MenuItem
-            icon="help-circle-outline"
-            label="Help & Support"
-            sublabel="FAQs, guides, and contact support"
-            color="#F4A427"
-            delay={730}
           />
         </View>
 
         {/* ── APP INFO ── */}
         <View style={styles.section}>
-          <SectionHeader title="App" delay={650} />
+          <SectionHeader title={t('profile.appSection')} delay={650} />
           <MenuItem
             icon="backup-restore"
-            label="Backup & Restore"
-            sublabel="Encrypted local backup files"
+            label={t('profile.backupRestore')}
+            sublabel={t('profile.backupRestoreSub')}
             color={theme.colors.accent}
             delay={680}
             onPress={() => router.push('/backups')}
           />
           <MenuItem
-            icon="information-outline"
-            label="About FitQuest"
-            sublabel="Version 1.0.0"
-            color="#5F63FF"
+            icon="help-circle-outline"
+            label={t('profile.helpSupport')}
+            sublabel={t('profile.helpSupportSub')}
+            color="#F4A427"
             delay={700}
+          />
+          <MenuItem
+            icon="information-outline"
+            label={t('profile.about')}
+            sublabel={`${t('profile.version')} 1.0.0`}
+            color="#5F63FF"
+            delay={720}
           />
         </View>
 
@@ -840,14 +1028,13 @@ export default function ProfileScreen() {
         <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.logoutSection}>
           <TouchableOpacity
             style={[styles.logoutBtn, {
-              borderColor: '#EF4444' + '40',
               backgroundColor: '#EF4444' + '10',
             }]}
             onPress={handleLogout}
             activeOpacity={0.7}
           >
             <MaterialCommunityIcons name="logout" size={18} color="#EF4444" />
-            <Text style={styles.logoutText}>Log Out</Text>
+            <Text style={styles.logoutText}>{t('profile.logout')}</Text>
           </TouchableOpacity>
         </Animated.View>
 

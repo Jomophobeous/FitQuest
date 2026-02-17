@@ -159,7 +159,7 @@ export default function MoveScreen() {
             style={styles.headerGradient}
           >
             <View style={styles.headerRow}>
-              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Move</Text>
+              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('tab.move')}</Text>
               <TouchableOpacity
                 onPress={() => setShowHistory(!showHistory)}
                 style={[styles.historyToggle, { backgroundColor: theme.colors.accent + '12' }]}
@@ -188,7 +188,7 @@ export default function MoveScreen() {
                 </Text>
               </Animated.View>
               <Text style={[styles.stepGoal, { color: theme.colors.textMuted }]}>
-                / {DAILY_STEP_GOAL.toLocaleString()} goal
+                / {DAILY_STEP_GOAL.toLocaleString()} {t('move.goal')}
               </Text>
 
               <View style={styles.stepMiniStats}>
@@ -211,7 +211,7 @@ export default function MoveScreen() {
           {!isTracking ? (
             <View style={styles.trackingButtonWrap}>
               <GradientButton
-                title="Start Tracking"
+                title={t('move.startTracking')}
                 icon="play"
                 onPress={handleStartTracking}
                 variant="success"
@@ -222,7 +222,7 @@ export default function MoveScreen() {
               <View style={styles.trackingStatusRow}>
                 <PulseDot color={theme.colors.success} />
                 <Text style={[styles.trackingText, { color: theme.colors.textSecondary }]}>
-                  Tracking active
+                  {t('move.trackingActive')}
                 </Text>
               </View>
               <TouchableOpacity
@@ -233,7 +233,7 @@ export default function MoveScreen() {
                 style={[styles.stopTrackingBtn, { backgroundColor: theme.colors.error + '18', borderColor: theme.colors.error + '40' }]}
               >
                 <MaterialCommunityIcons name="stop" size={16} color={theme.colors.error} />
-                <Text style={[styles.stopTrackingText, { color: theme.colors.error }]}>Stop</Text>
+                <Text style={[styles.stopTrackingText, { color: theme.colors.error }]}>{t('move.stop')}</Text>
               </TouchableOpacity>
             </Animated.View>
           )}
@@ -255,14 +255,14 @@ export default function MoveScreen() {
                 </View>
                 <View>
                   <Text style={[sensorStyles.activityType, { color: theme.colors.text }]}>
-                    {formatActivity(snapshot.activity)}
+                    {formatActivity(snapshot.activity, t)}
                   </Text>
                   <View style={sensorStyles.confidenceRow}>
                     {sensorActive && <PulseDot color={theme.colors.success} size={6} />}
                     <Text style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]}>
                       {sensorActive
-                        ? `${Math.round(snapshot.confidence * 100)}% confidence`
-                        : 'Tap to enable'}
+                        ? `${Math.round(snapshot.confidence * 100)}% ${t('move.confidence')}`
+                        : t('move.tapToEnable')}
                     </Text>
                   </View>
                 </View>
@@ -282,7 +282,7 @@ export default function MoveScreen() {
                 <Text style={[sensorStyles.sensorToggleText, {
                   color: sensorActive ? theme.colors.error : theme.colors.accent,
                 }]}>
-                  {sensorActive ? 'Stop' : 'Detect'}
+                  {sensorActive ? t('move.stop') : t('move.detect')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -294,14 +294,14 @@ export default function MoveScreen() {
                   <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
                     {snapshot.intensity.toFixed(1)}
                   </Text>
-                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>Intensity</Text>
+                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.intensity')}</Text>
                 </View>
                 <View style={[sensorStyles.metricBox, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }]}>
                   <MaterialCommunityIcons name="metronome" size={16} color={theme.colors.accent} />
                   <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
                     {snapshot.currentCadence}
                   </Text>
-                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>Cadence</Text>
+                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.cadence')}</Text>
                 </View>
                 {snapshot.activity === 'EXERCISE' && (
                 <View style={[sensorStyles.metricBox, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }]}>
@@ -309,7 +309,7 @@ export default function MoveScreen() {
                   <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
                     {snapshot.repCount}
                   </Text>
-                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>Reps</Text>
+                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.reps')}</Text>
                 </View>
                 )}
               </Animated.View>
@@ -317,7 +317,7 @@ export default function MoveScreen() {
             {sensorActive && snapshot.activity === 'STATIONARY' && (
               <Animated.View entering={FadeIn.duration(150)} style={sensorStyles.metricsRow}>
                 <Text style={[{ color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', flex: 1, paddingVertical: 8 }]}>
-                  Start moving to see activity metrics
+                  {t('move.startMovingForMetrics')}
                 </Text>
               </Animated.View>
             )}
@@ -347,9 +347,9 @@ export default function MoveScreen() {
                 />
               </View>
               <View>
-                <Text style={[styles.jogTitle, { color: theme.colors.text }]}>Jog / Walk</Text>
+                <Text style={[styles.jogTitle, { color: theme.colors.text }]}>{t('move.jogWalk')}</Text>
                 <Text style={[styles.jogSub, { color: theme.colors.textMuted }]}>
-                  {isJogging ? 'Session active' : 'Tap to start'}
+                  {isJogging ? t('move.sessionActive') : t('move.tapToStart')}
                 </Text>
               </View>
             </View>
@@ -367,19 +367,19 @@ export default function MoveScreen() {
                     <Text style={[styles.jogStatValue, { color: theme.colors.accent }]}>
                       {((todaySteps - (currentJog.distanceMeters || 0)) * 0.0008).toFixed(2)}
                     </Text>
-                    <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>km</Text>
+                    <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
                   </View>
                   <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
                   <View style={styles.jogStat}>
                     <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
                       {Math.round((todaySteps - (currentJog.distanceMeters || 0)) * 0.06)}
                     </Text>
-                    <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>cal</Text>
+                    <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
                   </View>
                 </View>
 
                 <GradientButton
-                  title="Stop Session"
+                  title={t('move.stopSession')}
                   icon="stop"
                   onPress={handleStopJog}
                   colors={[theme.colors.error, '#B91C1C']}
@@ -388,7 +388,7 @@ export default function MoveScreen() {
             ) : (
               <View style={styles.jogStartButtonWrap}>
                 <GradientButton
-                  title="Start Jog"
+                  title={t('move.startJog')}
                   icon="play"
                   onPress={handleStartJog}
                   variant="success"
@@ -401,10 +401,10 @@ export default function MoveScreen() {
         {/* ── HISTORY ── */}
         {showHistory && (
           <Animated.View entering={FadeInDown.duration(150)}>
-            <SectionHeader title="Step History" delay={0} />
+            <SectionHeader title={t('move.stepHistory')} delay={0} />
             {stepHistory.length === 0 ? (
               <GlassCard style={{ marginHorizontal: 16 }}>
-                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No step history yet</Text>
+                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noStepHistory')}</Text>
               </GlassCard>
             ) : (
               stepHistory.map((day, i) => (
@@ -415,17 +415,17 @@ export default function MoveScreen() {
                   }]}>
                     <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
                     <Text style={[styles.historySteps, { color: theme.colors.accent }]}>
-                      {day.steps.toLocaleString()} steps
+                      {day.steps.toLocaleString()} {t('move.steps').toLowerCase()}
                     </Text>
                   </View>
                 </AnimatedListItem>
               ))
             )}
 
-            <SectionHeader title="Jog History" delay={100} />
+            <SectionHeader title={t('move.jogHistory')} delay={100} />
             {jogHistory.length === 0 ? (
               <GlassCard style={{ marginHorizontal: 16 }}>
-                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No jog sessions yet</Text>
+                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noJogHistory')}</Text>
               </GlassCard>
             ) : (
               jogHistory.map((jog, i) => (
@@ -457,7 +457,7 @@ export default function MoveScreen() {
           <GlassCard style={styles.infoCard} delay={500}>
             <MaterialCommunityIcons name="information-outline" size={18} color={theme.colors.accent} />
             <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
-              1,000 steps = 4 XP • Jogs earn 10 XP per 100m{'\n'}Movement doesn't affect workout fatigue
+              {t('move.infoXpAndFatigue')}
             </Text>
           </GlassCard>
         </Animated.View>
@@ -490,7 +490,7 @@ export default function MoveScreen() {
               </LinearGradient>
 
               <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
-                Jog Complete! 🏃
+                {t('move.jogComplete')}
               </Text>
 
               {jogCompletionData && (
@@ -500,7 +500,7 @@ export default function MoveScreen() {
                     <Text style={[styles.statValue, { color: theme.colors.accent }]}>
                       {jogCompletionData.distance.toFixed(2)}
                     </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>km</Text>
+                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
                   </View>
 
                   <View style={[styles.statBox, { backgroundColor: theme.colors.accent2 + '12' }]}>
@@ -508,7 +508,7 @@ export default function MoveScreen() {
                     <Text style={[styles.statValue, { color: theme.colors.accent2 }]}>
                       {jogCompletionData.duration}
                     </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>time</Text>
+                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.time')}</Text>
                   </View>
 
                   <View style={[styles.statBox, { backgroundColor: theme.colors.warning + '12' }]}>
@@ -516,7 +516,7 @@ export default function MoveScreen() {
                     <Text style={[styles.statValue, { color: theme.colors.warning }]}>
                       {jogCompletionData.calories}
                     </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>cal</Text>
+                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
                   </View>
                 </View>
               )}
@@ -543,7 +543,7 @@ export default function MoveScreen() {
                   setJogCompletionData(null);
                 }}
               >
-                <Text style={styles.modalButtonText}>Awesome!</Text>
+                <Text style={styles.modalButtonText}>{t('move.awesome')}</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -704,16 +704,16 @@ function getActivityIcon(activity: ActivityType): keyof typeof MaterialCommunity
   return icons[activity] || 'help-circle-outline';
 }
 
-function formatActivity(activity: ActivityType): string {
+function formatActivity(activity: ActivityType, t: (key: string) => string): string {
   const labels: Record<ActivityType, string> = {
-    STATIONARY: 'Stationary',
-    WALKING: 'Walking',
-    RUNNING: 'Running',
-    CYCLING: 'Cycling',
-    EXERCISE: 'Exercising',
-    UNKNOWN: 'Detecting...',
+    STATIONARY: t('move.activity.stationary'),
+    WALKING: t('move.activity.walking'),
+    RUNNING: t('move.activity.running'),
+    CYCLING: t('move.activity.cycling'),
+    EXERCISE: t('move.activity.exercising'),
+    UNKNOWN: t('move.activity.detecting'),
   };
-  return labels[activity] || 'Unknown';
+  return labels[activity] || t('move.activity.unknown');
 }
 
 const sensorStyles = StyleSheet.create({

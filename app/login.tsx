@@ -38,6 +38,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../src/context/AuthContext';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import {
   GlassCard,
   GradientButton,
@@ -51,6 +52,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
   const {
     signIn,
@@ -138,7 +140,7 @@ export default function LoginScreen() {
       const idToken = (googleResponse as any)?.authentication?.idToken
         || (googleResponse as any)?.params?.id_token;
       if (!idToken || typeof idToken !== 'string') {
-        setError('Google sign-in did not return an ID token');
+        setError(t('login.error.googleNoToken'));
         return;
       }
 
@@ -148,7 +150,7 @@ export default function LoginScreen() {
         await signInWithGoogleToken(idToken);
         router.replace('/dashboard');
       } catch (err: any) {
-        setError(err.message || 'Google sign-in failed');
+        setError(err.message || t('login.error.googleFailed'));
         triggerShake();
       } finally {
         setSocialSubmitting(false);
@@ -183,13 +185,13 @@ export default function LoginScreen() {
       withTiming(1, { duration: 200 })
     );
 
-    const result = await authenticateWithBiometrics('Unlock FitQuest');
+    const result = await authenticateWithBiometrics(t('login.unlockPrompt'));
     if (result.success) {
       try {
         await resumeSession();
         router.replace('/dashboard');
       } catch {
-        setError('Session expired. Please sign in again.');
+        setError(t('login.error.sessionExpired'));
         setMode('email');
       }
     } else {
@@ -199,7 +201,7 @@ export default function LoginScreen() {
 
       if (newAttempts >= 5) {
         setMode(hasExistingPasscode ? 'passcode' : 'email');
-        setError('Too many failed attempts');
+        setError(t('login.error.tooManyAttempts'));
       }
     }
   };
@@ -216,17 +218,17 @@ export default function LoginScreen() {
         await resumeSession();
         router.replace('/dashboard');
       } catch {
-        setError('Authentication failed');
+        setError(t('login.error.authFailed'));
       }
     } else {
       triggerShake();
-      setError('Incorrect passcode');
+      setError(t('login.error.incorrectPasscode'));
       setPasscode('');
       const newAttempts = failedAttempts + 1;
       setFailedAttempts(newAttempts);
       if (newAttempts >= 10) {
         setMode('email');
-        setError('Account locked. Sign in with email.');
+        setError(t('login.error.accountLocked'));
       }
     }
     setSubmitting(false);
@@ -235,7 +237,7 @@ export default function LoginScreen() {
   // ── Email Sign In ──
   const handleEmailSignIn = async () => {
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError(t('login.error.fillAllFields'));
       return;
     }
     setError('');
@@ -244,7 +246,7 @@ export default function LoginScreen() {
       await signIn(email, password);
       router.replace('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Sign in failed');
+      setError(err.message || t('login.error.signInFailed'));
       triggerShake();
     } finally {
       setSubmitting(false);
@@ -253,7 +255,7 @@ export default function LoginScreen() {
 
   const handleGoogleSignIn = async () => {
     if (!googleClientConfigReady) {
-      setError('Google sign-in is not configured');
+      setError(t('login.error.googleNotConfigured'));
       return;
     }
 
@@ -265,7 +267,7 @@ export default function LoginScreen() {
         setSocialSubmitting(false);
       }
     } catch (err: any) {
-      setError(err?.message || 'Google sign-in failed');
+      setError(err?.message || t('login.error.googleFailed'));
       setSocialSubmitting(false);
     }
   };
@@ -275,7 +277,7 @@ export default function LoginScreen() {
     setSocialSubmitting(true);
     try {
       const available = await AppleAuthentication.isAvailableAsync();
-      if (!available) throw new Error('Apple sign-in not available on this device');
+      if (!available) throw new Error(t('login.error.appleUnavailable'));
 
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -285,14 +287,14 @@ export default function LoginScreen() {
       });
 
       const idToken = credential.identityToken;
-      if (!idToken) throw new Error('Apple sign-in did not return an ID token');
+      if (!idToken) throw new Error(t('login.error.appleNoToken'));
 
       await signInWithAppleToken(idToken);
       router.replace('/dashboard');
     } catch (err: any) {
       const cancelled = err?.code === 'ERR_REQUEST_CANCELED';
       if (!cancelled) {
-        setError(err.message || 'Apple sign-in failed');
+        setError(err.message || t('login.error.appleFailed'));
         triggerShake();
       }
     } finally {
@@ -312,15 +314,15 @@ export default function LoginScreen() {
 
   const oauthChecks = [
     {
-      label: 'Google Android client ID',
+      label: t('login.oauth.googleAndroidClientId'),
       ok: !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     },
     {
-      label: 'Google web/iOS fallback ID',
+      label: t('login.oauth.googleFallbackClientId'),
       ok: androidOnlyMode || !!(process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID),
     },
     {
-      label: 'Apple Sign-In availability',
+      label: t('login.oauth.appleAvailability'),
       ok: Platform.OS === 'ios' ? appleSignInAvailable : true,
     },
   ];
@@ -354,7 +356,7 @@ export default function LoginScreen() {
             </View>
             <Text style={[styles.appName, { color: theme.colors.text }]}>FitQuest</Text>
             <Text style={[styles.tagline, { color: theme.colors.textMuted }]}>
-              Your Personal Fitness AI
+              {t('login.tagline')}
             </Text>
           </Animated.View>
 
@@ -375,13 +377,13 @@ export default function LoginScreen() {
                 </Animated.View>
               </TouchableOpacity>
               <Text style={[styles.biometricLabel, { color: theme.colors.text }]}>
-                Tap to unlock with {Platform.OS === 'ios' ? 'Face ID' : 'fingerprint'}
+                {Platform.OS === 'ios' ? t('login.tapToUnlockFaceId') : t('login.tapToUnlockFingerprint')}
               </Text>
 
               {failedAttempts > 0 && failedAttempts < 5 && (
                 <Animated.View entering={FadeIn.duration(150)}>
                   <Text style={[styles.attemptsText, { color: theme.colors.warning }]}>
-                    {5 - failedAttempts} attempts remaining
+                    {5 - failedAttempts} {t('login.attemptsRemaining')}
                   </Text>
                 </Animated.View>
               )}
@@ -393,7 +395,7 @@ export default function LoginScreen() {
                     style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                   >
                     <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>Use Passcode</Text>
+                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.usePasscode')}</Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
@@ -401,7 +403,7 @@ export default function LoginScreen() {
                   style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                 >
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                  <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>Use Email</Text>
+                  <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</Text>
                 </TouchableOpacity>
               </View>
             </Animated.View>
@@ -410,7 +412,7 @@ export default function LoginScreen() {
           {/* ── Passcode Mode ── */}
           {mode === 'passcode' && (
             <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-              <Text style={[styles.modeTitle, { color: theme.colors.text }]}>Enter Passcode</Text>
+              <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.enterPasscode')}</Text>
               
               {/* Passcode dots */}
               <Animated.View style={[styles.dotsRow, shakeStyle]}>
@@ -477,7 +479,7 @@ export default function LoginScreen() {
                     style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                   >
                     <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>Biometric</Text>
+                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
@@ -485,7 +487,7 @@ export default function LoginScreen() {
                   style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                 >
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                  <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>Email</Text>
+                  <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</Text>
                 </TouchableOpacity>
               </View>
             </Animated.View>
@@ -494,7 +496,7 @@ export default function LoginScreen() {
           {/* ── Email Mode ── */}
           {mode === 'email' && (
             <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-              <Text style={[styles.modeTitle, { color: theme.colors.text }]}>Welcome Back</Text>
+              <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.welcomeBack')}</Text>
 
               <Animated.View style={shakeStyle}>
                 <View style={[styles.inputWrap, {
@@ -504,7 +506,7 @@ export default function LoginScreen() {
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
                     style={[styles.input, { color: theme.colors.text }]}
-                    placeholder="Email"
+                    placeholder={t('login.email')}
                     placeholderTextColor={theme.colors.textMuted}
                     value={email}
                     onChangeText={setEmail}
@@ -522,7 +524,7 @@ export default function LoginScreen() {
                   <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
                     style={[styles.input, { color: theme.colors.text }]}
-                    placeholder="Password"
+                    placeholder={t('login.password')}
                     placeholderTextColor={theme.colors.textMuted}
                     value={password}
                     onChangeText={setPassword}
@@ -542,7 +544,7 @@ export default function LoginScreen() {
                 {submitting ? (
                   <ActivityIndicator color="#000" />
                 ) : (
-                  <Text style={styles.emailBtnText}>Sign In</Text>
+                  <Text style={styles.emailBtnText}>{t('login.signIn')}</Text>
                 )}
               </TouchableOpacity>
 
@@ -561,7 +563,7 @@ export default function LoginScreen() {
                   activeOpacity={0.9}
                 >
                   <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
-                  <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>Continue with Google</Text>
+                  <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>{t('login.continueGoogle')}</Text>
                 </TouchableOpacity>
 
                 {Platform.OS === 'ios' && (
@@ -579,7 +581,7 @@ export default function LoginScreen() {
                     activeOpacity={0.9}
                   >
                     <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />
-                    <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>Continue with Apple</Text>
+                    <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>{t('login.continueApple')}</Text>
                   </TouchableOpacity>
                 )}
 
@@ -592,7 +594,7 @@ export default function LoginScreen() {
                     },
                   ]}
                 >
-                  <Text style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>OAuth readiness</Text>
+                  <Text style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>{t('login.oauth.readiness')}</Text>
                   {oauthChecks.map((item) => (
                     <Text
                       key={item.label}
@@ -611,10 +613,10 @@ export default function LoginScreen() {
 
               <View style={styles.registerRow}>
                 <Text style={[styles.registerText, { color: theme.colors.textMuted }]}>
-                  Don't have an account?{' '}
+                  {t('login.noAccount')}{' '}
                 </Text>
                 <TouchableOpacity onPress={() => router.push('/register')}>
-                  <Text style={[styles.registerLink, { color: accentColor }]}>Register</Text>
+                  <Text style={[styles.registerLink, { color: accentColor }]}>{t('login.register')}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -625,7 +627,7 @@ export default function LoginScreen() {
                     style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                   >
                     <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>Biometric</Text>
+                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
                   </TouchableOpacity>
                 )}
                 {hasExistingPasscode && (
@@ -634,7 +636,7 @@ export default function LoginScreen() {
                     style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                   >
                     <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>Passcode</Text>
+                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.passcode')}</Text>
                   </TouchableOpacity>
                 )}
               </View>

@@ -8,6 +8,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
+    "start:clean": "expo start -c",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -29,9 +30,16 @@
     "benchmark:ml:lite": "node scripts/ml-benchmark-lite.mjs",
     "build:food-db": "node scripts/generate-food-database.mjs",
     "verify:food-db": "node scripts/verify-food-db.mjs",
+    "verify:i18n:p0": "node scripts/verify-i18n-p0.mjs",
+    "verify:mealprep:text-safety": "node scripts/verify-mealprep-text-safety.mjs",
+    "verify:notifications:reliability": "node scripts/verify-notification-reliability.mjs",
+    "verify:performance:budget": "node scripts/verify-performance-budget.mjs",
+    "verify:ops:readiness": "node scripts/verify-ops-readiness.mjs",
     "verify:quality:110": "node scripts/quality-110-gate.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic"
+    "test": "vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic",
+    "alfred:run": "./.venv/bin/python agents/alfred/orchestrator.py --repo-root .",
+    "alfred:cycle": "./.venv/bin/python agents/alfred/orchestrator.py --repo-root . --cycles 1 --dry-run"
   },
   "dependencies": {
     "@apollo/client": "^3.8.0",
@@ -50,6 +58,7 @@
     "expo-linking": "~8.0.11",
     "expo-local-authentication": "~17.0.8",
     "expo-location": "~19.0.8",
+    "expo-notifications": "~0.32.16",
     "expo-router": "~6.0.23",
     "expo-secure-store": "~15.0.8",
     "expo-sensors": "^15.0.8",

@@ -19,7 +19,14 @@ Target: Expo SDK 54, offline-first mobile app.
 - [x] No AsyncStorage usage for any persisted data.
 - [x] Health metrics encrypted at rest.
 - [x] Biometric session validation enforced for protected screens.
-- [ ] Privacy disclosure + consent toggle for analytics.
+- [x] Privacy disclosure + consent toggle for analytics.
+- [x] In-app Legal Center reachable from profile.
+- [x] Privacy Policy + Terms of Service available in-app.
+- [x] Consent version + timestamp persisted (`app_state`).
+- [x] Privacy Policy draft maintained in repo (`docs/legal/PRIVACY_POLICY_DRAFT.md`).
+- [x] Terms of Service draft maintained in repo (`docs/legal/TERMS_OF_SERVICE_DRAFT.md`).
+- [ ] App Store Connect privacy policy URL matches `expo.extra.legal.privacyPolicyUrl`.
+- [ ] Google Play Console privacy policy URL matches `expo.extra.legal.privacyPolicyUrl`.
 
 ## Monetization
 - [x] RevenueCat configured with real API keys and entitlements.

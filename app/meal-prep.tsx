@@ -12,18 +12,15 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  ZoomIn,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { getAppState } from '../src/database/service';
+import { getCached, setCached } from '../src/services/cacheStoreService';
 import {
   GlassCard,
   SectionHeader,
@@ -37,19 +34,25 @@ import {
   type FoodItem,
 } from '../src/services/locationService';
 
-// ============================================
-// MEAL TYPES
-// ============================================
-
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack';
+type MealRegionOverride = 'AUTO' | 'ZA' | 'US' | 'GB' | 'IN' | 'BR' | 'AU';
 
-const MEAL_TABS: { key: MealType; label: string; icon: string }[] = [
-  { key: 'breakfast', label: 'Breakfast', icon: 'weather-sunset-up' },
-  { key: 'pre-workout', label: 'Pre-Workout', icon: 'lightning-bolt' },
-  { key: 'lunch', label: 'Lunch', icon: 'food' },
-  { key: 'post-workout', label: 'Post-Workout', icon: 'arm-flex' },
-  { key: 'dinner', label: 'Dinner', icon: 'food-turkey' },
-  { key: 'snack', label: 'Snack', icon: 'food-apple-outline' },
+const REGION_OVERRIDE_LOCATION: Record<Exclude<MealRegionOverride, 'AUTO'>, Pick<UserLocation, 'country' | 'isoCountryCode' | 'city' | 'region'>> = {
+  ZA: { country: 'South Africa', isoCountryCode: 'ZA', city: 'Unknown', region: undefined },
+  US: { country: 'United States', isoCountryCode: 'US', city: 'Unknown', region: undefined },
+  GB: { country: 'United Kingdom', isoCountryCode: 'GB', city: 'Unknown', region: undefined },
+  IN: { country: 'India', isoCountryCode: 'IN', city: 'Unknown', region: undefined },
+  BR: { country: 'Brazil', isoCountryCode: 'BR', city: 'Unknown', region: undefined },
+  AU: { country: 'Australia', isoCountryCode: 'AU', city: 'Unknown', region: undefined },
+};
+
+const MEAL_TABS: { key: MealType; icon: string }[] = [
+  { key: 'breakfast', icon: 'weather-sunset-up' },
+  { key: 'pre-workout', icon: 'lightning-bolt' },
+  { key: 'lunch', icon: 'food' },
+  { key: 'post-workout', icon: 'arm-flex' },
+  { key: 'dinner', icon: 'food-turkey' },
+  { key: 'snack', icon: 'food-apple-outline' },
 ];
 
 const CATEGORY_ICONS: Record<FoodItem['category'], string> = {
@@ -61,6 +64,8 @@ const CATEGORY_ICONS: Record<FoodItem['category'], string> = {
   snack: 'cookie',
   meal: 'food-variant',
 };
+
+const MEAL_PREP_BUNDLE_SIGNATURE = 'MEAL_PREP_SAFE_RENDER_2026_02_17';
 
 const withAlpha = (hex: string, alpha: number): string => {
   const normalized = hex.replace('#', '');
@@ -157,16 +162,13 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
     bottomSpacer: { height: theme.spacing[8] },
   });
 
-// ============================================
-// SCREEN
-// ============================================
-
 export default function MealPrepScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
   const [selectedMeal, setSelectedMeal] = useState<MealType>('breakfast');
   const [location, setLocation] = useState<UserLocation | null>(null);
+  const [manualRegionOverride, setManualRegionOverride] = useState<MealRegionOverride>('AUTO');
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [allFoods, setAllFoods] = useState<FoodItem[]>([]);
 
@@ -175,18 +177,73 @@ export default function MealPrepScreen() {
   }, []);
 
   useEffect(() => {
-    setAllFoods(getFoodsByLocation(location));
+    console.log(`[MealPrep] Bundle signature: ${MEAL_PREP_BUNDLE_SIGNATURE}`);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const loadFoods = async () => {
+      const regionCode = String(location?.isoCountryCode || 'GLOBAL').toUpperCase();
+      const cacheId = `foods_${regionCode}`;
+      const cached = await getCached<FoodItem[]>('meal', cacheId);
+      if (active && cached.value && cached.value.length > 0) {
+        setAllFoods(cached.value);
+      }
+
+      const freshFoods = getFoodsByLocation(location);
+      if (active) {
+        setAllFoods(freshFoods);
+      }
+      await setCached('meal', cacheId, freshFoods);
+    };
+
+    void loadFoods();
+    return () => {
+      active = false;
+    };
   }, [location]);
 
   const loadLocation = async () => {
     setIsLoadingLocation(true);
+    const savedOverride = (await getAppState('meal.region_override')) as MealRegionOverride | null;
+    const activeOverride: MealRegionOverride =
+      savedOverride && (savedOverride in REGION_OVERRIDE_LOCATION || savedOverride === 'AUTO')
+        ? savedOverride
+        : 'AUTO';
+    setManualRegionOverride(activeOverride);
+
+    if (activeOverride !== 'AUTO') {
+      const overrideLocation = REGION_OVERRIDE_LOCATION[activeOverride as Exclude<MealRegionOverride, 'AUTO'>];
+      const overrideResolvedLocation = {
+        latitude: 0,
+        longitude: 0,
+        city: overrideLocation.city,
+        region: overrideLocation.region,
+        country: overrideLocation.country,
+        isoCountryCode: overrideLocation.isoCountryCode,
+      };
+      setLocation(overrideResolvedLocation);
+      await setCached('meal', 'auto_location', overrideResolvedLocation, 10 * 60 * 1000);
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    const cachedAutoLocation = await getCached<UserLocation | null>('meal', 'auto_location');
+    if (cachedAutoLocation.value) {
+      setLocation(cachedAutoLocation.value);
+      setIsLoadingLocation(false);
+      return;
+    }
+
     const loc = await getCurrentLocation();
     setLocation(loc);
+    await setCached('meal', 'auto_location', loc, 10 * 60 * 1000);
     setIsLoadingLocation(false);
   };
 
   const currentMealSuggestions = getMealSuggestions(selectedMeal, location);
   const styles = useMemo(() => createStyles(theme), [theme]);
+
   const mealTabColors = useMemo(
     () => ({
       breakfast: theme.colors.warning,
@@ -198,6 +255,7 @@ export default function MealPrepScreen() {
     }),
     [theme]
   );
+
   const categoryColors = useMemo(
     () => ({
       protein: theme.colors.error,
@@ -210,6 +268,33 @@ export default function MealPrepScreen() {
     }),
     [theme]
   );
+
+  const mealTabLabelByType: Record<MealType, string> = {
+    breakfast: t('meal.tab.breakfast'),
+    'pre-workout': t('meal.tab.preWorkout'),
+    lunch: t('meal.tab.lunch'),
+    'post-workout': t('meal.tab.postWorkout'),
+    dinner: t('meal.tab.dinner'),
+    snack: t('meal.tab.snack'),
+  };
+
+  const mealHeaderByType: Record<MealType, string> = {
+    breakfast: t('meal.header.breakfast'),
+    'pre-workout': t('meal.header.preWorkout'),
+    lunch: t('meal.header.lunch'),
+    'post-workout': t('meal.header.postWorkout'),
+    dinner: t('meal.header.dinner'),
+    snack: t('meal.header.snack'),
+  };
+
+  const mealTipByType: Record<MealType, string> = {
+    breakfast: t('meal.tip.breakfast'),
+    'pre-workout': t('meal.tip.preWorkout'),
+    lunch: t('meal.tip.lunch'),
+    'post-workout': t('meal.tip.postWorkout'),
+    dinner: t('meal.tip.dinner'),
+    snack: t('meal.tip.snack'),
+  };
 
   const selectedTabColor = mealTabColors[selectedMeal];
 
@@ -275,10 +360,17 @@ export default function MealPrepScreen() {
     };
   }, [theme, selectedMeal, mealTabColors, categoryColors, selectedTabColor]);
 
+  const areaName = location
+    ? location.city && location.city !== 'Unknown'
+      ? location.city
+      : location.country && location.country !== 'Global'
+        ? location.country
+        : t('meal.location.yourArea').toLowerCase()
+    : t('meal.location.yourArea').toLowerCase();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* ── HEADER ── */}
         <Animated.View entering={FadeIn.duration(150)}>
           <LinearGradient
             colors={dynamicStyles.headerGradientColors}
@@ -288,11 +380,10 @@ export default function MealPrepScreen() {
               <TouchableOpacity onPress={() => router.back()}>
                 <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>Meal Prep</Text>
+              <Text style={styles.headerTitle}>{t('meal.title')}</Text>
               <View style={styles.headerSpacer} />
             </View>
 
-            {/* Location Badge */}
             <TouchableOpacity
               onPress={loadLocation}
               style={[styles.locationBadge, dynamicStyles.locationBadge]}
@@ -311,28 +402,25 @@ export default function MealPrepScreen() {
                         ? `${location.city}${location.country && location.country !== 'Global' ? `, ${location.country}` : ''}`
                         : location.country && location.country !== 'Global'
                           ? location.country
-                          : 'Your Area')
-                    : 'Tap to enable location'}
+                          : t('meal.location.yourArea'))
+                    : t('meal.location.tapEnable')}
+                  {manualRegionOverride !== 'AUTO' ? ` · ${t('meal.location.manual')}` : ''}
                 </Text>
               )}
             </TouchableOpacity>
           </LinearGradient>
         </Animated.View>
 
-        {/* ── MEAL TYPE SELECTOR ── */}
         <Animated.View entering={FadeInDown.delay(100).duration(150)}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealTabs}>
-            {MEAL_TABS.map((tab, idx) => {
+            {MEAL_TABS.map((tab) => {
               const isActive = selectedMeal === tab.key;
               const tabColor = mealTabColors[tab.key];
               return (
                 <TouchableOpacity
                   key={tab.key}
                   onPress={() => setSelectedMeal(tab.key)}
-                  style={[
-                    styles.mealTab,
-                    dynamicStyles.mealTabStyle[tab.key],
-                  ]}
+                  style={[styles.mealTab, dynamicStyles.mealTabStyle[tab.key]]}
                 >
                   <MaterialCommunityIcons
                     name={tab.icon as any}
@@ -340,7 +428,7 @@ export default function MealPrepScreen() {
                     color={isActive ? tabColor : theme.colors.textMuted}
                   />
                   <Text style={[styles.mealTabText, dynamicStyles.mealTabText[tab.key]]}>
-                    {tab.label}
+                    {mealTabLabelByType[tab.key]}
                   </Text>
                 </TouchableOpacity>
               );
@@ -348,90 +436,86 @@ export default function MealPrepScreen() {
           </ScrollView>
         </Animated.View>
 
-        {/* ── TIP CARD ── */}
         <GlassCard style={styles.tipCard} delay={200} glowColor={selectedTabColor}>
           <View style={styles.tipRow}>
             <MaterialCommunityIcons name="lightbulb-outline" size={20} color={selectedTabColor} />
-            <Text style={styles.tipText}>
-              {currentMealSuggestions.tip}
-            </Text>
+            <Text style={styles.tipText}>{mealTipByType[selectedMeal] || currentMealSuggestions.tip}</Text>
           </View>
         </GlassCard>
 
-        {/* ── FOOD SUGGESTIONS ── */}
-        <SectionHeader title={currentMealSuggestions.title} delay={250} />
+        <SectionHeader title={mealHeaderByType[selectedMeal] || currentMealSuggestions.title} delay={250} />
 
         {currentMealSuggestions.foods.length === 0 ? (
-            <GlassCard style={styles.emptyCard}>
-              <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
-              <Text style={styles.emptyText}>
-                No foods available for this meal type right now.{'\n'}Try another meal tab or refresh location.
-              </Text>
-            </GlassCard>
+          <GlassCard style={styles.emptyCard}>
+            <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
+            <Text style={styles.emptyText}>
+              {t('meal.empty.noFoods')}{'\n'}{t('meal.empty.tryAnother')}
+            </Text>
+          </GlassCard>
         ) : (
-          currentMealSuggestions.foods.map((food, idx) => (
-            <AnimatedListItem key={`${food.name}-${idx}`} index={idx} style={styles.foodItemSpacing}>
-              <View style={[styles.foodCard, dynamicStyles.foodCard]}>
-                <View style={[styles.foodIcon, dynamicStyles.categoryIcon[food.category]]}>
-                  <MaterialCommunityIcons
-                    name={CATEGORY_ICONS[food.category] as any}
-                    size={20}
-                    color={categoryColors[food.category]}
-                  />
+          currentMealSuggestions.foods.map((food, idx) => {
+            const hasLocalName = food.local_name != null && String(food.local_name).trim().length > 0;
+
+            return (
+              <AnimatedListItem key={`${food.name}-${idx}`} index={idx} style={styles.foodItemSpacing}>
+                <View style={[styles.foodCard, dynamicStyles.foodCard]}>
+                  <View style={[styles.foodIcon, dynamicStyles.categoryIcon[food.category]]}>
+                    <MaterialCommunityIcons
+                      name={CATEGORY_ICONS[food.category] as any}
+                      size={20}
+                      color={categoryColors[food.category]}
+                    />
+                  </View>
+                  <View style={styles.foodInfo}>
+                    <Text style={styles.foodName}>{food.name}</Text>
+                    <Text style={styles.foodDesc}>{food.description}</Text>
+                    {hasLocalName ? (
+                      <Text style={styles.foodLocal}>
+                        {t('meal.localPrefix')}: {String(food.local_name)}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <View style={styles.foodNutrition}>
+                    {food.calories_per_serving != null ? (
+                      <Text style={styles.foodCal}>
+                        {food.calories_per_serving} {t('meal.unit.cal')}
+                      </Text>
+                    ) : null}
+                    {food.protein_g != null ? (
+                      <Text style={styles.foodProtein}>
+                        {food.protein_g}g {t('meal.unit.protein')}
+                      </Text>
+                    ) : null}
+                  </View>
                 </View>
-                <View style={styles.foodInfo}>
-                  <Text style={styles.foodName}>{food.name}</Text>
-                  <Text style={styles.foodDesc}>{food.description}</Text>
-                  {food.local_name && (
-                    <Text style={styles.foodLocal}>
-                      Local: {food.local_name}
-                    </Text>
-                  )}
-                </View>
-                <View style={styles.foodNutrition}>
-                  {food.calories_per_serving && (
-                    <Text style={styles.foodCal}>
-                      {food.calories_per_serving} cal
-                    </Text>
-                  )}
-                  {food.protein_g && (
-                    <Text style={styles.foodProtein}>
-                      {food.protein_g}g protein
-                    </Text>
-                  )}
-                </View>
-              </View>
-            </AnimatedListItem>
-          ))
+              </AnimatedListItem>
+            );
+          })
         )}
 
-        {/* ── ALL FOODS SECTION ── */}
-        <SectionHeader title="📋 Full Food List" delay={400} />
+        <SectionHeader title={t('meal.section.fullFoodList')} delay={400} />
 
         {allFoods.map((food, idx) => (
           <AnimatedListItem key={`all-${food.name}-${idx}`} index={idx} style={styles.compactItemSpacing}>
             <View style={[styles.compactFoodRow, dynamicStyles.compactFoodRow]}>
               <View style={[styles.categoryDot, dynamicStyles.categoryDot[food.category]]} />
               <Text style={styles.compactFoodName}>{food.name}</Text>
-              <Text style={styles.compactFoodCategory}>
-                {food.category}
-              </Text>
-              {food.calories_per_serving && (
+              <Text style={styles.compactFoodCategory}>{food.category}</Text>
+              {food.calories_per_serving != null ? (
                 <Text style={styles.compactFoodCal}>
-                  {food.calories_per_serving} cal
+                  {food.calories_per_serving} {t('meal.unit.cal')}
                 </Text>
-              )}
+              ) : null}
             </View>
           </AnimatedListItem>
         ))}
 
-        {/* ── LOCATION INFO ── */}
         <GlassCard style={styles.locationInfo} delay={500}>
           <MaterialCommunityIcons name="information-outline" size={16} color={theme.colors.accent} />
           <Text style={styles.locationInfoText}>
             {location
-              ? `Showing foods available in ${location.city && location.city !== 'Unknown' ? location.city : location.country && location.country !== 'Global' ? location.country : 'your area'}, including regional and global options.`
-              : 'Enable location to see region-specific food suggestions. Tap the location badge above to retry.'}
+              ? `${t('meal.location.infoPrefix')} ${areaName}${t('meal.location.infoSuffix')}`
+              : t('meal.location.infoNoLocation')}
           </Text>
         </GlassCard>
 

@@ -45,6 +45,10 @@
     "extra": {
       "eas": {
         "projectId": "5952667d-bab3-4bce-9cb0-be0106c98d01"
+      },
+      "legal": {
+        "privacyPolicyUrl": "https://fitquest.app/privacy",
+        "termsOfServiceUrl": "https://fitquest.app/terms"
       }
     },
     "assetBundlePatterns": [
@@ -55,6 +59,7 @@
     "scheme": "fitquest",
     "plugins": [
       "expo-router",
+      "expo-notifications",
       "expo-updates"
     ]
   }

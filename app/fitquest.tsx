@@ -202,11 +202,11 @@ export default function FitQuestScreen() {
 
   const handleReset = () => {
     Alert.alert(
-      'Reset Database',
-      'This will clear all data and start fresh. Are you sure?',
+      t('fitquest.reset.title'),
+      t('fitquest.reset.body'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Reset', style: 'destructive', onPress: resetAll },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('fitquest.reset.confirm'), style: 'destructive', onPress: resetAll },
       ]
     );
   };
@@ -222,7 +222,7 @@ export default function FitQuestScreen() {
             </View>
           </Animated.View>
           <Animated.Text entering={FadeIn.delay(50).duration(150)} style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
-            Initializing FitQuest...
+            {t('fitquest.initializing')}
           </Animated.Text>
         </View>
       </SafeAreaView>
@@ -238,12 +238,12 @@ export default function FitQuestScreen() {
             <MaterialCommunityIcons name="alert-circle" size={64} color={theme.colors.error} />
           </Animated.View>
           <Text style={[styles.errorTitle, { color: theme.colors.text }]}>
-            Something went wrong
+            {t('fitquest.errorTitle')}
           </Text>
           <Text style={[styles.errorSub, { color: theme.colors.textSecondary }]}>
             {dbError || error}
           </Text>
-          <GradientButton title="Reset & Retry" icon="refresh" onPress={handleReset} colors={[theme.colors.error, '#B91C1C']} />
+          <GradientButton title={t('fitquest.resetAndRetry')} icon="refresh" onPress={handleReset} colors={[theme.colors.error, '#B91C1C']} />
         </View>
       </SafeAreaView>
     );
@@ -265,7 +265,7 @@ export default function FitQuestScreen() {
             </View>
           </Animated.View>
           <Animated.Text entering={FadeInUp.delay(50).duration(150)} style={[styles.completeTitle, { color: theme.colors.text }]}>
-            Workout Complete! 🎉
+            {t('fitquest.workoutComplete')}
           </Animated.Text>
 
           <Animated.View entering={FadeInDown.delay(80).duration(150)} style={{ width: '100%' }}>
@@ -280,10 +280,10 @@ export default function FitQuestScreen() {
           <Animated.View entering={FadeInDown.delay(100).duration(150)} style={{ width: '100%' }}>
             <GlassCard style={{ padding: 16, marginTop: 12 }}>
               <Text style={[styles.ratingTitle, { color: theme.colors.text }]}>
-                Rate this workout
+                {t('fitquest.rateWorkout')}
               </Text>
               <Text style={[styles.ratingSub, { color: theme.colors.textMuted }]}>
-                How did the overall session feel?
+                {t('fitquest.rateWorkoutSub')}
               </Text>
               <View style={styles.ratingRow}>
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -302,7 +302,7 @@ export default function FitQuestScreen() {
               </View>
               {workoutRating && (
                 <Text style={[styles.ratingFeedback, { color: theme.colors.success }]}>
-                  {workoutRating <= 2 ? 'Thanks for the feedback!' : workoutRating <= 3 ? 'Good workout!' : workoutRating === 4 ? 'Great session!' : 'Excellent! 💪'}
+                  {workoutRating <= 2 ? t('fitquest.feedback.low') : workoutRating <= 3 ? t('fitquest.feedback.mid') : workoutRating === 4 ? t('fitquest.feedback.high') : t('fitquest.feedback.top')}
                 </Text>
               )}
             </GlassCard>
@@ -314,10 +314,10 @@ export default function FitQuestScreen() {
                 <MaterialCommunityIcons name="fire" size={32} color={theme.colors.warning} />
                 <View style={{ marginLeft: 12 }}>
                   <Text style={[styles.streakTitle, { color: theme.colors.text }]}>
-                    {completionResult.streak.current} Day Streak
+                    {completionResult.streak.current} {t('fitquest.dayStreak')}
                   </Text>
                   <Text style={[styles.streakSub, { color: theme.colors.textMuted }]}>
-                    Best: {completionResult.streak.longest} days
+                    {t('fitquest.best')}: {completionResult.streak.longest} {t('common.days')}
                   </Text>
                 </View>
               </View>
@@ -325,7 +325,7 @@ export default function FitQuestScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInUp.delay(140).duration(150)} style={{ marginTop: 28, width: '100%' }}>
-            <GradientButton title="Generate New Workout" icon="refresh" onPress={handleNewWorkout} />
+            <GradientButton title={t('fitquest.generateNewWorkout')} icon="refresh" onPress={handleNewWorkout} />
           </Animated.View>
         </ScrollView>
       </SafeAreaView>
@@ -343,10 +343,10 @@ export default function FitQuestScreen() {
             </View>
           </Animated.View>
           <Animated.Text entering={FadeIn.delay(50).duration(150)} style={[styles.genTitle, { color: theme.colors.text }]}>
-            Crafting your workout...
+            {t('fitquest.craftingWorkout')}
           </Animated.Text>
           <Animated.Text entering={FadeIn.delay(80).duration(150)} style={[styles.genSub, { color: theme.colors.textMuted }]}>
-            Analyzing fatigue · Balancing patterns · Optimizing
+            {t('fitquest.craftingSub')}
           </Animated.Text>
         </View>
       </SafeAreaView>
@@ -371,12 +371,12 @@ export default function FitQuestScreen() {
               ]}
             >
               <View style={styles.readyHeaderRow}>
-                <Text style={[styles.readyTitle, { color: theme.colors.text }]}>Today's Workout</Text>
+                <Text style={[styles.readyTitle, { color: theme.colors.text }]}>{t('fitquest.todaysWorkout')}</Text>
                 {workout.isDeload && (
                   <View
                     style={[styles.deloadBadge, { backgroundColor: theme.colors.warning }]}
                   >
-                    <Text style={styles.deloadBadgeText}>DELOAD</Text>
+                    <Text style={styles.deloadBadgeText}>{t('fitquest.deload')}</Text>
                   </View>
                 )}
               </View>
@@ -420,7 +420,7 @@ export default function FitQuestScreen() {
                   color={deloadStatus.needed ? theme.colors.warning : theme.colors.success}
                 />
                 <View>
-                  <Text style={[styles.recoveryLabel, { color: theme.colors.text }]}>Recovery Status</Text>
+                  <Text style={[styles.recoveryLabel, { color: theme.colors.text }]}>{t('fitquest.recoveryStatus')}</Text>
                   <Text style={[styles.recoverySub, { color: theme.colors.textMuted }]}>{deloadStatus.reason}</Text>
                 </View>
               </GlassCard>
@@ -429,7 +429,7 @@ export default function FitQuestScreen() {
 
           {/* Exercise Count */}
           <SectionHeader
-            title={`${workout.exercises.length} Exercises · ~${workout.totalDuration} min`}
+            title={`${workout.exercises.length} ${t('library.exercises')} · ~${workout.totalDuration} ${t('fitquest.minShort')}`}
             delay={250}
           />
 
@@ -465,7 +465,7 @@ export default function FitQuestScreen() {
           {/* Start Button */}
           <Animated.View entering={FadeInUp.delay(400).duration(150)} style={{ paddingHorizontal: 16, marginTop: 16 }}>
             <GradientButton
-              title="Start Workout"
+              title={t('train.startWorkout')}
               icon="play"
               onPress={() => {
                 startWorkout();
@@ -482,7 +482,7 @@ export default function FitQuestScreen() {
           <Animated.View entering={FadeIn.delay(450).duration(150)} style={{ paddingHorizontal: 16, marginTop: 8 }}>
             <TouchableOpacity style={[styles.regenBtn, { borderColor: theme.colors.border }]} onPress={generateNewWorkout}>
               <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.text} />
-              <Text style={[styles.regenBtnText, { color: theme.colors.text }]}>Regenerate</Text>
+              <Text style={[styles.regenBtnText, { color: theme.colors.text }]}>{t('fitquest.regenerate')}</Text>
             </TouchableOpacity>
           </Animated.View>
 
@@ -552,12 +552,12 @@ export default function FitQuestScreen() {
                 <Text style={[styles.restTimerValue, { color: theme.colors.warning }]}>
                   {restTimer.formattedRemaining}
                 </Text>
-                <Text style={[styles.restTimerLabel, { color: theme.colors.textMuted }]}>Rest Time</Text>
+                <Text style={[styles.restTimerLabel, { color: theme.colors.textMuted }]}>{t('fitquest.restTime')}</Text>
                 <TouchableOpacity
                   style={[styles.skipRestButton, { borderColor: theme.colors.border }]}
                   onPress={() => { skipRest(); setIsResting(false); }}
                 >
-                  <Text style={{ color: theme.colors.text, fontWeight: '600', fontSize: 13 }}>Skip Rest →</Text>
+                  <Text style={{ color: theme.colors.text, fontWeight: '600', fontSize: 13 }}>{t('fitquest.skipRest')}</Text>
                 </TouchableOpacity>
               </GlassCard>
             </Animated.View>
@@ -573,9 +573,9 @@ export default function FitQuestScreen() {
 
             <View style={styles.prescriptionRow}>
               {[
-                { val: currentExercise.sets, label: 'Sets' },
-                { val: currentExercise.reps, label: 'Reps' },
-                { val: `${currentExercise.restSeconds}s`, label: 'Rest' },
+                { val: currentExercise.sets, label: t('fitquest.sets') },
+                { val: currentExercise.reps, label: t('fitquest.reps') },
+                { val: `${currentExercise.restSeconds}s`, label: t('train.rest') },
               ].map((p, i) => (
                 <Animated.View key={p.label} entering={FadeInUp.delay(i * 60).duration(150)} style={styles.prescriptionItem}>
                   <Text style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</Text>
@@ -598,7 +598,7 @@ export default function FitQuestScreen() {
             {currentExercise.instructions.length > 0 && (
               <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ width: '100%', marginTop: 24 }}>
                 <GlassCard>
-                  <Text style={[styles.instTitle, { color: theme.colors.text }]}>Form Tips</Text>
+                  <Text style={[styles.instTitle, { color: theme.colors.text }]}>{t('fitquest.formTips')}</Text>
                   {currentExercise.instructions
                     .slice(0, showAllInstructions ? undefined : 3)
                     .map((inst: string, idx: number) => (
@@ -609,7 +609,7 @@ export default function FitQuestScreen() {
                   {currentExercise.instructions.length > 3 && (
                     <TouchableOpacity onPress={() => setShowAllInstructions(!showAllInstructions)} style={{ marginTop: 8 }}>
                       <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600' }}>
-                        {showAllInstructions ? 'Show less' : `+${currentExercise.instructions.length - 3} more`}
+                        {showAllInstructions ? t('fitquest.showLess') : `+${currentExercise.instructions.length - 3} ${t('fitquest.more')}`}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -627,7 +627,7 @@ export default function FitQuestScreen() {
               >
                 <MaterialCommunityIcons name="timer-outline" size={16} color={theme.colors.accent} />
                 <Text style={{ color: theme.colors.accent, fontWeight: '600', marginLeft: 6, fontSize: 13 }}>
-                  Start Timer ({currentExercise.restSeconds || 30}s)
+                  {t('fitquest.startTimer')} ({currentExercise.restSeconds || 30}s)
                 </Text>
               </TouchableOpacity>
             </Animated.View>
@@ -637,10 +637,10 @@ export default function FitQuestScreen() {
           {showRPE && (
             <Animated.View entering={FadeInDown.duration(200)}>
               <Text style={[styles.diffPrompt, { color: theme.colors.text, fontWeight: '600', fontSize: 15 }]}>
-                {isLastExercise ? 'Rate & Finish' : 'Rate this set'}
+                {isLastExercise ? t('fitquest.rateAndFinish') : t('fitquest.rateThisSet')}
               </Text>
               <Text style={[{ color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', marginBottom: 12 }]}>
-                How hard did that feel? (1 = easy, 9 = max effort)
+                {t('fitquest.rpePrompt')}
               </Text>
               <View style={styles.difficultyRow}>
                 {[
@@ -699,12 +699,12 @@ export default function FitQuestScreen() {
                 skipExercise();
               }}
             >
-              <Text style={{ color: theme.colors.textMuted, fontWeight: '600' }}>Skip</Text>
+              <Text style={{ color: theme.colors.textMuted, fontWeight: '600' }}>{t('train.skip')}</Text>
             </TouchableOpacity>
 
             <View style={{ flex: 2 }}>
               <GradientButton
-                title={isLastExercise ? "Finish Workout" : "Complete Set"}
+                title={isLastExercise ? t('fitquest.finishWorkout') : t('fitquest.completeSet')}
                 icon={isLastExercise ? "check-all" : "check"}
                 onPress={() => {
                   // Stop voice and timer immediately
@@ -723,13 +723,13 @@ export default function FitQuestScreen() {
           <TouchableOpacity
             style={{ marginTop: 24, alignItems: 'center' }}
             onPress={() => {
-              Alert.alert('Cancel Workout', 'Are you sure? Progress will be lost.', [
-                { text: 'Keep Going', style: 'cancel' },
-                { text: 'Cancel', style: 'destructive', onPress: () => { audioService.stop(); stopAll(); cancelWorkout(); } },
+              Alert.alert(t('fitquest.cancelTitle'), t('fitquest.cancelBody'), [
+                { text: t('fitquest.keepGoing'), style: 'cancel' },
+                { text: t('common.cancel'), style: 'destructive', onPress: () => { audioService.stop(); stopAll(); cancelWorkout(); } },
               ]);
             }}
           >
-            <Text style={{ color: theme.colors.textMuted, fontSize: 13 }}>Cancel Workout</Text>
+            <Text style={{ color: theme.colors.textMuted, fontSize: 13 }}>{t('fitquest.cancelWorkout')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -746,7 +746,7 @@ export default function FitQuestScreen() {
               <ActivityIndicator size="large" color={theme.colors.success} />
             </View>
           </Animated.View>
-          <Text style={[styles.genTitle, { color: theme.colors.text }]}>Recording progress...</Text>
+          <Text style={[styles.genTitle, { color: theme.colors.text }]}>{t('fitquest.recordingProgress')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -770,23 +770,23 @@ export default function FitQuestScreen() {
           FitQuest
         </Animated.Text>
         <Animated.Text entering={FadeIn.delay(300).duration(150)} style={[styles.idleSub, { color: theme.colors.textSecondary }]}>
-          Intelligent workout generation powered by{'\n'}three engines working in harmony
+          {t('fitquest.idleSub')}
         </Animated.Text>
 
         {userProfile && (
           <Animated.View entering={FadeInDown.delay(400).duration(150)} style={{ width: '100%', maxWidth: 280 }}>
             <GlassCard style={{ alignItems: 'center', padding: 16, marginTop: 20 }}>
-              <Text style={[styles.profileLabel, { color: theme.colors.textMuted }]}>Current Profile</Text>
+              <Text style={[styles.profileLabel, { color: theme.colors.textMuted }]}>{t('fitquest.currentProfile')}</Text>
               <Text style={[styles.profileGoal, { color: theme.colors.text }]}>{userProfile.goal}</Text>
               <Text style={[styles.profileMeta, { color: theme.colors.textMuted }]}>
-                {userProfile.experience} · {userProfile.time_per_session_minutes}min sessions
+                {userProfile.experience} · {userProfile.time_per_session_minutes}{t('fitquest.minShort')} {t('fitquest.sessions')}
               </Text>
             </GlassCard>
           </Animated.View>
         )}
 
         <Animated.View entering={FadeInUp.delay(500).duration(150)} style={{ marginTop: 24, width: '100%', maxWidth: 280 }}>
-          <GradientButton title="Generate Workout" icon="lightning-bolt" onPress={generateNewWorkout} />
+          <GradientButton title={t('fitquest.generateWorkout')} icon="lightning-bolt" onPress={generateNewWorkout} />
         </Animated.View>
       </View>
     </SafeAreaView>

@@ -29,6 +29,7 @@ import {
   uploadLocalBackupToCloud,
   type CloudBackupListItem,
 } from '../src/services/cloudBackupService';
+import { enqueueMutation } from '../src/services/mutationQueueService';
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -258,6 +259,9 @@ export default function BackupsScreen() {
       await refreshCloud();
       Alert.alert('Uploaded', 'Encrypted backup uploaded successfully.');
     } catch (e: any) {
+      if (passphrase.trim().length === 0) {
+        await enqueueMutation('backup.upload_latest', {}, { dedupeKey: 'backup.upload_latest.manual' });
+      }
       Alert.alert('Upload failed', e?.message ?? 'Unknown error');
     } finally {
       setBusy(false);

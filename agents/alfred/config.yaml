@@ -1,0 +1,9 @@
+# Alfred runtime configuration
+max_cycles: 3
+
+dry_run: true
+
+# Reserved for future maturity phases
+planner_mode: roi_first
+safety_mode: strict
+persist_memory: true

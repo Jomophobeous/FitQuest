@@ -13,6 +13,8 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
+  Alert,
+  Platform,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -100,6 +102,22 @@ const MENU_ITEMS: MenuItem[] = [
     color: '#10B981',
   },
   {
+    id: 'health-dashboard',
+    label: 'Health Dashboard',
+    icon: 'heart-pulse',
+    route: '/health-dashboard',
+    category: 'knowledge',
+    color: '#EF4444',
+  },
+  {
+    id: 'craft-my-body',
+    label: 'Craft My Body',
+    icon: 'human-edit',
+    route: '/craft-my-body',
+    category: 'movement',
+    color: '#EC4899',
+  },
+  {
     id: 'saved-workouts',
     label: 'My Workouts',
     icon: 'folder-star',
@@ -125,7 +143,12 @@ const MENU_ITEMS: MenuItem[] = [
     id: 'about',
     label: 'About FitQuest',
     icon: 'information-outline',
-    action: () => {},
+    action: () => {
+      Alert.alert(
+        'FitQuest 2.0',
+        `Version 1.0.0\n${Platform.OS === 'android' ? 'Android' : Platform.OS === 'ios' ? 'iOS' : 'Web'} · Expo SDK 54\n\nBody + Mind fitness platform.\nAll data encrypted on-device.\n\n© 2026 FitQuest`,
+      );
+    },
     category: 'system',
   },
 ];

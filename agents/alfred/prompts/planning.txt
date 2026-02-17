@@ -1,0 +1,16 @@
+Planning rubric for Alfred:
+
+Given scan output:
+1) Identify top 3 high-impact risks.
+2) Convert each into measurable objective + completion criteria.
+3) Rank candidate actions by:
+   - Security impact
+   - Reliability impact
+   - User-facing impact
+   - Change risk
+   - Time-to-value
+4) Produce:
+   - Best immediate path
+   - Scalable alternative path
+   - Explicit risks and dependencies
+5) Emit minimal incremental tasks that preserve architecture consistency.

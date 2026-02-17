@@ -1,5 +1,405 @@
 # FitQuest Development Log
 
+## 2026-02-17 — Runtime Verification Hardening (Meal Prep Signature)
+
+### Session Overview
+Added deterministic runtime signature verification for Meal Prep so stale-bundle situations can be distinguished from source-code regressions.
+
+### Delivered
+- Added bundle signature constant + mount log in `app/meal-prep.tsx`:
+	- `[MealPrep] Bundle signature: MEAL_PREP_SAFE_RENDER_2026_02_17`
+- Extended `scripts/verify-mealprep-text-safety.mjs` to enforce signature presence.
+- Added clean-start script in `package.json`: `start:clean` (`expo start -c`).
+- Updated `reports/ops/older-device-sweep.md` with explicit signature check requirement.
+
+### Validation
+- `npm run verify:mealprep:text-safety` ✅
+- `npm run typecheck` ✅
+
+## 2026-02-17 — P1/P2 Continuation (Meal Prep Crash-Pattern Guard)
+
+### Session Overview
+Added a focused CI gate to prevent regression of the known `meal-prep` Text-render crash pattern and validated all reliability/ops checks.
+
+### Delivered
+- Added `scripts/verify-mealprep-text-safety.mjs` to enforce safe null-guard rendering in `app/meal-prep.tsx`.
+- Added npm script: `verify:mealprep:text-safety`.
+- Added CI step in `.github/workflows/ci.yml` for automated enforcement.
+
+### Progress Impact
+- P1 completion moved from 88% → 89%
+- Objective 5 moved from 86% → 87%
+
+### Validation
+- `npm run verify:mealprep:text-safety` ✅
+- `npm run verify:notifications:reliability` ✅
+- `npm run verify:ops:readiness` ✅
+- `npm run typecheck` ✅
+
+## 2026-02-17 — P1/P2 Continuation (Notification Gate + Rollout Stage Evidence)
+
+### Session Overview
+Advanced P1/P2 closure by adding enforceable notification wiring verification and rollout-stage evidence tracking, then validated all quality gates.
+
+### Delivered
+- P1 notification reliability hardening:
+	- Added gate script: `scripts/verify-notification-reliability.mjs`.
+	- Added npm command: `verify:notifications:reliability`.
+	- Added CI step in `.github/workflows/ci.yml`.
+	- Gate verifies: dependency/plugin presence and runtime usage in `app/_layout.tsx` and `app/profile.tsx`.
+- P2 operations hardening:
+	- Added `reports/ops/rollout-execution-log.md` with stage outcome evidence table.
+	- Extended `scripts/verify-ops-readiness.mjs` to require rollout log + outcome row.
+- Runtime triage update:
+	- Re-audited `app/meal-prep.tsx`; current source is null-safe and does not contain the previously failing `&&` nutrition rendering path.
+	- Ongoing red-screen traces are consistent with stale bundle/runtime state until clean Metro/device rerun.
+
+### Progress Impact
+- P1 completion moved from 86% → 88%
+- P2 completion moved from 64% → 68%
+- Objective 4 moved from 80% → 82%
+- Objective 5 moved from 83% → 86%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:notifications:reliability` ✅
+- `npm run verify:ops:readiness` ✅
+- `npm run verify:performance:budget` ✅
+
+## 2026-02-17 — P1/P2 Completion Cycle (Native Reminder Reliability + Ops Evidence)
+
+### Session Overview
+Closed the remaining in-repo P1 notification reliability gap by wiring native permission/scheduling logic and improved P2 operational rigor by requiring executable sweep evidence (not only static checklists).
+
+### Delivered
+- P1 native reminder reliability:
+	- Extended `src/services/notificationReliabilityService.ts` with platform permission sync, enable/disable flows, daily reminder scheduling/cancel, and startup reconciliation telemetry.
+	- Integrated runtime reconciliation on app start in `app/_layout.tsx`.
+	- Updated profile notification actions in `app/profile.tsx` to call real enable/disable/schedule handlers.
+	- Added `expo-notifications` dependency and plugin registration in `app.json`.
+- P2 ops execution evidence uplift:
+	- Converted `reports/ops/older-device-sweep.md` into structured execution evidence format (PASS/FAIL/BLOCKED rows).
+	- Extended `scripts/verify-ops-readiness.mjs` to require evidence rows with explicit execution status.
+
+### Progress Impact
+- P1 completion moved from 72% → 86%
+- P2 completion moved from 56% → 64%
+- Objective 4 moved from 75% → 80%
+- Objective 5 moved from 74% → 83%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:ops:readiness` ✅
+- `npm run verify:performance:budget` ✅
+
+## 2026-02-17 — P1/P2 Close-out Cycle (Notifications + Performance Budgets)
+
+### Session Overview
+Delivered a second close-out cycle focused on remaining P1/P2 gaps: notification reliability baseline, performance budget enforcement, and stronger ops readiness coverage.
+
+### Delivered
+- P1 notification reliability baseline:
+	- Added `src/services/notificationReliabilityService.ts` for persisted reminder hour, enabled state, permission state, and scheduling telemetry markers.
+	- Integrated profile controls for notification reliability state and reminder-hour configuration.
+- P1 performance budget enforcement:
+	- Added `scripts/verify-performance-budget.mjs` using `reports/ml-benchmark-lite.md` thresholds.
+	- Wired `verify:performance:budget` into npm scripts and CI.
+- P2 ops completion uplift:
+	- Added `reports/ops/older-device-sweep.md` checklist scaffold.
+	- Extended `scripts/verify-ops-readiness.mjs` to require older-device sweep artifact.
+
+### Progress Impact
+- P1 completion moved from 58% → 72%
+- P2 completion moved from 42% → 56%
+- Objective 4 moved from 71% → 75%
+- Objective 5 moved from 66% → 74%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:i18n:p0` ✅
+- `npm run verify:performance:budget` ✅
+- `npm run verify:ops:readiness` ✅
+
+## 2026-02-17 — P1/P2 Finish-up Cycle (Replay + Ops Readiness)
+
+### Session Overview
+Executed a targeted finish-up cycle to close remaining P1 reliability gaps and advance P2 operational readiness with enforceable CI gates.
+
+### Delivered
+- P1 reliability completion work:
+	- Added `src/services/replayOrchestrator.ts` for centralized replay execution with cooldown control.
+	- Integrated replay orchestrator at app startup (`app/_layout.tsx`) and on profile/legal entry points.
+	- Added sync queue fallback in `src/services/syncService.ts` so failed sync attempts are deferred via mutation queue.
+- P2 operations hardening:
+	- Added rollout runbook: `reports/ops/phased-rollout-plan.md`.
+	- Added rollback runbook: `reports/ops/rollback-runbook.md`.
+	- Added ops readiness gate script: `scripts/verify-ops-readiness.mjs`.
+	- Wired new gate in `package.json` and `.github/workflows/ci.yml`.
+
+### Progress Impact
+- P1 completion moved from 45% → 58%
+- P2 completion moved from 28% → 42%
+- Objective 4 moved from 63% → 71%
+- Objective 5 moved from 56% → 66%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:i18n:p0` ✅
+- `npm run verify:ops:readiness` ✅
+
+## 2026-02-17 — P0/P1/P2 Completion Push (Execution Cycle)
+
+### Session Overview
+Executed a cross-track completion pass focused on closing remaining in-repo gaps across legal readiness (P0), reliability replay coverage (P1), and operations hardening (P2).
+
+### Delivered
+- P1 replay expansion:
+	- Extended mutation queue job types to include `backup.upload_latest` and `sync.on_demand`.
+	- Added replay handlers for backup upload and sync-on-demand in `src/services/p1ReplayRunner.ts`.
+	- Added queue fallback in `src/services/cloudBackupService.ts` for failed auto cloud backups.
+	- Added queue fallback in `app/backups.tsx` for failed manual cloud backup uploads when no passphrase is provided.
+- P2 operations hardening:
+	- CI workflow now runs `verify:quality:110` and `verify:phase10:lite`.
+	- Added feature request intake template: `.github/ISSUE_TEMPLATE/feature-request.yml`.
+	- Added responsive QA baseline matrix: `reports/responsive-qa-matrix.md`.
+- P0 legal deliverables:
+	- Added legal draft documents:
+		- `docs/legal/PRIVACY_POLICY_DRAFT.md`
+		- `docs/legal/TERMS_OF_SERVICE_DRAFT.md`
+	- Updated deployment checklist to reference legal draft artifacts.
+
+### Progress Impact
+- P0 completion moved from 98% → 99% (remaining external store metadata + counsel review)
+- P1 completion moved from 32% → 45%
+- P2 completion moved from 10% → 28%
+- Objective 3 moved to 97%
+- Objective 4 moved to 63%
+- Objective 5 moved to 56%
+
+### Validation
+- `npm run typecheck` ✅
+
+## 2026-02-17 — P1 Reliability Cycle (10-Step Execution)
+
+### Session Overview
+Executed a 10-step architecture cycle to push P1 reliability forward with cache policy, read-through persistence, and replay queue infrastructure.
+
+### Steps & Completion
+1. ✅ Audit existing cache patterns (10%)
+2. ✅ Define unified cache policy (20%)
+3. ✅ Implement cache store service (35%)
+4. ✅ Add mutation queue persistence (50%)
+5. ✅ Add replay runner with legal consent handler (60%)
+6. ✅ Integrate meal prep cache usage (70%)
+7. ✅ Integrate profile cache usage (80%)
+8. ✅ Add telemetry events for cache/queue ops (90%)
+9. ✅ Update plan docs with new percentages (95%)
+10. ✅ Validate and finalize (100%)
+
+### New/Updated Reliability Components
+- `src/services/cachePolicy.ts`
+- `src/services/cacheStoreService.ts`
+- `src/services/mutationQueueService.ts`
+- `src/services/p1ReplayRunner.ts`
+- `src/services/legalService.ts` (queue fallback integration)
+- `app/meal-prep.tsx` (location + food list cache usage)
+- `app/profile.tsx` (profile snapshot cache usage + replay trigger)
+- `app/legal-center.tsx` (replay trigger)
+
+### Progress Impact
+- P1 completion moved from 15% → 32%
+- Objective 4 (Cache/State/Offline) moved from 35% → 52%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:i18n:p0` ✅
+
+## 2026-02-17 — Architected Follow-through (Percent Metrics + Rights Completion)
+
+### Session Overview
+Executed client-requested architecture cadence (plan → execute → review → repeat) with quantified completion tracking and one additional beneficial implementation: consent withdrawal path.
+
+### Implemented in this pass
+- Added progress percentages to planning artifacts:
+	- `OBJECTIVES.md` (Objective-level Q1 completion snapshot)
+	- `TODO.md` (P0/P1/P2 completion rates)
+- Enforced localization quality in CI:
+	- `.github/workflows/ci.yml` now runs `npm run verify:i18n:p0`
+- Completed additional data-rights UX path:
+	- Added local consent withdrawal in `src/services/legalService.ts`
+	- Added “Withdraw Local Consent” action in `app/legal-center.tsx`
+	- Added localized keys in `src/i18n/translations.ts`
+
+### Completion rates (current)
+- P0: 98%
+- P1: 15%
+- P2: 10%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:i18n:p0` ✅
+
+## 2026-02-17 — Progress Percentages + CI i18n Enforcement
+
+### Session Overview
+Added quantified completion rates to planning artifacts and enforced localization quality checks in CI for critical routes.
+
+### Changes Made
+- Added completion percentage snapshots to:
+	- `OBJECTIVES.md` (Objective-level Q1 progress)
+	- `TODO.md` (P0/P1/P2 execution progress)
+- Updated CI workflow (`.github/workflows/ci.yml`) to run:
+	- `npm run verify:i18n:p0`
+	- This prevents regression of hardcoded user-facing literals in critical routes.
+
+### Completion Snapshot (as recorded)
+- P0: 97%
+- P1: 15%
+- P2: 10%
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:i18n:p0` ✅
+
+## 2026-02-17 — P0 Completion (Localization + Legal + Regional Control)
+
+### Session Overview
+Closed P0 engineering scope by finishing the core-route localization pass, shipping the in-app Legal Center, and implementing consent version persistence.
+
+### Changes Made
+
+#### 1) Core-route localization hardening
+- Localized remaining user-facing literals in:
+	- `app/login.tsx`
+	- `app/fitquest.tsx`
+	- `app/dashboard.tsx`
+	- `app/profile.tsx`
+	- `app/move.tsx`
+	- `app/meal-prep.tsx`
+- Added missing key coverage in `src/i18n/translations.ts` for:
+	- `fitquest.*`
+	- `login.*`
+	- profile modal / goal / consent labels
+	- legal-center labels
+
+#### 2) Legal Center + in-app policies
+- Added new screens:
+	- `app/legal-center.tsx`
+	- `app/privacy-policy.tsx`
+	- `app/terms-of-service.tsx`
+- Profile now includes direct navigation to Legal Center.
+
+#### 3) Consent version + timestamp persistence
+- Added `src/services/legalService.ts`.
+- Consent acceptance now persists locally in `app_state`:
+	- `legal.consent.timestamp`
+	- `legal.consent.version`
+	- `legal.consent.source`
+- Acceptance flow attempts remote record first (`/users/consent`) and gracefully falls back to local persistence when unavailable.
+
+#### 4) Metadata alignment hooks
+- Added legal URL config in `app.json`:
+	- `expo.extra.legal.privacyPolicyUrl`
+	- `expo.extra.legal.termsOfServiceUrl`
+- Updated `DEPLOYMENT_CHECKLIST.md` with explicit store-console policy URL verification tasks.
+
+#### 5) Localization regression gate
+- Added script: `scripts/verify-i18n-p0.mjs`
+- Added npm command: `npm run verify:i18n:p0`
+- Gate checks critical routes for hardcoded user-facing literals.
+
+### Validation
+- `npm run typecheck` ✅
+- `npm run verify:i18n:p0` ✅ (after this session’s changes)
+
+### Remaining manual release actions (non-code)
+- Set/verify privacy policy URL in App Store Connect listing metadata.
+- Set/verify privacy policy URL in Google Play Console listing metadata.
+
+## 2026-02-17 — Planning Refresh (State Analysis + Roadmap Alignment)
+
+### Session Overview
+Analyzed current app state and planning drift, then aligned strategic docs with implementation reality and current compliance requirements.
+
+Primary intent for this session:
+- Reconcile roadmap/docs with completed Phase 2-10 foundations
+- Build a practical next-step plan from current product risks
+- Add explicit tracks for language responsiveness, regional meal-prep control, and legal/compliance readiness
+
+---
+
+## Analysis Findings (Current State)
+
+### 1) Roadmap vs implementation mismatch
+- `DEVELOPMENT_LOG.md` reflects Phase 2-10 completion milestones and verification scripts.
+- `OBJECTIVES.md` still had older short-term tactical next steps and no refreshed execution priorities.
+- `TODO.md` had older entries and lacked an up-to-date prioritized queue tied to current constraints.
+
+### 2) Language responsiveness baseline exists but coverage is partial
+- `LanguageContext` persists language and provides `t()`.
+- Several screens use `useLanguage()`, but translation usage is inconsistent across the app.
+- Need a strict localization pass to ensure fully responsive app-wide language switching.
+
+### 3) Meal prep already has location-aware filtering, but user control is incomplete
+- `locationService` supports GPS + region mapping and meal filtering.
+- `meal-prep.tsx` surfaces location badge and refresh, but there is no explicit settings-level manual region override path.
+
+### 4) Privacy/compliance primitives exist, legal package still incomplete
+- Profile currently exposes consent/export/delete actions.
+- Formal Privacy Policy and Terms of Service docs/workflows are not yet integrated as release-grade legal surfaces.
+
+---
+
+## External Policy References Reviewed
+
+- Apple App Store Review Guidelines (privacy, health data handling, account deletion, consent/access expectations)
+- Google Play User Data policy (prominent disclosure/consent, Data safety accuracy, privacy policy requirements, account deletion)
+- GDPR Article 9 (health data as special-category data, explicit-consent basis)
+- CCPA/CPRA consumer rights baseline (know/delete/correct/limit/notice obligations)
+
+Note:
+- Final legal language requires attorney review before production release.
+
+---
+
+## Changes Made
+
+### 1. Objectives document refreshed
+**File:** `OBJECTIVES.md`
+
+Added/updated:
+- Current state snapshot (2026-02-17)
+- 2026-Q1 priority objectives:
+	- app-wide responsive language system
+	- regional meal-prep controls (auto + manual)
+	- legal/data-protection readiness
+	- cache/state/offline reliability
+	- notifications/performance/CI-delivery ops
+- Jurisdiction/store compliance baseline section
+- Ownership and update timestamp refresh
+
+### 2. TODO queue reset to active execution priorities
+**File:** `TODO.md`
+
+Added:
+- "Strategic Plan Reset — 2026-02-17" section
+- P0/P1/P2 queue with concrete action tracks
+- legal deliverables checklist as release gate
+- updated `Last updated` date
+
+---
+
+## Outcome
+
+- Planning documents are now synchronized with app maturity and current risk profile.
+- Next delivery work is explicitly prioritized around:
+	1) language responsiveness,
+	2) regional meal-prep control,
+	3) legal/compliance readiness,
+	4) caching/offline/performance reliability.
+
+---
+
 ## 2026-02-05 — Major Feature Integration
 
 ### Session Overview

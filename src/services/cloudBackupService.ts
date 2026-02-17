@@ -8,6 +8,7 @@ import {
 } from './backupService';
 import { fetchWithAuth } from './authApi';
 import { getApiBaseUrl } from './apiBaseUrl';
+import { enqueueMutation } from './mutationQueueService';
 
 const LAST_AUTO_BACKUP_KEY = 'cloud_backup.last_auto_backup_at';
 
@@ -126,6 +127,6 @@ export async function maybeAutoCloudBackupOncePerDay(): Promise<void> {
     await uploadLocalBackupToCloud();
     await setAppState(LAST_AUTO_BACKUP_KEY, String(now));
   } catch {
-    // Silent failure: auto-backup should never break app startup.
+    await enqueueMutation('backup.upload_latest', {}, { dedupeKey: 'backup.upload_latest.auto' });
   }
 }

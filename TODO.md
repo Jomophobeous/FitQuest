@@ -2,13 +2,103 @@
 
 Purpose: single-source checklist for mobile work — track what has been done, what's in-progress, and the immediate next steps. Update this file whenever you complete or start a task (include date + short note).
 
-Last updated: 2026-02-08 (UTC)
+Last updated: 2026-02-17 (UTC)
 
 ## Status legend
 
 -   ✅ completed
 -   🔁 in-progress
 -   ⏳ planned / backlog
+
+## Strategic Plan Reset — 2026-02-17
+
+Context:
+- Current implementation includes strong Phase 2-10 foundations and verification scripts, but planning docs were lagging behind implementation state.
+- This section is the active execution queue for the next delivery window.
+
+### Completion Rates (2026-02-17)
+- P0 completion: **99%**
+    - Engineering implementation complete for localization, regional meal control, legal center/consent versioning, and legal policy draft documents.
+    - Remaining: manual App Store Connect + Google Play policy URL entry/verification, external legal counsel sign-off.
+- P1 completion: **89%**
+    - Added cache policy + cache store + mutation replay queue foundations.
+    - Added replay handlers for legal consent, backup upload, and on-demand sync.
+    - Added deferred backup upload queue fallback for automatic and manual cloud backup failures.
+    - Added centralized replay orchestrator with cooldown and startup integration.
+    - Added sync-on-demand queue fallback on network/API failures.
+    - Added notification reliability baseline with persisted reminder settings and permission-state tracking in profile.
+    - Added CI-enforced performance budget gate (`verify:performance:budget`).
+    - Added native notification permission + daily reminder scheduling/cancel/reconcile flow wired into app startup and profile.
+    - Added CI-enforced notification reliability gate (`verify:notifications:reliability`).
+    - Added CI-enforced Meal Prep text render safety gate (`verify:mealprep:text-safety`).
+    - Remaining: physical-device delivery verification pass across staged rollout cohorts.
+- P2 completion: **68%**
+    - Added responsive QA matrix baseline, CI quality hardening gates, structured feature request intake template.
+    - Added phased rollout and rollback runbooks with CI ops-readiness verification.
+    - Added older-device execution evidence artifact with enforced ops gate coverage.
+    - Added rollout execution log artifact with stage outcome evidence requirements.
+    - Remaining: execute staged rollout and complete real-device sweep sign-offs.
+
+### Baseline confirmed (already in app)
+- ✅ Cloud backup/auth/sync/analytics adaptation foundations (Phases 2-6)
+- ✅ Platform/autonomous/federation/hardening runtime scaffolding (Phases 7-10)
+- ✅ Initial privacy actions in profile (`record consent`, `export`, `delete`)
+- ✅ Language context and translation catalogue (15 languages) available
+- ✅ Meal prep location detection and region-mapped food filtering available
+
+### P0 — Must complete next (current sprint)
+- ✅ Responsive language hardening across core user journeys:
+    - completed high-traffic route pass (`dashboard`, `fitquest`, `move`, `meal-prep`, `profile`, `login`)
+    - added `verify:i18n:p0` gate for critical routes to prevent hardcoded regression
+    - `LanguageContext` fallback behavior preserved (en fallback + key fallback)
+- ✅ Meal prep regional control:
+    - manual region selector added in profile preferences
+    - precedence implemented: manual override > GPS-derived mapping > global fallback
+    - persistent active-region notice shown in Meal Prep header badge
+- ✅ Legal/Compliance baseline (engineering scope):
+    - in-app Legal Center added with Privacy Policy + Terms of Service entry points
+    - consent version + timestamp persisted via `app_state` (`legal.consent.*` keys)
+    - legal URLs centralized in `app.json` (`expo.extra.legal.*`) for store metadata alignment
+    - ⏳ manual store console update still required (App Store Connect + Google Play policy URL fields)
+
+### P1 — Next sprint after P0
+- 🔁 Caching strategy implementation (documented and enforced):
+    - ✅ Layer 1: in-memory cache via `cacheStoreService`
+    - ✅ Layer 2: SQLite/app_state persistent cache envelope
+    - 🔁 Layer 3: sync queue for remote writes/retries (legal consent + backup upload + sync-on-demand handlers complete; broader domain coverage pending)
+- 🔁 Push notification reliability:
+    - ✅ persisted reminder settings and reliability state controls in profile
+    - ✅ platform-native permission + scheduling/cancel hooks (`expo-notifications`)
+    - ✅ startup reconciliation + delivery/error telemetry markers
+    - ✅ CI gate for wiring/integration regressions (`verify:notifications:reliability`)
+    - 🔁 physical device verification (delivery timing + deny/allow flows)
+- ✅ Meal Prep runtime text-safety regression guard
+    - Added static gate for known crash pattern (`verify:mealprep:text-safety`)
+- ⏳ Performance optimization pass:
+    - ✅ startup/list micro-budget gate in CI (`verify:performance:budget`)
+    - sensor workload checks
+    - low-end device behavior safeguards
+
+### P2 — Operations and scale
+- ✅ Responsive QA matrix for 15 screen-size classes and orientation behaviors (baseline template at `reports/responsive-qa-matrix.md`)
+- 🔁 CI/CD hardening (quality gates, phased rollout, rollback path)
+    - ✅ Added additional CI gates (`verify:quality:110`, `verify:phase10:lite`)
+    - ✅ Added ops readiness gate (`verify:ops:readiness`)
+    - ✅ Added notification reliability gate (`verify:notifications:reliability`)
+- ✅ Feature request management flow (capture → triage → roadmap status) via `.github/ISSUE_TEMPLATE/feature-request.yml`
+- ✅ Rollout and rollback runbooks (`reports/ops/phased-rollout-plan.md`, `reports/ops/rollback-runbook.md`)
+- 🔁 Older-device test sweep (optional, schedule-based)
+    - ✅ structured execution evidence log with PASS/FAIL/BLOCKED status rows at `reports/ops/older-device-sweep.md`
+    - 🔁 complete real-device entries and sign-off
+- 🔁 Rollout execution evidence
+    - ✅ stage outcome log scaffold at `reports/ops/rollout-execution-log.md`
+    - 🔁 complete stage-by-stage PASS/FAIL entries with owner sign-off
+
+### Legal deliverables checklist (release gate)
+- ✅ Privacy Policy draft (health/location/sensor/encryption/retention/rights) — `docs/legal/PRIVACY_POLICY_DRAFT.md`
+- ✅ Terms of Service draft (medical disclaimer, liability, subscriptions, governing law) — `docs/legal/TERMS_OF_SERVICE_DRAFT.md`
+- ⏳ Data-rights UX verification (export/delete/correct/withdraw where applicable)
+- ⏳ Counsel review and approval before production release
 
 ## Future Tests
 

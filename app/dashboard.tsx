@@ -115,13 +115,13 @@ export default function DashboardScreen() {
           const sessionDate = new Date(latest.started_at);
           const isToday = sessionDate.toDateString() === new Date().toDateString();
           const isYesterday = sessionDate.toDateString() === new Date(Date.now() - 86400000).toDateString();
-          const dateLabel = isToday ? 'Today' : isYesterday ? 'Yesterday' : sessionDate.toLocaleDateString();
+          const dateLabel = isToday ? t('common.today') : isYesterday ? t('common.yesterday') : sessionDate.toLocaleDateString();
           
           setRecentWorkout({
             id: latest.id,
             name: latest.completed_exercises > 0
-              ? `${latest.completed_exercises} of ${latest.total_exercises} exercises`
-              : 'Incomplete Session',
+              ? `${latest.completed_exercises} ${t('dashboard.of')} ${latest.total_exercises} ${t('library.exercises').toLowerCase()}`
+              : t('dashboard.incompleteSession'),
             date: dateLabel,
             duration: latest.duration_minutes || 0,
             caloriesBurned: latest.completed_exercises > 0
@@ -200,11 +200,11 @@ export default function DashboardScreen() {
                 </View>
                 <View style={styles.statPill}>
                   <Text style={[styles.statValue, { color: theme.colors.accent }]}>{level}</Text>
-                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>Lv</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('dashboard.levelShort')}</Text>
                 </View>
                 <View style={styles.statPill}>
                   <Text style={[styles.statValue, { color: theme.colors.text }]}>{weeklyXP}</Text>
-                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>XP</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('dashboard.xp')}</Text>
                 </View>
               </View>
             </View>
@@ -235,12 +235,12 @@ export default function DashboardScreen() {
                   <View style={styles.metaItem}>
                     <MaterialCommunityIcons name="fire" size={16} color={theme.colors.warning} />
                     <Text style={[styles.metaValue, { color: theme.colors.text }]}> {totalCalories}</Text>
-                    <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}> kcal</Text>
+                    <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}> {t('dashboard.kcal')}</Text>
                   </View>
                   <View style={styles.metaItem}>
                     <MaterialCommunityIcons name="clock-outline" size={16} color={theme.colors.textMuted} />
                     <Text style={[styles.metaValue, { color: theme.colors.text }]}> {totalMinutes}</Text>
-                    <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}> min</Text>
+                    <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}> {t('fitquest.minShort')}</Text>
                   </View>
                 </View>
                 {/* PRIMARY ACTION: Start Workout - MOST PROMINENT */}
@@ -282,7 +282,7 @@ export default function DashboardScreen() {
                   styles.recoveryTitle,
                   { color: isRecoveryBad ? theme.colors.error : theme.colors.text }
                 ]}>
-                  Recovery
+                  {t('dashboard.recovery')}
                 </Text>
               </View>
               <View style={styles.recoveryRight}>
@@ -293,13 +293,13 @@ export default function DashboardScreen() {
                   {recoveryPercent}%
                 </Text>
                 <Text style={[styles.recoveryLabel, { color: theme.colors.textMuted }]}>
-                  {isRecoveryBad ? 'Rest recommended' : isRecoveryGood ? 'Ready to train' : 'Moderate'}
+                  {isRecoveryBad ? t('dashboard.restRecommended') : isRecoveryGood ? t('dashboard.readyToTrain') : t('dashboard.recoveryModerate')}
                 </Text>
               </View>
             </View>
             {isRecoveryBad && (
               <Text style={[styles.recoveryWarning, { color: theme.colors.error }]}>
-                ⚠️ High fatigue detected. Consider a lighter workout or rest day.
+                {t('dashboard.recoveryWarning')}
               </Text>
             )}
           </View>
@@ -315,7 +315,7 @@ export default function DashboardScreen() {
         {/* ══════════════════════════════════════════════════════════════════
             PRIORITY 3: LAST WORKOUT - Summary only (reduced)
         ══════════════════════════════════════════════════════════════════ */}
-        <SectionHeader title="Last Workout" delay={300} />
+        <SectionHeader title={t('dashboard.lastWorkout')} delay={300} />
         {recentWorkout ? (
           <AnimatedListItem key={recentWorkout.id} index={0} style={styles.workoutItem}>
             <GlassCard
@@ -343,7 +343,7 @@ export default function DashboardScreen() {
             <GlassCard style={[styles.workoutCard, { alignItems: 'center', paddingVertical: SPACING.md }]}>
               <MaterialCommunityIcons name="dumbbell" size={32} color={theme.colors.textMuted} />
               <Text style={[styles.workoutMeta, { color: theme.colors.textMuted, marginTop: 8, textAlign: 'center' }]}>
-                No workouts yet. Start your first one!
+                {t('dashboard.noWorkoutsYet')}
               </Text>
             </GlassCard>
           </View>
@@ -354,7 +354,7 @@ export default function DashboardScreen() {
         ══════════════════════════════════════════════════════════════════ */}
         <View style={styles.secondaryActions}>
           <GradientButton
-            title="Create Custom"
+            title={t('dashboard.createCustom')}
             icon="playlist-plus"
             onPress={() => router.push('/create-workout' as any)}
             variant="success"
@@ -367,7 +367,7 @@ export default function DashboardScreen() {
           <View style={styles.liveCard}>
             <PulseDot color={theme.colors.success} size={6} active={true} />
             <Text style={[styles.liveText, { color: theme.colors.textMuted }]}>
-              Recovery tracking active
+              {t('dashboard.recoveryTrackingActive')}
             </Text>
           </View>
         </Animated.View>

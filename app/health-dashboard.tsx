@@ -304,7 +304,7 @@ export default function HealthDashboardScreen() {
       }
 
       // Get active alerts
-      let alerts: Alert[] = [];
+      let alerts: HealthAlert[] = [];
       let anomalyCount = 0;
       try {
         const rawAlerts = await encryptedDB.getActiveAlerts();

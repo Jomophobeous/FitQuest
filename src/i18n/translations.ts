@@ -97,6 +97,13 @@ const en = {
   'fitquest.todaysWorkout': "Today's Workout",
   'fitquest.recoveryStatus': 'Recovery Status',
   'fitquest.restTime': 'Rest Time',
+  'fitquest.breatheIn': 'Breathe In',
+  'fitquest.breatheOut': 'Breathe Out',
+  'fitquest.hold': 'Hold',
+  'fitquest.getReady': 'GET READY',
+  'fitquest.go': 'GO!',
+  'fitquest.nextUp': 'Up Next',
+  'fitquest.equipmentChange': 'Equipment change — get set up!',
   'fitquest.formTips': 'Form Tips',
 
   // FitQuest/Train

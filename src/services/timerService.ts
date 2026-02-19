@@ -192,6 +192,15 @@ class Timer {
   }
 
   /**
+   * Add time to a running or paused timer
+   */
+  addTime(seconds: number): void {
+    if (this.state !== 'running' && this.state !== 'paused') return;
+    this.totalSeconds += seconds;
+    this.emit('tick'); // re-emit so listeners pick up the new total
+  }
+
+  /**
    * Skip to completion
    */
   skip(): void {
@@ -306,6 +315,13 @@ class TimerService {
    */
   skipRest(): void {
     this.restTimer.skip();
+  }
+
+  /**
+   * Extend rest period by adding seconds
+   */
+  extendRest(seconds: number): void {
+    this.restTimer.addTime(seconds);
   }
 
   /**

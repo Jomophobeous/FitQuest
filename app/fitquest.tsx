@@ -3,7 +3,7 @@
  * Premium glass UI with animated transitions
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Modal,
   useWindowDimensions,
   Vibration,
 } from 'react-native';
@@ -42,6 +41,8 @@ import {
 } from '../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ExerciseImage from '../src/components/ExerciseImage';
+import RestTimerOverlay from '../src/components/RestTimerOverlay';
+import GetReadyOverlay from '../src/components/GetReadyOverlay';
 import { useRouter } from 'expo-router';
 
 function FitQuestScreenInner() {
@@ -77,6 +78,7 @@ function FitQuestScreenInner() {
     sessionTimer,
     startRest,
     skipRest,
+    extendRest,
     startSession,
     endSession,
     pauseAll,
@@ -166,8 +168,13 @@ function FitQuestScreenInner() {
 
   // Rest timer state
   const [isResting, setIsResting] = useState(false);
-  const restTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingExerciseAdvanceRef = useRef(false);
+  // Get-Ready overlay state (P3: exercise transitions)
+  const [isGetReady, setIsGetReady] = useState(false);
+  const [getReadyExercise, setGetReadyExercise] = useState<{
+    exerciseId: string; name: string; category: string;
+    sets: number; reps: string; setupCue?: string; audioSetup?: string;
+  } | null>(null);
   // Collapsible instructions
   const [showAllInstructions, setShowAllInstructions] = useState(false);
 
@@ -191,27 +198,57 @@ function FitQuestScreenInner() {
     }
   }, [status, workout, completionResult]);
 
-  // Cleanup rest timer on unmount
+  // Auto-advance when rest timer completes (replaces setTimeout backup)
   useEffect(() => {
-    return () => {
-      if (restTimerRef.current) clearTimeout(restTimerRef.current);
-    };
-  }, []);
+    if (isResting && pendingExerciseAdvanceRef.current && restTimer.state === 'completed') {
+      void advanceAfterRest('timer');
+    }
+  }, [isResting, restTimer.state]);
 
   const advanceAfterRest = async (reason: 'timer' | 'skip') => {
     if (!pendingExerciseAdvanceRef.current) return;
     pendingExerciseAdvanceRef.current = false;
-    if (restTimerRef.current) {
-      clearTimeout(restTimerRef.current);
-      restTimerRef.current = null;
-    }
     skipRest();
     setIsResting(false);
     setShowAllInstructions(false);
+
+    const nextIdx = currentExerciseIndex + 1;
+    const hasNext = nextIdx < (workout?.exercises.length ?? 0);
+
+    if (reason === 'timer' && hasNext) {
+      // Timer ended naturally → show Get-Ready countdown before next exercise
+      const next = workout!.exercises[nextIdx];
+      setGetReadyExercise({
+        exerciseId: next.exerciseId,
+        name: next.name,
+        category: next.category,
+        sets: next.sets,
+        reps: next.reps,
+        setupCue: next.instructions?.[0],
+        audioSetup: next.audioSetup,
+      });
+      setIsGetReady(true);
+      console.log('[FitQuest] Rest ended — showing Get Ready', { nextExercise: next.name });
+    } else {
+      // Skipped rest or no next exercise → advance immediately
+      completeExercise(5);
+      Vibration.vibrate(20);
+      console.log('[FitQuest] Rest ended — advancing immediately', { reason });
+    }
+  };
+
+  const handleGetReadyDone = useCallback(() => {
+    setIsGetReady(false);
+    setGetReadyExercise(null);
     completeExercise(5);
     Vibration.vibrate(20);
-    console.log('[FitQuest] Rest ended — advancing exercise', { reason });
-  };
+    console.log('[FitQuest] Get-Ready done — next exercise');
+  }, [completeExercise]);
+
+  const handleExtendRest = useCallback((seconds: number) => {
+    extendRest(seconds);
+    console.log('[FitQuest] Rest extended +' + seconds + 's');
+  }, [extendRest]);
 
   const handleFinish = async () => {
     console.log('[FitQuest] handleFinish called — processing workout completion');
@@ -537,61 +574,32 @@ function FitQuestScreenInner() {
 
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        {/* ═══ FULL-SCREEN REST TIMER OVERLAY ═══ */}
-        <Modal
+        {/* ═══ REST TIMER OVERLAY (P2) ═══ */}
+        <RestTimerOverlay
           visible={!!isResting}
-          animationType="fade"
-          transparent={false}
-          statusBarTranslucent
-        >
-          <View style={[styles.restOverlay, { backgroundColor: theme.colors.background }]}>
-            <SafeAreaView style={styles.restOverlayInner}>
-              <Animated.View entering={ZoomIn.duration(200)} style={styles.restOverlayContent}>
-                <View style={[styles.restTimerIconWrap, { backgroundColor: theme.colors.warning + '18' }]}>
-                  <MaterialCommunityIcons name="timer-sand" size={48} color={theme.colors.warning} />
-                </View>
-                <Text style={[styles.restOverlayLabel, { color: theme.colors.textMuted }]}>
-                  {t('fitquest.restTime')}
-                </Text>
-                <Text style={[styles.restOverlayTimer, { color: theme.colors.warning }]}>
-                  {restTimer.formattedRemaining}
-                </Text>
-                
-                {/* Next exercise preview */}
-                <View style={[styles.restNextCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-                  <Text style={[styles.restNextLabel, { color: theme.colors.textMuted }]}>
-                    {t('fitquest.nextUp')}
-                  </Text>
-                  {workout.exercises[currentExerciseIndex + 1] && (
-                    <View style={{ alignItems: 'center', marginVertical: 8 }}>
-                      <ExerciseImage
-                        exerciseId={workout.exercises[currentExerciseIndex + 1].exerciseId}
-                        category={workout.exercises[currentExerciseIndex + 1].category}
-                        variant="thumbnail"
-                      />
-                    </View>
-                  )}
-                  <Text style={[styles.restNextName, { color: theme.colors.text }]}>
-                    {workout.exercises[currentExerciseIndex + 1]?.name || ''}
-                  </Text>
-                </View>
+          progress={restTimer.progress}
+          formattedRemaining={restTimer.formattedRemaining}
+          remaining={restTimer.remaining}
+          nextExercise={workout.exercises[currentExerciseIndex + 1] ? {
+            exerciseId: workout.exercises[currentExerciseIndex + 1].exerciseId,
+            name: workout.exercises[currentExerciseIndex + 1].name,
+            category: workout.exercises[currentExerciseIndex + 1].category,
+            sets: workout.exercises[currentExerciseIndex + 1].sets,
+            reps: workout.exercises[currentExerciseIndex + 1].reps,
+          } : undefined}
+          onSkip={() => {
+            console.log('[FitQuest] Rest skipped by user');
+            void advanceAfterRest('skip');
+          }}
+          onExtend={handleExtendRest}
+        />
 
-                <TouchableOpacity
-                  style={[styles.skipRestOverlayBtn, { borderColor: theme.colors.accent, backgroundColor: theme.colors.accent + '12' }]}
-                  onPress={() => {
-                    console.log('[FitQuest] Rest skipped by user');
-                    void advanceAfterRest('skip');
-                  }}
-                >
-                  <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.accent} />
-                  <Text style={{ color: theme.colors.accent, fontWeight: '700', fontSize: 15, marginLeft: 8 }}>
-                    {t('fitquest.skipRest')}
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
-            </SafeAreaView>
-          </View>
-        </Modal>
+        {/* ═══ GET READY OVERLAY (P3) ═══ */}
+        <GetReadyOverlay
+          visible={isGetReady}
+          exercise={getReadyExercise}
+          onReady={handleGetReadyDone}
+        />
 
         {/* Session Clock Bar */}
         <View
@@ -747,10 +755,6 @@ function FitQuestScreenInner() {
                     setIsResting(true);
                     const restDuration = currentExercise.restSeconds || 60;
                     startRest(restDuration);
-                    if (restTimerRef.current) clearTimeout(restTimerRef.current);
-                    restTimerRef.current = setTimeout(() => {
-                      void advanceAfterRest('timer');
-                    }, restDuration * 1000);
                   }
                 }}
                 variant={isLastExercise ? "success" : "primary"}
@@ -915,17 +919,7 @@ const styles = StyleSheet.create({
   progressBarFill: { height: 4, borderRadius: 2 },
   exerciseContent: { padding: 16, paddingBottom: 32 },
   exerciseContentCompact: { paddingBottom: 56 },
-  // ═══ FULL-SCREEN REST OVERLAY ═══
-  restOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  restOverlayInner: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' },
-  restOverlayContent: { alignItems: 'center', paddingHorizontal: 32, width: '100%' },
-  restTimerIconWrap: { width: 96, height: 96, borderRadius: 48, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
-  restOverlayLabel: { fontSize: 16, fontWeight: '500', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
-  restOverlayTimer: { fontSize: 72, fontWeight: '800', fontVariant: ['tabular-nums'] as any, marginBottom: 32 },
-  restNextCard: { paddingVertical: 16, paddingHorizontal: 24, borderRadius: 16, borderWidth: 1, alignItems: 'center', width: '100%', maxWidth: 300, marginBottom: 40 },
-  restNextLabel: { fontSize: 12, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 },
-  restNextName: { fontSize: 18, fontWeight: '700', textAlign: 'center' },
-  skipRestOverlayBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14, paddingHorizontal: 32, borderRadius: 14, borderWidth: 1.5 },
+  // ═══ REST / GET-READY overlays are in separate components ═══
   restTimerCard: { alignItems: 'center', padding: 24, marginBottom: 16, gap: 6 },
   restTimerValue: { fontSize: 32, fontWeight: '700', fontVariant: ['tabular-nums'] as any },
   restTimerLabel: { fontSize: 13 },

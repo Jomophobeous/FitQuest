@@ -25,6 +25,7 @@ export interface UseTimerReturn {
   restTimer: TimerHookState;
   startRest: (seconds: number) => void;
   skipRest: () => void;
+  extendRest: (seconds: number) => void;
   
   // Session timer
   sessionTimer: TimerHookState;
@@ -97,6 +98,10 @@ export function useTimer(): UseTimerReturn {
     timerService.skipRest();
   }, []);
 
+  const extendRest = useCallback((seconds: number) => {
+    timerService.extendRest(seconds);
+  }, []);
+
   const startSession = useCallback((maxMinutes: number = 60) => {
     timerService.startSession(maxMinutes);
     setIsActive(true);
@@ -127,6 +132,7 @@ export function useTimer(): UseTimerReturn {
     restTimer: restState,
     startRest,
     skipRest,
+    extendRest,
     sessionTimer: sessionState,
     startSession,
     endSession,

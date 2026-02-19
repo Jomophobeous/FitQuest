@@ -29,6 +29,8 @@ export interface AudioSettings {
   voiceEnabled: boolean;
   speechRate: 0.8 | 1.0 | 1.2;
   countdownCuesEnabled: boolean;
+  /** BCP-47 locale for TTS (runtime-only, not persisted to DB) */
+  language: string;
 }
 
 export interface ExerciseAudio {
@@ -56,6 +58,29 @@ const DEFAULT_SETTINGS: AudioSettings = {
   voiceEnabled: true,
   speechRate: 1.0,
   countdownCuesEnabled: true,
+  language: 'en-US',
+};
+
+/**
+ * Maps app language codes to BCP-47 TTS locale codes.
+ * expo-speech uses these to select the correct voice.
+ */
+const APP_LANG_TO_TTS_LOCALE: Record<string, string> = {
+  en: 'en-US',
+  af: 'af-ZA',
+  zu: 'zu-ZA',
+  xh: 'xh-ZA',
+  st: 'st-ZA',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  de: 'de-DE',
+  pt: 'pt-BR',
+  zh: 'zh-CN',
+  ja: 'ja-JP',
+  ko: 'ko-KR',
+  ar: 'ar-SA',
+  hi: 'hi-IN',
+  sw: 'sw-KE',
 };
 
 // ============================================
@@ -83,6 +108,7 @@ class AudioService {
           voiceEnabled: result.voice_enabled === 1,
           speechRate: result.speech_rate as 0.8 | 1.0 | 1.2,
           countdownCuesEnabled: result.countdown_cues_enabled === 1,
+          language: DEFAULT_SETTINGS.language,
         };
       } else {
         // Create default settings
@@ -127,6 +153,14 @@ class AudioService {
   }
 
   /**
+   * Set TTS language from app language code.
+   * Call this whenever the app language changes.
+   */
+  setLanguage(appLangCode: string): void {
+    this.settings.language = APP_LANG_TO_TTS_LOCALE[appLangCode] ?? 'en-US';
+  }
+
+  /**
    * Subscribe to audio events
    */
   subscribe(listener: AudioEventListener): () => void {
@@ -166,7 +200,7 @@ class AudioService {
       Speech.speak(text, {
         rate: this.settings.speechRate,
         pitch: 1.0,
-        language: 'en-US',
+        language: this.settings.language,
         onDone: () => {
           this.isSpeaking = false;
           resolve();
@@ -370,22 +404,85 @@ export function generateDefaultAudio(exerciseName: string, restSeconds: number =
 }
 
 /**
+ * Generate rich, detailed audio narration from exercise data.
+ * Builds TTS-optimized narration from the exercise's instruction array,
+ * muscle targets, and metadata — replacing the generic "Get into position".
+ */
+export function generateRichAudio(
+  exercise: {
+    name: string;
+    category?: string;
+    instructions: string[];
+    primaryMuscles?: string[];
+    restSeconds?: number;
+  },
+  nextExerciseName?: string,
+): ExerciseAudio {
+  const { name, category, instructions, primaryMuscles, restSeconds = 30 } = exercise;
+
+  // ── INTRO: Name + what it targets ──
+  let intro = `Next exercise: ${name}.`;
+  if (primaryMuscles && primaryMuscles.length > 0) {
+    const muscleList = primaryMuscles.slice(0, 3).map(m => m.replace(/_/g, ' ')).join(', ');
+    intro += ` This targets your ${muscleList}.`;
+  } else if (category) {
+    const catLabel = category.replace(/_/g, ' ');
+    intro += ` A ${catLabel} exercise.`;
+  }
+
+  // ── SETUP: First 1-2 instructions (typically positioning) ──
+  let setup: string;
+  if (instructions.length >= 2) {
+    setup = instructions.slice(0, 2).join('. ') + '.';
+  } else if (instructions.length === 1) {
+    setup = instructions[0] + '.';
+  } else {
+    setup = `Get into position for ${name}.`;
+  }
+  // Clean up double periods
+  setup = setup.replace(/\.+/g, '.').replace(/\.\s*\./g, '.');
+
+  // ── EXECUTION: Remaining instructions (movement cues) ──
+  let execution: string;
+  if (instructions.length > 2) {
+    // Take instructions 3+ as execution cues
+    const execSteps = instructions.slice(2);
+    execution = execSteps.join('. ') + '.';
+  } else if (instructions.length === 2) {
+    execution = instructions[1] + '. Focus on controlled movement.';
+  } else {
+    execution = `Perform ${name} with controlled form. Breathe steadily throughout.`;
+  }
+  execution = execution.replace(/\.+/g, '.').replace(/\.\s*\./g, '.');
+
+  // ── TRANSITION: Encouragement + rest + next exercise teaser ──
+  let transition = `Well done!`;
+  if (restSeconds > 0) {
+    transition += ` Rest for ${restSeconds} seconds.`;
+  }
+  if (nextExerciseName) {
+    transition += ` Up next: ${nextExerciseName}.`;
+  } else {
+    transition += ` Shake it out and get ready.`;
+  }
+
+  return { intro, setup, execution, transition };
+}
+
+/**
  * Validate audio content meets TTS requirements
+ * Relaxed limits for rich narration — TTS handles long text well
  */
 export function validateAudioContent(text: string): { valid: boolean; issues: string[] } {
   const issues: string[] = [];
   
-  if (text.length > 100) {
-    issues.push('Text too long (max 100 chars)');
+  if (text.length > 500) {
+    issues.push('Text very long (max 500 chars for optimal TTS)');
   }
   
   const sentences = text.split(/[.!?]+/).filter(Boolean);
-  if (sentences.length > 2) {
-    issues.push('More than 2 sentences');
-  }
-  
-  if (text.includes(',') && text.split(',').length > 3) {
-    issues.push('Too many commas (affects TTS cadence)');
+  if (sentences.length > 8) {
+    issues.push('Many sentences — consider breaking into phases');
   }
   
   return {

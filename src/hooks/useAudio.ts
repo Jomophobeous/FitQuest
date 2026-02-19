@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { audioService, AudioSettings, ExerciseAudio, generateDefaultAudio } from '../services/audioService';
 import { DEFAULT_USER_ID } from '../context/DatabaseContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface UseAudioReturn {
   settings: AudioSettings;
@@ -26,6 +27,12 @@ export function useAudio(): UseAudioReturn {
   const [settings, setSettings] = useState<AudioSettings>(audioService.getSettings());
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<string | null>(null);
+  const { language } = useLanguage();
+
+  // Sync TTS language whenever the app language changes
+  useEffect(() => {
+    audioService.setLanguage(language);
+  }, [language]);
 
   useEffect(() => {
     // Initialize audio service

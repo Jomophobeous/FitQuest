@@ -112,16 +112,51 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
 
 /**
  * Get a default location when actual location is unavailable
- * Used for development and when location services are disabled
+ * Uses device timezone to make a reasonable regional guess
  */
 function getDefaultLocation(): UserLocation {
+  // Try to infer region from timezone
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const tzLower = tz.toLowerCase();
+    
+    // Map timezone regions to likely country codes
+    if (tzLower.includes('africa/johannesburg') || tzLower.includes('africa/harare') || tzLower.includes('africa/maputo')) {
+      return { latitude: -26.2, longitude: 28.0, city: 'Johannesburg', region: 'Gauteng', country: 'South Africa', isoCountryCode: 'ZA' };
+    }
+    if (tzLower.includes('africa/cape_town') || tzLower.includes('africa/durban')) {
+      return { latitude: -33.9, longitude: 18.4, city: 'Cape Town', region: 'Western Cape', country: 'South Africa', isoCountryCode: 'ZA' };
+    }
+    if (tzLower.includes('africa/')) {
+      // Generic Africa fallback — use ZA as closest regional match
+      return { latitude: -26.2, longitude: 28.0, city: undefined, region: undefined, country: 'South Africa', isoCountryCode: 'ZA' };
+    }
+    if (tzLower.includes('america/new_york') || tzLower.includes('america/chicago') || tzLower.includes('america/denver') || tzLower.includes('america/los_angeles')) {
+      return { latitude: 40.7, longitude: -74.0, city: undefined, region: undefined, country: 'United States', isoCountryCode: 'US' };
+    }
+    if (tzLower.includes('europe/london')) {
+      return { latitude: 51.5, longitude: -0.1, city: 'London', region: undefined, country: 'United Kingdom', isoCountryCode: 'GB' };
+    }
+    if (tzLower.includes('asia/kolkata') || tzLower.includes('asia/mumbai')) {
+      return { latitude: 19.0, longitude: 72.8, city: undefined, region: undefined, country: 'India', isoCountryCode: 'IN' };
+    }
+    if (tzLower.includes('australia/')) {
+      return { latitude: -33.8, longitude: 151.2, city: 'Sydney', region: undefined, country: 'Australia', isoCountryCode: 'AU' };
+    }
+    if (tzLower.includes('america/sao_paulo') || tzLower.includes('america/fortaleza')) {
+      return { latitude: -23.5, longitude: -46.6, city: undefined, region: undefined, country: 'Brazil', isoCountryCode: 'BR' };
+    }
+  } catch {
+    // Timezone detection failed
+  }
+
   return {
     latitude: 0,
     longitude: 0,
-    city: 'Unknown',
+    city: undefined,
     region: undefined,
     country: 'Global',
-    isoCountryCode: 'GLOBAL', // Special code for global foods
+    isoCountryCode: 'GLOBAL',
   };
 }
 

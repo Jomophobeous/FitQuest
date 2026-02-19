@@ -23,12 +23,12 @@ export const colorSystem = {
     
     // Text
     text: '#F5F7FB', // Primary text (almost white)
-    textSecondary: '#A8B0BD', // Secondary text
-    textMuted: '#6B7280', // Tertiary/meta text
+    textSecondary: '#BBC4D3', // Secondary text (lifted contrast)
+    textMuted: '#8C96A8', // Tertiary/meta text (lifted contrast)
     
     // Dividers
-    border: '#2A2F3B', // Hairline borders (subtle)
-    divider: '#1F2330', // Internal dividers
+    border: '#343C4B', // Hairline borders (clearer separation)
+    divider: '#2B3342', // Internal dividers
     
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
@@ -41,6 +41,22 @@ export const colorSystem = {
     // Backward compatibility aliases (use warning/success instead)
     accent2: '#F4A427', // → use warning
     accent3: '#10B981', // → use success/accent
+
+    // Category accent colors
+    purple: '#8B5CF6',
+    indigo: '#5F63FF',
+    pink: '#EC4899',
+    blue: '#3B82F6',
+    orange: '#F97316',
+    skyBlue: '#38BDF8',
+    purpleLight: '#A78BFA',
+    pinkLight: '#F472B6',
+
+    // Contrast text on accent-colored surfaces
+    onAccent: '#FFFFFF',
+
+    // Chrome
+    overlay: 'rgba(0,0,0,0.65)',
   },
   
   light: {
@@ -52,11 +68,11 @@ export const colorSystem = {
     // Text
     text: '#121316', // Primary text (almost black)
     textSecondary: '#4B4F58', // Secondary text
-    textMuted: '#7A7F89', // Tertiary/meta text
+    textMuted: '#6E7480', // Tertiary/meta text (clearer)
     
     // Dividers
-    border: '#DADDE3', // Hairline borders (1px max, very soft)
-    divider: '#E5E7EB', // Internal dividers
+    border: '#CDD3DC', // Hairline borders
+    divider: '#D9DEE6', // Internal dividers
     
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
@@ -69,6 +85,22 @@ export const colorSystem = {
     // Backward compatibility aliases (use warning/success instead)
     accent2: '#F4A427', // → use warning
     accent3: '#10B981', // → use success/accent
+
+    // Category accent colors
+    purple: '#8B5CF6',
+    indigo: '#5F63FF',
+    pink: '#EC4899',
+    blue: '#3B82F6',
+    orange: '#F97316',
+    skyBlue: '#38BDF8',
+    purpleLight: '#A78BFA',
+    pinkLight: '#F472B6',
+
+    // Contrast text on accent-colored surfaces
+    onAccent: '#FFFFFF',
+
+    // Chrome
+    overlay: 'rgba(0,0,0,0.65)',
   },
 };
 

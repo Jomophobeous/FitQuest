@@ -8,7 +8,7 @@
  * Keeps existing colors from theme-system.ts — only adds texture & feel.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import {
   View,
   StyleSheet,
@@ -53,7 +53,7 @@ interface GlassCardProps {
   glowColor?: string; // ignored - no glows
 }
 
-export function GlassCard({
+export const GlassCard = memo(function GlassCard({
   children,
   style,
   delay = 0,
@@ -105,6 +105,7 @@ export function GlassCard({
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           onPress={onPress}
+          accessibilityRole="button"
         >
           {cardContent}
         </TouchableOpacity>
@@ -113,7 +114,7 @@ export function GlassCard({
   }
 
   return cardContent;
-}
+});
 
 // ============================================
 // HEADER BAR (Simplified flat design)
@@ -207,7 +208,7 @@ interface StatChipProps {
   delay?: number;
 }
 
-export function StatChip({ icon, label, value, color, delay = 0 }: StatChipProps) {
+export const StatChip = memo(function StatChip({ icon, label, value, color, delay = 0 }: StatChipProps) {
   const { theme } = useTheme();
   // Default to gray unless explicitly colored
   const chipColor = color || theme.colors.textMuted;
@@ -222,13 +223,15 @@ export function StatChip({ icon, label, value, color, delay = 0 }: StatChipProps
           borderColor: theme.colors.border,
         },
       ]}
+      accessibilityLabel={`${label}: ${value}`}
+      accessibilityRole="text"
     >
       <MaterialCommunityIcons name={icon} size={16} color={chipColor} />
       <Text style={[styles.statChipValue, { color: theme.colors.text }]}>{value}</Text>
       <Text style={[styles.statChipLabel, { color: theme.colors.textMuted }]}>{label}</Text>
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // ANIMATED COUNTER
@@ -240,22 +243,10 @@ interface AnimatedCounterProps {
   style?: any;
 }
 
-export function AnimatedCounter({ value, suffix = '', style }: AnimatedCounterProps) {
-  const displayValue = useSharedValue(0);
+export const AnimatedCounter = memo(function AnimatedCounter({ value, suffix = '', style }: AnimatedCounterProps) {
   const { theme } = useTheme();
 
-  useEffect(() => {
-    displayValue.value = withTiming(value, {
-      duration: 150,
-      easing: Easing.out(Easing.linear),
-    });
-  }, [value]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: 1,
-  }));
-
-  // For RN we use a simple approach - the actual counting is visual-only
+  // Simple animated counter — displays the raw value with a zoom-in entrance
   return (
     <Animated.View entering={ZoomIn.delay(200).duration(150)}>
       <Text style={[styles.animatedCounter, { color: theme.colors.text }, style]}>
@@ -263,7 +254,7 @@ export function AnimatedCounter({ value, suffix = '', style }: AnimatedCounterPr
       </Text>
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // BUTTON (Simplified solid colors)
@@ -280,7 +271,7 @@ export interface GradientButtonProps {
   style?: import('react-native').ViewStyle;
 }
 
-export function GradientButton({
+export const GradientButton = memo(function GradientButton({
   title,
   onPress,
   icon,
@@ -324,6 +315,9 @@ export function GradientButton({
         onPressOut={handlePressOut}
         onPress={onPress}
         disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityState={{ disabled }}
       >
         <View
           style={[
@@ -343,7 +337,7 @@ export function GradientButton({
       </TouchableOpacity>
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // WEEK CALENDAR STRIP
@@ -391,6 +385,9 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
               },
             ]}
             onPress={() => onDatePress?.(day)}
+            accessibilityRole="button"
+            accessibilityLabel={`${dayNames[i]}, ${day.getDate()}${isToday ? ', today' : ''}${hasWorkout ? ', workout completed' : ''}`}
+            accessibilityState={{ selected: isActive }}
           >
             <Text
               style={[
@@ -412,7 +409,7 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
               <View
                 style={[
                   styles.calendarDot,
-                  { backgroundColor: isActive ? '#fff' : theme.colors.success },
+                  { backgroundColor: isActive ? theme.colors.surface : theme.colors.success },
                 ]}
               />
             )}
@@ -490,7 +487,7 @@ interface SectionHeaderProps {
   delay?: number;
 }
 
-export function SectionHeader({ title, action, onAction, delay = 0 }: SectionHeaderProps) {
+export const SectionHeader = memo(function SectionHeader({ title, action, onAction, delay = 0 }: SectionHeaderProps) {
   const { theme } = useTheme();
   return (
     <Animated.View
@@ -499,13 +496,13 @@ export function SectionHeader({ title, action, onAction, delay = 0 }: SectionHea
     >
       <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{title}</Text>
       {action && onAction && (
-        <TouchableOpacity onPress={onAction}>
+        <TouchableOpacity onPress={onAction} accessibilityRole="button" accessibilityLabel={action}>
           <Text style={[styles.sectionAction, { color: theme.colors.accent }]}>{action}</Text>
         </TouchableOpacity>
       )}
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // ANIMATED LIST ITEM
@@ -544,6 +541,7 @@ export function AnimatedListItem({ children, index, style, onPress }: AnimatedLi
         onPressIn={() => { scale.value = withTiming(0.98, { duration: 120 }); }}
         onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
         onPress={onPress}
+        accessibilityRole="button"
       >
         {content}
       </TouchableOpacity>

@@ -3,7 +3,7 @@
  * Provides i18n translation support with persistent language selection
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { translations, SUPPORTED_LANGUAGES } from '../i18n/translations';
 
@@ -12,7 +12,8 @@ const LANGUAGE_STORAGE_KEY = 'fitquest.language';
 interface LanguageContextType {
   language: string;
   setLanguage: (code: string) => void;
-  t: (key: string) => string;
+  /** Translate a key, with optional interpolation: t('key', { name: 'val' }) replaces {{name}} */
+  t: (key: string, vars?: Record<string, string | number>) => string;
   languageName: string;
 }
 
@@ -46,23 +47,38 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const t = useCallback(
-    (key: string): string => {
+    (key: string, vars?: Record<string, string | number>): string => {
       const langStrings = translations[language];
-      if (langStrings && langStrings[key]) return langStrings[key];
-      // Fallback to English
-      const enStrings = translations.en;
-      if (enStrings && enStrings[key]) return enStrings[key];
-      // Return key as last resort
-      return key;
+      let result: string;
+      if (langStrings && langStrings[key]) {
+        result = langStrings[key];
+      } else {
+        // Fallback to English
+        const enStrings = translations.en;
+        result = (enStrings && enStrings[key]) ? enStrings[key] : key;
+      }
+      // Interpolation: replace {{var}} with value
+      if (vars) {
+        for (const [k, v] of Object.entries(vars)) {
+          result = result.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+        }
+      }
+      return result;
     },
     [language],
   );
 
-  const languageName =
-    SUPPORTED_LANGUAGES.find((l) => l.code === language)?.name || 'English';
+  const languageName = useMemo(() =>
+    SUPPORTED_LANGUAGES.find((l) => l.code === language)?.name || 'English',
+    [language]
+  );
+
+  const contextValue = useMemo(() => ({
+    language, setLanguage, t, languageName,
+  }), [language, setLanguage, t, languageName]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, languageName }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );
@@ -75,9 +91,15 @@ export function useLanguage() {
     return {
       language: 'en',
       setLanguage: () => {},
-      t: (key: string) => {
+      t: (key: string, vars?: Record<string, string | number>) => {
         const enStrings = translations.en;
-        return enStrings?.[key] || key;
+        let result = enStrings?.[key] || key;
+        if (vars) {
+          for (const [k, v] of Object.entries(vars)) {
+            result = result.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+          }
+        }
+        return result;
       },
       languageName: 'English',
     };

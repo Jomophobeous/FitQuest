@@ -14,7 +14,7 @@ interface ThemedTextProps extends TextProps {
   weight?: FontWeight;
 }
 
-export default function ThemedText({
+export default React.memo(function ThemedText({
   variant = 'body',
   color = 'primary',
   weight,
@@ -69,4 +69,4 @@ export default function ThemedText({
       {...props}
     />
   );
-}
+});

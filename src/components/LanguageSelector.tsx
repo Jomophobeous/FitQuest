@@ -102,15 +102,13 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
       transparent
       onRequestClose={onClose}
     >
-      <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.6)' }]}>
+      <View style={[styles.overlay, { backgroundColor: theme.colors.overlay }]}>
         <View
           style={[
             styles.sheet,
             {
-              backgroundColor: theme.isDark ? '#121820' : '#FFFFFF',
-              borderColor: theme.isDark
-                ? 'rgba(255,255,255,0.08)'
-                : 'rgba(0,0,0,0.06)',
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.border,
             },
           ]}
         >

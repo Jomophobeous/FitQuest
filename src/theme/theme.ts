@@ -1,4 +1,5 @@
-import { MD3LightTheme } from 'react-native-paper';
+// Legacy theme file — canonical theme is src/design/theme-system.ts
+// Kept for backward compatibility with any remaining consumers
 
 // GREEN is the ONE accent color for primary actions
 const ACCENT_GREEN = '#10B981';
@@ -6,9 +7,7 @@ const WARNING_AMBER = '#F4A427';
 const ERROR_RED = '#EF4444';
 
 export const theme = {
-  ...MD3LightTheme,
   colors: {
-    ...MD3LightTheme.colors,
     primary: ACCENT_GREEN,
     onPrimary: '#FFFFFF',
     primaryContainer: '#D1FAE5',

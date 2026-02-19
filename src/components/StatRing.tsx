@@ -1,3 +1,8 @@
+/**
+ * @deprecated Use `ProgressRing` from `src/components/ui/GlassUI.tsx` instead.
+ * This component is kept for backward compatibility in style-guide.tsx only.
+ * Do NOT use in new code.
+ */
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';

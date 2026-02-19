@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { BiometricAuthService, type BiometricCapability, type AuthResult } from '../security/BiometricAuth';
 import {
   migrateToSecureStorage,
@@ -18,6 +18,7 @@ import {
   registerCurrentDeviceMigration,
   registerWithEmail,
 } from '../services/authApi';
+import { getApiBaseUrl } from '../services/apiBaseUrl';
 
 // ============================================
 // TYPES
@@ -34,6 +35,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isSignedIn: boolean;
+  /** True when user has authenticated via biometric, passcode, OR server token */
+  isAuthenticated: boolean;
+  /** Whether a backend server is configured (EXPO_PUBLIC_API_BASE_URL is set) */
+  isServerConfigured: boolean;
   /** Biometric hardware info (null until initialize()) */
   biometricCapability: BiometricCapability | null;
   /** Whether biometric auth is enabled by user preference */
@@ -78,6 +83,8 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   isLoading: false,
   isSignedIn: false,
+  isAuthenticated: false,
+  isServerConfigured: false,
   biometricCapability: null,
   biometricEnabled: false,
   signIn: async () => {},
@@ -112,8 +119,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLocallyAuthenticated, setIsLocallyAuthenticated] = useState(false);
   const [biometricCapability, setBiometricCapability] = useState<BiometricCapability | null>(null);
   const [biometricEnabled, setBiometricEnabledState] = useState(false);
+
+  const isServerConfigured = !!getApiBaseUrl();
 
   const bioAuth = BiometricAuthService.getInstance();
 
@@ -247,12 +257,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Revoke server refresh token when possible.
       // Falls back to local clear if network/server is unavailable.
-      await logoutEverywhere();
+      if (isServerConfigured) {
+        try { await logoutEverywhere(); } catch { /* offline — skip server logout */ }
+      }
 
       // Defensive clear in case logoutEverywhere throws before cleanup.
       await clearAuthCredentials();
       setToken(null);
       setUser(null);
+      setIsLocallyAuthenticated(false);
     } catch (err) {
       console.log('[FitQuest Auth] Failed to sign out:', err);
     } finally {
@@ -325,7 +338,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // ============================================
 
   const authenticateWithBiometrics = async (prompt?: string): Promise<AuthResult> => {
-    return bioAuth.authenticate(prompt || 'Unlock FitQuest');
+    const result = await bioAuth.authenticate(prompt || 'Unlock FitQuest');
+    if (result.success) setIsLocallyAuthenticated(true);
+    return result;
   };
 
   const setupPasscode = async (passcode: string): Promise<void> => {
@@ -333,7 +348,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const verifyPasscode = async (passcode: string): Promise<AuthResult> => {
-    return bioAuth.verifyPasscode(passcode);
+    const result = await bioAuth.verifyPasscode(passcode);
+    if (result.success) setIsLocallyAuthenticated(true);
+    return result;
   };
 
   const hasPasscode = async (): Promise<boolean> => {
@@ -357,11 +374,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // CONTEXT VALUE
   // ============================================
 
-  const value: AuthContextType = {
+  const contextValue = useMemo<AuthContextType>(() => ({
     user,
     token,
     isLoading,
     isSignedIn: !!token,
+    isAuthenticated: !!token || isLocallyAuthenticated,
+    isServerConfigured,
     biometricCapability,
     biometricEnabled,
     signIn,
@@ -378,7 +397,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isSessionValid,
     touchSession,
     resumeSession,
-  };
+  }), [user, token, isLoading, isLocallyAuthenticated, biometricCapability, biometricEnabled]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };

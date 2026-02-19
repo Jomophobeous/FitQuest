@@ -1,3 +1,8 @@
+/**
+ * @deprecated Prefer `GlassCard` from `src/components/ui/GlassUI.tsx` for new screens.
+ * Existing usages in create-workout.tsx, progress.tsx, and ThemeToggle.tsx
+ * should be migrated when those screens are refactored.
+ */
 import React from 'react';
 import { View, ViewProps, StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';

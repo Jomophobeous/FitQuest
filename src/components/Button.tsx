@@ -1,3 +1,8 @@
+/**
+ * @deprecated Use `GradientButton` from `src/components/ui/GlassUI.tsx` instead.
+ * This component is kept for backward compatibility in style-guide.tsx only.
+ * Do NOT use in new code.
+ */
 import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
@@ -24,7 +29,7 @@ export default function Button({ children, variant = 'primary', size = 'md', sty
   const variantConfig = {
     primary: {
       backgroundColor: theme.colors.accent,
-      textColor: '#FFFFFF',
+      textColor: theme.colors.background,
       shadow: theme.shadows.md,
     },
     secondary: {

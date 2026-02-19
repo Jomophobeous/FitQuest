@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { darkTheme, lightTheme, type Theme } from '../design/theme-system';
@@ -34,24 +34,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })();
   }, [systemColorScheme]);
 
-  const setMode = async (newMode: 'dark' | 'light') => {
+  const setMode = useCallback(async (newMode: 'dark' | 'light') => {
     setModeState(newMode);
     try {
       await SecureStore.setItemAsync(THEME_STORAGE_KEY, newMode);
     } catch (e) {
       console.warn('Failed to save theme preference:', e);
     }
-  };
+  }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setMode(mode === 'dark' ? 'light' : 'dark');
-  };
+  }, [mode, setMode]);
 
   const theme = mode === 'dark' ? darkTheme : lightTheme;
 
+  const contextValue = useMemo(() => ({
+    mode, theme, toggleTheme, setMode,
+  }), [mode, theme, toggleTheme, setMode]);
+
   // Always provide context, even during loading (use default dark theme)
   return (
-    <ThemeContext.Provider value={{ mode, theme, toggleTheme, setMode }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

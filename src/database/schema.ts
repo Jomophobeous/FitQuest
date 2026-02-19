@@ -156,6 +156,56 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
       }
     }
 
+    // v15 → v16: Nuclear category fix.
+    // Previous v14/v15 migrations used complex table-rebuild approach that
+    // silently failed on some devices. Drop exercise tables entirely and
+    // let seedExercises + seedExternalExercises re-populate with correct
+    // category names. Also rebuild user_profile to fix goal CHECK constraint.
+    if (currentVersion < 16) {
+      const oldCats = await database.getFirstAsync<{ cnt: number }>(
+        `SELECT COUNT(*) as cnt FROM exercises WHERE category IN ('calisthenics','getting_taller','faster','flexible','mental_clarity','building_muscle')`
+      );
+      if ((oldCats?.cnt ?? 0) > 0) {
+        console.log(`[FitQuest DB] v16: ${oldCats!.cnt} exercises with old categories — dropping for clean re-seed`);
+        await database.execAsync('PRAGMA foreign_keys = OFF');
+        await database.execAsync('DROP TABLE IF EXISTS exercise_images');
+        await database.execAsync('DROP TABLE IF EXISTS exercise_training_types');
+        await database.execAsync('DROP TABLE IF EXISTS exercise_equipment');
+        await database.execAsync('DROP TABLE IF EXISTS exercise_muscles');
+        await database.execAsync('DROP TABLE IF EXISTS exercises');
+        console.log(`[FitQuest DB] v16: exercise tables dropped, will re-seed after createTables`);
+
+        // Rebuild user_profile to fix goal CHECK constraint
+        try {
+          await migrateUserProfileGoals(database);
+        } catch (e) {
+          console.warn(`[FitQuest DB] v16: user_profile goal migration skipped:`, e);
+        }
+
+        // Update body_craft_algorithms goal_type
+        try {
+          await database.execAsync(`
+            UPDATE body_craft_algorithms SET goal_type =
+              CASE goal_type
+                WHEN 'calisthenics' THEN 'body_control'
+                WHEN 'getting_taller' THEN 'posture'
+                WHEN 'faster' THEN 'speed'
+                WHEN 'flexible' THEN 'mobility'
+                WHEN 'mental_clarity' THEN 'focus'
+                WHEN 'building_muscle' THEN 'strength'
+                ELSE goal_type
+              END
+          `);
+        } catch (e) {
+          console.warn(`[FitQuest DB] v16: body_craft goal update skipped:`, e);
+        }
+
+        await database.execAsync('PRAGMA foreign_keys = ON');
+      } else {
+        console.log(`[FitQuest DB] v16: categories already correct`);
+      }
+    }
+
     await migrateFitMindLegacyTables(database);
     await createTables(database);
     await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
@@ -368,6 +418,52 @@ function normalizeName(name: string): string {
     .replace(/[^a-z0-9\s]/g, '') // strip special chars
     .replace(/\s+/g, ' ')        // collapse whitespace
     .trim();
+}
+
+/**
+ * v16 helper: Rebuild user_profile table with new goal CHECK constraint.
+ * Simpler than full migrateCategoryRename — only touches user_profile.
+ */
+async function migrateUserProfileGoals(database: SQLite.SQLiteDatabase): Promise<void> {
+  const GOAL_CASE = `
+    CASE goal
+      WHEN 'calisthenics' THEN 'body_control'
+      WHEN 'getting_taller' THEN 'posture'
+      WHEN 'faster' THEN 'speed'
+      WHEN 'flexible' THEN 'mobility'
+      WHEN 'mental_clarity' THEN 'focus'
+      WHEN 'building_muscle' THEN 'strength'
+      ELSE goal
+    END`;
+
+  await database.execAsync('DROP TABLE IF EXISTS user_profile_new');
+  await database.execAsync(`
+    CREATE TABLE user_profile_new (
+      id TEXT PRIMARY KEY,
+      sex TEXT CHECK (sex IN ('male', 'female', 'other')),
+      weight_kg REAL,
+      height_cm REAL,
+      goal TEXT NOT NULL CHECK (goal IN (
+        'body_control', 'posture', 'speed', 'mobility', 'focus', 'strength'
+      )),
+      experience TEXT NOT NULL CHECK (experience IN ('beginner', 'intermediate', 'advanced')),
+      training_days_per_week INTEGER NOT NULL DEFAULT 3 CHECK (training_days_per_week BETWEEN 1 AND 7),
+      time_per_session_minutes INTEGER NOT NULL DEFAULT 30,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      locked INTEGER NOT NULL DEFAULT 0
+    )
+  `);
+  await database.execAsync(`
+    INSERT INTO user_profile_new
+    SELECT id, sex, weight_kg, height_cm, ${GOAL_CASE}, experience,
+           training_days_per_week, time_per_session_minutes,
+           created_at, updated_at, locked
+    FROM user_profile
+  `);
+  await database.execAsync('DROP TABLE IF EXISTS user_profile');
+  await database.execAsync('ALTER TABLE user_profile_new RENAME TO user_profile');
+  console.log('[FitQuest DB] v16: user_profile goals migrated');
 }
 
 /**

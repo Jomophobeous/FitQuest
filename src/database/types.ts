@@ -395,4 +395,4 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 15; // v15: Repair stale-bundle category rename (re-runs v14 if old names detected)
+export const SCHEMA_VERSION = 16; // v16: Nuclear category fix — drop exercise tables, force re-seed with correct names

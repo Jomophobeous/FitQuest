@@ -349,12 +349,12 @@ function formatMuscles(muscles: string[]): string {
 
 function formatGoal(goal: Category): string {
   const goalNames: Record<Category, string> = {
-    calisthenics: 'bodyweight strength',
-    getting_taller: 'posture & height optimization',
-    faster: 'speed & agility',
-    flexible: 'flexibility & mobility',
-    mental_clarity: 'mind-body wellness',
-    building_muscle: 'muscle building',
+    body_control: 'bodyweight strength',
+    posture: 'posture & height optimization',
+    speed: 'speed & agility',
+    mobility: 'flexibility & mobility',
+    focus: 'mind-body wellness',
+    strength: 'muscle building',
   };
   return goalNames[goal] || goal;
 }

@@ -56,7 +56,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_001',
     name: 'Wall Push-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -83,7 +83,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_002',
     name: 'Incline Push-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'minimal',
     impact_level: 'no_impact',
@@ -110,7 +110,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_003',
     name: 'Knee Push-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -137,7 +137,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_004',
     name: 'Hip Hinge Drill (Good Morning)',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -164,7 +164,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_005',
     name: 'Glute Bridge',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -191,7 +191,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_006',
     name: 'Single-leg Glute Bridge',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -217,7 +217,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_007',
     name: 'Wall Sit',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -244,7 +244,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_008',
     name: 'Static Lunge Hold',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -271,7 +271,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_009',
     name: 'Calf Raise',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -297,7 +297,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_010',
     name: 'Single-leg Calf Raise',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -323,7 +323,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_011',
     name: 'Dead-bug',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -350,7 +350,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_012',
     name: 'Side-plank Hip Dip',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -376,7 +376,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_013',
     name: 'Standard Push-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -402,7 +402,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_014',
     name: 'Close-stance Squat',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'low_impact',
@@ -428,7 +428,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_015',
     name: 'Walking Lunge',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'low_impact',
@@ -454,7 +454,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_016',
     name: 'Jump Squat',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'high_impact',
@@ -479,7 +479,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_017',
     name: 'Star Jump',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'high_impact',
@@ -505,7 +505,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_018',
     name: 'Mountain Climber (fast)',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'low_impact',
@@ -531,7 +531,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_019',
     name: 'High-knee Sprint on Spot',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'high_impact',
@@ -557,7 +557,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_020',
     name: 'Butt-kick Sprint',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'high_impact',
@@ -582,7 +582,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_021',
     name: 'Plank',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -608,7 +608,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_022',
     name: 'V-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -634,7 +634,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_023',
     name: 'Hollow-body Rock',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -660,7 +660,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_024',
     name: 'Pull-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'playground',
     impact_level: 'no_impact',
@@ -686,7 +686,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_025',
     name: 'Archer Push-up',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'advanced',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -712,7 +712,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_026',
     name: 'Handstand Wall Hold',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'advanced',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -738,7 +738,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_027',
     name: 'Hanging Leg Raise (bent)',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'intermediate',
     equipment_level: 'playground',
     impact_level: 'no_impact',
@@ -764,7 +764,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_028',
     name: 'Toes-to-bar',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'advanced',
     equipment_level: 'playground',
     impact_level: 'no_impact',
@@ -789,7 +789,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
   {
     id: 'cal_029',
     name: 'L-sit (Parallettes)',
-    category: 'calisthenics',
+    category: 'body_control',
     difficulty: 'advanced',
     equipment_level: 'playground',
     impact_level: 'no_impact',
@@ -822,7 +822,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_001',
     name: 'Bar Dead-hang',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'playground',
     impact_level: 'no_impact',
@@ -849,7 +849,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_002',
     name: 'Active Hang Scapular Elevations',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'intermediate',
     equipment_level: 'playground',
     impact_level: 'no_impact',
@@ -875,7 +875,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_003',
     name: 'Cobra Pose',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -901,7 +901,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_004',
     name: 'Cat-Camel',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -926,7 +926,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_005',
     name: 'Child\'s Pose Reach',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -951,7 +951,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_006',
     name: 'Standing Forward Fold',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -977,7 +977,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_007',
     name: 'Jefferson Curl (Light)',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'intermediate',
     equipment_level: 'minimal',
     impact_level: 'no_impact',
@@ -1005,7 +1005,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_008',
     name: 'Wall Angels',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1031,7 +1031,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_009',
     name: 'Thoracic Extension (Foam Roller)',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'minimal',
     impact_level: 'no_impact',
@@ -1057,7 +1057,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   {
     id: 'tall_010',
     name: 'Neck Rolls',
-    category: 'getting_taller',
+    category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1090,7 +1090,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_001',
     name: 'Standing Quad Stretch',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1116,7 +1116,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_002',
     name: 'Knee-to-chest Supine',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1142,7 +1142,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_003',
     name: 'Reclined Butterfly',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1167,7 +1167,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_004',
     name: 'Happy Baby',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'beginner',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1192,7 +1192,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_005',
     name: 'Front Split (Half-split)',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1218,7 +1218,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_006',
     name: 'Side Split (Middle Split)',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'advanced',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1243,7 +1243,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_007',
     name: 'Scorpion Stretch',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'intermediate',
     equipment_level: 'none',
     impact_level: 'no_impact',
@@ -1269,7 +1269,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
   {
     id: 'flex_008',
     name: 'King Arthur Stretch',
-    category: 'flexible',
+    category: 'mobility',
     difficulty: 'intermediate',
     equipment_level: 'minimal',
     impact_level: 'no_impact',

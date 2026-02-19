@@ -42,14 +42,14 @@ export function buildDefaultPlatformTemplates(): ProgramTemplateDefinition[] {
     {
       id: 'tpl_strength_foundation',
       title: 'Strength Foundation',
-      goal: 'building_muscle',
+      goal: 'strength',
       daysPerWeek: 4,
       capabilities: ['COACH_TOOLING', 'PROGRAM_BUILDER'],
     },
     {
       id: 'tpl_mobility_performance',
       title: 'Mobility Performance',
-      goal: 'flexible',
+      goal: 'mobility',
       daysPerWeek: 3,
       capabilities: ['PROGRAM_BUILDER', 'SDK_EXPORT'],
     },

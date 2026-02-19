@@ -13,6 +13,8 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  useWindowDimensions,
+  Vibration,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -29,8 +31,8 @@ import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { useFitQuestWorkout, WorkoutExerciseDisplay } from '../src/hooks/useFitQuestWorkout';
-import { useTimer, formatTime } from '../src/hooks/useTimer';
-import { audioService, generateDefaultAudio } from '../src/services/audioService';
+import { useTimer } from '../src/hooks/useTimer';
+import { audioService } from '../src/services/audioService';
 import {
   GlassCard,
   GradientButton,
@@ -38,8 +40,12 @@ import {
   PulseDot,
   SectionHeader,
 } from '../src/components/ui/GlassUI';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import ExerciseImage from '../src/components/ExerciseImage';
+import { useRouter } from 'expo-router';
 
-export default function FitQuestScreen() {
+function FitQuestScreenInner() {
+  const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { t } = useLanguage();
   const { isReady, isLoading: dbLoading, error: dbError, userProfile, resetAll } = useDatabase();
@@ -67,10 +73,8 @@ export default function FitQuestScreen() {
 
   // Timer integration
   const {
-    exerciseTimer,
     restTimer,
     sessionTimer,
-    startExercise,
     startRest,
     skipRest,
     startSession,
@@ -89,12 +93,13 @@ export default function FitQuestScreen() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const lastSpokenExerciseRef = useRef<string | null>(null);
+  const isCompactScreen = width < 390;
 
   // Initialize audio service
   useEffect(() => {
     const initAudio = async () => {
       try {
-        await audioService.initialize('default_user');
+        await audioService.initialize('user_local_001');
         const settings = audioService.getSettings();
         setVoiceEnabled(settings.voiceEnabled);
       } catch (e) {
@@ -125,9 +130,12 @@ export default function FitQuestScreen() {
             transition: currentExercise.audioTransition,
           };
           
-          // Speak intro and setup sequentially
+          // Full narration sequence: intro → setup → (pause) → execution cues
           await audioService.playIntro(audioData);
           await audioService.playSetup(audioData);
+          // Brief pause before execution cues to let user get into position
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          await audioService.playExecution(audioData);
           setIsSpeaking(false);
         };
 
@@ -140,7 +148,7 @@ export default function FitQuestScreen() {
   const toggleVoice = async () => {
     const newValue = !voiceEnabled;
     setVoiceEnabled(newValue);
-    await audioService.updateSettings('default_user', { voiceEnabled: newValue });
+    await audioService.updateSettings('user_local_001', { voiceEnabled: newValue });
     if (!newValue) {
       audioService.stop();
     }
@@ -158,9 +166,8 @@ export default function FitQuestScreen() {
 
   // Rest timer state
   const [isResting, setIsResting] = useState(false);
-  
-  // RPE rating shown AFTER completing a set (not during)
-  const [showRPE, setShowRPE] = useState(false);
+  const restTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingExerciseAdvanceRef = useRef(false);
   // Collapsible instructions
   const [showAllInstructions, setShowAllInstructions] = useState(false);
 
@@ -168,6 +175,7 @@ export default function FitQuestScreen() {
   useEffect(() => {
     if (isReady && status === 'idle' && !completionResult) {
       // Small delay to let UI render first
+      console.log('[FitQuest] Auto-generating workout (idle state, no completion result)');
       const timer = setTimeout(() => generateNewWorkout(), 500);
       return () => clearTimeout(timer);
     }
@@ -183,21 +191,48 @@ export default function FitQuestScreen() {
     }
   }, [status, workout, completionResult]);
 
+  // Cleanup rest timer on unmount
+  useEffect(() => {
+    return () => {
+      if (restTimerRef.current) clearTimeout(restTimerRef.current);
+    };
+  }, []);
+
+  const advanceAfterRest = async (reason: 'timer' | 'skip') => {
+    if (!pendingExerciseAdvanceRef.current) return;
+    pendingExerciseAdvanceRef.current = false;
+    if (restTimerRef.current) {
+      clearTimeout(restTimerRef.current);
+      restTimerRef.current = null;
+    }
+    skipRest();
+    setIsResting(false);
+    setShowAllInstructions(false);
+    completeExercise(5);
+    Vibration.vibrate(20);
+    console.log('[FitQuest] Rest ended — advancing exercise', { reason });
+  };
+
   const handleFinish = async () => {
+    console.log('[FitQuest] handleFinish called — processing workout completion');
     const result = await finishWorkout();
     if (result) {
+      console.log('[FitQuest] Workout finished successfully — showing completion screen');
       setCompletionResult({
         summary: result.summary,
         streak: result.streak,
       });
       setWorkoutRating(null); // Reset rating for new workout
+    } else {
+      console.warn('[FitQuest] finishWorkout returned null — may have already been called');
     }
   };
 
   const handleNewWorkout = () => {
     setCompletionResult(null);
     setWorkoutRating(null);
-    generateNewWorkout();
+    cancelWorkout(); // Reset hook state to idle
+    setTimeout(() => generateNewWorkout(), 100); // Small delay for state to settle
   };
 
   const handleReset = () => {
@@ -443,15 +478,15 @@ export default function FitQuestScreen() {
               <View style={[
                 styles.exercisePreviewCard,
                 {
-                  backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.95)',
-                  borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                  backgroundColor: theme.colors.surfaceVariant,
+                  borderColor: theme.colors.border,
                 },
               ]}>
-                <View
-                  style={[styles.exerciseNum, { backgroundColor: theme.colors.accent }]}
-                >
-                  <Text style={[styles.exerciseNumText, { color: theme.colors.text }]}>{index + 1}</Text>
-                </View>
+                <ExerciseImage
+                  exerciseId={exercise.exerciseId}
+                  category={exercise.category}
+                  variant="thumbnail"
+                />
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
                   <Text style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
@@ -502,6 +537,62 @@ export default function FitQuestScreen() {
 
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        {/* ═══ FULL-SCREEN REST TIMER OVERLAY ═══ */}
+        <Modal
+          visible={!!isResting}
+          animationType="fade"
+          transparent={false}
+          statusBarTranslucent
+        >
+          <View style={[styles.restOverlay, { backgroundColor: theme.colors.background }]}>
+            <SafeAreaView style={styles.restOverlayInner}>
+              <Animated.View entering={ZoomIn.duration(200)} style={styles.restOverlayContent}>
+                <View style={[styles.restTimerIconWrap, { backgroundColor: theme.colors.warning + '18' }]}>
+                  <MaterialCommunityIcons name="timer-sand" size={48} color={theme.colors.warning} />
+                </View>
+                <Text style={[styles.restOverlayLabel, { color: theme.colors.textMuted }]}>
+                  {t('fitquest.restTime')}
+                </Text>
+                <Text style={[styles.restOverlayTimer, { color: theme.colors.warning }]}>
+                  {restTimer.formattedRemaining}
+                </Text>
+                
+                {/* Next exercise preview */}
+                <View style={[styles.restNextCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+                  <Text style={[styles.restNextLabel, { color: theme.colors.textMuted }]}>
+                    {t('fitquest.nextUp')}
+                  </Text>
+                  {workout.exercises[currentExerciseIndex + 1] && (
+                    <View style={{ alignItems: 'center', marginVertical: 8 }}>
+                      <ExerciseImage
+                        exerciseId={workout.exercises[currentExerciseIndex + 1].exerciseId}
+                        category={workout.exercises[currentExerciseIndex + 1].category}
+                        variant="thumbnail"
+                      />
+                    </View>
+                  )}
+                  <Text style={[styles.restNextName, { color: theme.colors.text }]}>
+                    {workout.exercises[currentExerciseIndex + 1]?.name || ''}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.skipRestOverlayBtn, { borderColor: theme.colors.accent, backgroundColor: theme.colors.accent + '12' }]}
+                  onPress={() => {
+                    console.log('[FitQuest] Rest skipped by user');
+                    void advanceAfterRest('skip');
+                  }}
+                >
+                  <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.accent} />
+                  <Text style={{ color: theme.colors.accent, fontWeight: '700', fontSize: 15, marginLeft: 8 }}>
+                    {t('fitquest.skipRest')}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            </SafeAreaView>
+          </View>
+        </Modal>
+
         {/* Session Clock Bar */}
         <View
           style={[
@@ -543,28 +634,19 @@ export default function FitQuestScreen() {
           />
         </View>
 
-        <ScrollView contentContainerStyle={styles.exerciseContent} showsVerticalScrollIndicator={false}>
-          {/* Rest Timer Overlay */}
-          {!!isResting && (
-            <Animated.View entering={SlideInDown.duration(180)}>
-              <GlassCard style={styles.restTimerCard}>
-                <MaterialCommunityIcons name="timer-sand" size={28} color={theme.colors.warning} />
-                <Text style={[styles.restTimerValue, { color: theme.colors.warning }]}>
-                  {restTimer.formattedRemaining}
-                </Text>
-                <Text style={[styles.restTimerLabel, { color: theme.colors.textMuted }]}>{t('fitquest.restTime')}</Text>
-                <TouchableOpacity
-                  style={[styles.skipRestButton, { borderColor: theme.colors.border }]}
-                  onPress={() => { skipRest(); setIsResting(false); }}
-                >
-                  <Text style={{ color: theme.colors.text, fontWeight: '600', fontSize: 13 }}>{t('fitquest.skipRest')}</Text>
-                </TouchableOpacity>
-              </GlassCard>
-            </Animated.View>
-          )}
-
+        <ScrollView contentContainerStyle={[styles.exerciseContent, isCompactScreen && styles.exerciseContentCompact]} showsVerticalScrollIndicator={false}>
           {/* Current Exercise */}
           <Animated.View entering={FadeIn.duration(150)} style={styles.currentExercise}>
+            {/* Exercise Image — auto-alternating between start/end position */}
+            <Animated.View entering={ZoomIn.duration(200)} style={{ alignItems: 'center', marginBottom: 16 }}>
+              <ExerciseImage
+                exerciseId={currentExercise.exerciseId}
+                category={currentExercise.category}
+                variant="detail"
+                animate={true}
+              />
+            </Animated.View>
+
             <Animated.View entering={ZoomIn.duration(150)}>
               <Text style={[styles.currentExName, { color: theme.colors.text }]}>
                 {currentExercise.name}
@@ -583,16 +665,6 @@ export default function FitQuestScreen() {
                 </Animated.View>
               ))}
             </View>
-
-            {/* Exercise Timer */}
-            {exerciseTimer.state === 'running' && (
-              <Animated.View entering={FadeIn.duration(180)} style={styles.exerciseTimerRow}>
-                <MaterialCommunityIcons name="timer" size={18} color={theme.colors.success} />
-                <Text style={[styles.exerciseTimerText, { color: theme.colors.success }]}>
-                  {exerciseTimer.formattedRemaining}
-                </Text>
-              </Animated.View>
-            )}
 
             {/* Instructions (show first 3, collapsible) */}
             {currentExercise.instructions.length > 0 && (
@@ -618,106 +690,73 @@ export default function FitQuestScreen() {
             )}
           </Animated.View>
 
-          {/* Start Exercise Timer */}
-          {exerciseTimer.state !== 'running' && !isResting && (
-            <Animated.View entering={FadeIn.delay(250).duration(150)}>
-              <TouchableOpacity
-                style={[styles.timerStartButton, { borderColor: theme.colors.accent }]}
-                onPress={() => startExercise(currentExercise.restSeconds || 30)}
-              >
-                <MaterialCommunityIcons name="timer-outline" size={16} color={theme.colors.accent} />
-                <Text style={{ color: theme.colors.accent, fontWeight: '600', marginLeft: 6, fontSize: 13 }}>
-                  {t('fitquest.startTimer')} ({currentExercise.restSeconds || 30}s)
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
-
-          {/* RPE Rating - shown AFTER tapping Complete/Finish */}
-          {!!showRPE && (
-            <Animated.View entering={FadeInDown.duration(200)}>
-              <Text style={[styles.diffPrompt, { color: theme.colors.text, fontWeight: '600', fontSize: 15 }]}>
-                {isLastExercise ? t('fitquest.rateAndFinish') : t('fitquest.rateThisSet')}
-              </Text>
-              <Text style={[{ color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', marginBottom: 12 }]}>
-                {t('fitquest.rpePrompt')}
-              </Text>
-              <View style={styles.difficultyRow}>
-                {[
-                  { level: 1, label: '1' },
-                  { level: 3, label: '3' },
-                  { level: 5, label: '5' },
-                  { level: 7, label: '7' },
-                  { level: 9, label: '9' },
-                ].map(({ level, label }) => {
-                  const btnColor = level <= 3 ? theme.colors.success : level <= 5 ? theme.colors.warning : theme.colors.error;
-                  return (
-                    <TouchableOpacity
-                      key={level}
-                      style={[styles.difficultyButton, { backgroundColor: btnColor }]}
-                      onPress={async () => {
-                        setShowRPE(false);
-                        setShowAllInstructions(false);
-                        
-                        // Play completion sound
-                        const nextExercise = !isLastExercise ? workout.exercises[currentExerciseIndex + 1] : null;
-                        
-                        // Complete the exercise with the RPE rating
-                        completeExercise(level);
-                        
-                        if (isLastExercise) {
-                          // Last exercise — play workout complete sound then finish
-                          await audioService.playWorkoutComplete();
-                          // Small delay to let state update (completeExercise sets status='completed')
-                          setTimeout(() => handleFinish(), 100);
-                        } else {
-                          await audioService.playExerciseFinished(nextExercise?.name);
-                          setIsResting(true);
-                          startRest(currentExercise.restSeconds || 60);
-                          setTimeout(() => setIsResting(false), (currentExercise.restSeconds || 60) * 1000);
-                        }
-                      }}
-                    >
-                      <Text style={[styles.difficultyText, { color: theme.colors.text }]}>{label}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </Animated.View>
-          )}
-
-          {/* Action Buttons - shown when NOT rating RPE */}
-          {!showRPE && (
-          <View style={styles.actionRow}>
+          {/* Action Buttons — always visible, no RPE interruption */}
+          <View style={[styles.actionRow, isCompactScreen && styles.actionRowCompact]}>
             <TouchableOpacity
-              style={[styles.skipButton, { borderColor: theme.colors.border }]}
+              style={[styles.skipButton, isCompactScreen && styles.skipButtonCompact, { borderColor: theme.colors.border }]}
               onPress={() => {
-                // Stop voice and timer when skipping
                 audioService.stop();
                 stopAll();
                 setShowAllInstructions(false);
                 skipExercise();
               }}
             >
-              <Text style={{ color: theme.colors.textMuted, fontWeight: '600' }}>{t('train.skip')}</Text>
+              <Text style={{ color: theme.colors.textSecondary, fontWeight: '600' }}>{t('train.skip')}</Text>
             </TouchableOpacity>
 
-            <View style={{ flex: 2 }}>
+            <View style={{ flex: 1 }}>
               <GradientButton
                 title={isLastExercise ? t('fitquest.finishWorkout') : t('fitquest.completeSet')}
                 icon={isLastExercise ? "check-all" : "check"}
-                onPress={() => {
-                  // Stop voice and timer immediately
+                onPress={async () => {
+                  if (isResting) return;
+                  console.log('[FitQuest] Action:complete_or_next', {
+                    isLastExercise,
+                    index: currentExerciseIndex,
+                    total: workout.exercises.length,
+                  });
                   audioService.stop();
                   stopAll();
-                  // Show RPE rating (same flow for ALL exercises including last)
-                  setShowRPE(true);
+                  setShowAllInstructions(false);
+
+                  if (isLastExercise) {
+                    // Complete with default difficulty (skip RPE — user rates at the end)
+                    completeExercise(5);
+                    // Last exercise — play completion sound
+                    // handleFinish is triggered by useEffect when status === 'completed'
+                    await audioService.playWorkoutComplete();
+                    console.log('[FitQuest] Last exercise completed — waiting for useEffect to trigger handleFinish');
+                  } else {
+                    // Show rest immediately, then advance after rest ends/skip
+                    const nextExercise = workout.exercises[currentExerciseIndex + 1];
+                    // Play transition narration (rich: "Well done! Rest for Xs. Up next: Y")
+                    audioService.stop(); // Stop any ongoing narration first
+                    const transitionAudio = {
+                      intro: currentExercise.audioIntro,
+                      setup: currentExercise.audioSetup,
+                      execution: currentExercise.audioExecution,
+                      transition: currentExercise.audioTransition,
+                    };
+                    await audioService.playTransition(transitionAudio);
+                    console.log('[FitQuest] Set complete — entering rest overlay immediately', {
+                      currentExercise: currentExercise.name,
+                      nextExercise: nextExercise?.name,
+                    });
+                    Vibration.vibrate(25);
+                    pendingExerciseAdvanceRef.current = true;
+                    setIsResting(true);
+                    const restDuration = currentExercise.restSeconds || 60;
+                    startRest(restDuration);
+                    if (restTimerRef.current) clearTimeout(restTimerRef.current);
+                    restTimerRef.current = setTimeout(() => {
+                      void advanceAfterRest('timer');
+                    }, restDuration * 1000);
+                  }
                 }}
                 variant={isLastExercise ? "success" : "primary"}
               />
             </View>
           </View>
-          )}
 
           {/* Cancel */}
           <TouchableOpacity
@@ -776,9 +815,9 @@ export default function FitQuestScreen() {
         {!!userProfile && (
           <Animated.View entering={FadeInDown.delay(400).duration(150)} style={{ width: '100%', maxWidth: 280 }}>
             <GlassCard style={{ alignItems: 'center', padding: 16, marginTop: 20 }}>
-              <Text style={[styles.profileLabel, { color: theme.colors.textMuted }]}>{t('fitquest.currentProfile')}</Text>
+              <Text style={[styles.profileLabel, { color: theme.colors.textSecondary }]}>{t('fitquest.currentProfile')}</Text>
               <Text style={[styles.profileGoal, { color: theme.colors.text }]}>{userProfile.goal}</Text>
-              <Text style={[styles.profileMeta, { color: theme.colors.textMuted }]}>
+              <Text style={[styles.profileMeta, { color: theme.colors.textSecondary }]}> 
                 {userProfile.experience} · {userProfile.time_per_session_minutes}{t('fitquest.minShort')} {t('fitquest.sessions')}
               </Text>
             </GlassCard>
@@ -814,7 +853,7 @@ const styles = StyleSheet.create({
   ratingRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 16 },
   ratingButton: { padding: 4 },
   ratingFeedback: { textAlign: 'center', marginTop: 12, fontSize: 14, fontWeight: '600' },
-  completionContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  completionContainer: { alignItems: 'center', padding: 24, paddingBottom: 60 },
   readyHeader: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
   readyHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   readyTitle: { fontSize: 24, fontWeight: '700' },
@@ -875,6 +914,18 @@ const styles = StyleSheet.create({
   },
   progressBarFill: { height: 4, borderRadius: 2 },
   exerciseContent: { padding: 16, paddingBottom: 32 },
+  exerciseContentCompact: { paddingBottom: 56 },
+  // ═══ FULL-SCREEN REST OVERLAY ═══
+  restOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  restOverlayInner: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' },
+  restOverlayContent: { alignItems: 'center', paddingHorizontal: 32, width: '100%' },
+  restTimerIconWrap: { width: 96, height: 96, borderRadius: 48, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
+  restOverlayLabel: { fontSize: 16, fontWeight: '500', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
+  restOverlayTimer: { fontSize: 72, fontWeight: '800', fontVariant: ['tabular-nums'] as any, marginBottom: 32 },
+  restNextCard: { paddingVertical: 16, paddingHorizontal: 24, borderRadius: 16, borderWidth: 1, alignItems: 'center', width: '100%', maxWidth: 300, marginBottom: 40 },
+  restNextLabel: { fontSize: 12, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 },
+  restNextName: { fontSize: 18, fontWeight: '700', textAlign: 'center' },
+  skipRestOverlayBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14, paddingHorizontal: 32, borderRadius: 14, borderWidth: 1.5 },
   restTimerCard: { alignItems: 'center', padding: 24, marginBottom: 16, gap: 6 },
   restTimerValue: { fontSize: 32, fontWeight: '700', fontVariant: ['tabular-nums'] as any },
   restTimerLabel: { fontSize: 13 },
@@ -885,30 +936,40 @@ const styles = StyleSheet.create({
   prescriptionItem: { alignItems: 'center' },
   prescriptionVal: { fontSize: 28, fontWeight: '700' },
   prescriptionLabel: { fontSize: 12, marginTop: 4, fontWeight: '400' },
-  exerciseTimerRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16, gap: 6 },
-  exerciseTimerText: { fontSize: 20, fontWeight: '700' },
   instTitle: { fontSize: 14, fontWeight: '600', marginBottom: 8 },
   instStep: { fontSize: 14, marginBottom: 4, lineHeight: 20 },
-  timerStartButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    marginTop: 16,
-  },
   diffPrompt: { textAlign: 'center', marginTop: 24, fontSize: 13 },
   difficultyRow: { flexDirection: 'row', justifyContent: 'center', gap: 10, marginTop: 10 },
   difficultyButton: { width: 46, height: 46, borderRadius: 23, justifyContent: 'center', alignItems: 'center' },
   difficultyText: { fontWeight: '700', fontSize: 15 },
-  actionRow: { flexDirection: 'row', gap: 12, marginTop: 28 },
-  skipButton: { flex: 1, paddingVertical: 14, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  idleIconWrap: { width: 120, height: 120, borderRadius: 40, justifyContent: 'center', alignItems: 'center' },
-  idleTitle: { fontSize: 28, fontWeight: '700', marginTop: 20 },
+  actionRow: { flexDirection: 'row', gap: 16, marginTop: 40, paddingHorizontal: 12 },
+  actionRowCompact: { flexDirection: 'column-reverse', gap: 10, marginTop: 28, paddingHorizontal: 0 },
+  skipButton: { 
+    width: 80, 
+    height: 56, 
+    borderRadius: 28, // Circular/Pill shape
+    borderWidth: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+  },
+  skipButtonCompact: {
+    width: '100%',
+    borderRadius: 14,
+    height: 48,
+  },
+  idleIconWrap: { width: 140, height: 140, borderRadius: 48, justifyContent: 'center', alignItems: 'center' },
+  idleTitle: { fontSize: 32, fontWeight: '800', marginTop: 24 },
   idleSub: { fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 21 },
   profileLabel: { fontSize: 12 },
   profileGoal: { fontSize: 16, fontWeight: '600', marginTop: 4 },
   profileMeta: { fontSize: 12, marginTop: 2 },
 });
+
+export default function FitQuestScreen() {
+  const router = useRouter();
+  return (
+    <ScreenErrorBoundary screenName="FitQuest" onGoBack={() => router.back()}>
+      <FitQuestScreenInner />
+    </ScreenErrorBoundary>
+  );
+}

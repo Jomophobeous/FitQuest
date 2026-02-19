@@ -95,7 +95,7 @@ const INTENT_KEYWORDS: Record<IntentCategory, { keywords: string[]; weight: numb
     { keywords: ['chest', 'back', 'legs', 'arms', 'shoulders', 'core', 'abs', 'glutes'], weight: 1.5 },
     { keywords: ['push-up', 'pushup', 'pull-up', 'pullup', 'squat', 'lunge', 'plank'], weight: 2.0 },
     { keywords: ['sore', 'recovery', 'recover', 'overtraining', 'fatigue', 'tired'], weight: 1.5 },
-    { keywords: ['progress', 'plateau', 'improve', 'better', 'stronger', 'faster'], weight: 1.3 },
+    { keywords: ['progress', 'plateau', 'improve', 'better', 'stronger', 'speed'], weight: 1.3 },
   ],
   PROFESSOR: [
     { keywords: ['read', 'reading', 'book', 'document', 'article', 'text'], weight: 2.0 },
@@ -126,7 +126,7 @@ const INTENT_KEYWORDS: Record<IntentCategory, { keywords: string[]; weight: numb
     { keywords: ['workout', 'routine', 'program', 'plan', 'schedule'], weight: 2.0 },
     { keywords: ['beginner', 'intermediate', 'advanced', 'difficulty'], weight: 1.5 },
     { keywords: ['equipment', 'dumbbell', 'barbell', 'resistance band', 'bodyweight'], weight: 1.8 },
-    { keywords: ['calisthenics', 'gymnastics', 'functional', 'hiit', 'cardio'], weight: 2.0 },
+    { keywords: ['body_control', 'gymnastics', 'functional', 'hiit', 'cardio'], weight: 2.0 },
     { keywords: ['deload', 'progressive overload', 'periodization'], weight: 2.5 },
     { keywords: ['split', 'full body', 'upper lower', 'push pull'], weight: 2.0 },
     { keywords: ['today', 'next workout', 'my workout', 'session'], weight: 1.3 },
@@ -221,7 +221,7 @@ export class IntentRouter {
     try {
       this.neuralModelReady = await neuralIntentRouter.initialize();
       if (this.neuralModelReady) {
-        console.log('[IntentRouter] v2.0 neural model loaded');
+        if (__DEV__) console.log('[IntentRouter] v2.0 neural model loaded');
       }
     } catch {
       this.neuralModelReady = false;
@@ -231,7 +231,7 @@ export class IntentRouter {
     try {
       this.mlModelReady = await trainedIntentRouter.initialize();
       if (this.mlModelReady) {
-        console.log('[IntentRouter] v1.0 ML model loaded — using trained classifier');
+        if (__DEV__) console.log('[IntentRouter] v1.0 ML model loaded — using trained classifier');
       }
     } catch {
       console.warn('[IntentRouter] ML model unavailable — using keyword fallback');

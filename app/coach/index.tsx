@@ -7,19 +7,21 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import SimpleMarkdown from '../../src/components/SimpleMarkdown';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -35,6 +37,9 @@ import { useLanguage } from '../../src/context/LanguageContext';
 import { getUserProgress, getStreak, getMuscleFatigue, getUserProfile, getExercises } from '../../src/database/service';
 import { getXPData } from '../../src/services/xpService';
 import { PulseDot } from '../../src/components/ui/GlassUI';
+import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
+import { intentRouter } from '../../src/engines/IntentRouter';
+import { dualAI } from '../../src/fitmind/DualAIEngine';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -132,10 +137,10 @@ const TOPIC_RESPONSES: Record<string, (ctx: CoachContext) => string> = {
       const avoid = fatigued.slice(0, 3).join(', ');
       return `Based on your recovery state, avoid ${avoid} today.\n\nI recommend:\n\n✅ **Upper body** (if legs are fatigued): Push-ups, Dips, Pike Push-ups\n✅ **Lower body** (if upper is fatigued): Squats, Lunges, Calf Raises\n✅ **Core & Flexibility**: Planks, Dead Bugs, Yoga Flow\n\n💡 Tip: Use the "Create Workout" in the menu to build a custom session with these exercises. The Exercise Library has ${ctx.exerciseCount || 200}+ exercises to choose from!`;
     }
-    if (ctx.goal === 'building_muscle') {
+    if (ctx.goal === 'strength') {
       return `For muscle building, I recommend a push/pull/legs split:\n\n💪 **Push Day**: Push-ups → Diamond Push-ups → Pike Push-ups → Dips\n💪 **Pull Day**: Pull-ups → Chin-ups → Inverted Rows → Dead Hangs\n💪 **Legs**: Pistol Squats → Bulgarian Split Squats → Calf Raises → Glute Bridges\n\n🔥 Aim for 3-4 sets of 8-12 reps each. Progressive overload is key!`;
     }
-    if (ctx.goal === 'flexible') {
+    if (ctx.goal === 'mobility') {
       return `For flexibility, try this daily routine:\n\n🧘 **Morning Flow** (15 min):\n1. Cat-Cow Stretch (2 min)\n2. World's Greatest Stretch (2 min each side)\n3. Pike Stretch Hold (60s)\n4. Frog Stretch (90s)\n5. Pigeon Pose (60s each side)\n6. Shoulder Dislocates (2 min)\n\nHold each stretch 30-60 seconds. Breathe deeply!`;
     }
     return `Here are my top recommendations based on your level:\n\n🌟 **Essential Compound Moves**:\n1. Push-ups (chest, triceps, shoulders)\n2. Pull-ups or Inverted Rows (back, biceps)\n3. Squats (quads, glutes)\n4. Plank Hold (core stability)\n5. Lunges (legs, balance)\n\n📊 You've completed ${ctx.totalWorkouts} workouts. Check the Library for ${ctx.exerciseCount || 200}+ exercises across all categories!`;
@@ -148,7 +153,7 @@ const TOPIC_RESPONSES: Record<string, (ctx: CoachContext) => string> = {
 
   // Calorie & macro guidance
   'macro|how much protein|how many calories|calorie count|tdee|bulk|cut': (ctx) => {
-    return `Quick macro guidelines for calisthenics athletes:\n\n📊 **Maintenance**: ~2,200-2,800 cal/day (varies by size)\n📊 **Muscle gain**: Add 300-500 cal above maintenance\n📊 **Fat loss**: Subtract 300-500 cal below maintenance\n\n🥩 **Protein**: 1.6-2.2g per kg bodyweight\n🍚 **Carbs**: 3-5g per kg (training days), 2-3g (rest days)\n🥑 **Fats**: 0.8-1.2g per kg\n\n💧 **Water**: Body weight (kg) × 0.033 = litres/day\n\n⚠️ These are estimates — adjust based on results over 2-3 weeks. Track your weight weekly and adjust accordingly!`;
+    return `Quick macro guidelines for fitness athletes:\n\n📊 **Maintenance**: ~2,200-2,800 cal/day (varies by size)\n📊 **Muscle gain**: Add 300-500 cal above maintenance\n📊 **Fat loss**: Subtract 300-500 cal below maintenance\n\n🥩 **Protein**: 1.6-2.2g per kg bodyweight\n🍚 **Carbs**: 3-5g per kg (training days), 2-3g (rest days)\n🥑 **Fats**: 0.8-1.2g per kg\n\n💧 **Water**: Body weight (kg) × 0.033 = litres/day\n\n⚠️ These are estimates — adjust based on results over 2-3 weeks. Track your weight weekly and adjust accordingly!`;
   },
 
   // Body transformation
@@ -197,7 +202,7 @@ const TOPIC_RESPONSES: Record<string, (ctx: CoachContext) => string> = {
 
   // Supplements
   'supplement|creatine|protein powder|bcaa|pre workout|vitamin': (ctx) => {
-    return `Supplement guide for calisthenics athletes:\n\n` +
+    return `Supplement guide for fitness athletes:\n\n` +
       `**Tier 1 (Recommended):**\n` +
       `💊 **Creatine Monohydrate** — 5g/day, proven muscle & strength benefit\n` +
       `🥤 **Protein Powder** — Only if you can't hit protein goals from food\n` +
@@ -345,8 +350,8 @@ function TypingIndicator() {
 
   return (
     <Animated.View entering={FadeIn.duration(150)} style={[styles.messageBubble, styles.coachBubble, {
-      backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-      borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+      backgroundColor: theme.colors.surfaceVariant,
+      borderColor: theme.colors.border,
       borderWidth: 1,
       flexDirection: 'row',
       alignItems: 'center',
@@ -366,6 +371,7 @@ function TypingIndicator() {
 
 function MessageBubble({ message, index }: { message: ChatMessage; index: number }) {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const isCoach = message.role === 'coach';
 
   return (
@@ -379,8 +385,8 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
         isCoach ? styles.coachBubble : styles.userBubble,
         isCoach
           ? {
-              backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-              borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+              backgroundColor: theme.colors.surfaceVariant,
+              borderColor: theme.colors.border,
               borderWidth: 1,
             }
           : {},
@@ -389,21 +395,25 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
       {!!isCoach && (
         <View style={styles.coachAvatarRow}>
           <LinearGradient
-            colors={[theme.colors.accent, '#4338CA'] as [string, string]}
+            colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
             style={styles.coachAvatarIcon}
           >
             <MaterialCommunityIcons name="robot-happy" size={12} color="#fff" />
           </LinearGradient>
-          <Text style={[styles.coachLabel, { color: theme.colors.accent }]}>FitQuest Coach</Text>
+          <Text style={[styles.coachLabel, { color: theme.colors.accent }]}>{t('coach.coachLabel')}</Text>
         </View>
       )}
       {isCoach ? (
         <View>
-          <Text style={[styles.messageText, { color: theme.colors.text }]}>{message.text}</Text>
+          <SimpleMarkdown
+            text={message.text}
+            style={[styles.messageText, { color: theme.colors.text }]}
+            boldStyle={{ color: theme.colors.accent }}
+          />
         </View>
       ) : (
         <LinearGradient
-          colors={[theme.colors.accent, '#4338CA'] as [string, string]}
+          colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.userBubbleGradient}
@@ -422,20 +432,42 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
 // SCREEN
 // ============================================
 
-export default function CoachScreen() {
+function CoachScreenInner() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<FlatList>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [coachCtx, setCoachCtx] = useState<CoachContext | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [lastTopic, setLastTopic] = useState<string | null>(null);
   const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const inputScale = useSharedValue(1);
 
   useEffect(() => { loadCoachContext(); }, []);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSub = Keyboard.addListener(showEvent, (event) => {
+      const nextHeight = event?.endCoordinates?.height ?? 0;
+      setKeyboardHeight(nextHeight);
+      console.log('[Coach] Keyboard show', { height: nextHeight });
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+      console.log('[Coach] Keyboard hide');
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const loadCoachContext = async () => {
     try {
@@ -464,7 +496,7 @@ export default function CoachScreen() {
         fatigueHighMuscles: fatigueHigh,
         lastWorkoutDate: progress.last_workout_date,
         daysSinceLastWorkout: daysSince,
-        goal: profile?.goal || 'calisthenics',
+        goal: profile?.goal || 'body_control',
         exerciseCount: exercises.length,
       };
 
@@ -493,7 +525,7 @@ export default function CoachScreen() {
       }]);
       setCoachCtx({
         streak: 0, totalWorkouts: 0, level: 1, totalXP: 0,
-        fatigueHighMuscles: [], lastWorkoutDate: null, daysSinceLastWorkout: 999, goal: 'calisthenics',
+        fatigueHighMuscles: [], lastWorkoutDate: null, daysSinceLastWorkout: 999, goal: 'body_control',
         exerciseCount: 200,
       });
     }
@@ -502,6 +534,7 @@ export default function CoachScreen() {
   const sendMessage = useCallback(() => {
     const text = input.trim();
     if (!text || !coachCtx) return;
+    console.log('[Coach] sendMessage', { chars: text.length });
 
     const userMsg: ChatMessage = {
       id: `user_${Date.now()}`,
@@ -516,8 +549,30 @@ export default function CoachScreen() {
 
     const topic = detectTopic(text);
 
-    setTimeout(() => {
-      const response = generateCoachResponse(text, coachCtx);
+    // Use IntentRouter for smarter classification
+    const classified = intentRouter.classify(text);
+
+    const handleResponse = async () => {
+      let response: string;
+
+      // For PROFESSOR and HEALTH intents with high confidence, use DualAI
+      if (classified.category === 'PROFESSOR' && classified.confidence > 0.5) {
+        try {
+          const aiResp = await dualAI.query(text, {
+            personality: 'PROFESSOR',
+            conversationHistory: [],
+          });
+          response = aiResp.message;
+        } catch {
+          response = generateCoachResponse(text, coachCtx);
+        }
+      } else if (classified.category === 'NAVIGATION' && classified.entities.screens.length > 0) {
+        const screen = classified.entities.screens[0];
+        response = `Sure! Let me take you to the ${screen} screen. Use the navigation tabs or menu to get there.`;
+      } else {
+        response = generateCoachResponse(text, coachCtx);
+      }
+
       const coachMsg: ChatMessage = {
         id: `coach_${Date.now()}`,
         role: 'coach',
@@ -533,12 +588,17 @@ export default function CoachScreen() {
       }
 
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+    };
+
+    setTimeout(() => {
+      handleResponse();
     }, 800 + Math.random() * 600);
 
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
   }, [input, coachCtx]);
 
   const handleSuggestion = (text: string) => {
+    console.log('[Coach] suggestion', { text });
     setInput(text);
     setTimeout(() => {
       const userMsg: ChatMessage = {
@@ -553,7 +613,11 @@ export default function CoachScreen() {
       const topic = detectTopic(text);
 
       setTimeout(() => {
-        const response = generateCoachResponse(text, coachCtx!);
+        const response = generateCoachResponse(text, coachCtx ?? {
+          streak: 0, totalWorkouts: 0, level: 1, totalXP: 0,
+          fatigueHighMuscles: [], lastWorkoutDate: null,
+          daysSinceLastWorkout: 0, goal: 'body_control', exerciseCount: 0,
+        });
         setMessages(prev => [...prev, {
           id: `coach_${Date.now()}`,
           role: 'coach',
@@ -596,7 +660,7 @@ export default function CoachScreen() {
     { text: "Weight management", icon: 'scale-bathroom' as const },
   ];
 
-  const suggestionColors = ['#5F63FF', '#4ECDC4', '#FF6B6B', '#10B981', '#EF4444', '#F4A427', '#8B5CF6', '#EC4899', '#F97316', '#3B82F6', '#14B8A6', '#A855F7', '#06B6D4', '#E11D48'];
+  const suggestionColors = [theme.colors.indigo, '#4ECDC4', '#FF6B6B', theme.colors.accent, theme.colors.error, theme.colors.warning, theme.colors.purple, theme.colors.pink, '#F97316', theme.colors.blue, '#14B8A6', '#A855F7', '#06B6D4', '#E11D48'];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -605,15 +669,15 @@ export default function CoachScreen() {
         <Animated.View entering={FadeInDown.duration(150)}>
           <LinearGradient
             colors={theme.isDark
-              ? ['rgba(95,99,255,0.20)', 'rgba(95,99,255,0.05)', 'transparent'] as [string, string, string]
-              : ['rgba(95,99,255,0.10)', 'rgba(95,99,255,0.02)', 'transparent'] as [string, string, string]}
+              ? [`${theme.colors.indigo}33`, `${theme.colors.indigo}0D`, 'transparent'] as [string, string, string]
+              : [`${theme.colors.indigo}1A`, `${theme.colors.indigo}05`, 'transparent'] as [string, string, string]}
             style={styles.headerGradient}
           >
             <View style={styles.headerRow}>
               <TouchableOpacity
                 onPress={() => router.back()}
                 style={[styles.headerBackBtn, {
-                  backgroundColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                  backgroundColor: theme.colors.surfaceVariant,
                 }]}
               >
                 <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
@@ -621,21 +685,21 @@ export default function CoachScreen() {
 
               <View style={styles.headerCenter}>
                 <LinearGradient
-                  colors={[theme.colors.accent, '#8B5CF6'] as [string, string]}
+                  colors={[theme.colors.accent, theme.colors.purple] as [string, string]}
                   style={styles.headerAvatar}
                 >
                   <MaterialCommunityIcons name="robot-happy" size={22} color="#fff" />
                 </LinearGradient>
                 <View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={[styles.headerTitle, { color: theme.colors.text }]}>AI Coach</Text>
+                    <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('coach.title')}</Text>
                     <View style={{ backgroundColor: theme.colors.warning + '25', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
-                      <Text style={{ color: theme.colors.warning, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>BETA</Text>
+                      <Text style={{ color: theme.colors.warning, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>{t('common.beta')}</Text>
                     </View>
                   </View>
                   <View style={styles.headerStatusRow}>
                     <PulseDot color={theme.colors.accent} size={6} />
-                    <Text style={[styles.headerStatus, { color: theme.colors.accent }]}>Online</Text>
+                    <Text style={[styles.headerStatus, { color: theme.colors.accent }]}>{t('coach.online')}</Text>
                   </View>
                 </View>
               </View>
@@ -647,111 +711,120 @@ export default function CoachScreen() {
 
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
         >
           {/* ── MESSAGES ── */}
-          <ScrollView
+          <FlatList
             ref={scrollRef}
+            data={messages}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item, index }) => (
+              <MessageBubble key={item.id} message={item} index={index} />
+            )}
             style={styles.messagesContainer}
             contentContainerStyle={styles.messagesContent}
             onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
             showsVerticalScrollIndicator={false}
-          >
-            {/* Date badge */}
-            <Animated.View entering={FadeIn.delay(200)} style={styles.dateBadgeWrap}>
-              <View style={[styles.dateBadge, {
-                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-              }]}>
-                <Text style={[styles.dateBadgeText, { color: theme.colors.textMuted }]}>
-                  Today
-                </Text>
-              </View>
-            </Animated.View>
-
-            {messages.map((msg, idx) => (
-              <MessageBubble key={msg.id} message={msg} index={idx} />
-            ))}
-
-            {isTyping && <TypingIndicator />}
-
-            {/* Quick Suggestions (show only after greeting) */}
-            {messages.length <= 1 && !isTyping && (
-              <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.suggestionsWrap}>
-                <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
-                  Tap a topic to get started
-                </Text>
-                <View style={styles.suggestionsGrid}>
-                  {quickSuggestions.map((suggestion, idx) => (
-                    <Animated.View
-                      key={suggestion.text}
-                      entering={FadeInDown.delay(180 + idx * 30).duration(150)}
-                    >
-                      <TouchableOpacity
-                        style={[styles.suggestionChip, {
-                          backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                          borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                        }]}
-                        activeOpacity={0.7}
-                        onPress={() => handleSuggestion(suggestion.text)}
-                      >
-                        <View style={[styles.suggestionIcon, { backgroundColor: suggestionColors[idx % suggestionColors.length] + '20' }]}>
-                          <MaterialCommunityIcons
-                            name={suggestion.icon}
-                            size={16}
-                            color={suggestionColors[idx % suggestionColors.length]}
-                          />
-                        </View>
-                        <Text style={[styles.suggestionText, { color: theme.colors.text }]}>
-                          {suggestion.text}
-                        </Text>
-                      </TouchableOpacity>
-                    </Animated.View>
-                  ))}
+            initialNumToRender={15}
+            maxToRenderPerBatch={10}
+            windowSize={7}
+            ListHeaderComponent={
+              <Animated.View entering={FadeIn.delay(200)} style={styles.dateBadgeWrap}>
+                <View style={[styles.dateBadge, {
+                  backgroundColor: theme.colors.surfaceVariant,
+                }]}>
+                  <Text style={[styles.dateBadgeText, { color: theme.colors.textMuted }]}>
+                    {t('common.today')}
+                  </Text>
                 </View>
               </Animated.View>
-            )}
+            }
+            ListFooterComponent={
+              <>
+                {isTyping && <TypingIndicator />}
 
-            {/* Follow-up suggestions after a response */}
-            {activeSuggestions.length > 0 && messages.length > 1 && !isTyping && (
-              <Animated.View entering={FadeInUp.delay(100).duration(150)} style={styles.followUpWrap}>
-                <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
-                  Related topics
-                </Text>
-                <View style={styles.followUpRow}>
-                  {activeSuggestions.map((s, idx) => (
-                    <TouchableOpacity
-                      key={s}
-                      style={[styles.followUpChip, {
-                        backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                        borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                      }]}
-                      activeOpacity={0.7}
-                      onPress={() => handleSuggestion(s)}
-                    >
-                      <Text style={[styles.followUpText, { color: theme.colors.accent }]}>{s}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </Animated.View>
-            )}
-          </ScrollView>
+                {/* Quick Suggestions (show only after greeting) */}
+                {messages.length <= 1 && !isTyping && (
+                  <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.suggestionsWrap}>
+                    <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
+                      {t('coach.tapToStart')}
+                    </Text>
+                    <View style={styles.suggestionsGrid}>
+                      {quickSuggestions.map((suggestion, idx) => (
+                        <Animated.View
+                          key={suggestion.text}
+                          entering={FadeInDown.delay(180 + idx * 30).duration(150)}
+                        >
+                          <TouchableOpacity
+                            style={[styles.suggestionChip, {
+                              backgroundColor: theme.colors.surfaceVariant,
+                              borderColor: theme.colors.border,
+                            }]}
+                            activeOpacity={0.7}
+                            onPress={() => handleSuggestion(suggestion.text)}
+                          >
+                            <View style={[styles.suggestionIcon, { backgroundColor: suggestionColors[idx % suggestionColors.length] + '20' }]}>
+                              <MaterialCommunityIcons
+                                name={suggestion.icon}
+                                size={16}
+                                color={suggestionColors[idx % suggestionColors.length]}
+                              />
+                            </View>
+                            <Text style={[styles.suggestionText, { color: theme.colors.text }]}>
+                              {suggestion.text}
+                            </Text>
+                          </TouchableOpacity>
+                        </Animated.View>
+                      ))}
+                    </View>
+                  </Animated.View>
+                )}
+
+                {/* Follow-up suggestions after a response */}
+                {activeSuggestions.length > 0 && messages.length > 1 && !isTyping && (
+                  <Animated.View entering={FadeInUp.delay(100).duration(150)} style={styles.followUpWrap}>
+                    <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
+                      {t('coach.relatedTopics')}
+                    </Text>
+                    <View style={styles.followUpRow}>
+                      {activeSuggestions.map((s, idx) => (
+                        <TouchableOpacity
+                          key={s}
+                          style={[styles.followUpChip, {
+                            backgroundColor: theme.colors.surfaceVariant,
+                            borderColor: theme.colors.border,
+                          }]}
+                          activeOpacity={0.7}
+                          onPress={() => handleSuggestion(s)}
+                        >
+                          <Text style={[styles.followUpText, { color: theme.colors.accent }]}>{s}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </Animated.View>
+                )}
+              </>
+            }
+          />
 
           {/* ── INPUT BAR ── */}
           <Animated.View
             entering={FadeInUp.delay(100).duration(150)}
             style={[styles.inputBarWrap, {
               backgroundColor: theme.colors.background,
-              borderTopColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              borderTopColor: theme.colors.border,
+              paddingBottom: Math.max(12, insets.bottom + 8),
+              marginBottom: Platform.OS === 'android' ? Math.max(0, keyboardHeight - 10) : 0,
             }]}
           >
             <View style={[styles.inputRow, {
-              backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-              borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+              backgroundColor: theme.colors.surfaceVariant,
+              borderColor: theme.colors.border,
             }]}>
               <TextInput
                 style={[styles.textInput, { color: theme.colors.text }]}
-                placeholder="Ask your coach anything..."
+                placeholder={t('coach.placeholder')}
                 placeholderTextColor={theme.colors.textMuted}
                 value={input}
                 onChangeText={setInput}
@@ -769,8 +842,8 @@ export default function CoachScreen() {
                 >
                   <LinearGradient
                     colors={input.trim()
-                      ? [theme.colors.accent, '#4338CA'] as [string, string]
-                      : [theme.isDark ? '#333' : '#ccc', theme.isDark ? '#222' : '#bbb'] as [string, string]
+                      ? [theme.colors.accent, theme.colors.indigo] as [string, string]
+                      : [theme.colors.surfaceVariant, theme.colors.surface] as [string, string]
                     }
                     style={styles.sendButton}
                   >
@@ -992,3 +1065,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default function CoachScreen() {
+  const router = useRouter();
+  return (
+    <ScreenErrorBoundary screenName="AI Coach" onGoBack={() => router.back()}>
+      <CoachScreenInner />
+    </ScreenErrorBoundary>
+  );
+}

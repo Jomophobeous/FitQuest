@@ -64,7 +64,7 @@ export const STATE_LIFECYCLE = {
 // ============================================
 
 export type ProfileChangeType = 
-  | 'goal_change'           // User changes primary goal (e.g., calisthenics → building_muscle)
+  | 'goal_change'           // User changes primary goal (e.g., body_control → strength)
   | 'experience_change'     // User changes experience level
   | 'equipment_change'      // User adds/removes equipment
   | 'injury_change'         // User adds/removes injury

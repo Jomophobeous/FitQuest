@@ -38,7 +38,7 @@ interface OverviewState {
 export default function PlatformStudioScreen() {
   const { theme } = useTheme();
   const [titleInput, setTitleInput] = useState('');
-  const [goalInput, setGoalInput] = useState('calisthenics');
+  const [goalInput, setGoalInput] = useState('body_control');
   const [daysInput, setDaysInput] = useState('4');
   const [overview, setOverview] = useState<OverviewState | null>(null);
   const [busy, setBusy] = useState(false);
@@ -157,7 +157,7 @@ export default function PlatformStudioScreen() {
         <TextInput
           value={goalInput}
           onChangeText={setGoalInput}
-          placeholder="Goal (e.g. calisthenics)"
+          placeholder="Goal (e.g. strength)"
           placeholderTextColor={theme.colors.textMuted}
           style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant }]}
         />

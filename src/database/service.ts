@@ -1815,14 +1815,14 @@ export async function applyBodyCraftAlgorithmToProfile(
 ): Promise<void> {
   const db = await getDatabase();
   const goalToCategory: Record<string, string> = {
-    lean_athletic: 'calisthenics',
-    muscular_powerful: 'building_muscle',
-    tall_flexible: 'getting_taller',
-    balanced_toned: 'calisthenics',
-    custom: 'calisthenics',
+    lean_athletic: 'body_control',
+    muscular_powerful: 'strength',
+    tall_flexible: 'posture',
+    balanced_toned: 'body_control',
+    custom: 'body_control',
   };
 
-  const mappedGoal = goalToCategory[algo.goal_type] || 'calisthenics';
+  const mappedGoal = goalToCategory[algo.goal_type] || 'body_control';
 
   await db.runAsync(
     `UPDATE user_profile SET goal = ?, training_days_per_week = ?, updated_at = datetime('now') WHERE id = ?`,

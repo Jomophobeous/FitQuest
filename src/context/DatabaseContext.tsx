@@ -3,9 +3,9 @@
  * Provides database initialization and access throughout the app
  */
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from 'react';
 import { initializeDatabase, resetDatabase } from '../database';
-import { getUserProfile, createUserProfile, lockUserProfile } from '../database/service';
+import { getUserProfile, createUserProfile } from '../database/service';
 import { initializeAIModels } from '../ai';
 import type { UserProfile } from '../database/types';
 
@@ -46,17 +46,15 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
         // Create a default profile for testing
         await createUserProfile({
           id: DEFAULT_USER_ID,
-          goal: 'calisthenics',
+          goal: 'body_control',
           experience: 'intermediate',
           training_days_per_week: 4,
           time_per_session_minutes: 30,
           locked: false,
         });
-        
-        // Lock the profile so workout generation works
-        await lockUserProfile(DEFAULT_USER_ID);
+
         profile = await getUserProfile(DEFAULT_USER_ID);
-        console.log('[FitQuest] Default profile created and locked');
+        console.log('[FitQuest] Default profile created');
       }
 
       setUserProfile(profile);
@@ -74,12 +72,12 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     const profile = await getUserProfile(DEFAULT_USER_ID);
     setUserProfile(profile);
-  };
+  }, []);
 
-  const resetAll = async () => {
+  const resetAll = useCallback(async () => {
     setIsLoading(true);
     try {
       await resetDatabase();
@@ -89,23 +87,23 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     initialize();
   }, []);
 
+  const contextValue = useMemo(() => ({
+    isReady,
+    isLoading,
+    error,
+    userProfile,
+    refreshProfile,
+    resetAll,
+  }), [isReady, isLoading, error, userProfile, refreshProfile, resetAll]);
+
   return (
-    <DatabaseContext.Provider
-      value={{
-        isReady,
-        isLoading,
-        error,
-        userProfile,
-        refreshProfile,
-        resetAll,
-      }}
-    >
+    <DatabaseContext.Provider value={contextValue}>
       {children}
     </DatabaseContext.Provider>
   );

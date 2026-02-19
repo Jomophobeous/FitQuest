@@ -63,42 +63,42 @@ const PATTERN_REQUIREMENTS: Record<string, TargetMuscle[]> = {
 
 /** Goal to training type mapping */
 const GOAL_TRAINING_TYPES: Record<Category, TrainingType[]> = {
-  calisthenics: ['strength', 'hypertrophy', 'endurance'],
-  getting_taller: ['decompression', 'mobility', 'posture'],
-  faster: ['speed_power', 'endurance', 'coordination'],
-  flexible: ['mobility', 'recovery'],
-  mental_clarity: ['mindfulness', 'recovery', 'balance'],
-  building_muscle: ['hypertrophy', 'strength'],
+  body_control: ['strength', 'hypertrophy', 'endurance'],
+  posture: ['decompression', 'mobility', 'posture'],
+  speed: ['speed_power', 'endurance', 'coordination'],
+  mobility: ['mobility', 'recovery'],
+  focus: ['mindfulness', 'recovery', 'balance'],
+  strength: ['hypertrophy', 'strength'],
 };
 
 /** Volume presets by goal and experience */
 const VOLUME_PRESETS: Record<Category, Record<string, { sets: number; reps: string }>> = {
-  calisthenics: {
+  body_control: {
     beginner: { sets: 3, reps: '8-12' },
     intermediate: { sets: 4, reps: '8-15' },
     advanced: { sets: 4, reps: '10-20' },
   },
-  building_muscle: {
+  strength: {
     beginner: { sets: 3, reps: '8-12' },
     intermediate: { sets: 4, reps: '8-12' },
     advanced: { sets: 5, reps: '6-12' },
   },
-  getting_taller: {
+  posture: {
     beginner: { sets: 2, reps: '30s hold' },
     intermediate: { sets: 3, reps: '45s hold' },
     advanced: { sets: 3, reps: '60s hold' },
   },
-  faster: {
+  speed: {
     beginner: { sets: 3, reps: '10-15' },
     intermediate: { sets: 4, reps: '12-20' },
     advanced: { sets: 5, reps: '15-25' },
   },
-  flexible: {
+  mobility: {
     beginner: { sets: 2, reps: '30s hold' },
     intermediate: { sets: 2, reps: '45s hold' },
     advanced: { sets: 3, reps: '60s hold' },
   },
-  mental_clarity: {
+  focus: {
     beginner: { sets: 2, reps: '60s hold' },
     intermediate: { sets: 3, reps: '90s hold' },
     advanced: { sets: 3, reps: '120s hold' },
@@ -201,42 +201,92 @@ async function applyHardFilter(
   const injuries = await getUserInjuries(userId);
   const injuredMuscles = new Set(injuries.filter(i => i.severity !== 'mild').map(i => i.muscle));
 
-  // Build filter
+  // Build filter for primary goal
   const filter: ExerciseFilter = {
     categories: [profile.goal],
     difficulties: getDifficultyRange(profile.experience),
     training_types: intent.training_types,
   };
 
-  // Get candidates
-  let candidates = await getExercises(filter);
+  if (__DEV__) console.log(`[WorkoutGen] Hard filter: goal="${profile.goal}", difficulties=${JSON.stringify(getDifficultyRange(profile.experience))}, training_types=${JSON.stringify(intent.training_types)}`);
 
   // Hard filters that need post-processing
-  candidates = candidates.filter(ex => {
-    // Equipment check
-    if (ex.equipment_required.length > 0) {
-      const hasAllRequired = ex.equipment_required.every(eq => userEquipment.includes(eq));
-      if (!hasAllRequired) return false;
-    }
+  // FIX: Run fallback logic on the FILTERED candidates, not the raw DB result
+  // If we have candidates but they all get filtered out by equipment/injuries, we need more candidates!
+  
+  const filterCandidates = (candList: ExerciseWithDetails[]) => {
+    return candList.filter(ex => {
+      // Equipment check
+      if (ex.equipment_required.length > 0) {
+        const hasAllRequired = ex.equipment_required.every(eq => userEquipment.includes(eq));
+        if (!hasAllRequired) return false;
+      }
 
-    // Injury check - exclude if primary muscle is injured
-    for (const muscle of ex.primary_muscles) {
-      if (injuredMuscles.has(muscle)) return false;
-    }
+      // Injury check - exclude if primary muscle is injured
+      for (const muscle of ex.primary_muscles) {
+        if (injuredMuscles.has(muscle)) return false;
+      }
 
-    // Fatigue check - skip if ANY primary muscle is over threshold
-    const fatigueThreshold = Math.round(
-      FATIGUE_THRESHOLD - (adaptive.fatigueSensitivity - 1) * 20
-    );
-    for (const muscle of ex.primary_muscles) {
-      const fatigue = fatigueMap.get(muscle) || 0;
-      if (fatigue > fatigueThreshold) return false;
-    }
+      // Fatigue check - skip if ANY primary muscle is over threshold
+      const fatigueThreshold = Math.round(
+        FATIGUE_THRESHOLD - (adaptive.fatigueSensitivity - 1) * 20
+      );
+      for (const muscle of ex.primary_muscles) {
+        const fatigue = fatigueMap.get(muscle) || 0;
+        if (fatigue > fatigueThreshold) return false;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  };
 
-  return candidates;
+  // 1. Try Primary Filter
+  let rawCandidates = await getExercises(filter);
+  let validCandidates = filterCandidates(rawCandidates);
+  if (__DEV__) console.log(`[WorkoutGen] Primary filter: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+
+  // 2. Fallback: Category Only
+  if (validCandidates.length < 4) {
+    if (__DEV__) console.log(`[WorkoutGen] Only ${validCandidates.length} valid candidates. Expanding to category...`);
+    const expandedFilter: ExerciseFilter = {
+      categories: [profile.goal],
+      difficulties: getDifficultyRange(profile.experience),
+    };
+    rawCandidates = await getExercises(expandedFilter);
+    validCandidates = filterCandidates(rawCandidates); // Re-filter
+    if (__DEV__) console.log(`[WorkoutGen] Category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+  }
+
+  // 3. Fallback: Cross-Category (Training Type match)
+  if (validCandidates.length < 4) {
+    if (__DEV__) console.log(`[WorkoutGen] Still only ${validCandidates.length} valid. Expanding to cross-category...`);
+    const crossCategoryFilter: ExerciseFilter = {
+      difficulties: getDifficultyRange(profile.experience),
+      training_types: intent.training_types,
+    };
+    rawCandidates = await getExercises(crossCategoryFilter);
+    validCandidates = filterCandidates(rawCandidates);
+    if (__DEV__) console.log(`[WorkoutGen] Cross-category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+  }
+
+  // 4. Fallback: Difficulty Only (Universal)
+  if (validCandidates.length < 4) {
+    if (__DEV__) console.log(`[WorkoutGen] Still only ${validCandidates.length} valid. Universal fallback...`);
+    const fallbackFilter: ExerciseFilter = {
+      difficulties: getDifficultyRange(profile.experience),
+    };
+    rawCandidates = await getExercises(fallbackFilter);
+    validCandidates = filterCandidates(rawCandidates);
+    if (__DEV__) console.log(`[WorkoutGen] Universal fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+  }
+
+  if (validCandidates.length > 0) {
+    const catCounts: Record<string, number> = {};
+    validCandidates.forEach(ex => { catCounts[ex.category] = (catCounts[ex.category] || 0) + 1; });
+    if (__DEV__) console.log(`[WorkoutGen] FINAL CANDIDATES by category:`, JSON.stringify(catCounts));
+  }
+
+  return validCandidates;
 }
 
 function getDifficultyRange(experience: string): ('beginner' | 'intermediate' | 'advanced')[] {
@@ -394,7 +444,7 @@ function prescribeVolume(
   adaptive: AdaptiveTrainingProfile
 ): { sets: number; reps: string } {
   const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ||
-    VOLUME_PRESETS.calisthenics.beginner;
+    VOLUME_PRESETS.body_control.beginner;
 
   let sets = preset.sets;
   let reps = preset.reps;
@@ -408,7 +458,7 @@ function prescribeVolume(
   }
 
   // Time-based exercises get hold times
-  if (exercise.category === 'getting_taller' || exercise.category === 'flexible') {
+  if (exercise.category === 'posture' || exercise.category === 'mobility') {
     reps = preset.reps; // Already holds
   }
 

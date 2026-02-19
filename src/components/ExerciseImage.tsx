@@ -40,12 +40,12 @@ const CATEGORY_CONFIG: Record<string, {
   colors: [string, string];
   icon: GlyphMapKey;
 }> = {
-  calisthenics: { colors: ['#10B981', '#059669'], icon: 'human-handsup' },
-  getting_taller: { colors: ['#6366F1', '#4F46E5'], icon: 'human-male-height' },
-  faster: { colors: ['#F59E0B', '#D97706'], icon: 'lightning-bolt' },
-  flexible: { colors: ['#EC4899', '#DB2777'], icon: 'yoga' },
-  mental_clarity: { colors: ['#8B5CF6', '#7C3AED'], icon: 'meditation' },
-  building_muscle: { colors: ['#EF4444', '#DC2626'], icon: 'dumbbell' },
+  body_control: { colors: ['#10B981', '#059669'], icon: 'human-handsup' },
+  posture: { colors: ['#6366F1', '#4F46E5'], icon: 'human-male-height' },
+  speed: { colors: ['#F59E0B', '#D97706'], icon: 'lightning-bolt' },
+  mobility: { colors: ['#EC4899', '#DB2777'], icon: 'yoga' },
+  focus: { colors: ['#8B5CF6', '#7C3AED'], icon: 'meditation' },
+  strength: { colors: ['#EF4444', '#DC2626'], icon: 'dumbbell' },
 };
 
 const DEFAULT_CONFIG = { colors: ['#64748B', '#475569'] as [string, string], icon: 'dumbbell' as GlyphMapKey };
@@ -71,7 +71,7 @@ interface ExerciseImageProps {
 
 export default function ExerciseImage({
   exerciseId,
-  category = 'calisthenics',
+  category = 'body_control',
   imagePaths: preloadedPaths,
   variant = 'thumbnail',
   animate = true,

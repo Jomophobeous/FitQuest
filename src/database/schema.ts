@@ -117,6 +117,14 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
       await shareExternalImagesToCore(database);
     }
 
+    // v13 → v14: Category rename
+    // calisthenics→body_control, getting_taller→posture, faster→speed,
+    // flexible→mobility, mental_clarity→focus, building_muscle→strength
+    if (currentVersion < 14) {
+      console.log(`[FitQuest DB] Migrating to v14: renaming exercise categories`);
+      await migrateCategoryRename(database);
+    }
+
     await migrateFitMindLegacyTables(database);
     await createTables(database);
     await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
@@ -329,6 +337,155 @@ function normalizeName(name: string): string {
     .replace(/[^a-z0-9\s]/g, '') // strip special chars
     .replace(/\s+/g, ' ')        // collapse whitespace
     .trim();
+}
+
+/**
+ * v14 migration: Rename categories from descriptive to standard fitness terms.
+ * Mapping: calisthenics→body_control, getting_taller→posture, faster→speed,
+ *          flexible→mobility, mental_clarity→focus, building_muscle→strength
+ *
+ * Approach: Recreate exercises and user_profile tables with new CHECK constraints,
+ * transform category/goal values via CASE, then rename tables back.
+ * Foreign keys are disabled during this operation to prevent CASCADE side-effects.
+ */
+async function migrateCategoryRename(database: SQLite.SQLiteDatabase): Promise<void> {
+  const CATEGORY_CASE = `
+    CASE category
+      WHEN 'calisthenics' THEN 'body_control'
+      WHEN 'getting_taller' THEN 'posture'
+      WHEN 'faster' THEN 'speed'
+      WHEN 'flexible' THEN 'mobility'
+      WHEN 'mental_clarity' THEN 'focus'
+      WHEN 'building_muscle' THEN 'strength'
+      ELSE category
+    END`;
+
+  const GOAL_CASE = `
+    CASE goal
+      WHEN 'calisthenics' THEN 'body_control'
+      WHEN 'getting_taller' THEN 'posture'
+      WHEN 'faster' THEN 'speed'
+      WHEN 'flexible' THEN 'mobility'
+      WHEN 'mental_clarity' THEN 'focus'
+      WHEN 'building_muscle' THEN 'strength'
+      ELSE goal
+    END`;
+
+  await database.execAsync('PRAGMA foreign_keys = OFF');
+  await database.execAsync('BEGIN TRANSACTION');
+
+  try {
+    // --- 1. Recreate exercises table with new CHECK constraint ---
+    await database.execAsync(`
+      CREATE TABLE exercises_new (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        category TEXT NOT NULL CHECK (category IN (
+          'body_control', 'posture', 'speed', 'mobility', 'focus', 'strength'
+        )),
+        difficulty TEXT NOT NULL CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
+        equipment_level TEXT NOT NULL CHECK (equipment_level IN ('none', 'minimal', 'playground')),
+        impact_level TEXT NOT NULL CHECK (impact_level IN ('no_impact', 'low_impact', 'high_impact')),
+        space_required TEXT NOT NULL CHECK (space_required IN (
+          'mat_only_1x1', 'small_bedroom_2x2', 'living_room_3x3', 'outdoors_hall'
+        )),
+        time_per_set_seconds INTEGER NOT NULL DEFAULT 30,
+        instructions TEXT NOT NULL,
+        order_in_category INTEGER NOT NULL DEFAULT 0,
+        audio_intro TEXT NOT NULL DEFAULT '',
+        audio_setup TEXT NOT NULL DEFAULT '',
+        audio_execution TEXT NOT NULL DEFAULT '',
+        audio_transition TEXT NOT NULL DEFAULT '',
+        force_type TEXT,
+        mechanic TEXT,
+        external_id TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )
+    `);
+
+    await database.execAsync(`
+      INSERT INTO exercises_new
+      SELECT id, name, ${CATEGORY_CASE}, difficulty, equipment_level,
+             impact_level, space_required, time_per_set_seconds, instructions,
+             order_in_category, audio_intro, audio_setup, audio_execution,
+             audio_transition, force_type, mechanic, external_id,
+             created_at, updated_at
+      FROM exercises
+    `);
+
+    await database.execAsync('DROP TABLE exercises');
+    await database.execAsync('ALTER TABLE exercises_new RENAME TO exercises');
+
+    // Recreate indexes
+    await database.execAsync(`
+      CREATE INDEX IF NOT EXISTS idx_exercises_category ON exercises(category);
+      CREATE INDEX IF NOT EXISTS idx_exercises_difficulty ON exercises(difficulty);
+      CREATE INDEX IF NOT EXISTS idx_exercises_equipment ON exercises(equipment_level);
+      CREATE INDEX IF NOT EXISTS idx_exercises_external_id ON exercises(external_id);
+    `);
+
+    // --- 2. Recreate user_profile table with new CHECK constraint ---
+    await database.execAsync(`
+      CREATE TABLE user_profile_new (
+        id TEXT PRIMARY KEY,
+        sex TEXT CHECK (sex IN ('male', 'female', 'other')),
+        weight_kg REAL,
+        height_cm REAL,
+        goal TEXT NOT NULL CHECK (goal IN (
+          'body_control', 'posture', 'speed', 'mobility', 'focus', 'strength'
+        )),
+        experience TEXT NOT NULL CHECK (experience IN ('beginner', 'intermediate', 'advanced')),
+        training_days_per_week INTEGER NOT NULL DEFAULT 3 CHECK (training_days_per_week BETWEEN 1 AND 7),
+        time_per_session_minutes INTEGER NOT NULL DEFAULT 30,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        locked INTEGER NOT NULL DEFAULT 0
+      )
+    `);
+
+    await database.execAsync(`
+      INSERT INTO user_profile_new
+      SELECT id, sex, weight_kg, height_cm, ${GOAL_CASE}, experience,
+             training_days_per_week, time_per_session_minutes,
+             created_at, updated_at, locked
+      FROM user_profile
+    `);
+
+    await database.execAsync('DROP TABLE user_profile');
+    await database.execAsync('ALTER TABLE user_profile_new RENAME TO user_profile');
+
+    // --- 3. Update body_craft_algorithms goal_type (no CHECK constraint) ---
+    await database.execAsync(`
+      UPDATE body_craft_algorithms SET goal_type =
+        CASE goal_type
+          WHEN 'calisthenics' THEN 'body_control'
+          WHEN 'getting_taller' THEN 'posture'
+          WHEN 'faster' THEN 'speed'
+          WHEN 'flexible' THEN 'mobility'
+          WHEN 'mental_clarity' THEN 'focus'
+          WHEN 'building_muscle' THEN 'strength'
+          ELSE goal_type
+        END
+    `);
+
+    await database.execAsync('COMMIT');
+
+    // Re-enable FK enforcement
+    await database.execAsync('PRAGMA foreign_keys = ON');
+
+    // Log result
+    const categories = await database.getAllAsync<{ category: string; count: number }>(
+      `SELECT category, COUNT(*) as count FROM exercises GROUP BY category ORDER BY count DESC`
+    );
+    console.log(`[FitQuest DB] Category rename complete:`, JSON.stringify(categories));
+
+  } catch (error) {
+    await database.execAsync('ROLLBACK');
+    await database.execAsync('PRAGMA foreign_keys = ON');
+    console.error('[FitQuest DB] Category rename migration failed:', error);
+    throw error;
+  }
 }
 
 async function migrateFitMindLegacyTables(database: SQLite.SQLiteDatabase): Promise<void> {
@@ -603,8 +760,8 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       category TEXT NOT NULL CHECK (category IN (
-        'calisthenics', 'getting_taller', 'faster', 'flexible', 
-        'mental_clarity', 'building_muscle'
+        'body_control', 'posture', 'speed', 'mobility', 
+        'focus', 'strength'
       )),
       difficulty TEXT NOT NULL CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
       equipment_level TEXT NOT NULL CHECK (equipment_level IN ('none', 'minimal', 'playground')),
@@ -686,8 +843,8 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       weight_kg REAL,
       height_cm REAL,
       goal TEXT NOT NULL CHECK (goal IN (
-        'calisthenics', 'getting_taller', 'faster', 'flexible', 
-        'mental_clarity', 'building_muscle'
+        'body_control', 'posture', 'speed', 'mobility', 
+        'focus', 'strength'
       )),
       experience TEXT NOT NULL CHECK (experience IN ('beginner', 'intermediate', 'advanced')),
       training_days_per_week INTEGER NOT NULL DEFAULT 3 CHECK (training_days_per_week BETWEEN 1 AND 7),

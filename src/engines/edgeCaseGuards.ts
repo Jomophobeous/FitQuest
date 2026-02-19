@@ -192,7 +192,7 @@ export async function ensureDeloadQuality(
   if (exercises.length < GUARD_CONFIG.deload_minimum_exercises) {
     // Try to add low-intensity mobility work
     const mobilityExercises = await getExercises({
-      categories: ['flexible'],
+      categories: ['mobility'],
       difficulties: ['beginner'],
     });
     

@@ -3,7 +3,7 @@
  * Custom workout builder - users pick exercises to create their own workout
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -18,6 +18,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { colorSystem } from '../src/design/theme-system';
+import { useLanguage } from '../src/context/LanguageContext';
 import { getExercises, createWorkoutSession, addSessionExercise } from '../src/database/service';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
 import ThemedText from '../src/components/ThemedText';
@@ -34,28 +36,28 @@ interface SelectedExercise {
   restSeconds: number;
 }
 
-const CATEGORIES: { key: Category | 'all'; label: string; icon: string }[] = [
-  { key: 'all', label: 'All', icon: 'view-grid' },
-  { key: 'calisthenics', label: 'Calisthenics', icon: 'arm-flex' },
-  { key: 'getting_taller', label: 'Posture', icon: 'human-male-height' },
-  { key: 'building_muscle', label: 'Muscle', icon: 'dumbbell' },
-  { key: 'flexible', label: 'Flexibility', icon: 'yoga' },
-  { key: 'faster', label: 'Speed', icon: 'run-fast' },
-  { key: 'mental_clarity', label: 'Mind', icon: 'head-heart' },
+const getCategories = (t: (key: string) => string): { key: Category | 'all'; label: string; icon: string }[] => [
+  { key: 'all', label: t('createWorkout.category.all'), icon: 'view-grid' },
+  { key: 'body_control', label: t('createWorkout.category.body_control'), icon: 'arm-flex' },
+  { key: 'posture', label: t('createWorkout.category.posture'), icon: 'human-male-height' },
+  { key: 'strength', label: t('createWorkout.category.strength'), icon: 'dumbbell' },
+  { key: 'mobility', label: t('createWorkout.category.mobility'), icon: 'yoga' },
+  { key: 'speed', label: t('createWorkout.category.speed'), icon: 'run-fast' },
+  { key: 'focus', label: t('createWorkout.category.focus'), icon: 'head-heart' },
 ];
 
-const DIFFICULTIES: { key: 'all' | 'beginner' | 'intermediate' | 'advanced'; label: string; color: string }[] = [
-  { key: 'all', label: 'All Levels', color: '#6B7280' },
-  { key: 'beginner', label: 'Beginner', color: '#10B981' },
-  { key: 'intermediate', label: 'Intermediate', color: '#F4A427' },
-  { key: 'advanced', label: 'Advanced', color: '#EF4444' },
+const getDifficulties = (t: (key: string) => string): { key: 'all' | 'beginner' | 'intermediate' | 'advanced'; label: string; color: string }[] => [
+  { key: 'all', label: t('createWorkout.allLevels'), color: colorSystem.dark.textMuted },
+  { key: 'beginner', label: t('createWorkout.beginner'), color: colorSystem.dark.accent },
+  { key: 'intermediate', label: t('createWorkout.intermediate'), color: colorSystem.dark.warning },
+  { key: 'advanced', label: t('createWorkout.advanced'), color: colorSystem.dark.error },
 ];
 
-const EQUIPMENT_LEVELS: { key: 'all' | 'none' | 'minimal' | 'playground'; label: string }[] = [
-  { key: 'all', label: 'Any Equipment' },
-  { key: 'none', label: 'No Equipment' },
-  { key: 'minimal', label: 'Minimal' },
-  { key: 'playground', label: 'Playground' },
+const getEquipmentLevels = (t: (key: string) => string): { key: 'all' | 'none' | 'minimal' | 'playground'; label: string }[] => [
+  { key: 'all', label: t('createWorkout.anyEquipment') },
+  { key: 'none', label: t('createWorkout.noEquipment') },
+  { key: 'minimal', label: t('createWorkout.minimal') },
+  { key: 'playground', label: t('createWorkout.playground') },
 ];
 
 // ============================================
@@ -64,6 +66,10 @@ const EQUIPMENT_LEVELS: { key: 'all' | 'none' | 'minimal' | 'playground'; label:
 
 export default function CreateWorkoutScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
+  const categories = useMemo(() => getCategories(t), [t]);
+  const difficulties = useMemo(() => getDifficulties(t), [t]);
+  const equipmentLevels = useMemo(() => getEquipmentLevels(t), [t]);
   const router = useRouter();
 
   // State
@@ -167,11 +173,11 @@ export default function CreateWorkoutScreen() {
 
   const handleSaveWorkout = async () => {
     if (selected.length === 0) {
-      Alert.alert('No exercises', 'Add at least one exercise to your workout.');
+      Alert.alert(t('createWorkout.selectFirst'), t('createWorkout.noExercises'));
       return;
     }
 
-    const name = workoutName.trim() || `Custom Workout (${selected.length} exercises)`;
+    const name = workoutName.trim() || `${t('createWorkout.customWorkout')} (${selected.length} ${t('createWorkout.exercises')})`;
     const sessionId = `custom_${Date.now()}`;
 
     try {
@@ -200,13 +206,13 @@ export default function CreateWorkoutScreen() {
       }
 
       Alert.alert(
-        'Workout Saved! 💪',
-        `"${name}" with ${selected.length} exercises (~${Math.round(estimatedDuration)} min)`,
+        t('createWorkout.saved'),
+        t('createWorkout.savedDetail'),
         [{ text: 'OK', onPress: () => router.back() }]
       );
     } catch (error) {
       console.error('[CreateWorkout] Failed to save:', error);
-      Alert.alert('Error', 'Failed to save workout. Please try again.');
+      Alert.alert('Error', t('createWorkout.saveFailed'));
     }
   };
 
@@ -219,16 +225,16 @@ export default function CreateWorkoutScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <ThemedText variant="h3">Create Workout</ThemedText>
+          <ThemedText variant="h3">{t('createWorkout.title')}</ThemedText>
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={() => router.push('/saved-workouts' as any)}>
               <MaterialCommunityIcons name="folder-star" size={22} color={theme.colors.accent} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => selected.length > 0 ? setStep('configure') : Alert.alert('Select exercises first')}
+              onPress={() => selected.length > 0 ? setStep('configure') : Alert.alert(t('createWorkout.selectFirst'))}
             >
               <ThemedText variant="body" color="accent" weight="600">
-                Next ({selected.length})
+                {t('createWorkout.next')} ({selected.length})
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -240,7 +246,7 @@ export default function CreateWorkoutScreen() {
             <MaterialCommunityIcons name="magnify" size={20} color={theme.colors.textMuted} />
             <TextInput
               style={[styles.searchInput, { color: theme.colors.text }]}
-              placeholder="Search exercises..."
+              placeholder={t('createWorkout.searchPlaceholder')}
               placeholderTextColor={theme.colors.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -256,7 +262,7 @@ export default function CreateWorkoutScreen() {
             <MaterialCommunityIcons
               name="filter-variant"
               size={20}
-              color={showFilters ? '#fff' : theme.colors.text}
+              color={showFilters ? theme.colors.onAccent : theme.colors.text}
             />
             {activeFiltersCount > 0 && (
               <View style={[styles.filterBadge, { backgroundColor: theme.colors.error }]}>
@@ -270,16 +276,16 @@ export default function CreateWorkoutScreen() {
         {!!showFilters && (
           <View style={[styles.filtersPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
             <View style={styles.filterHeader}>
-              <ThemedText variant="body" weight="600">Filters</ThemedText>
+              <ThemedText variant="body" weight="600">{t('createWorkout.filters')}</ThemedText>
               <TouchableOpacity onPress={clearFilters}>
-                <ThemedText variant="bodySmall" color="accent">Clear All</ThemedText>
+                <ThemedText variant="bodySmall" color="accent">{t('createWorkout.clearAll')}</ThemedText>
               </TouchableOpacity>
             </View>
 
             {/* Difficulty Filter */}
-            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 12 }}>Difficulty</ThemedText>
+            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 12 }}>{t('createWorkout.difficulty')}</ThemedText>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
-              {DIFFICULTIES.map(diff => (
+              {difficulties.map(diff => (
                 <TouchableOpacity
                   key={diff.key}
                   style={[
@@ -292,7 +298,7 @@ export default function CreateWorkoutScreen() {
                   onPress={() => setSelectedDifficulty(diff.key)}
                 >
                   <Text style={{
-                    color: selectedDifficulty === diff.key ? '#fff' : theme.colors.text,
+                    color: selectedDifficulty === diff.key ? theme.colors.onAccent : theme.colors.text,
                     fontSize: 12,
                     fontWeight: '600',
                   }}>
@@ -303,9 +309,9 @@ export default function CreateWorkoutScreen() {
             </ScrollView>
 
             {/* Equipment Filter */}
-            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 12 }}>Equipment</ThemedText>
+            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 12 }}>{t('createWorkout.equipment')}</ThemedText>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
-              {EQUIPMENT_LEVELS.map(eq => (
+              {equipmentLevels.map(eq => (
                 <TouchableOpacity
                   key={eq.key}
                   style={[
@@ -318,7 +324,7 @@ export default function CreateWorkoutScreen() {
                   onPress={() => setSelectedEquipment(eq.key)}
                 >
                   <Text style={{
-                    color: selectedEquipment === eq.key ? '#fff' : theme.colors.text,
+                    color: selectedEquipment === eq.key ? theme.colors.onAccent : theme.colors.text,
                     fontSize: 12,
                     fontWeight: '600',
                   }}>
@@ -332,7 +338,7 @@ export default function CreateWorkoutScreen() {
 
         {/* Category Filter */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-          {CATEGORIES.map(cat => (
+          {categories.map(cat => (
             <TouchableOpacity
               key={cat.key}
               style={[
@@ -345,7 +351,7 @@ export default function CreateWorkoutScreen() {
               onPress={() => setSelectedCategory(cat.key)}
             >
               <Text style={{
-                color: selectedCategory === cat.key ? '#fff' : theme.colors.text,
+                color: selectedCategory === cat.key ? theme.colors.onAccent : theme.colors.text,
                 fontSize: 12,
                 fontWeight: '600',
               }}>
@@ -357,7 +363,7 @@ export default function CreateWorkoutScreen() {
 
         {/* Exercise count */}
         <ThemedText variant="bodySmall" color="secondary" style={{ paddingHorizontal: 16, marginBottom: 8 }}>
-          {filteredExercises.length} exercises available
+          {filteredExercises.length} {t('createWorkout.exercisesAvailable')}
         </ThemedText>
 
         {/* Exercise List */}
@@ -413,9 +419,9 @@ export default function CreateWorkoutScreen() {
           <TouchableOpacity onPress={() => setStep('select')}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <ThemedText variant="h3">Configure</ThemedText>
+          <ThemedText variant="h3">{t('createWorkout.configure')}</ThemedText>
           <TouchableOpacity onPress={() => setStep('preview')}>
-            <ThemedText variant="body" color="accent" weight="600">Preview</ThemedText>
+            <ThemedText variant="body" color="accent" weight="600">{t('createWorkout.preview')}</ThemedText>
           </TouchableOpacity>
         </View>
 
@@ -423,10 +429,11 @@ export default function CreateWorkoutScreen() {
         <View style={[styles.nameInput, { borderColor: theme.colors.border }]}>
           <TextInput
             style={[styles.nameField, { color: theme.colors.text }]}
-            placeholder="Workout name (optional)"
+            placeholder={t('createWorkout.workoutNamePlaceholder')}
             placeholderTextColor={theme.colors.textMuted}
             value={workoutName}
             onChangeText={setWorkoutName}
+            maxLength={100}
           />
         </View>
 
@@ -456,7 +463,7 @@ export default function CreateWorkoutScreen() {
               {/* Sets / Reps / Rest */}
               <View style={styles.configRow}>
                 <View style={styles.configField}>
-                  <ThemedText variant="bodySmall" color="secondary">Sets</ThemedText>
+                  <ThemedText variant="bodySmall" color="secondary">{t('createWorkout.sets')}</ThemedText>
                   <View style={styles.stepper}>
                     <TouchableOpacity onPress={() => updateExerciseConfig(item.exercise.id, 'sets', Math.max(1, item.sets - 1))}>
                       <MaterialCommunityIcons name="minus-circle-outline" size={24} color={theme.colors.accent} />
@@ -468,16 +475,18 @@ export default function CreateWorkoutScreen() {
                   </View>
                 </View>
                 <View style={styles.configField}>
-                  <ThemedText variant="bodySmall" color="secondary">Reps</ThemedText>
+                  <ThemedText variant="bodySmall" color="secondary">{t('createWorkout.reps')}</ThemedText>
                   <TextInput
                     style={[styles.repsInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
                     value={item.reps}
                     onChangeText={(text) => updateExerciseConfig(item.exercise.id, 'reps', text)}
                     keyboardType="default"
+                    maxLength={10}
+                    placeholder="8-12"
                   />
                 </View>
                 <View style={styles.configField}>
-                  <ThemedText variant="bodySmall" color="secondary">Rest (s)</ThemedText>
+                  <ThemedText variant="bodySmall" color="secondary">{t('createWorkout.restSeconds')}</ThemedText>
                   <View style={styles.stepper}>
                     <TouchableOpacity onPress={() => updateExerciseConfig(item.exercise.id, 'restSeconds', Math.max(15, item.restSeconds - 15))}>
                       <MaterialCommunityIcons name="minus-circle-outline" size={24} color={theme.colors.accent} />
@@ -503,7 +512,7 @@ export default function CreateWorkoutScreen() {
         <TouchableOpacity onPress={() => setStep('configure')}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
         </TouchableOpacity>
-        <ThemedText variant="h3">Preview</ThemedText>
+        <ThemedText variant="h3">{t('createWorkout.preview')}</ThemedText>
         <View style={{ width: 24 }} />
       </View>
 
@@ -511,18 +520,18 @@ export default function CreateWorkoutScreen() {
         {/* Summary */}
         <Card style={styles.summaryCard}>
           <ThemedText variant="h3">
-            {workoutName.trim() || 'Custom Workout'}
+            {workoutName.trim() || t('createWorkout.customWorkout')}
           </ThemedText>
           <View style={styles.summaryRow}>
             <View style={styles.summaryItem}>
               <MaterialCommunityIcons name="dumbbell" size={20} color={theme.colors.accent} />
               <ThemedText variant="body" style={{ marginLeft: 6 }}>{selected.length}</ThemedText>
-              <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: 4 }}>exercises</ThemedText>
+              <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: 4 }}>{t('createWorkout.exercises')}</ThemedText>
             </View>
             <View style={styles.summaryItem}>
               <MaterialCommunityIcons name="clock-outline" size={20} color={theme.colors.accent} />
               <ThemedText variant="body" style={{ marginLeft: 6 }}>~{Math.round(estimatedDuration)}</ThemedText>
-              <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: 4 }}>min</ThemedText>
+              <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: 4 }}>{t('createWorkout.min')}</ThemedText>
             </View>
           </View>
         </Card>
@@ -550,7 +559,7 @@ export default function CreateWorkoutScreen() {
           onPress={handleSaveWorkout}
         >
           <MaterialCommunityIcons name="content-save" size={20} color="#fff" />
-          <Text style={[styles.saveButtonText, { color: theme.colors.text }]}>Save Workout</Text>
+          <Text style={[styles.saveButtonText, { color: theme.colors.text }]}>{t('createWorkout.saveWorkout')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

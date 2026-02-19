@@ -11,6 +11,8 @@
  *  - Exercise category weights: fed to workout generator
  */
 
+import * as Crypto from 'expo-crypto';
+
 // ============================================
 // TYPES
 // ============================================
@@ -93,34 +95,34 @@ const FAT_PER_KG = 0.9; // 0.8–1.0 range, we use 0.9
 /** Exercise category weight presets per goal */
 const GOAL_CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   muscular_powerful: {
-    building_muscle: 0.5,
-    calisthenics: 0.3,
-    flexible: 0.1,
-    getting_taller: 0.1,
+    strength: 0.5,
+    body_control: 0.3,
+    mobility: 0.1,
+    posture: 0.1,
   },
   lean_athletic: {
-    calisthenics: 0.4,
-    building_muscle: 0.2,
-    faster: 0.2,
-    flexible: 0.2,
+    body_control: 0.4,
+    strength: 0.2,
+    speed: 0.2,
+    mobility: 0.2,
   },
   tall_flexible: {
-    getting_taller: 0.4,
-    flexible: 0.3,
-    calisthenics: 0.2,
-    mental_clarity: 0.1,
+    posture: 0.4,
+    mobility: 0.3,
+    body_control: 0.2,
+    focus: 0.1,
   },
   balanced_toned: {
-    calisthenics: 0.3,
-    building_muscle: 0.25,
-    flexible: 0.25,
-    faster: 0.2,
+    body_control: 0.3,
+    strength: 0.25,
+    mobility: 0.25,
+    speed: 0.2,
   },
   custom: {
-    calisthenics: 0.3,
-    building_muscle: 0.25,
-    flexible: 0.25,
-    faster: 0.2,
+    body_control: 0.3,
+    strength: 0.25,
+    mobility: 0.25,
+    speed: 0.2,
   },
 };
 
@@ -130,11 +132,7 @@ const GOAL_CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
 
 /** Generate a simple UUID v4 */
 function generateId(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return Crypto.randomUUID();
 }
 
 /**
@@ -323,12 +321,12 @@ export function generateBodyCraftAlgorithm(inputs: BodyCraftInputs, userId: stri
   // 6. Exercise category weights
   const exercise_category_weights = { ...GOAL_CATEGORY_WEIGHTS[goal_type] };
 
-  // Boost weights for priority muscle areas (shift towards building_muscle if user has many priority areas)
+  // Boost weights for priority muscle areas (shift towards strength if user has many priority areas)
   const priorityCount = Object.values(muscle_priorities).filter((v) => v === 'priority').length;
   if (priorityCount >= 4 && goal_type !== 'muscular_powerful') {
-    exercise_category_weights.building_muscle = Math.min(
+    exercise_category_weights.strength = Math.min(
       1,
-      (exercise_category_weights.building_muscle || 0) + 0.1
+      (exercise_category_weights.strength || 0) + 0.1
     );
     // Re-normalize
     const total = Object.values(exercise_category_weights).reduce((s, v) => s + v, 0);

@@ -12,6 +12,17 @@
  */
 
 import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
+import {
+  TransformerLayerWeights,
+  transformerLayer as sharedTransformerLayer,
+  linearF64,
+  linearNum,
+  layerNorm,
+  gelu,
+  sigmoid,
+  softmax,
+  softmaxF64,
+} from '../TransformerRuntime';
 
 // ============================================
 // TYPES
@@ -19,7 +30,7 @@ import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
 
 export interface UserProfile {
   experience: 'beginner' | 'intermediate' | 'advanced' | 'elite';
-  goal: 'strength' | 'hypertrophy' | 'endurance' | 'fat_loss' | 'calisthenics';
+  goal: 'strength' | 'hypertrophy' | 'endurance' | 'fat_loss' | 'body_control';
   availableTimeMinutes: number;
   equipment: string[];
   fatigueMap: Record<string, number>; // muscle → 0-1 fatigue
@@ -82,24 +93,8 @@ interface TransformerCoachModel {
   inputScaler: { mean: number[]; scale: number[] };
 }
 
-interface TransformerBlock {
-  queryWeight: number[][];
-  queryBias: number[];
-  keyWeight: number[][];
-  keyBias: number[];
-  valueWeight: number[][];
-  valueBias: number[];
-  attOutputWeight: number[][];
-  attOutputBias: number[];
-  attLayerNormWeight: number[];
-  attLayerNormBias: number[];
-  ffnWeight: number[][];
-  ffnBias: number[];
-  ffnOutputWeight: number[][];
-  ffnOutputBias: number[];
-  outputLayerNormWeight: number[];
-  outputLayerNormBias: number[];
-}
+/** @see TransformerLayerWeights from TransformerRuntime */
+type TransformerBlock = TransformerLayerWeights;
 
 interface ExerciseEntry {
   id: number;
@@ -131,7 +126,7 @@ const GOAL_MAP: Record<string, number[]> = {
   hypertrophy: [0, 1, 0, 0, 0],
   endurance: [0, 0, 1, 0, 0],
   fat_loss: [0, 0, 0, 1, 0],
-  calisthenics: [0, 0, 0, 0, 1],
+  body_control: [0, 0, 0, 0, 1],
 };
 
 const EQUIPMENT_LIST = [
@@ -273,7 +268,7 @@ export class TransformerFitCoach {
         );
 
         // Check if done
-        const doneProbability = this.sigmoid(doneLogits[0]);
+        const doneProbability = sigmoid(doneLogits[0]);
         if (doneProbability > 0.5 && exercises.length >= 2) break;
 
         // Select exercise (avoid duplicates)
@@ -287,10 +282,10 @@ export class TransformerFitCoach {
         if (!exerciseInfo) continue;
 
         // Decode parameters
-        const sets = Math.max(1, Math.min(6, Math.round(this.sigmoid(setsOut[0]) * 5 + 1)));
-        const reps = Math.max(1, Math.min(30, Math.round(this.sigmoid(repsOut[0]) * 29 + 1)));
-        const restSeconds = Math.max(30, Math.min(300, Math.round(this.sigmoid(restOut[0]) * 270 + 30)));
-        const rpe = Math.max(5, Math.min(10, Math.round(this.sigmoid(rpeOut[0]) * 5 + 5)));
+        const sets = Math.max(1, Math.min(6, Math.round(sigmoid(setsOut[0]) * 5 + 1)));
+        const reps = Math.max(1, Math.min(30, Math.round(sigmoid(repsOut[0]) * 29 + 1)));
+        const restSeconds = Math.max(30, Math.min(300, Math.round(sigmoid(restOut[0]) * 270 + 30)));
+        const rpe = Math.max(5, Math.min(10, Math.round(sigmoid(rpeOut[0]) * 5 + 5)));
 
         exercises.push({
           exerciseId,
@@ -410,78 +405,10 @@ export class TransformerFitCoach {
     layer: TransformerBlock,
     _mask: Float64Array | null
   ): Float64Array[] {
-    const hidden = query[0].length;
-    const numHeads = this.model!.numHeads;
-    const headDim = Math.floor(hidden / numHeads);
-    const seqLen = query.length;
-    const kvLen = keyValue.length;
-
-    // Compute Q, K, V
-    const Q = query.map(h => this.linearF64(h, layer.queryWeight, layer.queryBias));
-    const K = keyValue.map(h => this.linearF64(h, layer.keyWeight, layer.keyBias));
-    const V = keyValue.map(h => this.linearF64(h, layer.valueWeight, layer.valueBias));
-
-    // Multi-head attention
-    const attnOutput = new Array(seqLen).fill(null).map(() => new Float64Array(hidden));
-
-    for (let head = 0; head < numHeads; head++) {
-      const offset = head * headDim;
-      const scale = Math.sqrt(headDim);
-
-      for (let i = 0; i < seqLen; i++) {
-        const scores = new Float64Array(kvLen);
-        for (let j = 0; j < kvLen; j++) {
-          let dot = 0;
-          for (let d = 0; d < headDim; d++) {
-            dot += Q[i][offset + d] * K[j][offset + d];
-          }
-          scores[j] = dot / scale;
-        }
-
-        const weights = this.softmaxF64(scores);
-
-        for (let d = 0; d < headDim; d++) {
-          let sum = 0;
-          for (let j = 0; j < kvLen; j++) {
-            sum += weights[j] * V[j][offset + d];
-          }
-          attnOutput[i][offset + d] = sum;
-        }
-      }
-    }
-
-    // Attention output projection + residual + layer norm
-    const projected = attnOutput.map(v =>
-      this.linearF64(v, layer.attOutputWeight, layer.attOutputBias)
-    );
-
-    let output = projected.map((v, i) => {
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) {
-        res[h] = query[i][h] + v[h];
-      }
-      return this.layerNorm(res, layer.attLayerNormWeight, layer.attLayerNormBias);
-    });
-
-    // FFN + residual + layer norm
-    const ffnOut = output.map(v => {
-      const inter = this.linearF64(v, layer.ffnWeight, layer.ffnBias);
-      const activated = inter.map(x => this.gelu(x));
-      return this.linearF64(
-        new Float64Array(activated),
-        layer.ffnOutputWeight, layer.ffnOutputBias
-      );
-    });
-
-    output = output.map((v, i) => {
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) {
-        res[h] = v[h] + ffnOut[i][h];
-      }
-      return this.layerNorm(res, layer.outputLayerNormWeight, layer.outputLayerNormBias);
-    });
-
-    return output;
+    return sharedTransformerLayer(query, layer, {
+      hiddenSize: this.model!.hiddenSize,
+      numHeads: this.model!.numHeads,
+    }, { keyValue });
   }
 
   // ============================================
@@ -522,7 +449,7 @@ export class TransformerFitCoach {
     }
 
     // Softmax and sample (or greedy)
-    const probs = this.softmax(scaled);
+    const probs = softmax(scaled);
     return probs.indexOf(Math.max(...probs));
   }
 
@@ -625,85 +552,13 @@ export class TransformerFitCoach {
   // MATH HELPERS
   // ============================================
 
-  private matVecMul(
-    matrix: number[][], vec: number[], bias: number[]
-  ): number[] {
-    const out = new Array(matrix.length).fill(0);
-    for (let i = 0; i < matrix.length; i++) {
-      let sum = bias[i] ?? 0;
-      for (let j = 0; j < vec.length; j++) {
-        sum += (matrix[i]?.[j] ?? 0) * vec[j];
-      }
-      out[i] = sum;
-    }
-    return out;
+  // Math helpers — delegate to shared TransformerRuntime
+  private matVecMul(matrix: number[][], vec: number[], bias: number[]): number[] {
+    return linearNum(vec, matrix, bias);
   }
 
-  private matVecMulNum(
-    matrix: number[][], vec: number[], bias: number[]
-  ): number[] {
-    return this.matVecMul(matrix, vec, bias);
-  }
-
-  private linearF64(
-    input: Float64Array, weights: number[][], bias: number[]
-  ): Float64Array {
-    const output = new Float64Array(weights.length);
-    for (let i = 0; i < weights.length; i++) {
-      let sum = bias[i] ?? 0;
-      const w = weights[i];
-      for (let j = 0; j < input.length; j++) {
-        sum += input[j] * (w?.[j] ?? 0);
-      }
-      output[i] = sum;
-    }
-    return output;
-  }
-
-  private layerNorm(
-    input: Float64Array, weight: number[], bias: number[], eps = 1e-12
-  ): Float64Array {
-    const n = input.length;
-    let mean = 0;
-    for (let i = 0; i < n; i++) mean += input[i];
-    mean /= n;
-    let variance = 0;
-    for (let i = 0; i < n; i++) variance += (input[i] - mean) ** 2;
-    variance /= n;
-    const std = Math.sqrt(variance + eps);
-    const out = new Float64Array(n);
-    for (let i = 0; i < n; i++) {
-      out[i] = ((input[i] - mean) / std) * (weight[i] ?? 1) + (bias[i] ?? 0);
-    }
-    return out;
-  }
-
-  private gelu(x: number): number {
-    return 0.5 * x * (1 + Math.tanh(Math.sqrt(2 / Math.PI) * (x + 0.044715 * x ** 3)));
-  }
-
-  private sigmoid(x: number): number {
-    return 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, x))));
-  }
-
-  private softmax(logits: number[]): number[] {
-    const max = Math.max(...logits);
-    const exps = logits.map(l => Math.exp(l - max));
-    const sum = exps.reduce((a, b) => a + b, 0);
-    return exps.map(e => e / sum);
-  }
-
-  private softmaxF64(logits: Float64Array): Float64Array {
-    let max = -Infinity;
-    for (const v of logits) if (v > max) max = v;
-    const out = new Float64Array(logits.length);
-    let sum = 0;
-    for (let i = 0; i < logits.length; i++) {
-      out[i] = Math.exp(logits[i] - max);
-      sum += out[i];
-    }
-    for (let i = 0; i < logits.length; i++) out[i] /= sum;
-    return out;
+  private matVecMulNum(matrix: number[][], vec: number[], bias: number[]): number[] {
+    return linearNum(vec, matrix, bias);
   }
 
   // ============================================

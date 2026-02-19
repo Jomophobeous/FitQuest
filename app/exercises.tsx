@@ -45,11 +45,11 @@ import ExerciseImage from '../src/components/ExerciseImage';
 
 const CATEGORIES: { key: Category | 'all'; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }[] = [
   { key: 'all', label: 'All', icon: 'apps' },
-  { key: 'calisthenics', label: 'Calisthenics', icon: 'human-handsup' },
-  { key: 'building_muscle', label: 'Muscle', icon: 'arm-flex' },
-  { key: 'flexible', label: 'Flexibility', icon: 'yoga' },
-  { key: 'faster', label: 'Speed', icon: 'run-fast' },
-  { key: 'mental_clarity', label: 'Mind', icon: 'meditation' },
+  { key: 'body_control', label: 'Body Control', icon: 'human-handsup' },
+  { key: 'strength', label: 'Strength', icon: 'arm-flex' },
+  { key: 'mobility', label: 'Mobility', icon: 'yoga' },
+  { key: 'speed', label: 'Speed', icon: 'run-fast' },
+  { key: 'focus', label: 'Focus', icon: 'meditation' },
 ];
 
 const DIFFICULTY_COLORS: Record<string, string> = {

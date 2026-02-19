@@ -8,12 +8,12 @@
 // ============================================
 
 export type Category =
-  | 'calisthenics'
-  | 'getting_taller'
-  | 'faster'
-  | 'flexible'
-  | 'mental_clarity'
-  | 'building_muscle';
+  | 'body_control'
+  | 'posture'
+  | 'speed'
+  | 'mobility'
+  | 'focus'
+  | 'strength';
 
 // v10: Force type from external exercise databases
 export type ForceType = 'push' | 'pull' | 'static' | 'compound' | null;
@@ -395,4 +395,4 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 13; // v13: Re-run variation cleanup (v12 skipped due to stale Metro bundle) + image mapping
+export const SCHEMA_VERSION = 14; // v14: Category rename (calisthenics→body_control, getting_taller→posture, faster→speed, flexible→mobility, mental_clarity→focus, building_muscle→strength)

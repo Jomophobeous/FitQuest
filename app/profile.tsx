@@ -33,6 +33,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
 import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState } from '../src/database/service';
 import { useRouter } from 'expo-router';
@@ -46,6 +47,13 @@ import { acceptCurrentPolicies, getConsentRecord } from '../src/services/legalSe
 import { getCached, setCached } from '../src/services/cacheStoreService';
 import { runReplayIfDue } from '../src/services/replayOrchestrator';
 import {
+  getHealthAdapter,
+  initializeHealthIntegration,
+  isHealthIntegrationAvailable,
+  syncHealthData,
+} from '../src/services/healthAdapters';
+import { captureHealthError, errorTelemetry, type ErrorEvent } from '../src/services/errorTelemetry';
+import {
   disableDailyWorkoutReminder,
   enableDailyWorkoutReminder,
   formatReminderHourLabel,
@@ -54,6 +62,8 @@ import {
   scheduleDailyWorkoutReminder,
   type NotificationReliabilitySettings,
 } from '../src/services/notificationReliabilityService';
+import { BiometricAuthService } from '../src/security/BiometricAuth';
+const bioAuth = BiometricAuthService.getInstance();
 
 // ============================================
 // THEMED PICKER MODAL
@@ -83,8 +93,8 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
       <Pressable style={modalStyles.overlay} onPress={onClose}>
         <Pressable
           style={[modalStyles.content, {
-            backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
-            borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.border,
           }]}
           onPress={(e) => e.stopPropagation()}
         >
@@ -100,8 +110,8 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
                 <TouchableOpacity
                   key={opt.value}
                   style={[modalStyles.optionItem, {
-                    backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                    borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                    backgroundColor: theme.colors.surfaceVariant,
+                    borderColor: theme.colors.border,
                   }]}
                   activeOpacity={0.7}
                   onPress={() => {
@@ -110,7 +120,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
                   }}
                 >
                   <Text style={[modalStyles.optionText, {
-                    color: isDestructive ? '#EF4444' : theme.colors.text,
+                    color: isDestructive ? theme.colors.error : theme.colors.text,
                     fontWeight: isDestructive ? '600' : '500',
                   }]}>
                     {opt.label}
@@ -122,7 +132,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
 
           <TouchableOpacity
             style={[modalStyles.cancelBtn, {
-              backgroundColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+              backgroundColor: theme.colors.surfaceVariant,
             }]}
             onPress={onClose}
             activeOpacity={0.7}
@@ -225,12 +235,12 @@ interface ProfileCacheSnapshot {
 }
 
 const GOAL_LABELS: Record<string, { icon: string; color: string }> = {
-  calisthenics: { icon: 'human-handsup', color: '#5F63FF' },
-  getting_taller: { icon: 'human-male-height', color: '#10B981' },
-  faster: { icon: 'lightning-bolt', color: '#F4A427' },
-  flexible: { icon: 'yoga', color: '#EC4899' },
-  mental_clarity: { icon: 'head-snowflake', color: '#8B5CF6' },
-  building_muscle: { icon: 'weight-lifter', color: '#EF4444' },
+  body_control: { icon: 'human-handsup', color: '#5F63FF' },
+  posture: { icon: 'human-male-height', color: '#10B981' },
+  speed: { icon: 'lightning-bolt', color: '#F4A427' },
+  mobility: { icon: 'yoga', color: '#EC4899' },
+  focus: { icon: 'head-snowflake', color: '#8B5CF6' },
+  strength: { icon: 'weight-lifter', color: '#EF4444' },
 };
 
 const MEAL_REGION_VALUES = ['AUTO', 'ZA', 'US', 'GB', 'IN', 'BR', 'AU'] as const;
@@ -262,8 +272,8 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
         onPressIn={() => { scale.value = withTiming(0.97, { duration: 120 }); }}
         onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
         style={[styles.menuItem, {
-          backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-          borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+          backgroundColor: theme.colors.surfaceVariant,
+          borderColor: theme.colors.border,
         }]}
       >
         <View style={[styles.menuIconWrap, { backgroundColor: color + '18' }]}>
@@ -272,7 +282,7 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
         <View style={styles.menuTextWrap}>
           <Text style={[styles.menuLabel, { color: theme.colors.text }]}>{label}</Text>
           {!!sublabel && (
-            <Text style={[styles.menuSublabel, { color: theme.colors.textMuted }]}>{sublabel}</Text>
+            <Text numberOfLines={3} style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>{sublabel}</Text>
           )}
         </View>
         {rightContent || (
@@ -291,6 +301,7 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
 export default function ProfileScreen() {
   const { theme, toggleTheme } = useTheme();
   const { t, languageName } = useLanguage();
+  const { refreshProfile } = useDatabase();
   const { signOut } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -312,6 +323,12 @@ export default function ProfileScreen() {
     lastScheduledAt: null,
     lastPromptAt: null,
   });
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [healthProviderCode, setHealthProviderCode] = useState<'health_connect' | 'healthkit' | 'google_fit' | 'none' | 'unknown' | 'unavailable'>('none');
+  const [healthIntegrationReady, setHealthIntegrationReady] = useState(false);
+  const [healthBusy, setHealthBusy] = useState(false);
+  const [healthSyncErrors, setHealthSyncErrors] = useState<ErrorEvent[]>([]);
 
   // Themed modal state
   const [pickerModal, setPickerModal] = useState<{
@@ -330,6 +347,10 @@ export default function ProfileScreen() {
     return t(key);
   }, [t]);
 
+  const healthProviderLabel = useCallback((value: typeof healthProviderCode) => {
+    return t(`profile.healthProvider.${value}`);
+  }, [t]);
+
   const handleTrainingDays = () => {
     setPickerModal({
       visible: true,
@@ -341,8 +362,10 @@ export default function ProfileScreen() {
       })),
       onSelect: async (val) => {
         const d = Number(val);
+        console.log('[Profile] Update training days', { value: d });
         await updateUserProfile('user_local_001', { training_days_per_week: d });
         setProfile(prev => prev ? { ...prev, trainingDays: d } : prev);
+        await refreshProfile();
       },
     });
   };
@@ -358,8 +381,10 @@ export default function ProfileScreen() {
       })),
       onSelect: async (val) => {
         const m = Number(val);
+        console.log('[Profile] Update session length', { value: m });
         await updateUserProfile('user_local_001', { time_per_session_minutes: m });
         setProfile(prev => prev ? { ...prev, sessionMinutes: m } : prev);
+        await refreshProfile();
       },
     });
   };
@@ -375,8 +400,10 @@ export default function ProfileScreen() {
         { label: t('profile.level.advanced'), value: 'advanced' },
       ],
       onSelect: async (val) => {
+        console.log('[Profile] Update experience', { value: val });
         await updateUserProfile('user_local_001', { experience: val as any });
         setProfile(prev => prev ? { ...prev, experience: val } : prev);
+        await refreshProfile();
       },
     });
   };
@@ -387,16 +414,18 @@ export default function ProfileScreen() {
       title: t('profile.goalModalTitle'),
       subtitle: t('profile.goalModalSub'),
       options: [
-        { label: t('profile.goal.calisthenics'), value: 'calisthenics' },
-        { label: t('profile.goal.getting_taller'), value: 'getting_taller' },
-        { label: t('profile.goal.faster'), value: 'faster' },
-        { label: t('profile.goal.flexible'), value: 'flexible' },
-        { label: t('profile.goal.mental_clarity'), value: 'mental_clarity' },
-        { label: t('profile.goal.building_muscle'), value: 'building_muscle' },
+        { label: t('profile.goal.body_control'), value: 'body_control' },
+        { label: t('profile.goal.posture'), value: 'posture' },
+        { label: t('profile.goal.speed'), value: 'speed' },
+        { label: t('profile.goal.mobility'), value: 'mobility' },
+        { label: t('profile.goal.focus'), value: 'focus' },
+        { label: t('profile.goal.strength'), value: 'strength' },
       ],
       onSelect: async (val) => {
+        console.log('[Profile] Update goal', { value: val });
         await updateUserProfile('user_local_001', { goal: val as any });
         setProfile(prev => prev ? { ...prev, goal: val } : prev);
+        await refreshProfile();
       },
     });
   };
@@ -466,9 +495,117 @@ export default function ProfileScreen() {
     });
   };
 
+  const refreshHealthIntegrationStatus = useCallback(async () => {
+    try {
+      const available = await isHealthIntegrationAvailable();
+      if (!available) {
+        setHealthProviderCode('none');
+        setHealthIntegrationReady(false);
+        return;
+      }
+
+      const adapter = await getHealthAdapter();
+      if (!adapter) {
+        setHealthProviderCode('none');
+        setHealthIntegrationReady(false);
+        return;
+      }
+
+      const status = await adapter.getStatus();
+      setHealthProviderCode((status.provider || 'unknown') as typeof healthProviderCode);
+      setHealthIntegrationReady(status.available && status.initialized);
+    } catch {
+      setHealthProviderCode('unavailable');
+      setHealthIntegrationReady(false);
+    }
+  }, []);
+
+  const refreshHealthSyncErrors = useCallback(() => {
+    const recentErrors = errorTelemetry.getRecentErrors({
+      category: 'health_sync',
+      unresolvedOnly: true,
+      limit: 5,
+    });
+    setHealthSyncErrors(recentErrors);
+  }, []);
+
+  const getHealthTelemetryProvider = useCallback(async (): Promise<'health_connect' | 'healthkit' | 'google_fit'> => {
+    try {
+      const adapter = await getHealthAdapter();
+      if (adapter?.provider === 'health_connect' || adapter?.provider === 'healthkit' || adapter?.provider === 'google_fit') {
+        return adapter.provider;
+      }
+    } catch {
+      // fall through
+    }
+    return 'health_connect';
+  }, []);
+
+  const handleConnectHealth = useCallback(async () => {
+    if (healthBusy) return;
+    setHealthBusy(true);
+    try {
+      const result = await initializeHealthIntegration();
+      await refreshHealthIntegrationStatus();
+      if (!result.success) {
+        Alert.alert(
+          t('profile.healthConnect'),
+          result.error || t('profile.healthConnectFailed')
+        );
+      } else {
+        Alert.alert(
+          t('profile.healthConnect'),
+          t('profile.healthConnectSuccess')
+        );
+      }
+    } catch (error) {
+      const provider = await getHealthTelemetryProvider();
+      await captureHealthError(error instanceof Error ? error : String(error), {
+        provider,
+        action: 'auth',
+      });
+      Alert.alert(
+        t('profile.healthConnect'),
+        t('profile.healthConnectFailed')
+      );
+    } finally {
+      setHealthBusy(false);
+    }
+  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
+
+  const handleSyncHealth = useCallback(async () => {
+    if (healthBusy) return;
+    setHealthBusy(true);
+    try {
+      const result = await syncHealthData({
+        since: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        categories: ['steps', 'calories', 'heart_rate', 'sleep', 'workout'],
+      });
+      await refreshHealthIntegrationStatus();
+      Alert.alert(
+        t('profile.healthSync'),
+        `${t('profile.healthSyncSummary')}: ${result.synced}\n${t('profile.healthSyncErrors')}: ${result.errors}`
+      );
+    } catch (error) {
+      const provider = await getHealthTelemetryProvider();
+      await captureHealthError(error instanceof Error ? error : String(error), {
+        provider,
+        action: 'sync',
+      });
+      Alert.alert(
+        t('profile.healthSync'),
+        t('profile.healthSyncFailed')
+      );
+    } finally {
+      setHealthBusy(false);
+    }
+  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
+
   useEffect(() => {
     void runReplayIfDue({ reason: 'profile_load', cooldownMs: 45 * 1000 });
     loadData();
+    void refreshHealthIntegrationStatus();
+    refreshHealthSyncErrors();
   }, []);
 
   const loadData = useCallback(async () => {
@@ -500,7 +637,7 @@ export default function ProfileScreen() {
 
       setProfile({
         name: 'Athlete',
-        goal: userProfile?.goal || 'calisthenics',
+        goal: userProfile?.goal || 'body_control',
         experience: userProfile?.experience || 'beginner',
         trainingDays: userProfile?.training_days_per_week || 3,
         sessionMinutes: userProfile?.time_per_session_minutes || 30,
@@ -531,7 +668,7 @@ export default function ProfileScreen() {
       await setCached('profile', 'main', {
         profile: {
           name: 'Athlete',
-          goal: userProfile?.goal || 'calisthenics',
+          goal: userProfile?.goal || 'body_control',
           experience: userProfile?.experience || 'beginner',
           trainingDays: userProfile?.training_days_per_week || 3,
           sessionMinutes: userProfile?.time_per_session_minutes || 30,
@@ -554,6 +691,14 @@ export default function ProfileScreen() {
         consentSource: consentRecord.source,
         notifications,
       } satisfies ProfileCacheSnapshot);
+
+      // Check biometric availability
+      try {
+        const capability = await bioAuth.initialize();
+        setBiometricAvailable(capability.isAvailable);
+        const sessionValid = await bioAuth.isSessionValid();
+        setBiometricEnabled(sessionValid);
+      } catch { /* biometric detection optional */ }
     } catch (err) {
       console.error('[Profile] Load failed:', err);
     } finally {
@@ -561,9 +706,9 @@ export default function ProfileScreen() {
     }
   }, []);
 
-  const goalInfo = GOAL_LABELS[profile?.goal || 'calisthenics'];
-  const goalLabel = t(`profile.goal.${profile?.goal || 'calisthenics'}`);
-  const xpProgress = stats ? stats.currentLevelXP / stats.xpForNext : 0;
+  const goalInfo = GOAL_LABELS[profile?.goal || 'body_control'] ?? GOAL_LABELS.body_control;
+  const goalLabel = t(`profile.goal.${profile?.goal || 'body_control'}`);
+  const xpProgress = stats && stats.xpForNext > 0 ? stats.currentLevelXP / stats.xpForNext : 0;
 
   const handleLogout = () => {
     setPickerModal({
@@ -680,8 +825,8 @@ export default function ProfileScreen() {
         <Animated.View entering={FadeIn.duration(150)}>
           <LinearGradient
             colors={theme.isDark
-              ? ['rgba(95,99,255,0.25)', 'rgba(139,92,246,0.10)', 'transparent'] as [string, string, string]
-              : ['rgba(95,99,255,0.12)', 'rgba(139,92,246,0.05)', 'transparent'] as [string, string, string]}
+              ? [`${theme.colors.indigo}40`, `${theme.colors.purple}1A`, 'transparent'] as [string, string, string]
+              : [`${theme.colors.indigo}1F`, `${theme.colors.purple}0D`, 'transparent'] as [string, string, string]}
             style={styles.headerGradient}
           >
             <SafeAreaView edges={['top']}>
@@ -689,12 +834,12 @@ export default function ProfileScreen() {
                 {/* Avatar with static ring (no glow animation) */}
                 <View style={styles.avatarGlowWrap}>
                   <LinearGradient
-                    colors={[theme.colors.accent, '#8B5CF6', '#EC4899'] as [string, string, string]}
+                    colors={[theme.colors.accent, theme.colors.purple, theme.colors.pink] as [string, string, string]}
                     style={styles.avatarRing}
                   >
                     <View style={[styles.avatarInner, { backgroundColor: theme.colors.background }]}>
                       <LinearGradient
-                        colors={[theme.colors.accent, '#4338CA'] as [string, string]}
+                        colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                         style={styles.avatarGradient}
                       >
                         <Text style={[styles.avatarInitials, { color: theme.colors.text }]}>
@@ -732,10 +877,10 @@ export default function ProfileScreen() {
                     </Text>
                   </View>
                   <View style={[styles.xpBarBg, {
-                    backgroundColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                    backgroundColor: theme.colors.surfaceVariant,
                   }]}>
                     <LinearGradient
-                      colors={[theme.colors.accent, '#8B5CF6'] as [string, string]}
+                      colors={[theme.colors.accent, theme.colors.purple] as [string, string]}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
                       style={[styles.xpBarFill, { width: `${Math.min(xpProgress * 100, 100)}%` as any }]}
@@ -749,9 +894,9 @@ export default function ProfileScreen() {
 
         {/* ── STATS ROW ── */}
         <View style={styles.statsRow}>
-          <StatChip icon="fire" label={t('dashboard.streak')} value={`${stats?.streak || 0}d`} color="#F4A427" delay={200} />
+          <StatChip icon="fire" label={t('dashboard.streak')} value={`${stats?.streak || 0}d`} color={theme.colors.warning} delay={200} />
           <StatChip icon="dumbbell" label={t('dashboard.workouts')} value={`${stats?.totalWorkouts || 0}`} color={theme.colors.accent} delay={300} />
-          <StatChip icon="lightning-bolt" label={t('dashboard.xp')} value={`${stats?.totalXP || 0}`} color="#8B5CF6" delay={400} />
+          <StatChip icon="lightning-bolt" label={t('dashboard.xp')} value={`${stats?.totalXP || 0}`} color={theme.colors.purple} delay={400} />
         </View>
 
         {/* ── ACHIEVEMENTS CARD ── */}
@@ -769,8 +914,8 @@ export default function ProfileScreen() {
                 <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('dashboard.workouts')}</Text>
               </View>
               <View style={styles.achievementItem}>
-                <ProgressRing progress={Math.min((stats?.longestStreak || 0) / 30, 1)} size={56} strokeWidth={4} color="#F4A427">
-                  <MaterialCommunityIcons name="fire" size={20} color="#F4A427" />
+                <ProgressRing progress={Math.min((stats?.longestStreak || 0) / 30, 1)} size={56} strokeWidth={4} color={theme.colors.warning}>
+                  <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
                 </ProgressRing>
                 <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
                   {stats?.longestStreak || 0}/30
@@ -778,8 +923,8 @@ export default function ProfileScreen() {
                 <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('profile.bestStreak')}</Text>
               </View>
               <View style={styles.achievementItem}>
-                <ProgressRing progress={Math.min((stats?.level || 1) / 20, 1)} size={56} strokeWidth={4} color="#10B981">
-                  <MaterialCommunityIcons name="star" size={20} color="#10B981" />
+                <ProgressRing progress={Math.min((stats?.level || 1) / 20, 1)} size={56} strokeWidth={4} color={theme.colors.accent}>
+                  <MaterialCommunityIcons name="star" size={20} color={theme.colors.accent} />
                 </ProgressRing>
                 <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
                   LVL {stats?.level || 1}
@@ -805,7 +950,7 @@ export default function ProfileScreen() {
             icon="calendar-week"
             label={t('profile.trainingDays')}
             sublabel={`${profile?.trainingDays || 3} ${t('profile.daysPerWeek')} — ${t('profile.trainingDaysSub')}`}
-            color="#5F63FF"
+            color={theme.colors.indigo}
             delay={460}
             onPress={handleTrainingDays}
           />
@@ -813,7 +958,7 @@ export default function ProfileScreen() {
             icon="clock-outline"
             label={t('profile.sessionLength')}
             sublabel={`${profile?.sessionMinutes || 30} ${t('common.minutes')} — ${t('profile.sessionLengthSub')}`}
-            color="#10B981"
+            color={theme.colors.accent}
             delay={480}
             onPress={handleSessionLength}
           />
@@ -821,7 +966,7 @@ export default function ProfileScreen() {
             icon="signal-cellular-3"
             label={t('profile.experience')}
             sublabel={`${(profile?.experience || 'beginner').charAt(0).toUpperCase() + (profile?.experience || 'beginner').slice(1)} — ${t('profile.experienceSub')}`}
-            color="#F4A427"
+            color={theme.colors.warning}
             delay={500}
             onPress={handleExperience}
           />
@@ -829,7 +974,7 @@ export default function ProfileScreen() {
             icon="human-edit"
             label={t('profile.craftMyBody')}
             sublabel={t('profile.craftMyBodySub')}
-            color="#EC4899"
+            color={theme.colors.pink}
             delay={520}
             onPress={() => router.push('/craft-my-body')}
           />
@@ -890,7 +1035,7 @@ export default function ProfileScreen() {
             sublabel={socialSettings?.enabled
               ? t('profile.socialLayerOn')
               : t('profile.socialLayerOff')}
-            color="#3B82F6"
+            color={theme.colors.blue}
             delay={535}
             onPress={() => {
               void handleSocialToggle(!(socialSettings?.enabled ?? false));
@@ -902,8 +1047,8 @@ export default function ProfileScreen() {
                   void handleSocialToggle(next);
                 }}
                 disabled={socialBusy}
-                trackColor={{ false: '#ddd', true: '#3B82F660' }}
-                thumbColor={(socialSettings?.enabled ?? false) ? '#3B82F6' : '#f4f3f4'}
+                trackColor={{ false: theme.colors.border, true: theme.colors.blue + '60' }}
+                thumbColor={(socialSettings?.enabled ?? false) ? theme.colors.blue : theme.colors.surface}
               />
             }
           />
@@ -911,15 +1056,15 @@ export default function ProfileScreen() {
             icon={theme.isDark ? 'weather-night' : 'weather-sunny'}
             label={t('profile.darkMode')}
             sublabel={theme.isDark ? t('profile.darkModeOn') : t('profile.darkModeOff')}
-            color="#8B5CF6"
+            color={theme.colors.purple}
             delay={550}
             onPress={toggleTheme}
             rightContent={
               <Switch
                 value={theme.isDark}
                 onValueChange={toggleTheme}
-                trackColor={{ false: '#ddd', true: theme.colors.accent + '60' }}
-                thumbColor={theme.isDark ? theme.colors.accent : '#f4f3f4'}
+                trackColor={{ false: theme.colors.border, true: theme.colors.accent + '60' }}
+                thumbColor={theme.isDark ? theme.colors.accent : theme.colors.surface}
               />
             }
           />
@@ -927,7 +1072,7 @@ export default function ProfileScreen() {
             icon="translate"
             label={t('profile.language')}
             sublabel={languageName}
-            color="#3B82F6"
+            color={theme.colors.blue}
             delay={575}
             onPress={() => setShowLanguageSelector(true)}
           />
@@ -935,17 +1080,99 @@ export default function ProfileScreen() {
             icon="map-marker-radius-outline"
             label={t('profile.mealRegion.title')}
             sublabel={mealRegionLabel(mealRegionOverride)}
-            color="#10B981"
+            color={theme.colors.accent}
             delay={590}
             onPress={handleMealRegion}
           />
           <MenuItem
             icon="bell-outline"
             label={t('profile.notifications')}
-            sublabel={`${notificationSettings.enabled ? t('profile.notificationsStatus.enabled') : t('profile.notificationsStatus.disabled')} · ${t('profile.notificationsStatus.permission')}: ${t(`profile.notificationsPermission.${notificationSettings.permission}`)} · ${formatReminderHourLabel(notificationSettings.reminderHour)}`}
-            color="#EC4899"
+            sublabel={`${notificationSettings.enabled ? t('profile.notificationsStatus.enabled') : t('profile.notificationsStatus.disabled')} · ${formatReminderHourLabel(notificationSettings.reminderHour)}`}
+            color={theme.colors.pink}
             delay={600}
             onPress={handleNotifications}
+          />
+          <MenuItem
+            icon="heart-pulse"
+            label={t('profile.healthConnect')}
+            sublabel={`${healthIntegrationReady ? t('profile.statusConnected') : t('profile.statusNotConnected')} · ${healthProviderLabel(healthProviderCode)}`}
+            color={theme.colors.accent}
+            delay={605}
+            onPress={() => {
+              void handleConnectHealth();
+            }}
+          />
+          <MenuItem
+            icon="sync"
+            label={t('profile.healthSync')}
+            sublabel={healthBusy ? t('profile.syncInProgress') : t('profile.healthSyncSub')}
+            color={theme.colors.blue}
+            delay={608}
+            onPress={() => {
+              void handleSyncHealth();
+            }}
+          />
+
+          {/* Compact Health Sync Errors */}
+          {healthSyncErrors.length > 0 && (
+            <Animated.View entering={FadeInDown.delay(612).duration(200)} style={[styles.healthErrorsContainer, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.error + '40' }]}>
+              <View style={styles.healthErrorsHeader}>
+                <MaterialCommunityIcons name="alert-circle-outline" size={16} color={theme.colors.error} />
+                <Text style={[styles.healthErrorsTitle, { color: theme.colors.error }]}>
+                  {t('profile.healthSyncIssues') || 'Recent Sync Issues'}
+                </Text>
+                <TouchableOpacity
+                  onPress={async () => {
+                    for (const err of healthSyncErrors) {
+                      await errorTelemetry.resolveError(err.id);
+                    }
+                    refreshHealthSyncErrors();
+                  }}
+                  hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                >
+                  <Text style={[styles.healthErrorsDismiss, { color: theme.colors.textMuted }]}>
+                    {t('common.dismiss') || 'Dismiss'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {healthSyncErrors.slice(0, 3).map((err) => (
+                <Text key={err.id} numberOfLines={1} style={[styles.healthErrorItem, { color: theme.colors.textSecondary }]}>
+                  • {err.message}
+                </Text>
+              ))}
+              {healthSyncErrors.length > 3 && (
+                <Text style={[styles.healthErrorMore, { color: theme.colors.textMuted }]}>
+                  +{healthSyncErrors.length - 3} {t('common.more') || 'more'}
+                </Text>
+              )}
+            </Animated.View>
+          )}
+
+          <MenuItem
+            icon="fingerprint"
+            label={t('profile.security') || 'Security'}
+            sublabel={biometricAvailable
+              ? (biometricEnabled ? (t('profile.biometricActive') || 'Biometric lock active') : (t('profile.biometricAvailable') || 'Biometric lock available'))
+              : (t('profile.biometricUnavailable') || 'Biometric not available on this device')}
+            color={theme.colors.indigo}
+            delay={610}
+            onPress={async () => {
+              if (!biometricAvailable) {
+                Alert.alert(t('profile.security') || 'Security', t('profile.biometricUnavailable') || 'Biometric authentication is not available on this device.');
+                return;
+              }
+              try {
+                const result = await bioAuth.authenticate();
+                if (result.success) {
+                  setBiometricEnabled(true);
+                  Alert.alert(t('profile.security') || 'Security', t('profile.biometricVerified') || 'Biometric authentication verified successfully.');
+                } else {
+                  Alert.alert(t('profile.security') || 'Security', result.error || 'Authentication failed.');
+                }
+              } catch (e) {
+                console.warn('[Profile] Biometric test failed:', e);
+              }
+            }}
           />
         </View>
 
@@ -956,7 +1183,7 @@ export default function ProfileScreen() {
             icon="book-open-page-variant-outline"
             label={t('profile.legalCenter')}
             sublabel={t('profile.legalCenterSub')}
-            color="#3B82F6"
+            color={theme.colors.blue}
             delay={630}
             onPress={() => router.push('/legal-center')}
           />
@@ -964,8 +1191,9 @@ export default function ProfileScreen() {
             icon="shield-check-outline"
             label={t('profile.privacySecurity')}
             sublabel={t('profile.privacySecuritySub')}
-            color="#10B981"
+            color={theme.colors.accent}
             delay={640}
+            onPress={() => router.push('/privacy-policy')}
           />
           <MenuItem
             icon="check-decagram-outline"
@@ -973,7 +1201,7 @@ export default function ProfileScreen() {
             sublabel={consentTimestamp
               ? `${t('profile.saved')} ${new Date(consentTimestamp).toLocaleString()} · ${t('profile.version')} ${consentVersion || '-'} · ${t(`profile.consentSource.${consentSource || 'local'}`)}`
               : t('profile.recordConsentSub')}
-            color="#10B981"
+            color={theme.colors.accent}
             delay={650}
             onPress={() => {
               void handleRecordConsent();
@@ -983,7 +1211,7 @@ export default function ProfileScreen() {
             icon="file-export-outline"
             label={t('profile.exportData')}
             sublabel={t('profile.exportDataSub')}
-            color="#5F63FF"
+            color={theme.colors.indigo}
             delay={660}
             onPress={() => {
               void handleExportData();
@@ -993,7 +1221,7 @@ export default function ProfileScreen() {
             icon="trash-can-outline"
             label={t('profile.menu.deleteCloudData')}
             sublabel={t('profile.deleteCloudDataSub')}
-            color="#EF4444"
+            color={theme.colors.error}
             delay={670}
             onPress={handleDeleteCloudData}
           />
@@ -1014,14 +1242,14 @@ export default function ProfileScreen() {
             icon="help-circle-outline"
             label={t('profile.helpSupport')}
             sublabel={t('profile.helpSupportSub')}
-            color="#F4A427"
+            color={theme.colors.warning}
             delay={700}
           />
           <MenuItem
             icon="information-outline"
             label={t('profile.about')}
             sublabel={`${t('profile.version')} 1.0.0`}
-            color="#5F63FF"
+            color={theme.colors.indigo}
             delay={720}
           />
         </View>
@@ -1194,22 +1422,22 @@ const styles = StyleSheet.create({
   // Sections
   section: {
     paddingHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 12,
   },
 
   // Menu items
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    marginBottom: 8,
+    marginBottom: 10,
     gap: 12,
   },
   menuIconWrap: {
-    width: 34,
-    height: 34,
+    width: 38,
+    height: 38,
     borderRadius: 11,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1218,15 +1446,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuLabel: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     letterSpacing: 0.2,
   },
   menuSublabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '400',
-    marginTop: 2,
-    lineHeight: 16,
+    marginTop: 4,
+    lineHeight: 18,
   },
 
   adaptiveRow: {
@@ -1262,6 +1490,39 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 12,
     lineHeight: 16,
+  },
+
+  // Health Sync Errors
+  healthErrorsContainer: {
+    marginHorizontal: 0,
+    marginTop: 8,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  healthErrorsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  healthErrorsTitle: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  healthErrorsDismiss: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  healthErrorItem: {
+    fontSize: 11,
+    marginBottom: 2,
+  },
+  healthErrorMore: {
+    fontSize: 10,
+    marginTop: 4,
+    fontStyle: 'italic',
   },
 
   // Logout

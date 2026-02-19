@@ -3,12 +3,12 @@
  * Generates 722+ exercises across all categories
  * 
  * Categories (6):
- * - calisthenics (bodyweight strength)
- * - getting_taller (posture, spinal decompression)
+ * - body_control (bodyweight strength)
+ * - posture (posture, spinal decompression)
  * - faster (speed, agility, cardio)
  * - flexible (stretching, mobility)
- * - mental_clarity (meditation, breathing)
- * - building_muscle (hypertrophy focus)
+ * - focus (meditation, breathing)
+ * - strength (hypertrophy focus)
  */
 
 import type {
@@ -254,12 +254,12 @@ const MUSCLE_BUILDING_EXERCISES: Partial<GeneratedExercise>[] = [
 
 function generateCategoryId(category: Category, index: number): string {
   const prefixes: Record<Category, string> = {
-    calisthenics: 'cal',
-    getting_taller: 'tall',
-    faster: 'speed',
-    flexible: 'flex',
-    mental_clarity: 'mind',
-    building_muscle: 'muscle',
+    body_control: 'cal',
+    posture: 'tall',
+    speed: 'speed',
+    mobility: 'flex',
+    focus: 'mind',
+    strength: 'muscle',
   };
   return `${prefixes[category]}_${String(index).padStart(3, '0')}`;
 }
@@ -336,36 +336,36 @@ export function generateAllExercises(): GeneratedExercise[] {
   let offset = 0;
   
   // Calisthenics (push, pull, legs, core)
-  const calisthenicsExercises = [
+  const bodyControlExercises = [
     ...generateVariations(PUSH_EXERCISES),
     ...generateVariations(PULL_EXERCISES),
     ...generateVariations(LEG_EXERCISES),
     ...generateVariations(CORE_EXERCISES),
   ];
-  allExercises.push(...generateExercisesForCategory('calisthenics', calisthenicsExercises, offset));
-  offset += calisthenicsExercises.length;
+  allExercises.push(...generateExercisesForCategory('body_control', bodyControlExercises, offset));
+  offset += bodyControlExercises.length;
   
   // Getting Taller (posture/decompression)
   const postureExercises = generateVariations(POSTURE_EXERCISES);
-  allExercises.push(...generateExercisesForCategory('getting_taller', postureExercises, 0));
+  allExercises.push(...generateExercisesForCategory('posture', postureExercises, 0));
   offset += postureExercises.length;
   
   // Faster (speed/agility)
   const speedExercises = generateVariations(SPEED_EXERCISES);
-  allExercises.push(...generateExercisesForCategory('faster', speedExercises, 0));
+  allExercises.push(...generateExercisesForCategory('speed', speedExercises, 0));
   offset += speedExercises.length;
   
   // Flexible
   const flexExercises = generateVariations(FLEXIBILITY_EXERCISES);
-  allExercises.push(...generateExercisesForCategory('flexible', flexExercises, 0));
+  allExercises.push(...generateExercisesForCategory('mobility', flexExercises, 0));
   offset += flexExercises.length;
   
   // Mental Clarity
-  allExercises.push(...generateExercisesForCategory('mental_clarity', MENTAL_CLARITY_EXERCISES, 0));
+  allExercises.push(...generateExercisesForCategory('focus', MENTAL_CLARITY_EXERCISES, 0));
   
   // Building Muscle
   const muscleExercises = generateVariations(MUSCLE_BUILDING_EXERCISES);
-  allExercises.push(...generateExercisesForCategory('building_muscle', muscleExercises, 0));
+  allExercises.push(...generateExercisesForCategory('strength', muscleExercises, 0));
   
   console.log(`[ExerciseGenerator] Generated ${allExercises.length} exercises`);
   return allExercises;

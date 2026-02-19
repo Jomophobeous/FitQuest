@@ -29,15 +29,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { createUserProfile, setUserEquipment } from '../src/database/service';
 import { EquipmentItem } from '../src/database/types';
 import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
+import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
-const ACCENT = '#CCFF00';
 
-type Goal = 'BUILD_MUSCLE' | 'LOSE_FAT' | 'ENDURANCE' | 'FLEXIBILITY' | 'GENERAL_FITNESS';
-type Experience = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+// Must match SQLite CHECK constraint: ('body_control','posture','speed','mobility','focus','strength')
+type Goal = 'body_control' | 'posture' | 'speed' | 'mobility' | 'focus' | 'strength';
+// Must match SQLite CHECK constraint: ('beginner','intermediate','advanced')
+type Experience = 'beginner' | 'intermediate' | 'advanced';
 
 interface OnboardingData {
   goal: Goal | null;
@@ -50,37 +53,38 @@ interface OnboardingData {
   equipment: EquipmentItem[];
 }
 
-const GOALS: { id: Goal; label: string; icon: string; desc: string }[] = [
-  { id: 'BUILD_MUSCLE', label: 'Build Muscle', icon: 'arm-flex', desc: 'Gain strength & size' },
-  { id: 'LOSE_FAT', label: 'Lose Fat', icon: 'fire', desc: 'Burn calories & lean out' },
-  { id: 'ENDURANCE', label: 'Endurance', icon: 'run-fast', desc: 'Improve stamina & cardio' },
-  { id: 'FLEXIBILITY', label: 'Flexibility', icon: 'human-greeting-variant', desc: 'Move better, recover faster' },
-  { id: 'GENERAL_FITNESS', label: 'General Fitness', icon: 'heart-pulse', desc: 'All-around health' },
-];
-
-const EXPERIENCE_LEVELS: { id: Experience; label: string; desc: string; icon: string }[] = [
-  { id: 'BEGINNER', label: 'Beginner', desc: '0–6 months training', icon: 'sprout' },
-  { id: 'INTERMEDIATE', label: 'Intermediate', desc: '6 months – 2 years', icon: 'tree' },
-  { id: 'ADVANCED', label: 'Advanced', desc: '2+ years consistent', icon: 'trophy' },
-];
-
-const EQUIPMENT_OPTIONS: { id: EquipmentItem; label: string; icon: string }[] = [
-  { id: 'DUMBBELLS' as EquipmentItem, label: 'Dumbbells', icon: 'dumbbell' },
-  { id: 'BARBELL' as EquipmentItem, label: 'Barbell', icon: 'weight-lifter' },
-  { id: 'PULL_UP_BAR' as EquipmentItem, label: 'Pull-up Bar', icon: 'human-handsup' },
-  { id: 'RESISTANCE_BANDS' as EquipmentItem, label: 'Bands', icon: 'yoga' },
-  { id: 'BENCH' as EquipmentItem, label: 'Bench', icon: 'seat-recline-normal' },
-  { id: 'KETTLEBELL' as EquipmentItem, label: 'Kettlebell', icon: 'weight' },
-  { id: 'CABLE_MACHINE' as EquipmentItem, label: 'Cable Machine', icon: 'elevator' },
-  { id: 'BODYWEIGHT' as EquipmentItem, label: 'Bodyweight Only', icon: 'human' },
-];
-
 const TOTAL_STEPS = 5;
 
 export default function OnboardingScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
   const isDark = theme.isDark;
+
+  const GOALS: { id: Goal; label: string; icon: string; desc: string }[] = [
+    { id: 'strength', label: t('onboarding.goal.buildMuscle'), icon: 'arm-flex', desc: t('onboarding.goal.buildMuscleSub') },
+    { id: 'body_control', label: t('onboarding.goal.loseFat'), icon: 'fire', desc: t('onboarding.goal.loseFatSub') },
+    { id: 'speed', label: t('onboarding.goal.endurance'), icon: 'run-fast', desc: t('onboarding.goal.enduranceSub') },
+    { id: 'mobility', label: t('onboarding.goal.flexibility'), icon: 'human-greeting-variant', desc: t('onboarding.goal.flexibilitySub') },
+    { id: 'focus', label: t('onboarding.goal.generalFitness'), icon: 'heart-pulse', desc: t('onboarding.goal.generalFitnessSub') },
+  ];
+
+  const EXPERIENCE_LEVELS: { id: Experience; label: string; desc: string; icon: string }[] = [
+    { id: 'beginner', label: t('onboarding.experience.beginner'), desc: t('onboarding.experience.beginnerSub'), icon: 'sprout' },
+    { id: 'intermediate', label: t('onboarding.experience.intermediate'), desc: t('onboarding.experience.intermediateSub'), icon: 'tree' },
+    { id: 'advanced', label: t('onboarding.experience.advanced'), desc: t('onboarding.experience.advancedSub'), icon: 'trophy' },
+  ];
+
+  const EQUIPMENT_OPTIONS: { id: EquipmentItem; label: string; icon: string }[] = [
+    { id: 'DUMBBELLS' as EquipmentItem, label: t('onboarding.equipment.dumbbells'), icon: 'dumbbell' },
+    { id: 'BARBELL' as EquipmentItem, label: t('onboarding.equipment.barbell'), icon: 'weight-lifter' },
+    { id: 'PULL_UP_BAR' as EquipmentItem, label: t('onboarding.equipment.pullupBar'), icon: 'human-handsup' },
+    { id: 'RESISTANCE_BANDS' as EquipmentItem, label: t('onboarding.equipment.resistanceBands'), icon: 'yoga' },
+    { id: 'BENCH' as EquipmentItem, label: t('onboarding.equipment.bench'), icon: 'seat-recline-normal' },
+    { id: 'KETTLEBELL' as EquipmentItem, label: t('onboarding.equipment.kettlebell'), icon: 'weight' },
+    { id: 'CABLE_MACHINE' as EquipmentItem, label: t('onboarding.equipment.cableMachine'), icon: 'elevator' },
+    { id: 'BODYWEIGHT' as EquipmentItem, label: t('onboarding.equipment.bodyweight'), icon: 'human' },
+  ];
 
   const [step, setStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({
@@ -94,6 +98,7 @@ export default function OnboardingScreen() {
     equipment: [],
   });
   const [saving, setSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const canAdvance = (): boolean => {
     switch (step) {
@@ -116,15 +121,37 @@ export default function OnboardingScreen() {
   };
 
   const finishOnboarding = async () => {
+    // Validate optional numeric body stats
+    const errors: Record<string, string> = {};
+    let parsedWeight: number | undefined;
+    let parsedHeight: number | undefined;
+
+    if (data.weightKg.trim()) {
+      const wv = validateNumeric(data.weightKg, BODY_RANGES.weightKg, false);
+      if (!wv.valid) { errors.weightKg = wv.error!; }
+      else { parsedWeight = wv.value || undefined; }
+    }
+    if (data.heightCm.trim()) {
+      const hv = validateNumeric(data.heightCm, BODY_RANGES.heightCm, false);
+      if (!hv.valid) { errors.heightCm = hv.error!; }
+      else { parsedHeight = hv.value || undefined; }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+
     setSaving(true);
     try {
       await createUserProfile({
         id: 'user_local_001',
         sex: data.sex ?? undefined,
-        weight_kg: data.weightKg ? parseFloat(data.weightKg) : undefined,
-        height_cm: data.heightCm ? parseFloat(data.heightCm) : undefined,
-        goal: data.goal ?? 'GENERAL_FITNESS',
-        experience: data.experience ?? 'BEGINNER',
+        weight_kg: parsedWeight,
+        height_cm: parsedHeight,
+        goal: data.goal ?? 'body_control',
+        experience: data.experience ?? 'beginner',
         training_days_per_week: data.trainingDays,
         time_per_session_minutes: data.sessionMinutes,
         locked: false,
@@ -157,14 +184,14 @@ export default function OnboardingScreen() {
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <View style={styles.welcomeIconWrap}>
-              <LinearGradient colors={[ACCENT + '30', ACCENT + '08']} style={styles.welcomeGlow} />
-              <MaterialCommunityIcons name="lightning-bolt" size={64} color={ACCENT} />
+              <LinearGradient colors={[theme.colors.accent + '30', theme.colors.accent + '08']} style={styles.welcomeGlow} />
+              <MaterialCommunityIcons name="lightning-bolt" size={64} color={theme.colors.accent} />
             </View>
             <Text style={[styles.welcomeTitle, { color: theme.colors.text }]}>
-              Welcome to{'\n'}FitQuest
+              {t('onboarding.welcome')}
             </Text>
             <Text style={[styles.welcomeDesc, { color: theme.colors.textMuted }]}>
-              Your AI-powered fitness companion.{'\n'}Let's personalise your experience.
+              {t('onboarding.tagline')}
             </Text>
           </Animated.View>
         );
@@ -173,9 +200,9 @@ export default function OnboardingScreen() {
       case 1:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>What's your goal?</Text>
+            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.goalTitle')}</Text>
             <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
-              Choose your primary fitness objective
+              {t('onboarding.goalSub')}
             </Text>
             <View style={styles.optionsList}>
               {GOALS.map((g, i) => (
@@ -186,21 +213,21 @@ export default function OnboardingScreen() {
                     style={[
                       styles.optionCard,
                       {
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                        borderColor: data.goal === g.id ? ACCENT : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                        backgroundColor: isDark ? theme.colors.surfaceVariant : theme.colors.surface,
+                        borderColor: data.goal === g.id ? theme.colors.accent : theme.colors.border,
                         borderWidth: data.goal === g.id ? 2 : 1,
                       },
                     ]}
                   >
-                    <View style={[styles.optionIcon, { backgroundColor: data.goal === g.id ? ACCENT + '20' : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)') }]}>
-                      <MaterialCommunityIcons name={g.icon as any} size={24} color={data.goal === g.id ? ACCENT : theme.colors.textMuted} />
+                    <View style={[styles.optionIcon, { backgroundColor: data.goal === g.id ? theme.colors.accent + '20' : theme.colors.surfaceVariant }]}>
+                      <MaterialCommunityIcons name={g.icon as any} size={24} color={data.goal === g.id ? theme.colors.accent : theme.colors.textMuted} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.optionLabel, { color: theme.colors.text }]}>{g.label}</Text>
                       <Text style={[styles.optionDesc, { color: theme.colors.textMuted }]}>{g.desc}</Text>
                     </View>
                     {data.goal === g.id && (
-                      <MaterialCommunityIcons name="check-circle" size={22} color={ACCENT} />
+                      <MaterialCommunityIcons name="check-circle" size={22} color={theme.colors.accent} />
                     )}
                   </TouchableOpacity>
                 </Animated.View>
@@ -213,9 +240,9 @@ export default function OnboardingScreen() {
       case 2:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>Experience Level</Text>
+            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.experienceTitle')}</Text>
             <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
-              This helps us tailor workout difficulty
+              {t('onboarding.experienceSub')}
             </Text>
             <View style={styles.optionsList}>
               {EXPERIENCE_LEVELS.map((e, i) => (
@@ -226,21 +253,21 @@ export default function OnboardingScreen() {
                     style={[
                       styles.optionCard,
                       {
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                        borderColor: data.experience === e.id ? ACCENT : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                        backgroundColor: isDark ? theme.colors.surfaceVariant : theme.colors.surface,
+                        borderColor: data.experience === e.id ? theme.colors.accent : theme.colors.border,
                         borderWidth: data.experience === e.id ? 2 : 1,
                       },
                     ]}
                   >
-                    <View style={[styles.optionIcon, { backgroundColor: data.experience === e.id ? ACCENT + '20' : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)') }]}>
-                      <MaterialCommunityIcons name={e.icon as any} size={24} color={data.experience === e.id ? ACCENT : theme.colors.textMuted} />
+                    <View style={[styles.optionIcon, { backgroundColor: data.experience === e.id ? theme.colors.accent + '20' : theme.colors.surfaceVariant }]}>
+                      <MaterialCommunityIcons name={e.icon as any} size={24} color={data.experience === e.id ? theme.colors.accent : theme.colors.textMuted} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.optionLabel, { color: theme.colors.text }]}>{e.label}</Text>
                       <Text style={[styles.optionDesc, { color: theme.colors.textMuted }]}>{e.desc}</Text>
                     </View>
                     {data.experience === e.id && (
-                      <MaterialCommunityIcons name="check-circle" size={22} color={ACCENT} />
+                      <MaterialCommunityIcons name="check-circle" size={22} color={theme.colors.accent} />
                     )}
                   </TouchableOpacity>
                 </Animated.View>
@@ -249,24 +276,33 @@ export default function OnboardingScreen() {
               {/* Quick body metrics */}
               <View style={{ marginTop: 16, gap: 12 }}>
                 <View style={styles.inputRow}>
-                  <View style={[styles.metricInput, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff', borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)' }]}>
+                  <View style={[styles.metricInput, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                     <TextInput
                       style={[styles.metricField, { color: theme.colors.text }]}
-                      placeholder="Weight (kg)"
+                      placeholder={t('onboarding.weightPlaceholder')}
                       placeholderTextColor={theme.colors.textMuted}
                       keyboardType="numeric"
+                      maxLength={6}
                       value={data.weightKg}
-                      onChangeText={v => setData(d => ({ ...d, weightKg: v }))}
+                      onChangeText={v => {
+                        setData(d => ({ ...d, weightKg: v }));
+                        if (fieldErrors.weightKg) setFieldErrors(e => ({ ...e, weightKg: '' }));
+                      }}
                     />
+                    {!!fieldErrors.weightKg && <Text style={{ color: theme.colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.weightKg}</Text>}
                   </View>
-                  <View style={[styles.metricInput, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff', borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)' }]}>
+                  <View style={[styles.metricInput, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
                     <TextInput
                       style={[styles.metricField, { color: theme.colors.text }]}
-                      placeholder="Height (cm)"
+                      placeholder={t('onboarding.heightPlaceholder')}
                       placeholderTextColor={theme.colors.textMuted}
                       keyboardType="numeric"
+                      maxLength={6}
                       value={data.heightCm}
-                      onChangeText={v => setData(d => ({ ...d, heightCm: v }))}
+                      onChangeText={v => {
+                        setData(d => ({ ...d, heightCm: v }));
+                        if (fieldErrors.heightCm) setFieldErrors(e => ({ ...e, heightCm: '' }));
+                      }}
                     />
                   </View>
                 </View>
@@ -279,8 +315,8 @@ export default function OnboardingScreen() {
                       style={[
                         styles.sexBtn,
                         {
-                          backgroundColor: data.sex === s ? ACCENT + '20' : (isDark ? 'rgba(255,255,255,0.04)' : '#fff'),
-                          borderColor: data.sex === s ? ACCENT : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                          backgroundColor: data.sex === s ? theme.colors.accent + '20' : theme.colors.surface,
+                          borderColor: data.sex === s ? theme.colors.accent : theme.colors.border,
                           borderWidth: data.sex === s ? 2 : 1,
                         },
                       ]}
@@ -288,9 +324,9 @@ export default function OnboardingScreen() {
                       <MaterialCommunityIcons
                         name={s === 'male' ? 'gender-male' : 'gender-female'}
                         size={20}
-                        color={data.sex === s ? ACCENT : theme.colors.textMuted}
+                        color={data.sex === s ? theme.colors.accent : theme.colors.textMuted}
                       />
-                      <Text style={[styles.sexLabel, { color: data.sex === s ? ACCENT : theme.colors.text }]}>
+                      <Text style={[styles.sexLabel, { color: data.sex === s ? theme.colors.accent : theme.colors.text }]}>
                         {s.charAt(0).toUpperCase() + s.slice(1)}
                       </Text>
                     </TouchableOpacity>
@@ -305,13 +341,13 @@ export default function OnboardingScreen() {
       case 3:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>Training Schedule</Text>
+            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.scheduleTitle')}</Text>
             <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
-              How often do you want to train?
+              {t('onboarding.scheduleSub')}
             </Text>
 
             <Text style={[styles.sliderLabel, { color: theme.colors.text }]}>
-              Days per week: <Text style={{ color: ACCENT, fontWeight: '900' }}>{data.trainingDays}</Text>
+              {t('onboarding.daysPerWeek')} <Text style={{ color: theme.colors.accent, fontWeight: '900' }}>{data.trainingDays}</Text>
             </Text>
             <View style={styles.daysRow}>
               {[2, 3, 4, 5, 6, 7].map(d => (
@@ -322,7 +358,7 @@ export default function OnboardingScreen() {
                   style={[
                     styles.dayBtn,
                     {
-                      backgroundColor: data.trainingDays === d ? ACCENT : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'),
+                      backgroundColor: data.trainingDays === d ? theme.colors.accent : theme.colors.surfaceVariant,
                     },
                   ]}
                 >
@@ -332,7 +368,7 @@ export default function OnboardingScreen() {
             </View>
 
             <Text style={[styles.sliderLabel, { color: theme.colors.text, marginTop: 28 }]}>
-              Minutes per session: <Text style={{ color: ACCENT, fontWeight: '900' }}>{data.sessionMinutes}</Text>
+              {t('onboarding.minutesPerSession')} <Text style={{ color: theme.colors.accent, fontWeight: '900' }}>{data.sessionMinutes}</Text>
             </Text>
             <View style={styles.daysRow}>
               {[20, 30, 45, 60, 90].map(m => (
@@ -343,7 +379,7 @@ export default function OnboardingScreen() {
                   style={[
                     styles.dayBtn,
                     {
-                      backgroundColor: data.sessionMinutes === m ? ACCENT : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'),
+                      backgroundColor: data.sessionMinutes === m ? theme.colors.accent : theme.colors.surfaceVariant,
                       paddingHorizontal: 14,
                     },
                   ]}
@@ -359,9 +395,9 @@ export default function OnboardingScreen() {
       case 4:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>Your Equipment</Text>
+            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.equipmentTitle')}</Text>
             <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
-              Select what you have access to
+              {t('onboarding.equipmentSub')}
             </Text>
             <View style={styles.equipGrid}>
               {EQUIPMENT_OPTIONS.map((eq, i) => {
@@ -374,8 +410,8 @@ export default function OnboardingScreen() {
                       style={[
                         styles.equipCard,
                         {
-                          backgroundColor: selected ? ACCENT + '15' : (isDark ? 'rgba(255,255,255,0.04)' : '#fff'),
-                          borderColor: selected ? ACCENT : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                          backgroundColor: selected ? theme.colors.accent + '15' : theme.colors.surface,
+                          borderColor: selected ? theme.colors.accent : theme.colors.border,
                           borderWidth: selected ? 2 : 1,
                         },
                       ]}
@@ -383,13 +419,13 @@ export default function OnboardingScreen() {
                       <MaterialCommunityIcons
                         name={eq.icon as any}
                         size={28}
-                        color={selected ? ACCENT : theme.colors.textMuted}
+                        color={selected ? theme.colors.accent : theme.colors.textMuted}
                       />
-                      <Text style={[styles.equipLabel, { color: selected ? ACCENT : theme.colors.text }]}>
+                      <Text style={[styles.equipLabel, { color: selected ? theme.colors.accent : theme.colors.text }]}>
                         {eq.label}
                       </Text>
                       {!!selected && (
-                        <View style={styles.equipCheck}>
+                        <View style={[styles.equipCheck, { backgroundColor: theme.colors.accent }]}>
                           <MaterialCommunityIcons name="check" size={14} color="#000" />
                         </View>
                       )}
@@ -407,10 +443,10 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0A0E17' : '#F4F5F7' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Background gradient */}
       <LinearGradient
-        colors={[ACCENT + '06', 'transparent', 'transparent']}
+        colors={[theme.colors.accent + '06', 'transparent', 'transparent']}
         style={styles.bgGlow}
       />
 
@@ -421,11 +457,11 @@ export default function OnboardingScreen() {
             <MaterialCommunityIcons name="chevron-left" size={28} color={theme.colors.text} />
           </TouchableOpacity>
         )}
-        <View style={[styles.progressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}>
+        <View style={[styles.progressTrack, { backgroundColor: theme.colors.border }]}>
           <Animated.View
             style={[
               styles.progressFill,
-              { width: `${((step + 1) / TOTAL_STEPS) * 100}%`, backgroundColor: ACCENT },
+              { width: `${((step + 1) / TOTAL_STEPS) * 100}%`, backgroundColor: theme.colors.accent },
             ]}
           />
         </View>
@@ -449,7 +485,7 @@ export default function OnboardingScreen() {
           style={[
             styles.ctaBtn,
             {
-              backgroundColor: canAdvance() ? ACCENT : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'),
+              backgroundColor: canAdvance() ? theme.colors.accent : theme.colors.surfaceVariant,
               opacity: canAdvance() ? 1 : 0.5,
             },
           ]}
@@ -458,7 +494,7 @@ export default function OnboardingScreen() {
           activeOpacity={0.9}
         >
           <Text style={[styles.ctaBtnText, { color: canAdvance() ? '#000' : theme.colors.textMuted }]}>
-            {step === TOTAL_STEPS - 1 ? (saving ? 'Saving...' : 'Get Started') : 'Continue'}
+            {step === TOTAL_STEPS - 1 ? (saving ? t('onboarding.saving') : t('onboarding.getStarted')) : t('onboarding.continue')}
           </Text>
           {step < TOTAL_STEPS - 1 && (
             <MaterialCommunityIcons name="arrow-right" size={20} color={canAdvance() ? '#000' : theme.colors.textMuted} />
@@ -467,7 +503,7 @@ export default function OnboardingScreen() {
 
         {step === 0 && (
           <TouchableOpacity onPress={() => router.replace('/dashboard')} style={{ marginTop: 12 }}>
-            <Text style={[styles.skipText, { color: theme.colors.textMuted }]}>Skip for now</Text>
+            <Text style={[styles.skipText, { color: theme.colors.textMuted }]}>{t('onboarding.skip')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -565,7 +601,6 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: ACCENT,
     justifyContent: 'center',
     alignItems: 'center',
   },

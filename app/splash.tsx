@@ -22,15 +22,15 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import { useAuthStore } from '../store/useAuthStore';
+import { useDatabase } from '../src/context/DatabaseContext';
+import { BiometricAuthService } from '../src/security/BiometricAuth';
 
 const { width, height } = Dimensions.get('window');
 
 export default function Splash() {
   const router = useRouter();
-  const setToken = useAuthStore(s => s.setToken);
   const hasNavigated = useRef(false);
+  const { isReady, userProfile } = useDatabase();
 
   // Animations
   const logoScale = useSharedValue(0.3);
@@ -62,15 +62,31 @@ export default function Splash() {
         // Give animations time to play
         await new Promise(res => setTimeout(res, 1800));
 
-        const token = await SecureStore.getItemAsync('jwt');
         if (hasNavigated.current) return;
+
+        // Wait for database to be ready
+        if (!isReady) return;
+
         hasNavigated.current = true;
 
-        if (token) {
-          setToken(token);
-          router.replace('/');
-        } else {
+        if (!userProfile) {
+          // No profile → first-time user
+          router.replace('/onboarding');
+          return;
+        }
+
+        // Profile exists — check if local auth is configured (biometric / passcode)
+        const bioAuth = BiometricAuthService.getInstance();
+        const hasLocalAuth = await bioAuth.hasPasscode();
+        const bioCapability = await bioAuth.initialize();
+        const bioEnabled = bioCapability.isAvailable && (await bioAuth.isBiometricEnabled());
+
+        if (hasLocalAuth || bioEnabled) {
+          // Auth configured — send to login for biometric/passcode verification
           router.replace('/login');
+        } else {
+          // No local auth configured — go straight to dashboard
+          router.replace('/dashboard');
         }
       } catch {
         if (!hasNavigated.current) {
@@ -81,7 +97,7 @@ export default function Splash() {
     };
 
     checkAuth();
-  }, []);
+  }, [isReady, userProfile]);
 
   const logoAnimStyle = useAnimatedStyle(() => ({
     transform: [{ scale: logoScale.value }],

@@ -43,6 +43,8 @@ import {
   GlassCard,
   GradientButton,
 } from '../src/components/ui/GlassUI';
+import { rateLimiter, RATE_LIMITS, formatRetryAfter } from '../src/utils/rateLimiter';
+import { getApiBaseUrl } from '../src/services/apiBaseUrl';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -94,7 +96,8 @@ export default function LoginScreen() {
   });
 
   const isDark = theme.isDark;
-  const accentColor = '#CCFF00';
+  const accentColor = theme.colors.accent;
+  const backendConfigured = !!getApiBaseUrl();
 
   // Animation values
   const pulseScale = useSharedValue(1);
@@ -113,6 +116,14 @@ export default function LoginScreen() {
     const init = async () => {
       const hasPc = await hasPasscode();
       setHasExistingPasscode(hasPc);
+
+      // If no backend configured and no existing auth, go directly to onboarding
+      const backendExists = !!getApiBaseUrl();
+      if (!backendExists && !hasPc && !(biometricCapability?.isAvailable && biometricEnabled)) {
+        // First-time offline user - skip login entirely
+        router.replace('/onboarding');
+        return;
+      }
 
       if (biometricCapability?.isAvailable && biometricEnabled) {
         setMode('biometric');
@@ -187,13 +198,14 @@ export default function LoginScreen() {
 
     const result = await authenticateWithBiometrics(t('login.unlockPrompt'));
     if (result.success) {
-      try {
-        await resumeSession();
-        router.replace('/dashboard');
-      } catch {
-        setError(t('login.error.sessionExpired'));
-        setMode('email');
+      if (backendConfigured) {
+        try {
+          await resumeSession();
+        } catch {
+          // Server session expired but local auth succeeded — continue offline
+        }
       }
+      router.replace('/dashboard');
     } else {
       const newAttempts = failedAttempts + 1;
       setFailedAttempts(newAttempts);
@@ -207,19 +219,22 @@ export default function LoginScreen() {
   };
 
   // ── Passcode Verification ──
-  const handlePasscode = async () => {
-    if (passcode.length < 4) return;
+  const handlePasscode = async (passcodeOverride?: string) => {
+    const code = passcodeOverride ?? passcode;
+    if (code.length < 4) return;
     setError('');
     setSubmitting(true);
 
-    const result = await verifyPasscode(passcode);
+    const result = await verifyPasscode(code);
     if (result.success) {
-      try {
-        await resumeSession();
-        router.replace('/dashboard');
-      } catch {
-        setError(t('login.error.authFailed'));
+      if (backendConfigured) {
+        try {
+          await resumeSession();
+        } catch {
+          // Server session expired but local auth succeeded — continue offline
+        }
       }
+      router.replace('/dashboard');
     } else {
       triggerShake();
       setError(t('login.error.incorrectPasscode'));
@@ -240,10 +255,25 @@ export default function LoginScreen() {
       setError(t('login.error.fillAllFields'));
       return;
     }
+
+    if (!backendConfigured) {
+      setError(t('login.error.noBackend'));
+      triggerShake();
+      return;
+    }
+
+    const rl = rateLimiter.attempt('email_signin', RATE_LIMITS.PASSCODE_AUTH);
+    if (!rl.allowed) {
+      setError(`Too many sign-in attempts. Retry in ${formatRetryAfter(rl.retryAfterMs)}`);
+      triggerShake();
+      return;
+    }
+
     setError('');
     setSubmitting(true);
     try {
       await signIn(email, password);
+      rateLimiter.reset('email_signin');
       router.replace('/dashboard');
     } catch (err: any) {
       setError(err.message || t('login.error.signInFailed'));
@@ -254,6 +284,10 @@ export default function LoginScreen() {
   };
 
   const handleGoogleSignIn = async () => {
+    if (!backendConfigured) {
+      setError(t('login.error.noBackend'));
+      return;
+    }
     if (!googleClientConfigReady) {
       setError(t('login.error.googleNotConfigured'));
       return;
@@ -269,6 +303,25 @@ export default function LoginScreen() {
     } catch (err: any) {
       setError(err?.message || t('login.error.googleFailed'));
       setSocialSubmitting(false);
+    }
+  };
+
+  const handleContinueOffline = async () => {
+    // For offline mode, just start a biometric/passcode session without server auth
+    try {
+      const hasPc = await hasPasscode();
+      if (hasPc) {
+        setMode('passcode');
+        return;
+      }
+      if (biometricCapability?.isAvailable && biometricEnabled) {
+        await promptBiometric();
+        return;
+      }
+      // No auth method set up - allow direct access for first-time offline users
+      router.replace('/onboarding');
+    } catch (err: any) {
+      setError(err?.message || 'Failed to start offline mode');
     }
   };
 
@@ -314,6 +367,10 @@ export default function LoginScreen() {
 
   const oauthChecks = [
     {
+      label: t('login.oauth.backendServer'),
+      ok: backendConfigured,
+    },
+    {
       label: t('login.oauth.googleAndroidClientId'),
       ok: !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
     },
@@ -327,13 +384,14 @@ export default function LoginScreen() {
     },
   ];
   const hasOAuthConfigIssue = oauthChecks.some((item) => !item.ok);
+  const oauthDisabled = !backendConfigured;
 
   // ──────────────────────────────────
   // RENDER
   // ──────────────────────────────────
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0A0E17' : '#F4F5F7' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Background glow */}
       <LinearGradient
         colors={[accentColor + '08', 'transparent', 'transparent']}
@@ -392,7 +450,7 @@ export default function LoginScreen() {
                 {!!hasExistingPasscode && (
                   <TouchableOpacity
                     onPress={() => { setMode('passcode'); setError(''); }}
-                    style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                    style={[styles.altBtn, { borderColor: theme.colors.border }]}
                   >
                     <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
                     <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.usePasscode')}</Text>
@@ -400,7 +458,7 @@ export default function LoginScreen() {
                 )}
                 <TouchableOpacity
                   onPress={() => { setMode('email'); setError(''); }}
-                  style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                  style={[styles.altBtn, { borderColor: theme.colors.border }]}
                 >
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                   <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</Text>
@@ -451,15 +509,14 @@ export default function LoginScreen() {
                         <TouchableOpacity
                           key={ci}
                           style={[styles.numpadBtn, {
-                            backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                            backgroundColor: theme.colors.surfaceVariant,
                           }]}
                           onPress={() => {
                             const next = passcode + String(digit);
                             setPasscode(next);
                             if (next.length === 4) {
-                              setPasscode(next);
                               setTimeout(() => {
-                                handlePasscode();
+                                handlePasscode(next);
                               }, 100);
                             }
                           }}
@@ -476,7 +533,7 @@ export default function LoginScreen() {
                 {biometricCapability?.isAvailable && (
                   <TouchableOpacity
                     onPress={() => { setMode('biometric'); setError(''); }}
-                    style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                    style={[styles.altBtn, { borderColor: theme.colors.border }]}
                   >
                     <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
                     <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
@@ -484,7 +541,7 @@ export default function LoginScreen() {
                 )}
                 <TouchableOpacity
                   onPress={() => { setMode('email'); setError(''); }}
-                  style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                  style={[styles.altBtn, { borderColor: theme.colors.border }]}
                 >
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                   <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</Text>
@@ -500,8 +557,8 @@ export default function LoginScreen() {
 
               <Animated.View style={shakeStyle}>
                 <View style={[styles.inputWrap, {
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                  borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
                 }]}>
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -518,8 +575,8 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={[styles.inputWrap, {
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                  borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
                 }]}>
                   <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -549,17 +606,36 @@ export default function LoginScreen() {
               </TouchableOpacity>
 
               <View style={styles.socialWrap}>
+                {/* Continue Offline button - shown prominently when no backend */}
+                {oauthDisabled && (
+                  <TouchableOpacity
+                    style={[
+                      styles.socialBtn,
+                      {
+                        backgroundColor: theme.colors.accent + '20',
+                        borderColor: theme.colors.accent,
+                        borderWidth: 1,
+                      },
+                    ]}
+                    onPress={handleContinueOffline}
+                    activeOpacity={0.9}
+                  >
+                    <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
+                    <Text style={[styles.socialBtnText, { color: theme.colors.accent }]}>{t('login.continueOffline')}</Text>
+                  </TouchableOpacity>
+                )}
+
                 <TouchableOpacity
                   style={[
                     styles.socialBtn,
                     {
-                      backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                      borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
-                      opacity: socialSubmitting ? 0.6 : 1,
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.border,
+                      opacity: (socialSubmitting || oauthDisabled) ? 0.4 : 1,
                     },
                   ]}
                   onPress={handleGoogleSignIn}
-                  disabled={socialSubmitting}
+                  disabled={socialSubmitting || oauthDisabled}
                   activeOpacity={0.9}
                 >
                   <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
@@ -571,13 +647,13 @@ export default function LoginScreen() {
                     style={[
                       styles.socialBtn,
                       {
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#fff',
-                        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
-                        opacity: socialSubmitting ? 0.6 : 1,
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.border,
+                        opacity: (socialSubmitting || oauthDisabled) ? 0.4 : 1,
                       },
                     ]}
                     onPress={handleAppleSignIn}
-                    disabled={socialSubmitting}
+                    disabled={socialSubmitting || oauthDisabled}
                     activeOpacity={0.9}
                   >
                     <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />

@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -26,8 +26,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
-import { getRecentSessions } from '../src/database/service';
-import { getDatabase } from '../src/database/schema';
+import { getRecentSessions, deleteWorkoutSession } from '../src/database/service';
 import type { WorkoutSession } from '../src/database/types';
 import {
   GlassCard,
@@ -81,17 +80,6 @@ function formatDuration(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
-}
-
-// ============================================
-// DELETE HELPER
-// ============================================
-
-async function deleteWorkoutSession(sessionId: string): Promise<void> {
-  const db = await getDatabase();
-  // Remove associated exercises first, then the session itself
-  await db.runAsync('DELETE FROM session_exercises WHERE session_id = ?', [sessionId]);
-  await db.runAsync('DELETE FROM workout_sessions WHERE id = ?', [sessionId]);
 }
 
 // ============================================
@@ -538,40 +526,42 @@ export default function SavedWorkoutsScreen() {
       </Animated.View>
 
       {/* Body */}
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor={theme.colors.accent}
-            colors={[theme.colors.accent]}
+      {loading ? (
+        <Animated.View entering={FadeIn.duration(150)} style={styles.loadingContainer}>
+          <MaterialCommunityIcons
+            name="loading"
+            size={36}
+            color={theme.colors.accent}
           />
-        }
-      >
-        {loading ? (
-          <Animated.View entering={FadeIn.duration(150)} style={styles.loadingContainer}>
-            <MaterialCommunityIcons
-              name="loading"
-              size={36}
-              color={theme.colors.accent}
+          <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>
+            Loading workouts…
+          </Text>
+        </Animated.View>
+      ) : workouts.length === 0 ? (
+        renderEmptyState()
+      ) : (
+        <FlatList
+          data={workouts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => renderWorkoutCard(item, index)}
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          initialNumToRender={8}
+          maxToRenderPerBatch={6}
+          windowSize={5}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={theme.colors.accent}
+              colors={[theme.colors.accent]}
             />
-            <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>
-              Loading workouts…
-            </Text>
-          </Animated.View>
-        ) : workouts.length === 0 ? (
-          renderEmptyState()
-        ) : (
-          <>
-            <SectionHeader title="My Workouts" delay={100} />
-            {workouts.map((w, i) => renderWorkoutCard(w, i))}
-            <View style={styles.bottomSpacer} />
-          </>
-        )}
-      </ScrollView>
+          }
+          ListHeaderComponent={<SectionHeader title="My Workouts" delay={100} />}
+          ListFooterComponent={<View style={styles.bottomSpacer} />}
+        />
+      )}
 
       {/* Floating Action Button */}
       {!loading && (

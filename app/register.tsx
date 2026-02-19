@@ -34,12 +34,15 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useAuth } from '../src/context/AuthContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { GradientButton } from '../src/components/ui/GlassUI';
+import { validateEmail, validatePassword, validateName } from '../src/utils/validation';
 
 const { width } = Dimensions.get('window');
 
 export default function RegisterScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { signUp } = useAuth();
   const router = useRouter();
 
@@ -74,23 +77,26 @@ export default function RegisterScreen() {
 
   // Validation
   const validateForm = (): boolean => {
-    if (!name.trim()) {
-      setErrorMsg('Please enter your name');
+    const nameResult = validateName(name);
+    if (!nameResult.valid) {
+      setErrorMsg(nameResult.error!);
       triggerShake();
       return false;
     }
-    if (!email.trim() || !email.includes('@')) {
-      setErrorMsg('Please enter a valid email');
+    const emailResult = validateEmail(email);
+    if (!emailResult.valid) {
+      setErrorMsg(emailResult.error!);
       triggerShake();
       return false;
     }
-    if (password.length < 6) {
-      setErrorMsg('Password must be at least 6 characters');
+    const pwResult = validatePassword(password);
+    if (!pwResult.valid) {
+      setErrorMsg(pwResult.errors[0]);
       triggerShake();
       return false;
     }
     if (password !== confirmPassword) {
-      setErrorMsg('Passwords do not match');
+      setErrorMsg(t('register.passwordsMismatch'));
       triggerShake();
       return false;
     }
@@ -106,7 +112,7 @@ export default function RegisterScreen() {
       await signUp(email, password, name);
       router.replace('/dashboard');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Registration failed. Please try again.');
+      setErrorMsg(err.message || t('register.failed'));
       triggerShake();
     } finally {
       setIsLoading(false);
@@ -116,10 +122,12 @@ export default function RegisterScreen() {
   // Password strength indicator
   const getPasswordStrength = (): { label: string; color: string; width: string } => {
     if (password.length === 0) return { label: '', color: 'transparent', width: '0%' };
-    if (password.length < 4) return { label: 'Weak', color: theme.colors.error, width: '25%' };
-    if (password.length < 6) return { label: 'Fair', color: theme.colors.warning, width: '50%' };
-    if (password.length < 8) return { label: 'Good', color: theme.colors.accent, width: '75%' };
-    return { label: 'Strong', color: theme.colors.success, width: '100%' };
+    const pw = validatePassword(password);
+    const labels = [t('register.strength.weak'), t('register.strength.fair'), t('register.strength.good'), t('register.strength.strong')];
+    const colors = [theme.colors.error, theme.colors.warning, theme.colors.accent, theme.colors.success];
+    const widths = ['25%', '50%', '75%', '100%'];
+    const idx = Math.min(pw.score, 3);
+    return { label: labels[idx], color: colors[idx], width: widths[idx] };
   };
 
   const strength = getPasswordStrength();
@@ -158,9 +166,9 @@ export default function RegisterScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInDown.delay(200).duration(200)}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>Create Account</Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>{t('register.title')}</Text>
             <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
-              Start your fitness journey today
+              {t('register.subtitle')}
             </Text>
           </Animated.View>
 
@@ -180,16 +188,17 @@ export default function RegisterScreen() {
           <Animated.View entering={FadeInUp.delay(300).duration(200)} style={styles.form}>
             {/* Name */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Full Name</Text>
+              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.fullName')}</Text>
               <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                 <MaterialCommunityIcons name="account-outline" size={18} color={theme.colors.textMuted} />
                 <TextInput
                   style={[styles.input, { color: theme.colors.text }]}
-                  placeholder="Your name"
+                  placeholder={t('register.namePlaceholder')}
                   placeholderTextColor={theme.colors.textMuted}
                   value={name}
                   onChangeText={setName}
                   autoCapitalize="words"
+                  maxLength={100}
                   editable={!isLoading}
                   returnKeyType="next"
                   onSubmitEditing={() => emailRef.current?.focus()}
@@ -199,18 +208,19 @@ export default function RegisterScreen() {
 
             {/* Email */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Email</Text>
+              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.email')}</Text>
               <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                 <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                 <TextInput
                   ref={emailRef}
                   style={[styles.input, { color: theme.colors.text }]}
-                  placeholder="you@example.com"
+                  placeholder={t('register.emailPlaceholder')}
                   placeholderTextColor={theme.colors.textMuted}
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  maxLength={254}
                   editable={!isLoading}
                   returnKeyType="next"
                   onSubmitEditing={() => passwordRef.current?.focus()}
@@ -220,13 +230,13 @@ export default function RegisterScreen() {
 
             {/* Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Password</Text>
+              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.password')}</Text>
               <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                 <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
                 <TextInput
                   ref={passwordRef}
                   style={[styles.input, { color: theme.colors.text }]}
-                  placeholder="Minimum 6 characters"
+                  placeholder={t('register.passwordPlaceholder')}
                   placeholderTextColor={theme.colors.textMuted}
                   value={password}
                   onChangeText={setPassword}
@@ -258,13 +268,13 @@ export default function RegisterScreen() {
 
             {/* Confirm Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Confirm Password</Text>
+              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.confirmPassword')}</Text>
               <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                 <MaterialCommunityIcons name="lock-check-outline" size={18} color={theme.colors.textMuted} />
                 <TextInput
                   ref={confirmRef}
                   style={[styles.input, { color: theme.colors.text }]}
-                  placeholder="Repeat password"
+                  placeholder={t('register.confirmPlaceholder')}
                   placeholderTextColor={theme.colors.textMuted}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
@@ -283,7 +293,7 @@ export default function RegisterScreen() {
             {/* Submit */}
             <View style={styles.submitWrap}>
               <GradientButton
-                title={isLoading ? 'Creating Account...' : 'Sign Up'}
+                title={isLoading ? t('register.creating') : t('register.signUp')}
                 onPress={handleRegister}
                 variant="primary"
               />
@@ -293,11 +303,11 @@ export default function RegisterScreen() {
           {/* Footer */}
           <Animated.View entering={FadeInUp.delay(400).duration(200)} style={styles.footer}>
             <Text style={[styles.footerText, { color: theme.colors.textMuted }]}>
-              Already have an account?{' '}
+              {t('register.alreadyHaveAccount')}{' '}
             </Text>
             <Link href="/login" asChild>
               <TouchableOpacity>
-                <Text style={[styles.footerLink, { color: theme.colors.accent }]}>Sign In</Text>
+                <Text style={[styles.footerLink, { color: theme.colors.accent }]}>{t('register.signIn')}</Text>
               </TouchableOpacity>
             </Link>
           </Animated.View>

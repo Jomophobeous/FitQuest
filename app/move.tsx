@@ -60,6 +60,10 @@ export default function MoveScreen() {
     isTracking,
     currentJog,
     isJogging,
+    jogStats,
+    cadence,
+    activity,
+    estimatedDistance,
     startTracking,
     stopTracking,
     startJog,
@@ -103,7 +107,7 @@ export default function MoveScreen() {
   const handleStartTracking = async () => {
     // Start tracking — uses native pedometer if available, SensorFusion fallback otherwise
     await startTracking();
-    await awardStepXP(todaySteps);
+    // XP is awarded when tracking stops (via the stop button), not on start
   };
 
   const handleStartJog = async () => {
@@ -289,14 +293,14 @@ export default function MoveScreen() {
 
             {sensorActive && snapshot.activity !== 'STATIONARY' && (
               <Animated.View entering={FadeInDown.duration(150)} style={sensorStyles.metricsRow}>
-                <View style={[sensorStyles.metricBox, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }]}>
+                <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                   <MaterialCommunityIcons name="speedometer" size={16} color={theme.colors.accent3} />
                   <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
                     {snapshot.intensity.toFixed(1)}
                   </Text>
                   <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.intensity')}</Text>
                 </View>
-                <View style={[sensorStyles.metricBox, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }]}>
+                <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                   <MaterialCommunityIcons name="metronome" size={16} color={theme.colors.accent} />
                   <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
                     {snapshot.currentCadence}
@@ -304,7 +308,7 @@ export default function MoveScreen() {
                   <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.cadence')}</Text>
                 </View>
                 {snapshot.activity === 'EXERCISE' && (
-                <View style={[sensorStyles.metricBox, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }]}>
+                <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                   <MaterialCommunityIcons name="repeat" size={16} color={theme.colors.accent2} />
                   <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
                     {snapshot.repCount}
@@ -363,20 +367,61 @@ export default function MoveScreen() {
                 </View>
 
                 <View style={styles.jogLiveStats}>
+                  {/* Distance - prefer GPS when available */}
                   <View style={styles.jogStat}>
                     <Text style={[styles.jogStatValue, { color: theme.colors.accent }]}>
-                      {((todaySteps - (currentJog.distanceMeters || 0)) * 0.0008).toFixed(2)}
+                      {jogStats 
+                        ? (jogStats.totalDistanceMeters / 1000).toFixed(2)
+                        : (estimatedDistance / 1000).toFixed(2)
+                      }
                     </Text>
                     <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
                   </View>
                   <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
-                  <View style={styles.jogStat}>
-                    <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
-                      {Math.round((todaySteps - (currentJog.distanceMeters || 0)) * 0.06)}
-                    </Text>
-                    <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
-                  </View>
+                  
+                  {/* Pace - show when GPS available */}
+                  {jogStats?.currentPaceSecondsPerKm ? (
+                    <View style={styles.jogStat}>
+                      <Text style={[styles.jogStatValue, { color: theme.colors.success }]}>
+                        {formatPace(jogStats.currentPaceSecondsPerKm)}
+                      </Text>
+                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.pace')}</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.jogStat}>
+                      <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
+                        {cadence}
+                      </Text>
+                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.cadence')}</Text>
+                    </View>
+                  )}
+                  <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
+                  
+                  {/* Elevation when GPS available, otherwise calories */}
+                  {jogStats?.elevationGainMeters && jogStats.elevationGainMeters > 0 ? (
+                    <View style={styles.jogStat}>
+                      <Text style={[styles.jogStatValue, { color: theme.colors.accent3 }]}>
+                        {Math.round(jogStats.elevationGainMeters)}
+                      </Text>
+                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>↑m</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.jogStat}>
+                      <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
+                        {Math.round((currentJog.distanceMeters ?? 0) * 0.06)}
+                      </Text>
+                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
+                    </View>
+                  )}
                 </View>
+
+                {/* GPS indicator */}
+                {jogStats && (
+                  <View style={[styles.gpsIndicator, { backgroundColor: theme.colors.success + '15' }]}>
+                    <MaterialCommunityIcons name="satellite-variant" size={12} color={theme.colors.success} />
+                    <Text style={[styles.gpsIndicatorText, { color: theme.colors.success }]}>GPS Active</Text>
+                  </View>
+                )}
 
                 <GradientButton
                   title={t('move.stopSession')}
@@ -410,8 +455,8 @@ export default function MoveScreen() {
               stepHistory.map((day, i) => (
                 <AnimatedListItem key={day.date} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
                   <View style={[styles.historyRow, {
-                    backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
-                    borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                    backgroundColor: theme.colors.surfaceVariant,
+                    borderColor: theme.colors.border,
                   }]}>
                     <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
                     <Text style={[styles.historySteps, { color: theme.colors.accent }]}>
@@ -431,8 +476,8 @@ export default function MoveScreen() {
               jogHistory.map((jog, i) => (
                 <AnimatedListItem key={jog.id} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
                   <View style={[styles.historyRow, {
-                    backgroundColor: theme.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
-                    borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                    backgroundColor: theme.colors.surfaceVariant,
+                    borderColor: theme.colors.border,
                   }]}>
                     <View>
                       <Text style={[styles.historyDate, { color: theme.colors.text }]}>
@@ -474,7 +519,7 @@ export default function MoveScreen() {
       >
         <View style={styles.modalOverlay}>
           <Animated.View entering={ZoomIn.duration(150)}>
-            <View style={[styles.modalContent, { backgroundColor: theme.isDark ? '#151929' : '#FFFFFF' }]}>
+            <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
               {/* Glow backdrop */}
               <LinearGradient
                 colors={[theme.colors.success + '25', 'transparent']}
@@ -525,7 +570,7 @@ export default function MoveScreen() {
               {jogCompletionData && jogCompletionData.xpEarned > 0 && (
                 <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.xpBadge}>
                   <LinearGradient
-                    colors={[theme.colors.accent, '#4338CA']}
+                    colors={[theme.colors.accent, theme.colors.indigo]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.xpGradient}
@@ -588,6 +633,17 @@ const styles = StyleSheet.create({
   jogStatValue: { fontSize: 22, fontWeight: '700' },
   jogStatLabel: { fontSize: 12, marginTop: 2 },
   jogStatDivider: { width: 1, height: 30 },
+  gpsIndicator: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 4, 
+    alignSelf: 'center', 
+    paddingHorizontal: 10, 
+    paddingVertical: 4, 
+    borderRadius: 12,
+    marginBottom: 4,
+  },
+  gpsIndicatorText: { fontSize: 11, fontWeight: '600' },
   emptyText: { textAlign: 'center', fontSize: 13 },
   historyRow: {
     flexDirection: 'row',

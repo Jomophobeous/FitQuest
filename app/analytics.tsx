@@ -26,96 +26,40 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import {
   GlassCard,
   SectionHeader,
   ProgressRing,
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
-import { getDatabase } from '../src/database/schema';
+import {
+  BarData,
+  MuscleGroupData,
+  StepStats,
+  JogStats,
+  PersonalRecord,
+  StreakData,
+  fetchWorkoutBars,
+  fetchXPData,
+  fetchMuscleGroups,
+  fetchStepStats,
+  fetchJogStats,
+  fetchActiveDays,
+  fetchPersonalRecords,
+  fetchStreakData,
+} from '../src/services/analyticsDataService';
 
 // ─── SCREEN WIDTH ──────────────────────────────────────────────
 const { width: SCREEN_W } = Dimensions.get('window');
 
-const USER_ID = 'user_local_001';
-
-// ─── TYPES ─────────────────────────────────────────────────────
-interface BarData {
-  day: string;
-  count: number;
-}
-
-interface MuscleGroupData {
-  name: string;
-  sessions: number;
-  icon: string;
-}
-
-interface StepStats {
-  steps: number;
-  distance: number;
-  calories: number;
-  avgDaily: number;
-}
-
-interface JogStats {
-  runs: number;
-  totalKm: number;
-  avgPace: string;
-  longestRun: number;
-}
-
-interface PersonalRecord {
-  exercise: string;
-  value: string;
-  date: string;
-  icon: string;
-}
-
-interface StreakData {
-  currentStreak: number;
-  longestStreak: number;
-  totalWorkouts: number;
-  consistencyPct: number;
-  thisWeek: number;
-  thisMonth: number;
-}
-
-// ─── DATE HELPERS ──────────────────────────────────────────────
-function getDateNDaysAgo(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return d.toISOString().split('T')[0];
-}
-
-function getStartOfWeek(): string {
-  const d = new Date();
-  const day = d.getDay(); // 0=Sun
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday start
-  d.setDate(diff);
-  return d.toISOString().split('T')[0];
-}
-
-function getStartOfMonth(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
-}
-
-function formatPace(secondsPerKm: number | null): string {
-  if (!secondsPerKm || secondsPerKm <= 0) return '--:--';
-  const m = Math.floor(secondsPerKm / 60);
-  const s = Math.round(secondsPerKm % 60);
-  return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DAY_LABELS_CAL = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-// muscle name → icon mapping
+// muscle name → icon mapping (kept for UI only)
 const MUSCLE_ICONS: Record<string, string> = {
   CHEST: 'arm-flex',
   BACK: 'human-handsup',
@@ -140,289 +84,10 @@ function getMonthCalendar(year: number, month: number) {
   return { daysInMonth, startWeekday };
 }
 
-// ─── DATA FETCHING ─────────────────────────────────────────────
-
-async function fetchWorkoutBars(range: 'weekly' | 'monthly'): Promise<BarData[]> {
-  const db = await getDatabase();
-  if (range === 'weekly') {
-    const bars: BarData[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = getDateNDaysAgo(i);
-      const dayOfWeek = new Date(date).getDay();
-      const r = await db.getFirstAsync<{ cnt: number }>(
-        `SELECT COUNT(*) as cnt FROM workout_sessions 
-         WHERE user_id = ? AND date(started_at) = ? AND completed_at IS NOT NULL`,
-        [USER_ID, date]
-      );
-      bars.push({ day: DAY_NAMES[dayOfWeek === 0 ? 6 : dayOfWeek - 1], count: r?.cnt ?? 0 });
-    }
-    return bars;
-  } else {
-    const bars: BarData[] = [];
-    for (let w = 3; w >= 0; w--) {
-      const start = getDateNDaysAgo(w * 7 + 6);
-      const end = getDateNDaysAgo(w * 7);
-      const r = await db.getFirstAsync<{ cnt: number }>(
-        `SELECT COUNT(*) as cnt FROM workout_sessions 
-         WHERE user_id = ? AND date(started_at) BETWEEN ? AND ? AND completed_at IS NOT NULL`,
-        [USER_ID, start, end]
-      );
-      bars.push({ day: `W${4 - w}`, count: r?.cnt ?? 0 });
-    }
-    return bars;
-  }
-}
-
-async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]> {
-  const db = await getDatabase();
-  if (range === 'weekly') {
-    const xp: number[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = getDateNDaysAgo(i);
-      const r = await db.getFirstAsync<{ cnt: number; exercises: number; total_exercises: number }>(
-        `SELECT COUNT(*) as cnt, COALESCE(SUM(completed_exercises), 0) as exercises,
-                COALESCE(SUM(total_exercises), 0) as total_exercises
-         FROM workout_sessions 
-         WHERE user_id = ? AND date(started_at) = ? AND completed_at IS NOT NULL`,
-        [USER_ID, date]
-      );
-      const workouts = r?.cnt ?? 0;
-      const exercises = r?.exercises ?? 0;
-      const totalEx = r?.total_exercises ?? 0;
-      // Match xpService formula: 100 base + 20/exercise + 50 completion bonus + streak*10
-      const completionBonus = (exercises >= totalEx && totalEx > 0) ? 50 * workouts : 0;
-      xp.push(workouts * 100 + exercises * 20 + completionBonus);
-    }
-    return xp;
-  } else {
-    const xp: number[] = [];
-    for (let w = 3; w >= 0; w--) {
-      const start = getDateNDaysAgo(w * 7 + 6);
-      const end = getDateNDaysAgo(w * 7);
-      const r = await db.getFirstAsync<{ cnt: number; exercises: number; total_exercises: number }>(
-        `SELECT COUNT(*) as cnt, COALESCE(SUM(completed_exercises), 0) as exercises,
-                COALESCE(SUM(total_exercises), 0) as total_exercises
-         FROM workout_sessions 
-         WHERE user_id = ? AND date(started_at) BETWEEN ? AND ? AND completed_at IS NOT NULL`,
-        [USER_ID, start, end]
-      );
-      const workouts = r?.cnt ?? 0;
-      const exercises = r?.exercises ?? 0;
-      const totalEx = r?.total_exercises ?? 0;
-      const completionBonus = (exercises >= totalEx && totalEx > 0) ? 50 * workouts : 0;
-      xp.push(workouts * 100 + exercises * 20 + completionBonus);
-    }
-    return xp;
-  }
-}
-
-async function fetchMuscleGroups(): Promise<MuscleGroupData[]> {
-  const db = await getDatabase();
-  const since = getDateNDaysAgo(30);
-  const rows = await db.getAllAsync<{ muscle: string; cnt: number }>(
-    `SELECT em.muscle, COUNT(DISTINCT se.session_id) as cnt
-     FROM session_exercises se
-     JOIN exercise_muscles em ON se.exercise_id = em.exercise_id
-     JOIN workout_sessions ws ON se.session_id = ws.id
-     WHERE ws.user_id = ? AND ws.completed_at IS NOT NULL AND date(ws.started_at) >= ?
-       AND em.is_primary = 1
-     GROUP BY em.muscle
-     ORDER BY cnt DESC`,
-    [USER_ID, since]
-  );
-
-  if (rows.length === 0) {
-    return ['CHEST', 'BACK', 'QUADRICEPS', 'SHOULDERS', 'BICEPS', 'CORE', 'GLUTES', 'HAMSTRINGS']
-      .map(name => ({
-        name: name.charAt(0) + name.slice(1).toLowerCase(),
-        sessions: 0,
-        icon: MUSCLE_ICONS[name] || 'dumbbell',
-      }));
-  }
-
-  return rows.map(r => ({
-    name: r.muscle.charAt(0) + r.muscle.slice(1).toLowerCase(),
-    sessions: r.cnt,
-    icon: MUSCLE_ICONS[r.muscle.toUpperCase()] || 'dumbbell',
-  }));
-}
-
-async function fetchStepStats(range: 'weekly' | 'monthly'): Promise<StepStats> {
-  const db = await getDatabase();
-  const since = range === 'weekly' ? getDateNDaysAgo(6) : getDateNDaysAgo(29);
-
-  const r = await db.getFirstAsync<{
-    total_steps: number;
-    total_active: number;
-    day_count: number;
-  }>(
-    `SELECT COALESCE(SUM(steps), 0) as total_steps, 
-            COALESCE(SUM(active_minutes), 0) as total_active,
-            COUNT(*) as day_count
-     FROM daily_steps 
-     WHERE user_id = ? AND date >= ?`,
-    [USER_ID, since]
-  );
-
-  const totalSteps = r?.total_steps ?? 0;
-  const dayCount = Math.max(r?.day_count ?? 1, 1);
-  return {
-    steps: totalSteps,
-    distance: Math.round(totalSteps * 0.0008 * 10) / 10,
-    calories: Math.round(totalSteps * 0.04),
-    avgDaily: Math.round(totalSteps / dayCount),
-  };
-}
-
-async function fetchJogStats(range: 'weekly' | 'monthly'): Promise<JogStats> {
-  const db = await getDatabase();
-  const since = range === 'weekly' ? getDateNDaysAgo(6) : getDateNDaysAgo(29);
-
-  const rows = await db.getAllAsync<{
-    distance_meters: number;
-    avg_pace_per_km: number | null;
-  }>(
-    `SELECT distance_meters, avg_pace_per_km
-     FROM jog_sessions 
-     WHERE user_id = ? AND date(start_time) >= ? AND end_time IS NOT NULL`,
-    [USER_ID, since]
-  );
-
-  if (rows.length === 0) {
-    return { runs: 0, totalKm: 0, avgPace: '--:--', longestRun: 0 };
-  }
-
-  const totalDistance = rows.reduce((s, r) => s + r.distance_meters, 0);
-  const longestRun = Math.max(...rows.map(r => r.distance_meters));
-  const paces = rows.filter(r => r.avg_pace_per_km && r.avg_pace_per_km > 0);
-  const avgPace = paces.length > 0
-    ? paces.reduce((s, r) => s + (r.avg_pace_per_km ?? 0), 0) / paces.length
-    : 0;
-
-  return {
-    runs: rows.length,
-    totalKm: Math.round(totalDistance / 100) / 10,
-    avgPace: formatPace(avgPace),
-    longestRun: Math.round(longestRun / 100) / 10,
-  };
-}
-
-async function fetchActiveDays(): Promise<number[]> {
-  const db = await getDatabase();
-  const now = new Date();
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-  const rows = await db.getAllAsync<{ d: number }>(
-    `SELECT DISTINCT CAST(strftime('%d', started_at) AS INTEGER) as d
-     FROM workout_sessions 
-     WHERE user_id = ? AND strftime('%Y-%m', started_at) = ? AND completed_at IS NOT NULL
-     UNION
-     SELECT DISTINCT CAST(strftime('%d', date) AS INTEGER) as d
-     FROM daily_steps
-     WHERE user_id = ? AND strftime('%Y-%m', date) = ? AND steps > 0`,
-    [USER_ID, yearMonth, USER_ID, yearMonth]
-  );
-
-  return rows.map(r => r.d);
-}
-
-async function fetchPersonalRecords(): Promise<PersonalRecord[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{
-    exercise_name: string;
-    category: string;
-    best_sets: number;
-    best_reps: string;
-    best_date: string;
-  }>(
-    `SELECT e.name as exercise_name, e.category,
-            pr.sets_completed as best_sets, pr.reps_achieved as best_reps,
-            pr.date as best_date
-     FROM progress_records pr
-     JOIN exercises e ON pr.exercise_id = e.id
-     WHERE pr.user_id = ?
-     ORDER BY pr.sets_completed DESC, pr.date DESC
-     LIMIT 5`,
-    [USER_ID]
-  );
-
-  if (rows.length === 0) return [];
-
-  const categoryIcons: Record<string, string> = {
-    UPPER_PUSH: 'dumbbell',
-    UPPER_PULL: 'arm-flex',
-    LOWER_COMPOUND: 'weight-lifter',
-    CORE: 'meditation',
-    CARDIO: 'run-fast',
-    MOBILITY: 'human-greeting-variant',
-  };
-
-  return rows.map(r => ({
-    exercise: r.exercise_name,
-    value: `${r.best_sets} × ${r.best_reps}`,
-    date: new Date(r.best_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-    icon: categoryIcons[r.category] || 'dumbbell',
-  }));
-}
-
-async function fetchStreakData(): Promise<StreakData> {
-  const db = await getDatabase();
-
-  const streak = await db.getFirstAsync<{
-    current_streak: number;
-    longest_streak: number;
-  }>(
-    `SELECT current_streak, longest_streak FROM workout_streaks WHERE user_id = ?`,
-    [USER_ID]
-  );
-
-  const weekStart = getStartOfWeek();
-  const monthStart = getStartOfMonth();
-
-  const weekCount = await db.getFirstAsync<{ cnt: number }>(
-    `SELECT COUNT(*) as cnt FROM workout_sessions 
-     WHERE user_id = ? AND date(started_at) >= ? AND completed_at IS NOT NULL`,
-    [USER_ID, weekStart]
-  );
-
-  const monthCount = await db.getFirstAsync<{ cnt: number }>(
-    `SELECT COUNT(*) as cnt FROM workout_sessions 
-     WHERE user_id = ? AND date(started_at) >= ? AND completed_at IS NOT NULL`,
-    [USER_ID, monthStart]
-  );
-
-  const totalCount = await db.getFirstAsync<{ cnt: number }>(
-    `SELECT COUNT(*) as cnt FROM workout_sessions WHERE user_id = ? AND completed_at IS NOT NULL`,
-    [USER_ID]
-  );
-
-  const now = new Date();
-  const daysElapsed = now.getDate();
-  // Calculate target training days this month based on days elapsed
-  // Uses a 4-day/week default target, proportional to days elapsed
-  const targetDaysPerWeek = 4;
-  const expectedTrainingDays = Math.max(1, Math.round((daysElapsed / 7) * targetDaysPerWeek));
-  const activeDaysMonth = await db.getFirstAsync<{ cnt: number }>(
-    `SELECT COUNT(DISTINCT date(started_at)) as cnt 
-     FROM workout_sessions 
-     WHERE user_id = ? AND strftime('%Y-%m', started_at) = ? AND completed_at IS NOT NULL`,
-    [USER_ID, `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`]
-  );
-  const consistencyPct = Math.min(100, Math.round(((activeDaysMonth?.cnt ?? 0) / expectedTrainingDays) * 100));
-
-  return {
-    currentStreak: streak?.current_streak ?? 0,
-    longestStreak: streak?.longest_streak ?? 0,
-    totalWorkouts: totalCount?.cnt ?? 0,
-    consistencyPct,
-    thisWeek: weekCount?.cnt ?? 0,
-    thisMonth: monthCount?.cnt ?? 0,
-  };
-}
-
 // ─── COMPONENT ─────────────────────────────────────────────────
 export default function AnalyticsScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [range, setRange] = useState<'weekly' | 'monthly'>('weekly');
   const [loading, setLoading] = useState(true);
 
@@ -492,8 +157,8 @@ export default function AnalyticsScreen() {
       >
         {/* ─── HEADER ─────────────────────────────── */}
         <Animated.View entering={FadeInDown.delay(50).duration(150)} style={s.header}>
-          <Text style={s.heroTitle}>Analytics</Text>
-          <Text style={s.heroSub}>Your performance at a glance</Text>
+          <Text style={s.heroTitle}>{t('analytics.title')}</Text>
+          <Text style={s.heroSub}>{t('analytics.subtitle')}</Text>
         </Animated.View>
 
         {/* ─── RANGE TOGGLE ───────────────────────── */}
@@ -515,7 +180,7 @@ export default function AnalyticsScreen() {
                     range === r && { color: theme.colors.accent, fontWeight: '700' },
                   ]}
                 >
-                  {r === 'weekly' ? 'Weekly' : 'Monthly'}
+                  {r === 'weekly' ? t('analytics.weekly') : t('analytics.monthly')}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -531,7 +196,7 @@ export default function AnalyticsScreen() {
         {!loading && (
           <>
             {/* ─── WORKOUT FREQUENCY BAR CHART ─────── */}
-            <SectionHeader title="Workout Frequency" delay={150} />
+            <SectionHeader title={t('analytics.workoutFrequency')} delay={150} />
             <Animated.View entering={FadeInDown.delay(200).duration(150)}>
               <GlassCard gradient glowColor={theme.colors.accent} style={s.chartCard}>
                 <View style={s.barRow}>
@@ -562,7 +227,7 @@ export default function AnalyticsScreen() {
             </Animated.View>
 
             {/* ─── XP TREND LINE ──────────────────── */}
-            <SectionHeader title="XP Progress" delay={300} />
+            <SectionHeader title={t('analytics.xpProgress')} delay={300} />
             <Animated.View entering={FadeInDown.delay(350).duration(150)}>
               <GlassCard gradient glowColor={theme.colors.accent3} style={s.chartCard}>
                 <View style={s.trendContainer}>
@@ -630,7 +295,7 @@ export default function AnalyticsScreen() {
                     <Text style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
                       {xpData.reduce((a, b) => a + b, 0).toLocaleString()}
                     </Text>
-                    <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>Total XP</Text>
+                    <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>{t('analytics.totalXP')}</Text>
                   </View>
                   <View style={s.xpSummaryItem}>
                     <Text style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
@@ -638,14 +303,14 @@ export default function AnalyticsScreen() {
                         ? Math.round(xpData.reduce((a, b) => a + b, 0) / xpData.length).toLocaleString()
                         : '0'}
                     </Text>
-                    <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>Avg / Period</Text>
+                    <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>{t('analytics.avgPerWorkout')}</Text>
                   </View>
                 </View>
               </GlassCard>
             </Animated.View>
 
             {/* ─── MUSCLE GROUP HEATMAP ───────────── */}
-            <SectionHeader title="Muscle Group Heatmap" delay={450} />
+            <SectionHeader title={t('analytics.muscleHeatmap')} delay={450} />
             <Animated.View entering={FadeInDown.delay(500).duration(150)}>
               <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: 16 }}>
                 <View style={s.muscleGrid}>
@@ -682,10 +347,10 @@ export default function AnalyticsScreen() {
                 </View>
                 <View style={s.legendRow}>
                   {[
-                    { label: 'Low', color: theme.colors.textMuted },
-                    { label: 'Med', color: theme.colors.warning },
-                    { label: 'High', color: theme.colors.accent3 },
-                    { label: 'Max', color: theme.colors.success },
+                    { label: t('analytics.low'), color: theme.colors.textMuted },
+                    { label: t('analytics.med'), color: theme.colors.warning },
+                    { label: t('analytics.high'), color: theme.colors.accent3 },
+                    { label: t('analytics.max'), color: theme.colors.success },
                   ].map((l) => (
                     <View key={l.label} style={s.legendItem}>
                       <View style={[s.legendDot, { backgroundColor: l.color }]} />
@@ -697,7 +362,7 @@ export default function AnalyticsScreen() {
             </Animated.View>
 
             {/* ─── STEP & JOG STATS ───────────────── */}
-            <SectionHeader title="Steps & Jogging" delay={550} />
+            <SectionHeader title={t('analytics.stepsJogging')} delay={550} />
             <Animated.View entering={FadeInDown.delay(600).duration(150)}>
               <View style={s.statsRow}>
                 <GlassCard gradient glowColor={theme.colors.success} style={s.statCard}>
@@ -747,11 +412,11 @@ export default function AnalyticsScreen() {
             </Animated.View>
 
             {/* ─── CALENDAR HEATMAP ───────────────── */}
-            <SectionHeader title={`${MONTH_NAMES[month]} ${year}`} delay={650} />
+            <SectionHeader title={`${[t('month.january'), t('month.february'), t('month.march'), t('month.april'), t('month.may'), t('month.june'), t('month.july'), t('month.august'), t('month.september'), t('month.october'), t('month.november'), t('month.december')][month]} ${year}`} delay={650} />
             <Animated.View entering={FadeInDown.delay(700).duration(150)}>
               <GlassCard gradient glowColor={theme.colors.success} style={s.calendarCard}>
                 <View style={s.calendarRow}>
-                  {DAY_LABELS_CAL.map((d) => (
+                  {[t('day.sun'), t('day.mon'), t('day.tue'), t('day.wed'), t('day.thu'), t('day.fri'), t('day.sat')].map((d) => (
                     <View key={d} style={s.calendarCell}>
                       <Text style={[s.calDayHeader, { color: theme.colors.textMuted }]}>{d}</Text>
                     </View>
@@ -781,10 +446,10 @@ export default function AnalyticsScreen() {
                                   backgroundColor: isActive
                                     ? theme.colors.success + (isToday ? 'FF' : '90')
                                     : theme.isDark
-                                    ? '#1a1f2e'
-                                    : '#e2e4e8',
+                                    ? theme.colors.surfaceVariant
+                                    : theme.colors.surfaceVariant,
                                   borderWidth: isToday ? 2 : 0,
-                                  borderColor: isToday ? '#fff' : 'transparent',
+                                  borderColor: isToday ? theme.colors.text : 'transparent',
                                 },
                               ]}
                             >
@@ -815,7 +480,7 @@ export default function AnalyticsScreen() {
                 })()}
                 <View style={[s.legendRow, { marginTop: 12 }]}>
                   <View style={s.legendItem}>
-                    <View style={[s.legendDot, { backgroundColor: theme.isDark ? '#1a1f2e' : '#e2e4e8' }]} />
+                    <View style={[s.legendDot, { backgroundColor: theme.colors.surfaceVariant }]} />
                     <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Rest</Text>
                   </View>
                   <View style={s.legendItem}>
@@ -831,7 +496,7 @@ export default function AnalyticsScreen() {
             </Animated.View>
 
             {/* ─── PERSONAL RECORDS ───────────────── */}
-            <SectionHeader title="Personal Records 🏆" delay={750} />
+            <SectionHeader title={t('analytics.personalRecords')} delay={750} />
             {personalRecords.length === 0 && (
               <GlassCard style={{ paddingVertical: 24, alignItems: 'center' }}>
                 <MaterialCommunityIcons name="trophy-outline" size={32} color={theme.colors.textMuted} />
@@ -861,7 +526,7 @@ export default function AnalyticsScreen() {
             ))}
 
             {/* ─── STREAK & CONSISTENCY ───────────── */}
-            <SectionHeader title="Streak & Consistency" delay={850} />
+            <SectionHeader title={t('analytics.streakConsistency')} delay={850} />
             <Animated.View entering={FadeInDown.delay(900).duration(150)}>
               <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: 20 }}>
                 <View style={s.streakHeroRow}>
@@ -886,15 +551,15 @@ export default function AnalyticsScreen() {
 
                 <View style={s.streakTilesRow}>
                   {[
-                    { label: 'Longest Streak', value: `${streakData.longestStreak} days`, icon: 'trophy-outline', color: theme.colors.warning },
-                    { label: 'Total Workouts', value: `${streakData.totalWorkouts}`, icon: 'dumbbell', color: theme.colors.accent3 },
-                    { label: 'This Week', value: `${streakData.thisWeek}`, icon: 'calendar-week', color: theme.colors.accent },
-                    { label: 'This Month', value: `${streakData.thisMonth}`, icon: 'calendar-month', color: theme.colors.success },
-                  ].map((t, i) => (
-                    <AnimatedListItem key={t.label} index={i} style={s.streakTile}>
-                      <MaterialCommunityIcons name={t.icon as any} size={20} color={t.color} />
-                      <Text style={[s.tileValue, { color: theme.colors.text }]}>{t.value}</Text>
-                      <Text style={[s.tileLabel, { color: theme.colors.textMuted }]}>{t.label}</Text>
+                    { label: t('analytics.longest'), value: `${streakData.longestStreak} ${t('common.days')}`, icon: 'trophy-outline', color: theme.colors.warning },
+                    { label: t('analytics.totalWorkouts'), value: `${streakData.totalWorkouts}`, icon: 'dumbbell', color: theme.colors.accent3 },
+                    { label: t('analytics.thisWeek'), value: `${streakData.thisWeek}`, icon: 'calendar-week', color: theme.colors.accent },
+                    { label: t('analytics.thisMonth'), value: `${streakData.thisMonth}`, icon: 'calendar-month', color: theme.colors.success },
+                  ].map((tile, i) => (
+                    <AnimatedListItem key={tile.label} index={i} style={s.streakTile}>
+                      <MaterialCommunityIcons name={tile.icon as any} size={20} color={tile.color} />
+                      <Text style={[s.tileValue, { color: theme.colors.text }]}>{tile.value}</Text>
+                      <Text style={[s.tileLabel, { color: theme.colors.textMuted }]}>{tile.label}</Text>
                     </AnimatedListItem>
                   ))}
                 </View>
@@ -993,7 +658,7 @@ const styles = (theme: any) =>
     streakTilesRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8, paddingHorizontal: 8 },
     streakTile: {
       width: '47%' as any,
-      backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+      backgroundColor: theme.colors.surfaceVariant,
       borderRadius: 14,
       paddingVertical: 14,
       paddingHorizontal: 12,

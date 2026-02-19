@@ -9,7 +9,8 @@
 
 import React, { useState, useCallback } from 'react';
 
-const ACCENT_PURPLE = '#8B5CF6';
+import { colorSystem } from '../src/design/theme-system';
+const ACCENT_PURPLE = colorSystem.dark.purple;
 import {
   View,
   ScrollView,
@@ -24,7 +25,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
+import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import {
   generateBodyCraftAlgorithm,
   type BodyCraftAlgorithm,
@@ -37,6 +40,7 @@ import {
   type TimelineMonths,
 } from '../src/engines/bodyCraftEngine';
 import { saveBodyCraftAlgorithm, applyAlgorithmToProfile } from '../src/database/bodyCraftService';
+import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
 
 // ============================================
 // CONSTANTS
@@ -92,9 +96,9 @@ const TIMELINE_OPTIONS: { months: TimelineMonths; label: string; desc: string; i
 const PRIORITY_CYCLE: MusclePriority[] = ['maintain', 'priority', 'ignore'];
 
 const PRIORITY_CONFIG: Record<MusclePriority, { label: string; color: string }> = {
-  priority: { label: 'Priority', color: '#10B981' },
-  maintain: { label: 'Maintain', color: '#F4A427' },
-  ignore: { label: 'Ignore', color: '#6B7280' },
+  priority: { label: 'Priority', color: colorSystem.dark.accent },
+  maintain: { label: 'Maintain', color: colorSystem.dark.warning },
+  ignore: { label: 'Ignore', color: colorSystem.dark.textMuted },
 };
 
 // ============================================
@@ -103,6 +107,7 @@ const PRIORITY_CONFIG: Record<MusclePriority, { label: string; color: string }> 
 
 export default function CraftMyBodyScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
 
   // Wizard state
@@ -131,17 +136,34 @@ export default function CraftMyBodyScreen() {
   // Step 5: Result
   const [algorithm, setAlgorithm] = useState<BodyCraftAlgorithm | null>(null);
   const [applied, setApplied] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // ========== Navigation ==========
 
   const canGoNext = useCallback((): boolean => {
     if (stepIndex === 0) {
-      return !!heightCm && !!weightKg && !!age && Number(heightCm) > 0 && Number(weightKg) > 0 && Number(age) > 0;
+      const hv = validateNumeric(heightCm, BODY_RANGES.heightCm);
+      const wv = validateNumeric(weightKg, BODY_RANGES.weightKg);
+      const av = validateNumeric(age, BODY_RANGES.age);
+      return hv.valid && wv.valid && av.valid;
     }
     return true;
   }, [stepIndex, heightCm, weightKg, age]);
 
   const goNext = useCallback(() => {
+    if (stepIndex === 0) {
+      // Validate measurements before advancing
+      const errs: Record<string, string> = {};
+      const hv = validateNumeric(heightCm, BODY_RANGES.heightCm);
+      const wv = validateNumeric(weightKg, BODY_RANGES.weightKg);
+      const av = validateNumeric(age, BODY_RANGES.age);
+      if (!hv.valid) errs.heightCm = hv.error!;
+      if (!wv.valid) errs.weightKg = wv.error!;
+      if (!av.valid) errs.age = av.error!;
+      if (Object.keys(errs).length > 0) { setFieldErrors(errs); return; }
+      setFieldErrors({});
+    }
+
     if (stepIndex === 3) {
       // Generate algorithm
       const inputs: BodyCraftInputs = {
@@ -156,7 +178,7 @@ export default function CraftMyBodyScreen() {
         muscle_priorities: musclePriorities,
         timeline_months: timeline,
       };
-      const algo = generateBodyCraftAlgorithm(inputs, 'local_user');
+      const algo = generateBodyCraftAlgorithm(inputs, 'user_local_001');
       setAlgorithm(algo);
       setStepIndex(4);
       return;
@@ -182,12 +204,12 @@ export default function CraftMyBodyScreen() {
     if (!algorithm) return;
     try {
       await saveBodyCraftAlgorithm(algorithm);
-      await applyAlgorithmToProfile('local_user', algorithm);
+      await applyAlgorithmToProfile('user_local_001', algorithm);
       setApplied(true);
-      Alert.alert('Applied!', 'Your training plan has been updated.');
+      Alert.alert(t('craftBody.appliedAlert'), t('craftBody.appliedDetail'));
     } catch (e) {
       console.error('[CraftMyBody] Failed to apply algorithm:', e);
-      Alert.alert('Error', 'Could not save your plan. Please try again.');
+      Alert.alert(t('craftBody.errorAlert'), t('craftBody.errorDetail'));
     }
   }, [algorithm]);
 
@@ -234,7 +256,7 @@ export default function CraftMyBodyScreen() {
         })}
       </View>
       {/* Connecting line */}
-      <View style={[styles.progressLine, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }]}>
+      <View style={[styles.progressLine, { backgroundColor: colors.border }]}>
         <View style={[styles.progressLineFill, { backgroundColor: colors.accent, width: `${(stepIndex / (STEPS.length - 1)) * 100}%` }]} />
       </View>
     </Animated.View>
@@ -243,7 +265,7 @@ export default function CraftMyBodyScreen() {
   // ---- Step 1: Assessment ----
   const renderAssessment = () => (
     <Animated.View entering={FadeInDown.duration(150)} key="step-assessment">
-      <SectionHeader title="Body Assessment" />
+      <SectionHeader title={t('craftBody.bodyAssessment')} />
 
       {/* Sex */}
       <GlassCard style={styles.card}>
@@ -255,8 +277,8 @@ export default function CraftMyBodyScreen() {
               onPress={() => setSex(s)}
               style={[styles.chip, { backgroundColor: sex === s ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', borderColor: sex === s ? colors.accent : 'transparent' }]}
             >
-              <MaterialCommunityIcons name={s === 'male' ? 'gender-male' : 'gender-female'} size={18} color={sex === s ? '#fff' : colors.textMuted} />
-              <Text style={[styles.chipText, { color: sex === s ? '#fff' : colors.text }]}>{s === 'male' ? 'Male' : 'Female'}</Text>
+              <MaterialCommunityIcons name={s === 'male' ? 'gender-male' : 'gender-female'} size={18} color={sex === s ? colors.onAccent : colors.textMuted} />
+              <Text style={[styles.chipText, { color: sex === s ? colors.onAccent : colors.text }]}>{s === 'male' ? 'Male' : 'Female'}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -267,16 +289,19 @@ export default function CraftMyBodyScreen() {
         <Text style={[styles.label, { color: colors.text }]}>Measurements</Text>
         <View style={styles.inputRow}>
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Height (cm)</Text>
-            <TextInput style={inputStyle} value={heightCm} onChangeText={setHeightCm} keyboardType="numeric" placeholder="175" placeholderTextColor={colors.textMuted} />
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.heightLabel')}</Text>
+            <TextInput style={inputStyle} value={heightCm} onChangeText={v => { setHeightCm(v); if (fieldErrors.heightCm) setFieldErrors(e => ({ ...e, heightCm: '' })); }} keyboardType="numeric" maxLength={6} placeholder="175" placeholderTextColor={colors.textMuted} />
+            {!!fieldErrors.heightCm && <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.heightCm}</Text>}
           </View>
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Weight (kg)</Text>
-            <TextInput style={inputStyle} value={weightKg} onChangeText={setWeightKg} keyboardType="numeric" placeholder="70" placeholderTextColor={colors.textMuted} />
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.weightLabel')}</Text>
+            <TextInput style={inputStyle} value={weightKg} onChangeText={v => { setWeightKg(v); if (fieldErrors.weightKg) setFieldErrors(e => ({ ...e, weightKg: '' })); }} keyboardType="numeric" maxLength={6} placeholder="70" placeholderTextColor={colors.textMuted} />
+            {!!fieldErrors.weightKg && <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.weightKg}</Text>}
           </View>
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>Age</Text>
-            <TextInput style={inputStyle} value={age} onChangeText={setAge} keyboardType="numeric" placeholder="25" placeholderTextColor={colors.textMuted} />
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.ageLabel')}</Text>
+            <TextInput style={inputStyle} value={age} onChangeText={v => { setAge(v); if (fieldErrors.age) setFieldErrors(e => ({ ...e, age: '' })); }} keyboardType="numeric" maxLength={3} placeholder="25" placeholderTextColor={colors.textMuted} />
+            {!!fieldErrors.age && <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.age}</Text>}
           </View>
         </View>
       </GlassCard>
@@ -310,7 +335,7 @@ export default function CraftMyBodyScreen() {
               onPress={() => setFitnessLevel(fl.key)}
               style={[styles.chip, { backgroundColor: fitnessLevel === fl.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', borderColor: fitnessLevel === fl.key ? colors.accent : 'transparent' }]}
             >
-              <Text style={[styles.chipText, { color: fitnessLevel === fl.key ? '#fff' : colors.text }]}>{fl.label}</Text>
+              <Text style={[styles.chipText, { color: fitnessLevel === fl.key ? colors.onAccent : colors.text }]}>{fl.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -339,12 +364,12 @@ export default function CraftMyBodyScreen() {
   // ---- Step 2: Goal Selection ----
   const renderGoalSelection = () => (
     <Animated.View entering={FadeInDown.duration(150)} key="step-goal">
-      <SectionHeader title="Choose Your Goal" />
+      <SectionHeader title={t('craftBody.chooseGoal')} />
       {GOAL_OPTIONS.map((g) => (
         <GlassCard key={g.key} style={styles.card} onPress={() => setGoalType(g.key)}>
           <View style={[styles.goalRow, { borderColor: goalType === g.key ? colors.accent : 'transparent', backgroundColor: goalType === g.key ? `${colors.accent}12` : 'transparent' }]}>
-            <View style={[styles.goalIcon, { backgroundColor: goalType === g.key ? colors.accent : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]}>
-              <MaterialCommunityIcons name={g.icon as any} size={28} color={goalType === g.key ? '#fff' : colors.textMuted} />
+            <View style={[styles.goalIcon, { backgroundColor: goalType === g.key ? colors.accent : colors.surfaceVariant }]}>
+              <MaterialCommunityIcons name={g.icon as any} size={28} color={goalType === g.key ? colors.onAccent : colors.textMuted} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.goalTitle, { color: colors.text }]}>{g.label}</Text>
@@ -360,7 +385,7 @@ export default function CraftMyBodyScreen() {
   // ---- Step 3: Focus Areas ----
   const renderFocusAreas = () => (
     <Animated.View entering={FadeInDown.duration(150)} key="step-focus">
-      <SectionHeader title="Focus Areas" />
+      <SectionHeader title={t('craftBody.focusAreas')} />
       <Text style={[styles.focusHint, { color: colors.textMuted }]}>Tap to cycle: Maintain → Priority → Ignore</Text>
       <View style={styles.muscleGrid}>
         {MUSCLE_GROUPS.map((mg) => {
@@ -385,12 +410,12 @@ export default function CraftMyBodyScreen() {
   // ---- Step 4: Timeline ----
   const renderTimeline = () => (
     <Animated.View entering={FadeInDown.duration(150)} key="step-timeline">
-      <SectionHeader title="Your Timeline" />
+      <SectionHeader title={t('craftBody.yourTimeline')} />
       {TIMELINE_OPTIONS.map((t) => (
         <GlassCard key={t.months} style={styles.card} onPress={() => setTimeline(t.months)}>
           <View style={[styles.goalRow, { borderColor: timeline === t.months ? colors.accent : 'transparent', backgroundColor: timeline === t.months ? `${colors.accent}12` : 'transparent' }]}>
-            <View style={[styles.goalIcon, { backgroundColor: timeline === t.months ? colors.accent : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }]}>
-              <MaterialCommunityIcons name={t.icon as any} size={28} color={timeline === t.months ? '#fff' : colors.textMuted} />
+            <View style={[styles.goalIcon, { backgroundColor: timeline === t.months ? colors.accent : colors.surfaceVariant }]}>
+              <MaterialCommunityIcons name={t.icon as any} size={28} color={timeline === t.months ? colors.onAccent : colors.textMuted} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.goalTitle, { color: colors.text }]}>{t.label}</Text>
@@ -414,7 +439,7 @@ export default function CraftMyBodyScreen() {
 
     return (
       <Animated.View entering={FadeInDown.duration(150)} key="step-results">
-        <SectionHeader title="Your Plan" />
+        <SectionHeader title={t('craftBody.yourPlan')} />
 
         {/* Training Split */}
         <GlassCard style={styles.card}>
@@ -477,17 +502,17 @@ export default function CraftMyBodyScreen() {
           </View>
           <View style={styles.targetRow}>
             <View style={styles.targetItem}>
-              <MaterialCommunityIcons name="water" size={24} color="#38BDF8" />
+              <MaterialCommunityIcons name="water" size={24} color={colors.skyBlue} />
               <Text style={[styles.targetValue, { color: colors.text }]}>{algorithm.daily_water_liters}L</Text>
               <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Water</Text>
             </View>
             <View style={styles.targetItem}>
-              <MaterialCommunityIcons name="weather-night" size={24} color="#A78BFA" />
+              <MaterialCommunityIcons name="weather-night" size={24} color={colors.purpleLight} />
               <Text style={[styles.targetValue, { color: colors.text }]}>{algorithm.sleep_hours}h</Text>
               <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Sleep</Text>
             </View>
             <View style={styles.targetItem}>
-              <MaterialCommunityIcons name="run" size={24} color="#F472B6" />
+              <MaterialCommunityIcons name="run" size={24} color={colors.pinkLight} />
               <Text style={[styles.targetValue, { color: colors.text }]}>{algorithm.cardio_minutes_per_week}m</Text>
               <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Cardio/wk</Text>
             </View>
@@ -511,7 +536,7 @@ export default function CraftMyBodyScreen() {
         {/* Apply Button */}
         <View style={styles.applyContainer}>
           <GradientButton
-            title={applied ? 'Applied ✓' : 'Apply to My Training'}
+            title={applied ? t('craftBody.applied') : t('craftBody.applyToTraining')}
             onPress={handleApply}
             icon={applied ? 'check-circle' : 'rocket-launch'}
             disabled={applied}
@@ -528,6 +553,7 @@ export default function CraftMyBodyScreen() {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['bottom']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {stepIndex === 0 && <MedicalDisclaimer screen="craft-my-body" compact />}
         {renderProgressBar()}
         {stepContent[stepIndex]()}
       </ScrollView>

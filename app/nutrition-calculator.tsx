@@ -6,7 +6,6 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 
-const ACCENT_PURPLE = '#8B5CF6';
 import {
   View,
   ScrollView,
@@ -34,6 +33,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
+import { colorSystem } from '../src/design/theme-system';
+import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import { useLanguage } from '../src/context/LanguageContext';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import {
@@ -79,27 +80,27 @@ function estimateProtein(food: RegionalFoodItem, servings: number): number {
 // CATEGORY ICONS & COLORS
 // ============================================
 
-const CATEGORY_META: Record<RegionalFoodCategory, { icon: string; color: string; label: string }> = {
-  protein: { icon: 'food-drumstick', color: '#EF4444', label: 'Protein' },
-  carb: { icon: 'bread-slice', color: '#F4A427', label: 'Carbs' },
-  fat: { icon: 'peanut', color: '#8B5CF6', label: 'Fats' },
-  vegetable: { icon: 'leaf', color: '#10B981', label: 'Vegetable' },
-  fruit: { icon: 'fruit-cherries', color: '#EC4899', label: 'Fruit' },
-  snack: { icon: 'cookie', color: '#F97316', label: 'Snack' },
-  meal: { icon: 'food', color: '#5F63FF', label: 'Meal' },
-};
+const getCategoryMeta = (t: (key: string) => string): Record<RegionalFoodCategory, { icon: string; color: string; label: string }> => ({
+  protein: { icon: 'food-drumstick', color: colorSystem.dark.error, label: t('nutrition.category.protein') },
+  carb: { icon: 'bread-slice', color: colorSystem.dark.warning, label: t('nutrition.category.carbs') },
+  fat: { icon: 'peanut', color: colorSystem.dark.purple, label: t('nutrition.category.fats') },
+  vegetable: { icon: 'leaf', color: colorSystem.dark.accent, label: t('nutrition.category.vegetable') },
+  fruit: { icon: 'fruit-cherries', color: colorSystem.dark.pink, label: t('nutrition.category.fruit') },
+  snack: { icon: 'cookie', color: colorSystem.dark.orange, label: t('nutrition.category.snack') },
+  meal: { icon: 'food', color: colorSystem.dark.indigo, label: t('nutrition.category.meal') },
+});
 
 // ============================================
 // FILTER TABS
 // ============================================
 
-const FILTER_OPTIONS: { label: string; value: RegionalFoodCategory | 'all' }[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Protein', value: 'protein' },
-  { label: 'Carbs', value: 'carb' },
-  { label: 'Fats', value: 'fat' },
-  { label: 'Veggies', value: 'vegetable' },
-  { label: 'Fruit', value: 'fruit' },
+const getFilterOptions = (t: (key: string) => string): { label: string; value: RegionalFoodCategory | 'all' }[] => [
+  { label: t('nutrition.filter.all'), value: 'all' },
+  { label: t('nutrition.category.protein'), value: 'protein' },
+  { label: t('nutrition.category.carbs'), value: 'carb' },
+  { label: t('nutrition.category.fats'), value: 'fat' },
+  { label: t('nutrition.filter.veggies'), value: 'vegetable' },
+  { label: t('nutrition.category.fruit'), value: 'fruit' },
 ];
 
 // ============================================
@@ -109,6 +110,8 @@ const FILTER_OPTIONS: { label: string; value: RegionalFoodCategory | 'all' }[] =
 export default function NutritionCalculatorScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const categoryMeta = useMemo(() => getCategoryMeta(t), [t]);
+  const filterOptions = useMemo(() => getFilterOptions(t), [t]);
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<RegionalFoodCategory | 'all'>('all');
@@ -132,7 +135,8 @@ export default function NutritionCalculatorScreen() {
       );
     }
 
-    return foods.slice(0, 50); // Limit to 50 results for performance
+    if (__DEV__) console.log(`[Nutrition] Filter: category=${categoryFilter}, query="${searchQuery}", results=${foods.length}/${REGIONAL_FOOD_DATABASE.length}`);
+    return foods; // Show all matching foods — FlatList handles virtualization
   }, [searchQuery, categoryFilter]);
 
   // Totals
@@ -165,11 +169,11 @@ export default function NutritionCalculatorScreen() {
   }, []);
 
   const clearAll = useCallback(() => {
-    Alert.alert('Clear All', 'Remove all items from your meal?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Clear', style: 'destructive', onPress: () => setMealEntries([]) },
+    Alert.alert(t('common.clearAll'), t('nutrition.clearAllConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('common.clearAll'), style: 'destructive', onPress: () => setMealEntries([]) },
     ]);
-  }, []);
+  }, [t]);
 
   const s = dynamicStyles(theme);
 
@@ -183,7 +187,7 @@ export default function NutritionCalculatorScreen() {
               <MaterialCommunityIcons name="arrow-left" size={22} color={theme.colors.text} />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-              Nutrition Calculator
+              {t('nutrition.title')}
             </Text>
             <TouchableOpacity
               onPress={() => setShowSearch(!showSearch)}
@@ -198,6 +202,9 @@ export default function NutritionCalculatorScreen() {
           </View>
         </Animated.View>
 
+        {/* Medical Disclaimer */}
+        <MedicalDisclaimer screen="nutrition" compact />
+
         {/* Totals Summary */}
         <Animated.View entering={FadeInDown.delay(100).duration(150)}>
           <GlassCard gradient style={styles.totalsCard}>
@@ -207,7 +214,7 @@ export default function NutritionCalculatorScreen() {
                   {totals.calories}
                 </Text>
                 <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>
-                  kcal (est.)
+                  {t('nutrition.kcalEst')}
                 </Text>
               </View>
               <View style={[styles.totalDivider, { backgroundColor: theme.colors.border }]} />
@@ -216,16 +223,16 @@ export default function NutritionCalculatorScreen() {
                   {totals.protein}g
                 </Text>
                 <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>
-                  Protein
+                  {t('nutrition.protein')}
                 </Text>
               </View>
               <View style={[styles.totalDivider, { backgroundColor: theme.colors.border }]} />
               <View style={styles.totalItem}>
-                <Text style={[styles.totalValue, { color: ACCENT_PURPLE }]}>
+                <Text style={[styles.totalValue, { color: theme.colors.purple }]}>
                   {mealEntries.length}
                 </Text>
                 <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>
-                  Items
+                  {t('common.items')}
                 </Text>
               </View>
             </View>
@@ -243,13 +250,13 @@ export default function NutritionCalculatorScreen() {
               {/* Search Input */}
               <Animated.View entering={FadeInDown.delay(150).duration(150)} style={styles.searchWrap}>
                 <View style={[styles.searchRow, {
-                  backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                  borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                  backgroundColor: theme.colors.surfaceVariant,
+                  borderColor: theme.colors.border,
                 }]}>
                   <MaterialCommunityIcons name="magnify" size={20} color={theme.colors.textMuted} />
                   <TextInput
                     style={[styles.searchInput, { color: theme.colors.text }]}
-                    placeholder="Search foods (e.g. chicken, rice, banana)..."
+                    placeholder={t('nutrition.searchPlaceholder')}
                     placeholderTextColor={theme.colors.textMuted}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -271,7 +278,7 @@ export default function NutritionCalculatorScreen() {
                 style={styles.filterScroll}
                 contentContainerStyle={styles.filterContent}
               >
-                {FILTER_OPTIONS.map((opt) => (
+                {filterOptions.map((opt) => (
                   <TouchableOpacity
                     key={opt.value}
                     style={[
@@ -279,10 +286,10 @@ export default function NutritionCalculatorScreen() {
                       {
                         backgroundColor: categoryFilter === opt.value
                           ? theme.colors.accent + '20'
-                          : theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                          : theme.colors.surfaceVariant,
                         borderColor: categoryFilter === opt.value
                           ? theme.colors.accent + '40'
-                          : theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                          : theme.colors.border,
                       },
                     ]}
                     onPress={() => setCategoryFilter(opt.value)}
@@ -306,8 +313,7 @@ export default function NutritionCalculatorScreen() {
 
               {/* Results Count */}
               <Text style={[styles.resultCount, { color: theme.colors.textMuted }]}>
-                {filteredFoods.length} food{filteredFoods.length !== 1 ? 's' : ''} found
-                {searchQuery ? ` for "${searchQuery}"` : ''}
+                {filteredFoods.length} {t('nutrition.foodsFound')}
               </Text>
 
               {/* Food Results */}
@@ -317,14 +323,17 @@ export default function NutritionCalculatorScreen() {
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
+                initialNumToRender={20}
+                maxToRenderPerBatch={15}
+                windowSize={5}
                 renderItem={({ item, index }) => {
-                  const meta = CATEGORY_META[item.category];
+                  const meta = categoryMeta[item.category];
                   return (
-                    <Animated.View entering={FadeInRight.delay(index * 20).duration(150)}>
+                    <View>
                       <TouchableOpacity
                         style={[styles.foodCard, {
-                          backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.95)',
-                          borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                          backgroundColor: theme.colors.surfaceVariant,
+                          borderColor: theme.colors.border,
                         }]}
                         activeOpacity={0.7}
                         onPress={() => addFood(item)}
@@ -337,7 +346,7 @@ export default function NutritionCalculatorScreen() {
                             {item.name}
                           </Text>
                           <Text style={[styles.foodDesc, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                            {item.protein_g}g protein · {meta.label}
+                            {item.protein_g}g {t('nutrition.protein')} · {meta.label}
                             {item.local_name ? ` · ${item.local_name}` : ''}
                           </Text>
                         </View>
@@ -345,14 +354,14 @@ export default function NutritionCalculatorScreen() {
                           <MaterialCommunityIcons name="plus" size={18} color={theme.colors.accent} />
                         </View>
                       </TouchableOpacity>
-                    </Animated.View>
+                    </View>
                   );
                 }}
                 ListEmptyComponent={
                   <View style={styles.emptyState}>
                     <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
                     <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
-                      No foods found. Try a different search.
+                      {t('nutrition.noFoods')}
                     </Text>
                   </View>
                 }
@@ -364,16 +373,16 @@ export default function NutritionCalculatorScreen() {
               contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
               showsVerticalScrollIndicator={false}
             >
-              <SectionHeader title={`My Meal (${mealEntries.length} items)`} delay={50} />
+              <SectionHeader title={`${t('nutrition.myMeal')} (${mealEntries.length} ${t('common.items')})`} delay={50} />
 
               {mealEntries.length === 0 ? (
                 <Animated.View entering={FadeIn.duration(200)} style={styles.emptyMeal}>
                   <MaterialCommunityIcons name="food-variant-off" size={56} color={theme.colors.textMuted} />
                   <Text style={[styles.emptyMealTitle, { color: theme.colors.text }]}>
-                    No items yet
+                    {t('nutrition.noItems')}
                   </Text>
                   <Text style={[styles.emptyMealSub, { color: theme.colors.textMuted }]}>
-                    Search and add foods to start tracking your meal nutrition
+                    {t('nutrition.addPrompt')}
                   </Text>
                   <TouchableOpacity
                     style={[styles.switchBtn, { borderColor: theme.colors.accent }]}
@@ -381,14 +390,14 @@ export default function NutritionCalculatorScreen() {
                   >
                     <MaterialCommunityIcons name="magnify" size={16} color={theme.colors.accent} />
                     <Text style={{ color: theme.colors.accent, fontWeight: '600', marginLeft: 6 }}>
-                      Search Foods
+                      {t('nutrition.searchFoods')}
                     </Text>
                   </TouchableOpacity>
                 </Animated.View>
               ) : (
                 <>
                   {mealEntries.map((entry, idx) => {
-                    const meta = CATEGORY_META[entry.food.category];
+                    const meta = categoryMeta[entry.food.category];
                     const cal = estimateCalories(entry.food, entry.servings);
                     const prot = estimateProtein(entry.food, entry.servings);
 
@@ -407,7 +416,7 @@ export default function NutritionCalculatorScreen() {
                                 {entry.food.name}
                               </Text>
                               <Text style={[styles.foodDesc, { color: theme.colors.textMuted }]}>
-                                {Math.round(cal)} kcal · {Math.round(prot)}g protein
+                                {Math.round(cal)} kcal · {Math.round(prot)}g {t('nutrition.protein')}
                               </Text>
                             </View>
                             <TouchableOpacity onPress={() => removeEntry(entry.id)}>
@@ -416,7 +425,7 @@ export default function NutritionCalculatorScreen() {
                           </View>
                           <View style={styles.servingsRow}>
                             <Text style={[styles.servingsLabel, { color: theme.colors.textMuted }]}>
-                              Servings:
+                              {t('nutrition.servings')}
                             </Text>
                             <TouchableOpacity
                               style={[styles.servingBtn, { backgroundColor: theme.colors.accent + '15' }]}
@@ -440,43 +449,43 @@ export default function NutritionCalculatorScreen() {
                   })}
 
                   {/* Nutrition Breakdown */}
-                  <SectionHeader title="Nutrition Breakdown" delay={100} />
+                  <SectionHeader title={t('nutrition.breakdown')} delay={100} />
                   <GlassCard gradient style={{ marginBottom: 16 }}>
                     <View style={styles.breakdownRow}>
                       <View style={styles.breakdownItem}>
                         <LinearGradient
-                          colors={[theme.colors.accent, '#4338CA'] as [string, string]}
+                          colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                           style={styles.breakdownIcon}
                         >
-                          <MaterialCommunityIcons name="fire" size={18} color="#fff" />
+                          <MaterialCommunityIcons name="fire" size={18} color={theme.colors.onAccent} />
                         </LinearGradient>
                         <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>
                           {totals.calories}
                         </Text>
                         <Text style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
-                          Calories (est.)
+                          {t('nutrition.caloriesEst')}
                         </Text>
                       </View>
                       <View style={styles.breakdownItem}>
                         <View style={[styles.breakdownIcon, { backgroundColor: theme.colors.error }]}>
-                          <MaterialCommunityIcons name="food-steak" size={18} color="#fff" />
+                          <MaterialCommunityIcons name="food-steak" size={18} color={theme.colors.onAccent} />
                         </View>
                         <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>
                           {totals.protein}g
                         </Text>
                         <Text style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
-                          Protein
+                          {t('nutrition.protein')}
                         </Text>
                       </View>
                       <View style={styles.breakdownItem}>
                         <View style={[styles.breakdownIcon, { backgroundColor: theme.colors.warning }]}>
-                          <MaterialCommunityIcons name="silverware-fork-knife" size={18} color="#fff" />
+                          <MaterialCommunityIcons name="silverware-fork-knife" size={18} color={theme.colors.onAccent} />
                         </View>
                         <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>
                           {mealEntries.length}
                         </Text>
                         <Text style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
-                          Items
+                          {t('common.items')}
                         </Text>
                       </View>
                     </View>
@@ -490,12 +499,12 @@ export default function NutritionCalculatorScreen() {
                     >
                       <MaterialCommunityIcons name="delete-outline" size={16} color={theme.colors.error} />
                       <Text style={{ color: theme.colors.error, fontWeight: '600', marginLeft: 6, fontSize: 13 }}>
-                        Clear All
+                        {t('common.clearAll')}
                       </Text>
                     </TouchableOpacity>
                     <View style={{ flex: 1 }}>
                       <GradientButton
-                        title="Add More Foods"
+                        title={t('nutrition.addMore')}
                         icon="plus"
                         onPress={() => setShowSearch(true)}
                         variant="primary"

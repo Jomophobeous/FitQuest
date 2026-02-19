@@ -27,18 +27,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { useSubscription } from '../src/purchases/SubscriptionContext';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
-// ── Feature list ──
-const FEATURES = [
-  { icon: 'lightning-bolt' as const, title: 'AI Workout Generation', desc: 'Unlimited smart workouts tailored to you' },
-  { icon: 'book-open-variant' as const, title: 'FitMind Library', desc: 'Import unlimited documents & flashcards' },
-  { icon: 'heart-pulse' as const, title: 'Health Monitoring', desc: '24/7 anomaly detection & sleep analysis' },
-  { icon: 'chart-areaspline' as const, title: 'Advanced Analytics', desc: 'Detailed trends, insights & predictions' },
-  { icon: 'shield-lock' as const, title: 'Encrypted & Private', desc: 'Military-grade encryption, always on-device' },
-  { icon: 'sync' as const, title: 'Cloud Backup', desc: 'Secure encrypted backup & restore' },
+// ── Feature list (built inside component to use t()) ──
+const getFeatures = (t: (key: string) => string) => [
+  { icon: 'lightning-bolt' as const, title: t('paywall.features.aiWorkouts'), desc: t('paywall.features.aiWorkoutsSub') },
+  { icon: 'book-open-variant' as const, title: t('paywall.features.fitmindLibrary'), desc: t('paywall.features.fitmindLibrarySub') },
+  { icon: 'heart-pulse' as const, title: t('paywall.features.healthMonitoring'), desc: t('paywall.features.healthMonitoringSub') },
+  { icon: 'chart-areaspline' as const, title: t('paywall.features.analytics'), desc: t('paywall.features.analyticsSub') },
+  { icon: 'shield-lock' as const, title: t('paywall.features.encrypted'), desc: t('paywall.features.encryptedSub') },
+  { icon: 'sync' as const, title: t('paywall.features.cloudBackup'), desc: t('paywall.features.cloudBackupSub') },
 ];
 
 const withAlpha = (hex: string, alpha: number): string => {
@@ -240,6 +241,7 @@ const getRadioStyle = (
 
 export default function PaywallScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
   const { 
     trialDaysRemaining, 
@@ -258,8 +260,9 @@ export default function PaywallScreen() {
   useEffect(() => {
     if (hasAccess && !subLoading) {
       // Already subscribed — don't show paywall
+      router.back();
     }
-  }, [hasAccess, subLoading]);
+  }, [hasAccess, subLoading, router]);
 
   const handleSubscribe = async () => {
     setPurchasing(true);
@@ -307,6 +310,7 @@ export default function PaywallScreen() {
     [theme, accentColor, selectedPlan]
   );
   const radioInnerStyle = useMemo(() => ({ backgroundColor: accentColor }), [accentColor]);
+  const features = useMemo(() => getFeatures(t), [t]);
   const heroGlowColors = useMemo(
     () => [withAlpha(accentColor, 0.12), 'transparent'] as const,
     [accentColor]
@@ -332,19 +336,19 @@ export default function PaywallScreen() {
               <MaterialCommunityIcons name="lightning-bolt" size={40} color={accentColor} />
             </View>
             <Text style={styles.heroTitle}>
-            Unlock Full{'\n'}FitQuest
+            {t('paywall.unlockTitle')}
           </Text>
             <Text style={styles.heroSub}>
             {trialDaysRemaining > 0
-              ? `${trialDaysRemaining} day${trialDaysRemaining !== 1 ? 's' : ''} left in your free trial`
-              : 'Your trial has ended'}
+              ? `${trialDaysRemaining} ${t('paywall.trialDaysLeft')}`
+              : t('paywall.trialEnded')}
           </Text>
         </Animated.View>
 
         {/* ── Features Grid ── */}
         <Animated.View entering={FadeInDown.delay(200).duration(150)}>
           <View style={styles.featureGrid}>
-            {FEATURES.map((feat, i) => (
+            {features.map((feat, i) => (
               <Animated.View
                 key={feat.title}
                 entering={FadeInUp.delay(250 + i * 60).duration(150)}
@@ -369,7 +373,7 @@ export default function PaywallScreen() {
         {/* ── Plan Selection ── */}
         <Animated.View entering={FadeInDown.delay(500).duration(150)} style={styles.planSection}>
           <Text style={styles.planSectionTitle}>
-            Choose Your Plan
+            {t('paywall.choosePlan')}
           </Text>
 
           {/* Annual Plan */}
@@ -383,12 +387,12 @@ export default function PaywallScreen() {
           >
             {/* Best Value badge */}
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>BEST VALUE</Text>
+              <Text style={styles.badgeText}>{t('paywall.bestValue')}</Text>
             </View>
 
             <View style={styles.planRow}>
               <View style={styles.planInfo}>
-                <Text style={styles.planName}>Annual</Text>
+                <Text style={styles.planName}>{t('paywall.annual')}</Text>
                 <Text style={styles.planDetail}>
                   {offerings.annual?.pricePerMonth ?? '$6.67'}/month
                 </Text>
@@ -397,7 +401,7 @@ export default function PaywallScreen() {
                 <Text style={styles.planPrice}>
                   {offerings.annual?.price ?? '$79.99'}
                 </Text>
-                <Text style={styles.planPeriod}>/year</Text>
+                <Text style={styles.planPeriod}>{t('paywall.perYear')}</Text>
               </View>
               <View style={[styles.radio, annualRadioStyle]}>
                 {selectedPlan === 'annual' && (
@@ -407,7 +411,7 @@ export default function PaywallScreen() {
             </View>
 
             <View style={styles.saveBadge}>
-              <Text style={styles.saveText}>Save 33%</Text>
+              <Text style={styles.saveText}>{t('paywall.save33')}</Text>
             </View>
           </TouchableOpacity>
 
@@ -422,16 +426,16 @@ export default function PaywallScreen() {
           >
             <View style={styles.planRow}>
               <View style={styles.planInfo}>
-                <Text style={styles.planName}>Monthly</Text>
+                <Text style={styles.planName}>{t('paywall.monthly')}</Text>
                 <Text style={styles.planDetail}>
-                  Flexible billing
+                  {t('paywall.flexibleBilling')}
                 </Text>
               </View>
               <View style={styles.planPriceWrap}>
                 <Text style={styles.planPrice}>
                   {offerings.monthly?.price ?? '$9.99'}
                 </Text>
-                <Text style={styles.planPeriod}>/month</Text>
+                <Text style={styles.planPeriod}>{t('paywall.perMonth')}</Text>
               </View>
               <View style={[styles.radio, monthlyRadioStyle]}>
                 {selectedPlan === 'monthly' && (
@@ -454,19 +458,19 @@ export default function PaywallScreen() {
               <ActivityIndicator color={theme.colors.background} />
             ) : (
               <Text style={styles.ctaText}>
-                {trialDaysRemaining > 0 ? 'Start Subscription' : 'Continue with Full Access'}
+                {trialDaysRemaining > 0 ? t('paywall.startSubscription') : t('paywall.continueAccess')}
               </Text>
             )}
           </TouchableOpacity>
 
           <Text style={styles.terms}>
-            Cancel anytime. No refunds for partial periods.
+            {t('paywall.cancelAnytime')}
           </Text>
 
           {/* Restore Purchases */}
           <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
             <Text style={styles.restoreText}>
-              Restore Purchases
+              {t('paywall.restorePurchases')}
             </Text>
           </TouchableOpacity>
         </Animated.View>

@@ -1,17 +1,13 @@
 import React from 'react';
-import { ApolloProvider } from '@apollo/client';
-import { mockApolloClient } from './src/services/mock-apollo-client';
 import { Slot } from 'expo-router';
 import { ThemeProvider } from './src/context/ThemeContext';
 
-// This app is now fully serverless - using local mock data only
-// All data is stored on the device using AsyncStorage
+// This app is fully serverless - all data stored on-device via SQLite
+// The real provider hierarchy lives in app/_layout.tsx
 export default function App() {
   return (
     <ThemeProvider>
-      <ApolloProvider client={mockApolloClient}>
-        <Slot />
-      </ApolloProvider>
+      <Slot />
     </ThemeProvider>
   );
 }

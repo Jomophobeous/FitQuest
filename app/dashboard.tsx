@@ -3,9 +3,10 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   ActivityIndicator,
-  Dimensions,
+  useWindowDimensions,
+  TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -17,8 +18,11 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { spacing } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import ThemedText from '../src/components/ThemedText';
+import { SkeletonDashboard } from '../src/components/ui/Skeleton';
 import { getUserProgress, getMuscleFatigue, getRecentSessions, getStreak } from '../src/database/service';
 import {
   GlassCard,
@@ -30,15 +34,7 @@ import {
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-// Spacing rhythm: ONLY 8, 16, 24, 32
-const SPACING = {
-  xs: 8,
-  sm: 16,
-  md: 24,
-  lg: 32,
-} as const;
+// Spacing uses canonical theme tokens: spacing[2]=8, [4]=16, [6]=24, [8]=32
 
 interface RecentWorkout {
   id: string;
@@ -51,9 +47,11 @@ interface RecentWorkout {
 }
 
 export default function DashboardScreen() {
+  const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
+  const isCompactScreen = width < 420;
   const [loading, setLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any>(null);
   const [fatigueLevel, setFatigueLevel] = useState(0); // 0-100 scale
@@ -62,6 +60,7 @@ export default function DashboardScreen() {
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Animated values
   const headerOpacity = useSharedValue(0);
@@ -76,9 +75,14 @@ export default function DashboardScreen() {
   }, []);
 
   const loadProgress = async () => {
+    console.log('[Dashboard] loadProgress:start');
     try {
       const progress = await getUserProgress();
       setUserProgress(progress);
+      console.log('[Dashboard] Progress loaded', {
+        weekly_xp: progress?.weekly_xp ?? 0,
+        completed_workouts: progress?.completed_workouts ?? 0,
+      });
 
       // Load real streak data
       try {
@@ -111,6 +115,7 @@ export default function DashboardScreen() {
       try {
         const sessions = await getRecentSessions('user_local_001', 5);
         if (sessions && sessions.length > 0) {
+          console.log('[Dashboard] Recent sessions loaded', { count: sessions.length });
           const latest = sessions[0];
           const sessionDate = new Date(latest.started_at);
           const isToday = sessionDate.toDateString() === new Date().toDateString();
@@ -150,7 +155,14 @@ export default function DashboardScreen() {
       console.error('[Dashboard] Failed to load progress:', error);
     } finally {
       setLoading(false);
+      console.log('[Dashboard] loadProgress:complete');
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadProgress();
+    setRefreshing(false);
   };
 
   // State-driven UI: determine if recovery is bad (>70% fatigue)
@@ -161,9 +173,7 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={theme.colors.accent} />
-        </View>
+        <SkeletonDashboard />
       </SafeAreaView>
     );
   }
@@ -179,32 +189,39 @@ export default function DashboardScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={theme.colors.accent}
+          />
+        }
       >
         {/* ── COMPACT HEADER ── */}
         <Animated.View entering={FadeIn.duration(150)}>
           <View style={[styles.heroHeader, { backgroundColor: theme.colors.background }]}>
             <View style={styles.heroTop}>
               <View>
-                <Text style={[styles.greeting, { color: theme.colors.textSecondary }]}>
+                <ThemedText variant="caption" color="secondary" style={styles.greeting}>
                   {t('dashboard.welcomeBack') || 'Welcome back'}
-                </Text>
-                <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
+                </ThemedText>
+                <ThemedText variant="h2" color="primary" style={styles.heroTitle}>
                   {t('tab.home')}
-                </Text>
+                </ThemedText>
               </View>
               {/* Stats row: Numbers visually heavier than labels */}
               <View style={styles.headerStats}>
-                <View style={styles.statPill}>
-                  <Text style={[styles.statValue, { color: theme.colors.warning }]}>{streak}</Text>
-                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>🔥</Text>
+                <View style={[styles.statPill, { backgroundColor: theme.colors.warning + '15' }]}>
+                  <ThemedText variant="bodySmall" weight="800" style={[styles.statValue, { color: theme.colors.warning }]}>{streak}</ThemedText>
+                  <ThemedText variant="caption" color="muted">🔥</ThemedText>
                 </View>
-                <View style={styles.statPill}>
-                  <Text style={[styles.statValue, { color: theme.colors.accent }]}>{level}</Text>
-                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('dashboard.levelShort')}</Text>
+                <View style={[styles.statPill, { backgroundColor: theme.colors.accent + '15' }]}>
+                  <ThemedText variant="bodySmall" weight="800" style={[styles.statValue, { color: theme.colors.accent }]}>{level}</ThemedText>
+                  <ThemedText variant="caption" color="muted">{t('dashboard.levelShort')}</ThemedText>
                 </View>
-                <View style={styles.statPill}>
-                  <Text style={[styles.statValue, { color: theme.colors.text }]}>{weeklyXP}</Text>
-                  <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('dashboard.xp')}</Text>
+                <View style={[styles.statPill, { backgroundColor: theme.colors.surfaceVariant }] }>
+                  <ThemedText variant="bodySmall" weight="800" style={[styles.statValue, { color: theme.colors.text }]}>{weeklyXP}</ThemedText>
+                  <ThemedText variant="caption" color="muted">{t('dashboard.xp')}</ThemedText>
                 </View>
               </View>
             </View>
@@ -216,31 +233,31 @@ export default function DashboardScreen() {
         ══════════════════════════════════════════════════════════════════ */}
         <Animated.View entering={FadeInDown.delay(100).duration(150)}>
           <GlassCard style={styles.todayGoalCard} delay={100}>
-            <View style={styles.todayGoalInner}>
+            <View style={[styles.todayGoalInner, isCompactScreen && styles.todayGoalInnerCompact]}>
               <View style={styles.todayGoalLeft}>
                 <ProgressRing progress={todayProgress} size={120} color={theme.colors.accent}>
-                  <Text style={[styles.todayGoalPercent, { color: theme.colors.accent }]}>
+                  <ThemedText variant="h2" weight="800" color="accent" style={styles.todayGoalPercent}>
                     {Math.round(todayProgress * 100)}%
-                  </Text>
+                  </ThemedText>
                 </ProgressRing>
               </View>
               <View style={styles.todayGoalRight}>
-                <Text style={[styles.todayGoalTitle, { color: theme.colors.text }]}>
+                <ThemedText variant="h3" color="primary" style={styles.todayGoalTitle}>
                   {t('dashboard.todaysGoal')}
-                </Text>
-                <Text style={[styles.todayGoalSub, { color: theme.colors.textSecondary }]}>
+                </ThemedText>
+                <ThemedText variant="bodySmall" color="secondary" style={styles.todayGoalSub}>
                   {todayProgress >= 1 ? (t('dashboard.completed') || 'Completed! 🎉') : (t('dashboard.keepPushing') || 'Keep pushing — you got this!')}
-                </Text>
+                </ThemedText>
                 <View style={styles.todayGoalMeta}>
                   <View style={styles.metaItem}>
                     <MaterialCommunityIcons name="fire" size={16} color={theme.colors.warning} />
-                    <Text style={[styles.metaValue, { color: theme.colors.text }]}> {totalCalories}</Text>
-                    <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}> {t('dashboard.kcal')}</Text>
+                    <ThemedText variant="bodySmall" weight="700" style={{ color: theme.colors.text }}> {totalCalories}</ThemedText>
+                    <ThemedText variant="caption" color="muted"> {t('dashboard.kcal')}</ThemedText>
                   </View>
                   <View style={styles.metaItem}>
                     <MaterialCommunityIcons name="clock-outline" size={16} color={theme.colors.textMuted} />
-                    <Text style={[styles.metaValue, { color: theme.colors.text }]}> {totalMinutes}</Text>
-                    <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}> {t('fitquest.minShort')}</Text>
+                    <ThemedText variant="bodySmall" weight="700" style={{ color: theme.colors.text }}> {totalMinutes}</ThemedText>
+                    <ThemedText variant="caption" color="muted"> {t('fitquest.minShort')}</ThemedText>
                   </View>
                 </View>
                 {/* PRIMARY ACTION: Start Workout - MOST PROMINENT */}
@@ -248,7 +265,10 @@ export default function DashboardScreen() {
                   <GradientButton
                     title={t('dashboard.startWorkout')}
                     icon="lightning-bolt"
-                    onPress={() => router.push('/fitquest')}
+                    onPress={() => {
+                      console.log('[Dashboard] CTA:startWorkout');
+                      router.push('/fitquest');
+                    }}
                     variant="primary"
                     style={styles.primaryButton}
                   />
@@ -266,7 +286,7 @@ export default function DashboardScreen() {
             styles.recoveryCard,
             {
               backgroundColor: isRecoveryBad 
-                ? (theme.isDark ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.08)')
+                ? theme.colors.error + '15'
                 : (theme.isDark ? theme.colors.surfaceVariant : theme.colors.surface),
               borderColor: isRecoveryBad ? theme.colors.error + '40' : theme.colors.border,
             }
@@ -278,29 +298,29 @@ export default function DashboardScreen() {
                   size={24} 
                   color={isRecoveryBad ? theme.colors.error : isRecoveryGood ? theme.colors.success : theme.colors.warning} 
                 />
-                <Text style={[
+                <ThemedText variant="bodySmall" weight="600" style={[
                   styles.recoveryTitle,
                   { color: isRecoveryBad ? theme.colors.error : theme.colors.text }
                 ]}>
                   {t('dashboard.recovery')}
-                </Text>
+                </ThemedText>
               </View>
               <View style={styles.recoveryRight}>
-                <Text style={[
+                <ThemedText variant="h3" weight="800" style={[
                   styles.recoveryValue,
                   { color: isRecoveryBad ? theme.colors.error : isRecoveryGood ? theme.colors.success : theme.colors.warning }
                 ]}>
                   {recoveryPercent}%
-                </Text>
-                <Text style={[styles.recoveryLabel, { color: theme.colors.textMuted }]}>
+                </ThemedText>
+                <ThemedText variant="caption" color="muted">
                   {isRecoveryBad ? t('dashboard.restRecommended') : isRecoveryGood ? t('dashboard.readyToTrain') : t('dashboard.recoveryModerate')}
-                </Text>
+                </ThemedText>
               </View>
             </View>
             {!!isRecoveryBad && (
-              <Text style={[styles.recoveryWarning, { color: theme.colors.error }]}>
+              <ThemedText variant="caption" color="error" style={styles.recoveryWarning}>
                 {t('dashboard.recoveryWarning')}
-              </Text>
+              </ThemedText>
             )}
           </View>
         </Animated.View>
@@ -327,24 +347,24 @@ export default function DashboardScreen() {
                   <MaterialCommunityIcons name={recentWorkout.icon} size={18} color={theme.colors.accent} />
                 </View>
                 <View style={styles.workoutInfo}>
-                  <Text style={[styles.workoutName, { color: theme.colors.text }]}>{recentWorkout.name}</Text>
-                  <Text style={[styles.workoutMeta, { color: theme.colors.textMuted }]}>
+                  <ThemedText variant="bodySmall" weight="600" color="primary" style={styles.workoutName}>{recentWorkout.name}</ThemedText>
+                  <ThemedText variant="caption" color="muted" style={styles.workoutMeta}>
                     {recentWorkout.duration}m · {recentWorkout.exercises} exercises · {recentWorkout.date}
-                  </Text>
+                  </ThemedText>
                 </View>
-                <Text style={[styles.workoutCalValue, { color: theme.colors.warning }]}>
+                <ThemedText variant="bodySmall" weight="700" style={{ color: theme.colors.warning }}>
                   {recentWorkout.caloriesBurned}
-                </Text>
+                </ThemedText>
               </View>
             </GlassCard>
           </AnimatedListItem>
         ) : (
-          <View style={[styles.workoutItem, { paddingHorizontal: SPACING.sm }]}>
-            <GlassCard style={[styles.workoutCard, { alignItems: 'center', paddingVertical: SPACING.md }]}>
+          <View style={[styles.workoutItem, { paddingHorizontal: spacing[4] }]}>
+            <GlassCard style={[styles.workoutCard, { alignItems: 'center', paddingVertical: spacing[6] }]}>
               <MaterialCommunityIcons name="dumbbell" size={32} color={theme.colors.textMuted} />
-              <Text style={[styles.workoutMeta, { color: theme.colors.textMuted, marginTop: 8, textAlign: 'center' }]}>
+              <ThemedText variant="caption" color="muted" style={{ marginTop: 8, textAlign: 'center' }}>
                 {t('dashboard.noWorkoutsYet')}
-              </Text>
+              </ThemedText>
             </GlassCard>
           </View>
         )}
@@ -362,17 +382,74 @@ export default function DashboardScreen() {
           />
         </View>
 
+        {/* ══════════════════════════════════════════════════════════════════
+            QUICK ACCESS TILES — Key features at a glance
+        ══════════════════════════════════════════════════════════════════ */}
+        <SectionHeader title={t('dashboard.explore') || 'Explore'} delay={350} />
+        <Animated.View entering={FadeInUp.delay(350).duration(150)}>
+          <View style={styles.exploreGrid}>
+            {[
+              { label: t('dashboard.health') || 'Health', desc: t('dashboard.healthDesc') || 'Track vitals & wellness', icon: 'heart-pulse' as const, color: theme.colors.error, route: '/health-dashboard' },
+              { label: t('dashboard.analytics') || 'Analytics', desc: t('dashboard.analyticsDesc') || 'Progress insights', icon: 'chart-bar' as const, color: theme.colors.blue, route: '/analytics' },
+              { label: t('dashboard.coach') || 'Coach', desc: t('dashboard.coachDesc') || 'AI fitness guidance', icon: 'robot-happy' as const, color: theme.colors.purple, route: '/coach' },
+              { label: 'Professor', desc: 'AI learning companion', icon: 'school' as const, color: '#8B5CF6', route: '/professor' },
+              { label: t('dashboard.mealPrep') || 'Meal Prep', desc: t('dashboard.mealPrepDesc') || 'Nutrition planning', icon: 'food-variant' as const, color: theme.colors.accent, route: '/meal-prep' },
+              { label: t('dashboard.exercises') || 'Exercises', desc: t('dashboard.exercisesDesc') || 'Exercise library', icon: 'dumbbell' as const, color: theme.colors.warning, route: '/exercises' },
+              { label: t('dashboard.myWorkouts') || 'My Workouts', desc: t('dashboard.myWorkoutsDesc') || 'Saved routines', icon: 'folder-star' as const, color: theme.colors.pink, route: '/saved-workouts' },
+            ].map((tile, idx) => (
+              <AnimatedListItem
+                key={tile.route}
+                index={idx}
+                style={styles.exploreTileWrap}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    console.log('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
+                    router.push(tile.route as any);
+                  }}
+                  style={[
+                    styles.exploreTile,
+                    {
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.border,
+                    },
+                  ]}
+                >
+                  <View style={[styles.exploreTileIcon, { backgroundColor: tile.color + '18' }]}> 
+                    <MaterialCommunityIcons name={tile.icon} size={26} color={tile.color} />
+                  </View>
+                  <View style={styles.exploreTileContent}>
+                    <ThemedText variant="bodySmall" weight="700" color="primary" style={styles.exploreTileLabel}>{tile.label}</ThemedText>
+                    <ThemedText
+                      variant="caption"
+                      color="secondary"
+                      style={styles.exploreTileDesc}
+                      numberOfLines={1}
+                    >
+                      {tile.desc}
+                    </ThemedText>
+                  </View>
+                  <View style={styles.exploreTileArrowRow}>
+                    <MaterialCommunityIcons name="arrow-right" size={16} color={theme.colors.textMuted} />
+                  </View>
+                </TouchableOpacity>
+              </AnimatedListItem>
+            ))}
+          </View>
+        </Animated.View>
+
         {/* ── LIVE STATUS (Minimal) ── */}
         <Animated.View entering={FadeInUp.delay(400).duration(150)}>
           <View style={styles.liveCard}>
             <PulseDot color={theme.colors.success} size={6} active={true} />
-            <Text style={[styles.liveText, { color: theme.colors.textMuted }]}>
+            <ThemedText variant="caption" color="muted" style={styles.liveText}>
               {t('dashboard.recoveryTrackingActive')}
-            </Text>
+            </ThemedText>
           </View>
         </Animated.View>
 
-        <View style={{ height: SPACING.lg }} />
+        <View style={{ height: spacing[8] }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -381,13 +458,13 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scrollContent: { paddingBottom: SPACING.lg },
+  scrollContent: { paddingBottom: spacing[8] },
   
   // ── HEADER (Compact) ──
   heroHeader: { 
-    paddingHorizontal: SPACING.sm, 
-    paddingTop: SPACING.xs, 
-    paddingBottom: SPACING.sm,
+    paddingHorizontal: spacing[4], 
+    paddingTop: spacing[2], 
+    paddingBottom: spacing[4],
   },
   heroTop: { 
     flexDirection: 'row', 
@@ -400,12 +477,15 @@ const styles = StyleSheet.create({
   // Stats in header - Numbers heavier than labels
   headerStats: {
     flexDirection: 'row',
-    gap: SPACING.xs,
+    gap: spacing[2],
   },
   statPill: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 2,
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
   },
   statValue: { 
     fontSize: 16, 
@@ -421,15 +501,20 @@ const styles = StyleSheet.create({
   // PRIORITY 1: TODAY'S GOAL - LARGEST, MOST PROMINENT
   // ══════════════════════════════════════════════════════════════════
   todayGoalCard: { 
-    marginHorizontal: SPACING.sm, 
-    marginTop: SPACING.xs, 
-    padding: SPACING.md,
+    marginHorizontal: spacing[4], 
+    marginTop: spacing[2], 
+    padding: spacing[6],
     minHeight: 180, // Tall card
   },
   todayGoalInner: { 
     flexDirection: 'row', 
-    alignItems: 'center', 
-    gap: SPACING.md,
+    alignItems: 'flex-start', 
+    gap: spacing[6],
+  },
+  todayGoalInnerCompact: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: spacing[4],
   },
   todayGoalLeft: {
     alignItems: 'center',
@@ -447,14 +532,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   todayGoalSub: { 
-    fontSize: 13, 
+    fontSize: 14,
     marginTop: 4, 
-    lineHeight: 18,
+    lineHeight: 20,
   },
   todayGoalMeta: { 
     flexDirection: 'row', 
-    gap: SPACING.sm, 
-    marginTop: SPACING.xs,
+    gap: spacing[4], 
+    marginTop: spacing[2],
   },
   metaItem: { 
     flexDirection: 'row', 
@@ -469,20 +554,20 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   primaryActionContainer: {
-    marginTop: SPACING.sm,
+    marginTop: spacing[4],
   },
   primaryButton: {
-    paddingVertical: SPACING.sm,
+    paddingVertical: spacing[4],
   },
 
   // ══════════════════════════════════════════════════════════════════
   // PRIORITY 2: RECOVERY STATUS - Full width, state-driven colors
   // ══════════════════════════════════════════════════════════════════
   recoveryCard: {
-    marginHorizontal: SPACING.sm,
-    marginTop: SPACING.sm,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
+    marginHorizontal: spacing[4],
+    marginTop: spacing[4],
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[4],
     borderRadius: 12,
     borderWidth: 1,
   },
@@ -494,7 +579,7 @@ const styles = StyleSheet.create({
   recoveryLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.xs,
+    gap: spacing[2],
   },
   recoveryRight: {
     alignItems: 'flex-end',
@@ -516,26 +601,26 @@ const styles = StyleSheet.create({
   recoveryWarning: {
     fontSize: 12,
     fontWeight: '500',
-    marginTop: SPACING.xs,
-    paddingTop: SPACING.xs,
+    marginTop: spacing[2],
+    paddingTop: spacing[2],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(239,68,68,0.2)',
+    borderTopColor: 'rgba(239,68,68,0.15)',
   },
 
   // ══════════════════════════════════════════════════════════════════
   // PRIORITY 3: LAST WORKOUT - Reduced, summary only
   // ══════════════════════════════════════════════════════════════════
   workoutItem: { 
-    paddingHorizontal: SPACING.sm, 
-    marginBottom: SPACING.xs,
+    paddingHorizontal: spacing[4], 
+    marginBottom: spacing[2],
   },
   workoutCard: { 
-    padding: SPACING.xs + 2, // ~10px (within rhythm: closest to 8)
+    padding: spacing[2] + 2, // ~10px (within rhythm: closest to 8)
   },
   workoutRow: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    gap: SPACING.xs,
+    gap: spacing[2],
   },
   workoutIcon: { 
     width: 36, // Reduced from 44
@@ -556,8 +641,8 @@ const styles = StyleSheet.create({
   // PRIORITY 4: SECONDARY ACTIONS (minimal)
   // ══════════════════════════════════════════════════════════════════
   secondaryActions: { 
-    paddingHorizontal: SPACING.sm, 
-    marginTop: SPACING.sm,
+    paddingHorizontal: spacing[4], 
+    marginTop: spacing[4],
   },
   secondaryButton: {
     opacity: 0.85, // Visually de-emphasized
@@ -565,16 +650,92 @@ const styles = StyleSheet.create({
 
   // ── LIVE STATUS (Minimal) ──
   liveCard: { 
-    marginHorizontal: SPACING.sm, 
-    marginTop: SPACING.sm, 
+    marginHorizontal: spacing[4], 
+    marginTop: spacing[6],
     flexDirection: 'row', 
     alignItems: 'center', 
-    gap: SPACING.xs,
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.sm,
+    gap: spacing[2],
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[4],
+    borderRadius: 12,
   },
   liveText: { 
     fontSize: 11, 
     fontWeight: '500',
+  },
+
+  // ── EXPLORE GRID (2-column) ──
+  exploreGrid: {
+    flexDirection: 'column',
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[6],
+  },
+  exploreTileWrap: {
+    width: '100%',
+    marginBottom: spacing[4],
+  },
+  exploreTileWrapCompact: {
+    width: '100%',
+  },
+  exploreTile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[4],
+    borderRadius: 14,
+    borderWidth: 1,
+    minHeight: 74,
+  },
+  exploreTileIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: spacing[4],
+  },
+  exploreTileContent: {
+    flex: 1,
+    gap: 2,
+  },
+  exploreTileArrowRow: {
+    marginLeft: spacing[2],
+    alignItems: 'center',
+  },
+  exploreTileLabel: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  exploreTileDesc: {
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 15,
+  },
+  quickAccessGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: spacing[4],
+    gap: spacing[2],
+  },
+  quickTileWrap: {
+    width: '31%',
+  },
+  quickTile: {
+    alignItems: 'center',
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[2],
+  },
+  quickTileIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  quickTileLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

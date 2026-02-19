@@ -171,6 +171,8 @@ export default function MealPrepScreen() {
   const [manualRegionOverride, setManualRegionOverride] = useState<MealRegionOverride>('AUTO');
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [allFoods, setAllFoods] = useState<FoodItem[]>([]);
+  // Pre-computed meal suggestions per tab (avoids re-filtering on every tab switch)
+  const [mealSuggestionsCache, setMealSuggestionsCache] = useState<Record<MealType, { title: string; foods: FoodItem[]; tip: string }> | null>(null);
 
   useEffect(() => {
     loadLocation();
@@ -193,6 +195,13 @@ export default function MealPrepScreen() {
       const freshFoods = getFoodsByLocation(location);
       if (active) {
         setAllFoods(freshFoods);
+        // Pre-compute all meal suggestions at once to avoid recalculating on tab switch
+        const allSuggestions: Record<string, { title: string; foods: FoodItem[]; tip: string }> = {};
+        const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner', 'pre-workout', 'post-workout', 'snack'];
+        for (const mt of mealTypes) {
+          allSuggestions[mt] = getMealSuggestions(mt, location);
+        }
+        setMealSuggestionsCache(allSuggestions as Record<MealType, { title: string; foods: FoodItem[]; tip: string }>);
       }
       await setCached('meal', cacheId, freshFoods);
     };
@@ -241,7 +250,7 @@ export default function MealPrepScreen() {
     setIsLoadingLocation(false);
   };
 
-  const currentMealSuggestions = getMealSuggestions(selectedMeal, location);
+  const currentMealSuggestions = mealSuggestionsCache?.[selectedMeal] || getMealSuggestions(selectedMeal, location);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const mealTabColors = useMemo(

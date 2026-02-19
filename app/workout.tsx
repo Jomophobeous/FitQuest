@@ -427,7 +427,7 @@ export default function WorkoutScreen() {
       >
         <View style={styles.modalOverlay}>
           <Animated.View entering={ZoomIn.duration(150)}>
-            <View style={[styles.modalContent, { backgroundColor: theme.isDark ? '#151929' : '#FFFFFF' }]}>
+            <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
               <LinearGradient
                 colors={[theme.colors.error + '20', 'transparent']}
                 style={styles.modalGlow}

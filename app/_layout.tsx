@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react';
+import { InteractionManager } from 'react-native';
 import { Tabs } from 'expo-router';
-import { ApolloProvider } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
 import { LanguageProvider, useLanguage } from '../src/context/LanguageContext';
 import { DatabaseProvider } from '../src/context/DatabaseContext';
 import { SubscriptionProvider } from '../src/purchases/SubscriptionContext';
-import { mockApolloClient } from '../src/services/mock-apollo-client';
-import { apolloClient } from '../src/services/apollo-client';
+import { AuthProvider } from '../src/context/AuthContext';
+
 import { DropdownMenu } from '../src/components/DropdownMenu';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
 import { logEvent, logPerf } from '../src/services/telemetry';
@@ -16,15 +17,25 @@ import { maybeAutoCloudBackupOncePerDay } from '../src/services/cloudBackupServi
 import { flushAnalyticsQueue } from '../src/services/analyticsIngestionService';
 import { runReplayIfDue } from '../src/services/replayOrchestrator';
 import { reconcileNotificationReliability } from '../src/services/notificationReliabilityService';
+import { errorTelemetry } from '../src/services/errorTelemetry';
+import { featureFlags } from '../src/services/featureFlags';
+import { backgroundHealth } from '../src/engines/BackgroundHealthEngine';
 
-// Toggle mock vs real API via EXPO_PUBLIC_USE_MOCK_API
-// Set to 'false' to use local SQLite database (recommended)
-const useMockAPI = process.env.EXPO_PUBLIC_USE_MOCK_API === 'true';
-const client = useMockAPI ? mockApolloClient : apolloClient;
+
 
 function ThemedTabs() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (__DEV__) {
+      console.log('[Tabs] Layout config', {
+        bottomInset: insets.bottom,
+        theme: theme.isDark ? 'dark' : 'light',
+      });
+    }
+  }, [insets.bottom, theme.isDark]);
 
   return (
     <Tabs
@@ -44,9 +55,14 @@ function ThemedTabs() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
+          position: 'absolute',
+          left: 12,
+          right: 12,
+          bottom: Math.max(8, insets.bottom + 2),
+          borderRadius: 16,
           paddingTop: 6,
-          paddingBottom: 8,
-          height: 64,
+          paddingBottom: Math.max(8, insets.bottom - 2),
+          height: 64 + Math.max(0, insets.bottom - 4),
         },
         tabBarActiveTintColor: theme.colors.accent,
         tabBarInactiveTintColor: theme.colors.textMuted,
@@ -63,6 +79,7 @@ function ThemedTabs() {
         name="dashboard"
         options={{
           title: t('tab.home'),
+          tabBarAccessibilityLabel: 'Dashboard tab',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="view-dashboard" size={22} color={color} />
           ),
@@ -74,6 +91,7 @@ function ThemedTabs() {
         name="fitquest"
         options={{
           title: t('tab.train'),
+          tabBarAccessibilityLabel: 'Workout tab',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="lightning-bolt" size={22} color={color} />
           ),
@@ -85,6 +103,7 @@ function ThemedTabs() {
         name="move"
         options={{
           title: t('tab.move'),
+          tabBarAccessibilityLabel: 'Move tab',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="shoe-print" size={22} color={color} />
           ),
@@ -96,6 +115,7 @@ function ThemedTabs() {
         name="fitmind-library"
         options={{
           title: t('tab.library'),
+          tabBarAccessibilityLabel: 'Library tab',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="book-open-variant" size={22} color={color} />
           ),
@@ -107,6 +127,7 @@ function ThemedTabs() {
         name="profile"
         options={{
           title: t('tab.profile'),
+          tabBarAccessibilityLabel: 'Profile tab',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="account" size={22} color={color} />
           ),
@@ -118,194 +139,223 @@ function ThemedTabs() {
         name="index"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="login"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="register"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="splash"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="onboarding"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="workout"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="workouts/index"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="workouts/[id]"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="style-guide"
         options={{
           href: null,
+          lazy: true,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           href: null,
-          title: 'Progress',
+          lazy: true,
+          title: t('nav.progress'),
         }}
       />
       <Tabs.Screen
         name="create-workout"
         options={{
           href: null,
-          title: 'Create Workout',
+          lazy: true,
+          title: t('nav.createWorkout'),
         }}
       />
       <Tabs.Screen
         name="coach/index"
         options={{
           href: null,
-          title: 'AI Coach',
+          lazy: true,
+          title: t('nav.aiCoach'),
         }}
       />
       <Tabs.Screen
         name="analytics"
         options={{
           href: null,
-          title: 'Analytics',
+          lazy: true,
+          title: t('nav.analytics'),
         }}
       />
       <Tabs.Screen
         name="saved-workouts"
         options={{
           href: null,
-          title: 'My Workouts',
+          lazy: true,
+          title: t('nav.myWorkouts'),
         }}
       />
       <Tabs.Screen
         name="meal-prep"
         options={{
           href: null,
-          title: 'Meal Prep',
+          lazy: true,
+          title: t('nav.mealPrep'),
         }}
       />
       <Tabs.Screen
         name="craft-my-body"
         options={{
           href: null,
-          title: 'Craft My Body',
+          lazy: true,
+          title: t('nav.craftMyBody'),
         }}
       />
       <Tabs.Screen
         name="backups"
         options={{
           href: null,
-          title: 'Backup & Restore',
+          lazy: true,
+          title: t('nav.backupRestore'),
         }}
       />
       <Tabs.Screen
         name="paywall"
         options={{
           href: null,
-          title: 'Premium',
+          lazy: true,
+          title: t('nav.premium'),
         }}
       />
       <Tabs.Screen
         name="health-dashboard"
         options={{
           href: null,
-          title: 'Health',
+          lazy: true,
+          title: t('nav.health'),
         }}
       />
       <Tabs.Screen
         name="fitmind-reader"
         options={{
           href: null,
-          title: 'Reader',
+          lazy: true,
+          title: t('nav.reader'),
         }}
       />
       <Tabs.Screen
         name="exercises"
         options={{
           href: null,
-          title: 'Exercises',
+          lazy: true,
+          title: t('nav.exercises'),
         }}
       />
       <Tabs.Screen
         name="nutrition-calculator"
         options={{
           href: null,
-          title: 'Nutrition Calculator',
+          lazy: true,
+          title: t('nav.nutritionCalculator'),
         }}
       />
       <Tabs.Screen
         name="legal-center"
         options={{
           href: null,
-          title: 'Legal Center',
+          lazy: true,
+          title: t('nav.legalCenter'),
         }}
       />
       <Tabs.Screen
         name="privacy-policy"
         options={{
           href: null,
-          title: 'Privacy Policy',
+          lazy: true,
+          title: t('nav.privacyPolicy'),
         }}
       />
       <Tabs.Screen
         name="terms-of-service"
         options={{
           href: null,
-          title: 'Terms of Service',
+          lazy: true,
+          title: t('nav.termsOfService'),
         }}
       />
       <Tabs.Screen
         name="platform-studio"
         options={{
           href: null,
-          title: 'Platform Studio',
+          lazy: true,
+          title: t('nav.platformStudio'),
         }}
       />
       <Tabs.Screen
         name="autonomous-center"
         options={{
           href: null,
-          title: 'Autonomous Center',
+          lazy: true,
+          title: t('nav.autonomousCenter'),
         }}
       />
       <Tabs.Screen
         name="federation-hub"
         options={{
           href: null,
-          title: 'Federation Hub',
+          lazy: true,
+          title: t('nav.federationHub'),
         }}
       />
       <Tabs.Screen
         name="enterprise-hardening"
         options={{
           href: null,
-          title: 'Enterprise Hardening',
+          lazy: true,
+          title: t('nav.enterpriseHardening'),
         }}
       />
     </Tabs>
@@ -316,28 +366,45 @@ export default function RootLayout() {
   const appStartRef = useRef(Date.now());
 
   useEffect(() => {
+    // Critical — must run immediately
     initializeCrashReporting();
 
     const durationMs = Date.now() - appStartRef.current;
     logPerf('app_launch', durationMs);
     logEvent('app_launch');
 
-    // Phase 2: silent periodic backup (no-op unless EXPO_PUBLIC_BACKUP_API_BASE_URL is configured)
-    void maybeAutoCloudBackupOncePerDay();
+    // Defer non-critical startup work until after first frame
+    InteractionManager.runAfterInteractions(() => {
+      void errorTelemetry.initialize();
+      void featureFlags.initialize();
 
-    // P1: centralized deferred mutation replay
-    void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {
-      // best-effort only
-    });
+      // Phase 2: silent periodic backup (no-op unless EXPO_PUBLIC_BACKUP_API_BASE_URL is configured)
+      void maybeAutoCloudBackupOncePerDay();
 
-    // P1: keep local reminder schedule in sync with persisted reliability settings
-    void reconcileNotificationReliability('app_start').catch(() => {
-      // best-effort only
-    });
+      // P1: centralized deferred mutation replay
+      void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {
+        // best-effort only
+      });
 
-    // Phase 4: best-effort anonymized analytics flush (server enforces consent before ingest)
-    void flushAnalyticsQueue().catch(() => {
-      // best-effort only
+      // P1: keep local reminder schedule in sync with persisted reliability settings
+      void reconcileNotificationReliability('app_start').catch(() => {
+        // best-effort only
+      });
+
+      // Phase 4: best-effort anonymized analytics flush (server enforces consent before ingest)
+      void flushAnalyticsQueue().catch(() => {
+        // best-effort only
+      });
+
+      // Start background health engine (periodic step collection, anomaly detection, daily summaries)
+      // Battery-aware: auto-throttles on low battery, pauses on critical
+      backgroundHealth.start({
+        collectionIntervalMs: 5 * 60 * 1000,  // every 5 minutes
+        anomalyCheckIntervalMs: 30 * 60 * 1000, // every 30 minutes
+        enableAlerts: true,
+      }).catch((e) => {
+        console.warn('[BackgroundHealth] Failed to start:', e);
+      });
     });
   }, []);
 
@@ -346,11 +413,11 @@ export default function RootLayout() {
       <ErrorBoundary>
         <LanguageProvider>
           <DatabaseProvider>
-            <SubscriptionProvider>
-              <ApolloProvider client={client}>
-                <ThemedTabs />
-              </ApolloProvider>
-            </SubscriptionProvider>
+            <AuthProvider>
+              <SubscriptionProvider>
+                  <ThemedTabs />
+              </SubscriptionProvider>
+            </AuthProvider>
           </DatabaseProvider>
         </LanguageProvider>
       </ErrorBoundary>

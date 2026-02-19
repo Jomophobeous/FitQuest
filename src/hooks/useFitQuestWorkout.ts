@@ -35,6 +35,7 @@ import {
 } from '../database/service';
 
 import { awardWorkoutXP } from '../services/xpService';
+import { generateRichAudio } from '../services/audioService';
 import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsIngestionService';
 import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
 import { evaluatePostWorkoutPolicyDecision } from '../services/autonomousPolicyRuntime';
@@ -78,6 +79,23 @@ export interface WorkoutState {
   currentExerciseIndex: number;
   startTime: Date | null;
   error: string | null;
+}
+
+/** Rich completion data returned by finishWorkout() */
+export interface WorkoutCompletionData {
+  summary: string;
+  streak: { current: number; longest: number };
+  completedCount: number;
+  totalCount: number;
+  durationSeconds: number;
+  xpEarned: number;
+  level: number;
+  levelUp: boolean;
+  newLevel?: number;
+  progressions: number;
+  regressions: number;
+  exerciseNames: string[];
+  musclesWorked: string[];
 }
 
 // ============================================
@@ -148,6 +166,20 @@ export function useFitQuestWorkout() {
       const exerciseDisplays: WorkoutExerciseDisplay[] = [];
       for (let i = 0; i < generated.exercises.length; i++) {
         const ex = generated.exercises[i];
+        const nextEx = generated.exercises[i + 1];
+
+        // Build rich audio narration from exercise instructions + muscles
+        const richAudio = generateRichAudio(
+          {
+            name: ex.exercise.name,
+            category: ex.exercise.category,
+            instructions: ex.exercise.instructions || [],
+            primaryMuscles: ex.exercise.primary_muscles || [],
+            restSeconds: 60,
+          },
+          nextEx?.exercise?.name,
+        );
+
         exerciseDisplays.push({
           id: `ex_${i}_${Date.now()}`,
           exerciseId: ex.exercise.id,
@@ -158,11 +190,11 @@ export function useFitQuestWorkout() {
           restSeconds: 60, // Default rest time
           instructions: ex.exercise.instructions || [],
           completed: false,
-          // Audio fields for TTS
-          audioIntro: ex.exercise.audio_intro || `Next exercise: ${ex.exercise.name}`,
-          audioSetup: ex.exercise.audio_setup || 'Get into position',
-          audioExecution: ex.exercise.audio_execution || 'Begin the movement',
-          audioTransition: ex.exercise.audio_transition || 'Rest and prepare for the next exercise',
+          // Audio: prefer DB-stored custom audio, fall back to rich generated audio
+          audioIntro: ex.exercise.audio_intro || richAudio.intro,
+          audioSetup: ex.exercise.audio_setup || richAudio.setup,
+          audioExecution: ex.exercise.audio_execution || richAudio.execution,
+          audioTransition: ex.exercise.audio_transition || richAudio.transition,
         });
       }
 
@@ -269,11 +301,7 @@ export function useFitQuestWorkout() {
   /**
    * Finish and record the workout using ENGINE 2 & 3
    */
-  const finishWorkout = useCallback(async (): Promise<{
-    summary: string;
-    progressions: ProgressionDecision[];
-    streak: { current: number; longest: number };
-  } | null> => {
+  const finishWorkout = useCallback(async (): Promise<WorkoutCompletionData | null> => {
     if (!state.workout || state.status !== 'completed') return null;
 
     try {
@@ -407,22 +435,45 @@ export function useFitQuestWorkout() {
         console.warn('[FitQuest] Analytics queue/flush failed:', analyticsError);
       }
 
-      // Reset state
-      setState({
-        status: 'idle',
-        workout: null,
-        currentExerciseIndex: 0,
-        startTime: null,
-        error: null,
-      });
+      // Keep status as 'completed' — the component will reset when user taps "New Workout"
+      // DO NOT reset to 'idle' here — it triggers auto-generate before completionResult is set
+      console.log('[FitQuest] Workout finished successfully, keeping completed state');
+
+      // Collect muscles worked from completed exercises
+      const musclesWorkedSet = new Set<string>();
+      for (const ex of state.workout.exercises) {
+        if (ex.completed) {
+          const exercise = await getExerciseById(ex.exerciseId);
+          if (exercise) {
+            exercise.primary_muscles.forEach((m: string) => musclesWorkedSet.add(m));
+          }
+        }
+      }
 
       return {
         summary: finalSummary,
-        progressions: progressionDecisions,
         streak,
+        completedCount,
+        totalCount: state.workout.exercises.length,
+        durationSeconds,
+        xpEarned: xpResult.xpEarned,
+        level: xpResult.data.level,
+        levelUp: xpResult.levelUp ?? false,
+        newLevel: xpResult.newLevel,
+        progressions,
+        regressions,
+        exerciseNames: state.workout.exercises.filter((e: WorkoutExerciseDisplay) => e.completed).map(e => e.name),
+        musclesWorked: Array.from(musclesWorkedSet),
       };
     } catch (err) {
       console.error('[FitQuest] Failed to finish workout:', err);
+      setState({
+        status: 'error',
+        workout: null,
+        currentExerciseIndex: 0,
+        startTime: null,
+        error: err instanceof Error ? err.message : 'Failed to finish workout',
+      });
       return null;
     }
   }, [state.workout, state.status, state.startTime, userProfile?.goal, userProfile?.experience]);

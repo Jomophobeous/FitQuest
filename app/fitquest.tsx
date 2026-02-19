@@ -29,7 +29,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { useFitQuestWorkout, WorkoutExerciseDisplay } from '../src/hooks/useFitQuestWorkout';
+import { useFitQuestWorkout, WorkoutExerciseDisplay, WorkoutCompletionData } from '../src/hooks/useFitQuestWorkout';
+import WorkoutSummaryView from '../src/components/WorkoutSummaryView';
 import { useTimer } from '../src/hooks/useTimer';
 import { audioService } from '../src/services/audioService';
 import {
@@ -67,10 +68,7 @@ function FitQuestScreenInner() {
     cancelWorkout,
   } = useFitQuestWorkout();
 
-  const [completionResult, setCompletionResult] = useState<{
-    summary: string;
-    streak: { current: number; longest: number };
-  } | null>(null);
+  const [completionResult, setCompletionResult] = useState<WorkoutCompletionData | null>(null);
 
   // Timer integration
   const {
@@ -174,6 +172,7 @@ function FitQuestScreenInner() {
   const [getReadyExercise, setGetReadyExercise] = useState<{
     exerciseId: string; name: string; category: string;
     sets: number; reps: string; setupCue?: string; audioSetup?: string;
+    equipmentChanged?: boolean;
   } | null>(null);
   // Collapsible instructions
   const [showAllInstructions, setShowAllInstructions] = useState(false);
@@ -218,6 +217,9 @@ function FitQuestScreenInner() {
     if (reason === 'timer' && hasNext) {
       // Timer ended naturally → show Get-Ready countdown before next exercise
       const next = workout!.exercises[nextIdx];
+      const curr = workout!.exercises[currentExerciseIndex];
+      // Detect category change as proxy for equipment change
+      const categoryChanged = curr && next && curr.category !== next.category;
       setGetReadyExercise({
         exerciseId: next.exerciseId,
         name: next.name,
@@ -226,9 +228,10 @@ function FitQuestScreenInner() {
         reps: next.reps,
         setupCue: next.instructions?.[0],
         audioSetup: next.audioSetup,
+        equipmentChanged: !!categoryChanged,
       });
       setIsGetReady(true);
-      console.log('[FitQuest] Rest ended — showing Get Ready', { nextExercise: next.name });
+      console.log('[FitQuest] Rest ended — showing Get Ready', { nextExercise: next.name, categoryChanged });
     } else {
       // Skipped rest or no next exercise → advance immediately
       completeExercise(5);
@@ -255,11 +258,8 @@ function FitQuestScreenInner() {
     const result = await finishWorkout();
     if (result) {
       console.log('[FitQuest] Workout finished successfully — showing completion screen');
-      setCompletionResult({
-        summary: result.summary,
-        streak: result.streak,
-      });
-      setWorkoutRating(null); // Reset rating for new workout
+      setCompletionResult(result);
+      setWorkoutRating(null);
     } else {
       console.warn('[FitQuest] finishWorkout returned null — may have already been called');
     }
@@ -324,83 +324,12 @@ function FitQuestScreenInner() {
   // ===== COMPLETION STATE =====
   if (completionResult) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <ScrollView contentContainerStyle={styles.completionContainer}>
-          <Animated.View entering={ZoomIn.duration(150)}>
-            <View
-              style={[
-                styles.trophyGlow,
-                { backgroundColor: theme.colors.success + '15' },
-              ]}
-            >
-              <MaterialCommunityIcons name="trophy" size={72} color={theme.colors.success} />
-            </View>
-          </Animated.View>
-          <Animated.Text entering={FadeInUp.delay(50).duration(150)} style={[styles.completeTitle, { color: theme.colors.text }]}>
-            {t('fitquest.workoutComplete')}
-          </Animated.Text>
-
-          <Animated.View entering={FadeInDown.delay(80).duration(150)} style={{ width: '100%' }}>
-            <GlassCard style={{ padding: 20, marginTop: 16 }}>
-              <Text style={[styles.summaryText, { color: theme.colors.textSecondary }]}>
-                {completionResult.summary}
-              </Text>
-            </GlassCard>
-          </Animated.View>
-
-          {/* WORKOUT RATING - after entire workout */}
-          <Animated.View entering={FadeInDown.delay(100).duration(150)} style={{ width: '100%' }}>
-            <GlassCard style={{ padding: 16, marginTop: 12 }}>
-              <Text style={[styles.ratingTitle, { color: theme.colors.text }]}>
-                {t('fitquest.rateWorkout')}
-              </Text>
-              <Text style={[styles.ratingSub, { color: theme.colors.textMuted }]}>
-                {t('fitquest.rateWorkoutSub')}
-              </Text>
-              <View style={styles.ratingRow}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <TouchableOpacity
-                    key={star}
-                    onPress={() => setWorkoutRating(star)}
-                    style={styles.ratingButton}
-                  >
-                    <MaterialCommunityIcons
-                      name={workoutRating && workoutRating >= star ? 'star' : 'star-outline'}
-                      size={36}
-                      color={workoutRating && workoutRating >= star ? theme.colors.warning : theme.colors.textMuted}
-                    />
-                  </TouchableOpacity>
-                ))}
-              </View>
-              {!!workoutRating && (
-                <Text style={[styles.ratingFeedback, { color: theme.colors.success }]}>
-                  {workoutRating <= 2 ? t('fitquest.feedback.low') : workoutRating <= 3 ? t('fitquest.feedback.mid') : workoutRating === 4 ? t('fitquest.feedback.high') : t('fitquest.feedback.top')}
-                </Text>
-              )}
-            </GlassCard>
-          </Animated.View>
-
-          <Animated.View entering={FadeInDown.delay(120).duration(150)} style={{ width: '100%' }}>
-            <GlassCard style={{ padding: 16, marginTop: 12 }}>
-              <View style={styles.streakRow}>
-                <MaterialCommunityIcons name="fire" size={32} color={theme.colors.warning} />
-                <View style={{ marginLeft: 12 }}>
-                  <Text style={[styles.streakTitle, { color: theme.colors.text }]}>
-                    {completionResult.streak.current} {t('fitquest.dayStreak')}
-                  </Text>
-                  <Text style={[styles.streakSub, { color: theme.colors.textMuted }]}>
-                    {t('fitquest.best')}: {completionResult.streak.longest} {t('common.days')}
-                  </Text>
-                </View>
-              </View>
-            </GlassCard>
-          </Animated.View>
-
-          <Animated.View entering={FadeInUp.delay(140).duration(150)} style={{ marginTop: 28, width: '100%' }}>
-            <GradientButton title={t('fitquest.generateNewWorkout')} icon="refresh" onPress={handleNewWorkout} />
-          </Animated.View>
-        </ScrollView>
-      </SafeAreaView>
+      <WorkoutSummaryView
+        data={completionResult}
+        rating={workoutRating}
+        onRate={setWorkoutRating}
+        onNewWorkout={handleNewWorkout}
+      />
     );
   }
 
@@ -598,6 +527,7 @@ function FitQuestScreenInner() {
         <GetReadyOverlay
           visible={isGetReady}
           exercise={getReadyExercise}
+          equipmentChanged={getReadyExercise?.equipmentChanged}
           onReady={handleGetReadyDone}
         />
 
@@ -846,18 +776,6 @@ const styles = StyleSheet.create({
   errorSub: { fontSize: 14, marginTop: 8, textAlign: 'center' },
   genTitle: { fontSize: 18, fontWeight: '600', marginTop: 16, textAlign: 'center' },
   genSub: { fontSize: 13, marginTop: 6, textAlign: 'center' },
-  completeTitle: { fontSize: 28, fontWeight: '700', marginTop: 20, textAlign: 'center' },
-  trophyGlow: { width: 120, height: 120, borderRadius: 60, justifyContent: 'center', alignItems: 'center' },
-  summaryText: { fontSize: 15, lineHeight: 23, textAlign: 'center' },
-  streakRow: { flexDirection: 'row', alignItems: 'center' },
-  streakTitle: { fontSize: 18, fontWeight: '600' },
-  streakSub: { fontSize: 13, marginTop: 2 },
-  ratingTitle: { fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  ratingSub: { fontSize: 13, textAlign: 'center', marginTop: 4 },
-  ratingRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 16 },
-  ratingButton: { padding: 4 },
-  ratingFeedback: { textAlign: 'center', marginTop: 12, fontSize: 14, fontWeight: '600' },
-  completionContainer: { alignItems: 'center', padding: 24, paddingBottom: 60 },
   readyHeader: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
   readyHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   readyTitle: { fontSize: 24, fontWeight: '700' },

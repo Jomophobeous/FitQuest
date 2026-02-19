@@ -24,6 +24,11 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   dbInitPromise = (async () => {
     try {
       const database = await SQLite.openDatabaseAsync(DATABASE_NAME);
+
+      // Enable foreign key constraint enforcement per-connection
+      // Without this, ON DELETE CASCADE and FK checks are silently ignored
+      await database.execAsync('PRAGMA foreign_keys = ON;');
+
       await initializeSchema(database);
       db = database;
       return database;
@@ -60,18 +65,48 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
 
     // v6 → v7: additive migration only (new module tables).
     // No exercise table drops needed — CREATE IF NOT EXISTS is safe.
-    if (currentVersion === 6) {
-      console.log(`[FitQuest DB] Migrating v6 → v7: adding security, FitMind, and health analytics tables`);
+    if (currentVersion < 7) {
+      console.log(`[FitQuest DB] Migrating to v7: adding security, FitMind, and health analytics tables`);
     }
 
     // v7 → v8: advanced health monitoring tables (anomaly, sleep, HR, daily health)
-    if (currentVersion === 7) {
-      console.log(`[FitQuest DB] Migrating v7 → v8: adding anomaly detection, sleep tracking, health monitoring tables`);
+    if (currentVersion < 8) {
+      console.log(`[FitQuest DB] Migrating to v8: adding anomaly detection, sleep tracking, health monitoring tables`);
     }
 
     // v8 → v9: trial_state table for subscription onboarding
-    if (currentVersion === 8) {
-      console.log(`[FitQuest DB] Migrating v8 → v9: adding trial state table`);
+    if (currentVersion < 9) {
+      console.log(`[FitQuest DB] Migrating to v9: adding trial state table`);
+    }
+
+    // v9 → v10: external exercise DB import, force_type, mechanic, exercise_images
+    if (currentVersion < 10) {
+      console.log(`[FitQuest DB] Migrating to v10: adding force_type, mechanic columns and exercise_images table`);
+      // Add new columns to existing exercises table
+      const hasForceType = await hasTableColumn(database, 'exercises', 'force_type');
+      if (!hasForceType) {
+        await database.execAsync(`ALTER TABLE exercises ADD COLUMN force_type TEXT`);
+      }
+      const hasMechanic = await hasTableColumn(database, 'exercises', 'mechanic');
+      if (!hasMechanic) {
+        await database.execAsync(`ALTER TABLE exercises ADD COLUMN mechanic TEXT`);
+      }
+      const hasExternalId = await hasTableColumn(database, 'exercises', 'external_id');
+      if (!hasExternalId) {
+        await database.execAsync(`ALTER TABLE exercises ADD COLUMN external_id TEXT`);
+      }
+    }
+
+    // v10 → v11: FSRS flashcard algorithm (stability, state, lapses, learning_steps)
+    if (currentVersion < 11) {
+      console.log(`[FitQuest DB] Migrating to v11: upgrading flashcards from SM-2 to FSRS algorithm`);
+      await migrateFSRSFlashcards(database);
+    }
+
+    // v11 → v12: Remove bloat variation exercises (Tempo/Pause/Isometric/Plyometric/Unilateral/Elevated/Weighted)
+    if (currentVersion < 12) {
+      console.log(`[FitQuest DB] Migrating to v12: removing variation exercises (keeping base exercises only)`);
+      await cleanVariationExercises(database);
     }
 
     await migrateFitMindLegacyTables(database);
@@ -89,6 +124,118 @@ async function hasTableColumn(
     `PRAGMA table_info(${tableName})`
   );
   return columns.some((column) => column.name === columnName);
+}
+
+/**
+ * Migrate flashcards from SM-2 to FSRS algorithm (v10 → v11).
+ * 
+ * FSRS fields:
+ * - stability: Memory stability in days (how long until 90% retention drops)
+ * - state: 0=New, 1=Learning, 2=Review, 3=Relearning
+ * - due: Next review timestamp (replaces next_review)
+ * - scheduled_days: Days until next review (replaces interval_days)
+ * - last_review: Timestamp of last review
+ * - reps: Total successful reviews (replaces repetitions)
+ * - lapses: Number of times card was forgotten
+ * - learning_steps: Current step in (re)learning sequence
+ */
+async function migrateFSRSFlashcards(database: SQLite.SQLiteDatabase): Promise<void> {
+  // Check if migration already done
+  const hasStability = await hasTableColumn(database, 'fitmind_flashcards', 'stability');
+  if (hasStability) {
+    console.log('[FitQuest DB] FSRS columns already exist, skipping migration');
+    return;
+  }
+
+  console.log('[FitQuest DB] Adding FSRS columns to fitmind_flashcards...');
+
+  // Add FSRS-specific columns
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN stability REAL DEFAULT 0;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN state INTEGER DEFAULT 0;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN due INTEGER;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN scheduled_days INTEGER DEFAULT 1;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN last_review INTEGER;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN reps INTEGER DEFAULT 0;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN lapses INTEGER DEFAULT 0;
+  `);
+  await database.execAsync(`
+    ALTER TABLE fitmind_flashcards ADD COLUMN learning_steps INTEGER DEFAULT 0;
+  `);
+
+  // Migrate existing data from SM-2 columns to FSRS columns
+  // - next_review → due
+  // - interval_days → scheduled_days
+  // - repetitions → reps
+  // - Estimate state based on repetitions (0 reps = New, else Review)
+  // - Estimate stability from interval_days (rough heuristic)
+  console.log('[FitQuest DB] Migrating existing flashcard data to FSRS format...');
+  await database.execAsync(`
+    UPDATE fitmind_flashcards SET
+      due = COALESCE(next_review, ${Date.now()}),
+      scheduled_days = COALESCE(interval_days, 1),
+      reps = COALESCE(repetitions, 0),
+      state = CASE WHEN COALESCE(repetitions, 0) = 0 THEN 0 ELSE 2 END,
+      stability = CASE 
+        WHEN COALESCE(repetitions, 0) = 0 THEN 0
+        ELSE COALESCE(interval_days, 1) * 0.9
+      END,
+      lapses = 0,
+      learning_steps = 0
+    WHERE due IS NULL;
+  `);
+
+  console.log('[FitQuest DB] FSRS migration complete');
+}
+
+/**
+ * Remove variation exercises from v11→v12 migration.
+ * 
+ * The exercise generator previously created Tempo/Pause/Isometric/Plyometric/
+ * Unilateral/Elevated/Weighted variations from each base template.
+ * These added ~340 low-value duplicate exercises with the same instructions.
+ * This migration removes them, keeping only base exercises.
+ * 
+ * Variation exercise IDs contain patterns like: _tempo_, _pause_, _iso_, _plyo_, _single_, _elevated_, _weighted_
+ * External exercises (fed_*) and handcrafted exercises (cal_*, tall_*, etc.) are NOT affected.
+ */
+async function cleanVariationExercises(database: SQLite.SQLiteDatabase): Promise<void> {
+  // Count before
+  const before = await database.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) as count FROM exercises WHERE id LIKE '%_gen_%'`
+  );
+  
+  // Delete variation exercises (CASCADE handles junction tables: exercise_muscles, exercise_equipment, exercise_training_types, exercise_images)
+  await database.execAsync(`
+    DELETE FROM exercises WHERE 
+      id LIKE '%_tempo_%' OR
+      id LIKE '%_pause_%' OR
+      id LIKE '%_iso_%' OR
+      id LIKE '%_plyo_%' OR
+      id LIKE '%_single_%' OR
+      id LIKE '%_elevated_%' OR
+      id LIKE '%_weighted_%'
+  `);
+  
+  // Count after
+  const after = await database.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) as count FROM exercises WHERE id LIKE '%_gen_%'`
+  );
+  
+  const removed = (before?.count ?? 0) - (after?.count ?? 0);
+  console.log(`[FitQuest DB] Removed ${removed} variation exercises (${before?.count ?? 0} → ${after?.count ?? 0} generated exercises)`);
 }
 
 async function migrateFitMindLegacyTables(database: SQLite.SQLiteDatabase): Promise<void> {
@@ -379,6 +526,9 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       audio_setup TEXT NOT NULL DEFAULT '',
       audio_execution TEXT NOT NULL DEFAULT '',
       audio_transition TEXT NOT NULL DEFAULT '',
+      force_type TEXT, -- v10: push, pull, static, compound
+      mechanic TEXT,   -- v10: compound, isolation
+      external_id TEXT, -- v10: ID from external exercise database
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -386,6 +536,19 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_exercises_category ON exercises(category);
     CREATE INDEX IF NOT EXISTS idx_exercises_difficulty ON exercises(difficulty);
     CREATE INDEX IF NOT EXISTS idx_exercises_equipment ON exercises(equipment_level);
+    CREATE INDEX IF NOT EXISTS idx_exercises_external_id ON exercises(external_id);
+
+    -- v10: Exercise images from external databases
+    CREATE TABLE IF NOT EXISTS exercise_images (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      exercise_id TEXT NOT NULL,
+      image_path TEXT NOT NULL,
+      image_order INTEGER NOT NULL DEFAULT 0,
+      source TEXT DEFAULT 'external', -- 'external', 'user', 'generated'
+      FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_exercise_images_exercise ON exercise_images(exercise_id);
 
     -- Exercise target muscles (many-to-many)
     CREATE TABLE IF NOT EXISTS exercise_muscles (
@@ -525,6 +688,7 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_progress_user ON progress_records(user_id);
     CREATE INDEX IF NOT EXISTS idx_progress_exercise ON progress_records(exercise_id);
     CREATE INDEX IF NOT EXISTS idx_progress_date ON progress_records(date);
+    CREATE INDEX IF NOT EXISTS idx_progress_user_exercise_date ON progress_records(user_id, exercise_id, date);
 
     -- ============================================
     -- SUBSCRIPTION & APP STATE TABLES
@@ -747,11 +911,24 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       document_id TEXT NOT NULL,
       front TEXT NOT NULL,
       back TEXT NOT NULL,
-      difficulty REAL DEFAULT 2.5,
+      -- FSRS core fields
+      difficulty REAL DEFAULT 5.0,
+      stability REAL DEFAULT 0,
+      state INTEGER DEFAULT 0,
+      -- Scheduling
+      due INTEGER NOT NULL,
+      scheduled_days INTEGER DEFAULT 1,
+      last_review INTEGER,
+      -- Progress tracking
+      reps INTEGER DEFAULT 0,
+      lapses INTEGER DEFAULT 0,
+      learning_steps INTEGER DEFAULT 0,
+      -- Legacy SM-2 compatibility
       repetitions INTEGER DEFAULT 0,
       interval_days INTEGER DEFAULT 1,
-      next_review INTEGER NOT NULL,
+      next_review INTEGER,
       ease_factor REAL DEFAULT 2.5,
+      -- Timestamps
       created_at INTEGER NOT NULL,
       FOREIGN KEY (document_id) REFERENCES fitmind_documents(id) ON DELETE CASCADE
     );
@@ -784,6 +961,7 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_fitmind_annotations_doc ON fitmind_annotations(document_id);
     CREATE INDEX IF NOT EXISTS idx_fitmind_flashcards_doc ON fitmind_flashcards(document_id);
     CREATE INDEX IF NOT EXISTS idx_fitmind_flashcards_review ON fitmind_flashcards(next_review);
+    CREATE INDEX IF NOT EXISTS idx_fitmind_flashcards_due ON fitmind_flashcards(due);
 
     -- ============================================
     -- ADVANCED HEALTH MONITORING (v8)

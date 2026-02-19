@@ -1385,8 +1385,8 @@ function convertGeneratedExercise(exercise: GeneratedExercise): SeedExercise {
  */
 export async function seedExercises(): Promise<void> {
   // Check if already seeded
-  // Minimum expected exercise count (handcrafted + generated)
-  const MINIMUM_EXPECTED = 720; // If fewer than this, re-seed to include generated exercises
+  // Minimum expected exercise count (handcrafted + generated base exercises)
+  const MINIMUM_EXPECTED = 400; // ~47 handcrafted + ~402 generated bases (no variations)
 
   const count = await getExerciseCountFromService();
 

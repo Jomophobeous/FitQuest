@@ -1,12 +1,25 @@
 /**
- * FitQuest FitMind Library — Coming Soon
+ * FitQuest FitMind Library — Document Library & Cognitive Fitness
  *
- * Placeholder for the upcoming API-based AI reading companion.
- * Original implementation preserved in fitmind-library.tsx.bak.
+ * Fully functional reading library wired to FitMindService.
+ * Supports: add text/note documents, view library, filter by status,
+ * reading streaks, flashcard review, and navigation to reader.
  */
 
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  Alert,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,88 +27,447 @@ import Animated, {
   FadeIn,
   FadeInDown,
   FadeInUp,
-  ZoomIn,
 } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
-import { GlassCard } from '../src/components/ui/GlassUI';
+import { useLanguage } from '../src/context/LanguageContext';
+import ThemedText from '../src/components/ThemedText';
+import { GlassCard, GradientButton, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
+import {
+  FitMindService,
+  type FitMindDocument,
+  type DocumentStatus,
+  type Flashcard,
+} from '../src/fitmind/schema';
+import { DocumentImportPipeline } from '../src/fitmind/DocumentImportPipeline';
+
+type FilterStatus = 'ALL' | DocumentStatus;
+
+const STATUS_FILTERS: { key: FilterStatus; icon: string; label: string }[] = [
+  { key: 'ALL', icon: 'book-multiple', label: 'fitmind.filter.all' },
+  { key: 'READING', icon: 'book-open-page-variant', label: 'fitmind.filter.reading' },
+  { key: 'UNREAD', icon: 'book-clock', label: 'fitmind.filter.unread' },
+  { key: 'COMPLETED', icon: 'book-check', label: 'fitmind.filter.done' },
+  { key: 'ARCHIVED', icon: 'archive', label: 'fitmind.filter.archived' },
+];
+
+const STATUS_COLORS: Record<string, string> = {
+  UNREAD: '#3B82F6',
+  READING: '#10B981',
+  COMPLETED: '#8B5CF6',
+  ARCHIVED: '#6B7280',
+};
+
+function generateId(): string {
+  return `doc_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
 
 export default function FitMindLibraryScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
+  const router = useRouter();
+
+  // Data state
+  const [documents, setDocuments] = useState<FitMindDocument[]>([]);
+  const [dueFlashcards, setDueFlashcards] = useState<Flashcard[]>([]);
+  const [readingStreak, setReadingStreak] = useState({ currentStreak: 0, longestStreak: 0, totalBooksCompleted: 0, totalPagesRead: 0, totalMinutesRead: 0 });
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [filter, setFilter] = useState<FilterStatus>('ALL');
+
+  // Add document modal
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newContent, setNewContent] = useState('');
+  const [newCategory, setNewCategory] = useState('General');
+  const [addingDoc, setAddingDoc] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
+  const [importingFile, setImportingFile] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      const [docs, streak, flashcards] = await Promise.all([
+        FitMindService.getDocuments(filter === 'ALL' ? undefined : filter as DocumentStatus),
+        FitMindService.getReadingStreak(),
+        FitMindService.getDueFlashcards(10),
+      ]);
+      setDocuments(docs);
+      setReadingStreak(streak);
+      setDueFlashcards(flashcards);
+    } catch (e) {
+      console.warn('[FitMind] Failed to load data:', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadData();
+  }, [loadData]);
+
+  const handleAddDocument = async () => {
+    if (!newTitle.trim()) {
+      Alert.alert(t('fitmind.titleRequired'), t('fitmind.titleRequiredDetail'));
+      return;
+    }
+    setAddingDoc(true);
+    try {
+      const wordCount = newContent.trim().split(/\s+/).filter(Boolean).length;
+      const estimatedMinutes = Math.max(1, Math.round(wordCount / 200));
+      const totalPages = Math.max(1, Math.ceil(wordCount / 250));
+
+      await FitMindService.addDocument({
+        id: generateId(),
+        title: newTitle.trim(),
+        author: 'Me',
+        type: 'NOTE' as const,
+        status: 'UNREAD' as const,
+        category: newCategory || 'General',
+        tags: '[]',
+        file_path: null,
+        file_size: newContent.length,
+        total_pages: totalPages,
+        current_page: 0,
+        content: newContent.trim() || null,
+        word_count: wordCount,
+        reading_level: null,
+        estimated_minutes: estimatedMinutes,
+        cover_color: ['#10B981', '#3B82F6', '#8B5CF6', '#F4A427', '#EC4899'][Math.floor(Math.random() * 5)],
+      });
+
+      setNewTitle('');
+      setNewContent('');
+      setNewCategory('General');
+      setShowAddModal(false);
+      loadData();
+    } catch (e) {
+      Alert.alert(t('common.error'), t('fitmind.addFailed'));
+      console.warn('[FitMind] Add document error:', e);
+    } finally {
+      setAddingDoc(false);
+    }
+  };
+
+  const handleDeleteDocument = (doc: FitMindDocument) => {
+    Alert.alert(
+      t('fitmind.deleteTitle'),
+      t('fitmind.deleteConfirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await FitMindService.deleteDocument(doc.id);
+              loadData();
+            } catch (e) {
+              console.warn('[FitMind] Delete error:', e);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleImportFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          'application/pdf',
+          'application/epub+zip',
+          'text/plain',
+          'text/markdown',
+          'text/html',
+        ],
+      });
+
+      if (result.canceled || !result.assets?.length) return;
+
+      const asset = result.assets[0];
+      setImportingFile(true);
+      setImportProgress(0);
+
+      const pipeline = new DocumentImportPipeline({
+        onProgress: (progress: number) => setImportProgress(progress),
+      });
+
+      const importResult = await pipeline.importFile(asset.uri, {
+        title: asset.name?.replace(/\.[^.]+$/, '') || 'Imported Document',
+        category: newCategory || 'General',
+      });
+
+      if (importResult.success) {
+        setShowAddModal(false);
+        setNewTitle('');
+        setNewContent('');
+        setNewCategory('General');
+        loadData();
+        Alert.alert(t('fitmind.imported'), t('fitmind.importedDetail'));
+      } else {
+        Alert.alert(t('fitmind.importFailed'), importResult.error || t('fitmind.importFailedDetail'));
+      }
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message || t('fitmind.importFailedDetail'));
+      console.warn('[FitMind] Import file error:', e);
+    } finally {
+      setImportingFile(false);
+      setImportProgress(0);
+    }
+  };
+
+  const openReader = (docId: string) => {
+    router.push({ pathname: '/fitmind-reader', params: { id: docId } });
+  };
+
+  const statusColor = (s: string) => STATUS_COLORS[s] || theme.colors.textMuted;
+
+  const dynamicStyles = {
+    surface: { backgroundColor: theme.colors.surface },
+    border: { borderColor: theme.colors.border },
+    input: {
+      backgroundColor: theme.colors.surface,
+      color: theme.colors.text,
+      borderColor: theme.colors.border,
+    },
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <ActivityIndicator size="large" color={theme.colors.accent} style={{ marginTop: 120 }} />
+      </View>
+    );
+  }
+
+  const listHeader = (
+    <>
+      {/* Header */}
+      <Animated.View entering={FadeIn.duration(200)}>
+        <LinearGradient
+          colors={[theme.colors.accent + '15', theme.colors.background] as [string, string]}
+          style={styles.headerGradient}
+        >
+          <View style={styles.headerRow}>
+            <MaterialCommunityIcons name="book-open-variant" size={22} color={theme.colors.accent} />
+            <ThemedText variant="h2" color="primary">{t('fitmind.title')}</ThemedText>
+            <TouchableOpacity onPress={() => setShowAddModal(true)} style={[styles.addBtn, { backgroundColor: theme.colors.accent + '20' }]}>
+              <MaterialCommunityIcons name="plus" size={22} color={theme.colors.accent} />
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </Animated.View>
+
+      {/* Stats Row */}
+      <Animated.View entering={FadeInDown.delay(100).duration(200)}>
+        <View style={styles.statsRow}>
+          <GlassCard style={styles.statCard} delay={0}>
+            <ThemedText variant="h2" color="accent">{readingStreak.currentStreak}</ThemedText>
+            <ThemedText variant="caption" color="muted">{t('fitmind.dayStreak')}</ThemedText>
+          </GlassCard>
+          <GlassCard style={styles.statCard} delay={50}>
+            <ThemedText variant="h2" color="primary">{readingStreak.totalBooksCompleted}</ThemedText>
+            <ThemedText variant="caption" color="muted">{t('fitmind.completed')}</ThemedText>
+          </GlassCard>
+          <GlassCard style={styles.statCard} delay={100}>
+            <ThemedText variant="h2" color="primary">{readingStreak.totalPagesRead}</ThemedText>
+            <ThemedText variant="caption" color="muted">{t('fitmind.pagesRead')}</ThemedText>
+          </GlassCard>
+          <GlassCard style={styles.statCard} delay={150}>
+            <ThemedText variant="h2" color="primary">{dueFlashcards.length}</ThemedText>
+            <ThemedText variant="caption" color="muted">{t('fitmind.cardsDue')}</ThemedText>
+          </GlassCard>
+        </View>
+      </Animated.View>
+
+      {/* Filter Tabs */}
+      <Animated.View entering={FadeInDown.delay(150).duration(200)}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
+          {STATUS_FILTERS.map((f) => {
+            const active = filter === f.key;
+            return (
+              <TouchableOpacity
+                key={f.key}
+                onPress={() => setFilter(f.key)}
+                style={[
+                  styles.filterPill,
+                  { backgroundColor: active ? theme.colors.accent + '20' : theme.colors.surface, borderColor: active ? theme.colors.accent : theme.colors.border },
+                ]}
+              >
+                <MaterialCommunityIcons name={f.icon as any} size={14} color={active ? theme.colors.accent : theme.colors.textMuted} />
+                <ThemedText variant="caption" color={active ? 'accent' : 'muted'}>{t(f.label)}</ThemedText>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </Animated.View>
+
+      {/* Document List Header */}
+      <SectionHeader title={`Library (${documents.length})`} delay={200} />
+    </>
+  );
+
+  const listEmpty = (
+    <GlassCard style={styles.emptyCard}>
+      <MaterialCommunityIcons name="book-plus" size={48} color={theme.colors.textMuted} />
+      <ThemedText variant="body" color="muted" style={styles.emptyText}>
+        {t('fitmind.noDocuments')}
+      </ThemedText>
+    </GlassCard>
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <SafeAreaView edges={['top']} style={styles.safeArea}>
-        {/* Header */}
-        <Animated.View entering={FadeIn.duration(200)} style={styles.header}>
-          <MaterialCommunityIcons name="book-open-variant" size={22} color={theme.colors.accent} />
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>FitMind</Text>
-        </Animated.View>
-
-        {/* Coming Soon Content */}
-        <View style={styles.content}>
-          <Animated.View entering={ZoomIn.delay(100).duration(400)} style={styles.iconWrap}>
-            <LinearGradient
-              colors={[theme.colors.accent + '30', '#3B82F6' + '20', 'transparent'] as [string, string, string]}
-              style={styles.iconGlow}
-            >
-              <LinearGradient
-                colors={[theme.colors.accent, '#3B82F6'] as [string, string]}
-                style={styles.iconGradient}
+        <FlatList
+          data={documents}
+          renderItem={({ item: doc, index: idx }) => (
+            <AnimatedListItem key={doc.id} index={idx} style={styles.docItemSpacing}>
+              <TouchableOpacity
+                onPress={() => openReader(doc.id)}
+                onLongPress={() => handleDeleteDocument(doc)}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel={`${doc.title} by ${doc.author}, ${doc.status}`}
               >
-                <MaterialCommunityIcons name="brain" size={56} color="#fff" />
-              </LinearGradient>
-            </LinearGradient>
-          </Animated.View>
-
-          <Animated.View entering={FadeInDown.delay(200).duration(300)}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>
-              FitMind
-            </Text>
-            <Text style={[styles.badge, { backgroundColor: theme.colors.warning + '20', color: theme.colors.warning }]}>
-              Coming Soon
-            </Text>
-          </Animated.View>
-
-          <Animated.View entering={FadeInDown.delay(300).duration(300)}>
-            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-              Train your body AND your mind. An AI-powered reading companion is coming:
-            </Text>
-          </Animated.View>
-
-          <Animated.View entering={FadeInUp.delay(400).duration(300)} style={styles.featuresWrap}>
-            <GlassCard delay={0}>
-              <View style={styles.featuresList}>
-                {[
-                  { icon: 'book-open-page-variant', text: 'Smart document library', color: '#10B981' },
-                  { icon: 'school', text: 'AI Professor reading companion', color: '#8B5CF6' },
-                  { icon: 'card-text', text: 'Auto-generated flashcards', color: '#F4A427' },
-                  { icon: 'chart-line', text: 'Reading analytics & streaks', color: '#3B82F6' },
-                  { icon: 'text-box-search', text: 'Comprehension summaries', color: '#EC4899' },
-                  { icon: 'file-document-multiple', text: 'Import from any source', color: '#5F63FF' },
-                ].map((feature, i) => (
-                  <Animated.View
-                    key={feature.text}
-                    entering={FadeInDown.delay(500 + i * 60).duration(200)}
-                    style={styles.featureRow}
-                  >
-                    <View style={[styles.featureIcon, { backgroundColor: feature.color + '18' }]}>
-                      <MaterialCommunityIcons name={feature.icon as any} size={18} color={feature.color} />
+                <View style={[styles.docCard, dynamicStyles.surface, dynamicStyles.border]}>
+                  <View style={[styles.docColor, { backgroundColor: doc.cover_color || theme.colors.accent }]} />
+                  <View style={styles.docInfo}>
+                    <ThemedText variant="body" color="primary" style={styles.docTitle} numberOfLines={1}>
+                      {doc.title}
+                    </ThemedText>
+                    <View style={styles.docMeta}>
+                      <ThemedText variant="caption" color="muted">
+                        {doc.author}
+                      </ThemedText>
+                      <View style={[styles.statusBadge, { backgroundColor: statusColor(doc.status) + '20' }]}>
+                        <ThemedText variant="caption" style={{ color: statusColor(doc.status), fontSize: 10 }}>
+                          {doc.status}
+                        </ThemedText>
+                      </View>
                     </View>
-                    <Text style={[styles.featureText, { color: theme.colors.text }]}>
-                      {feature.text}
-                    </Text>
-                  </Animated.View>
-                ))}
-              </View>
-            </GlassCard>
-          </Animated.View>
+                    <View style={styles.docStats}>
+                      <ThemedText variant="caption" color="muted">
+                        {doc.total_pages != null ? `${doc.current_page ?? 0}/${doc.total_pages}p` : ''}
+                      </ThemedText>
+                      {doc.estimated_minutes != null && doc.estimated_minutes > 0 ? (
+                        <ThemedText variant="caption" color="muted">
+                          {` · ${doc.estimated_minutes}min`}
+                        </ThemedText>
+                      ) : null}
+                      {doc.category ? (
+                        <ThemedText variant="caption" color="muted">
+                          {` · ${doc.category}`}
+                        </ThemedText>
+                      ) : null}
+                    </View>
+                  </View>
+                  <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
+                </View>
+              </TouchableOpacity>
+            </AnimatedListItem>
+          )}
+          keyExtractor={(doc) => doc.id}
+          ListHeaderComponent={listHeader}
+          ListEmptyComponent={listEmpty}
+          ListFooterComponent={<View style={styles.bottomSpacer} />}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.accent} />}
+        />
 
-          <Animated.View entering={FadeInUp.delay(800).duration(300)}>
-            <Text style={[styles.footerNote, { color: theme.colors.textMuted }]}>
-              Body + Mind = Complete Fitness 🧠
-            </Text>
-          </Animated.View>
-        </View>
+        {/* Add Document Modal */}
+        <Modal visible={showAddModal} animationType="slide" transparent>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: theme.colors.background }]}>
+              <View style={styles.modalHeader}>
+                <ThemedText variant="h3" color="primary">{t('fitmind.addDocument')}</ThemedText>
+                <TouchableOpacity onPress={() => setShowAddModal(false)}>
+                  <MaterialCommunityIcons name="close" size={24} color={theme.colors.textMuted} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Import from device */}
+              <TouchableOpacity
+                style={[styles.importFileBtn, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                onPress={handleImportFile}
+                disabled={importingFile}
+                activeOpacity={0.7}
+              >
+                <MaterialCommunityIcons
+                  name={importingFile ? 'loading' : 'file-document-outline'}
+                  size={28}
+                  color={theme.colors.accent}
+                />
+                <View style={{ flex: 1 }}>
+                  <ThemedText variant="body" color="primary" style={{ fontWeight: '600' }}>
+                    {importingFile ? `${t('fitmind.importing')} ${importProgress}%` : t('fitmind.importFromDevice')}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted">
+                    {t('fitmind.supportedFormats')}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+
+              {importingFile && (
+                <View style={[styles.progressBar, { backgroundColor: theme.colors.surface }]}>
+                  <View style={[styles.progressFill, { width: `${importProgress}%`, backgroundColor: theme.colors.accent }]} />
+                </View>
+              )}
+
+              <View style={[styles.dividerRow, { borderTopColor: theme.colors.border }]}>
+                <ThemedText variant="caption" color="muted">{t('fitmind.orAddManually')}</ThemedText>
+              </View>
+
+              <ThemedText variant="caption" color="muted" style={styles.fieldLabel}>{t('fitmind.titleLabel')}</ThemedText>
+              <TextInput
+                style={[styles.input, dynamicStyles.input]}
+                placeholder={t('fitmind.titlePlaceholder')}
+                placeholderTextColor={theme.colors.textMuted}
+                value={newTitle}
+                onChangeText={setNewTitle}
+                maxLength={200}
+              />
+
+              <ThemedText variant="caption" color="muted" style={styles.fieldLabel}>{t('fitmind.categoryLabel')}</ThemedText>
+              <TextInput
+                style={[styles.input, dynamicStyles.input]}
+                placeholder={t('fitmind.categoryPlaceholder')}
+                placeholderTextColor={theme.colors.textMuted}
+                value={newCategory}
+                onChangeText={setNewCategory}
+                maxLength={50}
+              />
+
+              <ThemedText variant="caption" color="muted" style={styles.fieldLabel}>{t('fitmind.contentLabel')}</ThemedText>
+              <TextInput
+                style={[styles.inputMulti, dynamicStyles.input]}
+                placeholder={t('fitmind.contentPlaceholder')}
+                placeholderTextColor={theme.colors.textMuted}
+                value={newContent}
+                onChangeText={setNewContent}
+                multiline
+                maxLength={500000}
+                textAlignVertical="top"
+              />
+
+              <GradientButton
+                title={addingDoc ? t('fitmind.adding') : t('fitmind.addToLibrary')}
+                variant="primary"
+                size="lg"
+                onPress={addingDoc ? () => {} : handleAddDocument}
+                style={addingDoc ? { ...styles.addDocBtn, opacity: 0.6 } : styles.addDocBtn}
+              />
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </View>
   );
@@ -104,54 +476,65 @@ export default function FitMindLibraryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   safeArea: { flex: 1 },
-  header: {
+  scrollContent: { paddingBottom: 100 },
+  headerGradient: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'space-between' },
+  addBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
+
+  statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 12 },
+  statCard: { flex: 1, alignItems: 'center', paddingVertical: 12, paddingHorizontal: 4 },
+
+  filterRow: { paddingHorizontal: 16, marginBottom: 12 },
+  filterPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1, marginRight: 8 },
+
+  emptyCard: { alignItems: 'center', padding: 32, marginHorizontal: 16 },
+  emptyText: { textAlign: 'center', marginTop: 12, lineHeight: 20 },
+
+  docItemSpacing: { marginHorizontal: 16, marginBottom: 8 },
+  docCard: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1, padding: 12, gap: 12 },
+  docColor: { width: 6, height: 48, borderRadius: 3 },
+  docInfo: { flex: 1 },
+  docTitle: { fontWeight: '600', marginBottom: 2 },
+  docMeta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
+  docStats: { flexDirection: 'row', marginTop: 2 },
+
+  bottomSpacer: { height: 40 },
+
+  // Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalContent: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, maxHeight: '80%' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  fieldLabel: { marginBottom: 6, marginTop: 12 },
+  input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, marginBottom: 4 },
+  inputMulti: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, marginBottom: 4, minHeight: 120 },
+  addDocBtn: { marginTop: 20 },
+
+  // File import
+  importFileBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
+    gap: 12,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 8,
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', letterSpacing: 0.3 },
-  content: {
-    flex: 1,
+  progressBar: {
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  dividerRow: {
+    borderTopWidth: 1,
+    paddingTop: 12,
+    marginTop: 4,
+    marginBottom: 4,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: 80,
-  },
-  iconWrap: { marginBottom: 24 },
-  iconGlow: {
-    width: 140, height: 140, borderRadius: 70,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  iconGradient: {
-    width: 100, height: 100, borderRadius: 50,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  title: {
-    fontSize: 24, fontWeight: '800', textAlign: 'center',
-    marginBottom: 8, letterSpacing: 0.3,
-  },
-  badge: {
-    alignSelf: 'center', fontSize: 12, fontWeight: '700',
-    paddingHorizontal: 14, paddingVertical: 5, borderRadius: 12,
-    overflow: 'hidden', marginBottom: 16, letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  subtitle: {
-    fontSize: 14, textAlign: 'center', lineHeight: 21,
-    marginBottom: 28, maxWidth: 320,
-  },
-  featuresWrap: { width: '100%', marginBottom: 20 },
-  featuresList: { gap: 14 },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  featureIcon: {
-    width: 36, height: 36, borderRadius: 12,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  featureText: { fontSize: 14, fontWeight: '500', flex: 1, letterSpacing: 0.2 },
-  footerNote: {
-    fontSize: 13, textAlign: 'center', fontWeight: '500',
-    letterSpacing: 0.3,
   },
 });

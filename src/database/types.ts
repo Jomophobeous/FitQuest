@@ -15,6 +15,12 @@ export type Category =
   | 'mental_clarity'
   | 'building_muscle';
 
+// v10: Force type from external exercise databases
+export type ForceType = 'push' | 'pull' | 'static' | 'compound' | null;
+
+// v10: Exercise mechanic type (compound vs isolation)
+export type MechanicType = 'compound' | 'isolation' | null;
+
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export type EquipmentLevel = 'none' | 'minimal' | 'playground';
@@ -138,6 +144,10 @@ export interface Exercise {
   audio_setup: string;      // "Hands under shoulders. Body straight."
   audio_execution: string;  // "Lower under control. Push explosively."
   audio_transition: string; // "Rest for 30 seconds."
+  // v10 fields for external exercise database
+  external_id?: string;
+  force_type?: ForceType;
+  mechanic?: MechanicType;
 }
 
 export interface ExerciseMuscle {
@@ -192,7 +202,7 @@ export interface MuscleFatigue {
   user_id: string;
   muscle: TargetMuscle;
   fatigue_level: number; // 0-100
-  last_trained_at: string;
+  last_trained_at: string | null;
   updated_at: string;
 }
 
@@ -260,18 +270,38 @@ export interface Annotation {
   created_at: number;
 }
 
+/**
+ * Flashcard with FSRS (Free Spaced Repetition Scheduler) fields.
+ * FSRS provides ~40% better retention than SM-2.
+ * 
+ * State progression: New(0) → Learning(1) → Review(2) ↔ Relearning(3)
+ */
 export interface Flashcard {
   id: string;
   document_id: string;
   front: string;
   back: string;
-  difficulty: number;
-  repetitions: number;
-  interval_days: number;
-  next_review: number;
-  ease_factor: number;
+  // FSRS core fields
+  difficulty: number;     // FSRS difficulty (1-10 scale, ~5 is neutral)
+  stability: number;      // Memory stability in days (how long until 90% retention drops)
+  state: FlashcardState;  // Current learning state (0=New, 1=Learning, 2=Review, 3=Relearning)
+  // Scheduling
+  due: number;            // Next review timestamp (Unix ms) — replaces next_review
+  scheduled_days: number; // Days until next review — replaces interval_days
+  last_review: number | null; // Timestamp of last review
+  // Progress tracking
+  reps: number;           // Total successful reviews — replaces repetitions
+  lapses: number;         // Number of times card was forgotten
+  learning_steps: number; // Current step in (re)learning sequence
+  // Legacy compatibility (for migration)
+  ease_factor: number;    // SM-2 ease factor (kept for backwards compat)
   created_at: number;
 }
+
+/**
+ * FSRS card states matching ts-fsrs State enum.
+ */
+export type FlashcardState = 0 | 1 | 2 | 3; // New=0, Learning=1, Review=2, Relearning=3
 
 export interface ReadingGoal {
   id: string;
@@ -357,4 +387,4 @@ export interface ExerciseWithDetails extends Exercise {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 9; // v9: Trial state table + SQL governance cleanup
+export const SCHEMA_VERSION = 12; // v12: Remove variation exercises (Tempo/Pause/Iso/Plyo/Uni/Elev/Weighted), keep base only

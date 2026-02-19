@@ -1,0 +1,184 @@
+[
+  {
+    "file": "Screenshot_20260218_053203_Expo Go.jpg",
+    "score": 3,
+    "faults": [
+      "Bottom region denser than top",
+      "Middle block visual density spike"
+    ],
+    "edge": 10.401,
+    "edge_top": 5.944,
+    "edge_mid": 16.113,
+    "edge_bottom": 9.162,
+    "contrast_std": 53.533,
+    "brightness": 32.307
+  },
+  {
+    "file": "Screenshot_20260218_052103_Expo Go.jpg",
+    "score": 3,
+    "faults": [
+      "Bottom region denser than top",
+      "Middle block visual density spike"
+    ],
+    "edge": 4.813,
+    "edge_top": 2.332,
+    "edge_mid": 6.083,
+    "edge_bottom": 6.011,
+    "contrast_std": 35.605,
+    "brightness": 28.176
+  },
+  {
+    "file": "Screenshot_20260218_053233_Expo Go.jpg",
+    "score": 3,
+    "faults": [
+      "Low tonal contrast",
+      "Bottom region denser than top"
+    ],
+    "edge": 2.899,
+    "edge_top": 1.599,
+    "edge_mid": 2.484,
+    "edge_bottom": 4.612,
+    "contrast_std": 31.42,
+    "brightness": 30.588
+  },
+  {
+    "file": "Screenshot_20260218_052345_Expo Go.jpg",
+    "score": 2,
+    "faults": [
+      "Low tonal contrast",
+      "Middle block visual density spike"
+    ],
+    "edge": 1.292,
+    "edge_top": 0.234,
+    "edge_mid": 2.788,
+    "edge_bottom": 0.805,
+    "contrast_std": 25.776,
+    "brightness": 19.436
+  },
+  {
+    "file": "Screenshot_20260218_053208_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Middle block visual density spike"
+    ],
+    "edge": 9.4,
+    "edge_top": 7.131,
+    "edge_mid": 12.662,
+    "edge_bottom": 8.43,
+    "contrast_std": 64.353,
+    "brightness": 38.908
+  },
+  {
+    "file": "Screenshot_20260218_053214_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Middle block visual density spike"
+    ],
+    "edge": 9.58,
+    "edge_top": 7.203,
+    "edge_mid": 15.919,
+    "edge_bottom": 5.667,
+    "contrast_std": 56.736,
+    "brightness": 33.976
+  },
+  {
+    "file": "Screenshot_20260218_053105_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Low tonal contrast"
+    ],
+    "edge": 2.645,
+    "edge_top": 2.73,
+    "edge_mid": 2.212,
+    "edge_bottom": 2.996,
+    "contrast_std": 32.689,
+    "brightness": 28.27
+  },
+  {
+    "file": "Screenshot_20260218_053052_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Low tonal contrast"
+    ],
+    "edge": 2.527,
+    "edge_top": 2.215,
+    "edge_mid": 2.531,
+    "edge_bottom": 2.839,
+    "contrast_std": 26.289,
+    "brightness": 24.192
+  },
+  {
+    "file": "Screenshot_20260218_053043_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Low tonal contrast"
+    ],
+    "edge": 3.355,
+    "edge_top": 3.479,
+    "edge_mid": 3.9,
+    "edge_bottom": 2.704,
+    "contrast_std": 31.323,
+    "brightness": 27.767
+  },
+  {
+    "file": "Screenshot_20260218_052316_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Middle block visual density spike"
+    ],
+    "edge": 3.079,
+    "edge_top": 1.786,
+    "edge_mid": 4.962,
+    "edge_bottom": 2.495,
+    "contrast_std": 37.509,
+    "brightness": 29.66
+  },
+  {
+    "file": "Screenshot_20260217_174050_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Low tonal contrast"
+    ],
+    "edge": 2.249,
+    "edge_top": 1.572,
+    "edge_mid": 2.776,
+    "edge_bottom": 2.399,
+    "contrast_std": 32.732,
+    "brightness": 29.803
+  },
+  {
+    "file": "Screenshot_20260218_053142_Expo Go.jpg",
+    "score": 1,
+    "faults": [
+      "Low tonal contrast"
+    ],
+    "edge": 2.207,
+    "edge_top": 2.421,
+    "edge_mid": 3.319,
+    "edge_bottom": 0.93,
+    "contrast_std": 24.332,
+    "brightness": 21.727
+  },
+  {
+    "file": "Screenshot_20260218_053058_Expo Go.jpg",
+    "score": 0,
+    "faults": [],
+    "edge": 2.264,
+    "edge_top": 1.532,
+    "edge_mid": 2.591,
+    "edge_bottom": 2.647,
+    "contrast_std": 35.625,
+    "brightness": 31.764
+  },
+  {
+    "file": "Screenshot_20260218_052323_Expo Go.jpg",
+    "score": 0,
+    "faults": [],
+    "edge": 3.163,
+    "edge_top": 2.733,
+    "edge_mid": 4.286,
+    "edge_bottom": 2.472,
+    "contrast_std": 39.409,
+    "brightness": 30.154
+  }
+]

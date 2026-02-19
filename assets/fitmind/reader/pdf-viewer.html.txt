@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #0A0E17; overflow: hidden; }
+    #container { width: 100%; height: 100%; overflow: auto; display: flex; justify-content: center; }
+    canvas { margin: 8px 0; max-width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="container"><canvas id="pdfCanvas"></canvas></div>
+  <script type="module">
+    const PDF_SOURCE = __PDF_SOURCE__;
+    const PDF_WORKER_SOURCE = __PDF_WORKER_SOURCE__;
+    const PDF_URI = __PDF_URI__;
+
+    function send(type, payload) {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type, payload }));
+      }
+    }
+
+    try {
+      const pdfModuleUrl = URL.createObjectURL(new Blob([PDF_SOURCE], { type: 'text/javascript' }));
+      const workerModuleUrl = URL.createObjectURL(new Blob([PDF_WORKER_SOURCE], { type: 'text/javascript' }));
+      const pdfjsLib = await import(pdfModuleUrl);
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerModuleUrl;
+
+      const canvas = document.getElementById('pdfCanvas');
+      const ctx = canvas.getContext('2d');
+      let pdfDoc = null;
+
+      async function renderPage(num) {
+        if (!pdfDoc) return;
+        const safePage = Math.max(1, Math.min(pdfDoc.numPages, num));
+        const page = await pdfDoc.getPage(safePage);
+        const viewport = page.getViewport({ scale: 1.3 });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        send('relocated', {
+          page: safePage,
+          totalPages: pdfDoc.numPages,
+          progress: (safePage / pdfDoc.numPages) * 100,
+          atStart: safePage <= 1,
+          atEnd: safePage >= pdfDoc.numPages,
+        });
+      }
+
+      window.__setPage = function (nextPage) {
+        const parsed = Number(nextPage || 1);
+        renderPage(parsed);
+      };
+
+      pdfjsLib.getDocument(PDF_URI).promise
+        .then(function (doc) {
+          pdfDoc = doc;
+          send('loaded', { totalPages: doc.numPages });
+          return renderPage(1);
+        })
+        .catch(function (err) {
+          send('error', { message: String(err && err.message ? err.message : err) });
+        });
+    } catch (err) {
+      send('error', { message: String(err && err.message ? err.message : err) });
+    }
+  </script>
+</body>
+</html>

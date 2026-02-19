@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body, #viewer { margin: 0; height: 100%; background: #0A0E17; color: #E5E7EB; overflow: hidden; }
+    #viewer { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="viewer"></div>
+  <script>
+    const EPUB_SOURCE = __EPUB_SOURCE__;
+    const EPUB_URI = __EPUB_URI__;
+
+    function send(type, payload) {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type, payload }));
+      }
+    }
+
+    try {
+      const libScript = document.createElement('script');
+      libScript.text = EPUB_SOURCE;
+      document.head.appendChild(libScript);
+
+      const book = ePub(EPUB_URI);
+      const rendition = book.renderTo('viewer', {
+        width: '100%',
+        height: '100%',
+        spread: 'none',
+        manager: 'default',
+        flow: 'paginated'
+      });
+
+      rendition.display();
+
+      rendition.on('relocated', function (location) {
+        const atStart = !!(location && location.atStart);
+        const atEnd = !!(location && location.atEnd);
+        const cfi = location && location.start && location.start.cfi ? String(location.start.cfi) : undefined;
+        let progress = 0;
+        if (location && location.start && location.start.percentage != null) {
+          progress = Number(location.start.percentage) * 100;
+        }
+
+        send('relocated', {
+          progress,
+          atStart,
+          atEnd,
+          cfi,
+        });
+      });
+
+      book.ready.then(function () {
+        const total = book.spine && book.spine.items ? book.spine.items.length : 0;
+        send('loaded', { totalPages: total });
+      });
+    } catch (err) {
+      send('error', { message: String(err && err.message ? err.message : err) });
+    }
+  </script>
+</body>
+</html>

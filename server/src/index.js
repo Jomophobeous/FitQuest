@@ -8,7 +8,8 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 
 import { getEnv, getNumberEnv } from './config.js';
-import { JsonStorage } from './storage.js';
+import { SqliteStorage } from './sqliteStorage.js';
+import rateLimit from 'express-rate-limit';
 import {
   createUserWithPassword,
   issueSession,
@@ -239,7 +240,7 @@ function requireAuth(req, res, next) {
   }
 }
 
-const storage = new JsonStorage({ dataDir: DATA_DIR });
+const storage = new SqliteStorage({ dataDir: DATA_DIR });
 await storage.init();
 
 const app = express();
@@ -247,11 +248,31 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
 
+// ── Rate limiters ──────────────────────────────────────────────────
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15,                   // 15 attempts per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many auth attempts, please try again later' },
+});
+
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000,       // 1 minute
+  max: 120,                   // 120 requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please slow down' },
+});
+
+app.use(globalLimiter);
+// ────────────────────────────────────────────────────────────────────
+
 app.get('/health', async (_req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/auth/email/register', async (req, res) => {
+app.post('/auth/email/register', authLimiter, async (req, res) => {
   try {
     const { jwtSecret, refreshPepper } = requireSecrets();
     const email = normalizeEmail(req.body?.email);
@@ -267,7 +288,7 @@ app.post('/auth/email/register', async (req, res) => {
   }
 });
 
-app.post('/auth/email/login', async (req, res) => {
+app.post('/auth/email/login', authLimiter, async (req, res) => {
   try {
     const { jwtSecret, refreshPepper } = requireSecrets();
     const email = normalizeEmail(req.body?.email);
@@ -280,7 +301,7 @@ app.post('/auth/email/login', async (req, res) => {
   }
 });
 
-app.post('/auth/refresh', async (req, res) => {
+app.post('/auth/refresh', authLimiter, async (req, res) => {
   try {
     const { jwtSecret, refreshPepper } = requireSecrets();
     const refreshToken = typeof req.body?.refreshToken === 'string' ? req.body.refreshToken : '';
@@ -863,6 +884,17 @@ app.get('/analytics/tuning-suggestions', requireAuth, requireAnalyticsConsent, a
 await ensureDir(DATA_DIR);
 await ensureDir(BACKUPS_DIR);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`[fitquest-backend] listening on http://localhost:${PORT}`);
 });
+
+// Graceful shutdown — close SQLite WAL cleanly
+for (const sig of ['SIGTERM', 'SIGINT']) {
+  process.on(sig, () => {
+    console.log(`[fitquest-backend] ${sig} received, shutting down…`);
+    server.close(() => {
+      storage.close();
+      process.exit(0);
+    });
+  });
+}

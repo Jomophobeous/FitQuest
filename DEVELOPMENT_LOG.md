@@ -1,5 +1,143 @@
 # FitQuest Development Log
 
+## 2026-02-18 — AI Phase 1: FSRS Flashcard Integration ✅ COMPLETE
+
+### Session Overview
+Implemented FSRS (Free Spaced Repetition Scheduler) algorithm to replace SM-2 for flashcard scheduling. FSRS provides ~40% better retention through a more sophisticated memory model.
+
+### Delivered
+
+**New Files**:
+- `src/fitmind/FSRSService.ts` — Clean wrapper around ts-fsrs library
+  - `scheduleReview(card, rating)` — Schedule next review based on user rating
+  - `previewReview(card)` — Show all four rating outcomes before user decides
+  - `getRetrievability(card)` — Current recall probability percentage
+  - `forgetCard(card)` — Reset card to initial state
+
+**Schema Migration (v10 → v11)**:
+- Added FSRS columns to `fitmind_flashcards`:
+  - `stability` (REAL) — Memory stability in days
+  - `state` (INTEGER) — 0=New, 1=Learning, 2=Review, 3=Relearning
+  - `due` (INTEGER) — Next review timestamp
+  - `scheduled_days` (INTEGER) — Days until next review
+  - `last_review` (INTEGER) — Last review timestamp
+  - `lapses` (INTEGER) — Forgotten count
+  - `learning_steps` (INTEGER) — Current (re)learning step
+- Auto-migration converts existing SM-2 cards to FSRS format
+
+**Updated FitMindService API**:
+- `reviewFlashcardFSRS(cardId, rating)` — New primary review method
+- `previewFlashcardReview(cardId)` — Preview intervals for each rating
+- `getFlashcardRetrievability(cardId)` — Current memory strength
+- `resetFlashcard(cardId)` — Start over with a card
+- Legacy `reviewFlashcard(quality)` kept for backwards compatibility
+
+### Technical Details
+- **Package**: ts-fsrs v5.2.3 (MIT license, ~50KB)
+- **Algorithm**: FSRS-5 with DSR (Difficulty, Stability, Retrievability) model
+- **Parameters**: 90% target retention, 365-day max interval, fuzzing enabled
+- **Rating scale**: 'again' | 'hard' | 'good' | 'easy' (maps to FSRS grades 1-4)
+
+### Validation
+- `npm run typecheck` ✅
+- All FSRS files have no TypeScript errors
+
+### Next Steps
+- AI Phase 2: Wire NeuralSummarizer, SemanticSearch, KnowledgeGraph into DualAIEngine
+
+---
+
+## 2026-02-18 — AI Bot Enhancement Strategy (Revised)
+
+### Session Overview
+Revised AI enhancement strategy per user direction: keep template-based "bot style" without heavy local LLMs. Discovered FitQuest already has sophisticated bundled neural models that need integration, not new models.
+
+### Key Discovery
+FitQuest has ~143MB of bundled neural models that exist but aren't fully wired into DualAIEngine:
+- **NeuralSummarizer** (`src/ai/professor/`) — Extractive summarization
+- **SemanticSearch** (`src/ai/professor/`) — Dense retrieval + HNSW index
+- **KnowledgeGraph** (`src/ai/professor/`) — Entity extraction
+- **TransformerFitCoach** (`src/ai/coach/`) — Neural workout generation
+- **NeuralIntentRouter** (`src/ai/intent/`) — 8-layer transformer
+
+### Delivered
+- **New strategy document**: [docs/AI_BOT_ENHANCEMENT_STRATEGY.md](docs/AI_BOT_ENHANCEMENT_STRATEGY.md)
+  - 5 phases: FSRS → Neural Integration → Memory → Templates → Suggestions
+  - ~6 weeks total vs 15+ weeks for LLM approach
+  - Zero new model downloads required
+
+- **Updated project tracking**:
+  - TODO.md — Revised "AI Bot Enhancement Initiative" section
+  - OBJECTIVES.md — Revised initiative with new direction
+
+### New 5-Phase Plan
+| Phase | Focus | Est. Time |
+|-------|-------|-----------|
+| 1 | FSRS flashcard algorithm (ts-fsrs) | 1 week |
+| 2 | Wire bundled neural models into DualAIEngine | 2 weeks |
+| 3 | Conversation memory across sessions | 1 week |
+| 4 | Expanded template library (150+ templates) | 1 week |
+| 5 | Smart context-aware suggestions | 1 week |
+
+### Deferred (Future)
+- react-native-executorch, llama.cpp — Too heavy for universal accessibility
+- Cloud AI — Breaks offline-first philosophy
+
+### Files Modified
+- `docs/AI_BOT_ENHANCEMENT_STRATEGY.md` — NEW
+- `TODO.md` — Revised AI initiative section
+- `OBJECTIVES.md` — Revised AI initiative section
+
+---
+
+## 2026-02-18 — AI Enhancement Research & Phase 6 Completion
+
+### Session Overview
+Completed Phase 6 (Document Reader Overhaul) verification and conducted comprehensive research on open-source AI repositories to enhance the COACH and PROFESSOR AI personalities.
+
+### Delivered
+- **Phase 6 Solidified**: Verified Document Reader module compiles cleanly (no TypeScript errors)
+  - Readers at `src/fitmind/readers/`: PDFReader, EPUBReader, ArticleReader, TextReader, ReaderFactory
+  
+- **AI Enhancement Research**: Identified 4 MIT/Apache-2.0 repos for commercial use:
+  | Repository | License | Stars | Purpose |
+  |------------|---------|-------|---------|
+  | react-native-executorch | MIT | 1.2k | On-device LLM via Meta ExecuTorch |
+  | ts-fsrs | MIT | 571 | FSRS spaced repetition (40% better than SM-2) |
+  | llama.cpp | MIT | 95.2k | Reference LLM implementation |
+  | RAGFlow | Apache-2.0 | 73.4k | RAG patterns (server-side, extract patterns only) |
+
+- **Repositories Cloned**: 3 repos to `workspace-repos/ai-enhancement/`:
+  - `ts-fsrs/` — TypeScript FSRS algorithm implementation
+  - `react-native-executorch/` — React Native LLM integration via ExecuTorch
+  - `llama.cpp/` — Reference for GGUF format and optimizations
+
+- **Research Documentation**: Created `docs/AI_ENHANCEMENT_RESEARCH.md` with:
+  - Executive summary and selection criteria
+  - Detailed analysis of each repository
+  - Implementation priorities (5-phase roadmap)
+  - Code examples from analyzed repos
+
+- **Project Tracking Updated**:
+  - `TODO.md` — Added "AI Enhancement Initiative" section with 5 AI phases
+  - `OBJECTIVES.md` — Marked Phase 6 complete, added AI Enhancement Initiative with detailed tasks
+
+### Key Technical Findings
+- **react-native-executorch**: Uses `useLLM` hook with `generate()` streaming, requires iOS 17+/Android 13+, New Architecture, RN 0.81+
+- **ts-fsrs**: FSRS algorithm implementation with TypeScript types, easy integration via `npm install ts-fsrs`
+- **Hybrid AI Strategy**: Templates for instant response + LLM for generative when model loaded
+
+### Next Steps (AI Phase 1)
+1. Install `ts-fsrs` package
+2. Create `FSRSService.ts` wrapper
+3. Migrate flashcard schema from SM-2 to FSRS fields
+
+### Validation
+- `get_errors` ✅ (Phase 6: no TypeScript errors)
+- All cloned repos verified ✅
+
+---
+
 ## 2026-02-17 — Runtime Verification Hardening (Meal Prep Signature)
 
 ### Session Overview
@@ -1521,5 +1659,73 @@ Verification upgrades:
 Completion state:
 - Updated `src/platform/phaseFoundation.ts` to mark all Phase 1-10 pillars at 100% for requested full completion status.
 
+---
 
+### Codebase Audit Tiers 0–5 — Solidification & Execution (19 Feb 2026)
+
+Full execution of `docs/CODEBASE_AUDIT_AND_STRATEGY.md` Tiers 0–5 across two sessions. All items verified with 0 TS errors and 155/155 tests passing (14 test files).
+
+#### Tier 0 — Blockers (completed prior)
+- C1-C4 resolved in earlier session (secrets, package name, Sentry, test fix).
+
+#### Tier 1 — Accessibility & Error Resilience (completed prior)
+- Completed in earlier session.
+
+#### Tier 2 — UI Consistency
+- **Dashboard SPACING cleanup**: Removed custom `SPACING = {xs:8, sm:16, md:24, lg:32}` from `app/dashboard.tsx`. Replaced all 20 usages with canonical `spacing[n]` tokens imported from `src/design/theme-system.ts`.
+- **Hardcoded color elimination (4 files)**:
+  - Added 5 new color tokens to `src/design/theme-system.ts` (both dark & light palettes): `onAccent`, `orange`, `skyBlue`, `purpleLight`, `pinkLight`.
+  - `app/craft-my-body.tsx`: Replaced `ACCENT_PURPLE`, `PRIORITY_CONFIG` colors, decorative icon colors, and all `'#fff'` with theme tokens.
+  - `app/create-workout.tsx`: Replaced `getDifficulties()` colors and all `'#fff'`.
+  - `app/exercises.tsx`: Replaced `DIFFICULTY_COLORS` and all `'#fff'`.
+  - `app/nutrition-calculator.tsx`: Replaced `getCategoryMeta()` colors and all `"#fff"`.
+- **Module-level color pattern**: For config objects outside React components (can't use `useTheme()` hook), imports `colorSystem` directly from theme-system.ts. Inside JSX, uses `theme.colors.xxx`.
+
+#### Tier 3 — DX & Testing
+- **Vitest alias fix**: Reordered `expo-file-system/legacy` BEFORE `expo-file-system` in `vitest.config.ts` to fix subpath resolution (Vite was matching the shorter prefix first).
+- **ESLint no-raw-text rule**: Installed `eslint-plugin-react-native`, added `react-native/no-raw-text` with `skip: ['ThemedText']` to `eslint.config.js`.
+- **Engine unit tests (3 new files, 36 tests)**:
+  - `tests/recoveryEngine.test.ts` — 19 tests: RECOVERY_CONFIG, fatigue classification, deload severity, needsRecoveryTick.
+  - `tests/workoutGenerator.test.ts` — 3 integration tests: null profile, exercise generation, deload intent.
+  - `tests/progressionEngine.test.ts` — Extended from 3→17 tests: PROGRESSION_CONFIG, analyzeExerciseProgression, calculateProgression.
+- **New test mocks (12 Expo modules)**: `expo-crypto`, `expo-secure-store`, `expo-sqlite`, `expo-battery`, `expo-local-authentication`, `expo-file-system`, `expo-sensors`, `expo-random`, `expo-modules-core`, `expo-asset` — all in `tests/__mocks__/`.
+- **New test files added by user/other tooling**:
+  - `tests/dualAIEngine.test.ts` — 3 tests: Professor model routing (local, OpenAI, fallback).
+  - `tests/fitmindReaderEngine.test.ts` — 18 tests: Reader engine utilities.
+  - `tests/rateLimiter.test.ts` — 10 tests: Rate limiter + formatting.
+  - `tests/readerWebAssets.test.ts` — 3 tests: PDF/EPUB HTML template builders.
+  - `tests/securityPolicy.test.ts` — 2 tests: AsyncStorage removal, secureDelete whitelist.
+  - `tests/adaptiveTrainingService.test.ts` — 2 tests: Profile derivation.
+  - `tests/loggerRedaction.test.ts` — 2 tests: Redaction of sensitive keys.
+  - `tests/phase710Foundations.test.ts` — 6 tests: Phase 7-10 foundations.
+
+#### Tier 4 — Workspace Sync Priorities
+- **DB N+1 fix**: Rewrote `getExercisesByMuscle()` in `src/database/service.ts` from 2-query N+1 pattern (fetch ALL exercises → filter in JS) to single SQL query with `JOIN exercise_muscles` + `WHERE … IN (…)` subquery.
+- **expo-location plugin**: Added `"expo-location"` to `app.json` plugins array for Android 14+ permission compliance.
+- **New services added by user/other tooling**:
+  - `src/services/analyticsDataService.ts` — Centralized analytics data fetching (SQL queries, no raw SQL in UI).
+  - `src/services/errorTelemetry.ts` — Error capture/telemetry service (SQLite-backed, reader/health error helpers).
+  - `src/services/exerciseTaxonomyMapper.ts` — Maps external exercise DB taxonomies to FitQuest enums.
+  - `src/services/featureFlags.ts` — Feature flag system (SQLite-persisted, 6 flags defined).
+  - `src/services/smokeTestUtils.ts` — Runtime smoke tests for critical pathways (DB, workout, health, auth, reader).
+  - `src/services/healthAdapters/` — Health provider adapter system:
+    - `types.ts` — Provider-neutral IHealthAdapter interface + data models.
+    - `HealthConnectAdapter.ts` — Android Health Connect implementation.
+    - `HealthKitAdapter.ts` — iOS HealthKit implementation.
+    - `index.ts` — Factory + convenience functions.
+  - `src/fitmind/readers/types.ts` — Document reader types (PDF, EPUB, Article, Note).
+  - `src/utils/rateLimiter.ts` — Client-side rate limiter (biometric, AI, export, destructive ops).
+  - `src/utils/validation.ts` — Input validation utilities (numeric, email, password, name, sanitizers).
+
+#### Tier 5 — Server & Deployment
+- **Server SQLite storage**: Created `server/src/sqliteStorage.js` (~300 lines) — drop-in `SqliteStorage` class replacing `JsonStorage`. Features: WAL mode, `busy_timeout=5000`, foreign keys, indexed columns, automatic JSON→SQLite migration (renames `.json` to `.json.bak`). Installed `better-sqlite3` in server.
+- **Wired into server**: Changed `server/src/index.js` import from `JsonStorage` → `SqliteStorage`, added graceful shutdown on SIGTERM/SIGINT (closes SQLite WAL cleanly).
+- **Server rate limiting**: Installed `express-rate-limit` in server. Added:
+  - Global limiter: 120 req/min.
+  - Auth limiter: 15 req/15min on `/auth/email/register`, `/auth/email/login`, `/auth/refresh`.
+
+#### Solidification (this session)
+- **TS type fix**: Updated `MuscleFatigue.last_trained_at` from `string` to `string | null` in `src/database/types.ts` — matches SQL schema where column allows NULL.
+- **Test type fixes**: Fixed `locked: 0` → `locked: false` in `workoutGenerator.test.ts`. Added `TargetMuscle` type import + assertion in `recoveryEngine.test.ts`.
+- **Verification**: 0 TypeScript errors, 14/14 test files, 155/155 tests passing.
 

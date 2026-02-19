@@ -1,6 +1,6 @@
 # FitQuest — Multi-Phase Execution Plan
 
-This document captures the strategic roadmap for FitQuest as a system (not an app). Each phase unlocks the next — do not skip phases.
+Last updated: 2026-02-18
 
 ## Phase Dependency Map
 
@@ -10,336 +10,220 @@ Phase 1 → Phase 2 → Phase 3
                       ↓
                    Phase 6
                       ↓
-                   Phase 7
+                   Phase 7-10
                       ↓
-                   Phase 8
-                      ↓
-                   Phase 9
-                      ↓
-                   Phase 10
-
-Skipping Phase 2 (persistence) or Phase 4 (aggregation) will break later phases.
+     Workspace Repo Sync (NEW)
 
 ---
 
-## Phase 1 — Local Dominance (DONE / LOCKED)
+## Phase 1 — Local Dominance ✅ COMPLETE / LOCKED
 
-Objective
-- Prove the core loop works entirely client-side.
-
-Stack / Guarantees
-- Client-only, deterministic generator
-- SQLite (local) for state/history
-- Subscription enforcement local with offline grace
-
-Success Signals / Exit Condition
-- Users return without reminders
-- Streaks survive breaks
-- Algorithm feels “personal”
-- Users explicitly request: Backup, Sync, Sharing, Competition
-
----
-
-## Phase 2 — State Persistence (Minimal Backend)
-
-Objective
-- Prevent data loss; enable device migration.
-
-Added Capabilities
-- Cloud backup and restore
-- Encrypted user-state storage
-- Minimal auth (email / Apple / Google)
-
-What You Must NOT Add
-- Business logic on server
-- Workout generation on server
-- Social features (leaderboards, messaging)
-
-Backend Scope
-- CRUD only (store encrypted user state)
-- Tech options: Supabase, Firebase, or minimal custom API
-- DB: PostgreSQL (user state only)
-
-Exit Condition
-- Users trust the app for long-term history
-- Multi-device usage becomes common
+Delivered:
+- Deterministic workout generator + 788 exercises (6 categories)
+- SQLite schema v9 with auto-migration chain (v0→v9)
+- Sensor fusion (accelerometer + gyroscope + pedometer) at 10Hz
+- Activity classification (STATIONARY/WALKING/RUNNING/CYCLING/EXERCISE)
+- Health engines: anomaly detection, sleep analysis, recovery scoring, background monitoring
+- AES-256-GCM encryption for health/AI data, biometric auth, PBKDF2 passcode
+- FitMind cognitive fitness module (documents, reader, dual AI, flashcards, SM-2 spaced repetition)
+- IntentRouter NLP for intent classification + entity extraction
+- 15-language i18n, legal center, consent versioning
+- Meal prep with GPS-based food filtering + manual region override
+- RevenueCat subscription enforcement with offline grace
 
 ---
 
-## Phase 3 — Cross-Device Continuity
+## Phase 2 — State Persistence 🔁 FOUNDATIONS BUILT
 
-Objective
-- Make FitQuest a persistent identity across devices.
+Client-side ready:
+- Cloud backup/restore service, replay orchestrator, deferred mutation queue
+- Auth scaffolding (biometric + passcode + Google OAuth stub)
+- Cache store service (in-memory + SQLite persistent layers)
 
-New Capabilities
-- Near-real-time or sync-on-demand
-- Seamless device switching
-
-Important Changes
-- Conflict resolution policy
-- Versioned state updates & session reconciliation
-- Server stores outcomes only (no generation)
-
-Exit Condition
-- Users expect continuity everywhere; power users emerge
+Still needed:
+- [ ] Deploy minimal backend CRUD API (Supabase recommended)
+- [ ] Real Google OAuth verification on physical device
+- [ ] End-to-end backup/restore test pass
 
 ---
 
-## Phase 4 — Aggregated Intelligence
+## Phase 3 — Cross-Device Continuity ⏳ SCAFFOLDED
 
-Objective
-- Learn from anonymized patterns to tune defaults.
-
-What to Collect (anonymized)
-- Completion rates, failure points, volume tolerances
-
-Use Cases
-- Tune defaults and progression curves
-- Detect algorithm blind spots
-
-Constraints
-- No per-user model training
-- No black-box personalization
-- Backend role: analytics & aggregation only
-
-Exit Condition
-- Demonstrable evidence some paths outperform others
+Built: sync-on-demand queue, replay handlers, conflict policy design
+Needed: multi-device sync, server reconciliation, real-time option
 
 ---
 
-## Phase 5 — Adaptive Systems
+## Phase 4 — Aggregated Intelligence ✅ COMPLETE
 
-Objective
-- Make FitQuest feel intelligent while staying interpretable.
-
-New Capabilities
-- Adaptive deload timing
-- Personalized progression curves
-- Per-user fatigue sensitivity (lightweight, interpretable models)
-
-Key Constraint
-- User can understand why changes occur (no opaque AI)
-
-Exit Condition
-- Users describe the app as “knowing me”
+Built:
+- Feature flags system (src/services/featureFlags.ts) with SQLite persistence
+- Analytics data service layer (src/services/analyticsDataService.ts)
+- Smoke test utilities (src/services/smokeTestUtils.ts)
+- Release verification script (scripts/verify-release.mjs)
+- Migration rollback playbook (docs/MIGRATION_ROLLBACK_PLAYBOOK.md)
 
 ---
 
-## Phase 6 — Social Layer (Optional, Dangerous)
+## Phase 5 — Adaptive Systems 🔁 IN PROGRESS
 
-Objective
-- Add opt-in social features for network effects only after retention is strong.
-
-Possible Features
-- Opt-in leaderboards, guilds, asynchronous competition
-
-Rules
-- Solo experience remains intact
-- Social features never block progression
-
-Risk
-- Toxic comparison, motivation collapse for average users
+Built: adaptive training profiles, fatigue-aware generation, anomaly detection, sleep scoring
+Needed: personalized progression curves, per-user calibration, user-facing "why" explanations
 
 ---
 
-## Phase 7 — Platformization
+## Phases 6-10 — ⏳ SCAFFOLDED
 
-Objective
-- Offer FitQuest as a system other creators build on.
-
-Capabilities
-- Coach tools, custom program builders, SDK/API
-
-Note
-- This is a company / product-stage change, not a build-stage change.
+Phase 6 (Social): opt-in toggle built, needs leaderboard/guild implementation
+Phase 7 (Platform): Studio screen exists, needs SDK/API
+Phase 8 (Autonomous): Center screen exists, needs policy engine
+Phase 9 (Federation): Hub screen exists, needs contracts
+Phase 10 (Hardening): CI gates exist (ops readiness, perf budget, quality), needs SLO/monitoring
 
 ---
 
-## Phase 8 — Autonomous Operations
+## NEW: Workspace Repository Sync Plan 🔁 PLANNED
 
-Objective
-- Add policy-driven automation loops for adaptation, rollout, and guardrails.
+Reference: [docs/WORKSPACE_REPO_SYNC_PLAN.md](docs/WORKSPACE_REPO_SYNC_PLAN.md)
 
-Capabilities
-- Safety-mode policies for auto-adjustments
-- Decision audit trails with rationale
-- Human-review gates for risky changes
+### Sync Phase 1: Exercise Database Enhancement (HIGH PRIORITY)
+- [ ] Import 870+ exercises from free-exercise-db
+- [ ] Schema migration v10 (force_type, mechanic, exercise_images)
+- [ ] Category mapping (strength→building_muscle, etc.)
+- [ ] Exercise images to assets/exercises/
 
-Constraint
-- Never allow opaque fully autonomous progression changes without interpretable policy checks.
+### Sync Phase 2: Workout Generator Restructure (HIGH PRIORITY)
+- [ ] Extract selectors from monolith
+- [ ] New modular architecture (src/engines/workout/)
+- [ ] Enhanced fatigue model (exponential decay)
+- [ ] Volume landmarks tracking (MV/MEV/MAV/MRV)
+- [ ] A/B testing via feature flags
 
----
+### Sync Phase 3: Native Health Platform Integration (MEDIUM PRIORITY)
+- [ ] Android Health Connect adapter
+- [ ] iOS HealthKit adapter
+- [ ] Unified HealthDataSource interface
+- [ ] Wearable sync (Fitbit, Garmin, Apple Watch)
 
-## Phase 9 — Ecosystem Federation
+### Sync Phase 4: Analytics Visualization (MEDIUM PRIORITY)
+- [ ] Victory Native charts integration
+- [ ] Workout duration trend chart
+- [ ] Muscle group distribution pie
+- [ ] Interactive date range selector
 
-Objective
-- Open FitQuest to partner integrations while preserving privacy and local-first guarantees.
+### Sync Phase 5: Enhanced Move Module (MEDIUM PRIORITY)
+- [ ] GPS-based distance tracking (Haversine)
+- [ ] Live pace display (current/average/best)
+- [ ] Elevation gain tracking
+- [ ] Step stride estimation
 
-Capabilities
-- Scoped import/export contracts
-- Integration registry with certification tiers
-- Federation policy enforcement
-
-Constraint
-- Integrations cannot bypass consent, encryption, or schema governance.
-
----
-
-## Phase 10 — Enterprise Hardening
-
-Objective
-- Reach enterprise-grade reliability, governance, and compliance posture.
-
-Capabilities
-- SLO/SLA targets and risk scoring
-- Control automation for key rotation, backup drills, privacy audits
-- Multi-tenant and operational governance foundations
-
-Constraint
-- Hardening must not degrade on-device usability or offline-first behavior.
+### Sync Phase 6: Document Reader Overhaul ✅ COMPLETE
+- [x] Native PDF viewer (react-native-pdf) — PDFReader.tsx with WebView fallback
+- [x] EPUB support (epub.js) — EPUBReader.tsx with CFI persistence  
+- [x] Unified reader architecture — ReaderFactory pattern at src/fitmind/readers/
+- [x] ArticleReader + TextReader components
 
 ---
 
-## Strategic Truths (Why this roadmap)
-- Most fitness apps fail by adding social too early, adding AI without data, or centralizing logic prematurely.
-- Maintain client-driven generation; add server roles only for storage, aggregation, and non-personalized analytics.
+## AI Bot Enhancement Initiative — REVISED (2026-02-18) 🔁 IN PROGRESS
+
+**Reference**: [docs/AI_BOT_ENHANCEMENT_STRATEGY.md](docs/AI_BOT_ENHANCEMENT_STRATEGY.md)
+
+**Direction**: Enhance template-based bot WITHOUT local LLM — keep it lightweight, universally accessible
+
+### Key Discovery ✅
+FitQuest already has sophisticated neural models bundled (~143MB):
+| Model | Location | Purpose |
+|-------|----------|---------|
+| NeuralSummarizer | `src/ai/professor/` | Extractive document summarization |
+| SemanticSearch | `src/ai/professor/` | Dense retrieval + HNSW index |
+| KnowledgeGraph | `src/ai/professor/` | Entity extraction & relationships |
+| TransformerFitCoach | `src/ai/coach/` | Neural workout generation |
+| NeuralIntentRouter | `src/ai/intent/` | 8-layer transformer intent classification |
+
+**The opportunity is INTEGRATION, not new models.**
+
+### AI Phase 1: FSRS Flashcard Algorithm ✅ COMPLETE (2026-02-18)
+- [x] Install `ts-fsrs` package v5.2.3 (MIT)
+- [x] Create `FSRSService.ts` wrapper service with scheduleReview, previewReview, getRetrievability, forgetCard APIs
+- [x] Schema v11 migration: Add FSRS fields (stability, state, due, scheduled_days, last_review, lapses, learning_steps)
+- [x] Auto-migrate existing SM-2 flashcards to FSRS format
+- [x] Update FitMindService with new FSRS methods
+- **Impact**: 40% better retention vs SM-2 | **Completed**: 2026-02-18
+
+### AI Phase 2: Wire Neural Models into DualAIEngine (HIGH)
+- [ ] Wire NeuralSummarizer → real extractive summaries
+- [ ] Wire SemanticSearch → document Q&A with citations
+- [ ] Wire KnowledgeGraph → entity-aware responses
+- **Impact**: Unlock existing bundled models | **Est**: 2 weeks
+
+### AI Phase 3: Conversation Memory (MED)
+- [ ] Load last N conversations on chat open
+- [ ] Build conversation summary for context injection
+- [ ] Track user preferences + entity memory
+- **Impact**: Bot remembers context across sessions | **Est**: 1 week
+
+### AI Phase 4: Expanded Template Library (MED)
+- [ ] Add 100+ new COACH templates (sport-specific, time-aware, streak milestones)
+- [ ] Add 50+ new PROFESSOR templates (reading level, document type aware)
+- [ ] Dynamic template selection (avoid repeats, weight by context)
+- **Impact**: Richer, more varied personality | **Est**: 1 week
+
+### AI Phase 5: Smart Suggestions (MED)
+- [ ] Context-aware quick reply buttons
+- [ ] Fatigue-aware, streak-aware, progress-aware suggestions
+- **Impact**: Quick replies feel intelligent | **Est**: 1 week
+
+### Deferred (Future — When Technology Benefits Everyone)
+| Item | Reason for Deferral |
+|------|---------------------|
+| react-native-executorch | Too heavy, limits device compatibility |
+| llama.cpp | Requires significant storage/RAM |
+| Cloud AI | Breaks offline-first philosophy |
 
 ---
 
-## Current State Snapshot (2026-02-17)
-- Phase 1 core loop is done and locked — client-only deterministic workout generation works.
-- Phase 2-6 core capabilities are implemented with verification pipelines.
-- Phase 7-10 screens exist as runtime scaffolds — **not user-facing features**. These screens (Platform Studio, Autonomous Center, Federation Hub, Enterprise Hardening) are registered but intentionally have no navigation paths. They remain hidden and will not ship to end-users.
-- Language switching exists via `LanguageContext`, but localization coverage is partial and inconsistent across screens.
-- Meal Prep has GPS/location filtering with manual region override in Profile → Preferences.
-- Privacy/Legal controls exist in Profile → Privacy & Legal section (consent, export, delete, legal center).
-- Health Dashboard is accessible via the dropdown menu.
-- Profile screen is organized into: Training Profile, Adaptive Training, Preferences, Privacy & Legal, App Info.
+## Current Sprint — Active Objectives (2026-02-18)
 
----
+### P0 — Blocking bugs ✅ COMPLETE
+- [x] Fix expo-auth-session Metro crash (expo-application resolution via metro.config.js extraNodeModules)
+- [x] Fix FitMind Library "Coming Soon" placeholder (replaced with real functional library)
+- [x] Fix pdf.viewer.tsx getConstants error (removed broken import)
+- [x] Fix FitMind route unmatched error (added fitmind-reader route export)
+- [x] Fix Google OAuth compliance (offline-first flow for first-time users)
 
-## 2026-Q1 Priority Objectives (Execution Plan)
+### P1 — Critical wiring ✅ COMPLETE
+- [x] Wire FitMind Library to real FitMindService CRUD
+- [x] Wire FitMind Reader navigation from Library
+- [x] Start BackgroundHealthEngine at app launch
+- [x] Wire IntentRouter + DualAI into Coach screen
+- [x] Add Dashboard quick-access tiles (Health, Analytics, Coach, Meal Prep, Exercises, My Workouts)
+- [x] Add biometric settings to Profile
+- [x] Add health sync error telemetry viewer to Profile
 
-### Progress Snapshot (2026-02-17)
-- Objective 1 — App-Wide Responsive Language System: **95%**
-   - Complete: critical routes localized + regression gate (`verify:i18n:p0`) added.
-   - Remaining: full non-critical route sweep + locale formatting consistency pass.
-- Objective 2 — Regional Meal Prep Controls (Auto + Manual): **100%**
-   - Complete: manual override in Profile → Preferences, precedence logic, persistent active-region indication.
-- Objective 3 — Legal & Data-Protection Readiness: **99%**
-   - Complete: in-app Legal Center (dedicated screen) + Privacy/Terms screens + consent version/timestamp storage + legal draft documents. Legal items grouped under Profile → Privacy & Legal section.
-   - Remaining: store-console legal URL alignment + counsel final review.
-- Objective 4 — Cache/State/Offline Reliability: **82%**
-   - Complete: foundational local-first persistence/sync scaffolding, cache policy/store baseline, replay handlers for legal consent + backup upload + sync-on-demand, centralized replay orchestrator with cooldown, sync queue fallback on failures, notification reliability reconciliation at app startup, and automated notification reliability wiring verification.
-   - Remaining: full domain-wide TTL/invalidation rollout + additional mutation handlers and retry/backoff tuning.
-- Objective 5 — Notifications/Performance/CI-CD/Delivery Ops: **87%**
-   - Complete: CI baseline, telemetry groundwork, core quality scripts, CI gate hardening (`verify:quality:110`, `verify:phase10:lite`, `verify:mealprep:text-safety`, `verify:notifications:reliability`, `verify:performance:budget`, `verify:ops:readiness`), native notification permission/scheduling wiring, rollout/rollback runbooks, older-device execution evidence tracking, and rollout stage execution logging.
-   - Remaining: real-device reminder delivery verification and staged rollout sign-off.
-- **Objective 6 — Navigation & UX Architecture: 100%** *(NEW — completed 2026-02-17)*
-   - Registered missing screens in layout (legal-center, privacy-policy, terms-of-service).
-   - Added Health Dashboard and Craft My Body to dropdown menu for discoverability.
-   - Reorganized Profile screen: Preferences (UI settings) | Privacy & Legal (consent, data rights) | App Info (backup, help, about).
-   - Fixed About FitQuest action (was no-op, now shows app info dialog).
-   - Phase 7-10 ghost screens remain registered but intentionally hidden (no navigation paths).
+### P1.5 — Security hardening ✅ COMPLETE
+- [x] Replace Math.random() with expo-crypto in differential privacy noise (CRITICAL — FederatedLearning.ts)
+- [x] Replace Math.random() with Crypto.randomUUID() for device/bundle IDs (EncryptedCloudSync.ts, FederatedLearning.ts)
+- [x] Replace Math.random() with Crypto.randomUUID() for session/entity IDs (SleepAnalysisEngine.ts, bodyCraftEngine.ts)
+- [x] Guard security console.logs with __DEV__ (AESEncryption.ts, BiometricAuth.ts, EncryptedDatabase.ts)
+- [x] Remove dead Apollo wrapper hooks (useGraphQL.ts)
 
-### 1) App-Wide Responsive Language System
-Objective
-- Make language changes immediate and consistent across all user-facing UI.
+### P2 — Feature & Quality Sprint ✅ COMPLETE
+- [x] Medical disclaimer system — MedicalDisclaimer on health-dashboard, nutrition-calculator, craft-my-body
+- [x] Battery-aware background tasks — expo-battery 4-tier throttling (NORMAL/LOW/CRITICAL/CHARGING)
+- [x] Hardcoded color cleanup — ~130+ replacements across 7 files, 5 new theme tokens
+- [x] Analytics screen wired to real SQLite data (workout_sessions, daily_steps, jog_sessions, XP, streaks, muscle heatmap)
+- [x] Input validation module (src/utils/validation.ts) — numeric ranges, email regex, password strength, name validation, sanitizers
+- [x] Input validation wired into: onboarding, craft-my-body, register, create-workout, fitmind-library, fitmind-reader
+- [x] Rate limiting module (src/utils/rateLimiter.ts) — sliding-window with lockout, 6 predefined profiles
+- [x] Rate limiting wired into: login (email sign-in), fitmind-reader (AI queries)
+- [x] Test coverage — 95 tests across 9 files (RealisticHealthEngine 36, validation 31, rateLimiter 11, plus 6 prior suites)
+- [x] Vitest config with Expo native module mocks
 
-Deliverables
-- 100% UI string audit with all user-visible text routed through `t()` keys.
-- Language readiness gate for new screens (no hardcoded literals in production routes).
-- Locale-aware formatting for date/time/numbers where relevant.
-
-Exit Criteria
-- Language switch reflects across all tabs/screens without stale text.
-- No untranslated hardcoded strings in `app/` critical routes.
-
-### 2) Regional Meal Prep Controls (Auto + Manual)
-Objective
-- Let users control food-region mapping even when GPS is unavailable or undesired.
-
-Deliverables
-- Settings option for manual region override (stored in SecureStore or SQLite `app_state`).
-- Priority logic: manual override > auto-detected location > global fallback.
-- Clear Meal Prep banner indicating active region with one-tap change entry.
-
-Exit Criteria
-- User can switch region explicitly and see food list update immediately.
-
-### 3) Legal & Data-Protection Readiness
-Objective
-- Ship minimum required legal/compliance surfaces for health/fitness distribution.
-
-Deliverables
-- In-app Legal Center with Privacy Policy + Terms of Service links/content.
-- Consent versioning: store accepted policy version + timestamp per user.
-- User rights flows consolidated: export, deletion request, consent withdrawal path.
-
-Exit Criteria
-- Legal docs are reachable in-app and store metadata is aligned.
-- Consent and data-rights actions are auditable.
-
-### 4) Cache/State/Offline Reliability
-Objective
-- Standardize caching and state persistence to improve performance and resilience.
-
-Deliverables
-- 3-layer cache policy documented and implemented: in-memory UI state, SQLite/app_state persistence, server sync queue.
-- TTL/invalidation rules per data domain (workouts, analytics, meal prep, profile).
-- Offline mutation queue with replay + dedupe strategy for sync-safe writes.
-
-Exit Criteria
-- Predictable offline behavior and reduced redundant reads.
-
-### 5) Notifications, Performance, CI/CD, and Delivery Ops
-Objective
-- Improve runtime reliability and release velocity.
-
-Deliverables
-- Push reliability baseline (permission UX, local reminders, delivery/error instrumentation).
-- Performance budget and profiling pass for startup/list rendering/sensor workloads.
-- CI/CD hardening for regression checks and deterministic release flow.
-- Feature request intake workflow (in-app capture → triage queue → roadmap link).
-
-Exit Criteria
-- Reproducible release pipeline and measurable runtime improvements.
-
-### 6) Navigation & UX Architecture *(COMPLETED)*
-Objective
-- Ensure every feature is discoverable through intuitive, well-organized navigation and that the profile screen follows standard mobile UX patterns.
-
-Deliverables
-- All screens registered in the Expo Router layout file.
-- Health Dashboard and Craft My Body accessible from the dropdown menu.
-- Profile screen organized into logical subsections: Training Profile, Adaptive Training, Preferences, Privacy & Legal, App Info.
-- Legal/privacy items grouped under a dedicated section — not mixed into general preferences.
-- About FitQuest action displays real app information.
-- Phase 7-10 scaffold screens remain hidden (no user-facing navigation paths).
-
-Exit Criteria
-- Every user-facing feature can be reached within 2 taps from a main screen.
-- No orphaned/inaccessible screens (except intentionally hidden scaffolds).
-- Profile settings are logically grouped by domain.
-
----
-
-## Jurisdictional/Store Compliance Baseline
-- Apple App Store: in-app and store-linked privacy policy, health-data handling disclosures, account deletion support, explicit consent UX where required.
-- Google Play: Data safety accuracy, in-app prominent disclosure/consent for sensitive data, privacy policy in-console + in-app, account deletion pathway.
-- GDPR (health data as special category): explicit consent basis and clear purpose boundaries for health processing.
-- CCPA/CPRA: rights handling for know/delete/correct/limit as applicable, with required notices and non-discrimination handling.
-- Final legal text must be reviewed and approved by qualified counsel before release.
-
----
-
-## Ownership (Updated)
-- Product: phase exit criteria, roadmap prioritization, and feature request triage.
-- Engineering: technical implementation, verification pipelines, and operational reliability.
-- Privacy & Legal: policy text ownership, jurisdiction review, and consent/data-rights governance.
-
----
-
-Created: 2026-02-05
-Updated: 2026-02-17
-
+### P3 — Polish & Release Gate
+- [ ] Wire SensorFusion into Move screen (replace basic pedometer)
+- [ ] Physical device notification delivery verification
+- [ ] Google OAuth live verification on Android device
+- [ ] Staged rollout execution + real-device sweep sign-offs
+- [ ] External legal counsel review before production release
+- [ ] Store console policy URL entry (App Store Connect + Google Play)

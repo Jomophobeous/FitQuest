@@ -19,6 +19,7 @@ import {
   type AccelerometerMeasurement,
   type GyroscopeMeasurement,
 } from 'expo-sensors';
+import { AppState, type NativeEventSubscription } from 'react-native';
 import { encryptedDB } from '../security/EncryptedDatabase';
 import { trainedActivityClassifier } from '../ai/TrainedActivityClassifier';
 import type { SensorReading as AISensorReading } from '../ai/TrainedActivityClassifier';
@@ -119,6 +120,8 @@ export class SensorFusionEngine {
   private accelSub: ReturnType<typeof Accelerometer.addListener> | null = null;
   private gyroSub: ReturnType<typeof Gyroscope.addListener> | null = null;
   private pedometerSub: { remove: () => void } | null = null;
+  private appStateSub: NativeEventSubscription | null = null;
+  private pausedByBackground = false;
 
   // Sensor data buffers (sliding window)
   private accelBuffer: Array<{ magnitude: number; timestamp: number }> = [];
@@ -159,7 +162,7 @@ export class SensorFusionEngine {
     try {
       this.deepModelReady = await deepActivityClassifier.initialize();
       if (this.deepModelReady) {
-        console.log('[SensorFusion] v2.0 CNN-LSTM classifier loaded');
+        if (__DEV__) console.log('[SensorFusion] v2.0 CNN-LSTM classifier loaded');
       }
     } catch {
       this.deepModelReady = false;
@@ -169,7 +172,7 @@ export class SensorFusionEngine {
     try {
       this.mlModelReady = await trainedActivityClassifier.initialize();
       if (this.mlModelReady) {
-        console.log('[SensorFusion] v1.0 ML activity classifier loaded');
+        if (__DEV__) console.log('[SensorFusion] v1.0 ML activity classifier loaded');
       }
     } catch {
       console.warn('[SensorFusion] ML model unavailable — using threshold-based fallback');
@@ -240,7 +243,33 @@ export class SensorFusionEngine {
     }
 
     this.running = true;
-    console.log(`[SensorFusion] Started. Accel: ✓, Gyro: ${gyroAvail ? '✓' : '✗'}, Pedometer: ${pedometerAvail ? '✓' : '✗'}`);
+
+    // Auto-pause sensors when app moves to background
+    this.appStateSub = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        if (this.running && !this.pausedByBackground) {
+          this.accelSub?.remove();
+          this.gyroSub?.remove();
+          this.accelSub = null;
+          this.gyroSub = null;
+          this.pausedByBackground = true;
+          if (__DEV__) console.log('[SensorFusion] Paused — app backgrounded');
+        }
+      } else if (nextState === 'active' && this.pausedByBackground) {
+        this.pausedByBackground = false;
+        Accelerometer.setUpdateInterval(100);
+        this.accelSub = Accelerometer.addListener((data) => this.handleAccelerometer(data));
+        Gyroscope.isAvailableAsync().then((avail) => {
+          if (avail) {
+            Gyroscope.setUpdateInterval(100);
+            this.gyroSub = Gyroscope.addListener((data) => this.handleGyroscope(data));
+          }
+        });
+        if (__DEV__) console.log('[SensorFusion] Resumed — app foregrounded');
+      }
+    });
+
+    if (__DEV__) console.log(`[SensorFusion] Started. Accel: ✓, Gyro: ${gyroAvail ? '✓' : '✗'}, Pedometer: ${pedometerAvail ? '✓' : '✗'}`);
     return true;
   }
 
@@ -248,6 +277,9 @@ export class SensorFusionEngine {
    * Stop all sensor subscriptions.
    */
   stop(): void {
+    this.appStateSub?.remove();
+    this.appStateSub = null;
+    this.pausedByBackground = false;
     this.accelSub?.remove();
     this.gyroSub?.remove();
     this.pedometerSub?.remove();
@@ -255,7 +287,7 @@ export class SensorFusionEngine {
     this.gyroSub = null;
     this.pedometerSub = null;
     this.running = false;
-    console.log('[SensorFusion] Stopped');
+    if (__DEV__) console.log('[SensorFusion] Stopped');
   }
 
   /**

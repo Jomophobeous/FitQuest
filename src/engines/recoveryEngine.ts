@@ -18,6 +18,7 @@ import {
   setAppState,
   getMuscleFatigueLevel,
 } from '../database/service';
+import { getDatabase } from '../database/schema';
 import type { TargetMuscle, MuscleFatigue, WorkoutSession } from '../database/types';
 import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
 
@@ -147,25 +148,37 @@ export async function accumulateFatigue(
   secondaryMuscles: TargetMuscle[],
   setsCompleted: number
 ): Promise<void> {
-  // Primary muscles get full fatigue hit
-  for (const muscle of primaryMuscles) {
-    const currentFatigue = await getCurrentFatigue(userId, muscle);
-    const newFatigue = Math.min(
-      100,
-      currentFatigue + setsCompleted * RECOVERY_CONFIG.fatigue_per_set_primary
-    );
-    await updateMuscleFatigue(userId, muscle, newFatigue, true);
-  }
+  const db = await getDatabase();
 
-  // Secondary muscles get half fatigue hit
-  for (const muscle of secondaryMuscles) {
-    const currentFatigue = await getCurrentFatigue(userId, muscle);
-    const newFatigue = Math.min(
-      100,
-      currentFatigue + setsCompleted * RECOVERY_CONFIG.fatigue_per_set_secondary
-    );
-    await updateMuscleFatigue(userId, muscle, newFatigue, false);
-  }
+  // Use a transaction with atomic UPDATE to prevent read-modify-write races
+  await db.withTransactionAsync(async () => {
+    // Primary muscles get full fatigue hit — atomic increment, no separate read
+    for (const muscle of primaryMuscles) {
+      const increment = setsCompleted * RECOVERY_CONFIG.fatigue_per_set_primary;
+      await db.runAsync(
+        `INSERT INTO muscle_fatigue (user_id, muscle, fatigue_level, last_trained_at, updated_at)
+         VALUES (?, ?, MIN(100, ?), datetime('now'), datetime('now'))
+         ON CONFLICT(user_id, muscle) DO UPDATE SET
+           fatigue_level = MIN(100, fatigue_level + ?),
+           last_trained_at = datetime('now'),
+           updated_at = datetime('now')`,
+        [userId, muscle, increment, increment]
+      );
+    }
+
+    // Secondary muscles get half fatigue hit
+    for (const muscle of secondaryMuscles) {
+      const increment = setsCompleted * RECOVERY_CONFIG.fatigue_per_set_secondary;
+      await db.runAsync(
+        `INSERT INTO muscle_fatigue (user_id, muscle, fatigue_level, last_trained_at, updated_at)
+         VALUES (?, ?, MIN(100, ?), datetime('now'), datetime('now'))
+         ON CONFLICT(user_id, muscle) DO UPDATE SET
+           fatigue_level = MIN(100, fatigue_level + ?),
+           updated_at = datetime('now')`,
+        [userId, muscle, increment, increment]
+      );
+    }
+  });
 }
 
 async function getCurrentFatigue(userId: string, muscle: TargetMuscle): Promise<number> {

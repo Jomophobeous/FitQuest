@@ -101,6 +101,9 @@ const REFERENCE_RANGES = {
 
 export class AnomalyDetector {
   private config: Required<AnomalyConfig>;
+  // Deduplication: track recently alerted anomaly types with cooldown
+  private recentAlerts: Map<string, number> = new Map(); // key → timestamp
+  private static ALERT_COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
 
   constructor(config?: AnomalyConfig) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -147,10 +150,18 @@ export class AnomalyDetector {
     const maResult = this.detectMovingAverageDeviation(metricName, values, anomalyType);
     if (maResult) anomalies.push(maResult);
 
-    // Auto-alert for high-severity anomalies
+    // Auto-alert for high-severity anomalies (with deduplication)
     if (this.config.autoAlert) {
+      const now = Date.now();
       for (const anomaly of anomalies) {
         if (anomaly.severity === 'HIGH' || anomaly.severity === 'CRITICAL') {
+          // Dedup: skip if same anomaly type+metric alerted within cooldown window
+          const dedupKey = `${anomaly.type}:${anomaly.metric}`;
+          const lastAlerted = this.recentAlerts.get(dedupKey);
+          if (lastAlerted && now - lastAlerted < AnomalyDetector.ALERT_COOLDOWN_MS) {
+            continue;
+          }
+
           try {
             await encryptedDB.createHealthAlert(
               anomaly.type,
@@ -164,6 +175,7 @@ export class AnomalyDetector {
                 recommendation: anomaly.recommendation,
               }
             );
+            this.recentAlerts.set(dedupKey, now);
           } catch (e) {
             console.warn('[AnomalyDetector] Failed to create alert:', e);
           }

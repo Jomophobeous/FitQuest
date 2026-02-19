@@ -116,7 +116,8 @@ export async function analyzeExerciseProgression(
   let lastOutcome: boolean | null = null;
 
   for (const record of history) {
-    const success = record.difficulty_rating !== undefined && record.difficulty_rating <= 7;
+    // Unrated exercises default to success (neutral outcome)
+    const success = record.difficulty_rating === undefined || record.difficulty_rating <= 7;
 
     if (lastOutcome === null) {
       lastOutcome = success;

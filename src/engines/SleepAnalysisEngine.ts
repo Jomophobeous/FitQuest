@@ -22,6 +22,7 @@
  * Data stored encrypted via EncryptedDatabase.
  */
 
+import * as Crypto from 'expo-crypto';
 import { encryptedDB } from '../security/EncryptedDatabase';
 import { getDatabase } from '../database/schema';
 
@@ -155,7 +156,7 @@ export class SleepAnalysisEngine {
       : 0;
 
     const session: SleepSession = {
-      id: `sleep_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      id: `sleep_${Date.now()}_${Crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`,
       bedtime: bedtimeMs,
       wakeTime: wakeTimeMs,
       totalDurationMs,
@@ -171,9 +172,11 @@ export class SleepAnalysisEngine {
     // Store encrypted
     await encryptedDB.storeHealthData('sleep_session', session);
 
-    console.log(
-      `[SleepEngine] Session recorded: ${(totalDurationMs / HOUR_MS).toFixed(1)}h, quality: ${qualityScore}`
-    );
+    if (__DEV__) {
+      console.log(
+        `[SleepEngine] Session recorded: ${(totalDurationMs / HOUR_MS).toFixed(1)}h, quality: ${qualityScore}`
+      );
+    }
 
     return session;
   }
@@ -211,7 +214,7 @@ export class SleepAnalysisEngine {
       : 0;
 
     const session: SleepSession = {
-      id: `sleep_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      id: `sleep_${Date.now()}_${Crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`,
       bedtime,
       wakeTime,
       totalDurationMs,
@@ -603,8 +606,11 @@ export class SleepAnalysisEngine {
   private calculateSleepDebt(sessions: SleepSession[], days: number): number {
     const totalSleepMs = sessions.reduce((a, b) => a + b.totalDurationMs, 0);
     const targetMs = days * RECOMMENDED_SLEEP_MS;
-    const debtMs = Math.max(0, targetMs - totalSleepMs);
-    return Math.round((debtMs / HOUR_MS) * 10) / 10;
+    // Allow surplus sleep to partially pay off debt (capped at 0 — you can't go negative)
+    // but also cap maximum reported debt at 3 days worth to avoid alarming numbers
+    const rawDebtMs = targetMs - totalSleepMs;
+    const cappedDebtMs = Math.max(0, Math.min(rawDebtMs, 3 * RECOMMENDED_SLEEP_MS));
+    return Math.round((cappedDebtMs / HOUR_MS) * 10) / 10;
   }
 
   private calculateConsistency(sessions: SleepSession[]): number {

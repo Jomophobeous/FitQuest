@@ -104,6 +104,10 @@ export class HealthMonitorService {
   private monitoringInterval: ReturnType<typeof setInterval> | null = null;
   private sensorUnsubscribe: (() => void) | null = null;
 
+  // Track which alert types have already fired today to prevent duplicates
+  private alertsFiredToday: Set<string> = new Set();
+  private alertsResetDate: string = '';
+
   private constructor() {}
 
   static getInstance(): HealthMonitorService {
@@ -141,7 +145,7 @@ export class HealthMonitorService {
     }, 5 * 60 * 1000);
 
     this.initialized = true;
-    console.log('[HealthMonitor] Initialized');
+    if (__DEV__) console.log('[HealthMonitor] Initialized');
   }
 
   /**
@@ -159,7 +163,7 @@ export class HealthMonitorService {
 
     await this.saveTodaySummary();
     this.initialized = false;
-    console.log('[HealthMonitor] Shutdown');
+    if (__DEV__) console.log('[HealthMonitor] Shutdown');
   }
 
   // ============================================
@@ -347,8 +351,17 @@ export class HealthMonitorService {
       });
     }
 
-    // Store alerts in encrypted database
+    // Reset alert dedup tracker at midnight
+    const today = new Date().toISOString().slice(0, 10);
+    if (this.alertsResetDate !== today) {
+      this.alertsFiredToday.clear();
+      this.alertsResetDate = today;
+    }
+
+    // Store alerts in encrypted database (deduplicated per type per day)
     for (const alert of alerts) {
+      if (this.alertsFiredToday.has(alert.type)) continue;
+      this.alertsFiredToday.add(alert.type);
       await encryptedDB.createHealthAlert(
         alert.type,
         alert.severity,

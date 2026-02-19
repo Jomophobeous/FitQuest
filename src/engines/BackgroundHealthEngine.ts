@@ -21,11 +21,15 @@
  * All sensitive data encrypted. Runs at configurable intervals.
  */
 
-import { AppState, type AppStateStatus } from 'react-native';
+import { AppState, Platform, type AppStateStatus } from 'react-native';
+import * as Battery from 'expo-battery';
+import type { EventSubscription } from 'expo-modules-core';
 import { encryptedDB } from '../security/EncryptedDatabase';
+import { captureHealthError } from '../services/errorTelemetry';
 import { AnomalyDetector, type MetricDataPoint } from './AnomalyDetector';
 import { SleepAnalysisEngine } from './SleepAnalysisEngine';
 import { RealisticHealthEngine } from './RealisticHealthEngine';
+import { syncHealthData } from '../services/healthAdapters';
 import {
   getAverageFatigueLevel,
   getDailyStepsForDate,
@@ -89,6 +93,10 @@ export interface BackgroundHealthConfig {
   dailySummaryTime?: string;
   /** Enable anomaly auto-alerts (default: true) */
   enableAlerts?: boolean;
+  /** Battery level (0-1) below which collection slows down (default: 0.20) */
+  lowBatteryThreshold?: number;
+  /** Battery level (0-1) below which collection pauses entirely (default: 0.10) */
+  criticalBatteryThreshold?: number;
 }
 
 // ============================================
@@ -100,7 +108,21 @@ const DEFAULT_CONFIG: Required<BackgroundHealthConfig> = {
   anomalyCheckIntervalMs: 30 * 60 * 1000,    // 30 min
   dailySummaryTime: '23:30',
   enableAlerts: true,
+  lowBatteryThreshold: 0.20,
+  criticalBatteryThreshold: 0.10,
 };
+
+/** Interval multipliers based on battery state */
+const BATTERY_THROTTLE = {
+  /** Normal battery (> lowBatteryThreshold): no throttle */
+  NORMAL: 1,
+  /** Low battery (criticalBatteryThreshold..lowBatteryThreshold): 3x slower */
+  LOW: 3,
+  /** Charging: slightly faster to take advantage of power */
+  CHARGING: 0.8,
+} as const;
+
+type BatteryTier = 'NORMAL' | 'LOW' | 'CRITICAL' | 'CHARGING';
 
 // Health score weights
 const SCORE_WEIGHTS = {
@@ -119,6 +141,8 @@ const DEFAULT_GOALS = {
   sleepHours: 8,
 };
 
+const EXTERNAL_HEALTH_SYNC_INTERVAL_MS = 15 * 60 * 1000;
+
 // ============================================
 // BACKGROUND HEALTH ENGINE
 // ============================================
@@ -131,6 +155,9 @@ export class BackgroundHealthEngine {
   private collectionTimer: ReturnType<typeof setInterval> | null = null;
   private anomalyTimer: ReturnType<typeof setInterval> | null = null;
   private appStateSubscription: any = null;
+  private batterySubscription: EventSubscription | null = null;
+  private currentBatteryTier: BatteryTier = 'NORMAL';
+  private lastExternalHealthSyncAt = 0;
   private anomalyDetector: AnomalyDetector;
   private sleepEngine: SleepAnalysisEngine;
   private todayData: {
@@ -161,47 +188,53 @@ export class BackgroundHealthEngine {
 
   /**
    * Start the background health engine.
+   * Checks battery state and adjusts polling intervals accordingly.
    */
-  start(config?: BackgroundHealthConfig): void {
+  async start(config?: BackgroundHealthConfig): Promise<void> {
     if (this.state === 'RUNNING') return;
 
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.state = 'RUNNING';
     this.todayData = this.resetTodayData();
 
-    // Start collection timer
-    this.collectionTimer = setInterval(() => {
-      this.collectAndProcess();
-    }, this.config.collectionIntervalMs);
+    // Check initial battery state and set tier
+    await this.updateBatteryTier();
 
-    // Start anomaly check timer
-    this.anomalyTimer = setInterval(() => {
-      this.runAnomalyCheck();
-    }, this.config.anomalyCheckIntervalMs);
+    // Subscribe to battery state changes
+    this.batterySubscription = Battery.addBatteryStateListener((event) => {
+      this.handleBatteryStateChange(event);
+    });
+
+    // Start timers with battery-aware intervals
+    this.restartTimers();
 
     // Listen for app state changes
     this.appStateSubscription = AppState.addEventListener('change', this.handleAppState);
 
-    // Initial collection
-    this.collectAndProcess();
+    // Initial collection (unless battery is critical)
+    if (this.currentBatteryTier !== 'CRITICAL') {
+      this.collectAndProcess();
+    }
 
-    console.log('[BackgroundHealth] Engine started');
+    if (__DEV__) console.log(`[BackgroundHealth] Engine started (battery: ${this.currentBatteryTier})`);
   }
 
   /**
-   * Stop the engine and clean up.
+   * Stop the engine and clean up all subscriptions.
    */
   stop(): void {
     if (this.collectionTimer) clearInterval(this.collectionTimer);
     if (this.anomalyTimer) clearInterval(this.anomalyTimer);
     this.appStateSubscription?.remove();
+    this.batterySubscription?.remove();
 
     this.collectionTimer = null;
     this.anomalyTimer = null;
     this.appStateSubscription = null;
+    this.batterySubscription = null;
     this.state = 'STOPPED';
 
-    console.log('[BackgroundHealth] Engine stopped');
+    if (__DEV__) console.log('[BackgroundHealth] Engine stopped');
   }
 
   /**
@@ -237,12 +270,16 @@ export class BackgroundHealthEngine {
     if (this.state !== 'RUNNING') return;
 
     try {
+      await this.syncExternalHealthProvidersIfDue();
+
       // Read from existing health data in SQLite
       // Get today's step data
       const today = new Date().toISOString().split('T')[0];
       const stepRow = await getDailyStepsForDate('user_local_001', today);
       if (stepRow) {
         this.todayData.steps = stepRow.steps;
+      } else {
+        await this.hydrateTodayMetricsFromEncryptedData();
       }
 
       // Get today's workout count
@@ -250,13 +287,17 @@ export class BackgroundHealthEngine {
       this.todayData.workoutsCompleted = await getWorkoutCountSince(startOfDay);
 
       // Estimate active calories from steps + workouts
-      this.todayData.calories = this.estimateActiveCalories(
-        this.todayData.steps,
-        this.todayData.workoutsCompleted
-      );
+      if (this.todayData.calories <= 0) {
+        this.todayData.calories = this.estimateActiveCalories(
+          this.todayData.steps,
+          this.todayData.workoutsCompleted
+        );
+      }
 
       // Estimate active minutes from steps (rough: 100 steps/min when walking)
-      this.todayData.activeMinutes = Math.round(this.todayData.steps / 100);
+      if (this.todayData.activeMinutes <= 0) {
+        this.todayData.activeMinutes = Math.round(this.todayData.steps / 100);
+      }
 
       // Store periodic snapshot (encrypted)
       await this.storeSnapshot();
@@ -295,6 +336,78 @@ export class BackgroundHealthEngine {
     this.todayData.steps = count;
   }
 
+  private async syncExternalHealthProvidersIfDue(): Promise<void> {
+    const now = Date.now();
+    if (now - this.lastExternalHealthSyncAt < EXTERNAL_HEALTH_SYNC_INTERVAL_MS) {
+      return;
+    }
+
+    const fallbackProvider = Platform.OS === 'ios' ? 'healthkit' : 'health_connect';
+
+    try {
+      const syncResult = await syncHealthData({
+        since: new Date(now - 24 * 60 * 60 * 1000),
+        categories: ['steps', 'calories', 'heart_rate', 'sleep', 'workout'],
+      });
+
+      if (syncResult.errors > 0) {
+        await captureHealthError(`Background sync completed with ${syncResult.errors} errors`, {
+          provider: syncResult.provider === 'healthkit' ? 'healthkit' : 'health_connect',
+          action: 'sync',
+          dataType: 'batch',
+        });
+      }
+    } catch (error) {
+      await captureHealthError(
+        error instanceof Error ? error : 'Background health sync failed',
+        {
+          provider: fallbackProvider,
+          action: 'sync',
+          dataType: 'batch',
+        }
+      );
+    } finally {
+      this.lastExternalHealthSyncAt = now;
+    }
+  }
+
+  private async hydrateTodayMetricsFromEncryptedData(): Promise<void> {
+    const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+
+    const [stepRecords, calorieRecords, activeMinuteRecords, heartRateRecords] = await Promise.all([
+      encryptedDB.getRecentHealthData('steps', 200),
+      encryptedDB.getRecentHealthData('calories', 200),
+      encryptedDB.getRecentHealthData('active_minutes', 200),
+      encryptedDB.getRecentHealthData('heart_rate', 200),
+    ]);
+
+    const sumSince = (records: object[]) =>
+      records.reduce((total, record) => {
+        const entry = record as { created_at?: number; value?: number; bpm?: number; startTime?: string; endTime?: string };
+        if ((entry.created_at ?? 0) < dayAgo) return total;
+        if (typeof entry.value === 'number') return total + entry.value;
+        return total;
+      }, 0);
+
+    const hrValues = heartRateRecords
+      .map((record) => record as { created_at?: number; value?: number; bpm?: number })
+      .filter((entry) => (entry.created_at ?? 0) >= dayAgo)
+      .map((entry) => (typeof entry.bpm === 'number' ? entry.bpm : entry.value))
+      .filter((value): value is number => typeof value === 'number' && value > 0);
+
+    const syncedSteps = Math.round(sumSince(stepRecords));
+    const syncedCalories = Math.round(sumSince(calorieRecords));
+    const syncedActiveMinutes = Math.round(sumSince(activeMinuteRecords));
+
+    if (syncedSteps > this.todayData.steps) this.todayData.steps = syncedSteps;
+    if (syncedCalories > this.todayData.calories) this.todayData.calories = syncedCalories;
+    if (syncedActiveMinutes > this.todayData.activeMinutes) this.todayData.activeMinutes = syncedActiveMinutes;
+
+    if (hrValues.length > 0) {
+      this.todayData.heartRateReadings = hrValues;
+    }
+  }
+
   // ============================================
   // ANOMALY DETECTION
   // ============================================
@@ -313,7 +426,7 @@ export class BackgroundHealthEngine {
       });
 
       if (anomalies.length > 0) {
-        console.log(`[BackgroundHealth] ${anomalies.length} anomalies detected`);
+        if (__DEV__) console.log(`[BackgroundHealth] ${anomalies.length} anomalies detected`);
       }
     } catch (e) {
       console.warn('[BackgroundHealth] Anomaly check error:', e);
@@ -379,7 +492,7 @@ export class BackgroundHealthEngine {
       const recoveryScore = 100 - (avgFatigue ?? 50);
       score += (recoveryScore / 100) * (SCORE_WEIGHTS.RECOVERY * 100);
     } catch {
-      score += 50 * (SCORE_WEIGHTS.RECOVERY / 100); // Default
+      score += (50 / 100) * (SCORE_WEIGHTS.RECOVERY * 100); // Default: 50% recovery
     }
 
     // Sleep score (0-25)
@@ -388,7 +501,7 @@ export class BackgroundHealthEngine {
       const sleepScore = Math.min(100, sleepMultiplier * 100);
       score += (sleepScore / 100) * (SCORE_WEIGHTS.SLEEP * 100);
     } catch {
-      score += 50 * (SCORE_WEIGHTS.SLEEP / 100); // Default
+      score += (50 / 100) * (SCORE_WEIGHTS.SLEEP * 100); // Default: 50% sleep
     }
 
     // Consistency score (0-15) — based on workout streak
@@ -500,7 +613,7 @@ export class BackgroundHealthEngine {
     // Store summary encrypted
     await encryptedDB.storeHealthData('daily_summary', summary);
 
-    console.log(`[BackgroundHealth] Daily summary: score=${healthScore}, steps=${this.todayData.steps}`);
+    if (__DEV__) console.log(`[BackgroundHealth] Daily summary: score=${healthScore}, steps=${this.todayData.steps}`);
 
     return summary;
   }
@@ -572,13 +685,120 @@ export class BackgroundHealthEngine {
   // INTERNAL HELPERS
   // ============================================
 
-  private handleAppState = (nextState: AppStateStatus): void => {
+  // ============================================
+  // BATTERY-AWARE SCHEDULING
+  // ============================================
+
+  /**
+   * Check current battery level + charging state and determine throttle tier.
+   */
+  private async updateBatteryTier(): Promise<void> {
+    try {
+      const [level, batteryState] = await Promise.all([
+        Battery.getBatteryLevelAsync(),
+        Battery.getBatteryStateAsync(),
+      ]);
+
+      const isCharging =
+        batteryState === Battery.BatteryState.CHARGING ||
+        batteryState === Battery.BatteryState.FULL;
+
+      if (isCharging) {
+        this.currentBatteryTier = 'CHARGING';
+      } else if (level >= 0 && level < this.config.criticalBatteryThreshold) {
+        this.currentBatteryTier = 'CRITICAL';
+      } else if (level >= 0 && level < this.config.lowBatteryThreshold) {
+        this.currentBatteryTier = 'LOW';
+      } else {
+        this.currentBatteryTier = 'NORMAL';
+      }
+    } catch {
+      // Battery API unavailable (e.g. web/simulator) — default to normal
+      this.currentBatteryTier = 'NORMAL';
+    }
+  }
+
+  /**
+   * Handle battery state changes (charging/unplugged).
+   * Re-evaluates tier and restarts timers with adjusted intervals.
+   */
+  private handleBatteryStateChange = async ({ batteryState }: { batteryState: Battery.BatteryState }): Promise<void> => {
+    const previousTier = this.currentBatteryTier;
+    await this.updateBatteryTier();
+
+    if (previousTier !== this.currentBatteryTier && this.state === 'RUNNING') {
+      if (__DEV__) console.log(`[BackgroundHealth] Battery tier: ${previousTier} → ${this.currentBatteryTier}`);
+      this.restartTimers();
+    }
+  };
+
+  /**
+   * Get the interval multiplier for the current battery tier.
+   */
+  private getIntervalMultiplier(): number {
+    switch (this.currentBatteryTier) {
+      case 'CHARGING': return BATTERY_THROTTLE.CHARGING;
+      case 'LOW': return BATTERY_THROTTLE.LOW;
+      case 'CRITICAL': return 0; // No polling — paused
+      case 'NORMAL':
+      default:
+        return BATTERY_THROTTLE.NORMAL;
+    }
+  }
+
+  /**
+   * (Re)start interval timers with battery-adjusted intervals.
+   * Called on start() and when battery tier changes.
+   */
+  private restartTimers(): void {
+    // Clear existing timers
+    if (this.collectionTimer) clearInterval(this.collectionTimer);
+    if (this.anomalyTimer) clearInterval(this.anomalyTimer);
+    this.collectionTimer = null;
+    this.anomalyTimer = null;
+
+    const multiplier = this.getIntervalMultiplier();
+    if (multiplier === 0) {
+      // Critical battery — pause all polling
+      if (__DEV__) console.log('[BackgroundHealth] Critical battery — polling paused');
+      return;
+    }
+
+    const collectionMs = Math.round(this.config.collectionIntervalMs * multiplier);
+    const anomalyMs = Math.round(this.config.anomalyCheckIntervalMs * multiplier);
+
+    this.collectionTimer = setInterval(() => {
+      this.collectAndProcess();
+    }, collectionMs);
+
+    this.anomalyTimer = setInterval(() => {
+      this.runAnomalyCheck();
+    }, anomalyMs);
+
+    if (__DEV__) console.log(`[BackgroundHealth] Timers set: collect=${collectionMs}ms, anomaly=${anomalyMs}ms`);
+  }
+
+  /**
+   * Get current battery tier (for UI display / diagnostics).
+   */
+  getBatteryTier(): BatteryTier {
+    return this.currentBatteryTier;
+  }
+
+  // ============================================
+  // APP STATE HANDLING
+  // ============================================
+
+  private handleAppState = async (nextState: AppStateStatus): Promise<void> => {
     if (nextState === 'background' || nextState === 'inactive') {
       // Store snapshot before going to background
       this.storeSnapshot().catch(() => {});
     } else if (nextState === 'active') {
+      // Re-check battery state when foregrounded
+      await this.updateBatteryTier();
+      this.restartTimers();
       // Resume collection
-      if (this.state === 'RUNNING') {
+      if (this.state === 'RUNNING' && this.currentBatteryTier !== 'CRITICAL') {
         this.collectAndProcess();
       }
     }

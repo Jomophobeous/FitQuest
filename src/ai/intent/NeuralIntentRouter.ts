@@ -12,6 +12,17 @@
  */
 
 import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
+import {
+  TransformerLayerWeights,
+  transformerLayer as sharedTransformerLayer,
+  normalizeLayerWeights,
+  linearF64,
+  linearNum,
+  layerNorm,
+  gelu,
+  softmax,
+  softmaxF64,
+} from '../TransformerRuntime';
 
 // ============================================
 // TYPES
@@ -63,6 +74,7 @@ interface TransformerModelData {
   classifierBias: number[];
 }
 
+/** Local alias — uses long field names, normalized at call site via normalizeLayerWeights() */
 interface TransformerLayer {
   // Self-attention
   queryWeight: number[][];
@@ -337,7 +349,7 @@ export class NeuralIntentRouter {
     const logits = this.forward(encoded);
 
     // Step 3: Softmax to get probabilities
-    const probs = this.softmax(logits);
+    const probs = softmax(logits);
 
     // Step 4: Build result
     const maxIdx = probs.indexOf(Math.max(...probs));
@@ -391,7 +403,7 @@ export class NeuralIntentRouter {
 
     // 2. Embedding layer norm
     hiddenStates = hiddenStates.map(vec =>
-      this.layerNorm(vec, model.embLayerNormWeight, model.embLayerNormBias)
+      layerNorm(vec, model.embLayerNormWeight, model.embLayerNormBias)
     ) as Float64Array[];
 
     // 3. Transformer layers
@@ -420,181 +432,24 @@ export class NeuralIntentRouter {
     layer: TransformerLayer,
     attentionMask: Int32Array
   ): Float64Array[] {
-    const hidden = hiddenStates[0].length;
-    const numHeads = this.model!.numHeads;
-    const headDim = Math.floor(hidden / numHeads);
-    const seqLen = hiddenStates.length;
-
-    // --- Multi-Head Self-Attention ---
-
-    // Compute Q, K, V for all positions
-    const Q = hiddenStates.map(h => this.linearProjectionF64(h, layer.queryWeight, layer.queryBias));
-    const K = hiddenStates.map(h => this.linearProjectionF64(h, layer.keyWeight, layer.keyBias));
-    const V = hiddenStates.map(h => this.linearProjectionF64(h, layer.valueWeight, layer.valueBias));
-
-    // Multi-head attention
-    const attnOutput = new Array(seqLen).fill(null).map(() => new Float64Array(hidden));
-
-    for (let head = 0; head < numHeads; head++) {
-      const offset = head * headDim;
-      const scale = Math.sqrt(headDim);
-
-      for (let i = 0; i < seqLen; i++) {
-        if (attentionMask[i] === 0) continue;
-
-        // Compute attention scores for position i
-        const scores = new Float64Array(seqLen);
-        for (let j = 0; j < seqLen; j++) {
-          if (attentionMask[j] === 0) {
-            scores[j] = -1e9; // Mask padding
-            continue;
-          }
-          let dot = 0;
-          for (let d = 0; d < headDim; d++) {
-            dot += Q[i][offset + d] * K[j][offset + d];
-          }
-          scores[j] = dot / scale;
-        }
-
-        // Softmax over attention scores
-        const attnWeights = this.softmaxF64(scores);
-
-        // Weighted sum of values
-        for (let d = 0; d < headDim; d++) {
-          let sum = 0;
-          for (let j = 0; j < seqLen; j++) {
-            sum += attnWeights[j] * V[j][offset + d];
-          }
-          attnOutput[i][offset + d] = sum;
-        }
-      }
-    }
-
-    // Attention output projection
-    const attnProjected = attnOutput.map(vec =>
-      this.linearProjectionF64(vec, layer.attentionOutputWeight, layer.attentionOutputBias)
+    return sharedTransformerLayer(
+      hiddenStates,
+      normalizeLayerWeights(layer),
+      {
+        hiddenSize: this.model!.hiddenSize,
+        numHeads: this.model!.numHeads,
+      },
+      { attentionMask },
     );
-
-    // Residual + LayerNorm
-    let output = new Array(seqLen).fill(null).map((_, i) => {
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) {
-        res[h] = hiddenStates[i][h] + attnProjected[i][h];
-      }
-      return this.layerNorm(res, layer.attentionLayerNormWeight, layer.attentionLayerNormBias);
-    });
-
-    // --- Feed-Forward Network ---
-    const ffnOutput = output.map(vec => {
-      // FFN: Linear → GELU → Linear
-      const intermediate = this.linearProjectionF64(vec, layer.ffnWeight, layer.ffnBias);
-      const activated = intermediate.map(v => this.gelu(v));
-      return this.linearProjectionF64(
-        new Float64Array(activated),
-        layer.ffnOutputWeight,
-        layer.ffnOutputBias
-      );
-    });
-
-    // Residual + LayerNorm
-    output = output.map((vec, i) => {
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) {
-        res[h] = vec[h] + ffnOutput[i][h];
-      }
-      return this.layerNorm(res, layer.outputLayerNormWeight, layer.outputLayerNormBias);
-    });
-
-    return output;
   }
 
   // ============================================
   // MATH OPERATIONS
   // ============================================
 
-  private linearProjection(
-    input: number[],
-    weights: number[][],
-    bias: number[]
-  ): number[] {
-    const output = new Array(weights.length).fill(0);
-    for (let i = 0; i < weights.length; i++) {
-      let sum = bias[i] ?? 0;
-      for (let j = 0; j < input.length; j++) {
-        sum += input[j] * (weights[i]?.[j] ?? 0);
-      }
-      output[i] = sum;
-    }
-    return output;
-  }
-
-  private linearProjectionF64(
-    input: Float64Array,
-    weights: number[][],
-    bias: number[]
-  ): Float64Array {
-    const output = new Float64Array(weights.length);
-    for (let i = 0; i < weights.length; i++) {
-      let sum = bias[i] ?? 0;
-      const w = weights[i];
-      for (let j = 0; j < input.length; j++) {
-        sum += input[j] * (w?.[j] ?? 0);
-      }
-      output[i] = sum;
-    }
-    return output;
-  }
-
-  private layerNorm(
-    input: Float64Array,
-    weight: number[],
-    bias: number[],
-    eps: number = 1e-12
-  ): Float64Array {
-    const n = input.length;
-    let mean = 0;
-    for (let i = 0; i < n; i++) mean += input[i];
-    mean /= n;
-
-    let variance = 0;
-    for (let i = 0; i < n; i++) variance += (input[i] - mean) ** 2;
-    variance /= n;
-
-    const std = Math.sqrt(variance + eps);
-    const output = new Float64Array(n);
-    for (let i = 0; i < n; i++) {
-      output[i] = ((input[i] - mean) / std) * (weight[i] ?? 1) + (bias[i] ?? 0);
-    }
-    return output;
-  }
-
-  private gelu(x: number): number {
-    // Gaussian Error Linear Unit approximation
-    return 0.5 * x * (1 + Math.tanh(Math.sqrt(2 / Math.PI) * (x + 0.044715 * x * x * x)));
-  }
-
-  private softmax(logits: number[]): number[] {
-    const maxLogit = Math.max(...logits);
-    const exps = logits.map(l => Math.exp(l - maxLogit));
-    const sum = exps.reduce((a, b) => a + b, 0);
-    return exps.map(e => e / sum);
-  }
-
-  private softmaxF64(logits: Float64Array): Float64Array {
-    let maxLogit = -Infinity;
-    for (let i = 0; i < logits.length; i++) {
-      if (logits[i] > maxLogit) maxLogit = logits[i];
-    }
-    const output = new Float64Array(logits.length);
-    let sum = 0;
-    for (let i = 0; i < logits.length; i++) {
-      output[i] = Math.exp(logits[i] - maxLogit);
-      sum += output[i];
-    }
-    for (let i = 0; i < logits.length; i++) {
-      output[i] /= sum;
-    }
-    return output;
+  // Math helpers — delegate to shared TransformerRuntime
+  private linearProjection(input: number[], weights: number[][], bias: number[]): number[] {
+    return linearNum(input, weights, bias);
   }
 
   // ============================================

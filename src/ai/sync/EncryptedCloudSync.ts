@@ -12,6 +12,7 @@
  */
 
 import * as FileSystem from 'expo-file-system/legacy';
+import * as Crypto from 'expo-crypto';
 
 // ============================================
 // TYPES
@@ -238,7 +239,7 @@ export class EncryptedCloudSync {
   private progressCallback?: (progress: SyncProgress) => void;
 
   private constructor() {
-    this.deviceId = `device_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    this.deviceId = `device_${Date.now().toString(36)}_${Crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
     this.vectorClock = { [this.deviceId]: 0 };
     this.syncDir = `${FileSystem.documentDirectory}sync/`;
     this.syncState = {
@@ -346,7 +347,7 @@ export class EncryptedCloudSync {
     });
 
     const bundle: SyncBundle = {
-      bundleId: `bundle_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      bundleId: `bundle_${Date.now().toString(36)}_${Crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`,
       deviceId: this.deviceId,
       createdAt: Date.now(),
       records: encryptedRecords,

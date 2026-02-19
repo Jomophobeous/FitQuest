@@ -14,6 +14,14 @@
  */
 
 import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
+import {
+  TransformerLayerWeights as TransformerLayer,
+  transformerLayer as sharedTransformerLayer,
+  linearF64,
+  layerNorm,
+  gelu,
+  softmaxF64,
+} from '../TransformerRuntime';
 
 // ============================================
 // TYPES
@@ -56,24 +64,7 @@ interface SentenceEncoderModel {
   poolingBias: number[];
 }
 
-interface TransformerLayer {
-  queryWeight: number[][];
-  queryBias: number[];
-  keyWeight: number[][];
-  keyBias: number[];
-  valueWeight: number[][];
-  valueBias: number[];
-  attOutputWeight: number[][];
-  attOutputBias: number[];
-  attLayerNormWeight: number[];
-  attLayerNormBias: number[];
-  ffnWeight: number[][];
-  ffnBias: number[];
-  ffnOutputWeight: number[][];
-  ffnOutputBias: number[];
-  outputLayerNormWeight: number[];
-  outputLayerNormBias: number[];
-}
+// TransformerLayer imported from TransformerRuntime as TransformerLayerWeights
 
 // ============================================
 // HNSW INDEX
@@ -566,53 +557,10 @@ export class SemanticSearch {
   private transformerLayer(
     input: Float64Array[], layer: TransformerLayer
   ): Float64Array[] {
-    const hidden = input[0].length;
-    const numHeads = this.model!.numHeads;
-    const headDim = Math.floor(hidden / numHeads);
-    const seqLen = input.length;
-
-    const Q = input.map(h => this.linear(h, layer.queryWeight, layer.queryBias));
-    const K = input.map(h => this.linear(h, layer.keyWeight, layer.keyBias));
-    const V = input.map(h => this.linear(h, layer.valueWeight, layer.valueBias));
-
-    const attnOut = new Array(seqLen).fill(null).map(() => new Float64Array(hidden));
-    for (let head = 0; head < numHeads; head++) {
-      const off = head * headDim;
-      const scale = Math.sqrt(headDim);
-      for (let i = 0; i < seqLen; i++) {
-        const scores = new Float64Array(seqLen);
-        for (let j = 0; j < seqLen; j++) {
-          let dot = 0;
-          for (let d = 0; d < headDim; d++) dot += Q[i][off + d] * K[j][off + d];
-          scores[j] = dot / scale;
-        }
-        const weights = this.softmaxF64(scores);
-        for (let d = 0; d < headDim; d++) {
-          let sum = 0;
-          for (let j = 0; j < seqLen; j++) sum += weights[j] * V[j][off + d];
-          attnOut[i][off + d] = sum;
-        }
-      }
-    }
-
-    let output = attnOut.map((v, i) => {
-      const proj = this.linear(v, layer.attOutputWeight, layer.attOutputBias);
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) res[h] = input[i][h] + proj[h];
-      return this.layerNorm(res, layer.attLayerNormWeight, layer.attLayerNormBias);
+    return sharedTransformerLayer(input, layer, {
+      hiddenSize: this.model!.hiddenSize,
+      numHeads: this.model!.numHeads,
     });
-
-    output = output.map(v => {
-      const inter = this.linear(v, layer.ffnWeight, layer.ffnBias);
-      const act = new Float64Array(inter.length);
-      for (let k = 0; k < inter.length; k++) act[k] = this.gelu(inter[k]);
-      const out = this.linear(act, layer.ffnOutputWeight, layer.ffnOutputBias);
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) res[h] = v[h] + out[h];
-      return this.layerNorm(res, layer.outputLayerNormWeight, layer.outputLayerNormBias);
-    });
-
-    return output;
   }
 
   // ============================================
@@ -682,44 +630,7 @@ export class SemanticSearch {
   // MATH
   // ============================================
 
-  private linear(input: Float64Array, w: number[][], b: number[]): Float64Array {
-    const out = new Float64Array(w.length);
-    for (let i = 0; i < w.length; i++) {
-      let sum = b[i] ?? 0;
-      const row = w[i];
-      for (let j = 0; j < input.length; j++) sum += input[j] * (row?.[j] ?? 0);
-      out[i] = sum;
-    }
-    return out;
-  }
-
-  private layerNorm(x: Float64Array, gamma: number[], beta: number[], eps = 1e-12): Float64Array {
-    const n = x.length;
-    let mean = 0;
-    for (let i = 0; i < n; i++) mean += x[i];
-    mean /= n;
-    let v = 0;
-    for (let i = 0; i < n; i++) v += (x[i] - mean) ** 2;
-    v /= n;
-    const std = Math.sqrt(v + eps);
-    const out = new Float64Array(n);
-    for (let i = 0; i < n; i++) out[i] = ((x[i] - mean) / std) * (gamma[i] ?? 1) + (beta[i] ?? 0);
-    return out;
-  }
-
-  private gelu(x: number): number {
-    return 0.5 * x * (1 + Math.tanh(Math.sqrt(2 / Math.PI) * (x + 0.044715 * x ** 3)));
-  }
-
-  private softmaxF64(logits: Float64Array): Float64Array {
-    let max = -Infinity;
-    for (const v of logits) if (v > max) max = v;
-    const out = new Float64Array(logits.length);
-    let sum = 0;
-    for (let i = 0; i < logits.length; i++) { out[i] = Math.exp(logits[i] - max); sum += out[i]; }
-    for (let i = 0; i < logits.length; i++) out[i] /= sum;
-    return out;
-  }
+  // Math helpers delegated to TransformerRuntime
 
   // ============================================
   // PUBLIC API

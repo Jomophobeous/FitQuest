@@ -12,6 +12,15 @@
  */
 
 import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
+import {
+  TransformerLayerWeights as TransformerLayer,
+  transformerLayer as sharedTransformerLayer,
+  linearF64,
+  layerNorm,
+  gelu,
+  softmaxF64,
+  cosineSimilarityF64,
+} from '../TransformerRuntime';
 
 // ============================================
 // TYPES
@@ -59,24 +68,7 @@ interface SentenceEncoderModel {
   sentenceSize: number; // output embedding dimension
 }
 
-interface TransformerLayer {
-  queryWeight: number[][];
-  queryBias: number[];
-  keyWeight: number[][];
-  keyBias: number[];
-  valueWeight: number[][];
-  valueBias: number[];
-  attOutputWeight: number[][];
-  attOutputBias: number[];
-  attLayerNormWeight: number[];
-  attLayerNormBias: number[];
-  ffnWeight: number[][];
-  ffnBias: number[];
-  ffnOutputWeight: number[][];
-  ffnOutputBias: number[];
-  outputLayerNormWeight: number[];
-  outputLayerNormBias: number[];
-}
+// TransformerLayer imported from TransformerRuntime as TransformerLayerWeights
 
 // ============================================
 // NEURAL SUMMARIZER
@@ -310,63 +302,10 @@ export class NeuralSummarizer {
     input: Float64Array[],
     layer: TransformerLayer
   ): Float64Array[] {
-    const hidden = input[0].length;
-    const numHeads = this.model!.numHeads;
-    const headDim = Math.floor(hidden / numHeads);
-    const seqLen = input.length;
-
-    // Q, K, V
-    const Q = input.map(h => this.linearF64(h, layer.queryWeight, layer.queryBias));
-    const K = input.map(h => this.linearF64(h, layer.keyWeight, layer.keyBias));
-    const V = input.map(h => this.linearF64(h, layer.valueWeight, layer.valueBias));
-
-    // Multi-head self-attention
-    const attnOut = new Array(seqLen).fill(null).map(() => new Float64Array(hidden));
-    for (let head = 0; head < numHeads; head++) {
-      const offset = head * headDim;
-      const scale = Math.sqrt(headDim);
-
-      for (let i = 0; i < seqLen; i++) {
-        const scores = new Float64Array(seqLen);
-        for (let j = 0; j < seqLen; j++) {
-          let dot = 0;
-          for (let d = 0; d < headDim; d++) {
-            dot += Q[i][offset + d] * K[j][offset + d];
-          }
-          scores[j] = dot / scale;
-        }
-
-        const weights = this.softmaxF64(scores);
-        for (let d = 0; d < headDim; d++) {
-          let sum = 0;
-          for (let j = 0; j < seqLen; j++) {
-            sum += weights[j] * V[j][offset + d];
-          }
-          attnOut[i][offset + d] = sum;
-        }
-      }
-    }
-
-    // Project + residual + layer norm
-    let output = attnOut.map((v, i) => {
-      const proj = this.linearF64(v, layer.attOutputWeight, layer.attOutputBias);
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) res[h] = input[i][h] + proj[h];
-      return this.layerNorm(res, layer.attLayerNormWeight, layer.attLayerNormBias);
+    return sharedTransformerLayer(input, layer, {
+      hiddenSize: this.model!.hiddenSize,
+      numHeads: this.model!.numHeads,
     });
-
-    // FFN + residual + layer norm
-    output = output.map((v, i) => {
-      const inter = this.linearF64(v, layer.ffnWeight, layer.ffnBias);
-      const activated = new Float64Array(inter.length);
-      for (let k = 0; k < inter.length; k++) activated[k] = this.gelu(inter[k]);
-      const out = this.linearF64(activated, layer.ffnOutputWeight, layer.ffnOutputBias);
-      const res = new Float64Array(hidden);
-      for (let h = 0; h < hidden; h++) res[h] = v[h] + out[h];
-      return this.layerNorm(res, layer.outputLayerNormWeight, layer.outputLayerNormBias);
-    });
-
-    return output;
   }
 
   // ============================================
@@ -493,14 +432,7 @@ export class NeuralSummarizer {
   // ============================================
 
   private cosineSimilarity(a: Float64Array, b: Float64Array): number {
-    let dot = 0, normA = 0, normB = 0;
-    for (let i = 0; i < a.length; i++) {
-      dot += a[i] * b[i];
-      normA += a[i] * a[i];
-      normB += b[i] * b[i];
-    }
-    const denom = Math.sqrt(normA) * Math.sqrt(normB);
-    return denom > 0 ? dot / denom : 0;
+    return cosineSimilarityF64(a, b);
   }
 
   private cosineSimSparse(
@@ -521,55 +453,7 @@ export class NeuralSummarizer {
   // MATH HELPERS
   // ============================================
 
-  private linearF64(
-    input: Float64Array, weights: number[][], bias: number[]
-  ): Float64Array {
-    const output = new Float64Array(weights.length);
-    for (let i = 0; i < weights.length; i++) {
-      let sum = bias[i] ?? 0;
-      const w = weights[i];
-      for (let j = 0; j < input.length; j++) {
-        sum += input[j] * (w?.[j] ?? 0);
-      }
-      output[i] = sum;
-    }
-    return output;
-  }
-
-  private layerNorm(
-    input: Float64Array, weight: number[], bias: number[], eps = 1e-12
-  ): Float64Array {
-    const n = input.length;
-    let mean = 0;
-    for (let i = 0; i < n; i++) mean += input[i];
-    mean /= n;
-    let variance = 0;
-    for (let i = 0; i < n; i++) variance += (input[i] - mean) ** 2;
-    variance /= n;
-    const std = Math.sqrt(variance + eps);
-    const out = new Float64Array(n);
-    for (let i = 0; i < n; i++) {
-      out[i] = ((input[i] - mean) / std) * (weight[i] ?? 1) + (bias[i] ?? 0);
-    }
-    return out;
-  }
-
-  private gelu(x: number): number {
-    return 0.5 * x * (1 + Math.tanh(Math.sqrt(2 / Math.PI) * (x + 0.044715 * x ** 3)));
-  }
-
-  private softmaxF64(logits: Float64Array): Float64Array {
-    let max = -Infinity;
-    for (const v of logits) if (v > max) max = v;
-    const out = new Float64Array(logits.length);
-    let sum = 0;
-    for (let i = 0; i < logits.length; i++) {
-      out[i] = Math.exp(logits[i] - max);
-      sum += out[i];
-    }
-    for (let i = 0; i < logits.length; i++) out[i] /= sum;
-    return out;
-  }
+  // Math helpers delegated to TransformerRuntime
 
   // ============================================
   // PUBLIC API

@@ -14,10 +14,12 @@ export * from './service';
 
 // Seed data
 export { seedExercises, getExerciseCount } from './seed';
+export { seedExternalExercises, hasExternalExercises, getExternalExerciseCount } from './external-seed';
 
 // Initialize database and seed on first load
 import { getDatabase } from './schema';
 import { seedExercises } from './seed';
+import { seedExternalExercises } from './external-seed';
 import { encryptedDB } from '../security/EncryptedDatabase';
 
 let initialized = false;
@@ -32,6 +34,10 @@ export async function initializeDatabase(): Promise<void> {
   try {
     const db = await getDatabase();
     await seedExercises();
+    
+    // Seed external exercises (868 from free-exercise-db)
+    // This adds force_type, mechanic, external_id, and images
+    await seedExternalExercises();
 
     // Initialize new module schemas (idempotent — safe to call every start)
     await encryptedDB.initialize();
@@ -41,6 +47,18 @@ export async function initializeDatabase(): Promise<void> {
     const muscleCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercise_muscles');
     const ttCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercise_training_types');
     console.log(`[FitQuest DB] exercises: ${exerciseCount?.count}, muscles: ${muscleCount?.count}, training_types: ${ttCount?.count}`);
+
+    // Category breakdown diagnostic
+    const categoryBreakdown = await db.getAllAsync<{ category: string; count: number }>(
+      'SELECT category, COUNT(*) as count FROM exercises GROUP BY category ORDER BY category'
+    );
+    console.log(`[FitQuest DB] Category breakdown:`, JSON.stringify(categoryBreakdown));
+
+    // Training type breakdown diagnostic
+    const ttBreakdown = await db.getAllAsync<{ training_type: string; count: number }>(
+      'SELECT training_type, COUNT(*) as count FROM exercise_training_types GROUP BY training_type ORDER BY count DESC'
+    );
+    console.log(`[FitQuest DB] Training type breakdown:`, JSON.stringify(ttBreakdown));
 
     // If junction tables are empty but exercises exist, force a re-seed
     if ((exerciseCount?.count ?? 0) > 0 && ((muscleCount?.count ?? 0) === 0 || (ttCount?.count ?? 0) === 0)) {

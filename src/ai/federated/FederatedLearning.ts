@@ -17,6 +17,7 @@
  */
 
 import * as FileSystem from 'expo-file-system/legacy';
+import * as Crypto from 'expo-crypto';
 
 // ============================================
 // TYPES
@@ -99,7 +100,7 @@ export class FederatedLearning {
       maxLocalEpochs: 5,
     };
     this.totalPrivacyBudget = this.config.epsilon;
-    this.deviceId = `device_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    this.deviceId = `device_${Date.now().toString(36)}_${Crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
   }
 
   static getInstance(): FederatedLearning {
@@ -160,7 +161,13 @@ export class FederatedLearning {
 
     for (let epoch = 0; epoch < this.config.maxLocalEpochs; epoch++) {
       // Shuffle data
-      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      // Fisher-Yates shuffle with crypto randomness
+      const shuffled = [...data];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const randomBytes = Crypto.getRandomBytes(4);
+        const j = (new DataView(randomBytes.buffer).getUint32(0) % (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
       let epochLoss = 0;
 
       for (const sample of shuffled) {
@@ -364,9 +371,12 @@ export class FederatedLearning {
    * Generate Gaussian noise using Box-Muller transform.
    */
   private gaussianNoise(sigma: number): number {
-    const u1 = Math.random();
-    const u2 = Math.random();
-    const z = Math.sqrt(-2 * Math.log(u1 || 1e-10)) * Math.cos(2 * Math.PI * u2);
+    // Box-Muller with cryptographically secure randomness (CRITICAL for differential privacy)
+    const bytes = Crypto.getRandomBytes(8);
+    const view = new DataView(bytes.buffer);
+    const u1 = (view.getUint32(0) >>> 0) / 0xFFFFFFFF || 1e-10;
+    const u2 = (view.getUint32(4) >>> 0) / 0xFFFFFFFF;
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
     return z * sigma;
   }
 

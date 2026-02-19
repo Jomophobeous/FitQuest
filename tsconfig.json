@@ -7,5 +7,10 @@
     "moduleResolution": "bundler",
     "skipLibCheck": true
   },
-  "exclude": ["agents/alfred/vscode-extension"]
+  "exclude": [
+    "agents/alfred/vscode-extension",
+    "workspace-repos",
+    "reports",
+    "App screenshots"
+  ]
 }

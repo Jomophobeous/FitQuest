@@ -15,7 +15,7 @@
  * All processing is on-device. No external API calls.
  */
 
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Crypto from 'expo-crypto';
 import { DocumentProcessor, type ImportResult, type TextAnalysis } from './DocumentProcessor';
 import { FitMindService, type DocumentType, type FitMindDocument } from './schema';
@@ -125,20 +125,26 @@ export class DocumentImportPipeline {
     metadata?: { title?: string; author?: string; category?: string }
   ): Promise<PipelineResult> {
     const warnings: string[] = [];
+    console.log(`[DocumentImport] Starting import pipeline for: ${sourceUri}`);
 
     try {
       // Stage 1: Validate
       this.report(5, 'VALIDATING');
+      console.log('[DocumentImport] Stage 1: Validating file...');
       const validation = await this.validateFileImport(sourceUri);
       if (!validation.valid) {
+        console.warn(`[DocumentImport] Validation failed: ${validation.error}`);
         return { success: false, error: validation.error, warnings };
       }
       if (validation.warnings) warnings.push(...validation.warnings);
+      console.log(`[DocumentImport] Validation passed. File size: ${validation.fileSize} bytes`);
 
       // Stage 2: Check storage quota
       this.report(15, 'VALIDATING');
+      console.log('[DocumentImport] Stage 2: Checking storage quota...');
       const storageOk = await this.checkStorageQuota(validation.fileSize!);
       if (!storageOk) {
+        console.warn('[DocumentImport] Storage quota exceeded');
         return { success: false, error: 'Storage quota exceeded. Delete some documents first.', warnings };
       }
 
@@ -154,26 +160,33 @@ export class DocumentImportPipeline {
 
       // Stage 4: Import via DocumentProcessor
       this.report(30, 'COPYING');
+      console.log('[DocumentImport] Stage 4: Importing via DocumentProcessor...');
       const sanitizedMeta = this.sanitizeMetadata(metadata);
       const result = await DocumentProcessor.importFromFile(sourceUri, sanitizedMeta);
 
       if (!result.success) {
+        console.warn(`[DocumentImport] DocumentProcessor import failed: ${result.error}`);
         return { ...result, warnings };
       }
+      console.log(`[DocumentImport] Import successful. Document ID: ${result.documentId}`);
 
       // Stage 5: Chunk content for reader
       this.report(70, 'CHUNKING');
+      console.log('[DocumentImport] Stage 5: Chunking content...');
       let chunkCount = 0;
       if (result.document?.filePath) {
         chunkCount = await this.createChunks(result.document.filePath, result.document.type);
       }
+      console.log(`[DocumentImport] Created ${chunkCount} chunks`);
 
       // Stage 6: Index
       this.report(90, 'INDEXING');
+      console.log('[DocumentImport] Stage 6: Indexing...');
       // Content hash for deduplication tracking
       const contentHash = await this.hashFileContent(result.document?.filePath || sourceUri);
 
       this.report(100, 'COMPLETE');
+      console.log(`[DocumentImport] Pipeline complete. Hash: ${contentHash?.substring(0, 16)}...`);
       return {
         ...result,
         contentHash,
@@ -181,6 +194,7 @@ export class DocumentImportPipeline {
         warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (e: any) {
+      console.error(`[DocumentImport] Pipeline error:`, e);
       this.report(0, 'ERROR');
       return { success: false, error: e.message || 'Pipeline error', warnings };
     }

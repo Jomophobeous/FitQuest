@@ -13,7 +13,6 @@ import {
   ActivityIndicator,
   Alert,
   useWindowDimensions,
-  Vibration,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -44,6 +43,9 @@ import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ExerciseImage from '../src/components/ExerciseImage';
 import RestTimerOverlay from '../src/components/RestTimerOverlay';
 import GetReadyOverlay from '../src/components/GetReadyOverlay';
+import ConfettiBurst from '../src/components/ConfettiBurst';
+import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
+import { haptic } from '../src/utils/haptics';
 import { useRouter } from 'expo-router';
 
 function FitQuestScreenInner() {
@@ -69,6 +71,8 @@ function FitQuestScreenInner() {
   } = useFitQuestWorkout();
 
   const [completionResult, setCompletionResult] = useState<WorkoutCompletionData | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showCompleteBadge, setShowCompleteBadge] = useState(false);
 
   // Timer integration
   const {
@@ -324,12 +328,15 @@ function FitQuestScreenInner() {
   // ===== COMPLETION STATE =====
   if (completionResult) {
     return (
-      <WorkoutSummaryView
-        data={completionResult}
-        rating={workoutRating}
-        onRate={setWorkoutRating}
-        onNewWorkout={handleNewWorkout}
-      />
+      <>
+        <ConfettiBurst active={showConfetti} onComplete={() => setShowConfetti(false)} />
+        <WorkoutSummaryView
+          data={completionResult}
+          rating={workoutRating}
+          onRate={setWorkoutRating}
+          onNewWorkout={handleNewWorkout}
+        />
+      </>
     );
   }
 
@@ -434,6 +441,52 @@ function FitQuestScreenInner() {
             delay={250}
           />
 
+          {/* Warm-Up Section (P6) */}
+          {workout.warmup && workout.warmup.length > 0 && (
+            <>
+              <Animated.View entering={FadeInDown.delay(260).duration(150)} style={{ paddingHorizontal: 16, marginBottom: 4 }}>
+                <View style={[styles.phaseTag, { backgroundColor: theme.colors.success + '18' }]}>
+                  <MaterialCommunityIcons name="fire" size={16} color={theme.colors.success} />
+                  <Text style={[styles.phaseTagText, { color: theme.colors.success }]}>
+                    {t('fitquest.warmUp') || 'Warm Up'} · {workout.warmup.length} {t('library.exercises')}
+                  </Text>
+                </View>
+              </Animated.View>
+              {workout.warmup.map((exercise: WorkoutExerciseDisplay, index: number) => (
+                <Animated.View
+                  key={exercise.id}
+                  entering={FadeInRight.delay(270 + index * 30).duration(120)}
+                  style={{ paddingHorizontal: 16, marginBottom: 6 }}
+                >
+                  <View style={[
+                    styles.exercisePreviewCard,
+                    { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.success + '30' },
+                  ]}>
+                    <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="thumbnail" />
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
+                      <Text style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
+                        {exercise.sets}× ({exercise.reps})
+                      </Text>
+                    </View>
+                  </View>
+                </Animated.View>
+              ))}
+            </>
+          )}
+
+          {/* Main Workout Section Header */}
+          {workout.warmup && workout.warmup.length > 0 && (
+            <Animated.View entering={FadeInDown.delay(300).duration(150)} style={{ paddingHorizontal: 16, marginTop: 4, marginBottom: 4 }}>
+              <View style={[styles.phaseTag, { backgroundColor: theme.colors.accent + '18' }]}>
+                <MaterialCommunityIcons name="dumbbell" size={16} color={theme.colors.accent} />
+                <Text style={[styles.phaseTagText, { color: theme.colors.accent }]}>
+                  {t('fitquest.mainWorkout') || 'Main Workout'}
+                </Text>
+              </View>
+            </Animated.View>
+          )}
+
           {/* Exercise List */}
           {workout.exercises.map((exercise: WorkoutExerciseDisplay, index: number) => (
             <Animated.View
@@ -463,12 +516,47 @@ function FitQuestScreenInner() {
             </Animated.View>
           ))}
 
+          {/* Cool-Down Section (P6) */}
+          {workout.cooldown && workout.cooldown.length > 0 && (
+            <>
+              <Animated.View entering={FadeInDown.delay(380).duration(150)} style={{ paddingHorizontal: 16, marginTop: 4, marginBottom: 4 }}>
+                <View style={[styles.phaseTag, { backgroundColor: '#3B82F6' + '18' }]}>
+                  <MaterialCommunityIcons name="snowflake" size={16} color="#3B82F6" />
+                  <Text style={[styles.phaseTagText, { color: '#3B82F6' }]}>
+                    {t('fitquest.coolDown') || 'Cool Down'} · {workout.cooldown.length} {t('library.exercises')}
+                  </Text>
+                </View>
+              </Animated.View>
+              {workout.cooldown.map((exercise: WorkoutExerciseDisplay, index: number) => (
+                <Animated.View
+                  key={exercise.id}
+                  entering={FadeInRight.delay(390 + index * 30).duration(120)}
+                  style={{ paddingHorizontal: 16, marginBottom: 6 }}
+                >
+                  <View style={[
+                    styles.exercisePreviewCard,
+                    { backgroundColor: theme.colors.surfaceVariant, borderColor: '#3B82F6' + '30' },
+                  ]}>
+                    <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="thumbnail" />
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
+                      <Text style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
+                        {exercise.sets}× ({exercise.reps})
+                      </Text>
+                    </View>
+                  </View>
+                </Animated.View>
+              ))}
+            </>
+          )}
+
           {/* Start Button */}
           <Animated.View entering={FadeInUp.delay(400).duration(150)} style={{ paddingHorizontal: 16, marginTop: 16 }}>
             <GradientButton
               title={t('train.startWorkout')}
               icon="play"
               onPress={() => {
+                haptic('workoutStart');
                 startWorkout();
                 startSession(60);
                 sessionStartRef.current = Date.now();
@@ -518,6 +606,7 @@ function FitQuestScreenInner() {
           } : undefined}
           onSkip={() => {
             console.log('[FitQuest] Rest skipped by user');
+            haptic('restOver');
             void advanceAfterRest('skip');
           }}
           onExtend={handleExtendRest}
@@ -571,6 +660,9 @@ function FitQuestScreenInner() {
             style={[styles.progressBarFill, { width: `${progressPercentage}%`, backgroundColor: theme.colors.accent }]}
           />
         </View>
+
+        {/* Exercise Complete Badge (P7) */}
+        <ExerciseCompleteBadge visible={showCompleteBadge} message="Nice!" color={theme.colors.success} />
 
         <ScrollView contentContainerStyle={[styles.exerciseContent, isCompactScreen && styles.exerciseContentCompact]} showsVerticalScrollIndicator={false}>
           {/* Current Exercise */}
@@ -660,6 +752,8 @@ function FitQuestScreenInner() {
                   if (isLastExercise) {
                     // Complete with default difficulty (skip RPE — user rates at the end)
                     completeExercise(5);
+                    haptic('workoutComplete');
+                    setShowConfetti(true);
                     // Last exercise — play completion sound
                     // handleFinish is triggered by useEffect when status === 'completed'
                     await audioService.playWorkoutComplete();
@@ -680,7 +774,9 @@ function FitQuestScreenInner() {
                       currentExercise: currentExercise.name,
                       nextExercise: nextExercise?.name,
                     });
-                    Vibration.vibrate(25);
+                    haptic('exerciseComplete');
+                    setShowCompleteBadge(true);
+                    setTimeout(() => setShowCompleteBadge(false), 1300);
                     pendingExerciseAdvanceRef.current = true;
                     setIsResting(true);
                     const restDuration = currentExercise.restSeconds || 60;
@@ -809,6 +905,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   regenBtnText: { fontSize: 15, fontWeight: '600' },
+  phaseTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+  },
+  phaseTagText: { fontSize: 13, fontWeight: '600' },
   sessionClockBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',

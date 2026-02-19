@@ -1,0 +1,67 @@
+/**
+ * P7 — Haptic Feedback Choreography
+ *
+ * Centralized haptic patterns for workout milestones.
+ * Uses react-native Vibration API (works in Expo Go).
+ */
+
+import { Vibration, Platform } from 'react-native';
+
+/** Vibration patterns (ms: [pause, vibrate, pause, vibrate, ...]) */
+const PATTERNS = {
+  /** Workout starts — double tap */
+  workoutStart: Platform.OS === 'android' ? [0, 60, 80, 60] : [0, 60],
+  /** Exercise starts — single firm tap */
+  exerciseStart: Platform.OS === 'android' ? [0, 50] : [0, 50],
+  /** Set/rep complete — light tap */
+  setComplete: Platform.OS === 'android' ? [0, 30] : [0, 30],
+  /** Exercise completed — triple tap */
+  exerciseComplete: Platform.OS === 'android' ? [0, 40, 60, 40, 60, 40] : [0, 40, 60, 40],
+  /** Rest starts — soft pulse */
+  restStart: Platform.OS === 'android' ? [0, 20] : [0, 20],
+  /** Rest ending countdown (3-2-1) — 3 quick taps */
+  restEnding: Platform.OS === 'android' ? [0, 30, 50, 30, 50, 30] : [0, 30, 50, 30],
+  /** Rest over — firm tap */
+  restOver: Platform.OS === 'android' ? [0, 60] : [0, 60],
+  /** Workout complete — celebration pattern */
+  workoutComplete: Platform.OS === 'android'
+    ? [0, 50, 60, 50, 100, 80, 60, 80]
+    : [0, 50, 60, 50, 100, 80],
+  /** Button press — micro tap */
+  buttonPress: Platform.OS === 'android' ? [0, 15] : [0, 15],
+  /** Error/warning */
+  error: Platform.OS === 'android' ? [0, 100, 50, 100] : [0, 100],
+};
+
+export type HapticEvent = keyof typeof PATTERNS;
+
+let enabled = true;
+
+/**
+ * Trigger a haptic pattern for the given workout event.
+ */
+export function haptic(event: HapticEvent): void {
+  if (!enabled) return;
+  try {
+    const pattern = PATTERNS[event];
+    if (pattern) {
+      Vibration.vibrate(pattern);
+    }
+  } catch {
+    // Silently ignore — some emulators don't support vibration
+  }
+}
+
+/**
+ * Enable or disable haptic feedback globally.
+ */
+export function setHapticsEnabled(value: boolean): void {
+  enabled = value;
+}
+
+/**
+ * Check if haptics are currently enabled.
+ */
+export function isHapticsEnabled(): boolean {
+  return enabled;
+}

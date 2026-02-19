@@ -41,6 +41,7 @@ import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTr
 import { evaluatePostWorkoutPolicyDecision } from '../services/autonomousPolicyRuntime';
 
 import type { TargetMuscle, ExerciseWithDetails } from '../database/types';
+import { generateWarmupCooldown, type WarmupCooldownExercise } from '../engines/warmupCooldownGenerator';
 
 // ============================================
 // TYPES
@@ -53,6 +54,10 @@ export interface GeneratedWorkoutDisplay {
   isDeload: boolean;
   explanation: string;
   warnings: string[];
+  /** P6: warm-up exercises shown before main workout */
+  warmup: WorkoutExerciseDisplay[];
+  /** P6: cool-down exercises shown after main workout */
+  cooldown: WorkoutExerciseDisplay[];
 }
 
 export interface WorkoutExerciseDisplay {
@@ -198,7 +203,47 @@ export function useFitQuestWorkout() {
         });
       }
 
-      // Step 7: Generate explanation
+      // Step 7: Generate warm-up & cool-down (P6)
+      const mainExerciseIds = new Set(generated.exercises.map(e => e.exercise.id));
+      let warmupDisplays: WorkoutExerciseDisplay[] = [];
+      let cooldownDisplays: WorkoutExerciseDisplay[] = [];
+      try {
+        const wcResult = await generateWarmupCooldown(generated.exercises, mainExerciseIds);
+        warmupDisplays = wcResult.warmup.map((w, i) => ({
+          id: `warmup_${i}_${Date.now()}`,
+          exerciseId: w.exercise.id,
+          name: w.exercise.name,
+          category: w.exercise.category,
+          sets: w.sets,
+          reps: w.reps,
+          restSeconds: 15,
+          instructions: w.exercise.instructions || [],
+          completed: false,
+          audioIntro: w.exercise.audio_intro || '',
+          audioSetup: w.exercise.audio_setup || '',
+          audioExecution: w.exercise.audio_execution || '',
+          audioTransition: w.exercise.audio_transition || '',
+        }));
+        cooldownDisplays = wcResult.cooldown.map((c, i) => ({
+          id: `cooldown_${i}_${Date.now()}`,
+          exerciseId: c.exercise.id,
+          name: c.exercise.name,
+          category: c.exercise.category,
+          sets: c.sets,
+          reps: c.reps,
+          restSeconds: 15,
+          instructions: c.exercise.instructions || [],
+          completed: false,
+          audioIntro: c.exercise.audio_intro || '',
+          audioSetup: c.exercise.audio_setup || '',
+          audioExecution: c.exercise.audio_execution || '',
+          audioTransition: c.exercise.audio_transition || '',
+        }));
+      } catch (wcErr) {
+        console.warn('[FitQuest] Warmup/cooldown generation failed (non-fatal):', wcErr);
+      }
+
+      // Step 8: Generate explanation
       const summary = generateWorkoutSummary(
         exerciseDisplays.length,
         userProfile.goal,
@@ -213,6 +258,8 @@ export function useFitQuestWorkout() {
         isDeload,
         explanation: summary,
         warnings: validation.recommendations,
+        warmup: warmupDisplays,
+        cooldown: cooldownDisplays,
       };
 
       setState({

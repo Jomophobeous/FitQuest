@@ -115,6 +115,9 @@ const en = {
   'fitquest.nextUp': 'Up Next',
   'fitquest.equipmentChange': 'Equipment change — get set up!',
   'fitquest.formTips': 'Form Tips',
+  'fitquest.warmUp': 'Warm Up',
+  'fitquest.coolDown': 'Cool Down',
+  'fitquest.mainWorkout': 'Main Workout',
 
   // FitQuest/Train
   'train.generating': 'Generating workout…',

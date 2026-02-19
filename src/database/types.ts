@@ -383,8 +383,16 @@ export interface ExerciseWithDetails extends Exercise {
   training_types: { type: TrainingType; effectiveness: number }[];
 }
 
+export interface ExerciseImageRecord {
+  id: number;
+  exercise_id: string;
+  image_path: string;
+  image_order: number;
+  source: 'external' | 'shared' | 'user' | 'generated';
+}
+
 // ============================================
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 12; // v12: Remove variation exercises (Tempo/Pause/Iso/Plyo/Uni/Elev/Weighted), keep base only
+export const SCHEMA_VERSION = 13; // v13: Re-run variation cleanup (v12 skipped due to stale Metro bundle) + image mapping

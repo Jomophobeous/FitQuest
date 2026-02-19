@@ -8,6 +8,7 @@ import type {
   Exercise,
   ExerciseWithDetails,
   ExerciseFilter,
+  ExerciseImageRecord,
   UserProfile,
   UserEquipment,
   UserInjury,
@@ -33,6 +34,34 @@ import type {
 } from './types';
 import type { BodyCraftAlgorithm } from '../engines/bodyCraftEngine';
 import { generateSecureId } from '../security/randomId';
+
+// ============================================
+// HELPERS
+// ============================================
+
+/**
+ * Safely parse the `instructions` column which may be:
+ *  - A valid JSON array string: '["step 1","step 2"]'
+ *  - Plain text (from external seed data): 'Begin by standing...'
+ *  - null/undefined/empty
+ * Always returns a string[].
+ */
+function safeParseInstructions(raw: string | null | undefined): string[] {
+  if (!raw || raw.trim() === '') return [];
+  const trimmed = raw.trim();
+  // If it looks like a JSON array, try parsing
+  if (trimmed.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {
+      // Fallback below
+    }
+  }
+  // Plain text — split by newlines or return as single-element array
+  const lines = trimmed.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  return lines.length > 0 ? lines : [trimmed];
+}
 
 // ============================================
 // EXERCISE QUERIES
@@ -115,7 +144,7 @@ export async function getExercises(filter?: ExerciseFilter): Promise<ExerciseWit
 
   return rows.map(row => ({
     ...row,
-    instructions: JSON.parse(row.instructions || '[]'),
+    instructions: safeParseInstructions(row.instructions),
     primary_muscles: row.primary_muscles?.split(',').filter(Boolean) || [],
     secondary_muscles: row.secondary_muscles?.split(',').filter(Boolean) || [],
     equipment_required: row.equipment_required?.split(',').filter(Boolean) || [],
@@ -137,24 +166,25 @@ export async function getExerciseById(id: string): Promise<ExerciseWithDetails |
 
   if (!exercise) return null;
 
-  const muscles = await db.getAllAsync<{ muscle: string; is_primary: number }>(
-    `SELECT muscle, is_primary FROM exercise_muscles WHERE exercise_id = ?`,
-    [id]
-  );
-
-  const equipment = await db.getAllAsync<{ equipment: string; is_required: number }>(
-    `SELECT equipment, is_required FROM exercise_equipment WHERE exercise_id = ?`,
-    [id]
-  );
-
-  const trainingTypes = await db.getAllAsync<{ training_type: string; effectiveness: number }>(
-    `SELECT training_type, effectiveness FROM exercise_training_types WHERE exercise_id = ?`,
-    [id]
-  );
+  // Fetch related data in parallel instead of sequentially
+  const [muscles, equipment, trainingTypes] = await Promise.all([
+    db.getAllAsync<{ muscle: string; is_primary: number }>(
+      `SELECT muscle, is_primary FROM exercise_muscles WHERE exercise_id = ?`,
+      [id]
+    ),
+    db.getAllAsync<{ equipment: string; is_required: number }>(
+      `SELECT equipment, is_required FROM exercise_equipment WHERE exercise_id = ?`,
+      [id]
+    ),
+    db.getAllAsync<{ training_type: string; effectiveness: number }>(
+      `SELECT training_type, effectiveness FROM exercise_training_types WHERE exercise_id = ?`,
+      [id]
+    ),
+  ]);
 
   return {
     ...exercise,
-    instructions: JSON.parse(exercise.instructions || '[]'),
+    instructions: safeParseInstructions(exercise.instructions),
     primary_muscles: muscles.filter(m => m.is_primary).map(m => m.muscle as TargetMuscle),
     secondary_muscles: muscles.filter(m => !m.is_primary).map(m => m.muscle as TargetMuscle),
     equipment_required: equipment.filter(e => e.is_required).map(e => e.equipment as EquipmentItem),
@@ -174,27 +204,98 @@ export async function getExercisesByCategory(category: Category): Promise<Exerci
 }
 
 /**
- * Get exercises targeting specific muscles
+ * Get exercises targeting specific muscles — uses SQL JOIN (no full-table scan)
  */
 export async function getExercisesByMuscle(
   muscles: TargetMuscle[],
   primaryOnly = true
 ): Promise<ExerciseWithDetails[]> {
+  if (!muscles.length) return [];
+
   const db = await getDatabase();
-
   const placeholders = muscles.map(() => '?').join(',');
-  const primaryFilter = primaryOnly ? 'AND is_primary = 1' : '';
+  const primaryFilter = primaryOnly ? 'AND fm.is_primary = 1' : '';
 
-  const exerciseIds = await db.getAllAsync<{ exercise_id: string }>(
-    `SELECT DISTINCT exercise_id FROM exercise_muscles 
-     WHERE muscle IN (${placeholders}) ${primaryFilter}`,
-    muscles
+  const sql = `
+    SELECT e.*,
+      GROUP_CONCAT(DISTINCT CASE WHEN em.is_primary = 1 THEN em.muscle END) as primary_muscles,
+      GROUP_CONCAT(DISTINCT CASE WHEN em.is_primary = 0 THEN em.muscle END) as secondary_muscles,
+      GROUP_CONCAT(DISTINCT CASE WHEN ee.is_required = 1 THEN ee.equipment END) as equipment_required,
+      GROUP_CONCAT(DISTINCT CASE WHEN ee.is_required = 0 THEN ee.equipment END) as equipment_optional
+    FROM exercises e
+    LEFT JOIN exercise_muscles em ON e.id = em.exercise_id
+    LEFT JOIN exercise_equipment ee ON e.id = ee.exercise_id
+    WHERE e.id IN (
+      SELECT DISTINCT exercise_id FROM exercise_muscles fm
+      WHERE fm.muscle IN (${placeholders}) ${primaryFilter}
+    )
+    GROUP BY e.id
+    ORDER BY e.category, e.order_in_category
+  `;
+
+  const rows = await db.getAllAsync<any>(sql, muscles);
+  return rows.map(row => ({
+    ...row,
+    instructions: safeParseInstructions(row.instructions),
+    primary_muscles: row.primary_muscles?.split(',').filter(Boolean) || [],
+    secondary_muscles: row.secondary_muscles?.split(',').filter(Boolean) || [],
+    equipment_required: row.equipment_required?.split(',').filter(Boolean) || [],
+    equipment_optional: row.equipment_optional?.split(',').filter(Boolean) || [],
+    training_types: [],
+  }));
+}
+
+// ============================================
+// EXERCISE IMAGES
+// ============================================
+
+/**
+ * Get all images for an exercise, ordered by image_order (0 = start, 1 = end).
+ */
+export async function getExerciseImages(exerciseId: string): Promise<ExerciseImageRecord[]> {
+  const db = await getDatabase();
+  return db.getAllAsync<ExerciseImageRecord>(
+    `SELECT id, exercise_id, image_path, image_order, source 
+     FROM exercise_images 
+     WHERE exercise_id = ? 
+     ORDER BY image_order`,
+    [exerciseId]
   );
+}
 
-  if (!exerciseIds.length) return [];
+/**
+ * Get the primary image path for an exercise (image_order = 0).
+ * Returns null if no images exist.
+ */
+export async function getExercisePrimaryImage(exerciseId: string): Promise<string | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ image_path: string }>(
+    `SELECT image_path FROM exercise_images WHERE exercise_id = ? ORDER BY image_order LIMIT 1`,
+    [exerciseId]
+  );
+  return row?.image_path ?? null;
+}
 
-  const ids = exerciseIds.map(r => r.exercise_id);
-  return getExercises({ categories: undefined }); // Then filter by ids
+/**
+ * Batch-fetch primary images for multiple exercises (used by list screens).
+ * Returns a Map of exerciseId → image_path.
+ */
+export async function getExerciseImageMap(exerciseIds: string[]): Promise<Map<string, string>> {
+  if (!exerciseIds.length) return new Map();
+  const db = await getDatabase();
+  const placeholders = exerciseIds.map(() => '?').join(',');
+  const rows = await db.getAllAsync<{ exercise_id: string; image_path: string }>(
+    `SELECT exercise_id, MIN(image_path) as image_path 
+     FROM exercise_images 
+     WHERE exercise_id IN (${placeholders})
+     GROUP BY exercise_id`,
+    exerciseIds
+  );
+  const map = new Map<string, string>();
+  for (const row of rows) {
+    map.set(row.exercise_id, row.image_path);
+  }
+  return map;
 }
 
 // ============================================
@@ -350,17 +451,14 @@ export async function createUserProfile(profile: Omit<UserProfile, 'created_at' 
 }
 
 /**
- * Update user profile (only if not locked)
+ * Update user profile
+ * Note: profile.locked is retained for onboarding state, but in-app profile edits must remain writable.
  */
 export async function updateUserProfile(
   userId: string,
   updates: Partial<Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>>
 ): Promise<boolean> {
   const db = await getDatabase();
-
-  // Check if locked
-  const profile = await getUserProfile(userId);
-  if (profile?.locked) return false;
 
   const fields: string[] = [];
   const values: any[] = [];
@@ -418,14 +516,17 @@ export async function getUserEquipment(userId: string): Promise<EquipmentItem[]>
 export async function setUserEquipment(userId: string, equipment: EquipmentItem[]): Promise<void> {
   const db = await getDatabase();
 
-  await db.runAsync(`DELETE FROM user_equipment WHERE user_id = ?`, [userId]);
+  // Wrap in transaction for atomicity — prevents partial equipment loss on crash
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(`DELETE FROM user_equipment WHERE user_id = ?`, [userId]);
 
-  for (const item of equipment) {
-    await db.runAsync(
-      `INSERT INTO user_equipment (user_id, equipment) VALUES (?, ?)`,
-      [userId, item]
-    );
-  }
+    for (const item of equipment) {
+      await db.runAsync(
+        `INSERT INTO user_equipment (user_id, equipment) VALUES (?, ?)`,
+        [userId, item]
+      );
+    }
+  });
 }
 
 // ============================================
@@ -598,6 +699,16 @@ export async function getRecentSessions(
      LIMIT ?`,
     [userId, limit]
   );
+}
+
+/**
+ * Delete a workout session and its associated exercises
+ */
+export async function deleteWorkoutSession(sessionId: string): Promise<void> {
+  const db = await getDatabase();
+  // Remove associated exercises first, then the session itself
+  await db.runAsync('DELETE FROM session_exercises WHERE session_id = ?', [sessionId]);
+  await db.runAsync('DELETE FROM workout_sessions WHERE id = ?', [sessionId]);
 }
 
 /**
@@ -1055,14 +1166,19 @@ export async function addFitMindFlashcard(card: {
   const db = await getDatabase();
   const id = await generateSecureId('fc');
   const now = Date.now();
-  const nextReview = now + 86400000;
-  const difficulty = card.difficulty ?? 2.5;
+
+  // FSRS initial values (from FSRSService.createNewCard)
+  const initialDifficulty = card.difficulty ?? 5; // FSRS uses 1-10 scale, 5 is neutral
+  const initialState = 0; // State.New
+  const initialStability = 0;
 
   await db.runAsync(
     `INSERT INTO fitmind_flashcards
-     (id, document_id, front, back, difficulty, ease_factor, interval_days, repetitions, next_review, created_at)
-     VALUES (?, ?, ?, ?, ?, 2.5, 1, 0, ?, ?)`,
-    [id, card.documentId, card.front, card.back, difficulty, nextReview, now]
+     (id, document_id, front, back, difficulty, stability, state, due, scheduled_days,
+      reps, lapses, learning_steps, ease_factor, repetitions, interval_days, next_review, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 2.5, 0, 1, ?, ?)`,
+    [id, card.documentId, card.front, card.back, initialDifficulty, initialStability, 
+     initialState, now, now, now]
   );
 
   return id;
@@ -1071,12 +1187,65 @@ export async function addFitMindFlashcard(card: {
 export async function getFitMindDueFlashcards(limit = 20): Promise<Flashcard[]> {
   const db = await getDatabase();
   const now = Date.now();
+  // Use FSRS 'due' column (falls back to next_review for legacy cards)
   return db.getAllAsync<Flashcard>(
-    `SELECT * FROM fitmind_flashcards WHERE next_review <= ? ORDER BY next_review ASC LIMIT ?`,
+    `SELECT * FROM fitmind_flashcards 
+     WHERE COALESCE(due, next_review) <= ? 
+     ORDER BY COALESCE(due, next_review) ASC LIMIT ?`,
     [now, limit]
   );
 }
 
+/**
+ * Get a flashcard by ID (for review operations).
+ */
+export async function getFitMindFlashcard(cardId: string): Promise<Flashcard | null> {
+  const db = await getDatabase();
+  return db.getFirstAsync<Flashcard>(
+    `SELECT * FROM fitmind_flashcards WHERE id = ?`,
+    [cardId]
+  );
+}
+
+/**
+ * Update a flashcard with FSRS scheduling result.
+ * This is the core update function used by FSRSService.
+ */
+export async function updateFitMindFlashcardFSRS(
+  cardId: string,
+  update: {
+    due: number;
+    stability: number;
+    difficulty: number;
+    state: number;
+    scheduled_days: number;
+    reps: number;
+    lapses: number;
+    learning_steps: number;
+    last_review: number;
+  }
+): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    `UPDATE fitmind_flashcards
+     SET due = ?, stability = ?, difficulty = ?, state = ?, scheduled_days = ?,
+         reps = ?, lapses = ?, learning_steps = ?, last_review = ?,
+         next_review = ?, interval_days = ?, repetitions = ?
+     WHERE id = ?`,
+    [
+      update.due, update.stability, update.difficulty, update.state, update.scheduled_days,
+      update.reps, update.lapses, update.learning_steps, update.last_review,
+      // Also update legacy columns for compatibility
+      update.due, update.scheduled_days, update.reps,
+      cardId
+    ]
+  );
+}
+
+/**
+ * @deprecated Use FSRSService.scheduleReview() + updateFitMindFlashcardFSRS() instead.
+ * Legacy SM-2 review function kept for backwards compatibility.
+ */
 export async function reviewFitMindFlashcard(cardId: string, quality: number): Promise<void> {
   const db = await getDatabase();
   const card = await db.getFirstAsync<Flashcard>(
@@ -1086,37 +1255,23 @@ export async function reviewFitMindFlashcard(cardId: string, quality: number): P
 
   if (!card) return;
 
-  let { ease_factor, interval_days, repetitions } = card;
-  const now = Date.now();
-
-  if (quality >= 3) {
-    if (repetitions === 0) {
-      interval_days = 1;
-    } else if (repetitions === 1) {
-      interval_days = 6;
-    } else {
-      interval_days = Math.round(interval_days * ease_factor);
-    }
-    repetitions++;
+  // Now delegate to FSRS
+  // Map SM-2 quality (0-5) to FSRS rating:
+  // 0-2 = Again, 3 = Hard, 4 = Good, 5 = Easy
+  const { fsrsService } = await import('../fitmind/FSRSService');
+  let rating: 'again' | 'hard' | 'good' | 'easy';
+  if (quality <= 2) {
+    rating = 'again';
+  } else if (quality === 3) {
+    rating = 'hard';
+  } else if (quality === 4) {
+    rating = 'good';
   } else {
-    repetitions = 0;
-    interval_days = 1;
+    rating = 'easy';
   }
 
-  ease_factor = Math.max(
-    1.3,
-    ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-  );
-
-  const nextReview = now + interval_days * 86400000;
-
-  await db.runAsync(
-    `UPDATE fitmind_flashcards
-     SET ease_factor = ?, interval_days = ?, repetitions = ?,
-         next_review = ?, difficulty = ?
-     WHERE id = ?`,
-    [ease_factor, interval_days, repetitions, nextReview, quality, cardId]
-  );
+  const result = fsrsService.scheduleReview(card, rating);
+  await updateFitMindFlashcardFSRS(cardId, result.card);
 }
 
 export async function getFitMindReadingStreak(): Promise<{
@@ -1681,9 +1836,10 @@ export async function applyBodyCraftAlgorithmToProfile(
 
 export async function getWorkoutCountSince(timestamp: number): Promise<number> {
   const db = await getDatabase();
+  const sinceIso = new Date(timestamp).toISOString();
   const row = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM workout_sessions WHERE started_at >= ?`,
-    [timestamp]
+    [sinceIso]
   );
   return row?.cnt ?? 0;
 }
@@ -1707,11 +1863,17 @@ export async function getWorkoutStreakCurrent(userId: string): Promise<number> {
 
 export async function getRecoveryScoresSince(since: number): Promise<Array<{ recovery_score: number; updated_at: number }>> {
   const db = await getDatabase();
-  return db.getAllAsync<{ recovery_score: number; updated_at: number }>(
+  const sinceIso = new Date(since).toISOString();
+  const rows = await db.getAllAsync<{ recovery_score: number; updated_at: string }>(
     `SELECT (100 - fatigue_level) as recovery_score, updated_at FROM muscle_fatigue
      WHERE updated_at > ? ORDER BY updated_at DESC LIMIT 30`,
-    [since]
+    [sinceIso]
   );
+
+  return rows.map((row) => ({
+    recovery_score: row.recovery_score,
+    updated_at: Date.parse(row.updated_at),
+  }));
 }
 
 // ============================================

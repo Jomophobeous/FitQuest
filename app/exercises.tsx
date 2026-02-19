@@ -30,10 +30,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { colorSystem } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { getExercises } from '../src/database/service';
 import type { ExerciseWithDetails, Category, Difficulty } from '../src/database/types';
 import { GlassCard, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
+import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
+import ExerciseImage from '../src/components/ExerciseImage';
 
 // ============================================
 // CATEGORY FILTERS
@@ -49,9 +53,9 @@ const CATEGORIES: { key: Category | 'all'; label: string; icon: keyof typeof Mat
 ];
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: '#10B981',
-  intermediate: '#F4A427',
-  advanced: '#FF6B6B',
+  beginner: colorSystem.dark.accent,
+  intermediate: colorSystem.dark.warning,
+  advanced: colorSystem.dark.error,
 };
 
 // ============================================
@@ -61,6 +65,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 export default function ExercisesScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady } = useDatabase();
   const router = useRouter();
 
   const [exercises, setExercises] = useState<ExerciseWithDetails[]>([]);
@@ -70,8 +75,10 @@ export default function ExercisesScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseWithDetails | null>(null);
+  const [detailVisible, setDetailVisible] = useState(false);
 
-  useEffect(() => { loadExercises(); }, []);
+  useEffect(() => { if (isReady) loadExercises(); }, [isReady]);
   useEffect(() => { filterExercises(); }, [exercises, selectedCategory, searchQuery]);
 
   const loadExercises = async () => {
@@ -115,17 +122,15 @@ export default function ExercisesScreen() {
   }, []);
 
   const handleExercisePress = (exercise: ExerciseWithDetails) => {
-    const muscles = [
-      ...exercise.primary_muscles.map(m => `• ${m} (primary)`),
-      ...exercise.secondary_muscles.map(m => `• ${m} (secondary)`),
-    ].join('\n');
-    const instructions = exercise.instructions.map((inst, i) => `${i + 1}. ${inst}`).join('\n');
-    Alert.alert(
-      exercise.name,
-      `Difficulty: ${exercise.difficulty}\nEquipment: ${exercise.equipment_level}\nImpact: ${exercise.impact_level}\n\nMuscles:\n${muscles || 'Not specified'}\n\nInstructions:\n${instructions || 'Not specified'}`,
-      [{ text: 'OK' }]
-    );
+    setSelectedExercise(exercise);
+    setDetailVisible(true);
   };
+
+  const handleCloseDetail = useCallback(() => {
+    setDetailVisible(false);
+    // Delay clearing to allow exit animation
+    setTimeout(() => setSelectedExercise(null), 300);
+  }, []);
 
   const renderExercise = ({ item, index }: { item: ExerciseWithDetails; index: number }) => {
     const diffColor = DIFFICULTY_COLORS[item.difficulty] || theme.colors.textMuted;
@@ -134,19 +139,26 @@ export default function ExercisesScreen() {
         <View style={[
           styles.exerciseCard,
           {
-            backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.95)',
-            borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+            backgroundColor: theme.colors.surfaceVariant,
+            borderColor: theme.colors.border,
           },
         ]}>
           <View style={styles.exerciseContent}>
             <View style={styles.exerciseTop}>
+              <ExerciseImage
+                exerciseId={item.id}
+                category={item.category}
+                variant="thumbnail"
+                animate={false}
+                style={{ marginRight: 12 }}
+              />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.exerciseName, { color: theme.colors.text }]} numberOfLines={1}>
                   {item.name}
                 </Text>
                 <View style={styles.muscleTags}>
                   {item.primary_muscles.slice(0, 2).map((m, i) => (
-                    <View key={i} style={[styles.muscleTag, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}>
+                    <View key={i} style={[styles.muscleTag, { backgroundColor: theme.colors.surfaceVariant }]}>
                       <Text style={[styles.muscleTagText, { color: theme.colors.textSecondary }]}>{m}</Text>
                     </View>
                   ))}
@@ -205,7 +217,7 @@ export default function ExercisesScreen() {
           ]}
         >
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Library</Text>
-          <Text style={[styles.headerCount, { color: theme.colors.textMuted }]}>
+          <Text style={[styles.headerCount, { color: theme.colors.textSecondary }]}> 
             {exercises.length} exercises
           </Text>
         </View>
@@ -216,8 +228,8 @@ export default function ExercisesScreen() {
         <View style={[
           styles.searchBar,
           {
-            backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : '#fff',
-            borderColor: searchFocused ? theme.colors.accent : (theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
+            backgroundColor: theme.colors.surfaceVariant,
+            borderColor: searchFocused ? theme.colors.accent : theme.colors.border,
           },
         ]}>
           <MaterialCommunityIcons name="magnify" size={20} color={searchFocused ? theme.colors.accent : theme.colors.textMuted} />
@@ -254,7 +266,7 @@ export default function ExercisesScreen() {
                 style={[
                   styles.categoryPill,
                   {
-                    backgroundColor: isSelected ? theme.colors.accent : (theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'),
+                    backgroundColor: isSelected ? theme.colors.accent : theme.colors.surfaceVariant,
                     borderWidth: isSelected ? 0 : 1,
                     borderColor: theme.colors.border,
                   },
@@ -263,9 +275,9 @@ export default function ExercisesScreen() {
                 <MaterialCommunityIcons
                   name={item.icon}
                   size={15}
-                  color={isSelected ? '#fff' : theme.colors.textMuted}
+                  color={isSelected ? theme.colors.onAccent : theme.colors.textSecondary}
                 />
-                <Text style={[styles.categoryLabel, { color: isSelected ? '#fff' : theme.colors.text }]}>
+                <Text style={[styles.categoryLabel, { color: isSelected ? theme.colors.onAccent : theme.colors.text }]}>
                   {item.label}
                 </Text>
               </TouchableOpacity>
@@ -310,6 +322,13 @@ export default function ExercisesScreen() {
       >
         <MaterialCommunityIcons name="playlist-plus" size={26} color="#fff" />
       </TouchableOpacity>
+
+      {/* ── EXERCISE DETAIL SHEET ── */}
+      <ExerciseDetailSheet
+        exercise={selectedExercise}
+        visible={detailVisible}
+        onClose={handleCloseDetail}
+      />
     </SafeAreaView>
   );
 }
@@ -329,42 +348,42 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    borderRadius: 14,
+    marginTop: 12,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 16,
     borderWidth: 1,
   },
-  searchInput: { flex: 1, marginLeft: 10, fontSize: 15 },
-  categoryList: { paddingHorizontal: 16, paddingBottom: 8 },
+  searchInput: { flex: 1, marginLeft: 12, fontSize: 16 },
+  categoryList: { paddingHorizontal: 16, paddingBottom: 12 },
   categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 24,
+    marginRight: 10,
     overflow: 'hidden',
   },
-  categoryLabel: { fontSize: 13, fontWeight: '500', marginLeft: 6 },
-  resultsRow: { paddingHorizontal: 20, paddingVertical: 6 },
-  resultsText: { fontSize: 12, fontWeight: '500' },
-  list: { paddingBottom: 24 },
+  categoryLabel: { fontSize: 14, fontWeight: '600', marginLeft: 6 },
+  resultsRow: { paddingHorizontal: 20, paddingVertical: 8 },
+  resultsText: { fontSize: 13, fontWeight: '500' },
+  list: { paddingBottom: 112 },
   exerciseCard: {
-    borderRadius: 14,
+    borderRadius: 18,
     borderWidth: 1,
     overflow: 'hidden',
   },
-  exerciseContent: { flex: 1, padding: 14 },
-  exerciseTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  exerciseName: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
-  muscleTags: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
-  muscleTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  muscleTagText: { fontSize: 11, fontWeight: '500' },
-  diffBadge: { alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-  diffText: { fontSize: 11, fontWeight: '500' },
-  exerciseBottom: { flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 12 },
+  exerciseContent: { flex: 1, padding: 18 },
+  exerciseTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  exerciseName: { fontSize: 17, fontWeight: '700', marginBottom: 8 },
+  muscleTags: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  muscleTag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  muscleTagText: { fontSize: 12, fontWeight: '500' },
+  diffBadge: { alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 },
+  diffText: { fontSize: 12, fontWeight: '600' },
+  exerciseBottom: { flexDirection: 'row', alignItems: 'center', marginTop: 14, gap: 14 },
   bottomTag: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   bottomTagText: { fontSize: 11 },
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: 48 },

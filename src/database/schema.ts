@@ -109,6 +109,14 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
       await cleanVariationExercises(database);
     }
 
+    // v12 → v13: Re-run cleanup (v12 migration was skipped on some devices due to stale Metro bundle)
+    // Also adds image sharing from external exercises to core exercises
+    if (currentVersion < 13) {
+      console.log(`[FitQuest DB] Migrating to v13: ensuring variation cleanup + image sharing`);
+      await cleanVariationExercises(database);
+      await shareExternalImagesToCore(database);
+    }
+
     await migrateFitMindLegacyTables(database);
     await createTables(database);
     await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
@@ -236,6 +244,91 @@ async function cleanVariationExercises(database: SQLite.SQLiteDatabase): Promise
   
   const removed = (before?.count ?? 0) - (after?.count ?? 0);
   console.log(`[FitQuest DB] Removed ${removed} variation exercises (${before?.count ?? 0} → ${after?.count ?? 0} generated exercises)`);
+}
+
+/**
+ * Share images from external exercises to matching core/generated exercises.
+ * 
+ * Strategy:
+ * 1. For each core exercise (id NOT starting with 'fed_'), normalize its name
+ * 2. Find a matching external exercise by normalized name
+ * 3. Copy the image_path from the external exercise's images to the core exercise
+ * 
+ * This is idempotent — uses INSERT OR IGNORE.
+ */
+async function shareExternalImagesToCore(database: SQLite.SQLiteDatabase): Promise<void> {
+  // Get all core exercises (non-external)
+  const coreExercises = await database.getAllAsync<{ id: string; name: string }>(
+    `SELECT id, name FROM exercises WHERE id NOT LIKE 'fed_%'`
+  );
+  
+  // Get all external exercise names → image paths (both start and end frame)
+  const externalImages = await database.getAllAsync<{ exercise_id: string; name: string; image_path: string; image_order: number }>(
+    `SELECT e.id as exercise_id, e.name, ei.image_path, ei.image_order 
+     FROM exercises e 
+     JOIN exercise_images ei ON e.id = ei.exercise_id 
+     WHERE e.id LIKE 'fed_%'`
+  );
+  
+  // Build lookup: normalized name → image records
+  const imagesByName = new Map<string, { image_path: string; image_order: number }[]>();
+  for (const img of externalImages) {
+    const normalized = normalizeName(img.name);
+    if (!imagesByName.has(normalized)) {
+      imagesByName.set(normalized, []);
+    }
+    imagesByName.get(normalized)!.push({ image_path: img.image_path, image_order: img.image_order });
+  }
+  
+  let shared = 0;
+  
+  for (const core of coreExercises) {
+    // Already has images?
+    const existing = await database.getFirstAsync<{ cnt: number }>(
+      `SELECT COUNT(*) as cnt FROM exercise_images WHERE exercise_id = ?`,
+      [core.id]
+    );
+    if (existing && existing.cnt > 0) continue;
+    
+    // Try exact normalized match
+    const normalized = normalizeName(core.name);
+    let images = imagesByName.get(normalized);
+    
+    // Try partial match (strip common prefixes from generated exercises)
+    if (!images) {
+      const stripped = normalized
+        .replace(/^(tempo|pause|isometric|plyometric|single leg|elevated|weighted)\s+/i, '')
+        .trim();
+      if (stripped !== normalized) {
+        images = imagesByName.get(stripped);
+      }
+    }
+    
+    if (images && images.length > 0) {
+      for (const img of images) {
+        await database.runAsync(
+          `INSERT OR IGNORE INTO exercise_images (exercise_id, image_path, image_order, source) VALUES (?, ?, ?, 'shared')`,
+          [core.id, img.image_path, img.image_order]
+        );
+      }
+      shared++;
+    }
+  }
+  
+  const totalWithImages = await database.getFirstAsync<{ cnt: number }>(
+    `SELECT COUNT(DISTINCT exercise_id) as cnt FROM exercise_images`
+  );
+  
+  console.log(`[FitQuest DB] Shared images to ${shared} core exercises. Total exercises with images: ${totalWithImages?.cnt ?? 0}`);
+}
+
+/** Normalize exercise name for fuzzy matching */
+function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '') // strip special chars
+    .replace(/\s+/g, ' ')        // collapse whitespace
+    .trim();
 }
 
 async function migrateFitMindLegacyTables(database: SQLite.SQLiteDatabase): Promise<void> {

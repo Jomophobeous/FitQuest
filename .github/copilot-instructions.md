@@ -96,9 +96,22 @@
 ❌ **Bug**: Flashcard `next_review` as ISO string → expects INTEGER Unix timestamp  
 ✅ **Fix**: Use `Date.now()` or `Math.floor(Date.now() / 1000)` for consistency
 
+### Exercise Data Errors
+❌ **Bug**: `JSON.parse(row.instructions)` crashes on plain-text instructions from external exercises  
+✅ **Fix**: Use `safeParseInstructions()` in `service.ts` — handles JSON arrays, plain text, and null
+
+❌ **Bug**: Using old category names (`calisthenics`, `building_muscle`, `getting_taller`, etc.)  
+✅ **Fix**: v14 renamed categories. Use: `body_control`, `posture`, `speed`, `mobility`, `focus`, `strength`
+
+❌ **Bug**: Creating variation exercises (Tempo/Pause/Isometric/Plyometric/etc.) bloats DB  
+✅ **Fix**: v12 migration stripped 364 variations. Generator only creates base exercises now
+
+❌ **Bug**: `useCallback` placed after an early `return` → "Rendered more hooks" crash  
+✅ **Fix**: All hooks MUST be before any conditional return in React components
+
 ---
 
-## 📊 EMBEDDED SCHEMA — SCHEMA VERSION 9
+## 📊 EMBEDDED SCHEMA — SCHEMA VERSION 14
 
 Below is the **canonical SQL schema** (auto-generated from `src/database/schema.ts`). When generating queries, ONLY reference columns that exist below:
 
@@ -109,7 +122,7 @@ Below is the **canonical SQL schema** (auto-generated from `src/database/schema.
 CREATE TABLE exercises (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('calisthenics', 'getting_taller', 'faster', 'flexible', 'mental_clarity', 'building_muscle')),
+  category TEXT NOT NULL CHECK (category IN ('body_control', 'posture', 'speed', 'mobility', 'focus', 'strength')),
   difficulty TEXT NOT NULL CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
   equipment_level TEXT NOT NULL CHECK (equipment_level IN ('none', 'minimal', 'playground')),
   impact_level TEXT NOT NULL CHECK (impact_level IN ('no_impact', 'low_impact', 'high_impact')),
@@ -121,6 +134,9 @@ CREATE TABLE exercises (
   audio_setup TEXT NOT NULL DEFAULT '',
   audio_execution TEXT NOT NULL DEFAULT '',
   audio_transition TEXT NOT NULL DEFAULT '',
+  force_type TEXT,
+  mechanic TEXT,
+  external_id TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -149,13 +165,22 @@ CREATE TABLE exercise_training_types (
   FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
 );
 
+CREATE TABLE exercise_images (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  exercise_id TEXT NOT NULL,
+  image_path TEXT NOT NULL,
+  image_order INTEGER NOT NULL DEFAULT 0,
+  source TEXT DEFAULT 'external', -- 'external', 'user', 'generated', 'shared'
+  FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
+);
+
 -- USER PROFILE & STATE
 CREATE TABLE user_profile (
   id TEXT PRIMARY KEY,
   sex TEXT CHECK (sex IN ('male', 'female', 'other')),
   weight_kg REAL,
   height_cm REAL,
-  goal TEXT NOT NULL CHECK (goal IN ('calisthenics', 'getting_taller', 'faster', 'flexible', 'mental_clarity', 'building_muscle')),
+  goal TEXT NOT NULL CHECK (goal IN ('body_control', 'posture', 'speed', 'mobility', 'focus', 'strength')),
   experience TEXT NOT NULL CHECK (experience IN ('beginner', 'intermediate', 'advanced')),
   training_days_per_week INTEGER NOT NULL DEFAULT 3 CHECK (training_days_per_week BETWEEN 1 AND 7),
   time_per_session_minutes INTEGER NOT NULL DEFAULT 30,
@@ -568,17 +593,17 @@ Canonical tokens: `src/design/theme-system.ts` (NOT `tokens.ts` — that file ha
 - Typography: use `ThemedText` (DEFAULT export) with `variant` (h1–caption) and `color` (primary/secondary/muted/accent) props.
 - `GradientButton` props: `title` (string), `variant` ('primary'|'success'|'warning'), `size` ('sm'|'md'|'lg'), `style?` (ViewStyle).
 
-## Data Layer — SQLite First (Schema v9)
+## Data Layer — SQLite First (Schema v14)
 
 All data operations go through `src/database/`:
-- **Schema**: `schema.ts` — versioned tables with auto-migration (v9: adds `trial_state`)
+- **Schema**: `schema.ts` — versioned tables with auto-migration (v14: category rename)
 - **Service**: `service.ts` — CRUD module (exercises, profiles, fatigue, sessions, streaks, progress, app state)
-- **Types**: `types.ts` — canonical enums (`Category`, `Difficulty`, `TargetMuscle`, `EquipmentItem`, etc.) + `SCHEMA_VERSION = 9`
+- **Types**: `types.ts` — canonical enums (`Category`, `Difficulty`, `TargetMuscle`, `EquipmentItem`, etc.) + `SCHEMA_VERSION = 14`
 - **Seed**: `seed.ts` — exercise catalogue seeded on first run
 - **Init**: `index.ts` — `initializeDatabase()` creates all tables + seeds exercises + inits encrypted DB
 
 Tables by module:
-- **Core**: exercises, exercise_muscles, exercise_equipment, exercise_training_types, user_profile, user_equipment, user_injuries, muscle_fatigue, workout_sessions, session_exercises, progress_records, subscription_state, trial_state, app_state, workout_streaks, daily_steps, jog_sessions, audio_settings, body_craft_algorithms
+- **Core**: exercises, exercise_muscles, exercise_equipment, exercise_training_types, exercise_images, user_profile, user_equipment, user_injuries, muscle_fatigue, workout_sessions, session_exercises, progress_records, subscription_state, trial_state, app_state, workout_streaks, daily_steps, jog_sessions, audio_settings, body_craft_algorithms
 - **Encrypted (v7)**: encrypted_health_data, encrypted_ai_conversations, encrypted_notes, health_alerts
 - **FitMind (v7)**: fitmind_documents, fitmind_reading_sessions, fitmind_annotations, fitmind_flashcards, fitmind_reading_goals, fitmind_reading_streaks
 - **Health Monitoring (v8)**: heart_rate_readings, anomaly_log, daily_health_summaries, document_content_hashes

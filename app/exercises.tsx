@@ -49,6 +49,7 @@ const CATEGORIES: { key: Category | 'all'; label: string; icon: keyof typeof Mat
   { key: 'strength', label: 'Strength', icon: 'arm-flex' },
   { key: 'mobility', label: 'Mobility', icon: 'yoga' },
   { key: 'speed', label: 'Speed', icon: 'run-fast' },
+  { key: 'posture', label: 'Posture', icon: 'human' },
   { key: 'focus', label: 'Focus', icon: 'meditation' },
 ];
 

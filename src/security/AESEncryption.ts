@@ -220,7 +220,7 @@ export async function getOrCreateMasterKey(): Promise<string> {
     keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
   });
 
-  console.log('[FitQuest Crypto] New v2 master key generated and secured');
+  if (__DEV__) console.log('[FitQuest Crypto] New v2 master key generated and secured');
   return masterKey;
 }
 
@@ -459,7 +459,14 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
-  return btoa(String.fromCharCode(...bytes));
+  // Chunked conversion to avoid V8 max argument limit on large payloads (>64KB)
+  let binary = '';
+  const chunkSize = 8192;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
 }
 
 function base64ToBytes(base64: string): Uint8Array {

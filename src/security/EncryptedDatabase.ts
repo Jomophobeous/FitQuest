@@ -103,7 +103,7 @@ export class EncryptedDatabaseService {
     this.legacyKey = await SecureStore.getItemAsync(LEGACY_KEY_ALIAS);
 
     this.initialized = true;
-    console.log('[FitQuest Security] Encrypted database v3 initialized (AES-256-GCM)');
+    if (__DEV__) console.log('[FitQuest Security] Encrypted database v3 initialized (AES-256-GCM)');
   }
 
   // ============================================

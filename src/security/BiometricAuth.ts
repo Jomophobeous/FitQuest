@@ -65,7 +65,10 @@ const SECURE_KEYS = {
 const SESSION_DURATION_MS = 30 * 60 * 1000; // 30 minutes
 const MAX_FAILED_ATTEMPTS = 5;
 const EMERGENCY_WIPE_THRESHOLD = 15; // After 15 failures, wipe sensitive data
-const PASSCODE_PBKDF2_ITERATIONS = 100_000;
+// JS-level iteration count for PBKDF2-like passcode hashing.
+// Each iteration calls native SHA-256 (expo-crypto), so per-call overhead
+// is higher than pure-native PBKDF2. 1000 JS iterations ≈ 100K native.
+const PASSCODE_PBKDF2_ITERATIONS = 1_000;
 const LOCKOUT_DURATIONS_MS = [
   30_000,    // 30 sec after 1st lockout
   60_000,    // 1 min
@@ -129,7 +132,7 @@ export class BiometricAuthService {
     await this.restoreSession();
 
     this.initialized = true;
-    console.log(`[FitQuest Auth] Biometric: ${biometricType}, available: ${this.capability.isAvailable}`);
+    if (__DEV__) console.log(`[FitQuest Auth] Biometric: ${biometricType}, available: ${this.capability.isAvailable}`);
     return this.capability;
   }
 
@@ -442,7 +445,7 @@ export class BiometricAuthService {
     ]);
 
     this.currentSession = session;
-    console.log(`[FitQuest Auth] Session created via ${method}, expires in 30 min`);
+    if (__DEV__) console.log(`[FitQuest Auth] Session created via ${method}, expires in 30 min`);
     return session;
   }
 
@@ -495,7 +498,7 @@ export class BiometricAuthService {
     // We do fewer JS-level iterations (1000) since each SHA-256
     // call has native overhead. This provides ~equivalent resistance
     // to 100K iterations of a pure-native PBKDF2 given the per-call cost.
-    for (let i = 1; i < 1000; i++) {
+    for (let i = 1; i < PASSCODE_PBKDF2_ITERATIONS; i++) {
       hash = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
         `${salt}:${hash}:${i}`

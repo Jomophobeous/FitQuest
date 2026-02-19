@@ -111,7 +111,7 @@
 
 ---
 
-## 📊 EMBEDDED SCHEMA — SCHEMA VERSION 14
+## 📊 EMBEDDED SCHEMA — SCHEMA VERSION 15
 
 Below is the **canonical SQL schema** (auto-generated from `src/database/schema.ts`). When generating queries, ONLY reference columns that exist below:
 
@@ -598,7 +598,7 @@ Canonical tokens: `src/design/theme-system.ts` (NOT `tokens.ts` — that file ha
 All data operations go through `src/database/`:
 - **Schema**: `schema.ts` — versioned tables with auto-migration (v14: category rename)
 - **Service**: `service.ts` — CRUD module (exercises, profiles, fatigue, sessions, streaks, progress, app state)
-- **Types**: `types.ts` — canonical enums (`Category`, `Difficulty`, `TargetMuscle`, `EquipmentItem`, etc.) + `SCHEMA_VERSION = 14`
+- **Types**: `types.ts` — canonical enums (`Category`, `Difficulty`, `TargetMuscle`, `EquipmentItem`, etc.) + `SCHEMA_VERSION = 15`
 - **Seed**: `seed.ts` — exercise catalogue seeded on first run
 - **Init**: `index.ts` — `initializeDatabase()` creates all tables + seeds exercises + inits encrypted DB
 

@@ -395,4 +395,4 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 14; // v14: Category rename (calisthenics→body_control, getting_taller→posture, faster→speed, flexible→mobility, mental_clarity→focus, building_muscle→strength)
+export const SCHEMA_VERSION = 15; // v15: Repair stale-bundle category rename (re-runs v14 if old names detected)

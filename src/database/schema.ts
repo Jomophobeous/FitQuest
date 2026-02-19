@@ -105,24 +105,55 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
 
     // v11 → v12: Remove bloat variation exercises (Tempo/Pause/Isometric/Plyometric/Unilateral/Elevated/Weighted)
     if (currentVersion < 12) {
-      console.log(`[FitQuest DB] Migrating to v12: removing variation exercises (keeping base exercises only)`);
-      await cleanVariationExercises(database);
+      try {
+        console.log(`[FitQuest DB] Migrating to v12: removing variation exercises (keeping base exercises only)`);
+        await cleanVariationExercises(database);
+      } catch (e) {
+        console.error('[FitQuest DB] v12 migration failed:', e);
+        throw e;
+      }
     }
 
     // v12 → v13: Re-run cleanup (v12 migration was skipped on some devices due to stale Metro bundle)
     // Also adds image sharing from external exercises to core exercises
     if (currentVersion < 13) {
-      console.log(`[FitQuest DB] Migrating to v13: ensuring variation cleanup + image sharing`);
-      await cleanVariationExercises(database);
-      await shareExternalImagesToCore(database);
+      try {
+        console.log(`[FitQuest DB] Migrating to v13: ensuring variation cleanup + image sharing`);
+        await cleanVariationExercises(database);
+        await shareExternalImagesToCore(database);
+      } catch (e) {
+        console.error('[FitQuest DB] v13 migration failed:', e);
+        throw e;
+      }
     }
 
     // v13 → v14: Category rename
     // calisthenics→body_control, getting_taller→posture, faster→speed,
     // flexible→mobility, mental_clarity→focus, building_muscle→strength
     if (currentVersion < 14) {
-      console.log(`[FitQuest DB] Migrating to v14: renaming exercise categories`);
-      await migrateCategoryRename(database);
+      try {
+        console.log(`[FitQuest DB] Migrating to v14: renaming exercise categories`);
+        await migrateCategoryRename(database);
+      } catch (e) {
+        console.error('[FitQuest DB] v14 migration failed:', e);
+        throw e;
+      }
+    }
+
+    // v14 → v15: Repair stale-bundle category rename.
+    // Some devices reached user_version=14 via a stale Metro bundle that
+    // never contained the v14 migration code. Re-run the rename if old
+    // category names are still present in the exercises table.
+    if (currentVersion < 15) {
+      const oldCats = await database.getFirstAsync<{ cnt: number }>(
+        `SELECT COUNT(*) as cnt FROM exercises WHERE category IN ('calisthenics','getting_taller','faster','flexible','mental_clarity','building_muscle')`
+      );
+      if ((oldCats?.cnt ?? 0) > 0) {
+        console.log(`[FitQuest DB] Migrating to v15: repairing ${oldCats!.cnt} exercises with stale category names`);
+        await migrateCategoryRename(database);
+      } else {
+        console.log(`[FitQuest DB] v15: categories already correct, skipping rename`);
+      }
     }
 
     await migrateFitMindLegacyTables(database);
@@ -372,6 +403,11 @@ async function migrateCategoryRename(database: SQLite.SQLiteDatabase): Promise<v
     END`;
 
   await database.execAsync('PRAGMA foreign_keys = OFF');
+
+  // Defensive: drop leftover temp tables from a previous failed attempt
+  await database.execAsync('DROP TABLE IF EXISTS exercises_new');
+  await database.execAsync('DROP TABLE IF EXISTS user_profile_new');
+
   await database.execAsync('BEGIN TRANSACTION');
 
   try {

@@ -24,7 +24,8 @@
         "NSCameraUsageDescription": "FitQuest needs camera access to capture progress photos and profile pictures.",
         "NSPhotoLibraryUsageDescription": "FitQuest needs photo library access to select profile pictures and import documents.",
         "NSLocationWhenInUseUsageDescription": "FitQuest uses your location to track jog routes and estimate distance.",
-        "NSMotionUsageDescription": "FitQuest uses motion sensors to count steps and track workout movements."
+        "NSMotionUsageDescription": "FitQuest uses motion sensors to count steps and track workout movements.",
+        "NSFaceIDUsageDescription": "FitQuest uses Face ID to securely protect your health data and app access."
       }
     },
     "android": {

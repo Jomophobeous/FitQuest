@@ -315,12 +315,12 @@ export async function fetchPersonalRecords(): Promise<PersonalRecord[]> {
   if (rows.length === 0) return [];
 
   const categoryIcons: Record<string, string> = {
-    UPPER_PUSH: 'dumbbell',
-    UPPER_PULL: 'arm-flex',
-    LOWER_COMPOUND: 'weight-lifter',
-    CORE: 'meditation',
-    CARDIO: 'run-fast',
-    MOBILITY: 'human-greeting-variant',
+    body_control: 'human-greeting-variant',
+    posture: 'human',
+    speed: 'run-fast',
+    mobility: 'yoga',
+    focus: 'meditation',
+    strength: 'dumbbell',
   };
 
   return rows.map(r => ({
@@ -364,7 +364,13 @@ export async function fetchStreakData(): Promise<StreakData> {
 
   const now = new Date();
   const daysElapsed = now.getDate();
-  const targetDaysPerWeek = 4;
+
+  // Read user's actual training days target from profile
+  const profile = await db.getFirstAsync<{ training_days_per_week: number }>(
+    `SELECT training_days_per_week FROM user_profile WHERE id = ?`,
+    [USER_ID]
+  );
+  const targetDaysPerWeek = profile?.training_days_per_week ?? 3;
   const expectedTrainingDays = Math.max(1, Math.round((daysElapsed / 7) * targetDaysPerWeek));
   const activeDaysMonth = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(DISTINCT date(started_at)) as cnt 

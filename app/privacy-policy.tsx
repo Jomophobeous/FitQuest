@@ -63,12 +63,33 @@ export default function PrivacyPolicyScreen() {
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.health')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.location')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.account')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.usage')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.device')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.storageTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.storageBody')}</ThemedText>
 
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.securityTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.securityBody')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.thirdPartyTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.thirdPartyBody')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.childrenTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.childrenBody')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.retentionTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.retentionBody')}</ThemedText>
+
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.rightsTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.rightsBody')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.accessRight')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.deleteRight')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.exportRight')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.correctRight')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.updatesTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.updatesBody')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.contactTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.contactBody')}</ThemedText>

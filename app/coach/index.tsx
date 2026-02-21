@@ -817,7 +817,6 @@ function CoachScreenInner() {
               backgroundColor: theme.colors.background,
               borderTopColor: theme.colors.border,
               paddingBottom: Math.max(12, insets.bottom + 8),
-              marginBottom: Platform.OS === 'android' ? Math.max(0, keyboardHeight - 10) : 0,
             }]}
           >
             <View style={[styles.inputRow, {

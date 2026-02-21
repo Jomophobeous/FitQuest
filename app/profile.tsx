@@ -35,7 +35,7 @@ import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
-import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState } from '../src/database/service';
+import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment } from '../src/database/service';
 import { useRouter } from 'expo-router';
 import { getXPData, XPData } from '../src/services/xpService';
 import { GlassCard, GradientButton, ProgressRing, StatChip, SectionHeader } from '../src/components/ui/GlassUI';
@@ -330,6 +330,10 @@ export default function ProfileScreen() {
   const [healthIntegrationReady, setHealthIntegrationReady] = useState(false);
   const [healthBusy, setHealthBusy] = useState(false);
   const [healthSyncErrors, setHealthSyncErrors] = useState<ErrorEvent[]>([]);
+  const [equipmentLevel, setEquipmentLevel] = useState<'none' | 'minimal' | 'playground'>('none');
+  const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [expandedAdaptive, setExpandedAdaptive] = useState<string | null>(null);
 
   // Themed modal state
   const [pickerModal, setPickerModal] = useState<{
@@ -427,6 +431,25 @@ export default function ProfileScreen() {
         await updateUserProfile('user_local_001', { goal: val as any });
         setProfile(prev => prev ? { ...prev, goal: val } : prev);
         await refreshProfile();
+      },
+    });
+  };
+
+  const handleEquipmentLevel = () => {
+    setPickerModal({
+      visible: true,
+      title: t('profile.equipmentLevel'),
+      subtitle: t('profile.equipmentLevelSub'),
+      options: [
+        { label: `🏠 ${t('profile.equipment.none')}`, value: 'none' },
+        { label: `🎒 ${t('profile.equipment.minimal')}`, value: 'minimal' },
+        { label: `🏋️ ${t('profile.equipment.playground')}`, value: 'playground' },
+      ],
+      onSelect: async (val) => {
+        const level = val as 'none' | 'minimal' | 'playground';
+        console.log('[Profile] Update equipment level', { value: level });
+        await setAppState('user.equipment_level', level);
+        setEquipmentLevel(level);
       },
     });
   };
@@ -624,7 +647,7 @@ export default function ProfileScreen() {
         setNotificationSettings(cached.value.notifications);
       }
 
-      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications] = await Promise.all([
+      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications, savedEquipmentLevel] = await Promise.all([
         getUserProfile('user_local_001'),
         getUserProgress(),
         getStreak('user_local_001'),
@@ -634,7 +657,11 @@ export default function ProfileScreen() {
         getAppState('meal.region_override'),
         getConsentRecord(),
         getNotificationReliabilitySettings(),
+        getAppState('user.equipment_level'),
       ]);
+
+      const eqLevel = (['none', 'minimal', 'playground'].includes(savedEquipmentLevel || '') ? savedEquipmentLevel : 'none') as 'none' | 'minimal' | 'playground';
+      setEquipmentLevel(eqLevel);
 
       setProfile({
         name: 'Athlete',
@@ -972,6 +999,14 @@ export default function ProfileScreen() {
             onPress={handleExperience}
           />
           <MenuItem
+            icon="dumbbell"
+            label={t('profile.equipmentLevel')}
+            sublabel={`${t(`profile.equipment.${equipmentLevel}`)} — ${t('profile.equipmentLevelSub')}`}
+            color={theme.colors.accent2}
+            delay={510}
+            onPress={handleEquipmentLevel}
+          />
+          <MenuItem
             icon="human-edit"
             label={t('profile.craftMyBody')}
             sublabel={t('profile.craftMyBodySub')}
@@ -985,24 +1020,84 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <SectionHeader title={t('profile.adaptiveTraining')} delay={530} />
           <GlassCard delay={560}>
-            <View style={styles.adaptiveRow}>
-              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.fatigueSensitivity')}</Text>
-              <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
-                {adaptiveProfile ? adaptiveProfile.fatigueSensitivity.toFixed(2) : '1.00'}
-              </Text>
-            </View>
-            <View style={styles.adaptiveRow}>
-              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.progressionPace')}</Text>
-              <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
-                {adaptiveProfile ? adaptiveProfile.progressionAggressiveness.toFixed(2) : '1.00'}
-              </Text>
-            </View>
-            <View style={styles.adaptiveRow}>
-              <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.volumeTolerance')}</Text>
-              <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
-                {adaptiveProfile ? adaptiveProfile.volumeTolerance.toFixed(2) : '1.00'}
-              </Text>
-            </View>
+            <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginBottom: 12, lineHeight: 18 }}>
+              {t('profile.adaptiveExplanation')}
+            </Text>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setExpandedAdaptive(expandedAdaptive === 'fatigue' ? null : 'fatigue')}
+            >
+              <View style={styles.adaptiveRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <MaterialCommunityIcons name="heart-pulse" size={16} color={theme.colors.error} />
+                  <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.fatigueSensitivity')}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                    {adaptiveProfile ? adaptiveProfile.fatigueSensitivity.toFixed(2) : '1.00'}
+                  </Text>
+                  <MaterialCommunityIcons name={expandedAdaptive === 'fatigue' ? 'chevron-up' : 'chevron-down'} size={14} color={theme.colors.textMuted} />
+                </View>
+              </View>
+            </TouchableOpacity>
+            {expandedAdaptive === 'fatigue' && (
+              <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: 24, paddingBottom: 8 }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 18 }}>
+                  {t('profile.fatigueSensitivityDesc')}
+                </Text>
+              </Animated.View>
+            )}
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setExpandedAdaptive(expandedAdaptive === 'progression' ? null : 'progression')}
+            >
+              <View style={styles.adaptiveRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <MaterialCommunityIcons name="trending-up" size={16} color={theme.colors.accent} />
+                  <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.progressionPace')}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                    {adaptiveProfile ? adaptiveProfile.progressionAggressiveness.toFixed(2) : '1.00'}
+                  </Text>
+                  <MaterialCommunityIcons name={expandedAdaptive === 'progression' ? 'chevron-up' : 'chevron-down'} size={14} color={theme.colors.textMuted} />
+                </View>
+              </View>
+            </TouchableOpacity>
+            {expandedAdaptive === 'progression' && (
+              <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: 24, paddingBottom: 8 }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 18 }}>
+                  {t('profile.progressionPaceDesc')}
+                </Text>
+              </Animated.View>
+            )}
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setExpandedAdaptive(expandedAdaptive === 'volume' ? null : 'volume')}
+            >
+              <View style={styles.adaptiveRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <MaterialCommunityIcons name="weight-lifter" size={16} color={theme.colors.warning} />
+                  <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>{t('profile.volumeTolerance')}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                    {adaptiveProfile ? adaptiveProfile.volumeTolerance.toFixed(2) : '1.00'}
+                  </Text>
+                  <MaterialCommunityIcons name={expandedAdaptive === 'volume' ? 'chevron-up' : 'chevron-down'} size={14} color={theme.colors.textMuted} />
+                </View>
+              </View>
+            </TouchableOpacity>
+            {expandedAdaptive === 'volume' && (
+              <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: 24, paddingBottom: 8 }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 18 }}>
+                  {t('profile.volumeToleranceDesc')}
+                </Text>
+              </Animated.View>
+            )}
 
             <View style={[styles.adaptiveConfidenceTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
               <View
@@ -1237,6 +1332,7 @@ export default function ProfileScreen() {
             sublabel={t('profile.helpSupportSub')}
             color={theme.colors.warning}
             delay={700}
+            onPress={() => setShowHelpModal(true)}
           />
           <MenuItem
             icon="information-outline"
@@ -1244,6 +1340,7 @@ export default function ProfileScreen() {
             sublabel={`${t('profile.version')} 1.0.0`}
             color={theme.colors.indigo}
             delay={720}
+            onPress={() => setShowAboutModal(true)}
           />
         </View>
 
@@ -1295,6 +1392,120 @@ export default function ProfileScreen() {
         onClose={closePicker}
         destructiveIndex={pickerModal.destructiveIndex}
       />
+
+      {/* Help & Support Modal */}
+      <Modal visible={showHelpModal} transparent animationType="fade" onRequestClose={() => setShowHelpModal(false)}>
+        <Pressable style={modalStyles.overlay} onPress={() => setShowHelpModal(false)}>
+          <Pressable
+            style={[modalStyles.content, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={{ alignItems: 'center', marginBottom: 16 }}>
+              <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.warning + '20', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <MaterialCommunityIcons name="help-circle-outline" size={28} color={theme.colors.warning} />
+              </View>
+              <Text style={[modalStyles.title, { color: theme.colors.text }]}>{t('profile.helpSupport')}</Text>
+            </View>
+
+            <View style={{ gap: 12, marginBottom: 16 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <MaterialCommunityIcons name="frequently-asked-questions" size={20} color={theme.colors.accent} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>{t('help.faqTitle')}</Text>
+                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 2 }}>{t('help.faqDesc')}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.accent2} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>{t('help.contactTitle')}</Text>
+                  <Text style={{ color: theme.colors.accent, fontSize: 12, marginTop: 2 }}>support@fitquest.app</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <MaterialCommunityIcons name="bug-outline" size={20} color={theme.colors.error} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>{t('help.bugTitle')}</Text>
+                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 2 }}>{t('help.bugDesc')}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <MaterialCommunityIcons name="lightbulb-outline" size={20} color={theme.colors.warning} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>{t('help.featureTitle')}</Text>
+                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 2 }}>{t('help.featureDesc')}</Text>
+                </View>
+              </View>
+            </View>
+
+            <Text style={{ color: theme.colors.textMuted, fontSize: 11, textAlign: 'center', marginBottom: 12 }}>{t('help.responseTime')}</Text>
+
+            <TouchableOpacity
+              style={[modalStyles.cancelBtn, { backgroundColor: theme.colors.surfaceVariant }]}
+              onPress={() => setShowHelpModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* About FitQuest Modal */}
+      <Modal visible={showAboutModal} transparent animationType="fade" onRequestClose={() => setShowAboutModal(false)}>
+        <Pressable style={modalStyles.overlay} onPress={() => setShowAboutModal(false)}>
+          <Pressable
+            style={[modalStyles.content, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={{ alignItems: 'center', marginBottom: 16 }}>
+              <LinearGradient
+                colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
+                style={{ width: 64, height: 64, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}
+              >
+                <MaterialCommunityIcons name="lightning-bolt" size={32} color="#fff" />
+              </LinearGradient>
+              <Text style={[modalStyles.title, { color: theme.colors.text }]}>FitQuest 2.0</Text>
+              <Text style={{ color: theme.colors.textMuted, fontSize: 13, marginTop: 2 }}>{t('profile.version')} 1.0.0</Text>
+            </View>
+
+            <Text style={{ color: theme.colors.textSecondary, fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 16 }}>
+              {t('about.description')}
+            </Text>
+
+            <View style={{ gap: 8, marginBottom: 16 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.platform')}</Text>
+                <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>React Native / Expo</Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.dataStorage')}</Text>
+                <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>{t('about.onDevice')}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.encryption')}</Text>
+                <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>AES-256-GCM</Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.security')}</Text>
+                <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>{t('about.biometric')}</Text>
+              </View>
+            </View>
+
+            <Text style={{ color: theme.colors.textMuted, fontSize: 11, textAlign: 'center', marginBottom: 12 }}>
+              {t('about.madeWith')}
+            </Text>
+
+            <TouchableOpacity
+              style={[modalStyles.cancelBtn, { backgroundColor: theme.colors.surfaceVariant }]}
+              onPress={() => setShowAboutModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }

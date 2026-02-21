@@ -220,6 +220,8 @@ function ThemedTabs() {
           href: null,
           lazy: true,
           title: t('nav.aiCoach'),
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen

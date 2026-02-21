@@ -262,7 +262,7 @@ export default function AnalyticsScreen() {
                             </View>
                             <Text style={[s.trendLabel, { color: theme.colors.textMuted }]}>
                               {range === 'weekly'
-                                ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]
+                                ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'][new Date(Date.now() - (6 - i) * 86400000).getDay()]
                                 : `W${i + 1}`}
                             </Text>
                           </View>
@@ -370,12 +370,12 @@ export default function AnalyticsScreen() {
                   <Text style={[s.statHero, { color: theme.colors.text }]}>
                     {stepStats.steps.toLocaleString()}
                   </Text>
-                  <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>Total Steps</Text>
+                  <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>{t('analytics.totalSteps')}</Text>
                   <View style={s.statDivider} />
                   <View style={s.miniStatRow}>
                     <View style={s.miniStat}>
                       <Text style={[s.miniStatVal, { color: theme.colors.success }]}>{stepStats.distance} km</Text>
-                      <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Distance</Text>
+                      <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>{t('analytics.distance')}</Text>
                     </View>
                     <View style={s.miniStat}>
                       <Text style={[s.miniStatVal, { color: theme.colors.accent2 }]}>
@@ -385,14 +385,14 @@ export default function AnalyticsScreen() {
                     </View>
                   </View>
                   <Text style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
-                    Avg {stepStats.avgDaily.toLocaleString()} / day
+                    {t('analytics.avg')} {stepStats.avgDaily.toLocaleString()} / {t('common.day')}
                   </Text>
                 </GlassCard>
 
                 <GlassCard gradient glowColor={theme.colors.accent} style={s.statCard}>
                   <MaterialCommunityIcons name="run-fast" size={26} color={theme.colors.accent} />
                   <Text style={[s.statHero, { color: theme.colors.text }]}>{jogStats.runs}</Text>
-                  <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>Runs</Text>
+                  <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>{t('analytics.runs')}</Text>
                   <View style={s.statDivider} />
                   <View style={s.miniStatRow}>
                     <View style={s.miniStat}>
@@ -401,11 +401,11 @@ export default function AnalyticsScreen() {
                     </View>
                     <View style={s.miniStat}>
                       <Text style={[s.miniStatVal, { color: theme.colors.accent3 }]}>{jogStats.avgPace}</Text>
-                      <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Avg Pace</Text>
+                      <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>{t('analytics.avgPace')}</Text>
                     </View>
                   </View>
                   <Text style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
-                    Longest: {jogStats.longestRun} km
+                    {t('analytics.longestRun')}: {jogStats.longestRun} km
                   </Text>
                 </GlassCard>
               </View>
@@ -481,15 +481,15 @@ export default function AnalyticsScreen() {
                 <View style={[s.legendRow, { marginTop: 12 }]}>
                   <View style={s.legendItem}>
                     <View style={[s.legendDot, { backgroundColor: theme.colors.surfaceVariant }]} />
-                    <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Rest</Text>
+                    <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('analytics.rest')}</Text>
                   </View>
                   <View style={s.legendItem}>
                     <View style={[s.legendDot, { backgroundColor: theme.colors.success + '90' }]} />
-                    <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Active</Text>
+                    <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('analytics.active')}</Text>
                   </View>
                   <View style={s.legendItem}>
                     <View style={[s.legendDot, { backgroundColor: theme.colors.success, borderWidth: 2, borderColor: theme.colors.text }]} />
-                    <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>Today</Text>
+                    <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('common.today')}</Text>
                   </View>
                 </View>
               </GlassCard>
@@ -501,7 +501,7 @@ export default function AnalyticsScreen() {
               <GlassCard style={{ paddingVertical: 24, alignItems: 'center' }}>
                 <MaterialCommunityIcons name="trophy-outline" size={32} color={theme.colors.textMuted} />
                 <Text style={{ color: theme.colors.textMuted, marginTop: 8, fontSize: 14, fontWeight: '600' }}>
-                  Complete workouts to set records
+                  {t('analytics.completeWorkoutsForRecords')}
                 </Text>
               </GlassCard>
             )}
@@ -543,7 +543,7 @@ export default function AnalyticsScreen() {
                         {streakData.currentStreak}
                       </Text>
                     </LinearGradient>
-                    <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>Day Streak</Text>
+                    <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>{t('analytics.dayStreak')}</Text>
                   </View>
 
                   {/* Divider */}
@@ -556,7 +556,7 @@ export default function AnalyticsScreen() {
                         {streakData.consistencyPct}%
                       </Text>
                     </ProgressRing>
-                    <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>Consistency</Text>
+                    <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>{t('analytics.consistency')}</Text>
                   </View>
                 </View>
 

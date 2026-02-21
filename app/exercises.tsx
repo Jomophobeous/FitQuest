@@ -30,7 +30,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
-import { colorSystem } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { getExercises } from '../src/database/service';
@@ -53,11 +52,11 @@ const CATEGORIES: { key: Category | 'all'; label: string; icon: keyof typeof Mat
   { key: 'focus', label: 'Focus', icon: 'meditation' },
 ];
 
-const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: colorSystem.dark.accent,
-  intermediate: colorSystem.dark.warning,
-  advanced: colorSystem.dark.error,
-};
+const getDifficultyColors = (colors: { accent: string; warning: string; error: string }): Record<string, string> => ({
+  beginner: colors.accent,
+  intermediate: colors.warning,
+  advanced: colors.error,
+});
 
 // ============================================
 // COMPONENT
@@ -134,7 +133,7 @@ export default function ExercisesScreen() {
   }, []);
 
   const renderExercise = ({ item, index }: { item: ExerciseWithDetails; index: number }) => {
-    const diffColor = DIFFICULTY_COLORS[item.difficulty] || theme.colors.textMuted;
+    const diffColor = getDifficultyColors(theme.colors)[item.difficulty] || theme.colors.textMuted;
     return (
       <AnimatedListItem index={index} onPress={() => handleExercisePress(item)} style={{ paddingHorizontal: 16, marginBottom: 10 }}>
         <View style={[

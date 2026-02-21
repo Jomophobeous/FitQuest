@@ -450,10 +450,11 @@ export function useFitQuestWorkout() {
 
       console.log('[FitQuest] Workout completed:', finalSummary);
 
+      const durationSeconds = state.startTime
+        ? Math.max(0, Math.floor((Date.now() - state.startTime.getTime()) / 1000))
+        : 0;
+
       try {
-        const durationSeconds = state.startTime
-          ? Math.max(0, Math.floor((Date.now() - state.startTime.getTime()) / 1000))
-          : 0;
 
         for (const ex of state.workout.exercises) {
           await queueAnalyticsEvent({

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "FitQuest",
     "slug": "fitquest",
     "version": "1.0.0",
     "sdkVersion": "54.0.0",
@@ -9,33 +9,43 @@
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0A0E17"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hugelet.fitquest"
+      "bundleIdentifier": "com.hugelet.fitquest",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "FitQuest needs camera access to capture progress photos and profile pictures.",
+        "NSPhotoLibraryUsageDescription": "FitQuest needs photo library access to select profile pictures and import documents.",
+        "NSLocationWhenInUseUsageDescription": "FitQuest uses your location to track jog routes and estimate distance.",
+        "NSMotionUsageDescription": "FitQuest uses motion sensors to count steps and track workout movements."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0A0E17"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.hugelet.fitquest"
+      "package": "com.hugelet.fitquest",
+      "permissions": [
+        "CAMERA",
+        "NOTIFICATIONS",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACTIVITY_RECOGNITION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "permissions": [
-      "CAMERA",
-      "NOTIFICATIONS"
-    ],
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
@@ -51,10 +61,6 @@
         "termsOfServiceUrl": "https://fitquest.app/terms"
       }
     },
-    "assetBundlePatterns": [
-      "assets/models/**/*",
-      "assets/images/*"
-    ],
     "owner": "hugelet",
     "scheme": "fitquest",
     "plugins": [

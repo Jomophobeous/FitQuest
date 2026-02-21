@@ -17,17 +17,17 @@ export default function ThemeToggle() {
         <View style={styles.content}>
           <View style={styles.iconContainer}>
             <MaterialCommunityIcons
-              name={mode === 'dark' ? 'moon-waning-crescent' : 'white-balance-sunny'}
+              name={mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'moon-waning-crescent' : 'white-balance-sunny'}
               size={24}
-              color={mode === 'dark' ? '#F4A427' : '#FFA500'}
+              color={mode === 'blackGold' ? '#D4AF37' : mode === 'dark' ? '#F4A427' : '#FFA500'}
             />
           </View>
           <View style={styles.textContainer}>
             <ThemedText variant="body" weight="600">
-              {mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+              {mode === 'blackGold' ? 'Black & Gold' : mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
             </ThemedText>
             <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 2 }}>
-              {mode === 'dark' ? 'Focus & immersion' : 'Speed & clarity'}
+              {mode === 'blackGold' ? 'Luxury & elegance' : mode === 'dark' ? 'Focus & immersion' : 'Speed & clarity'}
             </ThemedText>
           </View>
         </View>

@@ -33,7 +33,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
-import { colorSystem } from '../src/design/theme-system';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import { useLanguage } from '../src/context/LanguageContext';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
@@ -80,14 +79,14 @@ function estimateProtein(food: RegionalFoodItem, servings: number): number {
 // CATEGORY ICONS & COLORS
 // ============================================
 
-const getCategoryMeta = (t: (key: string) => string): Record<RegionalFoodCategory, { icon: string; color: string; label: string }> => ({
-  protein: { icon: 'food-drumstick', color: colorSystem.dark.error, label: t('nutrition.category.protein') },
-  carb: { icon: 'bread-slice', color: colorSystem.dark.warning, label: t('nutrition.category.carbs') },
-  fat: { icon: 'peanut', color: colorSystem.dark.purple, label: t('nutrition.category.fats') },
-  vegetable: { icon: 'leaf', color: colorSystem.dark.accent, label: t('nutrition.category.vegetable') },
-  fruit: { icon: 'fruit-cherries', color: colorSystem.dark.pink, label: t('nutrition.category.fruit') },
-  snack: { icon: 'cookie', color: colorSystem.dark.orange, label: t('nutrition.category.snack') },
-  meal: { icon: 'food', color: colorSystem.dark.indigo, label: t('nutrition.category.meal') },
+const getCategoryMeta = (t: (key: string) => string, colors: { error: string; warning: string; purple: string; accent: string; pink: string; orange: string; indigo: string }): Record<RegionalFoodCategory, { icon: string; color: string; label: string }> => ({
+  protein: { icon: 'food-drumstick', color: colors.error, label: t('nutrition.category.protein') },
+  carb: { icon: 'bread-slice', color: colors.warning, label: t('nutrition.category.carbs') },
+  fat: { icon: 'peanut', color: colors.purple, label: t('nutrition.category.fats') },
+  vegetable: { icon: 'leaf', color: colors.accent, label: t('nutrition.category.vegetable') },
+  fruit: { icon: 'fruit-cherries', color: colors.pink, label: t('nutrition.category.fruit') },
+  snack: { icon: 'cookie', color: colors.orange, label: t('nutrition.category.snack') },
+  meal: { icon: 'food', color: colors.indigo, label: t('nutrition.category.meal') },
 });
 
 // ============================================
@@ -110,7 +109,7 @@ const getFilterOptions = (t: (key: string) => string): { label: string; value: R
 export default function NutritionCalculatorScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const categoryMeta = useMemo(() => getCategoryMeta(t), [t]);
+  const categoryMeta = useMemo(() => getCategoryMeta(t, theme.colors), [t, theme.colors]);
   const filterOptions = useMemo(() => getFilterOptions(t), [t]);
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');

@@ -102,6 +102,50 @@ export const colorSystem = {
     // Chrome
     overlay: 'rgba(0,0,0,0.65)',
   },
+
+  blackGold: {
+    // Base — deep black with warm undertones
+    background: '#0D0D0D',
+    surface: '#1A1610',
+    surfaceVariant: '#242018',
+
+    // Text — warm parchment whites
+    text: '#F5F0E1',
+    textSecondary: '#C9BFA5',
+    textMuted: '#8A7E6B',
+
+    // Dividers — warm dark lines
+    border: '#3D3428',
+    divider: '#2E2820',
+
+    // Single accent color — GOLD for all primary actions
+    accent: '#D4AF37',
+
+    // Semantic
+    error: '#C41E3A',
+    warning: '#E8A317',
+    success: '#D4AF37',
+
+    // Backward compatibility aliases
+    accent2: '#E8A317',
+    accent3: '#D4AF37',
+
+    // Category accent colors — gold-tinted palette
+    purple: '#9B7FD4',
+    indigo: '#7B7FCC',
+    pink: '#D4789B',
+    blue: '#5A9FD4',
+    orange: '#D49537',
+    skyBlue: '#5AB8D4',
+    purpleLight: '#B49AE0',
+    pinkLight: '#E099B8',
+
+    // Contrast text on accent-colored (gold) surfaces
+    onAccent: '#0D0D0D',
+
+    // Chrome
+    overlay: 'rgba(0,0,0,0.75)',
+  },
 };
 
 // ============================================================================
@@ -243,10 +287,14 @@ export const motion = {
 // COMPLETE THEME OBJECTS
 // ============================================================================
 
-export const createTheme = (mode: 'dark' | 'light') => {
+export type ThemeMode = 'dark' | 'light' | 'blackGold';
+
+export const createTheme = (mode: ThemeMode) => {
   const colors = colorSystem[mode];
-  const animationConfig = motion[mode];
-  const shadowConfig = shadows[mode];
+  // Black & Gold is a dark variant — reuse dark shadow/motion configs
+  const baseMode = mode === 'blackGold' ? 'dark' : mode;
+  const animationConfig = motion[baseMode];
+  const shadowConfig = shadows[baseMode];
 
   return {
     colors,
@@ -258,13 +306,15 @@ export const createTheme = (mode: 'dark' | 'light') => {
     motion: animationConfig,
     
     // Utilities for theme switching
-    isDark: mode === 'dark',
+    isDark: mode === 'dark' || mode === 'blackGold',
     isLight: mode === 'light',
+    isBlackGold: mode === 'blackGold',
   };
 };
 
 // Export default theme (dark mode by default)
 export const darkTheme = createTheme('dark');
 export const lightTheme = createTheme('light');
+export const blackGoldTheme = createTheme('blackGold');
 
 export type Theme = ReturnType<typeof createTheme>;

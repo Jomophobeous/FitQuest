@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
+  Text,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
@@ -392,7 +393,7 @@ export default function DashboardScreen() {
               { label: t('dashboard.health') || 'Health', desc: t('dashboard.healthDesc') || 'Track vitals & wellness', icon: 'heart-pulse' as const, color: theme.colors.error, route: '/health-dashboard' },
               { label: t('dashboard.analytics') || 'Analytics', desc: t('dashboard.analyticsDesc') || 'Progress insights', icon: 'chart-bar' as const, color: theme.colors.blue, route: '/analytics' },
               { label: t('dashboard.coach') || 'Coach', desc: t('dashboard.coachDesc') || 'AI fitness guidance', icon: 'robot-happy' as const, color: theme.colors.purple, route: '/coach' },
-              { label: 'Professor', desc: 'AI learning companion', icon: 'school' as const, color: '#8B5CF6', route: '/professor' },
+              { label: 'Professor', desc: 'Coming Soon', icon: 'school' as const, color: '#8B5CF6', route: '/professor', comingSoon: true },
               { label: t('dashboard.mealPrep') || 'Meal Prep', desc: t('dashboard.mealPrepDesc') || 'Nutrition planning', icon: 'food-variant' as const, color: theme.colors.accent, route: '/meal-prep' },
               { label: t('dashboard.exercises') || 'Exercises', desc: t('dashboard.exercisesDesc') || 'Exercise library', icon: 'dumbbell' as const, color: theme.colors.warning, route: '/exercises' },
               { label: t('dashboard.myWorkouts') || 'My Workouts', desc: t('dashboard.myWorkoutsDesc') || 'Saved routines', icon: 'folder-star' as const, color: theme.colors.pink, route: '/saved-workouts' },
@@ -404,7 +405,9 @@ export default function DashboardScreen() {
               >
                 <TouchableOpacity
                   activeOpacity={0.7}
+                  disabled={!!(tile as any).comingSoon}
                   onPress={() => {
+                    if ((tile as any).comingSoon) return;
                     console.log('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
                     router.push(tile.route as any);
                   }}
@@ -413,6 +416,7 @@ export default function DashboardScreen() {
                     {
                       backgroundColor: theme.colors.surface,
                       borderColor: theme.colors.border,
+                      opacity: (tile as any).comingSoon ? 0.5 : 1,
                     },
                   ]}
                 >
@@ -420,7 +424,14 @@ export default function DashboardScreen() {
                     <MaterialCommunityIcons name={tile.icon} size={26} color={tile.color} />
                   </View>
                   <View style={styles.exploreTileContent}>
-                    <ThemedText variant="bodySmall" weight="700" color="primary" style={styles.exploreTileLabel}>{tile.label}</ThemedText>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <ThemedText variant="bodySmall" weight="700" color="primary" style={styles.exploreTileLabel}>{tile.label}</ThemedText>
+                      {!!(tile as any).comingSoon && (
+                        <View style={{ backgroundColor: theme.colors.warning + '25', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                          <Text style={{ color: theme.colors.warning, fontSize: 9, fontWeight: '700' }}>SOON</Text>
+                        </View>
+                      )}
+                    </View>
                     <ThemedText
                       variant="caption"
                       color="secondary"
@@ -431,7 +442,7 @@ export default function DashboardScreen() {
                     </ThemedText>
                   </View>
                   <View style={styles.exploreTileArrowRow}>
-                    <MaterialCommunityIcons name="arrow-right" size={16} color={theme.colors.textMuted} />
+                    <MaterialCommunityIcons name={(tile as any).comingSoon ? "lock" : "arrow-right"} size={16} color={theme.colors.textMuted} />
                   </View>
                 </TouchableOpacity>
               </AnimatedListItem>

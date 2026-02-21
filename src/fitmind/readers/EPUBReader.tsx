@@ -15,7 +15,7 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { WebView } from 'react-native-webview';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import ThemedText from '../../components/ThemedText';
 import type {
   EPUBReaderProps,

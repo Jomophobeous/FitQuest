@@ -358,6 +358,14 @@ function ThemedTabs() {
           title: t('nav.enterpriseHardening'),
         }}
       />
+      <Tabs.Screen
+        name="professor/index"
+        options={{
+          href: null,
+          lazy: true,
+          title: t('nav.professor'),
+        }}
+      />
     </Tabs>
   );
 }

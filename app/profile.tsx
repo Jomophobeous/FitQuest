@@ -299,7 +299,7 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
 // ============================================
 
 export default function ProfileScreen() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, mode, setMode } = useTheme();
   const { t, languageName } = useLanguage();
   const { refreshProfile } = useDatabase();
   const { signOut } = useAuth();
@@ -315,6 +315,7 @@ export default function ProfileScreen() {
   const [socialSettings, setSocialSettings] = useState<SocialLayerSettings | null>(null);
   const [socialBusy, setSocialBusy] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
   const [mealRegionOverride, setMealRegionOverride] = useState<MealRegionValue>('AUTO');
   const [notificationSettings, setNotificationSettings] = useState<NotificationReliabilitySettings>({
     enabled: false,
@@ -1053,20 +1054,12 @@ export default function ProfileScreen() {
             }
           />
           <MenuItem
-            icon={theme.isDark ? 'weather-night' : 'weather-sunny'}
-            label={t('profile.darkMode')}
-            sublabel={theme.isDark ? t('profile.darkModeOn') : t('profile.darkModeOff')}
-            color={theme.colors.purple}
+            icon={mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'weather-night' : 'weather-sunny'}
+            label="Theme"
+            sublabel={mode === 'blackGold' ? 'Black & Gold' : mode === 'dark' ? 'Dark' : 'Light'}
+            color={mode === 'blackGold' ? '#D4AF37' : theme.colors.purple}
             delay={550}
-            onPress={toggleTheme}
-            rightContent={
-              <Switch
-                value={theme.isDark}
-                onValueChange={toggleTheme}
-                trackColor={{ false: theme.colors.border, true: theme.colors.accent + '60' }}
-                thumbColor={theme.isDark ? theme.colors.accent : theme.colors.surface}
-              />
-            }
+            onPress={() => setShowThemePicker(true)}
           />
           <MenuItem
             icon="translate"
@@ -1271,6 +1264,20 @@ export default function ProfileScreen() {
         {/* Bottom spacing */}
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Theme Picker Modal */}
+      <ThemedPickerModal
+        visible={showThemePicker}
+        title="Choose Theme"
+        subtitle="Select your preferred app appearance"
+        options={[
+          { label: '🌙  Dark', value: 'dark' },
+          { label: '☀️  Light', value: 'light' },
+          { label: '👑  Black & Gold', value: 'blackGold' },
+        ]}
+        onSelect={(value) => setMode(value as 'dark' | 'light' | 'blackGold')}
+        onClose={() => setShowThemePicker(false)}
+      />
 
       {/* Language Selector Modal */}
       <LanguageSelector

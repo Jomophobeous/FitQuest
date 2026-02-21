@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Vibration,
   useWindowDimensions,
 } from 'react-native';
 import Animated, {
@@ -134,11 +135,11 @@ function FitQuestScreenInner() {
             transition: currentExercise.audioTransition,
           };
           
-          // Full narration sequence: intro → setup → (pause) → execution cues
+          // Full narration sequence: intro → setup → execution cues
           await audioService.playIntro(audioData);
           await audioService.playSetup(audioData);
-          // Brief pause before execution cues to let user get into position
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          // Short pause before execution cues
+          await new Promise(resolve => setTimeout(resolve, 600));
           await audioService.playExecution(audioData);
           setIsSpeaking(false);
         };
@@ -754,9 +755,11 @@ function FitQuestScreenInner() {
                     completeExercise(5);
                     haptic('workoutComplete');
                     setShowConfetti(true);
-                    // Last exercise — play completion sound
-                    // handleFinish is triggered by useEffect when status === 'completed'
+                    // Stop any ongoing narration, then play completion sound
+                    audioService.stop();
                     await audioService.playWorkoutComplete();
+                    // Stop completely after the completion message
+                    audioService.stop();
                     console.log('[FitQuest] Last exercise completed — waiting for useEffect to trigger handleFinish');
                   } else {
                     // Show rest immediately, then advance after rest ends/skip
@@ -865,7 +868,7 @@ function FitQuestScreenInner() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  scrollContent: { paddingBottom: 32 },
+  scrollContent: { paddingBottom: 100 },
   loadingIcon: { width: 80, height: 80, borderRadius: 24, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 16, fontSize: 14 },
   errorTitle: { fontSize: 20, fontWeight: '600', marginTop: 16, textAlign: 'center' },
@@ -942,8 +945,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   progressBarFill: { height: 4, borderRadius: 2 },
-  exerciseContent: { padding: 16, paddingBottom: 32 },
-  exerciseContentCompact: { paddingBottom: 56 },
+  exerciseContent: { padding: 16, paddingBottom: 100 },
+  exerciseContentCompact: { paddingBottom: 110 },
   // ═══ REST / GET-READY overlays are in separate components ═══
   restTimerCard: { alignItems: 'center', padding: 24, marginBottom: 16, gap: 6 },
   restTimerValue: { fontSize: 32, fontWeight: '700', fontVariant: ['tabular-nums'] as any },

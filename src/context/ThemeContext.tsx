@@ -1,29 +1,41 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { darkTheme, lightTheme, type Theme } from '../design/theme-system';
+import { darkTheme, lightTheme, blackGoldTheme, type Theme, type ThemeMode } from '../design/theme-system';
 
 interface ThemeContextType {
-  mode: 'dark' | 'light';
+  mode: ThemeMode;
   theme: Theme;
   toggleTheme: () => void;
-  setMode: (mode: 'dark' | 'light') => void;
+  setMode: (mode: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'fitquest.theme.mode';
 
+const VALID_MODES: ThemeMode[] = ['dark', 'light', 'blackGold'];
+
+function isValidMode(value: string | null): value is ThemeMode {
+  return value !== null && VALID_MODES.includes(value as ThemeMode);
+}
+
+const themeMap: Record<ThemeMode, Theme> = {
+  dark: darkTheme,
+  light: lightTheme,
+  blackGold: blackGoldTheme,
+};
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
-  const [mode, setModeState] = useState<'dark' | 'light'>('dark');
+  const [mode, setModeState] = useState<ThemeMode>('dark');
 
   // Load saved theme preference on mount
   useEffect(() => {
     (async () => {
       try {
         const saved = await SecureStore.getItemAsync(THEME_STORAGE_KEY);
-        if (saved === 'light' || saved === 'dark') {
+        if (isValidMode(saved)) {
           setModeState(saved);
         } else if (systemColorScheme) {
           setModeState(systemColorScheme);
@@ -34,7 +46,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })();
   }, [systemColorScheme]);
 
-  const setMode = useCallback(async (newMode: 'dark' | 'light') => {
+  const setMode = useCallback(async (newMode: ThemeMode) => {
     setModeState(newMode);
     try {
       await SecureStore.setItemAsync(THEME_STORAGE_KEY, newMode);
@@ -43,11 +55,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Cycle: dark → light → blackGold → dark
   const toggleTheme = useCallback(() => {
-    setMode(mode === 'dark' ? 'light' : 'dark');
+    const next: Record<ThemeMode, ThemeMode> = {
+      dark: 'light',
+      light: 'blackGold',
+      blackGold: 'dark',
+    };
+    setMode(next[mode]);
   }, [mode, setMode]);
 
-  const theme = mode === 'dark' ? darkTheme : lightTheme;
+  const theme = themeMap[mode];
 
   const contextValue = useMemo(() => ({
     mode, theme, toggleTheme, setMode,
@@ -74,7 +92,8 @@ export function useColors() {
   return theme.colors;
 }
 
-export function useThemeValue<T>(darkValue: T, lightValue: T): T {
+export function useThemeValue<T>(darkValue: T, lightValue: T, blackGoldValue?: T): T {
   const { mode } = useTheme();
+  if (mode === 'blackGold') return blackGoldValue ?? darkValue;
   return mode === 'dark' ? darkValue : lightValue;
 }

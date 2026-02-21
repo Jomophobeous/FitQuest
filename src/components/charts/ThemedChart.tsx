@@ -52,7 +52,7 @@ interface ThemedChartWrapperProps {
 
 export function useChartTheme(): ChartThemeColors {
   const { theme, mode } = useTheme();
-  return mode === 'dark' ? DARK_CHART_THEME : LIGHT_CHART_THEME;
+  return mode === 'light' ? LIGHT_CHART_THEME : DARK_CHART_THEME;
 }
 
 // ============================================

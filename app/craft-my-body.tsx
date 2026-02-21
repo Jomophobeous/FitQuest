@@ -9,8 +9,6 @@
 
 import React, { useState, useCallback } from 'react';
 
-import { colorSystem } from '../src/design/theme-system';
-const ACCENT_PURPLE = colorSystem.dark.purple;
 import {
   View,
   ScrollView,
@@ -95,11 +93,11 @@ const TIMELINE_OPTIONS: { months: TimelineMonths; label: string; desc: string; i
 
 const PRIORITY_CYCLE: MusclePriority[] = ['maintain', 'priority', 'ignore'];
 
-const PRIORITY_CONFIG: Record<MusclePriority, { label: string; color: string }> = {
-  priority: { label: 'Priority', color: colorSystem.dark.accent },
-  maintain: { label: 'Maintain', color: colorSystem.dark.warning },
-  ignore: { label: 'Ignore', color: colorSystem.dark.textMuted },
-};
+const getPriorityConfig = (colors: typeof import('../src/design/theme-system').colorSystem.dark): Record<MusclePriority, { label: string; color: string }> => ({
+  priority: { label: 'Priority', color: colors.accent },
+  maintain: { label: 'Maintain', color: colors.warning },
+  ignore: { label: 'Ignore', color: colors.textMuted },
+});
 
 // ============================================
 // SCREEN
@@ -390,7 +388,7 @@ export default function CraftMyBodyScreen() {
       <View style={styles.muscleGrid}>
         {MUSCLE_GROUPS.map((mg) => {
           const priority = musclePriorities[mg.key];
-          const cfg = PRIORITY_CONFIG[priority];
+          const cfg = getPriorityConfig(colors)[priority];
           return (
             <TouchableOpacity key={mg.key} onPress={() => toggleMusclePriority(mg.key)} activeOpacity={0.7}>
               <GlassCard style={{ ...styles.muscleCard, borderColor: cfg.color, borderWidth: priority === 'priority' ? 2 : 1 }}>
@@ -481,7 +479,7 @@ export default function CraftMyBodyScreen() {
               <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Carbs ({carbsPct}%)</Text>
             </View>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: ACCENT_PURPLE }]}>{algorithm.fats_g}g</Text>
+              <Text style={[styles.macroValue, { color: colors.purple }]}>{algorithm.fats_g}g</Text>
               <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Fats ({fatsPct}%)</Text>
             </View>
           </View>
@@ -490,7 +488,7 @@ export default function CraftMyBodyScreen() {
           <View style={[styles.macroBar, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}>
             <View style={{ flex: proteinPct, backgroundColor: colors.error, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }} />
             <View style={{ flex: carbsPct, backgroundColor: colors.warning }} />
-            <View style={{ flex: fatsPct, backgroundColor: ACCENT_PURPLE, borderTopRightRadius: 4, borderBottomRightRadius: 4 }} />
+            <View style={{ flex: fatsPct, backgroundColor: colors.purple, borderTopRightRadius: 4, borderBottomRightRadius: 4 }} />
           </View>
         </GlassCard>
 

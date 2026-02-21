@@ -18,7 +18,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
-import { colorSystem } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
 import { getExercises, createWorkoutSession, addSessionExercise } from '../src/database/service';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
@@ -46,11 +45,11 @@ const getCategories = (t: (key: string) => string): { key: Category | 'all'; lab
   { key: 'focus', label: t('createWorkout.category.focus'), icon: 'head-heart' },
 ];
 
-const getDifficulties = (t: (key: string) => string): { key: 'all' | 'beginner' | 'intermediate' | 'advanced'; label: string; color: string }[] => [
-  { key: 'all', label: t('createWorkout.allLevels'), color: colorSystem.dark.textMuted },
-  { key: 'beginner', label: t('createWorkout.beginner'), color: colorSystem.dark.accent },
-  { key: 'intermediate', label: t('createWorkout.intermediate'), color: colorSystem.dark.warning },
-  { key: 'advanced', label: t('createWorkout.advanced'), color: colorSystem.dark.error },
+const getDifficulties = (t: (key: string) => string, colors: { textMuted: string; accent: string; warning: string; error: string }): { key: 'all' | 'beginner' | 'intermediate' | 'advanced'; label: string; color: string }[] => [
+  { key: 'all', label: t('createWorkout.allLevels'), color: colors.textMuted },
+  { key: 'beginner', label: t('createWorkout.beginner'), color: colors.accent },
+  { key: 'intermediate', label: t('createWorkout.intermediate'), color: colors.warning },
+  { key: 'advanced', label: t('createWorkout.advanced'), color: colors.error },
 ];
 
 const getEquipmentLevels = (t: (key: string) => string): { key: 'all' | 'none' | 'minimal' | 'playground'; label: string }[] => [
@@ -68,7 +67,7 @@ export default function CreateWorkoutScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const categories = useMemo(() => getCategories(t), [t]);
-  const difficulties = useMemo(() => getDifficulties(t), [t]);
+  const difficulties = useMemo(() => getDifficulties(t, theme.colors), [t, theme.colors]);
   const equipmentLevels = useMemo(() => getEquipmentLevels(t), [t]);
   const router = useRouter();
 

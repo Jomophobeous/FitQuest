@@ -854,6 +854,16 @@ const en = {
   'nav.autonomousCenter': 'Autonomous Center',
   'nav.federationHub': 'Federation Hub',
   'nav.enterpriseHardening': 'Enterprise Hardening',
+  'nav.professor': 'Professor AI',
+  'nav.progress': 'Progress',
+  'nav.createWorkout': 'Create Workout',
+  'nav.analytics': 'Analytics',
+  'nav.myWorkouts': 'My Workouts',
+  'nav.premium': 'Premium',
+  'nav.health': 'Health',
+  'nav.reader': 'Reader',
+  'nav.nutritionCalculator': 'Nutrition Calculator',
+  'nav.platformStudio': 'Platform Studio',
 };
 
 const af: Record<string, string> = {

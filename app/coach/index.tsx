@@ -8,6 +8,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -71,10 +72,17 @@ interface CoachContext {
 // ============================================
 
 const GREETING_PROMPTS = [
-  "Hey champion! 💪 What can I help you with today?",
-  "Welcome back! Ready to crush it? What's on your mind?",
-  "Your coach is here! Ask me anything about your training.",
+  "What can I help you with today?",
+  "Ready to crush it? What's on your mind?",
+  "Ask me anything about your training.",
 ];
+
+function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 const TOPIC_RESPONSES: Record<string, (ctx: CoachContext) => string> = {
   // Motivation
@@ -502,11 +510,11 @@ function CoachScreenInner() {
 
       setCoachCtx(ctx);
 
-      let greeting = GREETING_PROMPTS[Math.floor(Math.random() * GREETING_PROMPTS.length)];
+      let greeting = `${getTimeGreeting()}! 💪 ${GREETING_PROMPTS[Math.floor(Math.random() * GREETING_PROMPTS.length)]}`;
       if (ctx.streak >= 3) {
-        greeting = `Amazing — ${ctx.streak}-day streak! 🔥 ${greeting}`;
+        greeting = `${getTimeGreeting()}! ${ctx.streak}-day streak! 🔥 ${GREETING_PROMPTS[Math.floor(Math.random() * GREETING_PROMPTS.length)]}`;
       } else if (ctx.daysSinceLastWorkout > 3) {
-        greeting = `Welcome back! It's been ${ctx.daysSinceLastWorkout} days. No judgment — let's get back on track! 💪`;
+        greeting = `${getTimeGreeting()}! It's been ${ctx.daysSinceLastWorkout} days — no judgment, let's get back on track! 💪`;
       }
 
       setMessages([{
@@ -644,20 +652,14 @@ function CoachScreenInner() {
   }));
 
   const quickSuggestions = [
-    { text: "Recommend exercises for me", icon: 'dumbbell' as const },
-    { text: "Meal prep ideas", icon: 'food-variant' as const },
-    { text: "I'm feeling tired today", icon: 'emoticon-sad-outline' as const },
+    { text: "Recommend exercises", icon: 'dumbbell' as const },
+    { text: "I'm tired today", icon: 'emoticon-sad-outline' as const },
     { text: "How's my progress?", icon: 'chart-line' as const },
-    { text: "I'm sore, should I rest?", icon: 'medical-bag' as const },
     { text: "Nutrition tips", icon: 'food-apple-outline' as const },
-    { text: "How often should I train?", icon: 'calendar-clock' as const },
-    { text: "Craft My Body", icon: 'human-edit' as const },
+    { text: "Recovery advice", icon: 'medical-bag' as const },
+    { text: "Meal prep ideas", icon: 'food-variant' as const },
     { text: "Warm-up routine", icon: 'fire' as const },
-    { text: "Injury prevention", icon: 'shield-check' as const },
-    { text: "Supplements guide", icon: 'pill' as const },
-    { text: "Mental health", icon: 'head-heart' as const },
-    { text: "Hydration tips", icon: 'water' as const },
-    { text: "Weight management", icon: 'scale-bathroom' as const },
+    { text: "How often to train?", icon: 'calendar-clock' as const },
   ];
 
   const suggestionColors = [theme.colors.indigo, '#4ECDC4', '#FF6B6B', theme.colors.accent, theme.colors.error, theme.colors.warning, theme.colors.purple, theme.colors.pink, '#F97316', theme.colors.blue, '#14B8A6', '#A855F7', '#06B6D4', '#E11D48'];
@@ -750,7 +752,7 @@ function CoachScreenInner() {
                     <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
                       {t('coach.tapToStart')}
                     </Text>
-                    <View style={styles.suggestionsGrid}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsScroll}>
                       {quickSuggestions.map((suggestion, idx) => (
                         <Animated.View
                           key={suggestion.text}
@@ -767,7 +769,7 @@ function CoachScreenInner() {
                             <View style={[styles.suggestionIcon, { backgroundColor: suggestionColors[idx % suggestionColors.length] + '20' }]}>
                               <MaterialCommunityIcons
                                 name={suggestion.icon}
-                                size={16}
+                                size={14}
                                 color={suggestionColors[idx % suggestionColors.length]}
                               />
                             </View>
@@ -777,7 +779,7 @@ function CoachScreenInner() {
                           </TouchableOpacity>
                         </Animated.View>
                       ))}
-                    </View>
+                    </ScrollView>
                   </Animated.View>
                 )}
 
@@ -982,7 +984,7 @@ const styles = StyleSheet.create({
 
   // Suggestions
   suggestionsWrap: {
-    marginTop: 8,
+    marginTop: 12,
   },
   suggestionsLabel: {
     fontSize: 12,
@@ -990,27 +992,29 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     letterSpacing: 0.3,
   },
-  suggestionsGrid: {
+  suggestionsScroll: {
+    flexDirection: 'row',
     gap: 8,
+    paddingRight: 16,
   },
   suggestionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 20,
     borderWidth: 1,
-    gap: 10,
+    gap: 8,
   },
   suggestionIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 10,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     justifyContent: 'center',
     alignItems: 'center',
   },
   suggestionText: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: '500',
   },
 

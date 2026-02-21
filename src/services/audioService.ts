@@ -121,6 +121,16 @@ class AudioService {
       }
 
       this.isInitialized = true;
+
+      // Pre-warm TTS engine to eliminate cold-start latency
+      // Speaking an empty space primes the native TTS synthesizer
+      if (this.settings.voiceEnabled) {
+        Speech.speak(' ', {
+          rate: this.settings.speechRate,
+          language: this.settings.language,
+          volume: 0,
+        });
+      }
     } catch (error) {
       console.error('[AudioService] Initialization failed:', error);
       // Use defaults on failure

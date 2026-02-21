@@ -528,39 +528,58 @@ export default function AnalyticsScreen() {
             {/* ─── STREAK & CONSISTENCY ───────────── */}
             <SectionHeader title={t('analytics.streakConsistency')} delay={850} />
             <Animated.View entering={FadeInDown.delay(900).duration(150)}>
-              <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: 20 }}>
+              {/* Hero Streak Card */}
+              <GlassCard gradient glowColor={theme.colors.warning} style={{ paddingVertical: 24, paddingHorizontal: 20 }}>
+                {/* Top row: Streak fire + Consistency ring */}
                 <View style={s.streakHeroRow}>
+                  {/* Current Streak - Hero element */}
                   <View style={s.streakHeroItem}>
-                    <ProgressRing progress={streakData.consistencyPct / 100} size={90} color={theme.colors.accent} strokeWidth={8}>
+                    <LinearGradient
+                      colors={[theme.colors.warning + '20', theme.colors.warning + '08'] as [string, string]}
+                      style={s.streakFireCircle}
+                    >
+                      <MaterialCommunityIcons name="fire" size={32} color={theme.colors.warning} />
+                      <Text style={[s.streakNumber, { color: theme.colors.text }]}>
+                        {streakData.currentStreak}
+                      </Text>
+                    </LinearGradient>
+                    <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>Day Streak</Text>
+                  </View>
+
+                  {/* Divider */}
+                  <View style={[s.streakDivider, { backgroundColor: theme.colors.border }]} />
+
+                  {/* Consistency Ring */}
+                  <View style={s.streakHeroItem}>
+                    <ProgressRing progress={streakData.consistencyPct / 100} size={80} color={theme.colors.accent} strokeWidth={6}>
                       <Text style={[s.ringValue, { color: theme.colors.accent }]}>
                         {streakData.consistencyPct}%
                       </Text>
                     </ProgressRing>
-                    <Text style={[s.streakHeroLabel, { color: theme.colors.textMuted }]}>Consistency</Text>
-                  </View>
-                  <View style={s.streakHeroItem}>
-                    <View style={s.streakFireWrap}>
-                      <MaterialCommunityIcons name="fire" size={44} color={theme.colors.accent2} />
-                      <Text style={[s.streakNumber, { color: theme.colors.text }]}>
-                        {streakData.currentStreak}
-                      </Text>
-                    </View>
-                    <Text style={[s.streakHeroLabel, { color: theme.colors.textMuted }]}>Day Streak</Text>
+                    <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>Consistency</Text>
                   </View>
                 </View>
 
-                <View style={s.streakTilesRow}>
+                {/* Stats Grid */}
+                <View style={[s.streakStatsGrid, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.border }]}>
                   {[
-                    { label: t('analytics.longest'), value: `${streakData.longestStreak} ${t('common.days')}`, icon: 'trophy-outline', color: theme.colors.warning },
-                    { label: t('analytics.totalWorkouts'), value: `${streakData.totalWorkouts}`, icon: 'dumbbell', color: theme.colors.accent3 },
-                    { label: t('analytics.thisWeek'), value: `${streakData.thisWeek}`, icon: 'calendar-week', color: theme.colors.accent },
-                    { label: t('analytics.thisMonth'), value: `${streakData.thisMonth}`, icon: 'calendar-month', color: theme.colors.success },
-                  ].map((tile, i) => (
-                    <AnimatedListItem key={tile.label} index={i} style={s.streakTile}>
-                      <MaterialCommunityIcons name={tile.icon as any} size={20} color={tile.color} />
-                      <Text style={[s.tileValue, { color: theme.colors.text }]}>{tile.value}</Text>
-                      <Text style={[s.tileLabel, { color: theme.colors.textMuted }]}>{tile.label}</Text>
-                    </AnimatedListItem>
+                    { label: t('analytics.longest'), value: streakData.longestStreak, unit: t('common.days'), icon: 'trophy' as const, color: theme.colors.warning },
+                    { label: t('analytics.totalWorkouts'), value: streakData.totalWorkouts, unit: '', icon: 'dumbbell' as const, color: theme.colors.accent },
+                    { label: t('analytics.thisWeek'), value: streakData.thisWeek, unit: '', icon: 'calendar-week' as const, color: theme.colors.blue },
+                    { label: t('analytics.thisMonth'), value: streakData.thisMonth, unit: '', icon: 'calendar-month' as const, color: theme.colors.purple },
+                  ].map((stat, i) => (
+                    <View key={stat.label} style={[s.streakStatItem, i < 2 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.colors.border }]}>
+                      <View style={[s.streakStatIcon, { backgroundColor: stat.color + '15' }]}>
+                        <MaterialCommunityIcons name={stat.icon} size={16} color={stat.color} />
+                      </View>
+                      <View style={s.streakStatText}>
+                        <Text style={[s.tileLabel, { color: theme.colors.textMuted }]}>{stat.label}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 3 }}>
+                          <Text style={[s.tileValue, { color: theme.colors.text }]}>{stat.value}</Text>
+                          {!!stat.unit && <Text style={[s.tileUnit, { color: theme.colors.textMuted }]}>{stat.unit}</Text>}
+                        </View>
+                      </View>
+                    </View>
                   ))}
                 </View>
               </GlassCard>
@@ -649,21 +668,18 @@ const styles = (theme: any) =>
     prDate: { fontSize: 11, fontWeight: '500', marginTop: 2 },
     prValue: { fontSize: 18, fontWeight: '800' },
 
-    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 },
-    streakHeroItem: { alignItems: 'center' },
+    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginBottom: 20 },
+    streakHeroItem: { alignItems: 'center', flex: 1 },
+    streakFireCircle: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: theme.colors.warning + '30' },
+    streakDivider: { width: StyleSheet.hairlineWidth, height: 60 },
     ringValue: { fontSize: 16, fontWeight: '800' },
-    streakFireWrap: { alignItems: 'center', justifyContent: 'center', height: 90 },
-    streakNumber: { fontSize: 28, fontWeight: '800', marginTop: -4 },
-    streakHeroLabel: { fontSize: 12, fontWeight: '600', marginTop: 6 },
-    streakTilesRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8, paddingHorizontal: 8 },
-    streakTile: {
-      width: '47%' as any,
-      backgroundColor: theme.colors.surfaceVariant,
-      borderRadius: 14,
-      paddingVertical: 14,
-      paddingHorizontal: 12,
-      alignItems: 'center',
-    },
-    tileValue: { fontSize: 18, fontWeight: '800', marginTop: 6 },
-    tileLabel: { fontSize: 10, fontWeight: '600', marginTop: 2, textAlign: 'center' },
+    streakNumber: { fontSize: 22, fontWeight: '800', marginTop: -2 },
+    streakHeroLabel: { fontSize: 12, fontWeight: '600', marginTop: 8 },
+    streakStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 14, borderWidth: 1, overflow: 'hidden' },
+    streakStatItem: { width: '50%', flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14, gap: 10 },
+    streakStatIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    streakStatText: { flex: 1 },
+    tileValue: { fontSize: 18, fontWeight: '800' },
+    tileLabel: { fontSize: 10, fontWeight: '600', textAlign: 'left' },
+    tileUnit: { fontSize: 11, fontWeight: '500' },
   });

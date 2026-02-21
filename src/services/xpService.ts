@@ -13,6 +13,7 @@
  */
 
 import { getAppState, setAppState } from '../database/service';
+import { getXPMultiplier, checkMilestoneReached } from './rankingService';
 
 // ============================================
 // TYPES
@@ -106,7 +107,12 @@ export async function awardWorkoutXP(
   const exerciseXP = completedExercises * 20;
   const completionBonus = completedExercises >= totalExercises ? 50 : 0;
   const streakBonus = streakDays * 10;
-  const totalGain = baseXP + exerciseXP + completionBonus + streakBonus;
+  const rawGain = baseXP + exerciseXP + completionBonus + streakBonus;
+
+  // Apply rank-based XP multiplier (rewards long-term consistency)
+  const currentData = await getXPData();
+  const multiplier = getXPMultiplier(currentData.level);
+  const totalGain = Math.round(rawGain * multiplier);
   
   return addXP(totalGain);
 }

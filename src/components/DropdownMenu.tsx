@@ -3,7 +3,7 @@
  * Premium glass-morphism dropdown with animated items
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -281,6 +281,14 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
   const { theme } = useTheme();
   const router = useRouter();
   const [visible, setVisible] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const isWorkoutActive = timerService.isActive();
 
@@ -289,7 +297,8 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
 
   const handleItemPress = useCallback((item: MenuItem) => {
     handleClose();
-    setTimeout(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current); // Clear any pending action
+    timeoutRef.current = setTimeout(() => {
       if (item.action) item.action();
       else if (item.route) router.push(item.route as any);
     }, 200);

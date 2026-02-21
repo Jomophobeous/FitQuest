@@ -10,7 +10,7 @@ import { GlassCard } from '../src/components/ui/GlassUI';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingBottom: 32 },
+  content: { paddingBottom: 80 },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -41,7 +41,7 @@ export default function TermsOfServiceScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}> 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator>
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}

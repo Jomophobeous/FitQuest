@@ -735,6 +735,52 @@ export async function addSessionExercise(exercise: SessionExercise): Promise<voi
   );
 }
 
+/**
+ * Get session exercises with full exercise details (for loading custom workouts)
+ */
+export async function getSessionExercises(sessionId: string): Promise<Array<{
+  id: string;
+  exercise_id: string;
+  order_in_session: number;
+  prescribed_sets: number;
+  prescribed_reps: string;
+  completed_sets: number;
+  skipped: boolean;
+  name: string;
+  category: string;
+  difficulty: string;
+  instructions: string;
+  audio_intro: string;
+  audio_setup: string;
+  audio_execution: string;
+  audio_transition: string;
+}>> {
+  const db = await getDatabase();
+  return db.getAllAsync(
+    `SELECT se.id, se.exercise_id, se.order_in_session,
+            se.prescribed_sets, se.prescribed_reps, se.completed_sets,
+            se.skipped,
+            e.name, e.category, e.difficulty, e.instructions,
+            e.audio_intro, e.audio_setup, e.audio_execution, e.audio_transition
+     FROM session_exercises se
+     JOIN exercises e ON se.exercise_id = e.id
+     WHERE se.session_id = ?
+     ORDER BY se.order_in_session ASC`,
+    [sessionId]
+  );
+}
+
+/**
+ * Get a single workout session by ID
+ */
+export async function getWorkoutSession(sessionId: string): Promise<WorkoutSession | null> {
+  const db = await getDatabase();
+  return db.getFirstAsync<WorkoutSession>(
+    `SELECT * FROM workout_sessions WHERE id = ?`,
+    [sessionId]
+  );
+}
+
 // ============================================
 // PROGRESS TRACKING QUERIES
 // ============================================
@@ -776,6 +822,23 @@ export async function getProgressHistory(
      ORDER BY date DESC
      LIMIT ?`,
     [userId, exerciseId, limit]
+  );
+}
+
+/**
+ * Get all progress records for a user (across all exercises)
+ */
+export async function getAllProgressRecords(
+  userId: string,
+  limit = 100
+): Promise<ProgressRecord[]> {
+  const db = await getDatabase();
+  return db.getAllAsync<ProgressRecord>(
+    `SELECT * FROM progress_records 
+     WHERE user_id = ?
+     ORDER BY date DESC
+     LIMIT ?`,
+    [userId, limit]
   );
 }
 

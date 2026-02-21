@@ -64,7 +64,7 @@ const getEpubProgressKey = (id: string) => `${EPUB_PROGRESS_PREFIX}.${id}`;
 export default function FitMindReaderScreen() {
   const router = useRouter();
   return (
-    <ScreenErrorBoundary screenName="FitMind Reader" onGoBack={() => router.back()}>
+    <ScreenErrorBoundary screenName="FitMind Reader" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/fitmind-library')}>
       <FitMindReaderScreenInner />
     </ScreenErrorBoundary>
   );
@@ -179,7 +179,7 @@ function FitMindReaderScreenInner() {
     try {
       const doc = await FitMindService.getDocument(docId);
       if (!doc) {
-        router.back();
+        router.canGoBack() ? router.back() : router.replace('/fitmind-library');
         return;
       }
       setDocument(doc);
@@ -539,7 +539,7 @@ function FitMindReaderScreenInner() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Top Bar */}
       <Animated.View entering={FadeIn} style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/fitmind-library')} style={styles.backButton}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
         </TouchableOpacity>
         <View style={styles.titleContainer}>

@@ -202,8 +202,9 @@ export default function MealPrepScreen() {
           allSuggestions[mt] = getMealSuggestions(mt, location);
         }
         setMealSuggestionsCache(allSuggestions as Record<MealType, { title: string; foods: FoodItem[]; tip: string }>);
+        // Only update cache if component is still mounted
+        await setCached('meal', cacheId, freshFoods);
       }
-      await setCached('meal', cacheId, freshFoods);
     };
 
     void loadFoods();
@@ -214,40 +215,45 @@ export default function MealPrepScreen() {
 
   const loadLocation = async () => {
     setIsLoadingLocation(true);
-    const savedOverride = (await getAppState('meal.region_override')) as MealRegionOverride | null;
-    const activeOverride: MealRegionOverride =
-      savedOverride && (savedOverride in REGION_OVERRIDE_LOCATION || savedOverride === 'AUTO')
-        ? savedOverride
-        : 'AUTO';
-    setManualRegionOverride(activeOverride);
+    try {
+      const savedOverride = (await getAppState('meal.region_override')) as MealRegionOverride | null;
+      const activeOverride: MealRegionOverride =
+        savedOverride && (savedOverride in REGION_OVERRIDE_LOCATION || savedOverride === 'AUTO')
+          ? savedOverride
+          : 'AUTO';
+      setManualRegionOverride(activeOverride);
 
-    if (activeOverride !== 'AUTO') {
-      const overrideLocation = REGION_OVERRIDE_LOCATION[activeOverride as Exclude<MealRegionOverride, 'AUTO'>];
-      const overrideResolvedLocation = {
-        latitude: 0,
-        longitude: 0,
-        city: overrideLocation.city,
-        region: overrideLocation.region,
-        country: overrideLocation.country,
-        isoCountryCode: overrideLocation.isoCountryCode,
-      };
-      setLocation(overrideResolvedLocation);
-      await setCached('meal', 'auto_location', overrideResolvedLocation, 10 * 60 * 1000);
+      if (activeOverride !== 'AUTO') {
+        const overrideLocation = REGION_OVERRIDE_LOCATION[activeOverride as Exclude<MealRegionOverride, 'AUTO'>];
+        const overrideResolvedLocation = {
+          latitude: 0,
+          longitude: 0,
+          city: overrideLocation.city,
+          region: overrideLocation.region,
+          country: overrideLocation.country,
+          isoCountryCode: overrideLocation.isoCountryCode,
+        };
+        setLocation(overrideResolvedLocation);
+        await setCached('meal', 'auto_location', overrideResolvedLocation, 10 * 60 * 1000);
+        return;
+      }
+
+      const cachedAutoLocation = await getCached<UserLocation | null>('meal', 'auto_location');
+      if (cachedAutoLocation.value) {
+        setLocation(cachedAutoLocation.value);
+        return;
+      }
+
+      const loc = await getCurrentLocation();
+      setLocation(loc);
+      await setCached('meal', 'auto_location', loc, 10 * 60 * 1000);
+    } catch (e) {
+      console.warn('[MealPrep] Failed to load location:', e);
+      // Default to global foods on error
+      setLocation(null);
+    } finally {
       setIsLoadingLocation(false);
-      return;
     }
-
-    const cachedAutoLocation = await getCached<UserLocation | null>('meal', 'auto_location');
-    if (cachedAutoLocation.value) {
-      setLocation(cachedAutoLocation.value);
-      setIsLoadingLocation(false);
-      return;
-    }
-
-    const loc = await getCurrentLocation();
-    setLocation(loc);
-    await setCached('meal', 'auto_location', loc, 10 * 60 * 1000);
-    setIsLoadingLocation(false);
   };
 
   const currentMealSuggestions = mealSuggestionsCache?.[selectedMeal] || getMealSuggestions(selectedMeal, location);

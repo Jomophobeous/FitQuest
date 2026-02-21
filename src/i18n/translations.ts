@@ -177,6 +177,10 @@ const en = {
   'profile.volumeToleranceDesc': 'How much total training volume (sets x reps) your body can handle. Higher values mean longer workout sessions with more exercises. Adjusts based on your session completion and skipped exercises.',
   'profile.confidence': 'Confidence',
   'profile.samples': 'Samples',
+  'profile.rank': 'Rank & Progress',
+  'profile.totalSteps': 'Steps',
+  'profile.totalDistance': 'Distance',
+  'profile.lastJog': 'Last Jog',
   'profile.equipmentLevel': 'Equipment Level',
   'profile.equipmentLevelSub': 'Filters exercises by available gear',
   'profile.equipment.none': 'No Equipment (Bodyweight)',
@@ -200,6 +204,7 @@ const en = {
   'profile.notificationsAction.permissionDenied': 'Mark permission denied',
   'profile.notificationsAction.setReminderTime': 'Set reminder hour',
   'profile.notificationsAction.pickHour': 'Choose daily reminder hour',
+  'profile.notificationsAction.pickTime': 'Choose your preferred reminder time',
   'profile.healthConnect': 'Health Integration',
   'profile.healthConnectFailed': 'Unable to connect health provider on this device.',
   'profile.healthConnectSuccess': 'Health provider connected successfully.',
@@ -506,6 +511,100 @@ const en = {
   'common.dismiss': 'Dismiss',
   'common.more': 'more',
   'common.close': 'Close',
+  'common.ok': 'OK',
+  'common.tryAgain': 'Try Again',
+  'common.goBack': 'Go Back',
+  'common.keepGoing': 'Keep Going',
+  'common.gpsActive': 'GPS Active',
+  'common.required': 'Required',
+  'common.optional': 'Optional',
+  'common.front': 'Front',
+  'common.side': 'Side',
+  'common.back': 'Back',
+  'common.noLabel': 'No Label',
+  'common.earned': 'earned',
+  'common.edit': 'Edit',
+  'common.exercises': 'Exercises',
+  'common.kcal': 'kcal',
+  'common.total': 'Total',
+  'common.skip': 'Skip',
+  'common.now': 'NOW',
+  'common.complete': 'Complete',
+
+  // Workout screen
+  'workout.noActive': 'No Active Workout',
+  'workout.generateFromTrain': 'Generate a workout from the Train tab',
+  'workout.goToTrain': 'Go to Train',
+  'workout.cancelTitle': 'Cancel Workout?',
+  'workout.cancelBody': 'Progress will be lost if you cancel.',
+  'workout.exercises': 'Exercises',
+  'workout.completeSet': 'Complete ✓',
+  'workout.completeWorkout': 'Complete Workout 🎉',
+  'workout.finishEarly': 'Finish Early',
+  'workout.nice': 'Nice!',
+  'workout.greatJob': 'Great Job!',
+
+  // Saved Workouts screen
+  'savedWorkouts.title': 'My Workouts',
+  'savedWorkouts.myWorkouts': 'My Workouts',
+  'savedWorkouts.createFirst': 'Create Your First Workout',
+  'savedWorkouts.startWorkout': 'Start Workout',
+  'savedWorkouts.pickExercises': 'Pick your exercises',
+  'savedWorkouts.setReps': 'Set reps & rest',
+  'savedWorkouts.startAnytime': 'Start anytime',
+  'savedWorkouts.deleteFailed': 'Failed to delete workout. Please try again.',
+  'savedWorkouts.emptyTitle': 'No Saved Workouts Yet',
+  'savedWorkouts.emptySubtitle': 'Build your first custom workout by selecting exercises tailored to your goals. It only takes a minute!',
+  'savedWorkouts.featurePick': 'Pick your exercises',
+  'savedWorkouts.featureSet': 'Set reps & rest',
+  'savedWorkouts.featureStart': 'Start anytime',
+  'savedWorkouts.deleteTitle': 'Delete Workout',
+  'savedWorkouts.deleteConfirm': 'Are you sure you want to delete "{name}"? This action cannot be undone.',
+  'savedWorkouts.deleteError': 'Failed to delete workout. Please try again.',
+  'savedWorkouts.today': 'Today',
+  'savedWorkouts.yesterday': 'Yesterday',
+
+  // Progress screen
+  'progress.labelPhoto': 'Label Photo',
+  'progress.whichView': 'Which view is this?',
+  'progress.photoSaved': 'Photo Saved! 📸',
+  'progress.deletePhoto': 'Delete Photo',
+  'progress.takePhoto': 'Take Photo',
+  'progress.gallery': 'Gallery',
+  'progress.permissionNeeded': 'Permission needed',
+  'progress.cameraRequired': 'Camera access is required to take progress photos.',
+  'progress.galleryRequired': 'Gallery access is required to select photos.',
+  'progress.deleteConfirm': 'Are you sure you want to delete this progress photo?',
+
+  // Craft My Body screen
+  'craftBody.sex': 'Sex',
+  'craftBody.measurements': 'Measurements',
+  'craftBody.bodyType': 'Body Type',
+  'craftBody.fitnessLevel': 'Fitness Level',
+  'craftBody.activityLevel': 'Activity Level',
+  'craftBody.trainingSplit': 'Training Split',
+  'craftBody.dailyNutrition': 'Daily Nutrition',
+
+  // Exercise Detail Sheet
+  'exerciseDetail.targetMuscles': 'Target Muscles',
+  'exerciseDetail.equipment': 'Equipment',
+  'exerciseDetail.howToPerform': 'How To Perform',
+  'exerciseDetail.trainingFocus': 'Training Focus',
+
+  // Error messages
+  'error.crashed': 'crashed',
+  'error.somethingWrong': 'Something went wrong',
+
+  // Platform Studio / Enterprise screens
+  'platformStudio.title': 'Platform Studio',
+  'platformStudio.missingFields': 'Missing fields',
+  'platformStudio.templateFailed': 'Template creation failed',
+  'federationHub.title': 'Federation Hub',
+  'federationHub.policyFailed': 'Policy update failed',
+  'enterpriseHardening.title': 'Enterprise Hardening',
+  'enterpriseHardening.updateFailed': 'Update failed',
+  'autonomousCenter.title': 'Autonomous Center',
+  'autonomousCenter.cycleSafetyMode': 'Cycle Safety Mode',
 
   // Help & Support
   'help.faqTitle': 'Frequently Asked Questions',
@@ -810,6 +909,34 @@ const en = {
   'fitmind.reader.rateLimited': 'Rate limit reached. Please wait...',
   'fitmind.reader.loadError': 'Unable to load page content.',
 
+  // Exercise Library
+  'exercises.library': 'Exercise Library',
+  'exercises.searchPlaceholder': 'Search exercises...',
+  'exercises.filters': 'Filters',
+  'exercises.difficulty': 'Difficulty',
+  'exercises.equipment': 'Equipment',
+  'exercises.clearFilters': 'Clear Filters',
+  'exercises.beginner': 'Beginner',
+  'exercises.intermediate': 'Intermediate',
+  'exercises.advanced': 'Advanced',
+  'exercises.bodyweight': 'Bodyweight',
+  'exercises.minimal': 'Minimal Equipment',
+  'exercises.playground': 'Full Equipment',
+  'exercises.of': 'of',
+  'exercises.results': 'exercises',
+  'exercises.noResults': 'No exercises match your filters',
+  'exercises.adjustFilters': 'Try adjusting your search or filters',
+  'exercises.loading': 'Loading exercises...',
+  'exercises.loadFailed': 'Failed to load exercises',
+  // Exercise categories
+  'exercises.category.all': 'All',
+  'exercises.category.body_control': 'Body Control',
+  'exercises.category.strength': 'Strength',
+  'exercises.category.mobility': 'Mobility',
+  'exercises.category.speed': 'Speed & Power',
+  'exercises.category.posture': 'Posture',
+  'exercises.category.focus': 'Focus & Mind',
+
   // Analytics
   'analytics.title': 'Analytics',
   'analytics.subtitle': 'Your performance at a glance',
@@ -910,15 +1037,35 @@ const en = {
   'nav.federationHub': 'Federation Hub',
   'nav.enterpriseHardening': 'Enterprise Hardening',
   'nav.professor': 'Professor AI',
-  'nav.progress': 'Progress',
-  'nav.createWorkout': 'Create Workout',
-  'nav.analytics': 'Analytics',
-  'nav.myWorkouts': 'My Workouts',
-  'nav.premium': 'Premium',
-  'nav.health': 'Health',
-  'nav.reader': 'Reader',
-  'nav.nutritionCalculator': 'Nutrition Calculator',
-  'nav.platformStudio': 'Platform Studio',
+
+  // FitMind reader extras
+  'fitmind.reader.openReader': 'Open Reader',
+  'fitmind.reader.binaryModeTitle': 'Binary Content',
+  'fitmind.reader.binaryModeBody': 'This file contains binary content that cannot be displayed as text.',
+
+  // Backups (i18n)
+  'backup.title': 'Backup & Restore',
+  'backup.createBackup': 'Create Backup',
+  'backup.availableBackups': 'Available Backups',
+  'backup.noBackups': 'No backups yet.',
+  'backup.helperText': 'Creates an encrypted backup file of your local database. If you set a passphrase, you must use the same passphrase to restore.',
+  'backup.optionalPassphrase': 'Optional passphrase',
+  'backup.working': 'Working…',
+  'backup.created': 'Backup created',
+  'backup.failed': 'Backup failed',
+  'backup.restoreConfirm': 'Restore backup?',
+  'backup.restoreWarning': 'This will replace your local database with the selected backup.',
+  'backup.restoreComplete': 'Restore complete',
+  'backup.restoreFailed': 'Restore failed',
+  'backup.deleteConfirm': 'Delete backup?',
+  'backup.deleteWarning': 'This cannot be undone.',
+  'backup.deleteFailed': 'Delete failed',
+  'backup.cloudBackups': 'Cloud Backups',
+  'backup.uploadBackup': 'Upload Backup',
+  'backup.uploaded': 'Uploaded',
+  'backup.uploadFailed': 'Upload failed',
+  'backup.noCloudBackups': 'No cloud backups yet.',
+  'backup.cloudHelper': 'Stores the encrypted backup blob on your Phase 2 backend. The server cannot decrypt your data.',
 };
 
 const af: Record<string, string> = {
@@ -1044,6 +1191,111 @@ const af: Record<string, string> = {
   'about.security': 'Sekuriteit',
   'about.biometric': 'Biometriese Verifikasie',
   'about.madeWith': 'Gemaak met toewyding vir fiksheid-entoesiaste wêreldwyd',
+
+  // Dashboard extras
+  'dashboard.stepsToday': 'Stappe',
+  'dashboard.activeMin': 'Aktiewe min',
+  'dashboard.completionRate': 'Voltooiing',
+  'dashboard.updatesTitle': 'Opdaterings Kom Binnekort',
+  'dashboard.updatesDesc': 'Sosiale kenmerke, draagbare toestelsinc, en KI-Professor is op pad.',
+
+  // Exercises screen
+  'exercises.library': 'Oefening Biblioteek',
+  'exercises.searchPlaceholder': 'Soek oefeninge…',
+  'exercises.filters': 'Filters',
+  'exercises.difficulty': 'Moeilikheid',
+  'exercises.equipment': 'Toerusting',
+  'exercises.clearFilters': 'Vee Filters Uit',
+  'exercises.beginner': 'Beginner',
+  'exercises.intermediate': 'Intermediêr',
+  'exercises.advanced': 'Gevorderd',
+  'exercises.bodyweight': 'Liggaamsgewig',
+  'exercises.minimal': 'Minimaal',
+  'exercises.playground': 'Speelgrond',
+  'exercises.of': 'van',
+  'exercises.results': 'oefeninge',
+  'exercises.noResults': 'Geen oefeninge pas by jou filters nie',
+  'exercises.adjustFilters': 'Probeer jou soek of filters aanpas',
+  'exercises.loading': 'Laai oefeninge…',
+  'exercises.loadFailed': 'Kon nie oefeninge laai nie',
+
+  // Analytics
+  'analytics.title': 'Analise',
+  'analytics.subtitle': 'Jou fiksheid-insigte',
+  'analytics.totalWorkouts': 'Totale Oefensessies',
+  'analytics.totalXP': 'Totale XP',
+  'analytics.totalSteps': 'Totale Stappe',
+  'analytics.dayStreak': 'Dag Reeks',
+  'analytics.consistency': 'Konsekwentheid',
+  'analytics.weekly': 'Weekliks',
+  'analytics.monthly': 'Maandeliks',
+  'analytics.thisWeek': 'Hierdie Week',
+  'analytics.thisMonth': 'Hierdie Maand',
+  'analytics.workoutFrequency': 'Oefening Frekwensie',
+  'analytics.xpProgress': 'XP-Vordering',
+  'analytics.muscleHeatmap': 'Spier Hitteprent',
+  'analytics.personalRecords': 'Persoonlike Rekords',
+  'analytics.streakConsistency': 'Reeks & Konsekwentheid',
+  'analytics.stepsJogging': 'Stappe & Drafstap',
+  'analytics.avgPerWorkout': 'Gem. per Oefening',
+  'analytics.completeWorkoutsForRecords': 'Voltooi oefeninge om jou rekords te sien',
+  'analytics.active': 'Aktief',
+  'analytics.rest': 'Rus',
+  'analytics.high': 'Hoog',
+  'analytics.med': 'Middel',
+  'analytics.low': 'Laag',
+  'analytics.avg': 'Gem.',
+  'analytics.max': 'Maks',
+  'analytics.longest': 'Langste',
+  'analytics.runs': 'Hardlope',
+  'analytics.distance': 'Afstand',
+  'analytics.avgPace': 'Gem. Tempo',
+  'analytics.longestRun': 'Langste Hardloop',
+
+  // Health dashboard
+  'health.stepsLast7Days': 'Stappe (Laaste 7 Dae)',
+
+  // Profile extras
+  'profile.totalSteps': 'Stappe',
+  'profile.totalDistance': 'Afstand',
+  'profile.lastJog': 'Laaste Drafstap',
+  'profile.biometricLock': 'Biometriese Slot',
+  'profile.biometricActive': 'Aktief — sessie beskerm',
+  'profile.biometricAvailable': 'Beskikbaar — tik om te aktiveer',
+  'profile.biometricUnavailable': 'Nie beskikbaar op hierdie toestel nie',
+  'profile.biometricVerified': 'Geverifieer',
+  'profile.consentAccepted': 'Aanvaar',
+  'profile.security': 'Sekuriteit',
+  'profile.notificationsAction.pickTime': 'Kies Tyd',
+
+  // FitMind reader extras
+  'fitmind.reader.openReader': 'Maak Leser Oop',
+  'fitmind.reader.binaryModeTitle': 'Binêre Inhoud',
+  'fitmind.reader.binaryModeBody': 'Hierdie lêer bevat binêre inhoud wat nie as teks vertoon kan word nie.',
+
+  // Backups
+  'backup.title': 'Rugsteun & Herstel',
+  'backup.createBackup': 'Skep Rugsteun',
+  'backup.availableBackups': 'Beskikbare Rugsteune',
+  'backup.noBackups': 'Geen rugsteune nog nie.',
+  'backup.helperText': 'Skep \'n geënkripteerde rugsteunlêer van jou plaaslike databasis.',
+  'backup.optionalPassphrase': 'Opsionele wagwoord',
+  'backup.working': 'Besig…',
+  'backup.created': 'Rugsteun geskep',
+  'backup.failed': 'Rugsteun het misluk',
+  'backup.restoreConfirm': 'Herstel rugsteun?',
+  'backup.restoreWarning': 'Dit sal jou plaaslike databasis vervang.',
+  'backup.restoreComplete': 'Herstel voltooi',
+  'backup.restoreFailed': 'Herstel het misluk',
+  'backup.deleteConfirm': 'Verwyder rugsteun?',
+  'backup.deleteWarning': 'Dit kan nie ongedaan gemaak word nie.',
+  'backup.deleteFailed': 'Verwyder het misluk',
+  'backup.cloudBackups': 'Wolk Rugsteune',
+  'backup.uploadBackup': 'Laai Rugsteun Op',
+  'backup.uploaded': 'Opgelaai',
+  'backup.uploadFailed': 'Oplaai het misluk',
+  'backup.noCloudBackups': 'Geen wolk rugsteune nog nie.',
+  'backup.cloudHelper': 'Berg die geënkripteerde rugsteun op jou Fase 2-bediener.',
 };
 
 const zu: Record<string, string> = {
@@ -1137,6 +1389,33 @@ const zu: Record<string, string> = {
   'common.hours': 'amahora',
   'common.days': 'izinsuku',
   'common.weeks': 'amasonto',
+
+  // Dashboard extras
+  'dashboard.stepsToday': 'Izinyathelo',
+  'dashboard.activeMin': 'Imizuzu esebenzayo',
+  'dashboard.completionRate': 'Ukuqedela',
+  'dashboard.updatesTitle': 'Izibuyekezo Ziyeza Maduze',
+  'dashboard.updatesDesc': 'Izici zenhlalo, ukusebenzisana namawashi, noSolwazi we-AI kusendleleni.',
+
+  // Exercises screen
+  'exercises.library': 'Umtapo Wokuzivocavoca',
+  'exercises.searchPlaceholder': 'Sesha ukuzivocavoca…',
+  'exercises.filters': 'Izihluzi',
+  'exercises.difficulty': 'Ubunzima',
+  'exercises.equipment': 'Amathuluzi',
+  'exercises.clearFilters': 'Sula Izihluzi',
+  'exercises.noResults': 'Akukho kuzivocavoca okufanayo nezihluzi zakho',
+
+  // Analytics
+  'analytics.title': 'Ukuhlaziya',
+  'analytics.totalWorkouts': 'Izivocavoco Eziphelele',
+  'analytics.totalSteps': 'Izinyathelo Eziphelele',
+  'analytics.dayStreak': 'Uchungechunge Lwezinsuku',
+
+  // Backups
+  'backup.title': 'Ukugcina & Ukubuyisela',
+  'backup.createBackup': 'Dala Ukugcina',
+  'backup.noBackups': 'Akukho kugcina okwamanje.',
 };
 
 const xh: Record<string, string> = {
@@ -1416,6 +1695,32 @@ const es: Record<string, string> = {
   'common.hours': 'horas',
   'common.days': 'días',
   'common.weeks': 'semanas',
+
+  // Dashboard extras
+  'dashboard.stepsToday': 'Pasos',
+  'dashboard.activeMin': 'Min activos',
+  'dashboard.completionRate': 'Completado',
+  'dashboard.updatesTitle': 'Actualizaciones Próximamente',
+  'dashboard.updatesDesc': 'Funciones sociales, sincronización con wearables y Profesor IA están en camino.',
+
+  // Exercises
+  'exercises.library': 'Biblioteca de Ejercicios',
+  'exercises.searchPlaceholder': 'Buscar ejercicios…',
+  'exercises.filters': 'Filtros',
+  'exercises.difficulty': 'Dificultad',
+  'exercises.equipment': 'Equipamiento',
+  'exercises.clearFilters': 'Limpiar Filtros',
+  'exercises.noResults': 'Ningún ejercicio coincide con tus filtros',
+
+  // Analytics
+  'analytics.title': 'Análisis',
+  'analytics.totalWorkouts': 'Total de Entrenamientos',
+  'analytics.totalSteps': 'Total de Pasos',
+
+  // Backups
+  'backup.title': 'Respaldo y Restauración',
+  'backup.createBackup': 'Crear Respaldo',
+  'backup.noBackups': 'Aún no hay respaldos.',
 };
 
 const fr: Record<string, string> = {

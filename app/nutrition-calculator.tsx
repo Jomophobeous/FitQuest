@@ -4,7 +4,7 @@
  * and view nutritional totals (protein, estimated calories).
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 
 import {
   View,
@@ -35,6 +35,7 @@ import Animated, {
 import { useTheme } from '../src/context/ThemeContext';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import { useLanguage } from '../src/context/LanguageContext';
+import { getAppState, setAppState } from '../src/database/service';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import {
   REGIONAL_FOOD_DATABASE,
@@ -116,6 +117,37 @@ export default function NutritionCalculatorScreen() {
   const [categoryFilter, setCategoryFilter] = useState<RegionalFoodCategory | 'all'>('all');
   const [mealEntries, setMealEntries] = useState<MealEntry[]>([]);
   const [showSearch, setShowSearch] = useState(true);
+  const hasMounted = useRef(false);
+
+  // Load persisted meals on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await getAppState('nutrition.todayMeals');
+        if (saved) {
+          const parsed = JSON.parse(saved) as { date: string; entries: MealEntry[] };
+          // Only restore if same day
+          if (parsed.date === new Date().toISOString().split('T')[0]) {
+            setMealEntries(parsed.entries);
+          }
+        }
+      } catch (e) {
+        // No saved data or parse error — start fresh
+      } finally {
+        hasMounted.current = true;
+      }
+    })();
+  }, []);
+
+  // Persist meals to SQLite whenever they change
+  useEffect(() => {
+    if (!hasMounted.current) return;
+    const payload = JSON.stringify({
+      date: new Date().toISOString().split('T')[0],
+      entries: mealEntries,
+    });
+    setAppState('nutrition.todayMeals', payload).catch(() => {});
+  }, [mealEntries]);
 
   // Search & filter foods
   const filteredFoods = useMemo(() => {

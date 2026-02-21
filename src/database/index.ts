@@ -23,15 +23,25 @@ import { seedExternalExercises } from './external-seed';
 import { encryptedDB } from '../security/EncryptedDatabase';
 
 let initialized = false;
+let initPromise: Promise<void> | null = null;
 
 /**
  * Initialize the database (call once at app start)
  * Creates core tables + new module tables (FitMind, encrypted, health)
+ * Uses promise-based mutex to prevent concurrent initialization
  */
 export async function initializeDatabase(): Promise<void> {
+  // If already initialized, return immediately
   if (initialized) return;
+  
+  // If initialization is in progress, wait for it
+  if (initPromise) return initPromise;
+  
+  // Start initialization and store the promise
+  initPromise = (async () => {
+    if (initialized) return; // Double-check after acquiring lock
 
-  try {
+    try {
     const db = await getDatabase();
     await seedExercises();
     
@@ -73,6 +83,10 @@ export async function initializeDatabase(): Promise<void> {
     console.log('[FitQuest DB] Full database initialized (core + FitMind + encrypted)');
   } catch (error) {
     console.error('Failed to initialize database:', error);
+    initPromise = null; // Reset promise on error to allow retry
     throw error;
   }
+  })();
+
+  return initPromise;
 }

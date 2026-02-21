@@ -70,16 +70,66 @@ export default function ExercisesScreen() {
 
   const [exercises, setExercises] = useState<ExerciseWithDetails[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<ExerciseWithDetails[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
+  const [selectedCategories, setSelectedCategories] = useState<Set<Category | 'all'>>(new Set(['all']));
+  const [selectedDifficulties, setSelectedDifficulties] = useState<Set<string>>(new Set());
+  const [selectedEquipment, setSelectedEquipment] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<ExerciseWithDetails | null>(null);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const DIFFICULTIES = [
+    { key: 'beginner', label: t('exercises.beginner') || 'Beginner', color: theme.colors.accent },
+    { key: 'intermediate', label: t('exercises.intermediate') || 'Intermediate', color: theme.colors.warning },
+    { key: 'advanced', label: t('exercises.advanced') || 'Advanced', color: theme.colors.error },
+  ];
+
+  const EQUIPMENT = [
+    { key: 'none', label: t('exercises.bodyweight') || 'Bodyweight', icon: 'human' as const },
+    { key: 'minimal', label: t('exercises.minimal') || 'Minimal', icon: 'dumbbell' as const },
+    { key: 'playground', label: t('exercises.playground') || 'Playground', icon: 'weight-lifter' as const },
+  ];
+
+  const toggleCategory = (key: Category | 'all') => {
+    setSelectedCategories(prev => {
+      const next = new Set(prev);
+      if (key === 'all') return new Set(['all']);
+      next.delete('all');
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      return next.size === 0 ? new Set(['all'] as (Category | 'all')[]) : next;
+    });
+  };
+
+  const toggleDifficulty = (key: string) => {
+    setSelectedDifficulties(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      return next;
+    });
+  };
+
+  const toggleEquipment = (key: string) => {
+    setSelectedEquipment(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      return next;
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSelectedCategories(new Set(['all']));
+    setSelectedDifficulties(new Set());
+    setSelectedEquipment(new Set());
+    setSearchQuery('');
+  };
+
+  const activeFilterCount = (selectedCategories.has('all') ? 0 : selectedCategories.size) + selectedDifficulties.size + selectedEquipment.size;
 
   useEffect(() => { if (isReady) loadExercises(); }, [isReady]);
-  useEffect(() => { filterExercises(); }, [exercises, selectedCategory, searchQuery]);
+  useEffect(() => { filterExercises(); }, [exercises, selectedCategories, selectedDifficulties, selectedEquipment, searchQuery]);
 
   const loadExercises = async () => {
     try {
@@ -93,7 +143,7 @@ export default function ExercisesScreen() {
       }
     } catch (error) {
       console.error('[Exercises] Failed to load:', error);
-      Alert.alert('Error', 'Failed to load exercises. Please restart the app.');
+      Alert.alert(t('common.error') || 'Error', t('exercises.loadFailed') || 'Failed to load exercises. Please restart the app.');
     } finally {
       setLoading(false);
     }
@@ -101,9 +151,19 @@ export default function ExercisesScreen() {
 
   const filterExercises = () => {
     let filtered = [...exercises];
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(ex => ex.category === selectedCategory);
+    // Category filter (multi-select)
+    if (!selectedCategories.has('all')) {
+      filtered = filtered.filter(ex => selectedCategories.has(ex.category));
     }
+    // Difficulty filter (multi-select)
+    if (selectedDifficulties.size > 0) {
+      filtered = filtered.filter(ex => selectedDifficulties.has(ex.difficulty));
+    }
+    // Equipment filter (multi-select)
+    if (selectedEquipment.size > 0) {
+      filtered = filtered.filter(ex => selectedEquipment.has(ex.equipment_level));
+    }
+    // Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(ex =>
@@ -175,7 +235,7 @@ export default function ExercisesScreen() {
               <View style={styles.bottomTag}>
                 <MaterialCommunityIcons name="dumbbell" size={12} color={theme.colors.textMuted} />
                 <Text style={[styles.bottomTagText, { color: theme.colors.textMuted }]}>
-                  {item.equipment_level === 'none' ? 'Bodyweight' : item.equipment_level}
+                  {item.equipment_level === 'none' ? (t('exercises.bodyweight') || 'Bodyweight') : item.equipment_level}
                 </Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
@@ -195,7 +255,7 @@ export default function ExercisesScreen() {
             entering={FadeIn.delay(300).duration(150)}
             style={[styles.loadingText, { color: theme.colors.textSecondary }]}
           >
-            Loading exercise library...
+            {t('exercises.loading') || 'Loading exercise library...'}
           </Animated.Text>
         </View>
       </SafeAreaView>
@@ -216,10 +276,27 @@ export default function ExercisesScreen() {
             },
           ]}
         >
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Library</Text>
-          <Text style={[styles.headerCount, { color: theme.colors.textSecondary }]}> 
-            {exercises.length} exercises
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View>
+              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('exercises.library') || 'Library'}</Text>
+              <Text style={[styles.headerCount, { color: theme.colors.textSecondary }]}> 
+                {filteredExercises.length} {t('exercises.of') || 'of'} {exercises.length} {t('library.exercises') || 'exercises'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setShowFilters(!showFilters)}
+              style={[styles.filterToggle, {
+                backgroundColor: activeFilterCount > 0 ? theme.colors.accent + '18' : theme.colors.surfaceVariant,
+                borderColor: activeFilterCount > 0 ? theme.colors.accent : theme.colors.border,
+              }]}
+            >
+              <MaterialCommunityIcons name="filter-variant" size={18} color={activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary} />
+              <Text style={{ color: activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary, fontSize: 13, fontWeight: '600', marginLeft: 4 }}>
+                {t('exercises.filters') || 'Filters'}{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              </Text>
+              <MaterialCommunityIcons name={showFilters ? 'chevron-up' : 'chevron-down'} size={16} color={theme.colors.textMuted} />
+            </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
 
@@ -235,7 +312,7 @@ export default function ExercisesScreen() {
           <MaterialCommunityIcons name="magnify" size={20} color={searchFocused ? theme.colors.accent : theme.colors.textMuted} />
           <TextInput
             style={[styles.searchInput, { color: theme.colors.text }]}
-            placeholder="Search exercises, muscles..."
+            placeholder={t('exercises.searchPlaceholder') || 'Search exercises, muscles...'}
             placeholderTextColor={theme.colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -250,7 +327,7 @@ export default function ExercisesScreen() {
         </View>
       </Animated.View>
 
-      {/* ── CATEGORY PILLS ── */}
+      {/* ── CATEGORY PILLS (always visible) ── */}
       <Animated.View entering={FadeInDown.delay(150).duration(150)}>
         <FlatList
           horizontal
@@ -259,10 +336,10 @@ export default function ExercisesScreen() {
           keyExtractor={(item) => item.key}
           contentContainerStyle={styles.categoryList}
           renderItem={({ item }) => {
-            const isSelected = selectedCategory === item.key;
+            const isSelected = selectedCategories.has(item.key);
             return (
               <TouchableOpacity
-                onPress={() => setSelectedCategory(item.key)}
+                onPress={() => toggleCategory(item.key)}
                 style={[
                   styles.categoryPill,
                   {
@@ -278,7 +355,7 @@ export default function ExercisesScreen() {
                   color={isSelected ? theme.colors.onAccent : theme.colors.textSecondary}
                 />
                 <Text style={[styles.categoryLabel, { color: isSelected ? theme.colors.onAccent : theme.colors.text }]}>
-                  {item.label}
+                  {t(`exercises.category.${item.key}`) || item.label}
                 </Text>
               </TouchableOpacity>
             );
@@ -286,10 +363,64 @@ export default function ExercisesScreen() {
         />
       </Animated.View>
 
+      {/* ── EXPANDED FILTERS (difficulty + equipment) ── */}
+      {showFilters && (
+        <Animated.View entering={FadeInDown.duration(200)} style={[styles.expandedFilters, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          {/* Difficulty */}
+          <Text style={[styles.filterSectionLabel, { color: theme.colors.textSecondary }]}>{t('exercises.difficulty') || 'Difficulty'}</Text>
+          <View style={styles.filterChipsRow}>
+            {DIFFICULTIES.map(d => {
+              const isOn = selectedDifficulties.has(d.key);
+              return (
+                <TouchableOpacity
+                  key={d.key}
+                  onPress={() => toggleDifficulty(d.key)}
+                  style={[styles.filterChip, {
+                    backgroundColor: isOn ? d.color + '20' : theme.colors.surfaceVariant,
+                    borderColor: isOn ? d.color : theme.colors.border,
+                  }]}
+                >
+                  <View style={[styles.filterDot, { backgroundColor: d.color }]} />
+                  <Text style={{ color: isOn ? d.color : theme.colors.text, fontSize: 13, fontWeight: '600' }}>{d.label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Equipment */}
+          <Text style={[styles.filterSectionLabel, { color: theme.colors.textSecondary, marginTop: 12 }]}>{t('exercises.equipment') || 'Equipment'}</Text>
+          <View style={styles.filterChipsRow}>
+            {EQUIPMENT.map(eq => {
+              const isOn = selectedEquipment.has(eq.key);
+              return (
+                <TouchableOpacity
+                  key={eq.key}
+                  onPress={() => toggleEquipment(eq.key)}
+                  style={[styles.filterChip, {
+                    backgroundColor: isOn ? theme.colors.accent + '20' : theme.colors.surfaceVariant,
+                    borderColor: isOn ? theme.colors.accent : theme.colors.border,
+                  }]}
+                >
+                  <MaterialCommunityIcons name={eq.icon} size={14} color={isOn ? theme.colors.accent : theme.colors.textSecondary} />
+                  <Text style={{ color: isOn ? theme.colors.accent : theme.colors.text, fontSize: 13, fontWeight: '600', marginLeft: 4 }}>{eq.label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Clear all */}
+          {activeFilterCount > 0 && (
+            <TouchableOpacity onPress={clearAllFilters} style={{ marginTop: 12, alignSelf: 'flex-end' }}>
+              <Text style={{ color: theme.colors.error, fontSize: 13, fontWeight: '600' }}>{t('exercises.clearFilters') || 'Clear all filters'}</Text>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
+      )}
+
       {/* ── RESULTS COUNT ── */}
       <Animated.View entering={FadeIn.delay(200).duration(150)} style={styles.resultsRow}>
         <Text style={[styles.resultsText, { color: theme.colors.textSecondary }]}>
-          {filteredExercises.length} result{filteredExercises.length !== 1 ? 's' : ''}
+          {filteredExercises.length} {t('exercises.results') || 'result'}{filteredExercises.length !== 1 ? 's' : ''}
         </Text>
       </Animated.View>
 
@@ -306,9 +437,9 @@ export default function ExercisesScreen() {
         ListEmptyComponent={
           <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.emptyState}>
             <MaterialCommunityIcons name="magnify-close" size={48} color={theme.colors.textMuted} />
-            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>No exercises found</Text>
+            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('exercises.noResults') || 'No exercises found'}</Text>
             <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
-              Try adjusting your search or filters
+              {t('exercises.adjustFilters') || 'Try adjusting your search or filters'}
             </Text>
           </Animated.View>
         }
@@ -403,5 +534,47 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+  },
+  filterToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 2,
+  },
+  expandedFilters: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  filterSectionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  filterChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  filterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 4,
+  },
+  filterDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });

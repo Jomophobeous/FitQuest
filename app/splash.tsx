@@ -57,12 +57,13 @@ export default function Splash() {
     progressWidth.value = withDelay(300, withTiming(100, { duration: 1500, easing: Easing.inOut(Easing.ease) }));
 
     // Auth check + navigate
+    let mounted = true;
     const checkAuth = async () => {
       try {
         // Give animations time to play
         await new Promise(res => setTimeout(res, 1800));
 
-        if (hasNavigated.current) return;
+        if (!mounted || hasNavigated.current) return;
 
         // Wait for database to be ready
         if (!isReady) return;
@@ -71,7 +72,7 @@ export default function Splash() {
 
         if (!userProfile) {
           // No profile → first-time user
-          router.replace('/onboarding');
+          if (mounted) router.replace('/onboarding');
           return;
         }
 
@@ -81,6 +82,8 @@ export default function Splash() {
         const bioCapability = await bioAuth.initialize();
         const bioEnabled = bioCapability.isAvailable && (await bioAuth.isBiometricEnabled());
 
+        if (!mounted) return;
+
         if (hasLocalAuth || bioEnabled) {
           // Auth configured — send to login for biometric/passcode verification
           router.replace('/login');
@@ -89,7 +92,7 @@ export default function Splash() {
           router.replace('/dashboard');
         }
       } catch {
-        if (!hasNavigated.current) {
+        if (mounted && !hasNavigated.current) {
           hasNavigated.current = true;
           router.replace('/login');
         }
@@ -97,6 +100,10 @@ export default function Splash() {
     };
 
     checkAuth();
+
+    return () => {
+      mounted = false;
+    };
   }, [isReady, userProfile]);
 
   const logoAnimStyle = useAnimatedStyle(() => ({

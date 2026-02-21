@@ -83,7 +83,7 @@ export default function FederationHubScreen() {
     setBusy(true);
     try {
       await registerFederationIntegration({
-        id: `int_${Date.now()}`,
+        id: `int_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
         name,
         provider,
         tier: 'CERTIFIED',

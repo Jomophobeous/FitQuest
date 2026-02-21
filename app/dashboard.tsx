@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,14 +17,18 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { spacing } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../src/components/ThemedText';
 import { SkeletonDashboard } from '../src/components/ui/Skeleton';
-import { getUserProgress, getMuscleFatigue, getRecentSessions, getStreak } from '../src/database/service';
+import { getUserProgress, getMuscleFatigue, getRecentSessions, getStreak, getDailyStepsForDate, getStepHistory, getAppState } from '../src/database/service';
+import { getXPData } from '../src/services/xpService';
+import { getCurrentRank } from '../src/services/rankingService';
+import { RankBadge } from '../src/components/RankDisplay';
+import { useDataSync } from '../src/services/dataSyncService';
 import {
   GlassCard,
   WeekCalendar,
@@ -61,7 +65,15 @@ export default function DashboardScreen() {
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
+  const [todaySteps, setTodaySteps] = useState(0);
+  const [todayActiveMinutes, setTodayActiveMinutes] = useState(0);
+  const [completionRate, setCompletionRate] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [todayExercisesDone, setTodayExercisesDone] = useState(0);
+  const [todayExercisesTarget, setTodayExercisesTarget] = useState(0);
+  const [realLevel, setRealLevel] = useState(1);
+  const [realXP, setRealXP] = useState(0);
+  const [displayName, setDisplayName] = useState<string>('Athlete');
 
   // Animated values
   const headerOpacity = useSharedValue(0);
@@ -70,14 +82,28 @@ export default function DashboardScreen() {
     headerOpacity.value = withTiming(1, { duration: 300 });
   }, []);
 
+  // Reload data every time screen gains focus (e.g. after completing a workout)
+  useFocusEffect(
+    useCallback(() => {
+      loadProgress();
+    }, [])
+  );
 
-  useEffect(() => {
-    loadProgress();
-  }, []);
+  // Also reload when data sync events fire (workout completed, XP awarded, etc.)
+  useDataSync(
+    ['workout_completed', 'xp_awarded', 'steps_updated', 'streak_updated', 'level_up'],
+    () => { loadProgress(); }
+  );
 
   const loadProgress = async () => {
     console.log('[Dashboard] loadProgress:start');
     try {
+      // Load user's display name first
+      const savedName = await getAppState('user.display_name');
+      if (savedName) {
+        setDisplayName(savedName);
+      }
+
       const progress = await getUserProgress();
       setUserProgress(progress);
       console.log('[Dashboard] Progress loaded', {
@@ -131,8 +157,8 @@ export default function DashboardScreen() {
             date: dateLabel,
             duration: latest.duration_minutes || 0,
             caloriesBurned: latest.completed_exercises > 0
-              ? Math.round((latest.duration_minutes || 0) * 6.5)
-              : 0, // No calories if no exercises completed
+              ? Math.round((latest.duration_minutes || 0) * 5 + (latest.completed_exercises || 0) * 8)
+              : 0, // MET-based: ~5 kcal/min moderate exercise + 8 kcal per exercise effort
             exercises: latest.completed_exercises || 0,
             icon: 'arm-flex' as any,
           });
@@ -142,8 +168,25 @@ export default function DashboardScreen() {
             const d = new Date(s.started_at);
             return d.toDateString() === new Date().toDateString() && (s.completed_exercises || 0) > 0;
           });
-          setTotalCalories(todaySessions.reduce((sum, s) => sum + Math.round((s.duration_minutes || 0) * 6.5), 0));
+          // MET-based calorie estimate: ~5 kcal/min moderate exercise + 8 kcal per exercise effort
+          setTotalCalories(todaySessions.reduce((sum, s) => sum + Math.round((s.duration_minutes || 0) * 5 + (s.completed_exercises || 0) * 8), 0));
           setTotalMinutes(todaySessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0));
+
+          // Today's exercise progress (for the main progress ring)
+          const todayDone = todaySessions.reduce((sum, s) => sum + (s.completed_exercises || 0), 0);
+          const todayTarget = todaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
+          // Also count sessions that haven't started yet (target from all today's sessions)
+          const allTodaySessions = sessions.filter(s => {
+            const d = new Date(s.started_at);
+            return d.toDateString() === new Date().toDateString();
+          });
+          const fullTarget = allTodaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
+          setTodayExercisesDone(todayDone);
+          setTodayExercisesTarget(Math.max(fullTarget, todayTarget));
+
+          // Calculate completion rate from all loaded sessions
+          const completedCount = sessions.filter(s => s.completed_at).length;
+          setCompletionRate(sessions.length > 0 ? Math.round((completedCount / sessions.length) * 100) : 0);
 
           // Collect workout dates for week calendar
           const dates = sessions.map(s => s.started_at.split('T')[0]);
@@ -151,6 +194,27 @@ export default function DashboardScreen() {
         }
       } catch (e) {
         console.log('[Dashboard] No workout sessions yet');
+      }
+
+      // Load today's step count
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const stepsData = await getDailyStepsForDate('user_local_001', today);
+        if (stepsData) {
+          setTodaySteps(stepsData.steps);
+          setTodayActiveMinutes(stepsData.active_minutes);
+        }
+      } catch (e) {
+        console.log('[Dashboard] No step data yet');
+      }
+
+      // Load real XP & level from xpService (persisted in app_state)
+      try {
+        const xpData = await getXPData();
+        setRealLevel(xpData.level);
+        setRealXP(xpData.totalXP);
+      } catch (e) {
+        console.log('[Dashboard] XP data not available');
       }
     } catch (error) {
       console.error('[Dashboard] Failed to load progress:', error);
@@ -182,8 +246,12 @@ export default function DashboardScreen() {
   const streak = userProgress?.current_streak ?? 0;
   const totalWorkouts = userProgress?.total_workouts ?? 0;
   const weeklyXP = userProgress?.weekly_xp ?? 0;
-  const todayProgress = userProgress ? Math.min(1, (userProgress.weekly_xp || 0) / 1000) : 0;
-  const level = userProgress?.level ?? 1;
+  // Today's progress: based on actual exercises completed today (not weekly XP)
+  // If no workouts today, check if any minutes/steps activity exists for a small baseline
+  const todayProgress = todayExercisesTarget > 0
+    ? Math.min(1, todayExercisesDone / todayExercisesTarget)
+    : (totalMinutes > 0 ? Math.min(1, totalMinutes / 30) : 0); // fallback: 30min as full goal
+  const level = realLevel;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -207,7 +275,7 @@ export default function DashboardScreen() {
                   {t('dashboard.welcomeBack') || 'Welcome back'}
                 </ThemedText>
                 <ThemedText variant="h2" color="primary" style={styles.heroTitle}>
-                  {t('tab.home')}
+                  {displayName}
                 </ThemedText>
               </View>
               {/* Stats row: Numbers visually heavier than labels */}
@@ -217,11 +285,10 @@ export default function DashboardScreen() {
                   <ThemedText variant="caption" color="muted">🔥</ThemedText>
                 </View>
                 <View style={[styles.statPill, { backgroundColor: theme.colors.accent + '15' }]}>
-                  <ThemedText variant="bodySmall" weight="800" style={[styles.statValue, { color: theme.colors.accent }]}>{level}</ThemedText>
-                  <ThemedText variant="caption" color="muted">{t('dashboard.levelShort')}</ThemedText>
+                  <RankBadge level={level} size="sm" />
                 </View>
                 <View style={[styles.statPill, { backgroundColor: theme.colors.surfaceVariant }] }>
-                  <ThemedText variant="bodySmall" weight="800" style={[styles.statValue, { color: theme.colors.text }]}>{weeklyXP}</ThemedText>
+                  <ThemedText variant="bodySmall" weight="800" style={[styles.statValue, { color: theme.colors.text }]}>{realXP}</ThemedText>
                   <ThemedText variant="caption" color="muted">{t('dashboard.xp')}</ThemedText>
                 </View>
               </View>
@@ -332,6 +399,35 @@ export default function DashboardScreen() {
           workoutDates={workoutDates}
           onDatePress={setSelectedDate}
         />
+
+        {/* ══════════════════════════════════════════════════════════════════
+            DAILY ACTIVITY STATS — Steps, Active Mins, Completion Rate
+        ══════════════════════════════════════════════════════════════════ */}
+        <Animated.View entering={FadeInUp.delay(250).duration(150)}>
+          <View style={styles.dailyStatsRow}>
+            <View style={[styles.dailyStatCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
+              <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: 4 }}>
+                {todaySteps > 0 ? todaySteps.toLocaleString() : '—'}
+              </ThemedText>
+              <ThemedText variant="caption" color="muted">{t('dashboard.stepsToday') || 'Steps'}</ThemedText>
+            </View>
+            <View style={[styles.dailyStatCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
+              <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: 4 }}>
+                {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '—'}
+              </ThemedText>
+              <ThemedText variant="caption" color="muted">{t('dashboard.activeMin') || 'Active min'}</ThemedText>
+            </View>
+            <View style={[styles.dailyStatCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
+              <ThemedText variant="h4" weight="800" style={{ color: theme.colors.success, marginTop: 4 }}>
+                {completionRate > 0 ? `${completionRate}%` : '—'}
+              </ThemedText>
+              <ThemedText variant="caption" color="muted">{t('dashboard.completionRate') || 'Completion'}</ThemedText>
+            </View>
+          </View>
+        </Animated.View>
 
         {/* ══════════════════════════════════════════════════════════════════
             PRIORITY 3: LAST WORKOUT - Summary only (reduced)
@@ -452,6 +548,20 @@ export default function DashboardScreen() {
 
         {/* ── LIVE STATUS (Minimal) ── */}
         <Animated.View entering={FadeInUp.delay(400).duration(150)}>
+          <View style={[styles.updatesBanner, { backgroundColor: theme.colors.accent + '10', borderColor: theme.colors.accent + '25' }]}>
+            <MaterialCommunityIcons name="rocket-launch-outline" size={18} color={theme.colors.accent} />
+            <View style={{ flex: 1 }}>
+              <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.accent }}>
+                {t('dashboard.updatesTitle') || 'Updates Coming Soon'}
+              </ThemedText>
+              <ThemedText variant="caption" color="muted">
+                {t('dashboard.updatesDesc') || 'Social features, wearable sync, and AI Professor are on the way.'}
+              </ThemedText>
+            </View>
+          </View>
+        </Animated.View>
+
+        <Animated.View entering={FadeInUp.delay(450).duration(150)}>
           <View style={styles.liveCard}>
             <PulseDot color={theme.colors.success} size={6} active={true} />
             <ThemedText variant="caption" color="muted" style={styles.liveText}>
@@ -673,6 +783,35 @@ const styles = StyleSheet.create({
   liveText: { 
     fontSize: 11, 
     fontWeight: '500',
+  },
+
+  // ── DAILY ACTIVITY STATS ──
+  dailyStatsRow: {
+    flexDirection: 'row',
+    gap: spacing[2],
+    paddingHorizontal: spacing[4],
+    marginTop: spacing[4],
+    marginBottom: spacing[2],
+  },
+  dailyStatCard: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: spacing[3],
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+
+  // ── UPDATES BANNER ──
+  updatesBanner: {
+    marginHorizontal: spacing[4],
+    marginTop: spacing[4],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
   },
 
   // ── EXPLORE GRID (2-column) ──

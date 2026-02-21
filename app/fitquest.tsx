@@ -196,11 +196,25 @@ function FitQuestScreenInner() {
   const [workoutRating, setWorkoutRating] = useState<number | null>(null);
 
   // Auto-trigger finish when workout reaches completed status
+  const finishTriggeredRef = useRef(false);
   useEffect(() => {
-    if (status === 'completed' && workout && !completionResult) {
-      handleFinish();
+    if (status === 'completed' && workout && !completionResult && !finishTriggeredRef.current) {
+      finishTriggeredRef.current = true;
+      // Ensure audio is fully stopped before processing completion
+      audioService.stop();
+      handleFinish().finally(() => {
+        finishTriggeredRef.current = false;
+      });
     }
   }, [status, workout, completionResult]);
+
+  // Stop audio whenever we leave in_progress state (safety net)
+  useEffect(() => {
+    if (status !== 'in_progress') {
+      audioService.stop();
+      setIsSpeaking(false);
+    }
+  }, [status]);
 
   // Auto-advance when rest timer completes (replaces setTimeout backup)
   useEffect(() => {
@@ -260,6 +274,10 @@ function FitQuestScreenInner() {
 
   const handleFinish = async () => {
     console.log('[FitQuest] handleFinish called — processing workout completion');
+    // Stop ALL audio immediately — narrator must not continue after workout ends
+    audioService.stop();
+    lastSpokenExerciseRef.current = null;
+    setIsSpeaking(false);
     const result = await finishWorkout();
     if (result) {
       console.log('[FitQuest] Workout finished successfully — showing completion screen');
@@ -755,11 +773,10 @@ function FitQuestScreenInner() {
                     completeExercise(5);
                     haptic('workoutComplete');
                     setShowConfetti(true);
-                    // Stop any ongoing narration, then play completion sound
+                    // Stop ALL narration immediately — no yapping on completion
                     audioService.stop();
-                    await audioService.playWorkoutComplete();
-                    // Stop completely after the completion message
-                    audioService.stop();
+                    // Light completion: just vibration, no voice (user requested instant silence)
+                    Vibration.vibrate([0, 100, 80, 100, 80, 200]);
                     console.log('[FitQuest] Last exercise completed — waiting for useEffect to trigger handleFinish');
                   } else {
                     // Show rest immediately, then advance after rest ends/skip
@@ -990,7 +1007,7 @@ const styles = StyleSheet.create({
 export default function FitQuestScreen() {
   const router = useRouter();
   return (
-    <ScreenErrorBoundary screenName="FitQuest" onGoBack={() => router.back()}>
+    <ScreenErrorBoundary screenName="FitQuest" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
       <FitQuestScreenInner />
     </ScreenErrorBoundary>
   );

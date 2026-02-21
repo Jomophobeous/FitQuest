@@ -47,8 +47,8 @@ const defaultState: SubscriptionState = {
 };
 
 const defaultOfferings: SubscriptionOfferings = {
-  monthly: { price: '$9.99', pricePerMonth: '$9.99', identifier: 'fitquest_monthly' },
-  annual: { price: '$79.99', pricePerMonth: '$6.67', identifier: 'fitquest_annual', savingsPercent: 33 },
+  monthly: { price: '$5.39', pricePerMonth: '$5.39', identifier: 'fitquest_monthly' },
+  annual: { price: '$53.99', pricePerMonth: '$4.50', identifier: 'fitquest_annual', savingsPercent: 17 },
 };
 
 // ============================================
@@ -154,7 +154,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     await manager.refresh();
   }, [manager]);
 
-  const hasAccess = manager?.hasAccess() ?? true;
+  const hasAccess = manager?.hasAccess() ?? false; // Default to false while loading
   const trialDaysRemaining = manager?.getTrialDaysRemaining() ?? 14;
 
   const value: SubscriptionContextType = {

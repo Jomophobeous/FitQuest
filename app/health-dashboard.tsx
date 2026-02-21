@@ -50,6 +50,7 @@ import { getHealthAdapter, initializeHealthIntegration, syncHealthData } from '.
 import { captureHealthError } from '../src/services/errorTelemetry';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useRouter } from 'expo-router';
+import { useDataSync } from '../src/services/dataSyncService';
 import {
   MetricRing,
   AlertCard,
@@ -236,6 +237,12 @@ function HealthDashboardScreenInner() {
   useEffect(() => {
     loadHealthData();
   }, [loadHealthData]);
+
+  // Subscribe to health data events from other screens
+  useDataSync('workout_completed', loadHealthData);
+  useDataSync('jog_completed', loadHealthData);
+  useDataSync('steps_updated', loadHealthData);
+  useDataSync('health_data_updated', loadHealthData);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -467,7 +474,7 @@ function HealthDashboardScreenInner() {
             <MetricRing
               value={healthData.steps}
               max={healthData.stepsGoal}
-              color={theme.colors.accent}
+              color={theme.colors.blue}
               icon="shoe-print"
               label={t('health.steps')}
               unit=""
@@ -525,7 +532,7 @@ function HealthDashboardScreenInner() {
           <Animated.View entering={FadeInDown.delay(400).duration(300)}>
             <SectionHeader title={t('health.stepsLast7Days')} />
             <GlassCard style={styles.trendCard}>
-              <TrendBar data={stepsTrend} color={theme.colors.accent} theme={theme} />
+              <TrendBar data={stepsTrend} color={theme.colors.blue} theme={theme} />
             </GlassCard>
           </Animated.View>
         )}
@@ -707,7 +714,7 @@ const styles = StyleSheet.create({
 export default function HealthDashboardScreen() {
   const router = useRouter();
   return (
-    <ScreenErrorBoundary screenName="Health Dashboard" onGoBack={() => router.back()}>
+    <ScreenErrorBoundary screenName="Health Dashboard" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
       <HealthDashboardScreenInner />
     </ScreenErrorBoundary>
   );

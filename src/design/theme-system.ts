@@ -17,18 +17,18 @@
 export const colorSystem = {
   dark: {
     // Base
-    background: '#0A0E17', // Matte black (primary background)
-    surface: '#121820', // Slightly elevated surface
-    surfaceVariant: '#1A1F2B', // Secondary surface (cards)
+    background: '#0A0E14', // Deep navy-black (premium depth)
+    surface: '#121821', // Elevated surface
+    surfaceVariant: '#1A2030', // Secondary surface (cards)
     
     // Text
-    text: '#F5F7FB', // Primary text (almost white)
-    textSecondary: '#BBC4D3', // Secondary text (lifted contrast)
-    textMuted: '#8C96A8', // Tertiary/meta text (lifted contrast)
+    text: '#F2F4F8', // Primary text (crisp white)
+    textSecondary: '#B0B8C8', // Secondary text
+    textMuted: '#7A849A', // Tertiary/meta text
     
     // Dividers
-    border: '#343C4B', // Hairline borders (clearer separation)
-    divider: '#2B3342', // Internal dividers
+    border: '#2A3245', // Hairline borders
+    divider: '#222B3D', // Internal dividers
     
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
@@ -61,18 +61,18 @@ export const colorSystem = {
   
   light: {
     // Base
-    background: '#F4F5F7', // Soft neutral gray (no pure white)
+    background: '#F5F6F8', // Soft cool gray
     surface: '#FFFFFF', // Primary surface (cards)
-    surfaceVariant: '#ECEEF2', // Secondary surface
+    surfaceVariant: '#EBEDF2', // Secondary surface
     
     // Text
-    text: '#121316', // Primary text (almost black)
-    textSecondary: '#4B4F58', // Secondary text
-    textMuted: '#6E7480', // Tertiary/meta text (clearer)
+    text: '#111318', // Primary text (near-black)
+    textSecondary: '#4A4F5C', // Secondary text
+    textMuted: '#6D7385', // Tertiary/meta text
     
     // Dividers
-    border: '#CDD3DC', // Hairline borders
-    divider: '#D9DEE6', // Internal dividers
+    border: '#D0D5DE', // Hairline borders
+    divider: '#DCE0E8', // Internal dividers
     
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
@@ -100,51 +100,51 @@ export const colorSystem = {
     onAccent: '#FFFFFF',
 
     // Chrome
-    overlay: 'rgba(0,0,0,0.65)',
+    overlay: 'rgba(0,0,0,0.60)',
   },
 
   blackGold: {
-    // Base — deep black with warm undertones
-    background: '#0D0D0D',
-    surface: '#1A1610',
-    surfaceVariant: '#242018',
+    // Base — pure black, zero warm tint for maximum contrast
+    background: '#09090B',
+    surface: '#141416',
+    surfaceVariant: '#1C1C1F',
 
-    // Text — warm parchment whites
-    text: '#F5F0E1',
-    textSecondary: '#C9BFA5',
-    textMuted: '#8A7E6B',
+    // Text — crisp platinum/silver (no warm parchment)
+    text: '#EDEDEF',
+    textSecondary: '#A1A1A6',
+    textMuted: '#6E6E76',
 
-    // Dividers — warm dark lines
-    border: '#3D3428',
-    divider: '#2E2820',
+    // Dividers — cool charcoal
+    border: '#2C2C30',
+    divider: '#222225',
 
-    // Single accent color — GOLD for all primary actions
-    accent: '#D4AF37',
+    // Single accent color — refined champagne gold (less saturated, more elegant)
+    accent: '#C9A84C',
 
-    // Semantic
-    error: '#C41E3A',
-    warning: '#E8A317',
-    success: '#D4AF37',
+    // Semantic — distinct colors, not all gold
+    error: '#B83240',
+    warning: '#D4963A',
+    success: '#C9A84C', // Use gold for success in blackGold theme (no green)
 
     // Backward compatibility aliases
-    accent2: '#E8A317',
-    accent3: '#D4AF37',
+    accent2: '#D4963A',
+    accent3: '#C9A84C', // Changed from green to gold
 
-    // Category accent colors — gold-tinted palette
-    purple: '#9B7FD4',
+    // Category accent colors — understated luxury palette
+    purple: '#9B86C7',
     indigo: '#7B7FCC',
-    pink: '#D4789B',
-    blue: '#5A9FD4',
-    orange: '#D49537',
-    skyBlue: '#5AB8D4',
+    pink: '#C77090',
+    blue: '#5A8FBF',
+    orange: '#C7924A',
+    skyBlue: '#5AADC7',
     purpleLight: '#B49AE0',
-    pinkLight: '#E099B8',
+    pinkLight: '#D499B0',
 
     // Contrast text on accent-colored (gold) surfaces
-    onAccent: '#0D0D0D',
+    onAccent: '#09090B',
 
     // Chrome
-    overlay: 'rgba(0,0,0,0.75)',
+    overlay: 'rgba(0,0,0,0.80)',
   },
 };
 

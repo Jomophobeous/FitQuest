@@ -244,6 +244,7 @@ export default function PaywallScreen() {
   const { t } = useLanguage();
   const router = useRouter();
   const { 
+    state: subscriptionState,
     trialDaysRemaining, 
     offerings,
     purchaseMonthly,
@@ -256,13 +257,14 @@ export default function PaywallScreen() {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [purchasing, setPurchasing] = useState(false);
 
-  // If user already has access, go back
+  // Only redirect if user is a PAID subscriber (not trial)
   useEffect(() => {
-    if (hasAccess && !subLoading) {
-      // Already subscribed — don't show paywall
-      router.back();
+    // Wait for loading to finish, then check if user is PAID subscriber
+    if (!subLoading && hasAccess && subscriptionState.status === 'ACTIVE') {
+      // Already paid subscriber — don't show paywall
+      router.canGoBack() ? router.back() : router.replace('/dashboard');
     }
-  }, [hasAccess, subLoading, router]);
+  }, [hasAccess, subLoading, subscriptionState.status, router]);
 
   const handleSubscribe = async () => {
     setPurchasing(true);
@@ -272,7 +274,7 @@ export default function PaywallScreen() {
         : await purchaseAnnual();
       
       if (success) {
-        router.back();
+        router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
     } finally {
       setPurchasing(false);
@@ -284,7 +286,7 @@ export default function PaywallScreen() {
     try {
       const state = await restorePurchases();
       if (state.status === 'ACTIVE' || state.status === 'TRIAL') {
-        router.back();
+        router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
     } finally {
       setPurchasing(false);
@@ -324,7 +326,7 @@ export default function PaywallScreen() {
       >
         {/* ── Close Button ── */}
         <Animated.View entering={FadeIn.duration(150)}>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.closeBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
             <MaterialCommunityIcons name="close" size={20} color={theme.colors.textMuted} />
           </TouchableOpacity>
         </Animated.View>
@@ -399,7 +401,7 @@ export default function PaywallScreen() {
               </View>
               <View style={styles.planPriceWrap}>
                 <Text style={styles.planPrice}>
-                  {offerings.annual?.price ?? '$79.99'}
+                  {offerings.annual?.price ?? '$53.99'}
                 </Text>
                 <Text style={styles.planPeriod}>{t('paywall.perYear')}</Text>
               </View>
@@ -433,7 +435,7 @@ export default function PaywallScreen() {
               </View>
               <View style={styles.planPriceWrap}>
                 <Text style={styles.planPrice}>
-                  {offerings.monthly?.price ?? '$9.99'}
+                  {offerings.monthly?.price ?? '$5.39'}
                 </Text>
                 <Text style={styles.planPeriod}>{t('paywall.perMonth')}</Text>
               </View>

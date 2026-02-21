@@ -15,11 +15,14 @@ import {
   Modal,
   Pressable,
   Alert,
+  Image,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as FileSystem from 'expo-file-system/legacy';
+import * as ImagePicker from 'expo-image-picker';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -35,12 +38,13 @@ import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
-import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment } from '../src/database/service';
-import { useRouter } from 'expo-router';
+import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries } from '../src/database/service';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { getXPData, XPData } from '../src/services/xpService';
+import { useDataSync } from '../src/services/dataSyncService';
 import { GlassCard, GradientButton, ProgressRing, StatChip, SectionHeader } from '../src/components/ui/GlassUI';
+import { RankCard, RankBadge, MilestoneList } from '../src/components/RankDisplay';
 import { useAuth } from '../src/context/AuthContext';
-import { deleteMyUserData, exportMyUserData } from '../src/services/authApi';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../src/services/adaptiveTrainingService';
 import { getSocialLayerSettings, setSocialLayerEnabled, type SocialLayerSettings } from '../src/services/socialLayerService';
 import { acceptCurrentPolicies, getConsentRecord } from '../src/services/legalService';
@@ -108,7 +112,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
               const isDestructive = destructiveIndex === i;
               return (
                 <TouchableOpacity
-                  key={opt.value}
+                  key={`${opt.value}-${i}`}
                   style={[modalStyles.optionItem, {
                     backgroundColor: theme.colors.surfaceVariant,
                     borderColor: theme.colors.border,
@@ -334,6 +338,12 @@ export default function ProfileScreen() {
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [expandedAdaptive, setExpandedAdaptive] = useState<string | null>(null);
+  const [profilePicUri, setProfilePicUri] = useState<string | null>(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameValue, setEditNameValue] = useState('');
+  const [totalSteps, setTotalSteps] = useState(0);
+  const [totalDistance, setTotalDistance] = useState(0);
+  const [recentDistance, setRecentDistance] = useState(0);
 
   // Themed modal state
   const [pickerModal, setPickerModal] = useState<{
@@ -492,11 +502,13 @@ export default function ProfileScreen() {
           setPickerModal({
             visible: true,
             title: t('profile.notificationsAction.setReminderTime'),
-            subtitle: t('profile.notificationsAction.pickHour'),
-            options: Array.from({ length: 24 }, (_, i) => ({
-              label: formatReminderHourLabel(i),
-              value: String(i),
-            })),
+            subtitle: t('profile.notificationsAction.pickTime') || 'Choose your preferred reminder time',
+            options: Array.from({ length: 48 }, (_, i) => {
+              const hour = Math.floor(i / 2);
+              const min = (i % 2) * 30;
+              const label = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+              return { label, value: String(hour) };
+            }),
             onSelect: async (hourValue) => {
               const hour = Number(hourValue);
               if (Number.isFinite(hour)) {
@@ -632,6 +644,19 @@ export default function ProfileScreen() {
     refreshHealthSyncErrors();
   }, []);
 
+  // Refresh data when screen gains focus (e.g. navigating back from workout)
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
+
+  // Subscribe to data sync events for real-time updates
+  useDataSync(
+    ['workout_completed', 'xp_awarded', 'level_up', 'streak_updated', 'profile_updated', 'rank_milestone_reached'],
+    () => loadData()
+  );
+
   const loadData = useCallback(async () => {
     try {
       const cached = await getCached<ProfileCacheSnapshot>('profile', 'main');
@@ -647,7 +672,7 @@ export default function ProfileScreen() {
         setNotificationSettings(cached.value.notifications);
       }
 
-      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications, savedEquipmentLevel] = await Promise.all([
+      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications, savedEquipmentLevel, savedName, savedProfilePic] = await Promise.all([
         getUserProfile('user_local_001'),
         getUserProgress(),
         getStreak('user_local_001'),
@@ -658,22 +683,49 @@ export default function ProfileScreen() {
         getConsentRecord(),
         getNotificationReliabilitySettings(),
         getAppState('user.equipment_level'),
+        getAppState('user.display_name'),
+        getAppState('user.profile_pic'),
       ]);
 
       const eqLevel = (['none', 'minimal', 'playground'].includes(savedEquipmentLevel || '') ? savedEquipmentLevel : 'none') as 'none' | 'minimal' | 'playground';
       setEquipmentLevel(eqLevel);
 
-      setProfile({
-        name: 'Athlete',
+      const displayName = savedName || 'Athlete';
+      if (savedProfilePic) setProfilePicUri(savedProfilePic);
+
+      // Load real step & distance data
+      try {
+        const { db } = require('../src/database');
+        const stepsResult = await db.getFirstAsync('SELECT COALESCE(SUM(steps), 0) as total FROM daily_steps WHERE user_id = ?', ['user_local_001']) as { total: number } | null;
+        const jogResult = await db.getFirstAsync(`
+          SELECT COALESCE(SUM(distance_meters), 0) as total,
+          COALESCE((SELECT distance_meters FROM jog_sessions WHERE user_id = ? ORDER BY start_time DESC LIMIT 1), 0) as recent
+          FROM jog_sessions WHERE user_id = ?
+        `, ['user_local_001', 'user_local_001']) as { total: number, recent: number } | null;
+        setTotalSteps(stepsResult?.total || 0);
+        setTotalDistance(Math.round((jogResult?.total || 0) / 1000 * 10) / 10);
+        setRecentDistance(Math.round((jogResult?.recent || 0) / 1000 * 10) / 10);
+      } catch { /* step/jog data optional */ }
+
+      // Calculate more realistic calories from workout sessions
+      let estimatedCalories = 0;
+      try {
+        const sessions = await getRecentSessions('user_local_001', 100);
+        estimatedCalories = sessions.reduce((sum, s) => sum + Math.round((s.duration_minutes || 0) * 6.5), 0);
+      } catch { estimatedCalories = progress.total_workouts * 280; }
+
+      // Use functional update to preserve existing name if no saved name found
+      setProfile((prev) => ({
+        name: savedName || prev?.name || 'Athlete',
         goal: userProfile?.goal || 'body_control',
         experience: userProfile?.experience || 'beginner',
         trainingDays: userProfile?.training_days_per_week || 3,
         sessionMinutes: userProfile?.time_per_session_minutes || 30,
-      });
+      }));
 
       setStats({
         totalWorkouts: progress.total_workouts,
-        totalCalories: progress.total_workouts * 280,
+        totalCalories: estimatedCalories,
         streak: streak.current,
         longestStreak: streak.longest,
         level: xp.level,
@@ -695,7 +747,7 @@ export default function ProfileScreen() {
 
       await setCached('profile', 'main', {
         profile: {
-          name: 'Athlete',
+          name: displayName,
           goal: userProfile?.goal || 'body_control',
           experience: userProfile?.experience || 'beginner',
           trainingDays: userProfile?.training_days_per_week || 3,
@@ -703,7 +755,7 @@ export default function ProfileScreen() {
         },
         stats: {
           totalWorkouts: progress.total_workouts,
-          totalCalories: progress.total_workouts * 280,
+          totalCalories: estimatedCalories,
           streak: streak.current,
           longestStreak: streak.longest,
           level: xp.level,
@@ -777,7 +829,33 @@ export default function ProfileScreen() {
     if (privacyBusy) return;
     setPrivacyBusy(true);
     try {
-      const payload = await exportMyUserData();
+      // Gather all local SQLite data for export
+      const [profile, equipment, injuries, fatigue, sessions, streakData, progress, steps, xp] = await Promise.all([
+        getUserProfile('user_local_001'),
+        getUserEquipment('user_local_001'),
+        getUserInjuries('user_local_001'),
+        getMuscleFatigue('user_local_001'),
+        getRecentSessions('user_local_001', 100),
+        getStreak('user_local_001'),
+        getAllProgressRecords('user_local_001', 100),
+        getStepHistory('user_local_001', 90),
+        getXPData(),
+      ]);
+
+      const payload = {
+        _exportedAt: new Date().toISOString(),
+        _version: 'FitQuest 2.0 Local Export',
+        profile,
+        equipment,
+        injuries,
+        muscleFatigue: fatigue,
+        workoutSessions: sessions,
+        streak: streakData,
+        progressRecords: progress,
+        dailySteps: steps,
+        xpData: xp,
+      };
+
       const exportDir = `${FileSystem.documentDirectory}exports/`;
       const dirInfo = await FileSystem.getInfoAsync(exportDir);
       if (!dirInfo.exists) {
@@ -799,25 +877,32 @@ export default function ProfileScreen() {
 
   const handleDeleteCloudData = useCallback(() => {
     if (privacyBusy) return;
-    setPickerModal({
-      visible: true,
-      title: t('profile.menu.deleteCloudData'),
-      subtitle: t('profile.menu.deleteCloudDataConfirm'),
-      options: [{ label: t('profile.menu.deletePermanently'), value: 'delete' }],
-      destructiveIndex: 0,
-      onSelect: async () => {
-        setPrivacyBusy(true);
-        try {
-          await deleteMyUserData();
-          await signOut();
-          router.replace('/login');
-        } catch (e: any) {
-          Alert.alert(t('profile.alert.deleteFailedTitle'), e?.message ?? t('profile.alert.deleteFailedBody'));
-        } finally {
-          setPrivacyBusy(false);
-        }
-      },
-    });
+    Alert.alert(
+      t('profile.menu.deleteCloudData'),
+      t('profile.menu.deleteCloudDataConfirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('profile.menu.deletePermanently'),
+          style: 'destructive',
+          onPress: async () => {
+            setPrivacyBusy(true);
+            try {
+              // Clear local data from app_state
+              await setAppState('user.display_name', '');
+              await setAppState('user.profile_pic', '');
+              // Sign out & redirect
+              await signOut();
+              router.replace('/login');
+            } catch (e: any) {
+              Alert.alert(t('profile.alert.deleteFailedTitle'), e?.message ?? t('profile.alert.deleteFailedBody'));
+            } finally {
+              setPrivacyBusy(false);
+            }
+          },
+        },
+      ]
+    );
   }, [privacyBusy, signOut, router, t]);
 
   const handleSocialToggle = useCallback(async (enabled: boolean) => {
@@ -859,30 +944,85 @@ export default function ProfileScreen() {
           >
             <SafeAreaView edges={['top']}>
               <View style={styles.headerContent}>
-                {/* Avatar with static ring (no glow animation) */}
-                <View style={styles.avatarGlowWrap}>
+                {/* Avatar with tap-to-change photo */}
+                <TouchableOpacity style={styles.avatarGlowWrap} onPress={async () => {
+                  try {
+                    const result = await ImagePicker.launchImageLibraryAsync({
+                      mediaTypes: ['images'],
+                      allowsEditing: true,
+                      aspect: [1, 1],
+                      quality: 0.7,
+                    });
+                    if (!result.canceled && result.assets[0]?.uri) {
+                      const destUri = `${FileSystem.documentDirectory}profile_pic.jpg`;
+                      await FileSystem.copyAsync({ from: result.assets[0].uri, to: destUri });
+                      setProfilePicUri(destUri);
+                      await setAppState('user.profile_pic', destUri);
+                    }
+                  } catch (e) { console.warn('[Profile] Photo pick failed:', e); }
+                }}>
                   <LinearGradient
                     colors={[theme.colors.accent, theme.colors.purple, theme.colors.pink] as [string, string, string]}
                     style={styles.avatarRing}
                   >
                     <View style={[styles.avatarInner, { backgroundColor: theme.colors.background }]}>
-                      <LinearGradient
-                        colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
-                        style={styles.avatarGradient}
-                      >
-                        <Text style={[styles.avatarInitials, { color: theme.colors.text }]}>
-                          {(profile?.name || 'A').charAt(0).toUpperCase()}
-                        </Text>
-                      </LinearGradient>
+                      {profilePicUri ? (
+                        <Image source={{ uri: profilePicUri }} style={styles.avatarGradient} />
+                      ) : (
+                        <LinearGradient
+                          colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
+                          style={styles.avatarGradient}
+                        >
+                          <Text style={[styles.avatarInitials, { color: theme.colors.text }]}>
+                            {(profile?.name || 'A').charAt(0).toUpperCase()}
+                          </Text>
+                        </LinearGradient>
+                      )}
                     </View>
                   </LinearGradient>
-                </View>
+                  <View style={[styles.cameraOverlay, { backgroundColor: theme.colors.accent }]}>
+                    <MaterialCommunityIcons name="camera" size={14} color={theme.colors.onAccent} />
+                  </View>
+                </TouchableOpacity>
 
-                {/* Name & goal */}
+                {/* Editable Name & goal */}
                 <Animated.View entering={FadeInDown.delay(50).duration(150)}>
-                  <Text style={[styles.profileName, { color: theme.colors.text }]}>
-                    {profile?.name || 'Athlete'}
-                  </Text>
+                  {isEditingName ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <TextInput
+                        style={[styles.profileName, { color: theme.colors.text, borderBottomWidth: 1, borderBottomColor: theme.colors.accent, minWidth: 120, textAlign: 'center', paddingBottom: 2 }]}
+                        value={editNameValue}
+                        onChangeText={setEditNameValue}
+                        autoFocus
+                        maxLength={24}
+                        onBlur={async () => {
+                          const trimmed = editNameValue.trim();
+                          if (trimmed) {
+                            setProfile(prev => prev ? { ...prev, name: trimmed } : prev);
+                            await setAppState('user.display_name', trimmed);
+                          }
+                          setIsEditingName(false);
+                        }}
+                        onSubmitEditing={async () => {
+                          const trimmed = editNameValue.trim();
+                          if (trimmed) {
+                            setProfile(prev => prev ? { ...prev, name: trimmed } : prev);
+                            await setAppState('user.display_name', trimmed);
+                          }
+                          setIsEditingName(false);
+                        }}
+                      />
+                    </View>
+                  ) : (
+                    <TouchableOpacity onPress={() => { setEditNameValue(profile?.name || 'Athlete'); setIsEditingName(true); }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Text style={[styles.profileName, { color: theme.colors.text }]}>
+                          {profile?.name || 'Athlete'}
+                        </Text>
+                        <MaterialCommunityIcons name="pencil-outline" size={16} color={theme.colors.textMuted} />
+                      </View>
+                    </TouchableOpacity>
+                  )}
                 </Animated.View>
 
                 <Animated.View entering={FadeInDown.delay(80).duration(150)}>
@@ -925,6 +1065,22 @@ export default function ProfileScreen() {
           <StatChip icon="fire" label={t('dashboard.streak')} value={`${stats?.streak || 0}d`} color={theme.colors.warning} delay={200} />
           <StatChip icon="dumbbell" label={t('dashboard.workouts')} value={`${stats?.totalWorkouts || 0}`} color={theme.colors.accent} delay={300} />
           <StatChip icon="lightning-bolt" label={t('dashboard.xp')} value={`${stats?.totalXP || 0}`} color={theme.colors.purple} delay={400} />
+        </View>
+        <View style={styles.statsRow}>
+          <StatChip icon="shoe-print" label={t('profile.totalSteps') || 'Steps'} value={totalSteps > 1000 ? `${(totalSteps / 1000).toFixed(1)}k` : `${totalSteps}`} color={theme.colors.blue} delay={450} />
+          <StatChip icon="map-marker-distance" label={t('profile.totalDistance') || 'Distance'} value={`${totalDistance}km`} color={theme.colors.skyBlue} delay={500} />
+          <StatChip icon="run" label={t('profile.lastJog') || 'Last Jog'} value={`${recentDistance}km`} color={theme.colors.orange} delay={550} />
+        </View>
+
+        {/* ── RANK & MILESTONES ── */}
+        <View style={styles.section}>
+          <SectionHeader title={t('profile.rank') || 'Rank & Progress'} delay={250} />
+          <RankCard level={stats?.level || 1} totalXP={stats?.totalXP || 0} showQuote={true} />
+          <View style={{ marginTop: 8 }}>
+            <GlassCard style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
+              <MilestoneList currentLevel={stats?.level || 1} maxVisible={5} />
+            </GlassCard>
+          </View>
         </View>
 
         {/* ── ACHIEVEMENTS CARD ── */}
@@ -1238,10 +1394,10 @@ export default function ProfileScreen() {
 
           <MenuItem
             icon="fingerprint"
-            label={t('profile.security') || 'Security'}
+            label={t('profile.biometricLock') || 'Biometric Lock'}
             sublabel={biometricAvailable
-              ? (biometricEnabled ? (t('profile.biometricActive') || 'Biometric lock active') : (t('profile.biometricAvailable') || 'Biometric lock available'))
-              : (t('profile.biometricUnavailable') || 'Biometric not available on this device')}
+              ? (biometricEnabled ? (t('profile.biometricActive') || 'Face ID / Fingerprint active') : (t('profile.biometricAvailable') || 'Tap to enable Face ID / Fingerprint'))
+              : (t('profile.biometricUnavailable') || 'Not available on this device')}
             color={theme.colors.indigo}
             delay={610}
             onPress={async () => {
@@ -1285,10 +1441,10 @@ export default function ProfileScreen() {
           />
           <MenuItem
             icon="check-decagram-outline"
-            label={t('profile.recordConsent')}
+            label={t('profile.recordConsent') || 'Data Consent'}
             sublabel={consentTimestamp
-              ? `${t('profile.saved')} ${new Date(consentTimestamp).toLocaleString()} · ${t('profile.version')} ${consentVersion || '-'} · ${t(`profile.consentSource.${consentSource || 'local'}`)}`
-              : t('profile.recordConsentSub')}
+              ? `${t('profile.consentAccepted') || 'Accepted'} ${new Date(consentTimestamp).toLocaleDateString()} · v${consentVersion || '-'}`
+              : (t('profile.recordConsentSub') || 'Accept privacy policy & terms to use all features')}
             color={theme.colors.accent}
             delay={650}
             onPress={() => {
@@ -1529,6 +1685,7 @@ const styles = StyleSheet.create({
   },
   avatarGlowWrap: {
     marginBottom: 16,
+    position: 'relative',
   },
   avatarRing: {
     width: 96,
@@ -1540,12 +1697,25 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 30,
     padding: 3,
+    overflow: 'hidden',
   },
   avatarGradient: {
     flex: 1,
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  cameraOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
   },
   avatarInitials: {
     fontSize: 32,

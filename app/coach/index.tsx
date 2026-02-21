@@ -17,10 +17,11 @@ import {
   Keyboard,
   Platform,
   Dimensions,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import SimpleMarkdown from '../../src/components/SimpleMarkdown';
 import Animated, {
@@ -385,8 +386,8 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
   return (
     <Animated.View
       entering={isCoach
-        ? FadeInDown.delay(index * 30).duration(150)
-        : FadeInRight.delay(30).duration(150)
+        ? FadeInDown.duration(120)
+        : FadeInRight.duration(100)
       }
       style={[
         styles.messageBubble,
@@ -456,6 +457,16 @@ function CoachScreenInner() {
   const inputScale = useSharedValue(1);
 
   useEffect(() => { loadCoachContext(); }, []);
+
+  // Handle Android hardware back button — prevent GO_BACK on flat Tabs navigator
+  useEffect(() => {
+    const backAction = () => {
+      router.canGoBack() ? router.back() : router.replace('/dashboard');
+      return true; // Prevent default (which dispatches GO_BACK to navigator)
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove();
+  }, [router]);
 
   useEffect(() => {
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -595,56 +606,53 @@ function CoachScreenInner() {
         setActiveSuggestions(getFollowUpSuggestions(topic));
       }
 
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+      // Scroll after message added
+      requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
     };
 
-    setTimeout(() => {
-      handleResponse();
-    }, 800 + Math.random() * 600);
+    // Call response handler directly (no artificial delay)
+    handleResponse();
 
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+    // Scroll for user message
+    requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
   }, [input, coachCtx]);
 
   const handleSuggestion = (text: string) => {
     console.log('[Coach] suggestion', { text });
-    setInput(text);
-    setTimeout(() => {
-      const userMsg: ChatMessage = {
-        id: `user_${Date.now()}`,
-        role: 'user',
-        text,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMsg]);
-      setIsTyping(true);
+    
+    const userMsg: ChatMessage = {
+      id: `user_${Date.now()}`,
+      role: 'user',
+      text,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+    setInput('');
 
-      const topic = detectTopic(text);
+    const topic = detectTopic(text);
 
-      setTimeout(() => {
-        const response = generateCoachResponse(text, coachCtx ?? {
-          streak: 0, totalWorkouts: 0, level: 1, totalXP: 0,
-          fatigueHighMuscles: [], lastWorkoutDate: null,
-          daysSinceLastWorkout: 0, goal: 'body_control', exerciseCount: 0,
-        });
-        setMessages(prev => [...prev, {
-          id: `coach_${Date.now()}`,
-          role: 'coach',
-          text: response,
-          timestamp: new Date(),
-        }]);
-        setIsTyping(false);
-        setInput('');
+    // Generate response immediately
+    const response = generateCoachResponse(text, coachCtx ?? {
+      streak: 0, totalWorkouts: 0, level: 1, totalXP: 0,
+      fatigueHighMuscles: [], lastWorkoutDate: null,
+      daysSinceLastWorkout: 0, goal: 'body_control', exerciseCount: 0,
+    });
+    
+    setMessages(prev => [...prev, {
+      id: `coach_${Date.now()}`,
+      role: 'coach',
+      text: response,
+      timestamp: new Date(),
+    }]);
+    setIsTyping(false);
 
-        if (topic) {
-          setLastTopic(topic);
-          setActiveSuggestions(getFollowUpSuggestions(topic));
-        }
+    if (topic) {
+      setLastTopic(topic);
+      setActiveSuggestions(getFollowUpSuggestions(topic));
+    }
 
-        setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
-      }, 800 + Math.random() * 600);
-
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
-    }, 50);
+    requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
   };
 
   const sendAnimatedStyle = useAnimatedStyle(() => ({
@@ -677,7 +685,7 @@ function CoachScreenInner() {
           >
             <View style={styles.headerRow}>
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
                 style={[styles.headerBackBtn, {
                   backgroundColor: theme.colors.surfaceVariant,
                 }]}
@@ -713,8 +721,8 @@ function CoachScreenInner() {
 
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 24}
         >
           {/* ── MESSAGES ── */}
           <FlatList
@@ -824,14 +832,15 @@ function CoachScreenInner() {
               borderColor: theme.colors.border,
             }]}>
               <TextInput
-                style={[styles.textInput, { color: theme.colors.text }]}
+                style={[styles.textInput, { color: theme.colors.text, maxHeight: 100 }]}
                 placeholder={t('coach.placeholder')}
                 placeholderTextColor={theme.colors.textMuted}
                 value={input}
                 onChangeText={setInput}
                 onSubmitEditing={sendMessage}
                 returnKeyType="send"
-                multiline={false}
+                multiline
+                blurOnSubmit
               />
               <Animated.View style={sendAnimatedStyle}>
                 <TouchableOpacity
@@ -1071,8 +1080,9 @@ const styles = StyleSheet.create({
 
 export default function CoachScreen() {
   const router = useRouter();
+  const handleBack = () => router.canGoBack() ? router.back() : router.replace('/dashboard');
   return (
-    <ScreenErrorBoundary screenName="AI Coach" onGoBack={() => router.back()}>
+    <ScreenErrorBoundary screenName="AI Coach" onGoBack={handleBack}>
       <CoachScreenInner />
     </ScreenErrorBoundary>
   );

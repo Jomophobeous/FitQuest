@@ -90,6 +90,7 @@ const APP_LANG_TO_TTS_LOCALE: Record<string, string> = {
 class AudioService {
   private settings: AudioSettings = DEFAULT_SETTINGS;
   private isSpeaking: boolean = false;
+  private isProcessingQueue: boolean = false;
   private queue: { text: string; type: AudioEventType }[] = [];
   private listeners: Set<AudioEventListener> = new Set();
   private isInitialized: boolean = false;
@@ -237,16 +238,24 @@ class AudioService {
   }
 
   /**
-   * Process speech queue sequentially
+   * Process speech queue sequentially (mutex-protected)
    */
   private async processQueue(): Promise<void> {
-    if (this.isSpeaking || this.queue.length === 0) return;
-
-    const item = this.queue.shift();
-    if (item) {
-      await this.speak(item.text, item.type);
-      await this.processQueue();
+    // Mutex guard: prevent concurrent processing
+    if (this.isProcessingQueue || this.isSpeaking || this.queue.length === 0) return;
+    
+    this.isProcessingQueue = true;
+    try {
+      const item = this.queue.shift();
+      if (item) {
+        await this.speak(item.text, item.type);
+      }
+    } finally {
+      this.isProcessingQueue = false;
     }
+    
+    // Continue processing remaining items
+    await this.processQueue();
   }
 
   /**
@@ -362,6 +371,7 @@ class AudioService {
     Speech.stop();
     this.queue = [];
     this.isSpeaking = false;
+    this.isProcessingQueue = false;
   }
 
   /**
@@ -372,6 +382,7 @@ class AudioService {
     Speech.stop();
     this.queue = [];
     this.isSpeaking = false;
+    this.isProcessingQueue = false;
   }
 
   /**

@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { getExercises, createWorkoutSession, addSessionExercise } from '../src/database/service';
+import { notifyCustomWorkoutCreated } from '../src/services/dataSyncService';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
 import ThemedText from '../src/components/ThemedText';
 import Card from '../src/components/Card';
@@ -204,14 +205,25 @@ export default function CreateWorkoutScreen() {
         });
       }
 
+      // Notify other screens that a new custom workout was created
+      notifyCustomWorkoutCreated(sessionId);
+
       Alert.alert(
         t('createWorkout.saved'),
         t('createWorkout.savedDetail'),
-        [{ text: 'OK', onPress: () => router.back() }]
+        [
+          { text: t('createWorkout.startNow') || 'Start Now', onPress: () => {
+            router.push({
+              pathname: '/workout',
+              params: { sessionId },
+            } as any);
+          }},
+          { text: t('common.ok'), onPress: () => router.back() },
+        ]
       );
     } catch (error) {
       console.error('[CreateWorkout] Failed to save:', error);
-      Alert.alert('Error', t('createWorkout.saveFailed'));
+      Alert.alert(t('error.title'), t('createWorkout.saveFailed'));
     }
   };
 

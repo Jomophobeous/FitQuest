@@ -17,6 +17,7 @@ import {
   Keyboard,
   Platform,
   Dimensions,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -164,6 +165,20 @@ function ProfessorScreenInner() {
   useEffect(() => {
     loadGreeting();
   }, []);
+
+  // Handle Android hardware back button on flat Tabs navigator
+  useEffect(() => {
+    const backAction = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/dashboard');
+      }
+      return true;
+    };
+    const subscription = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => subscription.remove();
+  }, [router]);
 
   useEffect(() => {
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -359,7 +374,7 @@ function ProfessorScreenInner() {
           >
             <View style={styles.headerRow}>
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
                 style={[styles.headerBackBtn, { backgroundColor: theme.colors.surfaceVariant }]}
               >
                 <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
@@ -600,8 +615,9 @@ const styles = StyleSheet.create({
 
 export default function ProfessorScreen() {
   const router = useRouter();
+  const handleBack = () => router.canGoBack() ? router.back() : router.replace('/dashboard');
   return (
-    <ScreenErrorBoundary screenName="AI Professor" onGoBack={() => router.back()}>
+    <ScreenErrorBoundary screenName="AI Professor" onGoBack={handleBack}>
       <ProfessorScreenInner />
     </ScreenErrorBoundary>
   );

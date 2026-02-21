@@ -33,11 +33,14 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { useFitQuestWorkout, WorkoutExerciseDisplay } from '../src/hooks/useFitQuestWorkout';
 import { audioService } from '../src/services/audioService';
 import { useTimer, formatTime } from '../src/hooks/useTimer';
+import { haptic } from '../src/utils/haptics';
+import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
 import {
   GlassCard,
   GradientButton,
@@ -99,7 +102,9 @@ function getExerciseIcon(name: string): keyof typeof MaterialCommunityIcons.glyp
 
 export default function WorkoutScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
+  const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
   const {
     status,
     workout,
@@ -111,6 +116,9 @@ export default function WorkoutScreen() {
     skipExercise,
     finishWorkout,
     cancelWorkout,
+    loadCustomWorkout,
+    generateNewWorkout,
+    startWorkout,
   } = useFitQuestWorkout();
 
   const { exerciseTimer, sessionTimer, startExercise, startSession, endSession } = useTimer();
@@ -119,6 +127,8 @@ export default function WorkoutScreen() {
   const [sessionElapsed, setSessionElapsed] = useState(0);
   const sessionStartRef = useRef<number | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showCompleteBadge, setShowCompleteBadge] = useState(false);
+  const prevExerciseIndexRef = useRef<number>(0);
 
   // Pulse animation for active exercise
   const pulse = useSharedValue(1);
@@ -160,18 +170,41 @@ export default function WorkoutScreen() {
     };
   }, []);
 
-  // Redirect if no active workout
+  // Load custom workout if sessionId is provided, otherwise redirect if idle
   useEffect(() => {
-    if (status === 'idle' && !workout) {
+    if (sessionId && status === 'idle' && !workout) {
+      loadCustomWorkout(sessionId);
+    } else if (!sessionId && status === 'idle' && !workout) {
       // Delay briefly to avoid flash
       const t = setTimeout(() => router.replace('/fitquest' as any), 200);
       return () => clearTimeout(t);
     }
-  }, [status, workout]);
+  }, [status, workout, sessionId]);
+
+  // Auto-start custom workout when it becomes ready
+  useEffect(() => {
+    if (sessionId && status === 'ready' && workout) {
+      startWorkout();
+    }
+  }, [sessionId, status, workout]);
+
+  // Haptic feedback when exercise changes (exercise start)
+  useEffect(() => {
+    if (status === 'in_progress' && currentExerciseIndex !== prevExerciseIndexRef.current) {
+      // New exercise started - trigger start haptic
+      haptic('exerciseStart');
+      prevExerciseIndexRef.current = currentExerciseIndex;
+    }
+  }, [currentExerciseIndex, status]);
 
   const handleComplete = useCallback(async () => {
     audioService.stop(); // Stop narration voice immediately
+    // Show visual badge and haptic
+    setShowCompleteBadge(true);
+    haptic('exerciseComplete');
     await completeExercise(4); // Default rating 4
+    // Hide badge after animation completes
+    setTimeout(() => setShowCompleteBadge(false), 1300);
   }, [completeExercise]);
 
   const handleSkip = useCallback(async () => {
@@ -202,8 +235,23 @@ export default function WorkoutScreen() {
 
   const exercises = workout?.exercises ?? [];
   const totalExercises = exercises.length;
-  const completedCount = currentExerciseIndex;
+  const completedCount = exercises.filter((e: WorkoutExerciseDisplay) => e.completed).length;
   const progress = totalExercises > 0 ? completedCount / totalExercises : 0;
+  const isLastExercise = currentExerciseIndex === totalExercises - 1;
+  const isWorkoutComplete = status === 'completed';
+
+  // ─── Auto-finish when workout is completed ───
+  useEffect(() => {
+    if (isWorkoutComplete && workout) {
+      // Trigger haptic for workout complete
+      haptic('workoutComplete');
+      // Auto-finish after a short delay to show the completion visual
+      const timer = setTimeout(() => {
+        handleFinish();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isWorkoutComplete, workout]);
 
   // ─── If waiting or no workout, show minimal state ───
 
@@ -212,13 +260,13 @@ export default function WorkoutScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centeredContent}>
           <MaterialCommunityIcons name="dumbbell" size={56} color={theme.colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>No Active Workout</Text>
+          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('workout.noActive')}</Text>
           <Text style={[styles.emptySub, { color: theme.colors.textMuted }]}>
-            Generate a workout from the Train tab
+            {t('workout.generateFromTrain')}
           </Text>
           <View style={{ marginTop: 24, width: '60%' }}>
             <GradientButton
-              title="Go to Train"
+              title={t('workout.goToTrain')}
               onPress={() => router.replace('/fitquest' as any)}
               variant="primary"
             />
@@ -230,6 +278,13 @@ export default function WorkoutScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* ── EXERCISE COMPLETE BADGE ── */}
+      <ExerciseCompleteBadge 
+        visible={showCompleteBadge} 
+        message={t('workout.nice') || 'Nice!'} 
+        color={theme.colors.success}
+      />
+      
       {/* ── TOP BAR ── */}
       <Animated.View entering={FadeIn.duration(150)}>
         <LinearGradient
@@ -335,12 +390,12 @@ export default function WorkoutScreen() {
                   }]}
                 >
                   <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.warning} />
-                  <Text style={[styles.skipText, { color: theme.colors.warning }]}>Skip</Text>
+                  <Text style={[styles.skipText, { color: theme.colors.warning }]}>{t('common.skip')}</Text>
                 </TouchableOpacity>
 
                 <View style={{ flex: 1 }}>
                   <GradientButton
-                    title="Complete ✓"
+                    title={isLastExercise ? t('workout.completeWorkout') : t('workout.completeSet')}
                     onPress={handleComplete}
                     variant="success"
                   />
@@ -351,11 +406,11 @@ export default function WorkoutScreen() {
         )}
 
         {/* ── EXERCISE LIST ── */}
-        <SectionHeader title="Exercises" delay={200} />
+        <SectionHeader title={t('workout.exercises')} delay={200} />
 
         {exercises.map((ex: WorkoutExerciseDisplay, i: number) => {
-          const isActive = i === currentExerciseIndex;
-          const isDone = i < currentExerciseIndex;
+          const isActive = i === currentExerciseIndex && !ex.completed;
+          const isDone = ex.completed;
           const statusColor = isDone
             ? theme.colors.success
             : isActive
@@ -408,14 +463,15 @@ export default function WorkoutScreen() {
         {completedCount > 0 && (
           <Animated.View entering={FadeInUp.delay(300).duration(150)} style={styles.finishSection}>
             <GradientButton
-              title={completedCount >= totalExercises ? 'Complete Workout 🎉' : 'Finish Early'}
+              title={completedCount >= totalExercises ? t('workout.completeWorkout') : t('workout.finishEarly')}
               onPress={handleFinish}
               variant={completedCount >= totalExercises ? 'success' : 'warning'}
             />
           </Animated.View>
         )}
 
-        <View style={{ height: 40 }} />
+        {/* Extra scroll space to ensure finish button is reachable */}
+        <View style={{ height: 120 }} />
       </ScrollView>
 
       {/* ── CANCEL CONFIRMATION MODAL ── */}

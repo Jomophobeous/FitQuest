@@ -21,6 +21,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Paths, File, Directory } from 'expo-file-system';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { getXPData, awardProgressPhotoXP, type XPData } from '../src/services/xpService';
 import { getAppState, setAppState, getUserProgress, getStreak } from '../src/database/service';
 import ThemedText from '../src/components/ThemedText';
@@ -114,6 +115,7 @@ async function deletePhoto(photoId: string): Promise<void> {
 
 export default function ProgressScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
   const [xpData, setXPData] = useState<XPData | null>(null);
   const [stats, setStats] = useState<{ workouts: number; streak: number; exercises: number }>({
@@ -146,7 +148,7 @@ export default function ProgressScreen() {
   const handleTakePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Camera access is required to take progress photos.');
+      Alert.alert(t('progress.permissionNeeded'), t('progress.cameraRequired'));
       return;
     }
 
@@ -165,7 +167,7 @@ export default function ProgressScreen() {
   const handlePickPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Gallery access is required to select photos.');
+      Alert.alert(t('progress.permissionNeeded'), t('progress.galleryRequired'));
       return;
     }
 
@@ -182,26 +184,26 @@ export default function ProgressScreen() {
   };
 
   const processNewPhoto = async (uri: string) => {
-    Alert.alert('Label Photo', 'Which view is this?', [
-      { text: 'Front', onPress: () => saveAndRefresh(uri, 'front') },
-      { text: 'Side', onPress: () => saveAndRefresh(uri, 'side') },
-      { text: 'Back', onPress: () => saveAndRefresh(uri, 'back') },
-      { text: 'No Label', onPress: () => saveAndRefresh(uri, undefined) },
+    Alert.alert(t('progress.labelPhoto'), t('progress.whichView'), [
+      { text: t('common.front'), onPress: () => saveAndRefresh(uri, 'front') },
+      { text: t('common.side'), onPress: () => saveAndRefresh(uri, 'side') },
+      { text: t('common.back'), onPress: () => saveAndRefresh(uri, 'back') },
+      { text: t('common.noLabel'), onPress: () => saveAndRefresh(uri, undefined) },
     ]);
   };
 
   const saveAndRefresh = async (uri: string, label?: string) => {
     await savePhoto(uri, label);
     const xpResult = await awardProgressPhotoXP();
-    Alert.alert('Photo Saved! 📸', `+${xpResult.xpEarned} XP earned!`);
+    Alert.alert(t('progress.photoSaved'), `+${xpResult.xpEarned} XP ${t('common.earned')}!`);
     await loadData();
   };
 
   const handleDeletePhoto = (photo: ProgressPhoto) => {
-    Alert.alert('Delete Photo', 'Are you sure you want to delete this progress photo?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('progress.deletePhoto'), t('progress.deleteConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete', style: 'destructive', onPress: async () => {
+        text: t('common.delete'), style: 'destructive', onPress: async () => {
           await deletePhoto(photo.id);
           setSelectedPhoto(null);
           await loadData();

@@ -26,8 +26,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
 import { getRecentSessions, deleteWorkoutSession } from '../src/database/service';
 import type { WorkoutSession } from '../src/database/types';
+import { useDataSync } from '../src/services/dataSyncService';
 import {
   GlassCard,
   GradientButton,
@@ -54,18 +56,18 @@ function getWorkoutName(session: WorkoutSession): string {
 }
 
 /** Format a date string into a human-readable relative label */
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string, t: (key: string) => string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays === 0) return t('common.today');
+  if (diffDays === 1) return t('common.yesterday');
+  if (diffDays < 7) return `${diffDays} ${t('common.days')} ago`;
   if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7);
-    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    return `${weeks} ${t('common.weeks')} ago`;
   }
   return date.toLocaleDateString('en-US', {
     month: 'short',
@@ -88,6 +90,7 @@ function formatDuration(minutes: number): string {
 
 export default function SavedWorkoutsScreen() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
@@ -125,6 +128,10 @@ export default function SavedWorkoutsScreen() {
     }, [loadWorkouts]),
   );
 
+  // Subscribe to workout events from other screens
+  useDataSync('workout_completed', loadWorkouts);
+  useDataSync('custom_workout_created', loadWorkouts);
+
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     loadWorkouts();
@@ -137,12 +144,12 @@ export default function SavedWorkoutsScreen() {
   const confirmDelete = (session: WorkoutSession) => {
     const name = getWorkoutName(session);
     Alert.alert(
-      'Delete Workout',
-      `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+      t('savedWorkouts.deleteTitle'),
+      t('savedWorkouts.deleteConfirm').replace('{name}', name),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -150,7 +157,7 @@ export default function SavedWorkoutsScreen() {
               setWorkouts((prev) => prev.filter((w) => w.id !== session.id));
               if (expandedId === session.id) setExpandedId(null);
             } catch (err) {
-              Alert.alert('Error', 'Failed to delete workout. Please try again.');
+              Alert.alert(t('error.title'), t('savedWorkouts.deleteError'));
             }
           },
         },
@@ -198,18 +205,17 @@ export default function SavedWorkoutsScreen() {
           </Animated.View>
 
           <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
-            No Saved Workouts Yet
+            {t('savedWorkouts.emptyTitle')}
           </Text>
           <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
-            Build your first custom workout by selecting exercises tailored to your goals.
-            It only takes a minute!
+            {t('savedWorkouts.emptySubtitle')}
           </Text>
 
           <View style={styles.emptyFeatures}>
             {[
-              { icon: 'dumbbell' as const, text: 'Pick your exercises' },
-              { icon: 'timer-outline' as const, text: 'Set reps & rest' },
-              { icon: 'play-circle-outline' as const, text: 'Start anytime' },
+              { icon: 'dumbbell' as const, text: t('savedWorkouts.featurePick') },
+              { icon: 'timer-outline' as const, text: t('savedWorkouts.featureSet') },
+              { icon: 'play-circle-outline' as const, text: t('savedWorkouts.featureStart') },
             ].map((f, i) => (
               <Animated.View
                 key={f.text}
@@ -237,7 +243,7 @@ export default function SavedWorkoutsScreen() {
 
           <View style={{ marginTop: 24, width: '100%' }}>
             <GradientButton
-              title="Create Your First Workout"
+              title={t('savedWorkouts.createFirst')}
               icon="plus"
               onPress={() => router.push('/create-workout')}
               variant="primary"
@@ -256,7 +262,7 @@ export default function SavedWorkoutsScreen() {
     const isExpanded = expandedId === session.id;
     const name = getWorkoutName(session);
     const duration = formatDuration(session.duration_minutes);
-    const dateLabel = formatDate(session.started_at);
+    const dateLabel = formatDate(session.started_at, t);
     const exerciseCount = session.total_exercises;
     const completed = session.completed_exercises;
     const wasSuccessful = !!session.success;
@@ -430,7 +436,7 @@ export default function SavedWorkoutsScreen() {
               <View style={styles.expandedActions}>
                 <View style={{ flex: 1 }}>
                   <GradientButton
-                    title="Start Workout"
+                    title={t('savedWorkouts.startWorkout')}
                     icon="play"
                     onPress={() => handleStartWorkout(session)}
                     variant="primary"
@@ -558,7 +564,7 @@ export default function SavedWorkoutsScreen() {
               colors={[theme.colors.accent]}
             />
           }
-          ListHeaderComponent={<SectionHeader title="My Workouts" delay={100} />}
+          ListHeaderComponent={<SectionHeader title={t('savedWorkouts.myWorkouts')} delay={100} />}
           ListFooterComponent={<View style={styles.bottomSpacer} />}
         />
       )}

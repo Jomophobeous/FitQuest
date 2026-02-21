@@ -89,10 +89,12 @@ export default function LoginScreen() {
     process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
   );
 
+  // Google OAuth config - provide empty strings as fallback to prevent hook crash
+  // The hook requires at least one client ID; empty strings are valid but won't work
   const [, googleResponse, promptGoogleSignIn] = Google.useIdTokenAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'disabled',
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || undefined,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || undefined,
   });
 
   const isDark = theme.isDark;

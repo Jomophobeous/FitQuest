@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -25,8 +26,10 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDataSync } from '../src/services/dataSyncService';
 import {
   GlassCard,
   SectionHeader,
@@ -90,6 +93,7 @@ export default function AnalyticsScreen() {
   const { t } = useLanguage();
   const [range, setRange] = useState<'weekly' | 'monthly'>('weekly');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [workoutBars, setWorkoutBars] = useState<BarData[]>([]);
   const [xpData, setXPData] = useState<number[]>([]);
@@ -143,6 +147,25 @@ export default function AnalyticsScreen() {
     loadData();
   }, [loadData]);
 
+  // Reload data when screen gains focus (e.g. after completing a workout)
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [range])
+  );
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  }, [loadData]);
+
+  // Subscribe to data sync events for real-time updates
+  useDataSync(
+    ['workout_completed', 'xp_awarded', 'jog_completed', 'steps_updated', 'streak_updated'],
+    () => loadData()
+  );
+
   const maxBarCount = Math.max(...workoutBars.map((b) => b.count), 1);
   const maxXP = Math.max(...xpData, 1);
   const maxMuscleSessions = Math.max(...muscleGroups.map((g) => g.sessions), 1);
@@ -152,8 +175,15 @@ export default function AnalyticsScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 16 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={theme.colors.accent}
+          />
+        }
       >
         {/* ─── HEADER ─────────────────────────────── */}
         <Animated.View entering={FadeInDown.delay(50).duration(150)} style={s.header}>

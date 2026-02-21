@@ -19,6 +19,7 @@ import {
   getRecentExerciseIds,
   getRecentlyTrainedMuscles,
   getProgressHistory,
+  getAppState,
 } from '../database/service';
 import { generateSecureId } from '../security/randomId';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
@@ -32,6 +33,7 @@ import type {
   TargetMuscle,
   TrainingType,
   ExerciseFilter,
+  EquipmentLevel,
 } from '../database/types';
 
 // ============================================
@@ -201,11 +203,28 @@ async function applyHardFilter(
   const injuries = await getUserInjuries(userId);
   const injuredMuscles = new Set(injuries.filter(i => i.severity !== 'mild').map(i => i.muscle));
 
+  // Get user's equipment level preference
+  const equipmentLevelPref = await getAppState('user.equipment_level') as EquipmentLevel | null;
+  
+  // Build equipment levels array based on preference (inclusive downward)
+  // 'none' -> only none, 'minimal' -> none + minimal, 'playground' -> all
+  const getEquipmentLevels = (level: EquipmentLevel | null): EquipmentLevel[] => {
+    switch (level) {
+      case 'none': return ['none'];
+      case 'minimal': return ['none', 'minimal'];
+      case 'playground': return ['none', 'minimal', 'playground'];
+      default: return ['none', 'minimal', 'playground']; // No preference = show all
+    }
+  };
+  const equipmentLevels = getEquipmentLevels(equipmentLevelPref);
+  if (__DEV__) console.log(`[WorkoutGen] Equipment level pref: ${equipmentLevelPref || 'none set'} -> filtering to: ${equipmentLevels.join(', ')}`);
+
   // Build filter for primary goal
   const filter: ExerciseFilter = {
     categories: [profile.goal],
     difficulties: getDifficultyRange(profile.experience),
     training_types: intent.training_types,
+    equipment_levels: equipmentLevels,
   };
 
   if (__DEV__) console.log(`[WorkoutGen] Hard filter: goal="${profile.goal}", difficulties=${JSON.stringify(getDifficultyRange(profile.experience))}, training_types=${JSON.stringify(intent.training_types)}`);
@@ -251,6 +270,7 @@ async function applyHardFilter(
     const expandedFilter: ExerciseFilter = {
       categories: [profile.goal],
       difficulties: getDifficultyRange(profile.experience),
+      equipment_levels: equipmentLevels,
     };
     rawCandidates = await getExercises(expandedFilter);
     validCandidates = filterCandidates(rawCandidates); // Re-filter
@@ -263,6 +283,7 @@ async function applyHardFilter(
     const crossCategoryFilter: ExerciseFilter = {
       difficulties: getDifficultyRange(profile.experience),
       training_types: intent.training_types,
+      equipment_levels: equipmentLevels,
     };
     rawCandidates = await getExercises(crossCategoryFilter);
     validCandidates = filterCandidates(rawCandidates);
@@ -274,6 +295,7 @@ async function applyHardFilter(
     if (__DEV__) console.log(`[WorkoutGen] Still only ${validCandidates.length} valid. Universal fallback...`);
     const fallbackFilter: ExerciseFilter = {
       difficulties: getDifficultyRange(profile.experience),
+      equipment_levels: equipmentLevels,
     };
     rawCandidates = await getExercises(fallbackFilter);
     validCandidates = filterCandidates(rawCandidates);

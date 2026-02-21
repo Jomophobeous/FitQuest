@@ -3,12 +3,13 @@
  * Integrates all three engines for workout generation, progression, and recovery
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useDatabase, DEFAULT_USER_ID } from '../context/DatabaseContext';
 
 // Engine imports
 import {
   generateWorkout,
+  createWorkout,
   recordSessionPerformance,
   getFatigueSnapshot,
   checkDeloadStatus,
@@ -32,6 +33,8 @@ import {
   getExerciseById,
   completeWorkoutSession,
   updateStreak,
+  getSessionExercises,
+  getWorkoutSession,
 } from '../database/service';
 
 import { awardWorkoutXP } from '../services/xpService';
@@ -39,6 +42,7 @@ import { generateRichAudio } from '../services/audioService';
 import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsIngestionService';
 import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
 import { evaluatePostWorkoutPolicyDecision } from '../services/autonomousPolicyRuntime';
+import { notifyWorkoutCompleted } from '../services/dataSyncService';
 
 import type { TargetMuscle, ExerciseWithDetails } from '../database/types';
 import { generateWarmupCooldown, type WarmupCooldownExercise } from '../engines/warmupCooldownGenerator';
@@ -109,6 +113,8 @@ export interface WorkoutCompletionData {
 
 export function useFitQuestWorkout() {
   const { userProfile, isReady } = useDatabase();
+  const finishingRef = useRef(false); // Prevent double-tap race condition on finish
+  const generatingRef = useRef(false); // Prevent concurrent workout generation
   const [state, setState] = useState<WorkoutState>({
     status: 'idle',
     workout: null,
@@ -124,7 +130,15 @@ export function useFitQuestWorkout() {
    * Generate a new workout using ENGINE 1
    */
   const generateNewWorkout = useCallback(async () => {
+    // Prevent concurrent generation (double-tap protection)
+    if (generatingRef.current) {
+      console.log('[FitQuest] Already generating workout, ignoring duplicate call');
+      return;
+    }
+    generatingRef.current = true;
+
     if (!isReady || !userProfile) {
+      generatingRef.current = false;
       setState((prev: WorkoutState) => ({ ...prev, status: 'error', error: 'Database not ready' }));
       return;
     }
@@ -159,9 +173,9 @@ export function useFitQuestWorkout() {
       }
       setFatigueSnapshot(fatigueMap);
 
-      // Step 5: Generate workout using ENGINE 1
+      // Step 5: Generate AND PERSIST workout using ENGINE 1
       const isDeload = deload.severity === 'required';
-      const generated = await generateWorkout(DEFAULT_USER_ID, isDeload);
+      const generated = await createWorkout(DEFAULT_USER_ID, isDeload);
 
       if (!generated || generated.exercises.length === 0) {
         throw new Error('Could not generate workout. Try adjusting your profile settings.');
@@ -278,9 +292,96 @@ export function useFitQuestWorkout() {
         status: 'error',
         error: err instanceof Error ? err.message : 'Failed to generate workout',
       }));
+    } finally {
+      generatingRef.current = false;
     }
   }, [isReady, userProfile]);
 
+  /**
+   * Load a custom (user-created) workout session from the database.
+   * Used when launching workouts from saved-workouts or create-workout screens.
+   */
+  const loadCustomWorkout = useCallback(async (sessionId: string) => {
+    setState((prev: WorkoutState) => ({ ...prev, status: 'generating', error: null }));
+
+    try {
+      const session = await getWorkoutSession(sessionId);
+      if (!session) throw new Error('Workout session not found');
+
+      const sessionExercises = await getSessionExercises(sessionId);
+      if (!sessionExercises || sessionExercises.length === 0) {
+        throw new Error('No exercises found in this workout');
+      }
+
+      // Parse instructions safely (may be JSON array or plain text)
+      const safeParseInstructions = (raw: string | null): string[] => {
+        if (!raw) return [];
+        try {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [raw];
+        } catch {
+          return raw ? [raw] : [];
+        }
+      };
+
+      const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
+        const richAudio = generateRichAudio(
+          {
+            name: se.name,
+            category: se.category,
+            instructions: safeParseInstructions(se.instructions),
+            primaryMuscles: [],
+            restSeconds: 60,
+          },
+          sessionExercises[i + 1]?.name,
+        );
+
+        return {
+          id: se.id,
+          exerciseId: se.exercise_id,
+          name: se.name,
+          category: se.category,
+          sets: se.prescribed_sets,
+          reps: se.prescribed_reps,
+          restSeconds: 60,
+          instructions: safeParseInstructions(se.instructions),
+          completed: false,
+          audioIntro: se.audio_intro || richAudio.intro,
+          audioSetup: se.audio_setup || richAudio.setup,
+          audioExecution: se.audio_execution || richAudio.execution,
+          audioTransition: se.audio_transition || richAudio.transition,
+        };
+      });
+
+      const workout: GeneratedWorkoutDisplay = {
+        id: sessionId,
+        exercises: exerciseDisplays,
+        totalDuration: session.duration_minutes || Math.round(sessionExercises.length * 3),
+        isDeload: false,
+        explanation: `Custom workout: ${session.notes?.replace('Custom: ', '') || sessionExercises.length + ' exercises'}`,
+        warnings: [],
+        warmup: [],
+        cooldown: [],
+      };
+
+      setState({
+        status: 'ready',
+        workout,
+        currentExerciseIndex: 0,
+        startTime: null,
+        error: null,
+      });
+
+      console.log('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
+    } catch (err) {
+      console.error('[FitQuest] Failed to load custom workout:', err);
+      setState((prev: WorkoutState) => ({
+        ...prev,
+        status: 'error',
+        error: err instanceof Error ? err.message : 'Failed to load custom workout',
+      }));
+    }
+  }, []);
   /**
    * Start the current workout
    */
@@ -347,10 +448,20 @@ export function useFitQuestWorkout() {
 
   /**
    * Finish and record the workout using ENGINE 2 & 3
+   * Supports both full completion and early finish (partial completion)
    */
   const finishWorkout = useCallback(async (): Promise<WorkoutCompletionData | null> => {
-    if (!state.workout || state.status !== 'completed') return null;
+    // Prevent double-tap race condition
+    if (finishingRef.current) {
+      console.log('[FitQuest] finishWorkout already in progress, ignoring duplicate call');
+      return null;
+    }
+    
+    // Allow finishing if we have a workout and are either completed OR in_progress (early finish)
+    if (!state.workout || (state.status !== 'completed' && state.status !== 'in_progress')) return null;
 
+    finishingRef.current = true;
+    
     try {
       // Build performance records
       const performances: ExercisePerformance[] = state.workout.exercises.map((ex: WorkoutExerciseDisplay) => ({
@@ -487,6 +598,15 @@ export function useFitQuestWorkout() {
       // DO NOT reset to 'idle' here — it triggers auto-generate before completionResult is set
       console.log('[FitQuest] Workout finished successfully, keeping completed state');
 
+      // Notify all subscribed screens that workout data changed
+      notifyWorkoutCompleted({
+        sessionId: state.workout.id,
+        exercisesCompleted: completedCount,
+        totalExercises: state.workout.exercises.length,
+        durationMinutes: Math.round(durationSeconds / 60),
+        xpEarned: xpResult.xpEarned,
+      });
+
       // Collect muscles worked from completed exercises
       const musclesWorkedSet = new Set<string>();
       for (const ex of state.workout.exercises) {
@@ -523,6 +643,8 @@ export function useFitQuestWorkout() {
         error: err instanceof Error ? err.message : 'Failed to finish workout',
       });
       return null;
+    } finally {
+      finishingRef.current = false;
     }
   }, [state.workout, state.status, state.startTime, userProfile?.goal, userProfile?.experience]);
 
@@ -564,6 +686,7 @@ export function useFitQuestWorkout() {
 
     // Actions
     generateNewWorkout,
+    loadCustomWorkout,
     startWorkout,
     completeExercise,
     skipExercise,

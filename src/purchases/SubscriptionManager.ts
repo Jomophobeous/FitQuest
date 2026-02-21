@@ -420,15 +420,15 @@ export class SubscriptionManager {
     // Default offerings for development
     return {
       monthly: {
-        price: '$9.99',
-        pricePerMonth: '$9.99',
+        price: '$5.39',
+        pricePerMonth: '$5.39',
         identifier: PRODUCT_MONTHLY,
       },
       annual: {
-        price: '$79.99',
-        pricePerMonth: '$6.67',
+        price: '$53.99',
+        pricePerMonth: '$4.50',
         identifier: PRODUCT_ANNUAL,
-        savingsPercent: 33,
+        savingsPercent: 17,
       },
     };
   }

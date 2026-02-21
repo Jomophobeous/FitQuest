@@ -51,6 +51,8 @@ function ThemedTabs() {
           fontSize: 18,
         },
         headerRight: () => <DropdownMenu />,
+        // Screen transition animations — smooth fade + slide
+        animation: 'shift',
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,

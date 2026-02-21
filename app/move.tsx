@@ -8,7 +8,7 @@
  * Walking 10k steps must NOT affect the workout engine.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -33,6 +33,7 @@ import { useLanguage } from '../src/context/LanguageContext';
 import { usePedometer, DailySteps, JogSession } from '../src/hooks/usePedometer';
 import { useSensorFusion, type ActivityType } from '../src/engines/SensorFusionEngine';
 import { awardJogXP, awardStepXP } from '../src/services/xpService';
+import { useDataSync, notifyStepsUpdated, notifyJogCompleted } from '../src/services/dataSyncService';
 import {
   GlassCard,
   GradientButton,
@@ -84,6 +85,14 @@ export default function MoveScreen() {
   const [showJogComplete, setShowJogComplete] = useState(false);
   const [jogCompletionData, setJogCompletionData] = useState<JogCompletionData | null>(null);
 
+  // Load step and jog history from database
+  const loadHistory = useCallback(async () => {
+    const steps = await getStepHistory(7);
+    const jogs = await getJogHistory(10);
+    setStepHistory(steps);
+    setJogHistory(jogs);
+  }, []);
+
   // Live jog timer
   useEffect(() => {
     let iv: ReturnType<typeof setInterval>;
@@ -95,14 +104,11 @@ export default function MoveScreen() {
     return () => clearInterval(iv);
   }, [isJogging, currentJog]);
 
-  useEffect(() => { loadHistory(); }, []);
+  useEffect(() => { loadHistory(); }, [loadHistory]);
 
-  const loadHistory = async () => {
-    const steps = await getStepHistory(7);
-    const jogs = await getJogHistory(10);
-    setStepHistory(steps);
-    setJogHistory(jogs);
-  };
+  // Subscribe to data sync events from other screens
+  useDataSync('workout_completed', loadHistory);
+  useDataSync('xp_awarded', loadHistory);
 
   const handleStartTracking = async () => {
     // Start tracking — uses native pedometer if available, SensorFusion fallback otherwise
@@ -127,6 +133,11 @@ export default function MoveScreen() {
         xpEarned: xpResult?.xpEarned || 0,
       });
       setShowJogComplete(true);
+      
+      // Notify other screens about the jog completion
+      const durationSeconds = session.endTime ? Math.floor((session.endTime.getTime() - session.startTime.getTime()) / 1000) : 0;
+      notifyJogCompleted(session.distanceMeters, durationSeconds);
+      
       loadHistory();
     }
   };
@@ -233,6 +244,7 @@ export default function MoveScreen() {
                 onPress={async () => {
                   await stopTracking();
                   await awardStepXP(todaySteps);
+                  notifyStepsUpdated(todaySteps);
                 }}
                 style={[styles.stopTrackingBtn, { backgroundColor: theme.colors.error + '18', borderColor: theme.colors.error + '40' }]}
               >
@@ -600,7 +612,7 @@ export default function MoveScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { paddingBottom: 32 },
+  scrollContent: { paddingBottom: 100 },
   headerGradient: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   headerTitle: { fontSize: 28, fontWeight: '800' },
@@ -624,7 +636,7 @@ const styles = StyleSheet.create({
   jogIconWrap: { width: 42, height: 42, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   jogTitle: { fontSize: 17, fontWeight: '700' },
   jogSub: { fontSize: 12, marginTop: 1 },
-  activeJog: { marginTop: 16, gap: 16, minHeight: 180 },
+  activeJog: { marginTop: 16, gap: 16 },
   jogStartButtonWrap: { marginTop: 14, minHeight: 48 },
   jogTimerDisplay: { alignItems: 'center' },
   jogTimerText: { fontSize: 40, fontWeight: '800', fontVariant: ['tabular-nums'] as any },

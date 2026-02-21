@@ -362,7 +362,7 @@ export default function OnboardingScreen() {
                     },
                   ]}
                 >
-                  <Text style={[styles.dayBtnText, { color: data.trainingDays === d ? '#000' : theme.colors.text }]}>{d}</Text>
+                  <Text style={[styles.dayBtnText, { color: data.trainingDays === d ? theme.colors.onAccent : theme.colors.text }]}>{d}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -384,7 +384,7 @@ export default function OnboardingScreen() {
                     },
                   ]}
                 >
-                  <Text style={[styles.dayBtnText, { color: data.sessionMinutes === m ? '#000' : theme.colors.text }]}>{m}</Text>
+                  <Text style={[styles.dayBtnText, { color: data.sessionMinutes === m ? theme.colors.onAccent : theme.colors.text }]}>{m}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -426,7 +426,7 @@ export default function OnboardingScreen() {
                       </Text>
                       {!!selected && (
                         <View style={[styles.equipCheck, { backgroundColor: theme.colors.accent }]}>
-                          <MaterialCommunityIcons name="check" size={14} color="#000" />
+                          <MaterialCommunityIcons name="check" size={14} color={theme.colors.onAccent} />
                         </View>
                       )}
                     </TouchableOpacity>
@@ -493,11 +493,11 @@ export default function OnboardingScreen() {
           disabled={!canAdvance() || saving}
           activeOpacity={0.9}
         >
-          <Text style={[styles.ctaBtnText, { color: canAdvance() ? '#000' : theme.colors.textMuted }]}>
+          <Text style={[styles.ctaBtnText, { color: canAdvance() ? theme.colors.onAccent : theme.colors.textMuted }]}>
             {step === TOTAL_STEPS - 1 ? (saving ? t('onboarding.saving') : t('onboarding.getStarted')) : t('onboarding.continue')}
           </Text>
           {step < TOTAL_STEPS - 1 && (
-            <MaterialCommunityIcons name="arrow-right" size={20} color={canAdvance() ? '#000' : theme.colors.textMuted} />
+            <MaterialCommunityIcons name="arrow-right" size={20} color={canAdvance() ? theme.colors.onAccent : theme.colors.textMuted} />
           )}
         </TouchableOpacity>
 

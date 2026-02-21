@@ -214,7 +214,7 @@ export default function NutritionCalculatorScreen() {
         {/* Header */}
         <Animated.View entering={FadeIn.duration(150)}>
           <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')} style={styles.backBtn}>
               <MaterialCommunityIcons name="arrow-left" size={22} color={theme.colors.text} />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: theme.colors.text }]}>

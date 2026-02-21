@@ -339,8 +339,8 @@ export default function ProgressScreen() {
             style={[styles.button, { backgroundColor: theme.colors.accent, flex: 1 }]}
             onPress={handleTakePhoto}
           >
-            <MaterialCommunityIcons name="camera" size={20} color="#fff" />
-            <Text style={[styles.buttonText, { color: theme.colors.text }]}>Take Photo</Text>
+            <MaterialCommunityIcons name="camera" size={20} color={theme.colors.onAccent} />
+            <Text style={[styles.buttonText, { color: theme.colors.onAccent }]}>Take Photo</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, flex: 1 }]}

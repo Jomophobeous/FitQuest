@@ -495,7 +495,7 @@ export default function SavedWorkoutsScreen() {
           style={styles.headerGradient}
         >
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
             style={[styles.backBtn, { backgroundColor: theme.colors.surface }]}
           >
             <MaterialCommunityIcons

@@ -186,7 +186,7 @@ export default function CraftMyBodyScreen() {
 
   const goBack = useCallback(() => {
     if (stepIndex > 0) setStepIndex((i) => i - 1);
-    else router.back();
+    else router.canGoBack() ? router.back() : router.replace('/dashboard');
   }, [stepIndex, router]);
 
   const toggleMusclePriority = useCallback((key: string) => {
@@ -580,7 +580,7 @@ export default function CraftMyBodyScreen() {
             <Text style={[styles.navBtnText, { color: colors.text }]}>Edit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.back()} style={styles.navBtn}>
+          <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')} style={styles.navBtn}>
             <Text style={[styles.navBtnText, { color: colors.accent }]}>Done</Text>
             <MaterialCommunityIcons name="check" size={22} color={colors.accent} />
           </TouchableOpacity>

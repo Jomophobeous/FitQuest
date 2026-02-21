@@ -1066,6 +1066,35 @@ const en = {
   'backup.uploadFailed': 'Upload failed',
   'backup.noCloudBackups': 'No cloud backups yet.',
   'backup.cloudHelper': 'Stores the encrypted backup blob on your Phase 2 backend. The server cannot decrypt your data.',
+
+  // Dashboard — daily stats & updates
+  'dashboard.stepsToday': 'Steps',
+  'dashboard.activeMin': 'Active min',
+  'dashboard.completionRate': 'Completion',
+  'dashboard.updatesTitle': 'Updates Coming Soon',
+  'dashboard.updatesDesc': 'Social features, wearable sync, and AI Professor are on the way.',
+  'dashboard.goodMorning': 'Good morning',
+  'dashboard.goodAfternoon': 'Good afternoon',
+  'dashboard.goodEvening': 'Good evening',
+
+  // Profile — biometric & security
+  'profile.biometricLock': 'Biometric Lock',
+  'profile.biometricActive': 'Face ID / Fingerprint active',
+  'profile.biometricAvailable': 'Tap to enable Face ID / Fingerprint',
+  'profile.biometricUnavailable': 'Not available on this device',
+  'profile.biometricVerified': 'Biometric authentication verified successfully.',
+  'profile.security': 'Security',
+  'profile.consentAccepted': 'Accepted',
+
+  // Login — offline & OAuth
+  'login.continueOffline': 'Continue Offline',
+  'login.error.noBackend': 'No server configured. Use offline mode.',
+  'login.oauth.backendServer': 'Backend server',
+
+  // Create Workout & common
+  'createWorkout.startNow': 'Start Now',
+  'error.title': 'Error',
+  'common.restore': 'Restore',
 };
 
 const af: Record<string, string> = {
@@ -1198,6 +1227,9 @@ const af: Record<string, string> = {
   'dashboard.completionRate': 'Voltooiing',
   'dashboard.updatesTitle': 'Opdaterings Kom Binnekort',
   'dashboard.updatesDesc': 'Sosiale kenmerke, draagbare toestelsinc, en KI-Professor is op pad.',
+  'dashboard.goodMorning': 'Goeie môre',
+  'dashboard.goodAfternoon': 'Goeie middag',
+  'dashboard.goodEvening': 'Goeie aand',
 
   // Exercises screen
   'exercises.library': 'Oefening Biblioteek',
@@ -1396,6 +1428,9 @@ const zu: Record<string, string> = {
   'dashboard.completionRate': 'Ukuqedela',
   'dashboard.updatesTitle': 'Izibuyekezo Ziyeza Maduze',
   'dashboard.updatesDesc': 'Izici zenhlalo, ukusebenzisana namawashi, noSolwazi we-AI kusendleleni.',
+  'dashboard.goodMorning': 'Sawubona ekuseni',
+  'dashboard.goodAfternoon': 'Sawubona ntambama',
+  'dashboard.goodEvening': 'Sawubona kusihlwa',
 
   // Exercises screen
   'exercises.library': 'Umtapo Wokuzivocavoca',
@@ -1702,6 +1737,9 @@ const es: Record<string, string> = {
   'dashboard.completionRate': 'Completado',
   'dashboard.updatesTitle': 'Actualizaciones Próximamente',
   'dashboard.updatesDesc': 'Funciones sociales, sincronización con wearables y Profesor IA están en camino.',
+  'dashboard.goodMorning': 'Buenos días',
+  'dashboard.goodAfternoon': 'Buenas tardes',
+  'dashboard.goodEvening': 'Buenas noches',
 
   // Exercises
   'exercises.library': 'Biblioteca de Ejercicios',

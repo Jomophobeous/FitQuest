@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -82,17 +82,24 @@ export default function DashboardScreen() {
     headerOpacity.value = withTiming(1, { duration: 300 });
   }, []);
 
+  // Debounce loadProgress to prevent triple-calls from focus + sync events
+  const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedLoad = useCallback(() => {
+    if (loadTimer.current) clearTimeout(loadTimer.current);
+    loadTimer.current = setTimeout(() => { loadProgress(); }, 300);
+  }, []);
+
   // Reload data every time screen gains focus (e.g. after completing a workout)
   useFocusEffect(
     useCallback(() => {
-      loadProgress();
-    }, [])
+      debouncedLoad();
+    }, [debouncedLoad])
   );
 
   // Also reload when data sync events fire (workout completed, XP awarded, etc.)
   useDataSync(
     ['workout_completed', 'xp_awarded', 'steps_updated', 'streak_updated', 'level_up'],
-    () => { loadProgress(); }
+    debouncedLoad
   );
 
   const loadProgress = async () => {
@@ -272,7 +279,12 @@ export default function DashboardScreen() {
             <View style={styles.heroTop}>
               <View>
                 <ThemedText variant="caption" color="secondary" style={styles.greeting}>
-                  {t('dashboard.welcomeBack') || 'Welcome back'}
+                  {(() => {
+                    const hour = new Date().getHours();
+                    if (hour < 12) return t('dashboard.goodMorning') || 'Good morning';
+                    if (hour < 18) return t('dashboard.goodAfternoon') || 'Good afternoon';
+                    return t('dashboard.goodEvening') || 'Good evening';
+                  })()}
                 </ThemedText>
                 <ThemedText variant="h2" color="primary" style={styles.heroTitle}>
                   {displayName}

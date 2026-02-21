@@ -503,12 +503,10 @@ export default function ProfileScreen() {
             visible: true,
             title: t('profile.notificationsAction.setReminderTime'),
             subtitle: t('profile.notificationsAction.pickTime') || 'Choose your preferred reminder time',
-            options: Array.from({ length: 48 }, (_, i) => {
-              const hour = Math.floor(i / 2);
-              const min = (i % 2) * 30;
-              const label = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
-              return { label, value: String(hour) };
-            }),
+            options: Array.from({ length: 24 }, (_, hour) => ({
+              label: `${String(hour).padStart(2, '0')}:00`,
+              value: String(hour),
+            })),
             onSelect: async (hourValue) => {
               const hour = Number(hourValue);
               if (Number.isFinite(hour)) {

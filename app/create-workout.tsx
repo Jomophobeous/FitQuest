@@ -302,8 +302,8 @@ export default function CreateWorkoutScreen() {
                   style={[
                     styles.filterChip,
                     {
-                      backgroundColor: selectedDifficulty === diff.key ? diff.color : theme.colors.background,
-                      borderColor: selectedDifficulty === diff.key ? diff.color : theme.colors.border,
+                      backgroundColor: selectedDifficulty === diff.key ? diff.color : theme.colors.surfaceVariant,
+                      borderColor: selectedDifficulty === diff.key ? diff.color : theme.colors.textMuted,
                     },
                   ]}
                   onPress={() => setSelectedDifficulty(diff.key)}
@@ -328,8 +328,8 @@ export default function CreateWorkoutScreen() {
                   style={[
                     styles.filterChip,
                     {
-                      backgroundColor: selectedEquipment === eq.key ? theme.colors.accent : theme.colors.background,
-                      borderColor: selectedEquipment === eq.key ? theme.colors.accent : theme.colors.border,
+                      backgroundColor: selectedEquipment === eq.key ? theme.colors.accent : theme.colors.surfaceVariant,
+                      borderColor: selectedEquipment === eq.key ? theme.colors.accent : theme.colors.textMuted,
                     },
                   ]}
                   onPress={() => setSelectedEquipment(eq.key)}
@@ -355,8 +355,8 @@ export default function CreateWorkoutScreen() {
               style={[
                 styles.categoryChip,
                 {
-                  backgroundColor: selectedCategory === cat.key ? theme.colors.accent : theme.colors.surface,
-                  borderColor: selectedCategory === cat.key ? theme.colors.accent : theme.colors.border,
+                  backgroundColor: selectedCategory === cat.key ? theme.colors.accent : theme.colors.surfaceVariant,
+                  borderColor: selectedCategory === cat.key ? theme.colors.accent : theme.colors.textMuted,
                 },
               ]}
               onPress={() => setSelectedCategory(cat.key)}

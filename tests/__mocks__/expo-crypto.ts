@@ -19,4 +19,8 @@ export function getRandomBytes(length: number): Uint8Array {
   for (let i = 0; i < length; i++) bytes[i] = Math.floor(Math.random() * 256);
   return bytes;
 }
-export default { digestStringAsync, getRandomBytesAsync, getRandomBytes, CryptoDigestAlgorithm, CryptoEncoding };
+export function randomUUID(): string {
+  const hex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+export default { digestStringAsync, getRandomBytesAsync, getRandomBytes, randomUUID, CryptoDigestAlgorithm, CryptoEncoding };

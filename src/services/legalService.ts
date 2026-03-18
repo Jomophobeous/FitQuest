@@ -3,7 +3,7 @@ import { deleteAppStateByPrefix, getAppState, setAppState } from '../database/se
 import { recordConsentTimestamp } from './authApi';
 import { enqueueMutation } from './mutationQueueService';
 
-export const LEGAL_POLICY_VERSION = '2026-02-17.1';
+export const LEGAL_POLICY_VERSION = '2026-03-13.1';
 
 const CONSENT_TIMESTAMP_KEY = 'legal.consent.timestamp';
 const CONSENT_VERSION_KEY = 'legal.consent.version';
@@ -21,8 +21,8 @@ export interface LegalLinks {
 }
 
 const DEFAULT_LINKS: LegalLinks = {
-  privacyPolicyUrl: 'https://fitquest.app/privacy',
-  termsOfServiceUrl: 'https://fitquest.app/terms',
+  privacyPolicyUrl: 'https://fitquest.dev/privacy',
+  termsOfServiceUrl: 'https://fitquest.dev/terms',
 };
 
 export async function getConsentRecord(): Promise<ConsentRecord> {

@@ -33,6 +33,7 @@ import { useFitQuestWorkout, WorkoutExerciseDisplay, WorkoutCompletionData } fro
 import WorkoutSummaryView from '../src/components/WorkoutSummaryView';
 import { useTimer } from '../src/hooks/useTimer';
 import { audioService } from '../src/services/audioService';
+import { setAppState } from '../src/database/service';
 import {
   GlassCard,
   GradientButton,
@@ -46,8 +47,10 @@ import RestTimerOverlay from '../src/components/RestTimerOverlay';
 import GetReadyOverlay from '../src/components/GetReadyOverlay';
 import ConfettiBurst from '../src/components/ConfettiBurst';
 import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
+import MindExerciseView from '../src/components/MindExerciseView';
 import { haptic } from '../src/utils/haptics';
 import { useRouter } from 'expo-router';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 function FitQuestScreenInner() {
   const { width } = useWindowDimensions();
@@ -98,6 +101,8 @@ function FitQuestScreenInner() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const lastSpokenExerciseRef = useRef<string | null>(null);
+  const speakCancelRef = useRef(0); // Cancellation token for async narration chains
+  const lastAnnouncedPhaseRef = useRef<string | null>(null); // Track phase transitions
   const isCompactScreen = width < 390;
 
   // Initialize audio service
@@ -125,23 +130,46 @@ function FitQuestScreenInner() {
       // Avoid re-speaking the same exercise
       if (lastSpokenExerciseRef.current !== currentExercise.id) {
         lastSpokenExerciseRef.current = currentExercise.id;
+        // Increment cancellation token — any in-flight chain with an older token will abort
+        const token = ++speakCancelRef.current;
 
         const speakExercise = async () => {
-          setIsSpeaking(true);
-          const audioData = {
-            intro: currentExercise.audioIntro,
-            setup: currentExercise.audioSetup,
-            execution: currentExercise.audioExecution,
-            transition: currentExercise.audioTransition,
-          };
+          try {
+            setIsSpeaking(true);
+
+            // Phase transition announcement (warmup→main→cooldown)
+            const currentPhase = currentExercise.phase || 'main';
+            if (lastAnnouncedPhaseRef.current !== currentPhase) {
+              const fromPhase = lastAnnouncedPhaseRef.current as 'warmup' | 'main' | 'cooldown' | null;
+              lastAnnouncedPhaseRef.current = currentPhase;
+              await audioService.playPhaseTransition(fromPhase, currentPhase);
+              if (speakCancelRef.current !== token) return;
+              // Brief pause after phase announcement to let it land
+              await new Promise(resolve => setTimeout(resolve, 800));
+              if (speakCancelRef.current !== token) return;
+            }
+
+            const audioData = {
+              intro: currentExercise.audioIntro,
+              setup: currentExercise.audioSetup,
+              execution: currentExercise.audioExecution,
+              transition: currentExercise.audioTransition,
+            };
           
-          // Full narration sequence: intro → setup → execution cues
-          await audioService.playIntro(audioData);
-          await audioService.playSetup(audioData);
-          // Short pause before execution cues
-          await new Promise(resolve => setTimeout(resolve, 600));
-          await audioService.playExecution(audioData);
-          setIsSpeaking(false);
+            // Full narration sequence with cancellation checks between each step
+            await audioService.playIntro(audioData);
+            if (speakCancelRef.current !== token) return;
+            await audioService.playSetup(audioData);
+            if (speakCancelRef.current !== token) return;
+            await new Promise(resolve => setTimeout(resolve, 600));
+            if (speakCancelRef.current !== token) return;
+            await audioService.playExecution(audioData);
+            if (speakCancelRef.current !== token) return;
+            setIsSpeaking(false);
+          } catch (e) {
+            console.warn('[FitQuest] Narration error (non-fatal):', e);
+            setIsSpeaking(false);
+          }
         };
 
         speakExercise();
@@ -182,15 +210,19 @@ function FitQuestScreenInner() {
   // Collapsible instructions
   const [showAllInstructions, setShowAllInstructions] = useState(false);
 
+  // Stable ref for generateNewWorkout to prevent re-triggering on identity changes
+  const generateNewWorkoutRef = useRef(generateNewWorkout);
+  generateNewWorkoutRef.current = generateNewWorkout;
+
   // Auto-generate on mount if ready and idle
   useEffect(() => {
-    if (isReady && status === 'idle' && !completionResult) {
+    if (isReady && userProfile && status === 'idle' && !completionResult) {
       // Small delay to let UI render first
       console.log('[FitQuest] Auto-generating workout (idle state, no completion result)');
-      const timer = setTimeout(() => generateNewWorkout(), 500);
+      const timer = setTimeout(() => generateNewWorkoutRef.current(), 500);
       return () => clearTimeout(timer);
     }
-  }, [isReady, status, completionResult]);
+  }, [isReady, userProfile, status, completionResult]);
 
   // Workout rating state (shown after completion)
   const [workoutRating, setWorkoutRating] = useState<number | null>(null);
@@ -211,6 +243,7 @@ function FitQuestScreenInner() {
   // Stop audio whenever we leave in_progress state (safety net)
   useEffect(() => {
     if (status !== 'in_progress') {
+      speakCancelRef.current++;
       audioService.stop();
       setIsSpeaking(false);
     }
@@ -234,11 +267,21 @@ function FitQuestScreenInner() {
     const hasNext = nextIdx < (workout?.exercises.length ?? 0);
 
     if (reason === 'timer' && hasNext) {
-      // Timer ended naturally → show Get-Ready countdown before next exercise
       const next = workout!.exercises[nextIdx];
       const curr = workout!.exercises[currentExerciseIndex];
-      // Detect category change as proxy for equipment change
-      const categoryChanged = curr && next && curr.category !== next.category;
+      const currentPhase = curr?.phase || 'main';
+
+      // Warmup/cooldown: skip Get-Ready overlay — just advance immediately for pace
+      if (currentPhase === 'warmup' || currentPhase === 'cooldown') {
+        completeExercise(5);
+        Vibration.vibrate(20);
+        console.log(`[FitQuest] ${currentPhase} rest ended — quick advance`, { next: next?.name });
+        return;
+      }
+
+      // Main exercises: full Get-Ready countdown before next exercise
+      if (!next) { completeExercise(5); return; }
+      const categoryChanged = curr && curr.category !== next.category;
       setGetReadyExercise({
         exerciseId: next.exerciseId,
         name: next.name,
@@ -274,15 +317,52 @@ function FitQuestScreenInner() {
 
   const handleFinish = async () => {
     console.log('[FitQuest] handleFinish called — processing workout completion');
-    // Stop ALL audio immediately — narrator must not continue after workout ends
+    // Cancel any in-flight narration chain AND stop current audio
+    speakCancelRef.current++;
     audioService.stop();
     lastSpokenExerciseRef.current = null;
+    lastAnnouncedPhaseRef.current = null;
     setIsSpeaking(false);
-    const result = await finishWorkout();
+
+    let result: WorkoutCompletionData | null = null;
+    try {
+      result = await finishWorkout();
+    } catch (e) {
+      console.error('[FitQuest] finishWorkout threw (non-fatal):', e);
+    }
+
     if (result) {
       console.log('[FitQuest] Workout finished successfully — showing completion screen');
       setCompletionResult(result);
       setWorkoutRating(null);
+
+      // Narrator compliments the user with context-aware praise (non-blocking)
+      try {
+        audioService.playWorkoutCompliment({
+          completedCount: result.completedCount,
+          totalCount: result.totalCount,
+          durationSeconds: result.durationSeconds,
+          streakDays: result.streak?.current ?? 0,
+          xpEarned: result.xpEarned,
+          levelUp: result.levelUp,
+          newLevel: result.newLevel,
+          progressions: result.progressions,
+          exerciseNames: result.exerciseNames,
+        });
+      } catch (e) {
+        console.warn('[FitQuest] Compliment narration error (non-fatal):', e);
+      }
+
+      // Store last workout summary so AI Coach can reference it
+      setAppState('last_completed_workout', JSON.stringify({
+        completedCount: result.completedCount,
+        totalCount: result.totalCount,
+        durationSeconds: result.durationSeconds,
+        streakDays: result.streak?.current ?? 0,
+        xpEarned: result.xpEarned,
+        exerciseNames: result.exerciseNames,
+        completedAt: Date.now(),
+      })).catch(e => console.warn('[FitQuest] Failed to store last workout:', e));
     } else {
       console.warn('[FitQuest] finishWorkout returned null — may have already been called');
     }
@@ -291,6 +371,7 @@ function FitQuestScreenInner() {
   const handleNewWorkout = () => {
     setCompletionResult(null);
     setWorkoutRating(null);
+    lastAnnouncedPhaseRef.current = null;
     cancelWorkout(); // Reset hook state to idle
     setTimeout(() => generateNewWorkout(), 100); // Small delay for state to settle
   };
@@ -338,7 +419,25 @@ function FitQuestScreenInner() {
           <Text style={[styles.errorSub, { color: theme.colors.textSecondary }]}>
             {dbError || error}
           </Text>
-          <GradientButton title={t('fitquest.resetAndRetry')} icon="refresh" onPress={handleReset} colors={[theme.colors.error, '#B91C1C']} />
+          <GradientButton title={t('fitquest.resetAndRetry')} icon="refresh" onPress={handleReset} colors={[theme.colors.error, theme.colors.error]} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ===== DB NOT READY YET (retry in progress) =====
+  if (!isReady) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.centered}>
+          <Animated.View entering={ZoomIn.duration(150)}>
+            <View style={[styles.loadingIcon, { backgroundColor: theme.colors.accent + '15' }]}>
+              <ActivityIndicator size="large" color={theme.colors.accent} />
+            </View>
+          </Animated.View>
+          <Animated.Text entering={FadeIn.delay(50).duration(150)} style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+            {t('fitquest.initializing')}
+          </Animated.Text>
         </View>
       </SafeAreaView>
     );
@@ -423,7 +522,7 @@ function FitQuestScreenInner() {
           </Animated.View>
 
           {/* Warnings */}
-          {workout.warnings.length > 0 && (
+          {workout.warnings?.length > 0 && (
             <Animated.View entering={FadeInDown.delay(150).duration(150)}>
               <GlassCard
                 style={{ marginHorizontal: 16, marginTop: 8 }}
@@ -456,7 +555,7 @@ function FitQuestScreenInner() {
 
           {/* Exercise Count */}
           <SectionHeader
-            title={`${workout.exercises.length} ${t('library.exercises')} · ~${workout.totalDuration} ${t('fitquest.minShort')}`}
+            title={`${(workout.exercises ?? []).filter(e => e.phase === 'main' || !e.phase).length} ${t('library.exercises')} · ~${workout.totalDuration} ${t('fitquest.minShort')}`}
             delay={250}
           />
 
@@ -506,8 +605,8 @@ function FitQuestScreenInner() {
             </Animated.View>
           )}
 
-          {/* Exercise List */}
-          {workout.exercises.map((exercise: WorkoutExerciseDisplay, index: number) => (
+          {/* Exercise List (main exercises only — warmup/cooldown shown above/below) */}
+          {(workout.exercises ?? []).filter(e => e.phase === 'main' || !e.phase).map((exercise: WorkoutExerciseDisplay, index: number) => (
             <Animated.View
               key={exercise.id}
               entering={FadeInRight.delay(250 + index * 40).duration(150)}
@@ -539,9 +638,9 @@ function FitQuestScreenInner() {
           {workout.cooldown && workout.cooldown.length > 0 && (
             <>
               <Animated.View entering={FadeInDown.delay(380).duration(150)} style={{ paddingHorizontal: 16, marginTop: 4, marginBottom: 4 }}>
-                <View style={[styles.phaseTag, { backgroundColor: '#3B82F6' + '18' }]}>
-                  <MaterialCommunityIcons name="snowflake" size={16} color="#3B82F6" />
-                  <Text style={[styles.phaseTagText, { color: '#3B82F6' }]}>
+                <View style={[styles.phaseTag, { backgroundColor: theme.colors.blue + '18' }]}>
+                  <MaterialCommunityIcons name="snowflake" size={16} color={theme.colors.blue} />
+                  <Text style={[styles.phaseTagText, { color: theme.colors.blue }]}>
                     {t('fitquest.coolDown') || 'Cool Down'} · {workout.cooldown.length} {t('library.exercises')}
                   </Text>
                 </View>
@@ -554,7 +653,7 @@ function FitQuestScreenInner() {
                 >
                   <View style={[
                     styles.exercisePreviewCard,
-                    { backgroundColor: theme.colors.surfaceVariant, borderColor: '#3B82F6' + '30' },
+                    { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.blue + '30' },
                   ]}>
                     <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="thumbnail" />
                     <View style={{ flex: 1, marginLeft: 12 }}>
@@ -588,7 +687,7 @@ function FitQuestScreenInner() {
 
           {/* Regenerate */}
           <Animated.View entering={FadeIn.delay(450).duration(150)} style={{ paddingHorizontal: 16, marginTop: 8 }}>
-            <TouchableOpacity style={[styles.regenBtn, { borderColor: theme.colors.border }]} onPress={generateNewWorkout}>
+            <TouchableOpacity style={[styles.regenBtn, { borderColor: theme.colors.border }]} onPress={generateNewWorkout} accessibilityRole="button" accessibilityLabel={t('fitquest.regenerate')}>
               <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.text} />
               <Text style={[styles.regenBtnText, { color: theme.colors.text }]}>{t('fitquest.regenerate')}</Text>
             </TouchableOpacity>
@@ -616,13 +715,11 @@ function FitQuestScreenInner() {
           progress={restTimer.progress}
           formattedRemaining={restTimer.formattedRemaining}
           remaining={restTimer.remaining}
-          nextExercise={workout.exercises[currentExerciseIndex + 1] ? {
-            exerciseId: workout.exercises[currentExerciseIndex + 1].exerciseId,
-            name: workout.exercises[currentExerciseIndex + 1].name,
-            category: workout.exercises[currentExerciseIndex + 1].category,
-            sets: workout.exercises[currentExerciseIndex + 1].sets,
-            reps: workout.exercises[currentExerciseIndex + 1].reps,
-          } : undefined}
+          phase={currentExercise.phase || 'main'}
+          nextExercise={(() => {
+            const ne = workout.exercises[currentExerciseIndex + 1];
+            return ne ? { exerciseId: ne.exerciseId, name: ne.name, category: ne.category, sets: ne.sets, reps: ne.reps } : undefined;
+          })()}
           onSkip={() => {
             console.log('[FitQuest] Rest skipped by user');
             haptic('restOver');
@@ -657,6 +754,9 @@ function FitQuestScreenInner() {
           <View style={styles.clockCenter}>
             <TouchableOpacity
               onPress={toggleVoice}
+              accessibilityRole="switch"
+              accessibilityLabel={voiceEnabled ? 'Disable voice guidance' : 'Enable voice guidance'}
+              accessibilityState={{ checked: voiceEnabled }}
               style={[styles.voiceToggle, { backgroundColor: voiceEnabled ? theme.colors.accent + '15' : theme.colors.textMuted + '10' }]}
             >
               <MaterialCommunityIcons
@@ -670,20 +770,155 @@ function FitQuestScreenInner() {
           
           <Text style={[styles.clockExerciseCount, { color: theme.colors.textMuted }]}>
             {currentExerciseIndex + 1} / {workout.exercises.length}
+            {currentExercise.phase === 'warmup' ? ' · Warm Up' : currentExercise.phase === 'cooldown' ? ' · Cool Down' : ''}
           </Text>
         </View>
 
-        {/* Progress Bar */}
-        <View style={styles.progressBarWrap}>
-          <View
-            style={[styles.progressBarFill, { width: `${progressPercentage}%`, backgroundColor: theme.colors.accent }]}
-          />
-        </View>
+        {/* Segmented Progress Bar (warmup → main → cooldown) */}
+        {(() => {
+          const warmupCount = workout.exercises.filter(e => e.phase === 'warmup').length;
+          const mainCount = workout.exercises.filter(e => e.phase === 'main' || !e.phase).length;
+          const cooldownCount = workout.exercises.filter(e => e.phase === 'cooldown').length;
+          const total = workout.exercises.length;
+          const completedInPhase = (phase: string) =>
+            workout.exercises.filter(e => (e.phase || 'main') === phase && e.completed).length;
+          const phaseTotal = (phase: string) =>
+            workout.exercises.filter(e => (e.phase || 'main') === phase).length;
+
+          // Current exercise counts as "in progress" — show partial fill
+          const currentPhase = currentExercise.phase || 'main';
+          const isInPhase = (phase: string) => currentPhase === phase;
+
+          return (
+            <View style={styles.segmentedBarWrap}>
+              {warmupCount > 0 && (
+                <View style={[styles.segmentedBarSegment, { flex: warmupCount / total }]}>
+                  <View
+                    style={[
+                      styles.segmentedBarFill,
+                      {
+                        width: `${phaseTotal('warmup') > 0 ? (completedInPhase('warmup') / phaseTotal('warmup')) * 100 : 0}%`,
+                        backgroundColor: theme.colors.success,
+                        borderRadius: completedInPhase('warmup') === phaseTotal('warmup') ? 0 : 2,
+                      },
+                    ]}
+                  />
+                  {isInPhase('warmup') && !workout.exercises[currentExerciseIndex]?.completed && (
+                    <View style={[styles.segmentedBarPulse, { backgroundColor: theme.colors.success + '60' }]} />
+                  )}
+                </View>
+              )}
+              {mainCount > 0 && (
+                <View style={[styles.segmentedBarSegment, { flex: mainCount / total }]}>
+                  <View
+                    style={[
+                      styles.segmentedBarFill,
+                      {
+                        width: `${phaseTotal('main') > 0 ? (completedInPhase('main') / phaseTotal('main')) * 100 : 0}%`,
+                        backgroundColor: theme.colors.accent,
+                      },
+                    ]}
+                  />
+                  {isInPhase('main') && !workout.exercises[currentExerciseIndex]?.completed && (
+                    <View style={[styles.segmentedBarPulse, { backgroundColor: theme.colors.accent + '60' }]} />
+                  )}
+                </View>
+              )}
+              {cooldownCount > 0 && (
+                <View style={[styles.segmentedBarSegment, { flex: cooldownCount / total }]}>
+                  <View
+                    style={[
+                      styles.segmentedBarFill,
+                      {
+                        width: `${phaseTotal('cooldown') > 0 ? (completedInPhase('cooldown') / phaseTotal('cooldown')) * 100 : 0}%`,
+                        backgroundColor: theme.colors.blue,
+                      },
+                    ]}
+                  />
+                  {isInPhase('cooldown') && !workout.exercises[currentExerciseIndex]?.completed && (
+                    <View style={[styles.segmentedBarPulse, { backgroundColor: theme.colors.blue + '60' }]} />
+                  )}
+                </View>
+              )}
+            </View>
+          );
+        })()}
 
         {/* Exercise Complete Badge (P7) */}
-        <ExerciseCompleteBadge visible={showCompleteBadge} message="Nice!" color={theme.colors.success} />
+        <ExerciseCompleteBadge
+          visible={showCompleteBadge}
+          message={
+            currentExercise.phase === 'warmup' ? '🔥 Warmed Up!'
+              : currentExercise.phase === 'cooldown' ? '❄️ Recovery!'
+              : ['Nice!', 'Strong!', 'Crushed it!', 'Beast mode!', 'Solid!'][currentExerciseIndex % 5]
+          }
+          color={
+            currentExercise.phase === 'warmup' ? theme.colors.success
+              : currentExercise.phase === 'cooldown' ? theme.colors.blue
+              : theme.colors.success
+          }
+        />
 
+        {/* ═══ MIND EXERCISE: completely different experience ═══ */}
+        {currentExercise.mindTimeline ? (
+          <MindExerciseView
+            exerciseName={currentExercise.name}
+            timeline={currentExercise.mindTimeline}
+            voiceEnabled={voiceEnabled}
+            onComplete={() => {
+              console.log('[FitQuest] Mind exercise completed:', currentExercise.name);
+              haptic('exerciseComplete');
+              setShowCompleteBadge(true);
+              setTimeout(() => setShowCompleteBadge(false), 1300);
+              completeExercise(5);
+            }}
+            onCancel={() => {
+              speakCancelRef.current++;
+              audioService.stop();
+              Alert.alert(
+                'End Mind Session?',
+                'Your progress for this exercise will be saved.',
+                [
+                  { text: 'Continue', style: 'cancel' },
+                  { text: 'End', style: 'destructive', onPress: () => {
+                    completeExercise(5);
+                  }},
+                ]
+              );
+            }}
+          />
+        ) : (
         <ScrollView contentContainerStyle={[styles.exerciseContent, isCompactScreen && styles.exerciseContentCompact]} showsVerticalScrollIndicator={false}>
+          {/* Phase Banner for warmup/cooldown — shows phase + position within phase */}
+          {currentExercise.phase === 'warmup' && (() => {
+            const warmups = workout.exercises.filter(e => e.phase === 'warmup');
+            const posInPhase = warmups.findIndex(e => e.id === currentExercise.id) + 1;
+            return (
+              <Animated.View entering={FadeIn.duration(150)} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+                <View style={[styles.phaseTag, { backgroundColor: theme.colors.success + '18', alignSelf: 'center' }]}>
+                  <MaterialCommunityIcons name="fire" size={16} color={theme.colors.success} />
+                  <Text style={[styles.phaseTagText, { color: theme.colors.success }]}>
+                    {t('fitquest.warmUp') || 'Warm Up'} {posInPhase}/{warmups.length}
+                  </Text>
+                </View>
+              </Animated.View>
+            );
+          })()}
+          {currentExercise.phase === 'cooldown' && (() => {
+            const cooldowns = workout.exercises.filter(e => e.phase === 'cooldown');
+            const posInPhase = cooldowns.findIndex(e => e.id === currentExercise.id) + 1;
+            return (
+              <Animated.View entering={FadeIn.duration(150)} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+                <View style={[styles.phaseTag, { backgroundColor: theme.colors.blue + '18', alignSelf: 'center' }]}>
+                  <MaterialCommunityIcons name="snowflake" size={16} color={theme.colors.blue} />
+                  <Text style={[styles.phaseTagText, { color: theme.colors.blue }]}>
+                    {t('fitquest.coolDown') || 'Cool Down'} {posInPhase}/{cooldowns.length}
+                  </Text>
+                </View>
+              </Animated.View>
+            );
+          })()}
+
           {/* Current Exercise */}
           <Animated.View entering={FadeIn.duration(150)} style={styles.currentExercise}>
             {/* Exercise Image — auto-alternating between start/end position */}
@@ -728,7 +963,7 @@ function FitQuestScreenInner() {
                     </Text>
                   ))}
                   {currentExercise.instructions.length > 3 && (
-                    <TouchableOpacity onPress={() => setShowAllInstructions(!showAllInstructions)} style={{ marginTop: 8 }}>
+                    <TouchableOpacity onPress={() => setShowAllInstructions(!showAllInstructions)} style={{ marginTop: 8 }} accessibilityRole="button" accessibilityLabel={showAllInstructions ? 'Show less instructions' : 'Show all instructions'}>
                       <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600' }}>
                         {showAllInstructions ? t('fitquest.showLess') : `+${currentExercise.instructions.length - 3} ${t('fitquest.more')}`}
                       </Text>
@@ -743,7 +978,10 @@ function FitQuestScreenInner() {
           <View style={[styles.actionRow, isCompactScreen && styles.actionRowCompact]}>
             <TouchableOpacity
               style={[styles.skipButton, isCompactScreen && styles.skipButtonCompact, { borderColor: theme.colors.border }]}
+              accessibilityRole="button"
+              accessibilityLabel={t('train.skip')}
               onPress={() => {
+                speakCancelRef.current++;
                 audioService.stop();
                 stopAll();
                 setShowAllInstructions(false);
@@ -755,8 +993,13 @@ function FitQuestScreenInner() {
 
             <View style={{ flex: 1 }}>
               <GradientButton
-                title={isLastExercise ? t('fitquest.finishWorkout') : t('fitquest.completeSet')}
-                icon={isLastExercise ? "check-all" : "check"}
+                title={
+                  isLastExercise ? t('fitquest.finishWorkout')
+                    : (currentExercise.phase === 'warmup' || currentExercise.phase === 'cooldown')
+                      ? 'Done →'
+                      : t('fitquest.completeSet')
+                }
+                icon={isLastExercise ? "check-all" : (currentExercise.phase === 'warmup' || currentExercise.phase === 'cooldown') ? "arrow-right" : "check"}
                 onPress={async () => {
                   if (isResting) return;
                   console.log('[FitQuest] Action:complete_or_next', {
@@ -764,6 +1007,7 @@ function FitQuestScreenInner() {
                     index: currentExerciseIndex,
                     total: workout.exercises.length,
                   });
+                  speakCancelRef.current++;
                   audioService.stop();
                   stopAll();
                   setShowAllInstructions(false);
@@ -774,33 +1018,78 @@ function FitQuestScreenInner() {
                     haptic('workoutComplete');
                     setShowConfetti(true);
                     // Stop ALL narration immediately — no yapping on completion
+                    speakCancelRef.current++;
                     audioService.stop();
                     // Light completion: just vibration, no voice (user requested instant silence)
                     Vibration.vibrate([0, 100, 80, 100, 80, 200]);
                     console.log('[FitQuest] Last exercise completed — waiting for useEffect to trigger handleFinish');
                   } else {
-                    // Show rest immediately, then advance after rest ends/skip
+                    const currentPhase = currentExercise.phase || 'main';
                     const nextExercise = workout.exercises[currentExerciseIndex + 1];
-                    // Play transition narration (rich: "Well done! Rest for Xs. Up next: Y")
-                    audioService.stop(); // Stop any ongoing narration first
-                    const transitionAudio = {
-                      intro: currentExercise.audioIntro,
-                      setup: currentExercise.audioSetup,
-                      execution: currentExercise.audioExecution,
-                      transition: currentExercise.audioTransition,
-                    };
-                    await audioService.playTransition(transitionAudio);
-                    console.log('[FitQuest] Set complete — entering rest overlay immediately', {
-                      currentExercise: currentExercise.name,
-                      nextExercise: nextExercise?.name,
-                    });
-                    haptic('exerciseComplete');
-                    setShowCompleteBadge(true);
-                    setTimeout(() => setShowCompleteBadge(false), 1300);
-                    pendingExerciseAdvanceRef.current = true;
-                    setIsResting(true);
-                    const restDuration = currentExercise.restSeconds || 60;
-                    startRest(restDuration);
+
+                    // Warmup & Cooldown: lighter flow — quick transition, no heavy rest
+                    if (currentPhase === 'warmup' || currentPhase === 'cooldown') {
+                      haptic(currentPhase === 'warmup' ? 'warmupComplete' : 'cooldownComplete');
+                      setShowCompleteBadge(true);
+                      setTimeout(() => setShowCompleteBadge(false), 1300);
+
+                      // Detect phase boundary (warmup→main or main→cooldown)
+                      const nextPhase = nextExercise?.phase || 'main';
+                      const phaseChanging = nextPhase !== currentPhase;
+
+                      if (phaseChanging) {
+                        // Phase transition: brief pause then auto-advance (phase announcement handles narration)
+                        completeExercise(5);
+                        haptic('phaseTransition');
+                      } else if (nextExercise) {
+                        // Same phase: quick 2-second "Get Ready" then advance
+                        setGetReadyExercise({
+                          exerciseId: nextExercise.exerciseId,
+                          name: nextExercise.name,
+                          category: nextExercise.category,
+                          sets: nextExercise.sets,
+                          reps: nextExercise.reps,
+                          setupCue: nextExercise.instructions?.[0],
+                          audioSetup: nextExercise.audioSetup,
+                          equipmentChanged: false,
+                        });
+                        pendingExerciseAdvanceRef.current = true;
+                        // Short auto-rest for warmup/cooldown (keeps pace up)
+                        setIsResting(true);
+                        startRest(currentPhase === 'warmup' ? 10 : 8);
+                      }
+                      console.log(`[FitQuest] ${currentPhase} exercise done`, {
+                        phaseChanging,
+                        nextPhase,
+                        next: nextExercise?.name,
+                      });
+                    } else {
+                      // Main exercises: full rest timer with breathing guide
+                      // Play transition narration (rich: "Well done! Rest for Xs. Up next: Y")
+                      audioService.stop(); // Stop any ongoing narration first
+                      const transitionAudio = {
+                        intro: currentExercise.audioIntro,
+                        setup: currentExercise.audioSetup,
+                        execution: currentExercise.audioExecution,
+                        transition: currentExercise.audioTransition,
+                      };
+                      try {
+                        await audioService.playTransition(transitionAudio);
+                      } catch (e) {
+                        console.warn('[FitQuest] Transition audio error (non-fatal):', e);
+                      }
+                      console.log('[FitQuest] Set complete — entering rest overlay immediately', {
+                        currentExercise: currentExercise.name,
+                        nextExercise: nextExercise?.name,
+                      });
+                      haptic('exerciseComplete');
+                      setShowCompleteBadge(true);
+                      setTimeout(() => setShowCompleteBadge(false), 1300);
+                      pendingExerciseAdvanceRef.current = true;
+                      setIsResting(true);
+                      const restDuration = currentExercise.restSeconds || 60;
+                      startRest(restDuration);
+                    }
                   }
                 }}
                 variant={isLastExercise ? "success" : "primary"}
@@ -814,13 +1103,14 @@ function FitQuestScreenInner() {
             onPress={() => {
               Alert.alert(t('fitquest.cancelTitle'), t('fitquest.cancelBody'), [
                 { text: t('fitquest.keepGoing'), style: 'cancel' },
-                { text: t('common.cancel'), style: 'destructive', onPress: () => { audioService.stop(); stopAll(); cancelWorkout(); } },
+                { text: t('common.cancel'), style: 'destructive', onPress: () => { speakCancelRef.current++; audioService.stop(); stopAll(); cancelWorkout(); } },
               ]);
             }}
           >
             <Text style={{ color: theme.colors.textMuted, fontSize: 13 }}>{t('fitquest.cancelWorkout')}</Text>
           </TouchableOpacity>
         </ScrollView>
+        )}
       </SafeAreaView>
     );
   }
@@ -962,6 +1252,31 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   progressBarFill: { height: 4, borderRadius: 2 },
+  segmentedBarWrap: {
+    flexDirection: 'row',
+    height: 5,
+    gap: 2,
+    paddingHorizontal: 0,
+  },
+  segmentedBarSegment: {
+    height: 5,
+    backgroundColor: 'rgba(128,128,128,0.12)',
+    borderRadius: 3,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  segmentedBarFill: {
+    height: 5,
+    borderRadius: 3,
+  },
+  segmentedBarPulse: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 8,
+    height: 5,
+    borderRadius: 3,
+  },
   exerciseContent: { padding: 16, paddingBottom: 100 },
   exerciseContentCompact: { paddingBottom: 110 },
   // ═══ REST / GET-READY overlays are in separate components ═══
@@ -1008,6 +1323,12 @@ export default function FitQuestScreen() {
   const router = useRouter();
   return (
     <ScreenErrorBoundary screenName="FitQuest" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
+      <ScreenTutorial
+        screenKey="fitquest"
+        icon="sword-cross"
+        title="FitQuest Training"
+        description="Your personalized workout generator. Tap 'Generate Workout' to get an AI-tailored exercise session based on your goals, equipment, and recovery status."
+      />
       <FitQuestScreenInner />
     </ScreenErrorBoundary>
   );

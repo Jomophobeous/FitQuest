@@ -19,10 +19,8 @@ import Animated, {
   FadeIn,
   FadeInDown,
   FadeInUp,
-  FadeInRight,
   ZoomIn,
   SlideInDown,
-  Layout,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -34,13 +32,19 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Alert } from 'react-native';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useFitQuestWorkout, WorkoutExerciseDisplay } from '../src/hooks/useFitQuestWorkout';
 import { audioService } from '../src/services/audioService';
-import { useTimer, formatTime } from '../src/hooks/useTimer';
+import { useTimer } from '../src/hooks/useTimer';
 import { haptic } from '../src/utils/haptics';
 import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
+import ExerciseImage from '../src/components/ExerciseImage';
+import RestTimerOverlay from '../src/components/RestTimerOverlay';
+import MindExerciseView from '../src/components/MindExerciseView';
 import {
   GlassCard,
   GradientButton,
@@ -49,54 +53,6 @@ import {
   SectionHeader,
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
-
-// ─── Difficulty helpers ───
-
-function getDifficultyColor(difficulty: string, theme: any): string {
-  switch (difficulty) {
-    case 'easy':
-    case 'beginner':
-      return theme.colors.success;
-    case 'medium':
-    case 'intermediate':
-      return theme.colors.warning;
-    case 'hard':
-    case 'advanced':
-      return theme.colors.error;
-    default:
-      return theme.colors.accent;
-  }
-}
-
-function getDifficultyLabel(difficulty: string): string {
-  switch (difficulty) {
-    case 'easy':
-    case 'beginner':
-      return 'BEGINNER';
-    case 'medium':
-    case 'intermediate':
-      return 'INTERMEDIATE';
-    case 'hard':
-    case 'advanced':
-      return 'ADVANCED';
-    default:
-      return difficulty?.toUpperCase() || 'MODERATE';
-  }
-}
-
-function getExerciseIcon(name: string): keyof typeof MaterialCommunityIcons.glyphMap {
-  const lower = name.toLowerCase();
-  if (lower.includes('bench') || lower.includes('press')) return 'weight-lifter';
-  if (lower.includes('squat') || lower.includes('leg')) return 'human-handsdown';
-  if (lower.includes('pull') || lower.includes('row')) return 'arm-flex';
-  if (lower.includes('curl')) return 'arm-flex-outline';
-  if (lower.includes('deadlift')) return 'weight';
-  if (lower.includes('plank') || lower.includes('core')) return 'human';
-  if (lower.includes('run') || lower.includes('cardio')) return 'run-fast';
-  if (lower.includes('push')) return 'chevron-down';
-  if (lower.includes('shoulder')) return 'human-greeting-variant';
-  return 'dumbbell';
-}
 
 // ─── Main Component ───
 
@@ -121,7 +77,7 @@ export default function WorkoutScreen() {
     startWorkout,
   } = useFitQuestWorkout();
 
-  const { exerciseTimer, sessionTimer, startExercise, startSession, endSession } = useTimer();
+  const { exerciseTimer, startExercise, restTimer, startRest, skipRest, extendRest, stopAll } = useTimer();
 
   // Session elapsed
   const [sessionElapsed, setSessionElapsed] = useState(0);
@@ -129,6 +85,8 @@ export default function WorkoutScreen() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [showCompleteBadge, setShowCompleteBadge] = useState(false);
   const prevExerciseIndexRef = useRef<number>(0);
+  const [showAllInstructions, setShowAllInstructions] = useState(false);
+  const [isResting, setIsResting] = useState(false);
 
   // Pulse animation for active exercise
   const pulse = useSharedValue(1);
@@ -191,36 +149,101 @@ export default function WorkoutScreen() {
   // Haptic feedback when exercise changes (exercise start)
   useEffect(() => {
     if (status === 'in_progress' && currentExerciseIndex !== prevExerciseIndexRef.current) {
-      // New exercise started - trigger start haptic
       haptic('exerciseStart');
+      setShowAllInstructions(false);
       prevExerciseIndexRef.current = currentExerciseIndex;
+      // Narrate exercise name
+      if (currentExercise) {
+        audioService.speakNarration(`${currentExercise.name}. ${currentExercise.sets} sets, ${currentExercise.reps} reps.`);
+      }
+      // Start exercise timer for timed exercises (e.g. "60s hold", "3 min", "1:30")
+      if (currentExercise) {
+        if (currentExercise.mindTimeline?.totalDuration) {
+          // Focus/mind exercises use the mind timeline duration
+          startExercise(currentExercise.mindTimeline.totalDuration);
+        } else {
+          // Parse various timed rep formats: "60s", "30s hold", "3 min", "1:30", "60 sec"
+          const reps = currentExercise.reps || '';
+          let seconds = 0;
+          const secMatch = reps.match(/^(\d+)\s*s(?:ec)?\b/i);
+          const minMatch = reps.match(/^(\d+)\s*min/i);
+          const colonMatch = reps.match(/^(\d+):(\d{2})$/);
+          const holdMatch = reps.match(/(\d+)\s*s?\s*hold/i);
+          if (secMatch) seconds = parseInt(secMatch[1]!, 10);
+          else if (minMatch) seconds = parseInt(minMatch[1]!, 10) * 60;
+          else if (colonMatch) seconds = parseInt(colonMatch[1]!, 10) * 60 + parseInt(colonMatch[2]!, 10);
+          else if (holdMatch) seconds = parseInt(holdMatch[1]!, 10);
+          if (secMatch) seconds = parseInt(secMatch[1]!, 10);
+          else if (minMatch) seconds = parseInt(minMatch[1]!, 10) * 60;
+          else if (colonMatch) seconds = parseInt(colonMatch[1]!, 10) * 60 + parseInt(colonMatch[2]!, 10);
+          if (seconds > 0) startExercise(seconds * currentExercise.sets);
+        }
+      }
     }
-  }, [currentExerciseIndex, status]);
+  }, [currentExerciseIndex, status, currentExercise]);
+
+  // Rest timer completion
+  useEffect(() => {
+    if (isResting && restTimer.state === 'completed') {
+      setIsResting(false);
+      haptic('restOver');
+    }
+  }, [isResting, restTimer.state]);
+
+  // Exercise timer completion (auto-complete timed exercises)
+  useEffect(() => {
+    if (exerciseTimer.state === 'completed' && currentExercise) {
+      handleComplete();
+    }
+  }, [exerciseTimer.state]);
 
   const handleComplete = useCallback(async () => {
-    audioService.stop(); // Stop narration voice immediately
-    // Show visual badge and haptic
+    audioService.stop();
     setShowCompleteBadge(true);
     haptic('exerciseComplete');
-    await completeExercise(4); // Default rating 4
-    // Hide badge after animation completes
+    setShowAllInstructions(false);
+    await completeExercise(4);
     setTimeout(() => setShowCompleteBadge(false), 1300);
-  }, [completeExercise]);
+    // Start rest timer if not the last exercise
+    const exs = workout?.exercises ?? [];
+    const isLast = currentExerciseIndex === exs.length - 1;
+    if (!isLast && currentExercise?.restSeconds) {
+      setIsResting(true);
+      startRest(currentExercise.restSeconds);
+    }
+  }, [completeExercise, currentExerciseIndex, workout, currentExercise, startRest]);
+
+  const handleSkipRest = useCallback(() => {
+    skipRest();
+    setIsResting(false);
+    haptic('restOver');
+  }, [skipRest]);
+
+  const handleExtendRest = useCallback((seconds: number) => {
+    extendRest(seconds);
+  }, [extendRest]);
 
   const handleSkip = useCallback(async () => {
-    audioService.stop(); // Stop narration voice immediately
+    audioService.stop();
+    setIsResting(false);
+    stopAll();
+    setShowAllInstructions(false);
     await skipExercise();
-  }, [skipExercise]);
+  }, [skipExercise, stopAll]);
 
   const handleFinish = useCallback(async () => {
-    audioService.stop(); // Stop narration voice immediately
+    audioService.stop();
+    setIsResting(false);
+    stopAll();
     sessionStartRef.current = null;
     await finishWorkout();
     router.replace('/fitquest' as any);
   }, [finishWorkout, router]);
 
   const handleCancel = useCallback(async () => {
-    audioService.stop(); // Stop narration voice immediately
+    audioService.stop();
+    setIsResting(false);
+    stopAll();
     setShowCancelConfirm(false);
     sessionStartRef.current = null;
     await cancelWorkout();
@@ -277,7 +300,28 @@ export default function WorkoutScreen() {
   }
 
   return (
+    <ScreenErrorBoundary screenName="Workout" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/fitquest' as any)}>
+    <ScreenTutorial
+      screenKey="workout"
+      icon="arm-flex"
+      title="Workout Session"
+      description="Follow along exercise by exercise. Swipe through sets, tap to complete, and rest between exercises. Your progress is saved automatically."
+    />
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* ── REST TIMER OVERLAY ── */}
+      <RestTimerOverlay
+        visible={isResting}
+        progress={restTimer.progress}
+        formattedRemaining={restTimer.formattedRemaining}
+        remaining={restTimer.remaining}
+        nextExercise={(() => {
+          const ne = exercises[currentExerciseIndex + 1];
+          return ne ? { exerciseId: ne.exerciseId, name: ne.name, category: ne.category, sets: ne.sets, reps: ne.reps } : undefined;
+        })()}
+        onSkip={handleSkipRest}
+        onExtend={handleExtendRest}
+      />
+
       {/* ── EXERCISE COMPLETE BADGE ── */}
       <ExerciseCompleteBadge 
         visible={showCompleteBadge} 
@@ -298,6 +342,8 @@ export default function WorkoutScreen() {
             <TouchableOpacity
               onPress={() => setShowCancelConfirm(true)}
               style={[styles.backBtn, { backgroundColor: theme.colors.error + '15' }]}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel workout"
             >
               <MaterialCommunityIcons name="close" size={18} color={theme.colors.error} />
             </TouchableOpacity>
@@ -342,32 +388,87 @@ export default function WorkoutScreen() {
         </Animated.View>
 
         {/* ── CURRENT EXERCISE ── */}
-        {!!currentExercise && (
+        {!!currentExercise && currentExercise.mindTimeline ? (
+          /* ═══ MIND EXERCISE: guided experience with phases ═══ */
+          <Animated.View entering={SlideInDown.delay(150).duration(200)}>
+            <MindExerciseView
+              exerciseName={currentExercise.name}
+              timeline={currentExercise.mindTimeline}
+              voiceEnabled={true}
+              onComplete={() => {
+                haptic('exerciseComplete');
+                setShowCompleteBadge(true);
+                setTimeout(() => setShowCompleteBadge(false), 1300);
+                completeExercise(5);
+                const exs = workout?.exercises ?? [];
+                const isLast = currentExerciseIndex === exs.length - 1;
+                if (!isLast && currentExercise?.restSeconds) {
+                  setIsResting(true);
+                  startRest(currentExercise.restSeconds);
+                }
+              }}
+              onCancel={() => {
+                audioService.stop();
+                Alert.alert(
+                  'End Mind Session?',
+                  'Your progress for this exercise will be saved.',
+                  [
+                    { text: 'Continue', style: 'cancel' },
+                    { text: 'End', style: 'destructive', onPress: () => completeExercise(5) },
+                  ]
+                );
+              }}
+            />
+          </Animated.View>
+        ) : !!currentExercise && (
           <Animated.View entering={SlideInDown.delay(150).duration(200)}>
             <GlassCard
               style={styles.currentCard}
               gradient
               glowColor={theme.colors.accent}
             >
-              <View style={styles.currentHeader}>
-                <View style={[styles.exerciseIconWrap, { backgroundColor: theme.colors.accent + '18' }]}>
-                  <MaterialCommunityIcons
-                    name={getExerciseIcon(currentExercise.name)}
-                    size={28}
-                    color={theme.colors.accent}
-                  />
-                </View>
-                <View style={styles.currentInfo}>
-                  <Text style={[styles.nowPlaying, { color: theme.colors.accent }]}>NOW</Text>
-                  <Text style={[styles.currentName, { color: theme.colors.text }]} numberOfLines={2}>
-                    {currentExercise.name}
-                  </Text>
-                  <Text style={[styles.currentMeta, { color: theme.colors.textMuted }]}>
-                    {currentExercise.sets} sets × {currentExercise.reps} reps
-                    {currentExercise.restSeconds ? ` · ${currentExercise.restSeconds}s rest` : ''}
-                  </Text>
-                </View>
+              {/* Exercise Image */}
+              <Animated.View entering={ZoomIn.duration(200)} style={{ alignItems: 'center', marginBottom: 16, width: '100%' }}>
+                <ExerciseImage
+                  exerciseId={currentExercise.exerciseId}
+                  category={currentExercise.category}
+                  variant="hero"
+                  animate={true}
+                />
+              </Animated.View>
+
+              {/* Exercise Name */}
+              <Text style={[styles.currentName, { color: theme.colors.text, textAlign: 'center' }]} numberOfLines={2}>
+                {currentExercise.name}
+              </Text>
+
+              {/* Prescription Row: sets / reps / rest */}
+              <View style={styles.prescriptionRow}>
+                {[
+                  { val: currentExercise.sets, label: t('fitquest.sets') || 'Sets' },
+                  { val: currentExercise.reps, label: t('fitquest.reps') || 'Reps' },
+                  { val: `${currentExercise.restSeconds || 60}s`, label: t('train.rest') || 'Rest' },
+                ].map((p, i) => (
+                  <Animated.View key={p.label} entering={FadeInUp.delay(i * 60).duration(150)} style={styles.prescriptionItem}>
+                    <Text style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</Text>
+                    <Text style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>{p.label}</Text>
+                  </Animated.View>
+                ))}
               </View>
+
+              {/* Exercise countdown timer for timed exercises */}
+              {exerciseTimer.state === 'running' && (
+                <View style={styles.exerciseTimerWrap}>
+                  <ProgressRing progress={exerciseTimer.progress} size={120} color={theme.colors.accent} strokeWidth={8}>
+                    <Text style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: 28 }]}>
+                      {exerciseTimer.formattedRemaining}
+                    </Text>
+                    <Text style={[styles.exerciseTimerLabel, { color: theme.colors.textMuted }]}>
+                      remaining
+                    </Text>
+                  </ProgressRing>
+                </View>
+              )}
 
               {/* Category badge */}
               {!!currentExercise.category && (
@@ -380,6 +481,31 @@ export default function WorkoutScreen() {
                 </View>
               )}
 
+              {/* Instructions card */}
+              {currentExercise.instructions && currentExercise.instructions.length > 0 && (
+                <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ marginTop: 12 }}>
+                  <GlassCard>
+                    <Text style={[styles.instTitle, { color: theme.colors.text }]}>
+                      {t('fitquest.formTips') || 'Form Tips'}
+                    </Text>
+                    {currentExercise.instructions
+                      .slice(0, showAllInstructions ? undefined : 3)
+                      .map((inst: string, idx: number) => (
+                      <Text key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
+                        {idx + 1}. {inst}
+                      </Text>
+                    ))}
+                    {currentExercise.instructions.length > 3 && (
+                      <TouchableOpacity onPress={() => setShowAllInstructions(!showAllInstructions)} style={{ marginTop: 8 }} accessibilityRole="button" accessibilityLabel={showAllInstructions ? 'Show fewer instructions' : 'Show all instructions'}>
+                        <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600' }}>
+                          {showAllInstructions ? (t('fitquest.showLess') || 'Show less') : `+${currentExercise.instructions.length - 3} ${t('fitquest.more') || 'more'}`}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </GlassCard>
+                </Animated.View>
+              )}
+
               {/* Actions */}
               <View style={styles.actionRow}>
                 <TouchableOpacity
@@ -388,6 +514,8 @@ export default function WorkoutScreen() {
                     backgroundColor: theme.colors.warning + '12',
                     borderColor: theme.colors.warning + '30',
                   }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Skip exercise"
                 >
                   <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.warning} />
                   <Text style={[styles.skipText, { color: theme.colors.warning }]}>{t('common.skip')}</Text>
@@ -436,7 +564,9 @@ export default function WorkoutScreen() {
                   )}
                 </View>
 
-                <View style={styles.exDetails}>
+                <ExerciseImage exerciseId={ex.exerciseId} category={ex.category} variant="thumbnail" />
+
+                <View style={[styles.exDetails, { marginLeft: 10 }]}>
                   <Text style={[
                     styles.exName,
                     { color: isDone ? theme.colors.textMuted : theme.colors.text },
@@ -502,12 +632,16 @@ export default function WorkoutScreen() {
                   style={[styles.modalBtn, {
                     backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
                   }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Keep going"
                 >
                   <Text style={[styles.modalBtnText, { color: theme.colors.text }]}>Keep Going</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleCancel}
                   style={[styles.modalBtn, { backgroundColor: theme.colors.error }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel workout and discard progress"
                 >
                   <Text style={[styles.modalBtnText, { color: theme.colors.text }]}>Cancel</Text>
                 </TouchableOpacity>
@@ -517,6 +651,7 @@ export default function WorkoutScreen() {
         </View>
       </Modal>
     </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -545,16 +680,20 @@ const styles = StyleSheet.create({
   progressPercent: { fontSize: 28, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
   progressLabel: { fontSize: 11, fontWeight: '500', marginTop: -2 },
   currentCard: { marginHorizontal: 16, padding: 20 },
-  currentHeader: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  exerciseIconWrap: { width: 52, height: 52, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
-  currentInfo: { flex: 1 },
-  nowPlaying: { fontSize: 10, fontWeight: '800', letterSpacing: 1.5, marginBottom: 2 },
   currentName: { fontSize: 20, fontWeight: '700', lineHeight: 24 },
-  currentMeta: { fontSize: 13, marginTop: 4 },
   targetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 14 },
   targetPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   targetText: { fontSize: 11, fontWeight: '600', textTransform: 'capitalize' },
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
+  prescriptionRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 16, marginBottom: 4 },
+  prescriptionItem: { alignItems: 'center', flex: 1 },
+  prescriptionVal: { fontSize: 22, fontWeight: '800' },
+  prescriptionLabel: { fontSize: 11, fontWeight: '500', marginTop: 2 },
+  exerciseTimerWrap: { alignItems: 'center', marginTop: 16, marginBottom: 8 },
+  exerciseTimerText: { fontSize: 22, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
+  exerciseTimerLabel: { fontSize: 10, fontWeight: '500', marginTop: -2 },
+  instTitle: { fontSize: 14, fontWeight: '700', marginBottom: 10 },
+  instStep: { fontSize: 13, lineHeight: 20, marginBottom: 4 },
   skipBtn: {
     flexDirection: 'row',
     alignItems: 'center',

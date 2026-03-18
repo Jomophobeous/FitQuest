@@ -285,8 +285,8 @@ export class HealthMonitorService {
     weekStart.setDate(now.getDate() - 6);
 
     return {
-      weekStart: weekStart.toISOString().split('T')[0],
-      weekEnd: now.toISOString().split('T')[0],
+      weekStart: weekStart.toISOString().split('T')[0]!,
+      weekEnd: now.toISOString().split('T')[0]!,
       avgDailySteps: Math.round(totalSteps / dailies.length),
       totalCalories: Math.round(totalCalories),
       totalWorkouts,
@@ -341,7 +341,7 @@ export class HealthMonitorService {
 
     // Goal reached alerts
     const progress = this.getGoalProgress();
-    if (progress.steps >= 1.0 && this.todaySteps > 0) {
+    if ((progress.steps ?? 0) >= 1.0 && this.todaySteps > 0) {
       alerts.push({
         type: 'GOAL_REACHED',
         severity: 'LOW',
@@ -437,7 +437,7 @@ export class HealthMonitorService {
   // ============================================
 
   private getTodayKey(): string {
-    return new Date().toISOString().split('T')[0];
+    return new Date().toISOString().split('T')[0]!;
   }
 }
 

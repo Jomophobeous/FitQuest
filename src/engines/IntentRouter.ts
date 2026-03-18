@@ -16,7 +16,8 @@
 
 import { AIPersonality, AIContext, AIResponse, DualAIEngine } from '../fitmind/DualAIEngine';
 import { trainedIntentRouter } from '../ai/TrainedIntentRouter';
-import { neuralIntentRouter } from '../ai/intent/NeuralIntentRouter';
+// NeuralIntentRouter removed — 48MB JS transformer is too heavy for 4GB devices.
+// The lightweight TF-IDF + keyword classifier provides equivalent routing quality.
 
 // ============================================
 // TYPES
@@ -210,59 +211,19 @@ export class IntentRouter {
       useConversationContext: true,
       contextWindowSize: 5,
     };
-    // Initialize trained model in background
+    // Initialize lightweight trained model in background (~305KB)
     this.initMLModel();
   }
 
-  private neuralModelReady = false;
-
   private async initMLModel(): Promise<void> {
-    // Try v2.0 neural model first
-    try {
-      this.neuralModelReady = await neuralIntentRouter.initialize();
-      if (this.neuralModelReady) {
-        if (__DEV__) console.log('[IntentRouter] v2.0 neural model loaded');
-      }
-    } catch {
-      this.neuralModelReady = false;
-    }
-
-    // Fall back to v1.0 trained model
     try {
       this.mlModelReady = await trainedIntentRouter.initialize();
-      if (this.mlModelReady) {
-        if (__DEV__) console.log('[IntentRouter] v1.0 ML model loaded — using trained classifier');
+      if (this.mlModelReady && __DEV__) {
+        console.log('[IntentRouter] v1.0 ML model loaded — using trained classifier');
       }
     } catch {
       console.warn('[IntentRouter] ML model unavailable — using keyword fallback');
     }
-  }
-
-  // Cached neural intent for sync access
-  private lastNeuralIntent: { query: string; intent: string; confidence: number } | null = null;
-
-  /**
-   * Fire-and-forget neural classification that caches for sync retrieval.
-   * Returns cached result if the same query was recently classified.
-   */
-  private getNeuralIntentSync(query: string): { intent: string; confidence: number } | null {
-    // Return cached result if query matches
-    if (this.lastNeuralIntent?.query === query) {
-      return this.lastNeuralIntent;
-    }
-
-    // Fire async classification to cache for next call
-    neuralIntentRouter.predict(query).then(result => {
-      if (result.confidence >= this.config.confidenceThreshold) {
-        this.lastNeuralIntent = {
-          query,
-          intent: result.intent,
-          confidence: result.confidence,
-        };
-      }
-    }).catch(() => { /* ignore */ });
-
-    return null; // not ready yet — will fall through to v1
   }
 
   static getInstance(): IntentRouter {
@@ -278,38 +239,13 @@ export class IntentRouter {
 
   /**
    * Classify a user query into an intent category.
-   * Priority: v2.0 neural → v1.0 TF-IDF+SVC → keyword scoring
+   * Uses: v1.0 TF-IDF+SVC (fast, ~5ms) → keyword scoring fallback
    */
   classify(query: string): ClassifiedIntent {
     const startTime = Date.now();
     const normalizedQuery = query.toLowerCase().trim();
 
-    // Try v2.0 Neural Intent Router first (sync check, async predict handled below)
-    if (this.neuralModelReady && neuralIntentRouter.loaded) {
-      try {
-        // Note: predict is async but we need sync classify.
-        // Use the handler mapping synchronously from cached intent.
-        const intentLabel = this.getNeuralIntentSync(normalizedQuery);
-        if (intentLabel) {
-          const entities = this.extractEntities(normalizedQuery);
-          const handler = neuralIntentRouter.getHandlerForIntent(intentLabel.intent);
-          const result: ClassifiedIntent = {
-            category: handler as IntentCategory,
-            confidence: intentLabel.confidence,
-            entities,
-            query,
-            classificationTimeMs: Date.now() - startTime,
-          };
-          this.recentIntents.push(result);
-          if (this.recentIntents.length > 50) this.recentIntents.shift();
-          return result;
-        }
-      } catch {
-        // Fall through to v1.0
-      }
-    }
-
-    // Try ML model first (if loaded)
+    // Try ML model first (if loaded) — ~5ms, 305KB
     if (this.mlModelReady && trainedIntentRouter.loaded) {
       const mlResult = trainedIntentRouter.classify(query);
       if (mlResult.confidence >= this.config.confidenceThreshold) {
@@ -335,12 +271,14 @@ export class IntentRouter {
         let secondaryConfidence: number | undefined;
         if (mlResult.alternatives.length > 0) {
           const alt = mlResult.alternatives[0];
-          secondaryCategory = categoryMap[alt.intent] ?? 'GENERAL';
-          secondaryConfidence = alt.confidence;
-          // Only show if gap is small
-          if (mlResult.confidence - (secondaryConfidence ?? 0) >= 0.15) {
-            secondaryCategory = undefined;
-            secondaryConfidence = undefined;
+          if (alt) {
+            secondaryCategory = categoryMap[alt.intent] ?? 'GENERAL';
+            secondaryConfidence = alt.confidence;
+            // Only show if gap is small
+            if (mlResult.confidence - (secondaryConfidence ?? 0) >= 0.15) {
+              secondaryCategory = undefined;
+              secondaryConfidence = undefined;
+            }
           }
         }
 
@@ -428,12 +366,12 @@ export class IntentRouter {
 
     if (sorted.length > 0) {
       const totalScore = sorted.reduce((sum, [, s]) => sum + s, 0);
-      primaryCategory = sorted[0][0] as IntentCategory;
-      confidence = totalScore > 0 ? sorted[0][1] / totalScore : 0;
+      primaryCategory = sorted[0]![0] as IntentCategory;
+      confidence = totalScore > 0 ? sorted[0]![1] / totalScore : 0;
 
       if (sorted.length > 1) {
-        secondaryCategory = sorted[1][0] as IntentCategory;
-        secondaryConfidence = totalScore > 0 ? sorted[1][1] / totalScore : 0;
+        secondaryCategory = sorted[1]![0] as IntentCategory;
+        secondaryConfidence = totalScore > 0 ? sorted[1]![1] / totalScore : 0;
 
         // If gap is too small, mark ambiguous
         if (confidence - (secondaryConfidence ?? 0) < 0.15) {

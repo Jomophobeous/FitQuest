@@ -226,13 +226,13 @@ export function suggestTemplate(
   // For 3 sessions, rotate through PPL
   if (sessionsPerWeek === 3) {
     const rotation = [PUSH_TEMPLATE, PULL_TEMPLATE, LEGS_TEMPLATE];
-    return rotation[dayInWeek % 3];
+    return rotation[dayInWeek % 3]!;
   }
   
   // For 4+ sessions, use upper/lower split
   if (sessionsPerWeek >= 4) {
     const rotation = [UPPER_TEMPLATE, LOWER_TEMPLATE, UPPER_TEMPLATE, LOWER_TEMPLATE, FULL_BODY_TEMPLATE];
-    return rotation[dayInWeek % rotation.length];
+    return rotation[dayInWeek % rotation.length]!;
   }
   
   return suitableTemplates[0] || FULL_BODY_TEMPLATE;

@@ -5,12 +5,33 @@
     "jsx": "react-native",
     "allowJs": true,
     "moduleResolution": "bundler",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@app/*": ["./app/*"]
+    }
   },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": [
+    "node_modules",
     "agents/alfred/vscode-extension",
     "workspace-repos",
     "reports",
-    "App screenshots"
+    "App screenshots",
+    "server",
+    "website",
+    "training",
+    "scripts",
+    "Figma UI"
   ]
 }

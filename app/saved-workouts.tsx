@@ -27,15 +27,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
-import { getRecentSessions, deleteWorkoutSession } from '../src/database/service';
+import { useDatabase } from '../src/context/DatabaseContext';
+import { getRecentSessions, deleteWorkoutSession, getSessionExercises } from '../src/database/service';
 import type { WorkoutSession } from '../src/database/types';
 import { useDataSync } from '../src/services/dataSyncService';
+import ExerciseImage from '../src/components/ExerciseImage';
 import {
   GlassCard,
   GradientButton,
   SectionHeader,
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 // ============================================
 // CONSTANTS
@@ -91,10 +94,12 @@ function formatDuration(minutes: number): string {
 export default function SavedWorkoutsScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const router = useRouter();
 
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedExercises, setExpandedExercises] = useState<Record<string, Array<{ exercise_id: string; name: string; category: string; prescribed_sets: number; prescribed_reps: string }>>>({});
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -118,14 +123,14 @@ export default function SavedWorkoutsScreen() {
   }, []);
 
   useEffect(() => {
-    loadWorkouts();
-  }, [loadWorkouts]);
+    if (dbReady) loadWorkouts();
+  }, [dbReady, loadWorkouts]);
 
   // Refresh when the screen gains focus (e.g. after creating a workout)
   useFocusEffect(
     useCallback(() => {
-      loadWorkouts();
-    }, [loadWorkouts]),
+      if (dbReady) loadWorkouts();
+    }, [dbReady, loadWorkouts]),
   );
 
   // Subscribe to workout events from other screens
@@ -172,8 +177,21 @@ export default function SavedWorkoutsScreen() {
     });
   };
 
-  const toggleExpand = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
+  const toggleExpand = async (id: string) => {
+    if (expandedId === id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(id);
+    // Load exercises for this session if not already loaded
+    if (!expandedExercises[id]) {
+      try {
+        const exercises = await getSessionExercises(id);
+        setExpandedExercises(prev => ({ ...prev, [id]: exercises }));
+      } catch {
+        // Session exercises might not be available
+      }
+    }
   };
 
   // ------------------------------------------
@@ -275,7 +293,7 @@ export default function SavedWorkoutsScreen() {
       theme.colors.success,
       theme.colors.warning,
     ];
-    const accentColor = cardAccents[index % cardAccents.length];
+    const accentColor = cardAccents[index % cardAccents.length]!;
 
     return (
       <AnimatedListItem key={session.id} index={index} style={styles.cardOuter}>
@@ -337,6 +355,8 @@ export default function SavedWorkoutsScreen() {
               onPress={() => confirmDelete(session)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={styles.deleteBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Delete workout session"
             >
               <MaterialCommunityIcons
                 name="trash-can-outline"
@@ -408,29 +428,38 @@ export default function SavedWorkoutsScreen() {
                     Estimated {duration}
                   </Text>
                 </View>
-                <View style={styles.detailRow}>
-                  <MaterialCommunityIcons
-                    name="format-list-numbered"
-                    size={16}
-                    color={theme.colors.textMuted}
-                  />
-                  <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
-                    {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''} in this workout
-                  </Text>
-                </View>
-                {session.notes && !session.notes.startsWith('Custom:') && (
-                  <View style={styles.detailRow}>
-                    <MaterialCommunityIcons
-                      name="note-text-outline"
-                      size={16}
-                      color={theme.colors.textMuted}
-                    />
-                    <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
-                      {session.notes}
-                    </Text>
-                  </View>
-                )}
               </View>
+
+              {/* Exercise list with images */}
+              {(() => {
+                const exList = expandedExercises[session.id];
+                if (!exList || exList.length === 0) return null;
+                return (
+                <View style={styles.expandedExerciseList}>
+                  <Text style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>
+                    Exercises
+                  </Text>
+                  {exList.map((ex, idx) => (
+                    <View key={ex.exercise_id + idx} style={[styles.exerciseRow, { borderColor: theme.colors.border }]}>
+                      <ExerciseImage
+                        exerciseId={ex.exercise_id}
+                        category={ex.category as any}
+                        variant="thumbnail"
+                        animate={false}
+                      />
+                      <View style={{ flex: 1, marginLeft: 10 }}>
+                        <Text style={[styles.exerciseRowName, { color: theme.colors.text }]} numberOfLines={1}>
+                          {ex.name}
+                        </Text>
+                        <Text style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
+                          {ex.prescribed_sets} sets × {ex.prescribed_reps}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              );
+              })()}
 
               {/* Action Buttons */}
               <View style={styles.expandedActions}>
@@ -452,6 +481,8 @@ export default function SavedWorkoutsScreen() {
                     },
                   ]}
                   onPress={() => confirmDelete(session)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Delete workout"
                 >
                   <MaterialCommunityIcons
                     name="delete-outline"
@@ -482,6 +513,12 @@ export default function SavedWorkoutsScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="saved-workouts"
+        icon="content-save-all"
+        title="Saved Workouts"
+        description="View your completed workout history. Tap any workout to see details, or long-press to delete. Your progress is saved automatically."
+      />
       {/* Header */}
       <Animated.View entering={FadeInDown.duration(150)} style={styles.headerContainer}>
         <LinearGradient
@@ -497,6 +534,8 @@ export default function SavedWorkoutsScreen() {
           <TouchableOpacity
             onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
             style={[styles.backBtn, { backgroundColor: theme.colors.surface }]}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
           >
             <MaterialCommunityIcons
               name="arrow-left"
@@ -835,6 +874,31 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 13,
     fontWeight: '500',
+  },
+  expandedExerciseList: {
+    marginBottom: 16,
+    gap: 8,
+  },
+  exerciseListHeader: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  exerciseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  exerciseRowName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  exerciseRowMeta: {
+    fontSize: 12,
+    marginTop: 2,
   },
   expandedActions: {
     flexDirection: 'row',

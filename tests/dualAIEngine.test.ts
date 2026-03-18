@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { storeAIConversationMock, getAIConversationsMock } = vi.hoisted(() => ({
-  storeAIConversationMock: vi.fn(),
+  storeAIConversationMock: vi.fn().mockResolvedValue(undefined),
   getAIConversationsMock: vi.fn().mockResolvedValue([]),
 }));
 

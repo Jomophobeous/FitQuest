@@ -17,7 +17,7 @@ describe('logger redaction', () => {
     expect(redacted.token).toBe('[REDACTED]');
     expect(redacted.nested.refreshToken).toBe('[REDACTED]');
     expect(redacted.nested.safe).toContain('***');
-    expect(redacted.list[0].password).toBe('[REDACTED]');
+    expect(redacted.list[0]!.password).toBe('[REDACTED]');
   });
 
   it('keeps shape for primitive values', () => {

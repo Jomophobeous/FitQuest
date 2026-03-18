@@ -62,7 +62,7 @@ export interface StreakData {
 function getDateNDaysAgo(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().split('T')[0];
+  return d.toISOString().split('T')[0]!;
 }
 
 function getStartOfWeek(): string {
@@ -70,7 +70,7 @@ function getStartOfWeek(): string {
   const day = d.getDay(); // 0=Sun
   const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday start
   d.setDate(diff);
-  return d.toISOString().split('T')[0];
+  return d.toISOString().split('T')[0]!;
 }
 
 function getStartOfMonth(): string {
@@ -120,7 +120,7 @@ export async function fetchWorkoutBars(range: 'weekly' | 'monthly'): Promise<Bar
          WHERE user_id = ? AND date(started_at) = ? AND completed_at IS NOT NULL`,
         [USER_ID, date]
       );
-      bars.push({ day: DAY_NAMES[dayOfWeek === 0 ? 6 : dayOfWeek - 1], count: r?.cnt ?? 0 });
+      bars.push({ day: DAY_NAMES[dayOfWeek === 0 ? 6 : dayOfWeek - 1]!, count: r?.cnt ?? 0 });
     }
     return bars;
   } else {
@@ -141,6 +141,14 @@ export async function fetchWorkoutBars(range: 'weekly' | 'monthly'): Promise<Bar
 
 export async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]> {
   const db = await getDatabase();
+
+  // Get current streak for streak bonus component
+  const streak = await db.getFirstAsync<{ current_streak: number }>(
+    `SELECT current_streak FROM workout_streaks WHERE user_id = ?`,
+    [USER_ID]
+  );
+  const streakDays = streak?.current_streak ?? 0;
+
   if (range === 'weekly') {
     const xp: number[] = [];
     for (let i = 6; i >= 0; i--) {
@@ -155,9 +163,10 @@ export async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]
       const workouts = r?.cnt ?? 0;
       const exercises = r?.exercises ?? 0;
       const totalEx = r?.total_exercises ?? 0;
-      // Match xpService formula: 100 base + 20/exercise + 50 completion bonus
+      // Match xpService formula: 100 base + 20/exercise + 50 completion bonus + 10*streak
       const completionBonus = (exercises >= totalEx && totalEx > 0) ? 50 * workouts : 0;
-      xp.push(workouts * 100 + exercises * 20 + completionBonus);
+      const streakBonus = workouts > 0 ? streakDays * 10 : 0;
+      xp.push(workouts * 100 + exercises * 20 + completionBonus + streakBonus);
     }
     return xp;
   } else {
@@ -176,7 +185,8 @@ export async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]
       const exercises = r?.exercises ?? 0;
       const totalEx = r?.total_exercises ?? 0;
       const completionBonus = (exercises >= totalEx && totalEx > 0) ? 50 * workouts : 0;
-      xp.push(workouts * 100 + exercises * 20 + completionBonus);
+      const streakBonus = workouts > 0 ? streakDays * 10 : 0;
+      xp.push(workouts * 100 + exercises * 20 + completionBonus + streakBonus);
     }
     return xp;
   }

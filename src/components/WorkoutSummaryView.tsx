@@ -161,6 +161,45 @@ export default function WorkoutSummaryView({
           <StatTile icon="trending-up" value={`${data.progressions}`} label={t('fitquest.progressions') ?? 'Levelled Up'} color={theme.colors.accent} theme={theme} />
         </Animated.View>
 
+        {/* ── Phase Breakdown ── */}
+        {data.phaseBreakdown && (data.phaseBreakdown.warmup.total > 0 || data.phaseBreakdown.cooldown.total > 0) && (
+          <Animated.View entering={FadeInDown.delay(320).duration(200)}>
+            <GlassCard style={styles.phaseCard}>
+              <Text style={[styles.sectionLabel, { color: theme.colors.text }]}>
+                Session Breakdown
+              </Text>
+              {data.phaseBreakdown.warmup.total > 0 && (
+                <PhaseRow
+                  icon="fire"
+                  label="Warm-up"
+                  completed={data.phaseBreakdown.warmup.completed}
+                  total={data.phaseBreakdown.warmup.total}
+                  color={theme.colors.success}
+                  theme={theme}
+                />
+              )}
+              <PhaseRow
+                icon="dumbbell"
+                label="Workout"
+                completed={data.phaseBreakdown.main.completed}
+                total={data.phaseBreakdown.main.total}
+                color={theme.colors.accent}
+                theme={theme}
+              />
+              {data.phaseBreakdown.cooldown.total > 0 && (
+                <PhaseRow
+                  icon="snowflake"
+                  label="Cool-down"
+                  completed={data.phaseBreakdown.cooldown.completed}
+                  total={data.phaseBreakdown.cooldown.total}
+                  color={theme.colors.blue}
+                  theme={theme}
+                />
+              )}
+            </GlassCard>
+          </Animated.View>
+        )}
+
         {/* ── Muscles Worked ── */}
         {data.musclesWorked.length > 0 && (
           <Animated.View entering={FadeInDown.delay(350).duration(200)}>
@@ -254,6 +293,28 @@ function StatTile({ icon, value, label, color, theme }: {
   );
 }
 
+// ─── Phase Row ────────────────────────────────────────
+function PhaseRow({ icon, label, completed, total, color, theme }: {
+  icon: string; label: string; completed: number; total: number; color: string; theme: any;
+}) {
+  const pct = total > 0 ? (completed / total) * 100 : 0;
+  return (
+    <View style={styles.phaseRow}>
+      <MaterialCommunityIcons name={icon as any} size={18} color={color} />
+      <Text style={[styles.phaseLabel, { color: theme.colors.text }]}>{label}</Text>
+      <View style={[styles.phaseBar, { backgroundColor: theme.colors.border }]}>
+        <View style={[styles.phaseBarFill, { width: `${pct}%`, backgroundColor: color }]} />
+      </View>
+      <Text style={[styles.phaseCount, { color: theme.colors.textMuted }]}>
+        {completed}/{total}
+      </Text>
+      {completed >= total && (
+        <MaterialCommunityIcons name="check-circle" size={16} color={color} />
+      )}
+    </View>
+  );
+}
+
 // ─── Helpers ──────────────────────────────────────────
 function formatMuscleName(muscle: string): string {
   return muscle
@@ -301,6 +362,14 @@ const styles = StyleSheet.create({
   statTile: { width: '48%', alignItems: 'center', paddingVertical: 16, gap: 6 },
   statValue: { fontSize: 20, fontWeight: '700' },
   statLabel: { fontSize: 11, fontWeight: '500' },
+
+  // Phase breakdown
+  phaseCard: { width: '100%', padding: 16, marginBottom: 12, gap: 12 },
+  phaseRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  phaseLabel: { fontSize: 13, fontWeight: '600', width: 72 },
+  phaseBar: { flex: 1, height: 6, borderRadius: 3, overflow: 'hidden' as const },
+  phaseBarFill: { height: 6, borderRadius: 3 },
+  phaseCount: { fontSize: 12, fontWeight: '600', fontVariant: ['tabular-nums'] as any, width: 30, textAlign: 'right' as const },
 
   // Muscles
   musclesCard: { width: '100%', padding: 16, marginBottom: 12 },

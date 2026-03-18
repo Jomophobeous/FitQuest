@@ -321,7 +321,7 @@ export class SleepAnalysisEngine {
     const sessions = await this.getRecentSessions(days);
 
     return sessions.map((s) => ({
-      date: new Date(s.bedtime).toISOString().split('T')[0],
+      date: new Date(s.bedtime).toISOString().split('T')[0]!,
       quality: s.qualityScore,
       durationHours: Math.round((s.totalDurationMs / HOUR_MS) * 10) / 10,
     }));

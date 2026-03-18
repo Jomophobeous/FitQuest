@@ -18,6 +18,7 @@ import {
   View,
   Image,
   StyleSheet,
+  Platform,
   type ViewStyle,
   type ImageStyle,
 } from 'react-native';
@@ -26,29 +27,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { Category } from '../database/types';
+import { categoryTheme, defaultCategoryTheme } from '../design/theme-system';
+import { resolveExerciseImageFolder } from '../services/exerciseImageMap';
 
 // ─── Constants ───
 
+/**
+ * All platforms use documentDirectory for exercise images.
+ * On Android, images are copied from APK assets to documentDirectory on first launch
+ * by initializeExerciseImages() in exerciseImageService.ts.
+ */
 const IMAGE_BASE_DIR = `${FileSystem.documentDirectory}exercises/`;
+const APK_ASSETS_DIR = 'file:///android_asset/exercises/';
 const ANIMATION_INTERVAL_MS = 1200; // Toggle between 0.jpg and 1.jpg
 
-// ─── Category theming (gradient + icon) ───
-
 type GlyphMapKey = keyof typeof MaterialCommunityIcons.glyphMap;
-
-const CATEGORY_CONFIG: Record<string, {
-  colors: [string, string];
-  icon: GlyphMapKey;
-}> = {
-  body_control: { colors: ['#10B981', '#059669'], icon: 'human-handsup' },
-  posture: { colors: ['#6366F1', '#4F46E5'], icon: 'human-male-height' },
-  speed: { colors: ['#F59E0B', '#D97706'], icon: 'lightning-bolt' },
-  mobility: { colors: ['#EC4899', '#DB2777'], icon: 'yoga' },
-  focus: { colors: ['#8B5CF6', '#7C3AED'], icon: 'meditation' },
-  strength: { colors: ['#EF4444', '#DC2626'], icon: 'dumbbell' },
-};
-
-const DEFAULT_CONFIG = { colors: ['#64748B', '#475569'] as [string, string], icon: 'dumbbell' as GlyphMapKey };
 
 // ─── Props ───
 
@@ -83,8 +76,9 @@ export default function ExerciseImage({
   const [hasError, setHasError] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const config = CATEGORY_CONFIG[category] || DEFAULT_CONFIG;
-  const dimensions = VARIANT_DIMENSIONS[variant];
+  const catTheme = categoryTheme[category] || defaultCategoryTheme;
+  const config = { colors: catTheme.colors, icon: catTheme.icon as GlyphMapKey };
+  const dimensions = VARIANT_DIMENSIONS[variant]!;
 
   // Resolve image URIs from file system
   useEffect(() => {
@@ -100,24 +94,74 @@ export default function ExerciseImage({
           paths.push(...images.map(img => img.image_path));
         }
 
+        // Fallback: use exerciseImageMap (primary strategy) or derive from name
+        if (paths.length === 0) {
+          const { getDatabase } = await import('../database/schema');
+          const db = await getDatabase();
+          const ex = await db.getFirstAsync<{ external_id: string | null; name: string }>(
+            'SELECT external_id, name FROM exercises WHERE id = ?',
+            [exerciseId]
+          );
+          if (ex) {
+            // Primary: use the comprehensive image map
+            const mappedFolder = resolveExerciseImageFolder(ex.name);
+            if (mappedFolder) {
+              paths.push(`${mappedFolder}/0.webp`, `${mappedFolder}/1.webp`, `${mappedFolder}/0.jpg`, `${mappedFolder}/1.jpg`);
+            } else {
+              // Fallback: try external_id or underscored name
+              const candidates: string[] = [];
+              if (ex.external_id) candidates.push(ex.external_id);
+              candidates.push(ex.name.replace(/[/ (),']/g, '_'));
+
+              const seen = new Set<string>();
+              for (const c of candidates) {
+                if (!seen.has(c)) {
+                  seen.add(c);
+                  paths.push(`${c}/0.webp`, `${c}/1.webp`, `${c}/0.jpg`, `${c}/1.jpg`);
+                }
+              }
+            }
+          }
+        }
+
         if (paths.length === 0) {
           if (!cancelled) setResolvedUris([]);
           return;
         }
 
-        // Check which files actually exist on disk
+        // Check which files actually exist on disk (try documentDirectory first, then APK assets)
         const validUris: string[] = [];
+        // Deduplicate paths — the same folder may appear with both .webp and .jpg
+        const seen = new Set<string>();
         for (const imgPath of paths) {
-          // image_path in DB: "3_4_Sit-Up/0.jpg"
-          // file on disk:     documentDirectory/exercises/3_4_Sit-Up/images/0.jpg
-          const parts = imgPath.split('/');
-          const folder = parts.slice(0, -1).join('/');
-          const file = parts[parts.length - 1];
-          const fullPath = `${IMAGE_BASE_DIR}${folder}/images/${file}`;
+          if (validUris.length >= 2) break; // Only need 2 frames max
+          if (seen.has(imgPath)) continue;
+          seen.add(imgPath);
 
-          const info = await FileSystem.getInfoAsync(fullPath);
-          if (info.exists) {
-            validUris.push(fullPath);
+          const fullPath = `${IMAGE_BASE_DIR}${imgPath}`;
+          // Also try .webp variant if the path is .jpg/.png (APK may only have .webp)
+          const webpPath = imgPath.replace(/\.(jpg|png)$/i, '.webp');
+          const fullWebpPath = `${IMAGE_BASE_DIR}${webpPath}`;
+
+          // Try documentDirectory first (both webp and original)
+          for (const candidate of webpPath !== imgPath ? [fullWebpPath, fullPath] : [fullPath]) {
+            try {
+              const info = await FileSystem.getInfoAsync(candidate);
+              if (info.exists) {
+                validUris.push(candidate);
+                break;
+              }
+            } catch {
+              // Skip
+            }
+          }
+          if (validUris.length > seen.size - 1) continue; // Found one, move on
+
+          // Android: load directly from APK assets — getInfoAsync doesn't work
+          // for file:///android_asset/ (compressed archive), but <Image> can load them.
+          // Prefer .webp since APK assets were converted to webp.
+          if (Platform.OS === 'android') {
+            validUris.push(`${APK_ASSETS_DIR}${webpPath !== imgPath ? webpPath : imgPath}`);
           }
         }
 
@@ -156,11 +200,23 @@ export default function ExerciseImage({
   // Show real image
   if (resolvedUris.length > 0 && !hasError) {
     const uri = resolvedUris[currentFrame] ?? resolvedUris[0];
+    const borderRadius = variant === 'thumbnail' ? 8 : 12;
     return (
-      <View style={[dimensions, styles.container, { borderRadius: variant === 'thumbnail' ? 8 : 12 }, style]}>
+      <View style={[
+        dimensions,
+        styles.container,
+        {
+          borderRadius,
+          borderWidth: 1.5,
+          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surfaceVariant,
+          overflow: 'hidden',
+        },
+        style,
+      ]}>
         <Image
           source={{ uri }}
-          style={[dimensions, styles.image, { borderRadius: variant === 'thumbnail' ? 8 : 12 }] as ImageStyle[]}
+          style={[dimensions, styles.image, { borderRadius: borderRadius - 1 }] as ImageStyle[]}
           resizeMode={variant === 'hero' ? 'cover' : 'contain'}
           onError={handleError}
         />
@@ -173,7 +229,7 @@ export default function ExerciseImage({
                 style={[
                   styles.frameDot,
                   {
-                    backgroundColor: i === currentFrame ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
+                    backgroundColor: i === currentFrame ? theme.colors.accent : 'rgba(255,255,255,0.4)',
                   },
                 ]}
               />
@@ -184,20 +240,58 @@ export default function ExerciseImage({
     );
   }
 
-  // Placeholder: gradient + category icon
+  // Placeholder: gradient + category icon with dual-frame indicator for detail/hero
+  const showDualHint = variant === 'detail' || variant === 'hero';
+  const placeholderRadius = variant === 'thumbnail' ? 8 : 12;
   return (
-    <View style={[dimensions, styles.container, { borderRadius: variant === 'thumbnail' ? 8 : 12 }, style]}>
+    <View style={[
+      dimensions,
+      styles.container,
+      {
+        borderRadius: placeholderRadius,
+        borderWidth: 1.5,
+        borderColor: theme.colors.border,
+        overflow: 'hidden',
+      },
+      style,
+    ]}>
       <LinearGradient
         colors={config.colors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[dimensions, styles.placeholder, { borderRadius: variant === 'thumbnail' ? 8 : 12 }]}
+        style={[dimensions, styles.placeholder, { borderRadius: placeholderRadius - 1 }]}
       >
-        <MaterialCommunityIcons
-          name={config.icon}
-          size={dimensions.height * 0.45}
-          color="rgba(255,255,255,0.6)"
-        />
+        {showDualHint ? (
+          <View style={styles.dualPlaceholder}>
+            <View style={styles.dualFrame}>
+              <MaterialCommunityIcons
+                name={config.icon}
+                size={dimensions.height * 0.3}
+                color="rgba(255,255,255,0.5)"
+              />
+              <View style={[styles.dualLabel, { backgroundColor: 'rgba(0,0,0,0.25)' }]}>
+                <MaterialCommunityIcons name="numeric-1-circle-outline" size={12} color="rgba(255,255,255,0.7)" />
+              </View>
+            </View>
+            <View style={styles.dualDivider} />
+            <View style={styles.dualFrame}>
+              <MaterialCommunityIcons
+                name={config.icon}
+                size={dimensions.height * 0.3}
+                color="rgba(255,255,255,0.35)"
+              />
+              <View style={[styles.dualLabel, { backgroundColor: 'rgba(0,0,0,0.25)' }]}>
+                <MaterialCommunityIcons name="numeric-2-circle-outline" size={12} color="rgba(255,255,255,0.7)" />
+              </View>
+            </View>
+          </View>
+        ) : (
+          <MaterialCommunityIcons
+            name={config.icon}
+            size={dimensions.height * 0.45}
+            color="rgba(255,255,255,0.6)"
+          />
+        )}
       </LinearGradient>
     </View>
   );
@@ -208,7 +302,7 @@ export default function ExerciseImage({
 const VARIANT_DIMENSIONS: Record<string, { width: number; height: number }> = {
   thumbnail: { width: 56, height: 56 },
   detail: { width: 120, height: 120 },
-  hero: { width: 999, height: 200 }, // width: 999 means "use flex"
+  hero: { width: 999, height: 240 }, // width: 999 means "use flex"
 };
 
 // ─── Styles ───
@@ -239,5 +333,30 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
+  },
+  dualPlaceholder: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  dualFrame: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  dualDivider: {
+    width: 1,
+    height: '60%',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  dualLabel: {
+    position: 'absolute',
+    bottom: 4,
+    borderRadius: 8,
+    paddingHorizontal: 2,
+    paddingVertical: 1,
   },
 });

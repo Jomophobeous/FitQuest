@@ -244,7 +244,7 @@ function calculateExerciseScore(
 
 function getLastUseOfExercise(sessions: SessionRecord[], exerciseId: string): CompletedExercise | null {
   for (let i = sessions.length - 1; i >= 0; i--) {
-    const ex = sessions[i].exercises.find((e) => e.exercise_id === exerciseId);
+    const ex = sessions[i]!.exercises.find((e) => e.exercise_id === exerciseId);
     if (ex) return ex;
   }
   return null;
@@ -397,7 +397,7 @@ export function updateFatiguePostWorkout(
 
   // Clamp 0-100
   Object.keys(updated).forEach((muscle) => {
-    updated[muscle] = Math.max(0, Math.min(100, updated[muscle]));
+    updated[muscle] = Math.max(0, Math.min(100, updated[muscle]!));
   });
 
   return updated;
@@ -407,7 +407,7 @@ export function applyDailyRecovery(fatigueMap: Record<string, number>): Record<s
   const updated = { ...fatigueMap };
 
   Object.keys(updated).forEach((muscle) => {
-    updated[muscle] = Math.max(0, updated[muscle] - FATIGUE_CONSTANTS.DAILY_RECOVERY_RATE);
+    updated[muscle] = Math.max(0, updated[muscle]! - FATIGUE_CONSTANTS.DAILY_RECOVERY_RATE);
   });
 
   return updated;
@@ -443,7 +443,7 @@ export function shouldTriggerDeload(state: WorkoutGeneratorState): boolean {
 function countConsecutiveFailures(sessions: SessionRecord[]): number {
   let count = 0;
   for (let i = sessions.length - 1; i >= 0; i--) {
-    const failed = sessions[i].exercises.some((ex) => !ex.success);
+    const failed = sessions[i]!.exercises.some((ex) => !ex.success);
     if (failed) {
       count++;
     } else {

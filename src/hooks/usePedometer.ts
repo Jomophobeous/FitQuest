@@ -87,7 +87,7 @@ export interface UsePedometerReturn {
 // ============================================
 
 function getTodayDateString(): string {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split('T')[0]!;
 }
 
 async function generateId(): Promise<string> {
@@ -113,6 +113,7 @@ export function usePedometer(): UsePedometerReturn {
   // GPS jog state
   const [jogStats, setJogStats] = useState<DistanceStats | null>(null);
   const jogUsingGPSRef = useRef(false);
+  const jogStatsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   const subscriptionRef = useRef<ReturnType<typeof Pedometer.watchStepCount> | null>(null);
   const baseStepsRef = useRef(0);
@@ -246,46 +247,104 @@ export function usePedometer(): UsePedometerReturn {
   }, []);
 
   const startJog = useCallback(async (useGPS: boolean = true) => {
-    const session: JogSession = {
-      id: await generateId(),
-      startTime: new Date(),
+    // Generate ID and create DB session — if either fails, propagate to caller
+    const id = await generateId();
+    const startTime = new Date();
+
+    await createJogSession({
+      id,
+      userId: DEFAULT_USER_ID,
+      startTime: startTime.getTime(),
       distanceMeters: 0,
-      useGPS,
+    });
+
+    const session: JogSession = { id, startTime, distanceMeters: 0, useGPS };
+
+    // Initialize empty jog stats before showing UI
+    const emptyStats: DistanceStats = {
+      totalDistanceMeters: 0,
+      currentPaceSecondsPerKm: null,
+      averagePaceSecondsPerKm: null,
+      bestPaceSecondsPerKm: null,
+      elevationGainMeters: 0,
+      elevationLossMeters: 0,
+      currentAltitude: null,
+      elapsedSeconds: 0,
+      splits: [],
+      currentSpeedMps: null,
+      routePoints: [],
     };
 
-    try {
-      await createJogSession({
-        id: session.id,
-        userId: DEFAULT_USER_ID,
-        startTime: session.startTime.getTime(),
-        distanceMeters: 0,
-      });
-    } catch (error) {
-      console.error('[Pedometer] Failed to start jog session:', error);
-    }
-
-    // Start GPS tracking if enabled
-    if (useGPS) {
-      jogUsingGPSRef.current = true;
-      const gpsStarted = await distanceEngine.startTracking();
-      if (gpsStarted) {
-        console.log('[Pedometer] GPS tracking started for jog');
-        // Set up GPS stats listener
-        const updateStats = () => setJogStats(distanceEngine.getStats());
-        distanceEngine.on('distance', updateStats);
-        distanceEngine.on('location', updateStats);
-      } else {
-        console.log('[Pedometer] GPS not available, using step-based distance');
-        jogUsingGPSRef.current = false;
-      }
-    } else {
-      jogUsingGPSRef.current = false;
-    }
-
-    // Start enhanced step counter session
-    stepCounterEngine.startSession();
-
+    // Show jog UI immediately — don't wait for GPS
+    setJogStats(emptyStats);
     setCurrentJog(session);
+
+    // Start step counter session (synchronous, safe)
+    try {
+      stepCounterEngine.startSession();
+    } catch (e) {
+      console.warn('[Pedometer] StepCounter session start failed:', e);
+    }
+
+    // Start GPS tracking in the background — never block or crash the jog start
+    jogUsingGPSRef.current = false;
+    if (useGPS) {
+      // Use setTimeout(0) to let the UI settle before requesting GPS permission
+      setTimeout(async () => {
+        try {
+          const gpsStarted = await distanceEngine.startTracking();
+          if (gpsStarted) {
+            jogUsingGPSRef.current = true;
+            console.log('[Pedometer] GPS tracking started for jog');
+            const updateStats = () => {
+              try {
+                setJogStats(distanceEngine.getStats());
+              } catch (e) {
+                console.warn('[Pedometer] GPS stats update failed:', e);
+              }
+            };
+            distanceEngine.on('distance', updateStats);
+            distanceEngine.on('location', updateStats);
+          } else {
+            console.log('[Pedometer] GPS not available, using step-based distance');
+            startStepFallbackInterval();
+          }
+        } catch (error) {
+          console.error('[Pedometer] GPS tracking failed:', error);
+          startStepFallbackInterval();
+        }
+      }, 0);
+    }
+
+    // If no GPS requested, start step-only fallback immediately
+    if (!useGPS) {
+      startStepFallbackInterval();
+    }
+  }, []);
+
+  // Step-based distance fallback interval (used when GPS is unavailable)
+  const startStepFallbackInterval = useCallback(() => {
+    if (jogStatsIntervalRef.current) return;
+    jogStatsIntervalRef.current = setInterval(() => {
+      try {
+        const data = stepCounterEngine.getData();
+        setJogStats({
+          totalDistanceMeters: data.distanceMeters,
+          currentPaceSecondsPerKm: null,
+          averagePaceSecondsPerKm: null,
+          bestPaceSecondsPerKm: null,
+          elevationGainMeters: 0,
+          elevationLossMeters: 0,
+          currentAltitude: null,
+          elapsedSeconds: 0,
+          splits: [],
+          currentSpeedMps: null,
+          routePoints: [],
+        });
+      } catch (e) {
+        console.warn('[Pedometer] Step fallback update failed:', e);
+      }
+    }, 1000);
   }, []);
 
   const stopJog = useCallback(async (): Promise<JogSession | null> => {
@@ -359,6 +418,7 @@ export function usePedometer(): UsePedometerReturn {
         distanceMeters,
         avgPacePerKm: avgPacePerKm || null,
         caloriesEstimate,
+        routeData: routePoints ? JSON.stringify(routePoints) : null,
       });
     } catch (error) {
       console.error('[Pedometer] Failed to save jog session:', error);
@@ -367,6 +427,12 @@ export function usePedometer(): UsePedometerReturn {
     jogUsingGPSRef.current = false;
     setJogStats(null);
     setCurrentJog(null);
+
+    if (jogStatsIntervalRef.current) {
+      clearInterval(jogStatsIntervalRef.current);
+      jogStatsIntervalRef.current = null;
+    }
+
     return completedSession;
   }, [currentJog, todaySteps]);
 

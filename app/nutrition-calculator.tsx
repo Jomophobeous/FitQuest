@@ -35,6 +35,7 @@ import Animated, {
 import { useTheme } from '../src/context/ThemeContext';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { getAppState, setAppState } from '../src/database/service';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import {
@@ -42,6 +43,7 @@ import {
   RegionalFoodItem,
   RegionalFoodCategory,
 } from '../src/services/foodDatabase';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 // ============================================
 // TYPES
@@ -110,6 +112,7 @@ const getFilterOptions = (t: (key: string) => string): { label: string; value: R
 export default function NutritionCalculatorScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const categoryMeta = useMemo(() => getCategoryMeta(t, theme.colors), [t, theme.colors]);
   const filterOptions = useMemo(() => getFilterOptions(t), [t]);
   const router = useRouter();
@@ -121,6 +124,7 @@ export default function NutritionCalculatorScreen() {
 
   // Load persisted meals on mount
   useEffect(() => {
+    if (!dbReady) return;
     (async () => {
       try {
         const saved = await getAppState('nutrition.todayMeals');
@@ -137,11 +141,11 @@ export default function NutritionCalculatorScreen() {
         hasMounted.current = true;
       }
     })();
-  }, []);
+  }, [dbReady]);
 
   // Persist meals to SQLite whenever they change
   useEffect(() => {
-    if (!hasMounted.current) return;
+    if (!hasMounted.current || !dbReady) return;
     const payload = JSON.stringify({
       date: new Date().toISOString().split('T')[0],
       entries: mealEntries,
@@ -210,6 +214,12 @@ export default function NutritionCalculatorScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="nutrition-calculator"
+        icon="calculator"
+        title="Nutrition Calculator"
+        description="Calculate your daily calorie needs, macro breakdown, and find regional foods that fit your nutrition goals."
+      />
       <SafeAreaView edges={['top']} style={{ flex: 1 }}>
         {/* Header */}
         <Animated.View entering={FadeIn.duration(150)}>
@@ -358,7 +368,7 @@ export default function NutritionCalculatorScreen() {
                 maxToRenderPerBatch={15}
                 windowSize={5}
                 renderItem={({ item, index }) => {
-                  const meta = categoryMeta[item.category];
+                  const meta = categoryMeta[item.category] || { icon: 'food', color: theme.colors.textMuted, label: item.category };
                   return (
                     <View>
                       <TouchableOpacity
@@ -428,7 +438,7 @@ export default function NutritionCalculatorScreen() {
               ) : (
                 <>
                   {mealEntries.map((entry, idx) => {
-                    const meta = categoryMeta[entry.food.category];
+                    const meta = categoryMeta[entry.food.category] || { icon: 'food', color: theme.colors.textMuted, label: entry.food.category };
                     const cal = estimateCalories(entry.food, entry.servings);
                     const prot = estimateProtein(entry.food, entry.servings);
 

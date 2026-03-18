@@ -1,6 +1,7 @@
 import { getAppState, setAppState } from '../database/service';
 import { captureException, capturePerformanceMetric } from './crashReporting';
 import { redactForLog, safeWarn } from './logger';
+import { getPostHogClient } from './posthogService';
 
 type TelemetryType = 'error' | 'event' | 'perf';
 
@@ -45,7 +46,23 @@ async function appendTelemetry(entry: TelemetryEntry): Promise<void> {
   }
 }
 
+/** Forward an event to PostHog (fire-and-forget). */
+async function posthogCapture(
+  eventName: string,
+  properties?: Record<string, unknown>
+): Promise<void> {
+  try {
+    const client = await getPostHogClient();
+    if (client) {
+      client.capture(eventName, properties as Record<string, any>);
+    }
+  } catch {
+    // PostHog delivery is best-effort — never block telemetry
+  }
+}
+
 export async function logEvent(name: string, data?: Record<string, unknown>): Promise<void> {
+  void posthogCapture(name, data);
   await appendTelemetry({
     id: makeId(),
     type: 'event',
@@ -61,6 +78,7 @@ export async function logPerf(
   data?: Record<string, unknown>
 ): Promise<void> {
   capturePerformanceMetric(name, durationMs);
+  void posthogCapture(`perf_${name}`, { duration_ms: durationMs, ...data });
   await appendTelemetry({
     id: makeId(),
     type: 'perf',
@@ -74,6 +92,11 @@ export async function logError(error: unknown, context?: Record<string, unknown>
   const message = error instanceof Error ? error.message : 'Unknown error';
   const sanitized = redactForLog(context || {});
   captureException(error, sanitized);
+  void posthogCapture('app_error', {
+    error_name: error instanceof Error ? error.name : 'Error',
+    error_message: message,
+    ...sanitized,
+  });
   await appendTelemetry({
     id: makeId(),
     type: 'error',

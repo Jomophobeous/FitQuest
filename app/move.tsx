@@ -30,9 +30,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
+import ScreenTutorial from '../src/components/ScreenTutorial';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { usePedometer, DailySteps, JogSession } from '../src/hooks/usePedometer';
 import { useSensorFusion, type ActivityType } from '../src/engines/SensorFusionEngine';
 import { awardJogXP, awardStepXP } from '../src/services/xpService';
+import { logEvent } from '../src/services/telemetry';
 import { useDataSync, notifyStepsUpdated, notifyJogCompleted } from '../src/services/dataSyncService';
 import {
   GlassCard,
@@ -42,6 +46,8 @@ import {
   PulseDot,
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
+import JogMap from '../src/components/JogMap';
+import { getJogRoute } from '../src/database/service';
 
 const DAILY_STEP_GOAL = 10000;
 
@@ -55,6 +61,7 @@ interface JogCompletionData {
 export default function MoveScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const {
     todaySteps,
     isAvailable,
@@ -84,6 +91,13 @@ export default function MoveScreen() {
   // Jog completion modal state
   const [showJogComplete, setShowJogComplete] = useState(false);
   const [jogCompletionData, setJogCompletionData] = useState<JogCompletionData | null>(null);
+  const [jogError, setJogError] = useState<string | null>(null);
+
+  // Map state
+  const [showLiveMap, setShowLiveMap] = useState(true);
+  const [reviewJogId, setReviewJogId] = useState<string | null>(null);
+  const [reviewRoute, setReviewRoute] = useState<[number, number][] | null>(null);
+  const [reviewJog, setReviewJog] = useState<JogSession | null>(null);
 
   // Load step and jog history from database
   const loadHistory = useCallback(async () => {
@@ -104,7 +118,7 @@ export default function MoveScreen() {
     return () => clearInterval(iv);
   }, [isJogging, currentJog]);
 
-  useEffect(() => { loadHistory(); }, [loadHistory]);
+  useEffect(() => { if (dbReady) loadHistory(); }, [dbReady, loadHistory]);
 
   // Subscribe to data sync events from other screens
   useDataSync('workout_completed', loadHistory);
@@ -117,28 +131,62 @@ export default function MoveScreen() {
   };
 
   const handleStartJog = async () => {
-    await startJog();
-    if (!isTracking) await startTracking();
+    if (!dbReady) {
+      setJogError('Database is still loading. Please wait a moment and try again.');
+      return;
+    }
+    setJogError(null);
+    setShowLiveMap(true); // Reset map visibility for new jog
+
+    try {
+      await startJog();
+      // Start step tracking if not already active (non-critical — wrap separately)
+      try {
+        if (!isTracking) await startTracking();
+      } catch (e) {
+        console.warn('[Move] Step tracking start failed (non-critical):', e);
+      }
+    } catch (error) {
+      console.warn('[Move] Failed to start jog:', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      if (msg.includes('FOREIGN KEY') || msg.includes('user_profile')) {
+        setJogError('Profile not ready. Please complete onboarding first, then try again.');
+      } else if (msg.includes('permission') || msg.includes('location')) {
+        setJogError('Unable to start jog. Please ensure location permissions are granted and try again.');
+      } else {
+        setJogError('Unable to start jog session. Please try again.');
+      }
+    }
   };
 
   const handleStopJog = async () => {
-    const session = await stopJog();
-    if (session) {
-      const xpResult = await awardJogXP(session.distanceMeters);
-      // Use glass modal instead of Alert
-      setJogCompletionData({
-        distance: session.distanceMeters / 1000,
-        duration: formatDuration(session.startTime, session.endTime!),
-        calories: session.caloriesEstimate || 0,
-        xpEarned: xpResult?.xpEarned || 0,
-      });
-      setShowJogComplete(true);
-      
-      // Notify other screens about the jog completion
-      const durationSeconds = session.endTime ? Math.floor((session.endTime.getTime() - session.startTime.getTime()) / 1000) : 0;
-      notifyJogCompleted(session.distanceMeters, durationSeconds);
-      
-      loadHistory();
+    try {
+      const session = await stopJog();
+      if (session) {
+        const xpResult = await awardJogXP(session.distanceMeters);
+        // Use glass modal instead of Alert
+        setJogCompletionData({
+          distance: session.distanceMeters / 1000,
+          duration: (session.startTime && session.endTime) ? formatDuration(session.startTime, session.endTime) : '0:00',
+          calories: session.caloriesEstimate || 0,
+          xpEarned: xpResult?.xpEarned || 0,
+        });
+        setShowJogComplete(true);
+        
+        // Notify other screens about the jog completion
+        const durationSeconds = (session.startTime && session.endTime) ? Math.floor((session.endTime.getTime() - session.startTime.getTime()) / 1000) : 0;
+        notifyJogCompleted(session.distanceMeters, durationSeconds);
+        void logEvent('jog_completed', {
+          distance_meters: session.distanceMeters,
+          duration_seconds: durationSeconds,
+          calories: session.caloriesEstimate || 0,
+        });
+        
+        loadHistory();
+      }
+    } catch (error) {
+      console.warn('[Move] Failed to stop jog:', error);
+      setJogError('Something went wrong stopping your jog. Please try again.');
     }
   };
 
@@ -157,12 +205,19 @@ export default function MoveScreen() {
   };
 
   const stepProgress = Math.min(todaySteps / DAILY_STEP_GOAL, 1);
-  const distKm = (todaySteps * 0.0007).toFixed(1);
+  const distKm = (todaySteps * 0.0008).toFixed(1);
   const calories = Math.round(todaySteps * 0.04);
   const activeMin = Math.round(todaySteps / 100);
 
   return (
+    <ScreenErrorBoundary screenName="Move" onGoBack={() => {}}>
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="move"
+        icon="shoe-print"
+        title="Move & Track"
+        description="Track your daily steps, distance, and active minutes. Start a jog session to log your route and pace."
+      />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* ── HEADER ── */}
         <Animated.View entering={FadeIn.duration(150)}>
@@ -177,6 +232,8 @@ export default function MoveScreen() {
               <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('tab.move')}</Text>
               <TouchableOpacity
                 onPress={() => setShowHistory(!showHistory)}
+                accessibilityRole="button"
+                accessibilityLabel={showHistory ? 'Hide history' : 'Show history'}
                 style={[styles.historyToggle, { backgroundColor: theme.colors.accent + '12' }]}
               >
                 <MaterialCommunityIcons
@@ -188,6 +245,22 @@ export default function MoveScreen() {
             </View>
           </LinearGradient>
         </Animated.View>
+
+        {jogError && (
+          <GlassCard style={styles.errorCard} glowColor={theme.colors.error} delay={150}>
+            <Text style={[styles.errorText, { color: theme.colors.error }]}>{jogError}</Text>
+            <GradientButton
+              title={t('common.tryAgain')}
+              variant="warning"
+              size="sm"
+              onPress={() => {
+                setJogError(null);
+                handleStartJog();
+              }}
+              style={{ marginTop: 8 }}
+            />
+          </GlassCard>
+        )}
 
         {/* ── STEP COUNTER HERO ── */}
         <GlassCard style={styles.stepHero} gradient glowColor={theme.colors.accent3} delay={100}>
@@ -207,17 +280,17 @@ export default function MoveScreen() {
               </Text>
 
               <View style={styles.stepMiniStats}>
-                <View style={styles.miniStat}>
+                <View style={[styles.miniStat, { backgroundColor: theme.colors.accent + '15' }]}>
                   <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.colors.accent} />
-                  <Text style={[styles.miniStatText, { color: theme.colors.text }]}>{distKm} km</Text>
+                  <Text style={[styles.miniStatText, { color: theme.colors.accent }]}>{distKm} km</Text>
                 </View>
-                <View style={styles.miniStat}>
+                <View style={[styles.miniStat, { backgroundColor: theme.colors.accent2 + '15' }]}>
                   <MaterialCommunityIcons name="fire" size={14} color={theme.colors.accent2} />
-                  <Text style={[styles.miniStatText, { color: theme.colors.text }]}>{calories} cal</Text>
+                  <Text style={[styles.miniStatText, { color: theme.colors.accent2 }]}>{calories} cal</Text>
                 </View>
-                <View style={styles.miniStat}>
-                  <MaterialCommunityIcons name="clock-outline" size={14} color={theme.colors.textMuted} />
-                  <Text style={[styles.miniStatText, { color: theme.colors.text }]}>{activeMin} min</Text>
+                <View style={[styles.miniStat, { backgroundColor: theme.colors.accent3 + '15' }]}>
+                  <MaterialCommunityIcons name="clock-outline" size={14} color={theme.colors.accent3} />
+                  <Text style={[styles.miniStatText, { color: theme.colors.accent3 }]}>{activeMin} min</Text>
                 </View>
               </View>
             </View>
@@ -242,10 +315,16 @@ export default function MoveScreen() {
               </View>
               <TouchableOpacity
                 onPress={async () => {
-                  await stopTracking();
-                  await awardStepXP(todaySteps);
-                  notifyStepsUpdated(todaySteps);
+                  try {
+                    await stopTracking();
+                    await awardStepXP(todaySteps);
+                    notifyStepsUpdated(todaySteps);
+                  } catch (e) {
+                    console.warn('[Move] Stop tracking error:', e);
+                  }
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="Stop step tracking"
                 style={[styles.stopTrackingBtn, { backgroundColor: theme.colors.error + '18', borderColor: theme.colors.error + '40' }]}
               >
                 <MaterialCommunityIcons name="stop" size={16} color={theme.colors.error} />
@@ -254,6 +333,69 @@ export default function MoveScreen() {
             </Animated.View>
           )}
         </GlassCard>
+
+        {/* ── WEEKLY STEP TREND ── */}
+        <Animated.View entering={FadeInDown.delay(150).duration(150)}>
+          <GlassCard style={{ marginHorizontal: 16, marginTop: 12, padding: 16 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: theme.colors.text }}>
+                This Week
+              </Text>
+              <Text style={{ fontSize: 12, color: theme.colors.textMuted }}>
+                {t('move.goal')}: {(DAILY_STEP_GOAL / 1000).toFixed(0)}k
+              </Text>
+            </View>
+            <View style={styles.weeklyBars}>
+              {(() => {
+                const days = [];
+                for (let i = 6; i >= 0; i--) {
+                  const d = new Date();
+                  d.setDate(d.getDate() - i);
+                  const dateStr = d.toISOString().split('T')[0];
+                  const dayData = stepHistory.find(h => h.date === dateStr);
+                  days.push({
+                    label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][d.getDay()],
+                    steps: dayData?.steps || 0,
+                    isToday: i === 0,
+                  });
+                }
+                const maxVal = Math.max(DAILY_STEP_GOAL, ...days.map(d => d.steps));
+                const goalPct = (DAILY_STEP_GOAL / maxVal) * 80;
+                return days.map((day, idx) => {
+                  const barH = Math.max(4, (day.steps / maxVal) * 80);
+                  const hitGoal = day.steps >= DAILY_STEP_GOAL;
+                  return (
+                    <View key={idx} style={styles.weeklyBarCol}>
+                      <Text style={[styles.weeklyBarCount, {
+                        color: hitGoal ? theme.colors.accent3 : theme.colors.textMuted,
+                      }]}>
+                        {day.steps > 0 ? (day.steps >= 1000 ? (day.steps / 1000).toFixed(1) + 'k' : String(day.steps)) : '–'}
+                      </Text>
+                      <View style={[styles.weeklyBarTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
+                        <View style={[styles.weeklyGoalMark, { bottom: goalPct, backgroundColor: theme.colors.accent3 + '40' }]} />
+                        <LinearGradient
+                          colors={hitGoal
+                            ? [theme.colors.accent3, theme.colors.accent3 + '70']
+                            : day.isToday
+                              ? [theme.colors.accent, theme.colors.accent + '60']
+                              : [theme.colors.accent + '80', theme.colors.accent + '40']
+                          }
+                          style={[styles.weeklyBarFill, { height: barH }]}
+                        />
+                      </View>
+                      <Text style={[styles.weeklyBarLabel, {
+                        color: day.isToday ? theme.colors.accent : theme.colors.textMuted,
+                        fontWeight: day.isToday ? '700' : '500',
+                      }]}>
+                        {day.label}
+                      </Text>
+                    </View>
+                  );
+                });
+              })()}
+            </View>
+          </GlassCard>
+        </Animated.View>
 
         {/* ── ACTIVITY DETECTION ── */}
         <Animated.View entering={FadeInDown.delay(200).duration(150)}>
@@ -275,7 +417,7 @@ export default function MoveScreen() {
                   </Text>
                   <View style={sensorStyles.confidenceRow}>
                     {sensorActive && <PulseDot color={theme.colors.success} size={6} />}
-                    <Text style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]}>
+                    <Text style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]} numberOfLines={1}>
                       {sensorActive
                         ? `${Math.round(snapshot.confidence * 100)}% ${t('move.confidence')}`
                         : t('move.tapToEnable')}
@@ -285,6 +427,8 @@ export default function MoveScreen() {
               </View>
               <TouchableOpacity
                 onPress={sensorActive ? stopSensor : () => startSensor()}
+                accessibilityRole="button"
+                accessibilityLabel={sensorActive ? 'Stop activity detection' : 'Start activity detection'}
                 style={[sensorStyles.sensorToggle, {
                   backgroundColor: sensorActive ? theme.colors.error + '15' : theme.colors.accent + '15',
                   borderColor: sensorActive ? theme.colors.error + '30' : theme.colors.accent + '30',
@@ -363,8 +507,8 @@ export default function MoveScreen() {
                 />
               </View>
               <View>
-                <Text style={[styles.jogTitle, { color: theme.colors.text }]}>{t('move.jogWalk')}</Text>
-                <Text style={[styles.jogSub, { color: theme.colors.textMuted }]}>
+                <Text style={[styles.jogTitle, { color: theme.colors.text }]} numberOfLines={1}>{t('move.jogWalk')}</Text>
+                <Text style={[styles.jogSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
                   {isJogging ? t('move.sessionActive') : t('move.tapToStart')}
                 </Text>
               </View>
@@ -435,6 +579,44 @@ export default function MoveScreen() {
                   </View>
                 )}
 
+                {/* Live Map */}
+                {jogStats && showLiveMap && (
+                  <Animated.View entering={FadeIn.duration(200)}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.textSecondary }}>Route Map</Text>
+                      <TouchableOpacity
+                        onPress={() => setShowLiveMap(false)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Hide map"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <MaterialCommunityIcons name="chevron-up" size={20} color={theme.colors.textMuted} />
+                      </TouchableOpacity>
+                    </View>
+                    <JogMap
+                      routePoints={jogStats.routePoints}
+                      isLive
+                      height={220}
+                      distanceMeters={jogStats.totalDistanceMeters}
+                      pace={jogStats.currentPaceSecondsPerKm
+                        ? formatPace(jogStats.currentPaceSecondsPerKm)
+                        : undefined
+                      }
+                    />
+                  </Animated.View>
+                )}
+                {jogStats && !showLiveMap && (
+                  <TouchableOpacity
+                    onPress={() => setShowLiveMap(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Show map"
+                    style={[styles.showMapBtn, { backgroundColor: theme.colors.accent + '15', borderColor: theme.colors.accent + '30' }]}
+                  >
+                    <MaterialCommunityIcons name="map-outline" size={16} color={theme.colors.accent} />
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.accent }}>Show Map</Text>
+                  </TouchableOpacity>
+                )}
+
                 <GradientButton
                   title={t('move.stopSession')}
                   icon="stop"
@@ -464,19 +646,41 @@ export default function MoveScreen() {
                 <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noStepHistory')}</Text>
               </GlassCard>
             ) : (
-              stepHistory.map((day, i) => (
-                <AnimatedListItem key={day.date} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
-                  <View style={[styles.historyRow, {
-                    backgroundColor: theme.colors.surfaceVariant,
-                    borderColor: theme.colors.border,
-                  }]}>
-                    <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
-                    <Text style={[styles.historySteps, { color: theme.colors.accent }]}>
-                      {day.steps.toLocaleString()} {t('move.steps').toLowerCase()}
-                    </Text>
-                  </View>
-                </AnimatedListItem>
-              ))
+              stepHistory.map((day, i) => {
+                const pct = Math.min(100, (day.steps / DAILY_STEP_GOAL) * 100);
+                const hitGoal = day.steps >= DAILY_STEP_GOAL;
+                return (
+                  <AnimatedListItem key={day.date} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
+                    <View style={[styles.historyRow, {
+                      backgroundColor: theme.colors.surfaceVariant,
+                      borderColor: theme.colors.border,
+                    }]}>
+                      <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
+                          <Text style={[styles.historySteps, { color: hitGoal ? theme.colors.accent3 : theme.colors.accent }]}>
+                            {day.steps.toLocaleString()} {t('move.steps').toLowerCase()}
+                          </Text>
+                        </View>
+                        <View style={[styles.historyProgressTrack, { backgroundColor: theme.colors.border }]}>
+                          <LinearGradient
+                            colors={hitGoal
+                              ? [theme.colors.accent3, theme.colors.accent3 + '80']
+                              : [theme.colors.accent, theme.colors.accent + '60']
+                            }
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={[styles.historyProgressFill, { width: `${pct}%` as any }]}
+                          />
+                        </View>
+                      </View>
+                      {hitGoal && (
+                        <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.accent3} style={{ marginLeft: 10 }} />
+                      )}
+                    </View>
+                  </AnimatedListItem>
+                );
+              })
             )}
 
             <SectionHeader title={t('move.jogHistory')} delay={100} />
@@ -487,22 +691,44 @@ export default function MoveScreen() {
             ) : (
               jogHistory.map((jog, i) => (
                 <AnimatedListItem key={jog.id} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
-                  <View style={[styles.historyRow, {
-                    backgroundColor: theme.colors.surfaceVariant,
-                    borderColor: theme.colors.border,
-                  }]}>
-                    <View>
-                      <Text style={[styles.historyDate, { color: theme.colors.text }]}>
-                        {jog.startTime.toLocaleDateString()}
-                      </Text>
-                      <Text style={[{ fontSize: 11, color: theme.colors.textMuted }]}>
-                        {(jog.distanceMeters / 1000).toFixed(2)} km · {formatPace(jog.avgPacePerKm)}
-                      </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={async () => {
+                      try {
+                        setReviewJog(jog);
+                        const route = await getJogRoute(jog.id);
+                        setReviewRoute(route);
+                        setReviewJogId(jog.id);
+                      } catch (e) {
+                        console.warn('[Move] Failed to load jog route:', e);
+                      }
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Jog on ${jog.startTime.toLocaleDateString()}, ${(jog.distanceMeters / 1000).toFixed(2)} km`}
+                    accessibilityHint="Double tap to view route"
+                    style={[styles.historyRow, {
+                      backgroundColor: theme.colors.surfaceVariant,
+                      borderColor: theme.colors.border,
+                    }]}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={[styles.historyDate, { color: theme.colors.text }]}>
+                          {jog.startTime.toLocaleDateString()}
+                        </Text>
+                        <Text style={[styles.historySteps, { color: theme.colors.accent2 }]}>
+                          ~{jog.caloriesEstimate} cal
+                        </Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                        <Text style={[{ fontSize: 11, color: theme.colors.textMuted }]}>
+                          {(jog.distanceMeters / 1000).toFixed(2)} km · {formatPace(jog.avgPacePerKm)}
+                        </Text>
+                        <MaterialCommunityIcons name="map-marker-path" size={12} color={theme.colors.accent + '80'} />
+                      </View>
                     </View>
-                    <Text style={[styles.historySteps, { color: theme.colors.accent2 }]}>
-                      ~{jog.caloriesEstimate} cal
-                    </Text>
-                  </View>
+                    <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+                  </TouchableOpacity>
                 </AnimatedListItem>
               ))
             )}
@@ -521,6 +747,102 @@ export default function MoveScreen() {
 
         <View style={{ height: 32 }} />
       </ScrollView>
+
+      {/* ── ROUTE REVIEW MODAL ── */}
+      <Modal
+        visible={reviewJogId !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => {
+          setReviewJogId(null);
+          setReviewRoute(null);
+          setReviewJog(null);
+        }}
+      >
+        <View style={[styles.routeModalContainer, { backgroundColor: theme.colors.background }]}>
+          {/* Header */}
+          <SafeAreaView edges={['top']}>
+            <View style={styles.routeModalHeader}>
+              <TouchableOpacity
+                onPress={() => {
+                  setReviewJogId(null);
+                  setReviewRoute(null);
+                  setReviewJog(null);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Close route review"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+              <Text style={[styles.routeModalTitle, { color: theme.colors.text }]}>
+                Route Review
+              </Text>
+              <View style={{ width: 24 }} />
+            </View>
+          </SafeAreaView>
+
+          {/* Map */}
+          <View style={{ flex: 1 }}>
+            {reviewRoute && reviewRoute.length > 0 ? (
+              <JogMap
+                routePoints={reviewRoute}
+                isLive={false}
+                height={400}
+                distanceMeters={reviewJog?.distanceMeters}
+                pace={reviewJog?.avgPacePerKm ? formatPace(reviewJog.avgPacePerKm) : undefined}
+              />
+            ) : (
+              <View style={[styles.noRouteContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
+                <MaterialCommunityIcons name="map-marker-off" size={40} color={theme.colors.textMuted} />
+                <Text style={[styles.noRouteText, { color: theme.colors.textMuted }]}>
+                  No route recorded for this jog
+                </Text>
+                <Text style={[styles.noRouteHint, { color: theme.colors.textMuted }]}>
+                  Routes are saved when GPS is active during a jog
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* Stats Footer */}
+          {reviewJog && (
+            <View style={[styles.routeStatsFooter, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
+              <View style={styles.routeStatItem}>
+                <MaterialCommunityIcons name="map-marker-distance" size={18} color={theme.colors.accent} />
+                <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                  {(reviewJog.distanceMeters / 1000).toFixed(2)} km
+                </Text>
+              </View>
+              <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
+              <View style={styles.routeStatItem}>
+                <MaterialCommunityIcons name="speedometer" size={18} color={theme.colors.success} />
+                <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                  {formatPace(reviewJog.avgPacePerKm)}
+                </Text>
+              </View>
+              <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
+              <View style={styles.routeStatItem}>
+                <MaterialCommunityIcons name="fire" size={18} color={theme.colors.accent2} />
+                <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                  {reviewJog.caloriesEstimate ?? 0} cal
+                </Text>
+              </View>
+              {reviewJog.endTime && (
+                <>
+                  <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
+                  <View style={styles.routeStatItem}>
+                    <MaterialCommunityIcons name="timer-outline" size={18} color={theme.colors.accent3} />
+                    <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                      {formatDuration(reviewJog.startTime, reviewJog.endTime)}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+          )}
+        </View>
+      </Modal>
 
       {/* ── JOG COMPLETION MODAL ── */}
       <Modal
@@ -599,6 +921,8 @@ export default function MoveScreen() {
                   setShowJogComplete(false);
                   setJogCompletionData(null);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="Dismiss jog completion"
               >
                 <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>{t('move.awesome')}</Text>
               </TouchableOpacity>
@@ -607,6 +931,7 @@ export default function MoveScreen() {
         </View>
       </Modal>
     </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -619,12 +944,14 @@ const styles = StyleSheet.create({
   historyToggle: { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   stepHero: { marginHorizontal: 16, padding: 20 },
   stepHeroInner: { flexDirection: 'row', alignItems: 'center', gap: 20 },
+  errorCard: { marginHorizontal: 16, padding: 16, borderRadius: 16, marginTop: 12 },
+  errorText: { fontSize: 13, fontWeight: '600', textAlign: 'center' },
   stepDetails: { flex: 1 },
   stepCount: { fontSize: 34, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
   stepGoal: { fontSize: 13, marginTop: 2 },
-  stepMiniStats: { flexDirection: 'row', gap: 14, marginTop: 12 },
-  miniStat: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  miniStatText: { fontSize: 13, fontWeight: '600' },
+  stepMiniStats: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+  miniStat: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  miniStatText: { fontSize: 12, fontWeight: '600' },
   trackingButtonWrap: { marginTop: 16, minHeight: 48 },
   trackingLiveRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, minHeight: 48 },
   trackingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -656,6 +983,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   gpsIndicatorText: { fontSize: 11, fontWeight: '600' },
+  showMapBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
   emptyText: { textAlign: 'center', fontSize: 13 },
   historyRow: {
     flexDirection: 'row',
@@ -668,9 +1004,20 @@ const styles = StyleSheet.create({
   },
   historyDate: { fontSize: 14, fontWeight: '500' },
   historySteps: { fontSize: 14, fontWeight: '700' },
+  historyProgressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
+  historyProgressFill: { height: 4, borderRadius: 2 },
   infoCard: { marginHorizontal: 16, marginTop: 16, flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14 },
   infoText: { flex: 1, fontSize: 12, lineHeight: 18 },
   
+  // Weekly trend styles
+  weeklyBars: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 6 },
+  weeklyBarCol: { flex: 1, alignItems: 'center', gap: 4 },
+  weeklyBarTrack: { width: '100%', height: 80, borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
+  weeklyBarFill: { width: '100%', borderRadius: 6 },
+  weeklyBarCount: { fontSize: 10, fontWeight: '600' },
+  weeklyBarLabel: { fontSize: 11 },
+  weeklyGoalMark: { position: 'absolute', left: 0, right: 0, height: 1 },
+
   // Modal styles
   modalOverlay: {
     flex: 1,
@@ -753,6 +1100,60 @@ const styles = StyleSheet.create({
   modalButtonText: {
     fontSize: 16,
     fontWeight: '700',
+  },
+
+  // Route review modal
+  routeModalContainer: {
+    flex: 1,
+  },
+  routeModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  routeModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  noRouteContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 16,
+    borderRadius: 16,
+    gap: 12,
+    padding: 32,
+  },
+  noRouteText: {
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  noRouteHint: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  routeStatsFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderTopWidth: 1,
+  },
+  routeStatItem: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  routeStatValue: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  routeStatDivider: {
+    width: 1,
+    height: 28,
   },
 });
 

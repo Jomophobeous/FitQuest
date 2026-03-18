@@ -289,10 +289,10 @@ export async function getEmergencyFallbackExercise(): Promise<Exercise | null> {
   });
 
   if (fallbacks.length > 0) {
-    return fallbacks[0];
+    return fallbacks[0] ?? null;
   }
 
   // Absolute fallback: any exercise
   const any = await getExercises({});
-  return any.length > 0 ? any[0] : null;
+  return any.length > 0 ? (any[0] ?? null) : null;
 }

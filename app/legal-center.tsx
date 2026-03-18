@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import {
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
 export default function LegalCenterScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const router = useRouter();
   const [consent, setConsent] = useState<ConsentRecord>({ timestamp: null, version: null, source: null });
   const [saving, setSaving] = useState(false);
@@ -81,9 +83,10 @@ export default function LegalCenterScreen() {
   }, []);
 
   useEffect(() => {
+    if (!dbReady) return;
     void runReplayIfDue({ reason: 'legal_center_load', cooldownMs: 45 * 1000 });
     void loadConsent();
-  }, [loadConsent]);
+  }, [dbReady, loadConsent]);
 
   const openUrl = useCallback(async (url: string) => {
     const canOpen = await Linking.canOpenURL(url);
@@ -130,7 +133,7 @@ export default function LegalCenterScreen() {
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
           >
             <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>

@@ -27,7 +27,7 @@ export function calculateCurrentFatigue(
   muscle: TargetMuscle
 ): number {
   const size = getMuscleSize(muscle);
-  const params = FATIGUE_DECAY_RATES[size];
+  const params = FATIGUE_DECAY_RATES[size]!;
   
   // Exponential decay
   const currentFatigue = initialFatigue * Math.exp(-params.decayRate * hoursSinceTraining);
@@ -47,7 +47,7 @@ export function calculateTrainingFatigue(
   muscle: TargetMuscle
 ): number {
   const size = getMuscleSize(muscle);
-  const params = FATIGUE_DECAY_RATES[size];
+  const params = FATIGUE_DECAY_RATES[size]!;
   
   // Base fatigue per set (higher for larger muscles)
   const fatiguePerSet = 5 * params.sensitivityFactor * intensityFactor;
@@ -71,7 +71,7 @@ export function estimateRecoveryTime(
   if (currentFatigue <= targetFatigue) return 0;
   
   const size = getMuscleSize(muscle);
-  const params = FATIGUE_DECAY_RATES[size];
+  const params = FATIGUE_DECAY_RATES[size]!;
   
   // Solve: target = current * e^(-λ * t)
   // t = -ln(target/current) / λ

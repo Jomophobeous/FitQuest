@@ -342,7 +342,7 @@ export class DocumentImportPipeline {
     let failed = 0;
 
     for (let i = 0; i < items.length; i++) {
-      const item = items[i];
+      const item = items[i]!;
       const itemProgress = (progress: number) => {
         const overallProgress = Math.round(((i + progress / 100) / items.length) * 100);
         this.options.onProgress(overallProgress, progress === 100 ? 'COMPLETE' : 'ANALYZING');
@@ -529,6 +529,13 @@ export class DocumentImportPipeline {
 
   private async hashFileContent(uri: string): Promise<string> {
     try {
+      // Skip reading binary files as text — hash path + size instead
+      const ext = uri.split('.').pop()?.toLowerCase();
+      if (ext === 'pdf' || ext === 'epub') {
+        const info = await FileSystem.getInfoAsync(uri);
+        const sizeStr = String((info as any).size || 0);
+        return Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `${uri}:${sizeStr}:bin`);
+      }
       const content = await FileSystem.readAsStringAsync(uri);
       return Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, content);
     } catch {

@@ -17,7 +17,7 @@ import * as Crypto from 'expo-crypto';
 // TYPES
 // ============================================
 
-export type BodyType = 'ectomorph' | 'mesomorph' | 'endomorph';
+export type BodyType = 'ectomorph' | 'mesomorph' | 'endomorph' | 'ecto_mesomorph' | 'meso_endomorph' | 'endo_ectomorph';
 export type GoalType = 'lean_athletic' | 'muscular_powerful' | 'tall_flexible' | 'balanced_toned' | 'custom';
 export type FitnessLevel = 'beginner' | 'intermediate' | 'advanced';
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'very_active';
@@ -269,6 +269,9 @@ function getNutritionTips(goal_type: GoalType, body_type: BodyType): string[] {
     ectomorph: 'As an ectomorph, increase meal frequency and add calorie-dense snacks (nuts, nut butters).',
     mesomorph: 'As a mesomorph, you respond well to balanced macros — maintain consistency.',
     endomorph: 'As an endomorph, prioritize protein and fiber to manage satiety and reduce fat gain.',
+    ecto_mesomorph: 'As an ecto-mesomorph, you build lean muscle well — focus on slightly higher calories with clean protein sources.',
+    meso_endomorph: 'As a meso-endomorph, you gain muscle easily but watch carb intake on rest days to manage body fat.',
+    endo_ectomorph: 'As an endo-ectomorph, use carb cycling — higher carbs on training days, lower on rest days — to stay lean while building.',
   };
 
   return [...universal, ...(goalTips[goal_type] || []), bodyTips[body_type]];
@@ -331,7 +334,7 @@ export function generateBodyCraftAlgorithm(inputs: BodyCraftInputs, userId: stri
     // Re-normalize
     const total = Object.values(exercise_category_weights).reduce((s, v) => s + v, 0);
     for (const key of Object.keys(exercise_category_weights)) {
-      exercise_category_weights[key] = parseFloat((exercise_category_weights[key] / total).toFixed(2));
+      exercise_category_weights[key] = parseFloat(((exercise_category_weights[key] ?? 0) / total).toFixed(2));
     }
   }
 

@@ -43,7 +43,7 @@ interface Particle {
 function generateParticles(width: number): Particle[] {
   return Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
     id: i,
-    emoji: EMOJIS[i % EMOJIS.length],
+    emoji: EMOJIS[i % EMOJIS.length]!,
     startX: 20 + Math.random() * 60,     // 20-80% width
     startY: -5 - Math.random() * 15,     // above screen
     endX: (Math.random() - 0.5) * 40,    // ±20% drift

@@ -1,4 +1,5 @@
 import { safeWarn } from './logger';
+import Constants from 'expo-constants';
 
 let initialized = false;
 
@@ -14,26 +15,32 @@ export function initializeCrashReporting(): void {
 
   const dsn = getSentryDsn();
   if (!dsn) {
-    safeWarn('[Observability] External crash reporting disabled (missing EXPO_PUBLIC_SENTRY_DSN)');
+    if (__DEV__) console.log('[Observability] Crash reporting skipped (no EXPO_PUBLIC_SENTRY_DSN)');
     return;
   }
 
   try {
-    const sentryExpo = require('sentry-expo');
-    sentryExpo.Sentry.init({
+    const Sentry = require('@sentry/react-native');
+    const appVersion = Constants.expoConfig?.version ?? '0.0.0';
+    Sentry.init({
       dsn,
+      environment: __DEV__ ? 'development' : 'production',
+      release: `com.hugelet.fitquest@${appVersion}`,
       enableInExpoDevelopment: false,
       debug: false,
+      tracesSampleRate: 0.2,
+      attachScreenshot: true,
+      enableNativeFramesTracking: true,
     });
   } catch {
-    safeWarn('[Observability] sentry-expo not installed; external crash reporting skipped');
+    safeWarn('[Observability] @sentry/react-native not available; external crash reporting skipped');
   }
 }
 
 export function captureException(error: unknown, context?: Record<string, unknown>): void {
   try {
-    const sentryExpo = require('sentry-expo');
-    sentryExpo.Sentry.Native.captureException(error, {
+    const Sentry = require('@sentry/react-native');
+    Sentry.captureException(error, {
       extra: context,
     });
   } catch {
@@ -43,8 +50,8 @@ export function captureException(error: unknown, context?: Record<string, unknow
 
 export function capturePerformanceMetric(name: string, durationMs: number): void {
   try {
-    const sentryExpo = require('sentry-expo');
-    sentryExpo.Sentry.Native.addBreadcrumb({
+    const Sentry = require('@sentry/react-native');
+    Sentry.addBreadcrumb({
       category: 'performance',
       message: `${name}:${durationMs}`,
       level: 'info',

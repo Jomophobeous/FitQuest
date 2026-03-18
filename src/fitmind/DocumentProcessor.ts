@@ -307,6 +307,11 @@ export class DocumentProcessor {
     page: number,
     wordsPerPage = AVG_WORDS_PER_PAGE
   ): Promise<{ content: string; hasNext: boolean; hasPrev: boolean }> {
+    // Guard: never read binary formats as UTF-8 text
+    const ext = filePath.split('.').pop()?.toLowerCase();
+    if (ext === 'pdf' || ext === 'epub') {
+      return { content: '', hasNext: false, hasPrev: false };
+    }
     const content = await FileSystem.readAsStringAsync(filePath);
     const cleanContent = filePath.endsWith('.html') ? DocumentProcessor.stripHtml(content) : content;
 
@@ -461,7 +466,7 @@ export class DocumentProcessor {
 
   private static extractTitleFromHtml(html: string): string | null {
     const match = html.match(/<title[^>]*>(.*?)<\/title>/i);
-    return match ? match[1].trim() : null;
+    return match ? match[1]!.trim() : null;
   }
 
   private static async analyzeFile(filePath: string, type: DocumentType): Promise<TextAnalysis> {

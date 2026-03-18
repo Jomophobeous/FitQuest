@@ -114,7 +114,7 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
  * Get a default location when actual location is unavailable
  * Uses device timezone to make a reasonable regional guess
  */
-function getDefaultLocation(): UserLocation {
+export function getDefaultLocation(): UserLocation {
   // Try to infer region from timezone
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
@@ -287,39 +287,11 @@ function getRegionalGroupsForCountry(isoCountryCode?: string): string[] {
 
 /**
  * Get foods filtered by user's location
- * Returns global foods + region-specific foods for the user's country
- * When location is unknown, returns ALL foods from the database
+ * Returns ALL foods from the database, with regional foods sorted first
+ * When location is unknown, returns all foods in default order
  */
 export function getFoodsByLocation(location: UserLocation | null): FoodItem[] {
-  const globalFoods = GLOBAL_FOODS.filter(f => f.available_regions.includes('global'));
-  
-  // If no location or GLOBAL fallback, return all foods from database + global
-  if (!location?.isoCountryCode || location.isoCountryCode === 'GLOBAL') {
-    const allRegionalFoods = REGIONAL_FOOD_DATABASE.map(food => ({
-      name: food.name,
-      category: food.category,
-      description: food.description,
-      calories_per_serving: food.calories_per_serving,
-      protein_g: food.protein_g,
-      available_regions: food.available_regions,
-      local_name: food.local_name,
-    }));
-    
-    const mergedFoods = [...allRegionalFoods, ...globalFoods];
-    const dedupedFoods = mergedFoods.filter((food, index, list) =>
-      list.findIndex((item) => item.name.toLowerCase() === food.name.toLowerCase()) === index
-    );
-    
-    return dedupedFoods;
-  }
-
-  const countryCode = location.isoCountryCode.toUpperCase();
-  const regionalGroups = getRegionalGroupsForCountry(countryCode);
-
-  const regionalFoods = REGIONAL_FOOD_DATABASE.filter(food => {
-    const foodRegion = food.available_regions[0];
-    return foodRegion === countryCode || regionalGroups.includes(foodRegion);
-  }).map(food => ({
+  const allRegionalFoods = REGIONAL_FOOD_DATABASE.map(food => ({
     name: food.name,
     category: food.category,
     description: food.description,
@@ -328,39 +300,128 @@ export function getFoodsByLocation(location: UserLocation | null): FoodItem[] {
     available_regions: food.available_regions,
     local_name: food.local_name,
   }));
+  
+  const globalFoods = GLOBAL_FOODS.filter(f => f.available_regions.includes('global'));
+  const all = deduplicateFoods([...allRegionalFoods, ...globalFoods]);
 
-  const mergedFoods = [...regionalFoods, ...globalFoods];
-  const dedupedFoods = mergedFoods.filter((food, index, list) =>
-    list.findIndex((item) => item.name.toLowerCase() === food.name.toLowerCase()) === index
-  );
+  // If no location, return all foods unsorted
+  if (!location?.isoCountryCode || location.isoCountryCode === 'GLOBAL') {
+    return all;
+  }
 
-  return dedupedFoods;
+  // Sort regional foods first — user's region foods appear at the top
+  const countryCode = location.isoCountryCode.toUpperCase();
+  const regionalGroups = getRegionalGroupsForCountry(countryCode);
+
+  return all.sort((a, b) => {
+    const aRegional = a.available_regions.some(r => r === countryCode || regionalGroups.includes(r));
+    const bRegional = b.available_regions.some(r => r === countryCode || regionalGroups.includes(r));
+    if (aRegional && !bRegional) return -1;
+    if (!aRegional && bRegional) return 1;
+    return 0;
+  });
+}
+
+/** O(n) deduplication using Set instead of O(n²) findIndex */
+function deduplicateFoods(foods: FoodItem[]): FoodItem[] {
+  const seen = new Set<string>();
+  return foods.filter(food => {
+    const key = food.name.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 /**
  * Get meal suggestions based on timing and location
  */
+const MEAL_SUGGESTIONS_CONFIG: Record<string, { title: string; categories: FoodItem['category'][]; tip: string }> = {
+  breakfast: { title: '🍳 Breakfast', categories: ['protein', 'carb', 'fruit'], tip: 'Eat within 1 hour of waking for best energy' },
+  lunch: { title: '🥗 Lunch', categories: ['protein', 'carb', 'vegetable'], tip: 'Balance protein with complex carbs for sustained energy' },
+  dinner: { title: '🍗 Dinner', categories: ['protein', 'vegetable', 'fat'], tip: 'Focus on lean protein and veggies for recovery' },
+  'pre-workout': { title: '⚡ Pre-Workout', categories: ['carb', 'fruit'], tip: 'Light carbs 30-60 min before training' },
+  'post-workout': { title: '💪 Post-Workout', categories: ['protein', 'carb'], tip: 'Consume protein within 30 min post-exercise' },
+  snack: { title: '🥜 Snack', categories: ['fat', 'fruit', 'snack'], tip: 'Keep portions small — aim for 150-200 calories' },
+};
+
+const MEAL_ORDER: Array<'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack'> =
+  ['breakfast', 'pre-workout', 'lunch', 'post-workout', 'dinner', 'snack'];
+
+/**
+ * Deterministic hash for distributing foods across meal types.
+ * Uses the food name to produce a stable numeric hash.
+ */
+function stableHash(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+/**
+ * Pre-partitioning cache: computed once per food array identity.
+ * Maps mealType → food indices for that meal.
+ */
+let _partitionCache: { key: FoodItem[] | null; result: Map<string, FoodItem[]> } = { key: null, result: new Map() };
+
+function partitionFoodsAcrossMeals(foods: FoodItem[]): Map<string, FoodItem[]> {
+  // Return cached result if same array reference
+  if (_partitionCache.key === foods) return _partitionCache.result;
+
+  const result = new Map<string, FoodItem[]>();
+  for (const m of MEAL_ORDER) result.set(m, []);
+
+  // For each food, find which meals accept its category, then assign to ONE meal
+  // using a stable hash so the assignment is deterministic.
+  for (const food of foods) {
+    const eligibleMeals = MEAL_ORDER.filter(m =>
+      MEAL_SUGGESTIONS_CONFIG[m]?.categories.includes(food.category)
+    );
+    if (eligibleMeals.length === 0) continue;
+
+    // Pick the meal with the fewest foods so far, breaking ties with hash
+    const hash = stableHash(food.name);
+    let bestMeal = eligibleMeals[hash % eligibleMeals.length]!;
+
+    // Balance: if the hashed meal has 2× the count of the smallest eligible meal, pick smallest
+    const counts = eligibleMeals.map(m => ({ m, c: result.get(m)?.length ?? 0 }));
+    counts.sort((a, b) => a.c - b.c);
+    const smallest = counts[0];
+    const hashedCount = result.get(bestMeal)?.length ?? 0;
+    if (smallest && hashedCount > smallest.c * 1.5 + 2) {
+      bestMeal = smallest.m;
+    }
+
+    result.get(bestMeal)?.push(food);
+  }
+
+  _partitionCache = { key: foods, result };
+  return result;
+}
+
 export function getMealSuggestions(
   mealType: 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack',
   location: UserLocation | null,
 ): { title: string; foods: FoodItem[]; tip: string } {
-  const allFoods = getFoodsByLocation(location);
+  return getMealSuggestionsFromFoods(mealType, getFoodsByLocation(location));
+}
 
-  const suggestions: Record<string, { title: string; categories: FoodItem['category'][]; tip: string }> = {
-    breakfast: { title: '🍳 Breakfast', categories: ['protein', 'carb', 'fruit'], tip: 'Eat within 1 hour of waking for best energy' },
-    lunch: { title: '🥗 Lunch', categories: ['protein', 'carb', 'vegetable'], tip: 'Balance protein with complex carbs for sustained energy' },
-    dinner: { title: '🍗 Dinner', categories: ['protein', 'vegetable', 'fat'], tip: 'Focus on lean protein and veggies for recovery' },
-    'pre-workout': { title: '⚡ Pre-Workout', categories: ['carb', 'fruit'], tip: 'Light carbs 30-60 min before training' },
-    'post-workout': { title: '💪 Post-Workout', categories: ['protein', 'carb'], tip: 'Consume protein within 30 min post-exercise' },
-    snack: { title: '🥜 Snack', categories: ['fat', 'fruit', 'snack'], tip: 'Keep portions small — aim for 150-200 calories' },
-  };
-
-  const config = suggestions[mealType];
-  const filteredFoods = allFoods.filter(f => config.categories.includes(f.category));
-
+/**
+ * Derive meal suggestions from a pre-computed food list.
+ * Each food is assigned to exactly ONE meal type so no duplicates across tabs.
+ */
+export function getMealSuggestionsFromFoods(
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack',
+  foods: FoodItem[],
+): { title: string; foods: FoodItem[]; tip: string } {
+  const config = MEAL_SUGGESTIONS_CONFIG[mealType];
+  if (!config) return { title: mealType, foods: [], tip: '' };
+  const partitioned = partitionFoodsAcrossMeals(foods);
   return {
     title: config.title,
-    foods: filteredFoods,
+    foods: partitioned.get(mealType) || [],
     tip: config.tip,
   };
 }

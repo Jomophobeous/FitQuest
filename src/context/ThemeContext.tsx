@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const saved = await SecureStore.getItemAsync(THEME_STORAGE_KEY);
         if (isValidMode(saved)) {
           setModeState(saved);
-        } else if (systemColorScheme) {
+        } else if (systemColorScheme && isValidMode(systemColorScheme)) {
           setModeState(systemColorScheme);
         }
       } catch (e) {

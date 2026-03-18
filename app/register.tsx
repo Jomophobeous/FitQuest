@@ -91,7 +91,7 @@ export default function RegisterScreen() {
     }
     const pwResult = validatePassword(password);
     if (!pwResult.valid) {
-      setErrorMsg(pwResult.errors[0]);
+      setErrorMsg(pwResult.errors[0] ?? t('register.invalidPassword'));
       triggerShake();
       return false;
     }
@@ -127,7 +127,7 @@ export default function RegisterScreen() {
     const colors = [theme.colors.error, theme.colors.warning, theme.colors.accent, theme.colors.success];
     const widths = ['25%', '50%', '75%', '100%'];
     const idx = Math.min(pw.score, 3);
-    return { label: labels[idx], color: colors[idx], width: widths[idx] };
+    return { label: labels[idx] ?? '', color: colors[idx] ?? 'transparent', width: widths[idx] ?? '0%' };
   };
 
   const strength = getPasswordStrength();

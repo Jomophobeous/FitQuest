@@ -24,6 +24,13 @@ export default defineConfig({
       'expo-random': path.resolve(__dirname, 'tests/__mocks__/expo-random.ts'),
       'expo-modules-core': path.resolve(__dirname, 'tests/__mocks__/expo-modules-core.ts'),
       'expo-asset': path.resolve(__dirname, 'tests/__mocks__/expo-asset.ts'),
+      'posthog-react-native': path.resolve(__dirname, 'tests/__mocks__/posthog-react-native.ts'),
+      '@sentry/react-native': path.resolve(__dirname, 'tests/__mocks__/sentry-react-native.ts'),
+      'expo-constants': path.resolve(__dirname, 'tests/__mocks__/expo-constants.ts'),
+      // Mock internal services that depend on native .tsx imports
+      '../services/posthogService': path.resolve(__dirname, 'tests/__mocks__/posthogService.ts'),
+      '../../services/posthogService': path.resolve(__dirname, 'tests/__mocks__/posthogService.ts'),
+      './posthogService': path.resolve(__dirname, 'tests/__mocks__/posthogService.ts'),
     },
   },
 });

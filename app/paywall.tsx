@@ -29,6 +29,8 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useSubscription } from '../src/purchases/SubscriptionContext';
+import { getRegionalPricing } from '../src/utils/regionalPricing';
+import { logEvent } from '../src/services/telemetry';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -257,12 +259,15 @@ export default function PaywallScreen() {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [purchasing, setPurchasing] = useState(false);
 
+  useEffect(() => { void logEvent('paywall_viewed'); }, []);
+  const regionalPricing = useMemo(() => getRegionalPricing(), []);
+
   // Only redirect if user is a PAID subscriber (not trial)
   useEffect(() => {
     // Wait for loading to finish, then check if user is PAID subscriber
     if (!subLoading && hasAccess && subscriptionState.status === 'ACTIVE') {
       // Already paid subscriber — don't show paywall
-      router.canGoBack() ? router.back() : router.replace('/dashboard');
+      router.replace('/dashboard');
     }
   }, [hasAccess, subLoading, subscriptionState.status, router]);
 
@@ -274,6 +279,7 @@ export default function PaywallScreen() {
         : await purchaseAnnual();
       
       if (success) {
+        void logEvent('subscription_purchased', { plan: selectedPlan });
         router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
     } finally {
@@ -326,7 +332,7 @@ export default function PaywallScreen() {
       >
         {/* ── Close Button ── */}
         <Animated.View entering={FadeIn.duration(150)}>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
+          <TouchableOpacity style={styles.closeBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')} accessibilityRole="button" accessibilityLabel="Close paywall">
             <MaterialCommunityIcons name="close" size={20} color={theme.colors.textMuted} />
           </TouchableOpacity>
         </Animated.View>
@@ -386,6 +392,9 @@ export default function PaywallScreen() {
               styles.planCard,
               planCardAnnualStyle,
             ]}
+            accessibilityRole="radio"
+            accessibilityLabel="Annual plan"
+            accessibilityState={{ selected: selectedPlan === 'annual' }}
           >
             {/* Best Value badge */}
             <View style={styles.badge}>
@@ -396,12 +405,12 @@ export default function PaywallScreen() {
               <View style={styles.planInfo}>
                 <Text style={styles.planName}>{t('paywall.annual')}</Text>
                 <Text style={styles.planDetail}>
-                  {offerings.annual?.pricePerMonth ?? '$6.67'}/month
+                  {offerings.annual?.pricePerMonth ?? regionalPricing.monthlyPerMonth}/month
                 </Text>
               </View>
               <View style={styles.planPriceWrap}>
                 <Text style={styles.planPrice}>
-                  {offerings.annual?.price ?? '$53.99'}
+                  {offerings.annual?.price ?? regionalPricing.annual}
                 </Text>
                 <Text style={styles.planPeriod}>{t('paywall.perYear')}</Text>
               </View>
@@ -425,6 +434,9 @@ export default function PaywallScreen() {
               styles.planCard,
               planCardMonthlyStyle,
             ]}
+            accessibilityRole="radio"
+            accessibilityLabel="Monthly plan"
+            accessibilityState={{ selected: selectedPlan === 'monthly' }}
           >
             <View style={styles.planRow}>
               <View style={styles.planInfo}>
@@ -435,7 +447,7 @@ export default function PaywallScreen() {
               </View>
               <View style={styles.planPriceWrap}>
                 <Text style={styles.planPrice}>
-                  {offerings.monthly?.price ?? '$5.39'}
+                  {offerings.monthly?.price ?? regionalPricing.monthly}
                 </Text>
                 <Text style={styles.planPeriod}>{t('paywall.perMonth')}</Text>
               </View>
@@ -455,6 +467,8 @@ export default function PaywallScreen() {
             onPress={handleSubscribe}
             disabled={purchasing}
             style={[styles.ctaBtn, purchasing && { opacity: 0.6 }]}
+            accessibilityRole="button"
+            accessibilityLabel="Subscribe"
           >
             {purchasing ? (
               <ActivityIndicator color={theme.colors.background} />
@@ -470,7 +484,7 @@ export default function PaywallScreen() {
           </Text>
 
           {/* Restore Purchases */}
-          <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn}>
+          <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn} accessibilityRole="button" accessibilityLabel="Restore purchases">
             <Text style={styles.restoreText}>
               {t('paywall.restorePurchases')}
             </Text>

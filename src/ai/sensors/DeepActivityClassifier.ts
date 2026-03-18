@@ -189,8 +189,8 @@ export class DeepActivityClassifier {
       let maxProb = 0;
       let bestIdx = 0;
       for (let i = 0; i < probs.length; i++) {
-        if (probs[i] > maxProb) {
-          maxProb = probs[i];
+        if (probs[i]! > maxProb) {
+          maxProb = probs[i]!;
           bestIdx = i;
         }
       }
@@ -201,7 +201,7 @@ export class DeepActivityClassifier {
       // Build probability map
       const allProbabilities: Record<ActivityClass, number> = {} as any;
       for (let i = 0; i < labels.length; i++) {
-        allProbabilities[labels[i]] = probs[i];
+        allProbabilities[labels[i]!] = probs[i]!;
       }
 
       // Estimate cadence from accelerometer
@@ -294,10 +294,10 @@ export class DeepActivityClassifier {
         for (let k = 0; k < kernelSize; k++) {
           const idx = t + k - pad;
           if (idx >= 0 && idx < seqLen) {
-            const inputRow = input[idx];
-            const filterRow = filters[f][k];
+            const inputRow = input[idx]!;
+            const filterRow = filters[f]![k];
             for (let c = 0; c < inputRow.length; c++) {
-              sum += inputRow[c] * (filterRow?.[c] ?? 0);
+              sum += inputRow[c]! * (filterRow?.[c] ?? 0);
             }
           }
         }
@@ -372,7 +372,7 @@ export class DeepActivityClassifier {
         let sum = this.model!.lstmBias[i] ?? 0;
         const wRow = this.model!.lstmInputWeight[i];
         for (let j = 0; j < inputVec.length; j++) {
-          sum += inputVec[j] * (wRow?.[j] ?? 0);
+          sum += inputVec[j]! * (wRow?.[j] ?? 0);
         }
         gates[i] = sum;
       }
@@ -381,7 +381,7 @@ export class DeepActivityClassifier {
       for (let i = 0; i < 4 * hiddenSize; i++) {
         const wRow = this.model!.lstmHiddenWeight[i];
         for (let j = 0; j < hiddenSize; j++) {
-          gates[i] += h[j] * (wRow?.[j] ?? 0);
+          gates[i] = (gates[i] ?? 0) + h[j]! * (wRow?.[j] ?? 0);
         }
       }
 
@@ -390,13 +390,13 @@ export class DeepActivityClassifier {
       const newC = new Float64Array(hiddenSize);
 
       for (let i = 0; i < hiddenSize; i++) {
-        const inputGate = this.sigmoidF64(gates[i]);
-        const forgetGate = this.sigmoidF64(gates[hiddenSize + i]);
-        const cellGate = Math.tanh(gates[2 * hiddenSize + i]);
-        const outputGate = this.sigmoidF64(gates[3 * hiddenSize + i]);
+        const inputGate = this.sigmoidF64(gates[i]!);
+        const forgetGate = this.sigmoidF64(gates[hiddenSize + i]!);
+        const cellGate = Math.tanh(gates[2 * hiddenSize + i]!);
+        const outputGate = this.sigmoidF64(gates[3 * hiddenSize + i]!);
 
-        newC[i] = forgetGate * c[i] + inputGate * cellGate;
-        newH[i] = outputGate * Math.tanh(newC[i]);
+        newC[i] = forgetGate * c[i]! + inputGate * cellGate;
+        newH[i] = outputGate * Math.tanh(newC[i]!);
       }
 
       h = newH;
@@ -421,7 +421,7 @@ export class DeepActivityClassifier {
 
     // Compute accelerometer magnitude
     const magnitudes = window.map(s =>
-      Math.sqrt(s[0] ** 2 + s[1] ** 2 + s[2] ** 2)
+      Math.sqrt(s[0]! ** 2 + s[1]! ** 2 + s[2]! ** 2)
     );
 
     // Remove DC component (mean)
@@ -444,8 +444,8 @@ export class DeepActivityClassifier {
       let real = 0, imag = 0;
       for (let t = 0; t < n; t++) {
         const angle = (2 * Math.PI * k * t) / n;
-        real += centered[t] * Math.cos(angle);
-        imag -= centered[t] * Math.sin(angle);
+        real += centered[t]! * Math.cos(angle);
+        imag -= centered[t]! * Math.sin(angle);
       }
       const power = real * real + imag * imag;
       if (power > maxPower) {
@@ -510,7 +510,7 @@ export class DeepActivityClassifier {
   ): ClassificationResult {
     // Simple threshold-based classification
     const magnitudes = window.map(s =>
-      Math.sqrt(s[0] ** 2 + s[1] ** 2 + s[2] ** 2)
+      Math.sqrt(s[0]! ** 2 + s[1]! ** 2 + s[2]! ** 2)
     );
 
     const mean = magnitudes.reduce((a, b) => a + b, 0) / magnitudes.length;
@@ -564,7 +564,7 @@ export class DeepActivityClassifier {
     for (let i = 0; i < matrix.length; i++) {
       let sum = bias[i] ?? 0;
       for (let j = 0; j < vec.length; j++) {
-        sum += (matrix[i]?.[j] ?? 0) * vec[j];
+        sum += (matrix[i]?.[j] ?? 0) * vec[j]!;
       }
       out[i] = sum;
     }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
+import { useDatabase } from '../../src/context/DatabaseContext';
 import ThemedText from '../../src/components/ThemedText';
 import { getRecentSessions } from '../../src/database/service';
 
@@ -19,11 +20,13 @@ interface SessionExerciseRow {
 export default function WorkoutDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { theme } = useTheme();
+  const { isReady: dbReady } = useDatabase();
   const [session, setSession] = useState<any | null>(null);
   const [exercises, setExercises] = useState<SessionExerciseRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!dbReady) return;
     (async () => {
       try {
         // Try to find session in recent history
@@ -41,7 +44,7 @@ export default function WorkoutDetail() {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, dbReady]);
 
   if (loading) {
     return (

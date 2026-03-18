@@ -63,6 +63,7 @@ export function analyzeBalance(
   for (const [muscle, volume] of weeklyVolume) {
     const size = getMuscleSize(muscle);
     const landmarks = DEFAULT_VOLUME_LANDMARKS[size];
+    if (!landmarks) continue;
     
     if (volume > landmarks.MAV) {
       overworked.push(muscle);
@@ -245,25 +246,25 @@ export function optimizeExerciseOrder(
 ): ExerciseWithDetails[] {
   if (exercises.length <= 2) return exercises;
   
-  const ordered: ExerciseWithDetails[] = [exercises[0]];
+  const ordered: ExerciseWithDetails[] = [exercises[0]!];
   const remaining = exercises.slice(1);
   
   while (remaining.length > 0) {
-    const lastExercise = ordered[ordered.length - 1];
+    const lastExercise = ordered[ordered.length - 1]!;
     
     // Find exercise with least overlap to last one
     let bestIndex = 0;
     let bestOverlap = Infinity;
     
     for (let i = 0; i < remaining.length; i++) {
-      const overlap = calculateMuscleOverlap(lastExercise, remaining[i]);
+      const overlap = calculateMuscleOverlap(lastExercise, remaining[i]!);
       if (overlap < bestOverlap) {
         bestOverlap = overlap;
         bestIndex = i;
       }
     }
     
-    ordered.push(remaining[bestIndex]);
+    ordered.push(remaining[bestIndex]!);
     remaining.splice(bestIndex, 1);
   }
   

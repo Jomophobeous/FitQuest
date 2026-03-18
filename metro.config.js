@@ -19,6 +19,9 @@ config.resolver.blockList = [
   new RegExp(`${projectRoot}/workspace-repos/.*`),
   new RegExp(`${projectRoot}/server/.*`),
   new RegExp(`${projectRoot}/android/build/.*`),
+  // Block native build artifacts inside node_modules that exhaust inotify watchers
+  /.*\/android\/build\/.*/,
+  /.*\/ios\/build\/.*/,
 ];
 
 // Treat .model files as binary assets (not source code).

@@ -17,18 +17,18 @@
 export const colorSystem = {
   dark: {
     // Base
-    background: '#0A0E14', // Deep navy-black (premium depth)
-    surface: '#121821', // Elevated surface
-    surfaceVariant: '#1A2030', // Secondary surface (cards)
+    background: '#050507', // Pure charcoal black
+    surface: '#0E0E12', // Elevated surface
+    surfaceVariant: '#161619', // Secondary surface (cards)
     
     // Text
-    text: '#F2F4F8', // Primary text (crisp white)
-    textSecondary: '#B0B8C8', // Secondary text
-    textMuted: '#7A849A', // Tertiary/meta text
+    text: '#F4F5F9', // Primary text (crisp white)
+    textSecondary: '#A8B0C0', // Secondary text
+    textMuted: '#6B7590', // Tertiary/meta text
     
     // Dividers
-    border: '#2A3245', // Hairline borders
-    divider: '#222B3D', // Internal dividers
+    border: '#1E1E24', // Hairline borders
+    divider: '#18181D', // Internal dividers
     
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
@@ -104,31 +104,31 @@ export const colorSystem = {
   },
 
   blackGold: {
-    // Base — pure black, zero warm tint for maximum contrast
-    background: '#09090B',
-    surface: '#141416',
-    surfaceVariant: '#1C1C1F',
+    // Base — deep true black for maximum luxury contrast
+    background: '#020204',
+    surface: '#0A0A0C',
+    surfaceVariant: '#121214',
 
     // Text — crisp platinum/silver (no warm parchment)
-    text: '#EDEDEF',
-    textSecondary: '#A1A1A6',
+    text: '#F2F2F5',
+    textSecondary: '#ACACB2',
     textMuted: '#6E6E76',
 
     // Dividers — cool charcoal
-    border: '#2C2C30',
-    divider: '#222225',
+    border: '#252528',
+    divider: '#1A1A1E',
 
-    // Single accent color — refined champagne gold (less saturated, more elegant)
-    accent: '#C9A84C',
+    // Single accent color — refined warm gold (not blinding)
+    accent: '#D4A843',
 
     // Semantic — distinct colors, not all gold
     error: '#B83240',
-    warning: '#D4963A',
-    success: '#C9A84C', // Use gold for success in blackGold theme (no green)
+    warning: '#C8943A',
+    success: '#D4A843', // Gold for success in blackGold theme
 
     // Backward compatibility aliases
-    accent2: '#D4963A',
-    accent3: '#C9A84C', // Changed from green to gold
+    accent2: '#C8943A',
+    accent3: '#D4A843', // Warm gold
 
     // Category accent colors — understated luxury palette
     purple: '#9B86C7',
@@ -141,10 +141,10 @@ export const colorSystem = {
     pinkLight: '#D499B0',
 
     // Contrast text on accent-colored (gold) surfaces
-    onAccent: '#09090B',
+    onAccent: '#050507',
 
     // Chrome
-    overlay: 'rgba(0,0,0,0.80)',
+    overlay: 'rgba(0,0,0,0.85)',
   },
 };
 
@@ -311,6 +311,24 @@ export const createTheme = (mode: ThemeMode) => {
     isBlackGold: mode === 'blackGold',
   };
 };
+
+// ============================================================================
+// EXERCISE CATEGORY GRADIENTS & ICONS
+// ============================================================================
+
+export const categoryTheme: Record<string, {
+  colors: [string, string];
+  icon: string;
+}> = {
+  body_control: { colors: ['#10B981', '#059669'], icon: 'human-handsup' },
+  posture:      { colors: ['#6366F1', '#4F46E5'], icon: 'human-male-height' },
+  speed:        { colors: ['#F59E0B', '#D97706'], icon: 'lightning-bolt' },
+  mobility:     { colors: ['#EC4899', '#DB2777'], icon: 'yoga' },
+  focus:        { colors: ['#8B5CF6', '#7C3AED'], icon: 'meditation' },
+  strength:     { colors: ['#EF4444', '#DC2626'], icon: 'dumbbell' },
+};
+
+export const defaultCategoryTheme = { colors: ['#64748B', '#475569'] as [string, string], icon: 'dumbbell' };
 
 // Export default theme (dark mode by default)
 export const darkTheme = createTheme('dark');

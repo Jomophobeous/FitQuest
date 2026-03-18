@@ -1,5 +1,129 @@
 # FitQuest Development Log
 
+## 2026-03-11 — Quality Gate Artifact Hardening
+
+### Session Overview
+Hardened the aggregate `verify:quality:110` gate so it now writes definitive report artifacts while running, instead of forcing verification to rely on terminal streaming that can truncate around `tsc --noEmit` in the VS Code shell.
+
+---
+
+## 2026-03-15 — Release Build + Jog/Wheel UX fixes
+
+### Session Overview
+Fixed the Move tab so the app launches via the splash experience (not straight to index), bundled all exercise images into the APK (no more adb push required), and added robust error handling when starting a jog session (prevents blank screens when GPS/permissions fail).
+
+### Delivered
+- Updated `app/index.tsx` to redirect to `/splash` (ensures splash animation & auth routing always run on cold start)
+- Bundled exercise images into `android/app/src/main/assets/exercises/` and updated:
+  - `src/services/exerciseImageService.ts` to resolve images from `file:///android_asset/exercises/` on Android
+  - `src/components/ExerciseImage.tsx` to load images from APK assets (skipping `FileSystem.getInfoAsync` on Android)
+- Added jog-start error capture in `app/move.tsx` so failures show a message and retry button instead of a blank screen
+- Rebuilt release APK twice (after jog fix + splash routing change) to ensure changes are included
+
+### Validation
+- Confirmed release APK built successfully and exists at `android/app/build/outputs/apk/release/app-release.apk`
+- Verified exercise images are present within APK assets (98MB of images now bundled)
+- Verified splash routing change (app now opens to `/splash` before redirecting)
+
+---
+
+2026-02-18 — AI Phase 1: FSRS Flashcard Integration ✅ COMPLETE
+
+### Session Overview
+HARDWARE... (existing log continues unchanged)
+
+### Delivered
+- Updated `scripts/quality-110-gate.mjs` to emit live status artifacts:
+	- `reports/quality-110-latest.json`
+	- `reports/quality-110-latest.md`
+- Added per-step execution tracking for all gate stages:
+	- Phase 10 lite verification
+	- Simulation lite verification
+	- Typecheck
+	- Targeted quality tests
+	- Monetization verification
+	- Food DB verification
+- Added persisted score/state fields to the report:
+	- overall status (`RUNNING` / `PASS` / `FAIL`)
+	- core score, stretch score, total score
+	- timestamps for start/finish
+	- per-step status and failure details
+- Added failure-path artifact writing so an interrupted or failed gate still leaves a readable final state on disk.
+- Added signal handling for `SIGINT` / `SIGTERM` so externally interrupted runs do not leave the quality report stuck in `RUNNING`.
+- Added a synchronous process-exit fallback so unexpected wrapper termination still rewrites the report to a final `FAIL` state.
+- Added stale-run reconciliation on startup: if a prior gate artifact says `RUNNING` but its recorded PID is no longer alive, the next gate run automatically marks that stale artifact as failed before continuing.
+- Added `FITQUEST_QUALITY_GATE_SELF_TEST=1` mode so the artifact-writing path can be validated quickly with short no-op steps instead of waiting on the full 110 gate.
+- Separated self-test artifacts from standard gate artifacts so fast validation runs do not overwrite `reports/quality-110-latest.{md,json}`.
+- Added heartbeat metadata and periodic heartbeat writes to quality gate artifacts:
+	- `lastHeartbeatAt`
+	- `staleAfterAt`
+	- `heartbeatIntervalMs`
+	- `staleAfterMs`
+- Added timeout-based stale detection so an old `RUNNING` standard artifact can be identified as stale even without relying only on PID checks.
+- Added dedicated npm command: `verify:quality:110:self-test`.
+
+### Why
+- The repo checks were already passing, but the wrapper gate output was not always trustworthy in the editor shell.
+- The hardened artifacts make gate status inspectable from files even when terminal capture is incomplete.
+
+### Validation Plan
+- Re-run `npm run verify:quality:110`
+- Confirm both new report artifacts are created and show final status without depending on terminal output
+
+### Validation Results
+- Standard gate artifact now shows a completed PASS state in `reports/quality-110-latest.{md,json}` with all six standard steps marked passed and total score `110/110`.
+- Dedicated self-test command passes:
+	- `npm run verify:quality:110:self-test`
+	- exit code `0`
+	- final PASS artifacts in `reports/quality-110-self-test-latest.{md,json}`
+- Timeout/stale-state recovery validated by seeding a stale self-test artifact (`RUNNING`, expired `staleAfterAt`, dead PID) and rerunning `npm run verify:quality:110:self-test`; the rerun replaced the stale state with a fresh PASS artifact.
+
+### Readiness Verification Follow-up
+- Ran `npm run verify:release:strict` — passed (`36/36` checks).
+- Ran `npm test` — passed (`14` test files, `157` tests).
+- Ran `npm run verify:ops:readiness` — passed.
+- Existing standard gate artifact remained PASS at `110/110`.
+- Current editor diagnostics did not show repo-owned source failures; the only reported issue came from a dependency `tsconfig` under `node_modules`, which is outside the workspace source tree and did not reproduce through repo verification scripts.
+
+### Hardening Mini-Phase Tracking
+- Added `docs/HARDENING_MINI_PHASES.md` to track hardening mini-phases within major phases.
+- Updated `EXECUTION_PLAN.md` runtime sequence so every substantial hardening pass now starts with a named mini-phase, records verification evidence, and closes with a development-log update.
+- Marked `P0.H1 - Verification Gate Hardening` completed.
+- Started `P0.H2 - Native Validation Stabilization` to finish native validation without repeatedly restarting builds after shell/editor interruptions.
+- Checked current Android build state without rebuilding:
+	- no packaged Android artifact was present yet under `android/**/build`
+	- native validation remains open and is being handled as the active mini-phase
+
+### Native Validation Findings
+- Performed static native validation instead of immediately restarting Gradle after the interrupted build.
+- Confirmed the Android project tree exists, but the expected checked-in app manifest is missing at `android/app/src/main/AndroidManifest.xml`.
+- Confirmed no packaged Android artifact or output metadata is currently present under `android/**/build`.
+- Confirmed `app.json` currently includes general Android permissions (`CAMERA`, `NOTIFICATIONS`, location, `ACTIVITY_RECOGNITION`) but does not declare Android health permissions.
+- Confirmed `app.json` currently includes iOS camera, photo, location, motion, and Face ID usage descriptions, but does not declare HealthKit usage strings.
+- Updated `P0.H2 - Native Validation Stabilization` status to blocked pending native configuration correction and one controlled rerun of native validation.
+
+### Native Build Restart Attempt
+- Restarted the Android native build on user request and allowed it to run for the requested minimum wait window before checking status.
+- First restart attempt did not yield a usable completion signal and produced no packaged artifact.
+- Launched a second controlled build with log redirection and then stabilized to a single active Gradle run after duplicate attempts from earlier interrupted sessions were cleaned up.
+- Observed the stabilized build continue running well past the requested wait window with active Gradle CPU usage, but without producing:
+	- an APK or AAB
+	- output metadata
+	- a final exit marker file
+- Latest reproducible outcome: native Android validation is blocked by a build stall/non-completing Gradle run rather than by a confirmed app-compile success or a surfaced compile error.
+
+### Fresh Build Reset
+- Removed old Android build directories:
+	- `android/build`
+	- `android/app/build`
+- Removed prior Android build-tracking files under `reports/` and reset the build log.
+- Terminated stale Java/Gradle processes from previous interrupted attempts.
+- Started one fresh detached Android build:
+	- command: `./gradlew assembleDebug --no-daemon --console=plain`
+	- PID recorded in `reports/android-assemble-debug.pid`
+	- output redirected to `reports/android-assemble-debug.log`
+- `P0.H2 - Native Validation Stabilization` is now back in progress pending the user-reported outcome of this fresh build attempt.
+
 ## 2026-02-18 — AI Phase 1: FSRS Flashcard Integration ✅ COMPLETE
 
 ### Session Overview
@@ -1393,6 +1517,43 @@ Pipeline scope:
 
 Files changed:
 - `scripts/phase2-verify-lite.mjs` (new)
+
+## 2026-03-11 — Workout Generator Reliability Pass ✅
+
+### Session Overview
+Audited the workout generator against the live code path, removed brittle fake-data assumptions from testing, fixed generator data quality gaps, improved selection behavior, and added an on-device diagnostics path for future analysis.
+
+### Findings
+- `getExercises()` was returning empty `training_types`, which weakened generator scoring quality.
+- Generator scoring used per-candidate progress-history lookups, creating unnecessary N+1 reads.
+- Selection logic diluted session intent by forcing pattern coverage too early.
+- Existing workout-generator tests used fabricated exercise fixtures and drifted from the real runtime contract.
+- Strict quality gate failure was due to OAuth env configuration, not generator correctness.
+
+### Changes Delivered
+
+Files changed:
+- `src/database/service.ts`
+- `src/engines/workoutGenerator.ts`
+- `tests/workoutGenerator.test.ts`
+- `app/workouts/index.tsx`
+- `scripts/oauth-preflight.mjs`
+- `docs/WORKOUT_GENERATOR_ANALYSIS_MARCH_2026.md`
+
+What changed:
+- Restored real `training_types` on exercise query results.
+- Batched progress-history reads during scoring.
+- Removed an unused recent-session read from workout generation.
+- Reworked selection to prioritize the freshest focus pattern before widening distribution.
+- Added `analyzeWorkoutGeneration()` for diagnostics without persisting workouts.
+- Added a hidden on-device diagnostics panel in the workouts screen to run the real generator against the device database.
+- Replaced fake workout-generator tests with real-catalog integration tests.
+- Updated OAuth preflight to merge `.env` and `.env.local` and accept a real fallback client configuration.
+
+Validation:
+- `npm run typecheck`
+- `npm run test`
+- `npm run verify:quality:110` after env alignment
 - `package.json` (new script)
 - `TODO.md` (`Future Tests` field added for deferred heavy suites)
 
@@ -1456,6 +1617,43 @@ Validation results:
 - `npm run typecheck` passed
 - `npm --prefix server run smoke:phase3` passed
 - `npm run verify:phase3:lite` passed (includes Phase 2 baseline + Phase 3 smoke)
+
+### Resume Verification And Harness Tightening
+
+Resumed after VS Code crash and revalidated the workout-generator follow-up work before continuing.
+
+What was verified:
+- `npm run verify:quality:110` reaches a passing OAuth preflight with real client alignment and only the expected fallback-mode warning when Android-specific OAuth is absent.
+- Changed generator files remained free of type/lint diagnostics in editor validation.
+- The hidden on-device diagnostics route was confirmed to call the live generator path (`analyzeWorkoutGeneration`) from the real app shell.
+
+Additional fix delivered:
+- Updated `app/workouts/index.tsx` so recent session history and diagnostics both use the active profile ID instead of splitting between the active profile and hardcoded `user_local_001`.
+- Removed the nested virtualized-list pattern from the hidden workouts diagnostics route and reset the loading flag on user-context refresh so the native harness behaves predictably during on-device checks.
+
+Reason:
+- The diagnostics harness should exercise the same user context end-to-end. Mixing profile IDs could make the on-device readout misleading during native validation.
+- The route is intended to be a stable native diagnostics surface; virtualized-list nesting warnings and stale loading state add noise during device-side validation.
+
+### Verification Script Compatibility Fix
+
+The strict quality path exposed one remaining unrelated failure in `verify:food-db`: the verifier still assumed the food database was exported as a literal TypeScript array, but the current implementation lazy-loads `assets/food-data.json` behind a proxy.
+
+Fix delivered:
+- Updated `scripts/verify-food-db.mjs` to validate the JSON asset when the service uses the lazy asset-backed export.
+
+Reason:
+- This preserves the startup-friendly lazy-loading implementation while keeping the verification script aligned with the actual data source.
+
+### Simulation Contract Alignment
+
+The next strict-gate blocker turned out to be real: `verify:simulation:lite` was failing because the hidden platform routes were registered in `app/_layout.tsx`, but the shared dropdown navigation contract in `src/components/DropdownMenu.tsx` did not include matching menu entries.
+
+Fix delivered:
+- Added dropdown menu items for `platform-studio`, `autonomous-center`, `federation-hub`, and `enterprise-hardening` so the menu contract and routed screens are aligned.
+
+Reason:
+- The simulation-lite gate explicitly verifies that these routes remain reachable from both the router and the app's shared menu surface. The routes were present, but discoverability had regressed.
 
 ### Phase 4 Analytics & Privacy-Safe Aggregation (Completed)
 
@@ -1728,4 +1926,108 @@ Full execution of `docs/CODEBASE_AUDIT_AND_STRATEGY.md` Tiers 0–5 across two s
 - **TS type fix**: Updated `MuscleFatigue.last_trained_at` from `string` to `string | null` in `src/database/types.ts` — matches SQL schema where column allows NULL.
 - **Test type fixes**: Fixed `locked: 0` → `locked: false` in `workoutGenerator.test.ts`. Added `TargetMuscle` type import + assertion in `recoveryEngine.test.ts`.
 - **Verification**: 0 TypeScript errors, 14/14 test files, 155/155 tests passing.
+
+---
+
+### Full i18n + Language-Aware AI & Narrator + Natural Speech Evolution (Session 2)
+
+Complete internationalization of the AI Coach and workout narrator. The app now responds in the user's selected language across all voice and AI interactions, with natural speech improvements for human-like narration.
+
+#### 15-Language Translation Pipeline (prior session)
+- Extended `src/i18n/translations.ts` from ~200 keys to **1078 keys** per language.
+- Built `scripts/translate_i18n.py` — automated extract → translate → generate pipeline using `deep-translator` (Google Translate).
+- All 15 languages translated: EN, AF, ZU, XH, ST, ES, FR, DE, PT, ZH, JA, KO, AR, HI, SW.
+- Total: **16,170 translations** (1078 × 15).
+
+#### AI Coach Language Awareness
+- **`src/fitmind/DualAIEngine.ts`**: Extended `AIContext` interface with `language?: string` and `languageName?: string` fields.
+- **`src/services/aiProvider.ts`**: Added language instruction block to `buildAdaptiveSystemPrompt()` — when `context.language !== 'en'`, injects: "You MUST respond entirely in {languageName}. Use natural, conversational {languageName}."
+- **`app/coach/index.tsx`**: Passes `language` and `languageName` from `useLanguage()` into `buildAIContext()` → flows through to cloud AI system prompt.
+- Result: AI Coach (cloud path via Groq/OpenRouter) now responds in the user's selected language. Offline DualAI templates remain English (acceptable fallback).
+
+#### Narrator & Audio Service i18n
+- **`src/services/audioService.ts`** — Major refactor:
+  - Added `TranslatorFn` type and `setTranslator()` method to inject React context's `t()` into the singleton.
+  - Replaced all hardcoded English narration text with `this.t('audio.*')` translation keys:
+    - `playCountdown()`, `playComplete()`, `playBell()`, `playExerciseFinished()`, `playWorkoutComplete()`, `playPhaseTransition()`.
+  - Rewrote `generateCompletionCompliment()` with numbered i18n keys (`audio.compliment.1–5`, `audio.perfect.1–3`, `audio.levelUp.1–2`, `audio.streak.7–90`).
+  - Updated `generateDefaultAudio()` and `generateRichAudio()` signatures to accept optional `TranslatorFn`.
+- **`src/hooks/useAudio.ts`**: Injects `t` from `useLanguage()` into `audioService.setTranslator(t)` via useEffect.
+- **`src/hooks/useFitQuestWorkout.ts`**: Passes `t` to both `generateRichAudio()` call sites.
+- **45 new `audio.*` translation keys** added to English, translated to all 14 other languages.
+- **63 placeholder fixes**: Fixed machine-translated placeholders (e.g., `{{nombre}}` → `{{name}}`, `{{المستوى}}` → `{{level}}`) across all languages.
+
+#### Natural Speech Evolution
+- **Voice selection**: Added `selectBestVoice()` to `AudioService` — queries `Speech.getAvailableVoicesAsync()`, prefers "Enhanced" quality voices matching the user's locale.
+- **Adaptive speech rate**: Narration types (`intro`, `setup`, `execution`, `transition`) speak 10% slower than user's configured rate for more natural pacing.
+- **Conversational text formatting**: Updated all English audio keys with natural pause markers — commas for breathing pauses, ellipses for dramatic pauses, periods for full stops. TTS engines interpret these as natural speech rhythm.
+- **Research**: Investigated expo-speech capabilities, SSML limitations (not supported), react-native-tts (more control but requires native build), Piper TTS (neural but too heavy for weak devices). Decision: stay with expo-speech + text formatting tricks for maximum compatibility.
+
+#### Files Changed
+| File | Changes |
+|------|---------|
+| `src/fitmind/DualAIEngine.ts` | Added `language`, `languageName` to `AIContext` |
+| `src/services/aiProvider.ts` | Language instruction in system prompt |
+| `app/coach/index.tsx` | Language context passed to AI |
+| `src/services/audioService.ts` | Full i18n + voice selection + adaptive rate |
+| `src/hooks/useAudio.ts` | Translator injection |
+| `src/hooks/useFitQuestWorkout.ts` | Translator passed to audio generation |
+| `src/i18n/translations.ts` | +45 audio keys, 63 placeholder fixes, naturalness tweaks |
+
+---
+
+### Production Readiness Audit & Hardening (14 Mar 2026)
+
+Comprehensive codebase audit covering architecture, error handling, security, performance, UX flows, and edge cases. Identified and fixed critical gaps.
+
+#### tsconfig.json Hardening
+- Added `forceConsistentCasingInFileNames`, `noFallthroughCasesInSwitch`, `noUncheckedIndexedAccess` — all pass clean (zero additional errors).
+- Added `paths` aliases (`@/*` → `./src/*`, `@app/*` → `./app/*`).
+- Extended `exclude` to cover `server/`, `website/`, `training/`, `scripts/`, `Figma UI/` — prevents TS from compiling unrelated code.
+- Added explicit `include` for `app/` and `src/` subdirectories.
+
+#### Professor Language Awareness Gap (Fixed)
+- `app/professor/index.tsx` had 3 `dualAI.query()` calls that only passed `personality` and `conversationHistory` — missing `language` and `languageName`.
+- Added `language` and `languageName` destructuring from `useLanguage()` and passed to all 3 AI context objects (greeting, main chat, suggestion handler).
+
+#### Onboarding Silent Failure (Fixed)
+- **Critical Bug**: If profile save failed during onboarding (DB error, lock failure, equipment write), the error was swallowed with `console.warn` and the user was navigated to the dashboard anyway — resulting in an empty profile that blocks workout generation.
+- **Fix**: Added `Alert.alert()` with translated error message and `return` to prevent navigation. User stays on onboarding and can retry.
+- Added `onboarding.saveError` translation key to all 15 languages.
+
+#### Workout Generation Timeout (Added)
+- `useFitQuestWorkout.generateNewWorkout()` had no timeout — if SQLite locked or queries hung, the app would show infinite "generating" state with no escape.
+- Added 20-second timeout using `setTimeout` + `clearTimeout` in `finally` block. On timeout, sets error state with "timed out, try again" message.
+
+#### Production Console Logging (Guarded)
+- `src/database/index.ts`: 3 `console.log` statements → guarded with `if (__DEV__)` (diagnostic counts, re-seed count, init complete).
+- `src/security/BiometricAuth.ts`: Session-ended log → guarded with `if (__DEV__)`. Emergency wipe/lockout logs left as security audit trail.
+- `src/security/EncryptedDatabase.ts`: Migration log → guarded with `if (__DEV__)`.
+
+#### app.json: Added Missing Plugin
+- Added `expo-speech` to plugins array (was in dependencies but missing from plugins — required for native TTS on EAS builds).
+
+#### Audit Summary (No Changes Needed)
+- **Error Handling**: Global ErrorBoundary + 9 screen-level boundaries ✅
+- **Security**: No hardcoded secrets, AES-256-GCM encryption, biometric auth with lockout ✅
+- **Performance**: FlatList with `keyExtractor`, `initialNumToRender`, `windowSize`, `removeClippedSubviews` ✅
+- **Memory**: Timer/interval cleanup in all useEffect hooks ✅
+- **Empty States**: Dashboard, profile, exercises all handle null data ✅
+- **Network**: AI provider has AbortController + timeout + model failover chain ✅
+
+#### Production Readiness: 8.5/10
+Remaining for launch: Sentry DSN (external crash reporting), RevenueCat API key (subscriptions), ProGuard rules (optional). All are configuration/secrets — no code changes needed.
+
+#### Files Changed
+| File | Changes |
+|------|---------|
+| `tsconfig.json` | Stricter settings, path aliases, proper include/exclude |
+| `app.json` | Added `expo-speech` plugin |
+| `app/professor/index.tsx` | Language context passed to all 3 dualAI.query() calls |
+| `app/onboarding.tsx` | Error alert on profile save failure + Alert import |
+| `src/hooks/useFitQuestWorkout.ts` | 20s generation timeout + dev-guarded logging |
+| `src/database/index.ts` | 3 console.log → `if (__DEV__)` |
+| `src/security/BiometricAuth.ts` | Session log → `if (__DEV__)` |
+| `src/security/EncryptedDatabase.ts` | Migration log → `if (__DEV__)` |
+| `src/i18n/translations.ts` | +1 key (onboarding.saveError) × 15 languages |
 

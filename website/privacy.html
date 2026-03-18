@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FitQuest Privacy Policy — How we protect your data with AES-256-GCM encryption on-device. No cloud servers.">
+  <meta name="theme-color" content="#0A0E17">
+  <title>Privacy Policy — FitQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="reading-progress"><div class="reading-progress__bar"></div></div>
+  <div class="nav__overlay" id="navOverlay"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">
+        <div class="nav__logo-icon">⚡</div>
+        FitQuest
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="index.html" class="nav__link">Home</a>
+        <a href="about.html" class="nav__link">About</a>
+        <a href="support.html" class="nav__link">Support</a>
+        <a href="index.html#pricing" class="nav__link">Pricing</a>
+        <a href="index.html#download" class="nav__cta">Get the App</a>
+      </div>
+      <div class="nav__right">
+        <div class="lang-selector">
+          <button class="lang-trigger" aria-label="Select language">
+            <span class="lang-trigger__globe">🌐</span>
+            <span class="lang-trigger__text">EN</span>
+            <span class="lang-trigger__chevron">▼</span>
+          </button>
+          <div class="lang-dropdown">
+            <div class="lang-dropdown__label">Available in App</div>
+            <div class="lang-option active" data-code="EN"><span class="lang-option__flag">🇬🇧</span><span class="lang-option__name">English</span></div>
+            <div class="lang-option" data-code="ST"><span class="lang-option__flag">🇱🇸</span><span class="lang-option__name">Sesotho</span></div>
+            <div class="lang-option" data-code="AF"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">Afrikaans</span></div>
+            <div class="lang-option" data-code="ZU"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiZulu</span></div>
+            <div class="lang-option" data-code="XH"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiXhosa</span></div>
+            <div class="lang-option" data-code="ES"><span class="lang-option__flag">🇪🇸</span><span class="lang-option__name">Español</span></div>
+            <div class="lang-option" data-code="FR"><span class="lang-option__flag">🇫🇷</span><span class="lang-option__name">Français</span></div>
+            <div class="lang-option" data-code="DE"><span class="lang-option__flag">🇩🇪</span><span class="lang-option__name">Deutsch</span></div>
+            <div class="lang-option" data-code="PT"><span class="lang-option__flag">🇧🇷</span><span class="lang-option__name">Português</span></div>
+            <div class="lang-option" data-code="ZH"><span class="lang-option__flag">🇨🇳</span><span class="lang-option__name">中文</span></div>
+            <div class="lang-option" data-code="JA"><span class="lang-option__flag">🇯🇵</span><span class="lang-option__name">日本語</span></div>
+            <div class="lang-option" data-code="KO"><span class="lang-option__flag">🇰🇷</span><span class="lang-option__name">한국어</span></div>
+            <div class="lang-option" data-code="AR"><span class="lang-option__flag">🇸🇦</span><span class="lang-option__name">العربية</span></div>
+            <div class="lang-option" data-code="HI"><span class="lang-option__flag">🇮🇳</span><span class="lang-option__name">हिन्दी</span></div>
+            <div class="lang-option" data-code="SW"><span class="lang-option__flag">🇰🇪</span><span class="lang-option__name">Kiswahili</span></div>
+          </div>
+        </div>
+        <div class="theme-switch" role="switch" aria-label="Toggle dark/light theme" tabindex="0">
+          <div class="theme-switch__track">
+            <span class="theme-switch__icon theme-switch__icon--moon">🌙</span>
+            <span class="theme-switch__icon theme-switch__icon--sun">☀️</span>
+          </div>
+          <div class="theme-switch__indicator"></div>
+        </div>
+        <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="legal-hero">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-header__label">Legal</div>
+        <h1 class="section-header__title">Privacy <span class="text-gradient">Policy</span></h1>
+        <p class="section-header__desc">Last updated: January 2026 &middot; Effective: January 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section class="section legal-content">
+    <div class="container" style="max-width: 800px;">
+
+      <div class="glass-card reveal" style="margin-bottom: 24px; border-left: 3px solid var(--accent);">
+        <p style="font-weight: 600; margin-bottom: 6px;">🔒 Privacy at a Glance</p>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">FitQuest is a fully offline app. Your data never leaves your device. Health data is encrypted with AES-256-GCM. We have no servers, no accounts, and no cloud storage. We literally cannot see your data.</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>1. Who We Are</h2>
+        <p>FitQuest is developed and published by <strong>fitquest.dev</strong>, domiciled in the <strong>Kingdom of Lesotho</strong>. For privacy inquiries, contact us at <a href="mailto:fitquestsupp0rt@gmail.com">fitquestsupp0rt@gmail.com</a>.</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>2. Architecture — Why We're Different</h2>
+        <p>FitQuest is designed as a <strong>fully client-side application</strong> with no backend servers. This architectural decision means:</p>
+        <ul>
+          <li>All workout data, health metrics, and profile information are stored <strong>exclusively on your device</strong> using SQLite.</li>
+          <li>There is <strong>no user account system</strong> — no email, no password, no cloud identity.</li>
+          <li>The app functions 100% offline. An internet connection is only needed for initial download and subscription verification.</li>
+          <li>We have <strong>no ability</strong> to access, read, or extract your data remotely.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>3. Data We Collect</h2>
+        <h3>3a. On-Device Data (Never Transmitted)</h3>
+        <p>The following data is created and stored <strong>only on your device</strong>:</p>
+        <table class="legal-table">
+          <thead>
+            <tr><th>Category</th><th>Data</th><th>Storage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Profile</td><td>Sex, weight, height, goals, experience level</td><td>SQLite (plaintext)</td></tr>
+            <tr><td>Workouts</td><td>Exercise logs, sets, reps, session duration</td><td>SQLite (plaintext)</td></tr>
+            <tr><td>Health Metrics</td><td>Heart rate, sleep data, daily steps, calories</td><td>AES-256-GCM encrypted</td></tr>
+            <tr><td>AI Conversations</td><td>Coach &amp; Professor chat history</td><td>AES-256-GCM encrypted</td></tr>
+            <tr><td>Notes &amp; Annotations</td><td>FitMind reading notes, highlights, bookmarks</td><td>AES-256-GCM encrypted</td></tr>
+            <tr><td>Health Alerts</td><td>Anomaly detection results, severity flags</td><td>AES-256-GCM encrypted</td></tr>
+          </tbody>
+        </table>
+
+        <h3>3b. Subscription Verification</h3>
+        <p>When you subscribe, FitQuest verifies your subscription status through <strong>RevenueCat</strong>:</p>
+        <ul>
+          <li>An anonymous subscriber ID is exchanged with RevenueCat.</li>
+          <li>An anonymous app instance ID is generated.</li>
+          <li>No name, email, or payment details are transmitted by the app.</li>
+          <li>All payment processing is handled by the <strong>Google Play Store</strong> or <strong>Apple App Store</strong> — we never see, process, or store your credit card or billing information.</li>
+        </ul>
+
+        <h3>3c. Health Connect / HealthKit (Optional)</h3>
+        <p>If you grant permission, FitQuest reads health data from Google Health Connect (Android) or Apple HealthKit (iOS):</p>
+        <ul>
+          <li>Data types: step count, heart rate, sleep sessions, active energy.</li>
+          <li>This data is read <strong>into the app only</strong> and encrypted on-device.</li>
+          <li>FitQuest <strong>never writes back</strong> to Health Connect / HealthKit without explicit user action.</li>
+          <li>You can revoke access at any time in your device settings.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>4. Encryption &amp; Security</h2>
+        <p>All sensitive health data is encrypted using <strong>AES-256-GCM</strong> (Advanced Encryption Standard with Galois/Counter Mode):</p>
+        <ul>
+          <li><strong>Key derivation:</strong> Master encryption key generated on first launch and stored in device secure enclave (Keychain on iOS, Keystore on Android).</li>
+          <li><strong>Scope:</strong> Heart rate, sleep, AI conversations, health alerts, notes, and anomaly data are all encrypted at rest.</li>
+          <li><strong>Authentication:</strong> GCM mode provides both confidentiality and data integrity verification.</li>
+          <li><strong>Access:</strong> Biometric authentication (fingerprint/face) or PBKDF2-hardened passcode required to unlock encrypted data.</li>
+          <li><strong>Emergency wipe:</strong> After 15 consecutive failed authentication attempts, all encrypted data is securely wiped.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>5. Background Health Collection</h2>
+        <p>When enabled, FitQuest collects health data in the background at <strong>1-minute intervals</strong>:</p>
+        <ul>
+          <li>Step count, heart rate (if available from sensors), and active minutes.</li>
+          <li>Statistical anomaly detection runs every 30 minutes to check for unusual health patterns.</li>
+          <li>Daily health summaries are auto-generated and stored encrypted.</li>
+          <li>Background collection can be <strong>disabled at any time</strong> in app settings.</li>
+          <li>All collected data remains 100% on-device and encrypted.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>6. AI Assistants</h2>
+        <p>FitQuest includes two on-device AI assistants (Coach &amp; Professor):</p>
+        <ul>
+          <li>AI responses are generated using <strong>template-based response generation</strong> with context injection — no external API calls.</li>
+          <li>All conversation history is encrypted with AES-256-GCM and stored locally.</li>
+          <li>The AI does not learn from or retain your data between sessions beyond what you explicitly see in your conversation history.</li>
+          <li>No conversation data is transmitted to any external server or AI provider.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>7. Third-Party Services</h2>
+        <table class="legal-table">
+          <thead>
+            <tr><th>Service</th><th>Purpose</th><th>Data Shared</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>RevenueCat</td><td>Subscription verification</td><td>Anonymous subscriber ID only</td></tr>
+            <tr><td>Google Play / App Store</td><td>Payment processing</td><td>Handled by platform, not by FitQuest</td></tr>
+            <tr><td>Expo Updates</td><td>App updates</td><td>Device platform &amp; app version (anon)</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 12px;">We do <strong>not</strong> use any analytics SDKs (no Google Analytics, no Firebase Analytics, no Mixpanel, no Amplitude).</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>8. Children's Privacy</h2>
+        <p>FitQuest is not directed at children under 13 (or the applicable minimum age in your jurisdiction). We do not knowingly collect personal data from children. Since all data is on-device and we have no server-side data collection, this risk is inherently mitigated by architecture.</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>9. Your Rights</h2>
+        <p>Under the Lesotho <strong>Data Protection Act 2011</strong>, South Africa's <strong>POPIA</strong>, the EU <strong>GDPR</strong>, and <strong>CCPA</strong>, you have the right to:</p>
+        <ul>
+          <li><strong>Access:</strong> View all your data directly in the app (it's on your device).</li>
+          <li><strong>Delete:</strong> Delete all data via Settings → Delete Account, or uninstall the app. See our <a href="delete-account.html">Data Deletion</a> page for instructions.</li>
+          <li><strong>Portability:</strong> Your data lives on your device — you already have full access.</li>
+          <li><strong>Object:</strong> You can disable any data collection feature (background health, Health Connect, etc.).</li>
+          <li><strong>Restrict processing:</strong> All processing is local — disable features you don't want.</li>
+        </ul>
+        <p style="margin-top: 8px;">Since we have no servers and no centralized data store, most data rights are self-service: your device, your data, your control.</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>10. POPIA Compliance (South Africa)</h2>
+        <p>For users in South Africa, FitQuest's architecture inherently satisfies POPIA's core principles:</p>
+        <ul>
+          <li><strong>Minimality:</strong> We collect only fitness-relevant data needed for the app's functionality.</li>
+          <li><strong>Purpose limitation:</strong> Data is used exclusively for your personal fitness tracking.</li>
+          <li><strong>Safeguards:</strong> AES-256-GCM encryption, biometric authentication, PBKDF2 key derivation.</li>
+          <li><strong>No transborder transfer:</strong> Data never leaves your device, so no cross-border concerns arise.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>11. Data Retention</h2>
+        <ul>
+          <li>Data persists on your device until you delete it or uninstall the app.</li>
+          <li>We have no server-side data, so there is nothing to retain on our end.</li>
+          <li>Subscription verification tokens are anonymous and managed by RevenueCat.</li>
+        </ul>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>12. Changes to This Policy</h2>
+        <p>We may update this privacy policy to reflect product or regulatory changes. The "Last updated" date at the top will change accordingly. Material changes will be communicated via an in-app notice.</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>13. Governing Law</h2>
+        <p>This privacy policy is governed by the laws of the <strong>Kingdom of Lesotho</strong>, including the Data Protection Act 2011. Disputes shall be resolved in the courts of Maseru, Lesotho.</p>
+      </div>
+
+      <div class="legal-section reveal">
+        <h2>14. Contact</h2>
+        <p>For privacy-related questions or concerns:</p>
+        <ul>
+          <li><strong>Email:</strong> <a href="mailto:fitquestsupp0rt@gmail.com">fitquestsupp0rt@gmail.com</a></li>
+          <li><strong>Publisher:</strong> fitquest.dev</li>
+          <li><strong>Jurisdiction:</strong> Kingdom of Lesotho</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a href="index.html" class="nav__logo" style="margin-bottom: 6px;">
+            <div class="nav__logo-icon">⚡</div>
+            FitQuest
+          </a>
+          <p class="footer__brand-desc">Train your body and sharpen your mind with AI-powered adaptive fitness. Privacy-first, offline-first, proudly built in the Kingdom of Lesotho.</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">Product</h4>
+          <a href="index.html#features" class="footer__link">Features</a>
+          <a href="index.html#pricing" class="footer__link">Pricing</a>
+          <a href="index.html#download" class="footer__link">Download</a>
+          <a href="about.html" class="footer__link">About</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Legal</h4>
+          <a href="privacy.html" class="footer__link">Privacy Policy</a>
+          <a href="terms.html" class="footer__link">Terms of Service</a>
+          <a href="delete-account.html" class="footer__link">Delete Account</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Support</h4>
+          <a href="support.html" class="footer__link">Help Center</a>
+          <a href="mailto:fitquestsupp0rt@gmail.com" class="footer__link">Email Support</a>
+          <a href="support.html#faq" class="footer__link">FAQ</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="footer__copy">&copy; 2026 fitquest.dev &middot; Kingdom of Lesotho</span>
+        <div class="footer__bottom-links">
+          <a href="privacy.html" class="footer__bottom-link">Privacy</a>
+          <a href="terms.html" class="footer__bottom-link">Terms</a>
+          <a href="delete-account.html" class="footer__bottom-link">Data Deletion</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="js/main.js"></script>
+</body>
+</html>

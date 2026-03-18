@@ -54,13 +54,7 @@ interface DropdownMenuProps {
 // MENU ITEMS
 // ============================================
 
-const ACCENT_PURPLE = '#8B5CF6';
-const ACCENT_TEAL = '#4ECDC4';
-const ACCENT_ORANGE = '#F97316';
-const ACCENT_GREEN = '#10B981';
-const ACCENT_RED = '#EF4444';
-const ACCENT_PINK = '#EC4899';
-const ACCENT_AMBER = '#F4A427';
+// Menu colors now use theme color keys resolved at render time
 
 const MENU_ITEMS: MenuItem[] = [
   {
@@ -72,7 +66,7 @@ const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'progress',
-    label: 'Progress Photos',
+    label: 'Progress',
     icon: 'camera-burst',
     route: '/progress',
     category: 'movement',
@@ -83,7 +77,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'robot-happy',
     route: '/coach',
     category: 'knowledge',
-    color: ACCENT_PURPLE,
+    color: 'purple',
   },
   {
     id: 'analytics',
@@ -91,7 +85,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'chart-bar',
     route: '/analytics',
     category: 'knowledge',
-    color: ACCENT_TEAL,
+    color: 'skyBlue',
   },
   {
     id: 'nutrition-calc',
@@ -99,7 +93,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'calculator-variant',
     route: '/nutrition-calculator',
     category: 'knowledge',
-    color: ACCENT_ORANGE,
+    color: 'orange',
   },
   {
     id: 'meal-prep',
@@ -107,7 +101,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'food-variant',
     route: '/meal-prep',
     category: 'knowledge',
-    color: ACCENT_GREEN,
+    color: 'accent',
   },
   {
     id: 'health-dashboard',
@@ -115,7 +109,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'heart-pulse',
     route: '/health-dashboard',
     category: 'knowledge',
-    color: ACCENT_RED,
+    color: 'error',
   },
   {
     id: 'craft-my-body',
@@ -123,7 +117,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'human-edit',
     route: '/craft-my-body',
     category: 'movement',
-    color: ACCENT_PINK,
+    color: 'pink',
   },
   {
     id: 'saved-workouts',
@@ -138,7 +132,7 @@ const MENU_ITEMS: MenuItem[] = [
     icon: 'crown',
     route: '/paywall',
     category: 'system',
-    color: ACCENT_AMBER,
+    color: '#F4A427',
   },
   {
     id: 'backups',
@@ -147,6 +141,7 @@ const MENU_ITEMS: MenuItem[] = [
     route: '/backups',
     category: 'system',
   },
+
   {
     id: 'about',
     label: 'About FitQuest',
@@ -218,7 +213,7 @@ function AnimatedMenuItem({
   const { theme } = useTheme();
   const isWorkoutActive = timerService.isActive();
   const scale = useSharedValue(1);
-  const iconColor = item.color || (isDisabled ? theme.colors.textMuted : theme.colors.accent);
+  const iconColor = item.color ? (theme.colors as any)[item.color] || theme.colors.accent : (isDisabled ? theme.colors.textMuted : theme.colors.accent);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

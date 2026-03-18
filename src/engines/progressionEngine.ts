@@ -145,7 +145,7 @@ export async function analyzeExerciseProgression(
     }
   }
 
-  const latest = history[0];
+  const latest = history[0]!;
   return {
     consecutive_successes: consecutiveSuccesses,
     consecutive_failures: consecutiveFailures,
@@ -262,7 +262,7 @@ export async function recordExercisePerformance(
     id: await generateSecureId('progress'),
     user_id: userId,
     exercise_id: performance.exercise_id,
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0]!,
     sets_completed: performance.completed_sets,
     reps_achieved: performance.completed_reps || performance.prescribed_reps,
     difficulty_rating: performance.difficulty_rating,

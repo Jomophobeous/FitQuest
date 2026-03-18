@@ -16,20 +16,27 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Paths, File, Directory } from 'expo-file-system';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { getXPData, awardProgressPhotoXP, type XPData } from '../src/services/xpService';
 import { getAppState, setAppState, getUserProgress, getStreak } from '../src/database/service';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 import ThemedText from '../src/components/ThemedText';
 import Card from '../src/components/Card';
 import ProgressBar from '../src/components/ProgressBar';
+import { GlassCard, SectionHeader } from '../src/components/ui/GlassUI';
+import { getCardWidth, getGridColumns, ms } from '../src/utils/responsive';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const PHOTO_SIZE = (SCREEN_WIDTH - 48 - 12) / 2; // 2 columns with padding
+const GRID_COLS = getGridColumns();
+const PHOTO_SIZE = getCardWidth(GRID_COLS, 16, 12);
 
 // ============================================
 // TYPES
@@ -86,7 +93,7 @@ async function savePhoto(uri: string, label?: string): Promise<ProgressPhoto> {
   const photo: ProgressPhoto = {
     id,
     uri: destFile.uri,
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0]!,
     label,
   };
   
@@ -116,6 +123,7 @@ async function deletePhoto(photoId: string): Promise<void> {
 export default function ProgressScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
   const [xpData, setXPData] = useState<XPData | null>(null);
   const [stats, setStats] = useState<{ workouts: number; streak: number; exercises: number }>({
@@ -126,8 +134,8 @@ export default function ProgressScreen() {
   const [comparePhotos, setComparePhotos] = useState<ProgressPhoto[]>([]);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (dbReady) loadData();
+  }, [dbReady]);
 
   const loadData = async () => {
     const [photoList, xp, progress, streak] = await Promise.all([
@@ -139,7 +147,7 @@ export default function ProgressScreen() {
     setPhotos(photoList);
     setXPData(xp);
     setStats({
-      workouts: progress.total_workouts,
+      workouts: progress.completed_workouts,
       streak: streak.current,
       exercises: progress.total_exercises_done,
     });
@@ -154,9 +162,10 @@ export default function ProgressScreen() {
 
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
-      quality: 0.8,
+      quality: 0.6,
       allowsEditing: true,
       aspect: [3, 4],
+      exif: false,
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -173,9 +182,10 @@ export default function ProgressScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      quality: 0.8,
+      quality: 0.6,
       allowsEditing: true,
       aspect: [3, 4],
+      exif: false,
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -227,7 +237,7 @@ export default function ProgressScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.compareHeader}>
-          <TouchableOpacity onPress={() => { setCompareMode(false); setComparePhotos([]); }}>
+          <TouchableOpacity onPress={() => { setCompareMode(false); setComparePhotos([]); }} accessibilityRole="button" accessibilityLabel="Close compare view">
             <MaterialCommunityIcons name="close" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="h3">Before & After</ThemedText>
@@ -246,6 +256,8 @@ export default function ProgressScreen() {
         <TouchableOpacity
           style={[styles.button, { backgroundColor: theme.colors.accent, margin: 16 }]}
           onPress={() => { setCompareMode(false); setComparePhotos([]); }}
+          accessibilityRole="button"
+          accessibilityLabel="Done comparing"
         >
           <Text style={[styles.buttonText, { color: theme.colors.text }]}>Done</Text>
         </TouchableOpacity>
@@ -258,13 +270,13 @@ export default function ProgressScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.photoViewHeader}>
-          <TouchableOpacity onPress={() => setSelectedPhoto(null)}>
+          <TouchableOpacity onPress={() => setSelectedPhoto(null)} accessibilityRole="button" accessibilityLabel="Go back">
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="body" weight="600">
             {selectedPhoto.date} {selectedPhoto.label ? `• ${selectedPhoto.label}` : ''}
           </ThemedText>
-          <TouchableOpacity onPress={() => handleDeletePhoto(selectedPhoto)}>
+          <TouchableOpacity onPress={() => handleDeletePhoto(selectedPhoto)} accessibilityRole="button" accessibilityLabel="Delete photo">
             <MaterialCommunityIcons name="delete-outline" size={24} color={theme.colors.error} />
           </TouchableOpacity>
         </View>
@@ -276,24 +288,40 @@ export default function ProgressScreen() {
   // ===== MAIN VIEW =====
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="progress"
+        icon="chart-line"
+        title="Your Progress"
+        description="Track your fitness journey with progress photos, workout stats, and XP levels. Take before/after photos to visualize your transformation."
+      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <ThemedText variant="h2">Progress</ThemedText>
-          {photos.length >= 2 && (
-            <TouchableOpacity onPress={() => setCompareMode(!compareMode)}>
-              <MaterialCommunityIcons
-                name={compareMode ? 'close' : 'compare'}
-                size={24}
-                color={theme.colors.accent}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
+        {/* Hero Header */}
+        <Animated.View entering={FadeInDown.delay(50).duration(200)}>
+          <LinearGradient
+            colors={theme.isDark
+              ? [theme.colors.accent + '12', theme.colors.purple + '08', 'transparent'] as [string, string, string]
+              : [theme.colors.accent + '0A', theme.colors.purple + '05', 'transparent'] as [string, string, string]}
+            style={{ paddingTop: 8, paddingBottom: 16, borderRadius: 20, marginBottom: 4 }}
+          >
+            <View style={styles.header}>
+              <ThemedText variant="h2">Progress</ThemedText>
+              {photos.length >= 2 && (
+                <TouchableOpacity onPress={() => setCompareMode(!compareMode)} accessibilityRole="button" accessibilityLabel={compareMode ? 'Exit compare mode' : 'Compare photos'}>
+                  <MaterialCommunityIcons
+                    name={compareMode ? 'close' : 'compare'}
+                    size={24}
+                    color={theme.colors.accent}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </LinearGradient>
+        </Animated.View>
 
         {/* XP & Level Card */}
         {!!xpData && (
-          <Card style={styles.xpCard}>
+          <Animated.View entering={FadeInDown.delay(100).duration(200)}>
+          <GlassCard gradient glowColor={theme.colors.warning} style={styles.xpCard}>
             <View style={styles.xpHeader}>
               <MaterialCommunityIcons name="star" size={28} color={theme.colors.warning} />
               <View style={{ marginLeft: 12, flex: 1 }}>
@@ -305,39 +333,46 @@ export default function ProgressScreen() {
               <ThemedText variant="h4" color="accent">{xpData.totalXP} XP</ThemedText>
             </View>
             <ProgressBar progress={xpData.progressPercent} height={8} variant="progress" />
-          </Card>
+          </GlassCard>
+          </Animated.View>
         )}
 
         {/* Stats Row */}
+        <Animated.View entering={FadeInDown.delay(150).duration(200)}>
         <View style={styles.statsRow}>
-          <Card style={styles.statCard}>
+          <GlassCard gradient glowColor={theme.colors.accent} style={styles.statCard}>
             <ThemedText variant="h3" color="accent">{stats.workouts}</ThemedText>
             <ThemedText variant="bodySmall" color="secondary">Workouts</ThemedText>
-          </Card>
-          <Card style={styles.statCard}>
+          </GlassCard>
+          <GlassCard gradient glowColor={theme.colors.warning} style={styles.statCard}>
             <ThemedText variant="h3" color="accent">{stats.streak}</ThemedText>
             <ThemedText variant="bodySmall" color="secondary">Streak</ThemedText>
-          </Card>
-          <Card style={styles.statCard}>
+          </GlassCard>
+          <GlassCard gradient glowColor={theme.colors.purple} style={styles.statCard}>
             <ThemedText variant="h3" color="accent">{stats.exercises}</ThemedText>
             <ThemedText variant="bodySmall" color="secondary">Exercises</ThemedText>
-          </Card>
+          </GlassCard>
         </View>
+        </Animated.View>
 
         {/* Compare mode instruction */}
         {!!compareMode && (
-          <Card style={[styles.compareInstr, { borderColor: theme.colors.accent }]}>
+          <GlassCard style={[styles.compareInstr, { borderColor: theme.colors.accent }]}>
             <ThemedText variant="bodySmall" color="accent" style={{ textAlign: 'center' }}>
               Tap 2 photos to compare side by side ({comparePhotos.length}/2 selected)
             </ThemedText>
-          </Card>
+          </GlassCard>
         )}
 
         {/* Photo Actions */}
+        <SectionHeader title="Photos" delay={200} />
+        <Animated.View entering={FadeInDown.delay(250).duration(200)}>
         <View style={styles.photoActions}>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.colors.accent, flex: 1 }]}
             onPress={handleTakePhoto}
+            accessibilityRole="button"
+            accessibilityLabel="Take photo"
           >
             <MaterialCommunityIcons name="camera" size={20} color={theme.colors.onAccent} />
             <Text style={[styles.buttonText, { color: theme.colors.onAccent }]}>Take Photo</Text>
@@ -345,6 +380,8 @@ export default function ProgressScreen() {
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, flex: 1 }]}
             onPress={handlePickPhoto}
+            accessibilityRole="button"
+            accessibilityLabel="Pick from gallery"
           >
             <MaterialCommunityIcons name="image-plus" size={20} color={theme.colors.text} />
             <Text style={[styles.buttonText, { color: theme.colors.text }]}>Gallery</Text>
@@ -353,7 +390,7 @@ export default function ProgressScreen() {
 
         {/* Photo Grid */}
         {photos.length === 0 ? (
-          <Card style={styles.emptyCard}>
+          <GlassCard style={styles.emptyCard}>
             <MaterialCommunityIcons name="image-multiple-outline" size={48} color={theme.colors.textMuted} />
             <ThemedText variant="body" color="secondary" style={{ marginTop: 12, textAlign: 'center' }}>
               No progress photos yet
@@ -361,7 +398,7 @@ export default function ProgressScreen() {
             <ThemedText variant="bodySmall" color="muted" style={{ marginTop: 4, textAlign: 'center' }}>
               Take your first photo to start tracking your transformation!
             </ThemedText>
-          </Card>
+          </GlassCard>
         ) : (
           <View style={styles.photoGrid}>
             {photos.map((photo) => {
@@ -374,6 +411,8 @@ export default function ProgressScreen() {
                     isSelected && { borderColor: theme.colors.accent, borderWidth: 3 },
                   ]}
                   onPress={() => compareMode ? handleCompareToggle(photo) : setSelectedPhoto(photo)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Progress photo from ${photo.date}${photo.label ? `, ${photo.label}` : ''}`}
                 >
                   <Image source={{ uri: photo.uri }} style={styles.photoImage} />
                   <View style={[styles.photoOverlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
@@ -385,6 +424,7 @@ export default function ProgressScreen() {
             })}
           </View>
         )}
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -469,12 +509,12 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   photoDate: {
-    fontSize: 12,
+    fontSize: ms(12),
     fontWeight: '600',
   },
   photoLabel: {
     color: 'rgba(255,255,255,0.8)',
-    fontSize: 10,
+    fontSize: ms(10),
     textTransform: 'uppercase',
   },
   photoViewHeader: {

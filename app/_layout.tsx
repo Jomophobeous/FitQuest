@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { InteractionManager } from 'react-native';
-import { Tabs } from 'expo-router';
+import { BackHandler } from 'react-native';
+import { Tabs, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
@@ -8,6 +8,7 @@ import { LanguageProvider, useLanguage } from '../src/context/LanguageContext';
 import { DatabaseProvider } from '../src/context/DatabaseContext';
 import { SubscriptionProvider } from '../src/purchases/SubscriptionContext';
 import { AuthProvider } from '../src/context/AuthContext';
+import { PostHogAnalyticsProvider } from '../src/services/posthogService';
 
 import { DropdownMenu } from '../src/components/DropdownMenu';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
@@ -20,13 +21,37 @@ import { reconcileNotificationReliability } from '../src/services/notificationRe
 import { errorTelemetry } from '../src/services/errorTelemetry';
 import { featureFlags } from '../src/services/featureFlags';
 import { backgroundHealth } from '../src/engines/BackgroundHealthEngine';
+import { audioService } from '../src/services/audioService';
 
+/** Keeps audioService TTS language in sync with the current app language */
+function AudioLanguageSyncer() {
+  const { language, t } = useLanguage();
+  useEffect(() => {
+    audioService.setLanguage(language);
+    audioService.setTranslator(t);
+  }, [language, t]);
+  return null;
+}
 
 
 function ThemedTabs() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+
+  // Handle hardware back button — prevent GO_BACK crashes on root screens
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (router.canGoBack()) {
+        router.back();
+        return true;
+      }
+      // On root tab, don't crash — just let system handle (minimize app)
+      return false;
+    });
+    return () => backHandler.remove();
+  }, [router]);
 
   useEffect(() => {
     if (__DEV__) {
@@ -51,8 +76,10 @@ function ThemedTabs() {
           fontSize: 18,
         },
         headerRight: () => <DropdownMenu />,
-        // Screen transition animations — smooth fade + slide
-        animation: 'shift',
+        // Smooth cross-fade transition (enterprise-grade, 60fps)
+        animation: 'fade',
+        // @ts-expect-error animationDuration exists at runtime but missing from BottomTabNavigationOptions type
+        animationDuration: 200,
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
@@ -112,14 +139,15 @@ function ThemedTabs() {
         }}
       />
 
-      {/* FitMind Library Tab */}
+      {/* AI Coach Tab */}
       <Tabs.Screen
-        name="fitmind-library"
+        name="coach/index"
         options={{
-          title: t('tab.library'),
-          tabBarAccessibilityLabel: 'Library tab',
+          title: t('nav.aiCoach'),
+          tabBarAccessibilityLabel: 'AI Coach tab',
+          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="book-open-variant" size={22} color={color} />
+            <MaterialCommunityIcons name="robot-happy" size={22} color={color} />
           ),
         }}
       />
@@ -149,6 +177,8 @@ function ThemedTabs() {
         options={{
           href: null,
           lazy: true,
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
@@ -156,6 +186,8 @@ function ThemedTabs() {
         options={{
           href: null,
           lazy: true,
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
@@ -163,6 +195,8 @@ function ThemedTabs() {
         options={{
           href: null,
           lazy: true,
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
@@ -170,6 +204,8 @@ function ThemedTabs() {
         options={{
           href: null,
           lazy: true,
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
@@ -193,13 +229,7 @@ function ThemedTabs() {
           lazy: true,
         }}
       />
-      <Tabs.Screen
-        name="style-guide"
-        options={{
-          href: null,
-          lazy: true,
-        }}
-      />
+
       <Tabs.Screen
         name="progress"
         options={{
@@ -217,13 +247,11 @@ function ThemedTabs() {
         }}
       />
       <Tabs.Screen
-        name="coach/index"
+        name="fitmind-library"
         options={{
           href: null,
           lazy: true,
-          title: t('nav.aiCoach'),
-          headerShown: false,
-          tabBarStyle: { display: 'none' },
+          title: t('tab.library'),
         }}
       />
       <Tabs.Screen
@@ -330,38 +358,7 @@ function ThemedTabs() {
           title: t('nav.termsOfService'),
         }}
       />
-      <Tabs.Screen
-        name="platform-studio"
-        options={{
-          href: null,
-          lazy: true,
-          title: t('nav.platformStudio'),
-        }}
-      />
-      <Tabs.Screen
-        name="autonomous-center"
-        options={{
-          href: null,
-          lazy: true,
-          title: t('nav.autonomousCenter'),
-        }}
-      />
-      <Tabs.Screen
-        name="federation-hub"
-        options={{
-          href: null,
-          lazy: true,
-          title: t('nav.federationHub'),
-        }}
-      />
-      <Tabs.Screen
-        name="enterprise-hardening"
-        options={{
-          href: null,
-          lazy: true,
-          title: t('nav.enterpriseHardening'),
-        }}
-      />
+
       <Tabs.Screen
         name="professor/index"
         options={{
@@ -386,12 +383,12 @@ export default function RootLayout() {
     logEvent('app_launch');
 
     // Defer non-critical startup work until after first frame
-    InteractionManager.runAfterInteractions(() => {
-      void errorTelemetry.initialize();
-      void featureFlags.initialize();
+    const deferStartup = () => {
+      void errorTelemetry.initialize().catch(() => {});
+      void featureFlags.initialize().catch(() => {});
 
       // Phase 2: silent periodic backup (no-op unless EXPO_PUBLIC_BACKUP_API_BASE_URL is configured)
-      void maybeAutoCloudBackupOncePerDay();
+      void maybeAutoCloudBackupOncePerDay().catch(() => {});
 
       // P1: centralized deferred mutation replay
       void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {
@@ -411,19 +408,32 @@ export default function RootLayout() {
       // Start background health engine (periodic step collection, anomaly detection, daily summaries)
       // Battery-aware: auto-throttles on low battery, pauses on critical
       backgroundHealth.start({
-        collectionIntervalMs: 5 * 60 * 1000,  // every 5 minutes
+        collectionIntervalMs: 1 * 60 * 1000,    // every 1 minute
         anomalyCheckIntervalMs: 30 * 60 * 1000, // every 30 minutes
         enableAlerts: true,
       }).catch((e) => {
         console.warn('[BackgroundHealth] Failed to start:', e);
       });
-    });
+
+      // HealthConnect permissions are requested ONLY from Profile screen
+      // when user taps "Connect Health Provider" — the Activity must have
+      // a registered permission launcher, which isn't available in deferred startup.
+    };
+
+    // Use requestIdleCallback where available, fall back to setTimeout
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(deferStartup);
+    } else {
+      setTimeout(deferStartup, 300);
+    }
   }, []);
 
   return (
     <ThemeProvider>
       <ErrorBoundary>
+        <PostHogAnalyticsProvider>
         <LanguageProvider>
+          <AudioLanguageSyncer />
           <DatabaseProvider>
             <AuthProvider>
               <SubscriptionProvider>
@@ -432,6 +442,7 @@ export default function RootLayout() {
             </AuthProvider>
           </DatabaseProvider>
         </LanguageProvider>
+        </PostHogAnalyticsProvider>
       </ErrorBoundary>
     </ThemeProvider>
   );

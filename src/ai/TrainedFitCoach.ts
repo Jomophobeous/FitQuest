@@ -168,16 +168,16 @@ export class TrainedFitCoach {
     let current = input;
 
     for (let layer = 0; layer < model.weights.length; layer++) {
-      const W = model.weights[layer];
-      const b = model.biases[layer];
+      const W = model.weights[layer]!;
+      const b = model.biases[layer]!;
       const outputSize = b.length;
       const next = new Array(outputSize);
 
       // Matrix multiply: next = W^T · current + b
       for (let j = 0; j < outputSize; j++) {
-        let sum = b[j];
+        let sum = b[j]!;
         for (let i = 0; i < current.length; i++) {
-          sum += current[i] * W[i][j];
+          sum += current[i]! * W[i]![j]!;
         }
         next[j] = sum;
       }
@@ -239,12 +239,12 @@ export class TrainedFitCoach {
 
   private scaleInput(input: number[]): number[] {
     const { mean, scale } = this.model!.input_scaler;
-    return input.map((v, i) => (v - mean[i]) / (scale[i] || 1));
+    return input.map((v, i) => (v - (mean[i] ?? 0)) / (scale[i] || 1));
   }
 
   private inverseScaleOutput(output: number[]): number[] {
     const { mean, scale } = this.model!.output_scaler;
-    return output.map((v, i) => v * (scale[i] || 1) + mean[i]);
+    return output.map((v, i) => v * (scale[i] || 1) + (mean[i] ?? 0));
   }
 
   private decodeOutput(output: number[], profile: UserProfile): GeneratedExercise[] {
@@ -253,7 +253,7 @@ export class TrainedFitCoach {
 
     for (let i = 0; i < 8; i++) {
       const base = i * 5;
-      const exIdxNorm = output[base];
+      const exIdxNorm = output[base]!;
 
       // Skip padding (negative or very small)
       if (exIdxNorm < 0) continue;
@@ -261,24 +261,24 @@ export class TrainedFitCoach {
       // Find closest exercise
       const exIdx = Math.round(exIdxNorm * model.exercise_list.length);
       const clampedIdx = Math.max(0, Math.min(exIdx, model.exercise_list.length - 1));
-      const exerciseId = model.exercise_list[clampedIdx];
+      const exerciseId = model.exercise_list[clampedIdx]!;
       const exerciseInfo = model.exercise_database[exerciseId];
 
       if (!exerciseInfo) continue;
 
       // Check equipment compatibility
       const hasEquipment = exerciseInfo.equipment.some(
-        eq => profile.equipment.includes(eq) || eq === 'bodyweight'
+        (eq: string) => profile.equipment.includes(eq) || eq === 'bodyweight'
       );
       if (!hasEquipment) continue;
 
       exercises.push({
         exerciseId,
         exerciseName: exerciseInfo.name,
-        sets: Math.max(2, Math.min(6, Math.round(output[base + 1] * 10))),
-        reps: Math.max(3, Math.min(30, Math.round(output[base + 2] * 30))),
-        restSeconds: Math.max(30, Math.min(300, Math.round(output[base + 3] * 300))),
-        rpeTarget: Math.max(5, Math.min(10, Math.round(output[base + 4] * 10))),
+        sets: Math.max(2, Math.min(6, Math.round(output[base + 1]! * 10))),
+        reps: Math.max(3, Math.min(30, Math.round(output[base + 2]! * 30))),
+        restSeconds: Math.max(30, Math.min(300, Math.round(output[base + 3]! * 300))),
+        rpeTarget: Math.max(5, Math.min(10, Math.round(output[base + 4]! * 10))),
         category: exerciseInfo.category,
         primaryMuscles: exerciseInfo.primary,
       });

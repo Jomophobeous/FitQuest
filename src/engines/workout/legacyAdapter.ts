@@ -97,7 +97,7 @@ function determineTrainingStyle(
   const avgSets = plan.exercises.reduce((sum, e) => sum + e.sets, 0) / plan.exercises.length;
   const avgRepsLow = plan.exercises.reduce((sum, e) => {
     const match = e.reps.match(/^(\d+)/);
-    return sum + (match ? parseInt(match[1], 10) : 8);
+    return sum + (match ? parseInt(match[1]!, 10) : 8);
   }, 0) / plan.exercises.length;
   
   if (avgSets >= 4 && avgRepsLow <= 6) return 'strength';

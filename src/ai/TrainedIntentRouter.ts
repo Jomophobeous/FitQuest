@@ -147,11 +147,11 @@ export class TrainedIntentRouter {
     const indexed = probs.map((p, i) => ({ prob: p, idx: i }));
     indexed.sort((a, b) => b.prob - a.prob);
 
-    const topIntent = this.modelData.labels[indexed[0].idx] as TrainedIntentType;
-    const confidence = indexed[0].prob;
+    const topIntent = this.modelData.labels[indexed[0]!.idx] as TrainedIntentType;
+    const confidence = indexed[0]!.prob;
 
     const alternatives = indexed.slice(1, 3).map(s => ({
-      intent: this.modelData!.labels[s.idx] as TrainedIntentType,
+      intent: this.modelData!.labels[s.idx]! as TrainedIntentType,
       confidence: s.prob,
     }));
 
@@ -182,7 +182,7 @@ export class TrainedIntentRouter {
 
     // Generate unigrams and bigrams
     const tokens: string[] = [...words];
-    if (model.config.ngram_range[1] >= 2) {
+    if (model.config.ngram_range[1]! >= 2) {
       for (let i = 0; i < words.length - 1; i++) {
         tokens.push(`${words[i]} ${words[i + 1]}`);
       }
@@ -207,12 +207,12 @@ export class TrainedIntentRouter {
     // L2 normalize
     let norm = 0;
     for (let i = 0; i < vector.length; i++) {
-      norm += vector[i] * vector[i];
+      norm += vector[i]! * vector[i]!;
     }
     norm = Math.sqrt(norm);
     if (norm > 0) {
       for (let i = 0; i < vector.length; i++) {
-        vector[i] /= norm;
+        vector[i] = vector[i]! / norm;
       }
     }
 
@@ -228,10 +228,10 @@ export class TrainedIntentRouter {
     const scores: number[] = new Array(numClasses);
 
     for (let c = 0; c < numClasses; c++) {
-      let score = model.intercept[c];
-      const weights = model.coef[c];
+      let score = model.intercept[c]!;
+      const weights = model.coef[c]!;
       for (let f = 0; f < weights.length; f++) {
-        score += tfidf[f] * weights[f];
+        score += tfidf[f]! * weights[f]!;
       }
       scores[c] = score;
     }
@@ -319,8 +319,8 @@ export class TrainedIntentRouter {
     entries.sort((a, b) => b[1] - a[1]);
     const total = entries.reduce((s, [, v]) => s + v, 0) || 1;
 
-    const intent = entries[0][1] > 0 ? entries[0][0] : 'GREETING';
-    const confidence = entries[0][1] / total;
+    const intent = entries[0]![1] > 0 ? entries[0]![0] : 'GREETING';
+    const confidence = entries[0]![1] / total;
 
     return {
       intent,

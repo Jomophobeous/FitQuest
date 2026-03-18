@@ -353,7 +353,10 @@ export async function archiveProgressionForGoalChange(
 
   // Store archive marker in app state
   const existingArchives = await getAppState(userKey(userId, 'progression_archives'));
-  const archives = existingArchives ? JSON.parse(existingArchives) : [];
+  let archives: any[] = [];
+  if (existingArchives) {
+    try { archives = JSON.parse(existingArchives); } catch { /* corrupted, reset */ }
+  }
   archives.push(archive);
   
   await setAppState(userKey(userId, 'progression_archives'), JSON.stringify(archives));
@@ -364,7 +367,8 @@ export async function archiveProgressionForGoalChange(
  */
 export async function hasArchivedData(userId: string): Promise<boolean> {
   const archives = await getAppState(userKey(userId, 'progression_archives'));
-  return archives !== null && JSON.parse(archives).length > 0;
+  if (!archives) return false;
+  try { return JSON.parse(archives).length > 0; } catch { return false; }
 }
 
 // ============================================

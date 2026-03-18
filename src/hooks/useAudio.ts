@@ -27,12 +27,13 @@ export function useAudio(): UseAudioReturn {
   const [settings, setSettings] = useState<AudioSettings>(audioService.getSettings());
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<string | null>(null);
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
-  // Sync TTS language whenever the app language changes
+  // Sync TTS language and translator whenever the app language changes
   useEffect(() => {
     audioService.setLanguage(language);
-  }, [language]);
+    audioService.setTranslator(t);
+  }, [language, t]);
 
   useEffect(() => {
     // Initialize audio service
@@ -85,8 +86,8 @@ export function useAudio(): UseAudioReturn {
   }, []);
 
   const generateAudio = useCallback((name: string, restSeconds?: number) => {
-    return generateDefaultAudio(name, restSeconds);
-  }, []);
+    return generateDefaultAudio(name, restSeconds, t);
+  }, [t]);
 
   return {
     settings,

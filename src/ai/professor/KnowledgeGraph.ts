@@ -266,7 +266,7 @@ export class KnowledgeGraph {
       const entitiesInWindow: string[] = [];
 
       for (let j = i; j < Math.min(i + window, sentences.length); j++) {
-        const entities = this.findEntitiesInText(sentences[j]);
+        const entities = this.findEntitiesInText(sentences[j]!);
         entitiesInWindow.push(...entities);
       }
 
@@ -285,11 +285,11 @@ export class KnowledgeGraph {
             existing.weight = Math.min(1, existing.weight + 0.1);
           } else {
             this.addRelationship({
-              sourceId: unique[a],
-              targetId: unique[b],
+              sourceId: unique[a]!,
+              targetId: unique[b]!,
               type: 'CO_OCCURS',
               weight: 0.3,
-              evidence: [sentences[i]],
+              evidence: [sentences[i]!],
               documentId,
             });
             count++;
@@ -438,7 +438,7 @@ export class KnowledgeGraph {
 
     while (queue.length > 0) {
       const path = queue.shift()!;
-      const current = path[path.length - 1];
+      const current = path[path.length - 1]!;
 
       if (current === toId) {
         return path
@@ -571,12 +571,12 @@ export class KnowledgeGraph {
     );
     for (let i = 1; i <= m; i++) {
       for (let j = 1; j <= n; j++) {
-        dp[i][j] = a[i - 1] === b[j - 1]
-          ? dp[i - 1][j - 1]
-          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        dp[i]![j] = a[i - 1] === b[j - 1]
+          ? dp[i - 1]![j - 1]!
+          : 1 + Math.min(dp[i - 1]![j]!, dp[i]![j - 1]!, dp[i - 1]![j - 1]!);
       }
     }
-    return dp[m][n];
+    return dp[m]![n]!;
   }
 
   private isStopWord(word: string): boolean {

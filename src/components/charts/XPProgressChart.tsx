@@ -140,10 +140,10 @@ function SimpleAreaChart({
         {data.length > 0 && (
           <>
             <Text style={[styles.xLabel, { color: mutedColor }]}>
-              {formatDate(parseISO(data[0].date), 'MMM d')}
+              {formatDate(parseISO(data[0]!.date), 'MMM d')}
             </Text>
             <Text style={[styles.xLabel, { color: mutedColor }]}>
-              {formatDate(parseISO(data[data.length - 1].date), 'MMM d')}
+              {formatDate(parseISO(data[data.length - 1]!.date), 'MMM d')}
             </Text>
           </>
         )}

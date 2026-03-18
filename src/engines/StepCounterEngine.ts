@@ -289,8 +289,8 @@ class StepCounterEngine extends EventEmitter {
   getCurrentCadence(): number {
     if (this.cadenceWindow.length < 2) return 0;
 
-    const oldest = this.cadenceWindow[0];
-    const newest = this.cadenceWindow[this.cadenceWindow.length - 1];
+    const oldest = this.cadenceWindow[0]!;
+    const newest = this.cadenceWindow[this.cadenceWindow.length - 1]!;
     const timeSpanMinutes = (newest.timestamp - oldest.timestamp) / 1000 / 60;
 
     if (timeSpanMinutes <= 0) return 0;

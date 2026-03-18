@@ -64,13 +64,13 @@ const MUSCLE_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap>
 function getDifficultyConfig(difficulty: string) {
   switch (difficulty) {
     case 'beginner':
-      return { label: 'Beginner', color: '#10B981', filled: 1 };
+      return { label: 'Beginner', colorKey: 'accent', filled: 1 };
     case 'intermediate':
-      return { label: 'Intermediate', color: '#F4A427', filled: 2 };
+      return { label: 'Intermediate', colorKey: 'warning', filled: 2 };
     case 'advanced':
-      return { label: 'Advanced', color: '#EF4444', filled: 3 };
+      return { label: 'Advanced', colorKey: 'error', filled: 3 };
     default:
-      return { label: difficulty, color: '#8B8B8B', filled: 1 };
+      return { label: difficulty, colorKey: 'textMuted', filled: 1 };
   }
 }
 
@@ -210,10 +210,10 @@ export function ExerciseDetailSheet({
                   <View
                     style={[
                       styles.diffTag,
-                      { backgroundColor: diffConfig.color + '15' },
+                      { backgroundColor: (theme.colors as any)[diffConfig.colorKey] + '15' },
                     ]}
                   >
-                    <Text style={[styles.diffTagText, { color: diffConfig.color }]}>
+                    <Text style={[styles.diffTagText, { color: (theme.colors as any)[diffConfig.colorKey] }]}>
                       {diffConfig.label}
                     </Text>
                   </View>
@@ -242,7 +242,7 @@ export function ExerciseDetailSheet({
                     {
                       backgroundColor:
                         level <= diffConfig.filled
-                          ? diffConfig.color
+                          ? (theme.colors as any)[diffConfig.colorKey]
                           : theme.colors.textMuted + '25',
                     },
                   ]}

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
 import { BiometricAuthService, type BiometricCapability, type AuthResult } from '../security/BiometricAuth';
 import {
   migrateToSecureStorage,
@@ -190,6 +191,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     restoreToken();
   }, [restoreToken]);
+
+  // ============================================
+  // APP LOCK ON BACKGROUND
+  // ============================================
+
+  const backgroundTimestampRef = useRef<number | null>(null);
+  const APP_LOCK_THRESHOLD_MS = 30_000; // 30 seconds
+
+  useEffect(() => {
+    const handleAppStateChange = (nextState: AppStateStatus) => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        backgroundTimestampRef.current = Date.now();
+      } else if (nextState === 'active' && backgroundTimestampRef.current) {
+        const elapsed = Date.now() - backgroundTimestampRef.current;
+        backgroundTimestampRef.current = null;
+        if (elapsed > APP_LOCK_THRESHOLD_MS && isLocallyAuthenticated) {
+          setIsLocallyAuthenticated(false);
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, [isLocallyAuthenticated]);
 
   // ============================================
   // EMAIL/PASSWORD AUTH (local accounts)

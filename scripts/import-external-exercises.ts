@@ -113,15 +113,15 @@ function mapMuscles(externalMuscles: string[] | null | undefined): string[] {
 const EQUIPMENT_MAP: Record<string, string | null> = {
   'body only': null,
   'bands': 'band',
-  'dumbbell': null,
-  'barbell': null,
-  'kettlebells': null,
-  'cable': null,
-  'machine': null,
-  'exercise ball': null,
-  'medicine ball': null,
+  'dumbbell': 'dumbbell',
+  'barbell': 'barbell',
+  'kettlebells': 'kettlebell',
+  'cable': 'cable_machine',
+  'machine': 'machine',
+  'exercise ball': 'exercise_ball',
+  'medicine ball': 'medicine_ball',
   'foam roll': 'foam_roller',
-  'e-z curl bar': null,
+  'e-z curl bar': 'barbell',
   'other': null,
   'pull up bar': 'pull_up_bar',
   'pullup bar': 'pull_up_bar',
@@ -150,6 +150,9 @@ function inferEquipmentLevel(equipment: string | null): EquipmentLevel {
   if (!equipment) return 'none';
   const playgroundEquipment = ['pull_up_bar', 'parallel_bars', 'monkey_bars', 'bench', 'hill', 'sand', 'sled', 'parachute', 'parallettes', 'rings'];
   if (playgroundEquipment.includes(equipment)) return 'playground';
+  // Gym-level equipment that requires a gym or home gym setup
+  const gymEquipment = ['barbell', 'cable_machine', 'machine', 'dumbbell', 'kettlebell', 'exercise_ball', 'medicine_ball'];
+  if (gymEquipment.includes(equipment)) return 'playground';
   return 'minimal';
 }
 

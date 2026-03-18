@@ -210,7 +210,7 @@ function scoreGoalAlignment(
   // Score based on overlap with priority training types
   let matchScore = 0;
   for (let i = 0; i < priorityTypes.length; i++) {
-    if (exerciseTypes.includes(priorityTypes[i])) {
+    if (exerciseTypes.includes(priorityTypes[i]!)) {
       // Higher score for higher priority match (earlier in list)
       matchScore += (priorityTypes.length - i) / priorityTypes.length;
     }

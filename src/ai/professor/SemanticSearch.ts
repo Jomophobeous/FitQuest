@@ -132,19 +132,19 @@ class HNSWIndex {
       for (const neighborId of selected) {
         const neighbor = this.nodes[neighborId];
         if (neighbor && neighbor.connections[lev]) {
-          neighbor.connections[lev].push(id);
+          neighbor.connections[lev]!.push(id);
           // Prune if too many
-          if (neighbor.connections[lev].length > this.M * 2) {
+          if (neighbor.connections[lev]!.length > this.M * 2) {
             neighbor.connections[lev] = this.selectNeighbors(
-              this.vectors[neighborId],
-              neighbor.connections[lev],
+              this.vectors[neighborId]!,
+              neighbor.connections[lev]!,
               this.M
             );
           }
         }
       }
 
-      if (neighbors.length > 0) currentNode = neighbors[0];
+      if (neighbors.length > 0) currentNode = neighbors[0]!;
     }
 
     if (level > this.maxLevel) {
@@ -176,7 +176,7 @@ class HNSWIndex {
     return candidates
       .map(id => ({
         id,
-        distance: this.cosineDistance(query, this.vectors[id]),
+        distance: this.cosineDistance(query, this.vectors[id]!),
       }))
       .sort((a, b) => a.distance - b.distance)
       .slice(0, k);
@@ -184,14 +184,14 @@ class HNSWIndex {
 
   private greedySearch(query: Float32Array, startNode: number, level: number): number {
     let current = startNode;
-    let currentDist = this.cosineDistance(query, this.vectors[current]);
+    let currentDist = this.cosineDistance(query, this.vectors[current]!);
 
     let improved = true;
     while (improved) {
       improved = false;
       const connections = this.nodes[current]?.connections[level] ?? [];
       for (const neighborId of connections) {
-        const dist = this.cosineDistance(query, this.vectors[neighborId]);
+        const dist = this.cosineDistance(query, this.vectors[neighborId]!);
         if (dist < currentDist) {
           current = neighborId;
           currentDist = dist;
@@ -211,7 +211,7 @@ class HNSWIndex {
   ): number[] {
     const visited = new Set<number>([startNode]);
     const candidates: Array<{ id: number; dist: number }> = [
-      { id: startNode, dist: this.cosineDistance(query, this.vectors[startNode]) },
+      { id: startNode, dist: this.cosineDistance(query, this.vectors[startNode]!) },
     ];
     const results: Array<{ id: number; dist: number }> = [...candidates];
 
@@ -221,7 +221,7 @@ class HNSWIndex {
       const closest = candidates.shift()!;
 
       // Check if we're done
-      const farthestResult = results[results.length - 1];
+      const farthestResult = results[results.length - 1]!;
       if (results.length >= ef && closest.dist > farthestResult.dist) break;
 
       // Explore neighbors
@@ -230,8 +230,8 @@ class HNSWIndex {
         if (visited.has(neighborId)) continue;
         visited.add(neighborId);
 
-        const dist = this.cosineDistance(query, this.vectors[neighborId]);
-        if (results.length < ef || dist < results[results.length - 1].dist) {
+        const dist = this.cosineDistance(query, this.vectors[neighborId]!);
+        if (results.length < ef || dist < results[results.length - 1]!.dist) {
           candidates.push({ id: neighborId, dist });
           results.push({ id: neighborId, dist });
           results.sort((a, b) => a.dist - b.dist);
@@ -251,7 +251,7 @@ class HNSWIndex {
     if (candidateIds.length <= maxNeighbors) return candidateIds;
 
     return candidateIds
-      .map(id => ({ id, dist: this.cosineDistance(query, this.vectors[id]) }))
+      .map(id => ({ id, dist: this.cosineDistance(query, this.vectors[id]!) }))
       .sort((a, b) => a.dist - b.dist)
       .slice(0, maxNeighbors)
       .map(c => c.id);
@@ -266,9 +266,9 @@ class HNSWIndex {
   private cosineDistance(a: Float32Array, b: Float32Array): number {
     let dot = 0, normA = 0, normB = 0;
     for (let i = 0; i < a.length; i++) {
-      dot += a[i] * b[i];
-      normA += a[i] * a[i];
-      normB += b[i] * b[i];
+      dot += a[i]! * b[i]!;
+      normA += a[i]! * a[i]!;
+      normB += b[i]! * b[i]!;
     }
     const denom = Math.sqrt(normA) * Math.sqrt(normB);
     return denom > 0 ? 1 - dot / denom : 1; // cosine distance
@@ -347,14 +347,14 @@ export class SemanticSearch {
     let indexed = 0;
 
     for (let i = 0; i < textChunks.length; i++) {
-      const chunkText = textChunks[i];
+      const chunkText = textChunks[i]!;
       const chunkId = `${documentId}_chunk_${i}`;
 
       if (this.isLoaded && this.model) {
         // Neural embedding
         const embedding = this.encode(chunkText);
         const f32 = new Float32Array(embedding.length);
-        for (let j = 0; j < embedding.length; j++) f32[j] = embedding[j];
+        for (let j = 0; j < embedding.length; j++) f32[j] = embedding[j]!;
 
         this.index.add(f32);
         this.chunks.push({ id: chunkId, documentId, text: chunkText, embedding: f32 });
@@ -363,7 +363,7 @@ export class SemanticSearch {
         const words = this.getWords(chunkText);
         const tf: Record<string, number> = {};
         for (const w of words) tf[w] = (tf[w] ?? 0) + 1;
-        for (const w of Object.keys(tf)) tf[w] /= words.length;
+        for (const w of Object.keys(tf)) tf[w] = tf[w]! / words.length;
         this.chunkWordVectors.set(chunkId, tf);
 
         this.chunks.push({
@@ -452,7 +452,7 @@ export class SemanticSearch {
   private neuralSearch(query: string, topK: number): SearchResult[] {
     const queryEmb = this.encode(query);
     const f32Query = new Float32Array(queryEmb.length);
-    for (let i = 0; i < queryEmb.length; i++) f32Query[i] = queryEmb[i];
+    for (let i = 0; i < queryEmb.length; i++) f32Query[i] = queryEmb[i]!;
 
     const hnswResults = this.index.search(f32Query, topK);
 
@@ -471,7 +471,7 @@ export class SemanticSearch {
     const queryWords = this.getWords(query);
     const queryTf: Record<string, number> = {};
     for (const w of queryWords) queryTf[w] = (queryTf[w] ?? 0) + 1;
-    for (const w of Object.keys(queryTf)) queryTf[w] /= queryWords.length;
+    for (const w of Object.keys(queryTf)) queryTf[w] = queryTf[w]! / queryWords.length;
 
     // TF-IDF query vector
     const queryVec: Record<string, number> = {};
@@ -531,17 +531,16 @@ export class SemanticSearch {
     // Mean pool
     const pooled = new Float64Array(hidden);
     for (const s of states) {
-      for (let i = 0; i < hidden; i++) pooled[i] += s[i];
+      for (let i = 0; i < hidden; i++) pooled[i] = (pooled[i] ?? 0) + s[i]!;
     }
-    for (let i = 0; i < hidden; i++) pooled[i] /= states.length;
-
+    for (let i = 0; i < hidden; i++) pooled[i] = pooled[i]! / states.length;
     // Project
     const sentSize = this.model.sentenceSize;
     const out = new Float64Array(sentSize);
     for (let i = 0; i < sentSize; i++) {
       let sum = this.model.poolingBias[i] ?? 0;
       const w = this.model.poolingWeight[i];
-      for (let j = 0; j < hidden; j++) sum += pooled[j] * (w?.[j] ?? 0);
+      for (let j = 0; j < hidden; j++) sum += pooled[j]! * (w?.[j] ?? 0);
       out[i] = sum;
     }
 
@@ -549,7 +548,7 @@ export class SemanticSearch {
     let norm = 0;
     for (const v of out) norm += v * v;
     norm = Math.sqrt(norm) || 1;
-    for (let i = 0; i < sentSize; i++) out[i] /= norm;
+    for (let i = 0; i < sentSize; i++) out[i] = out[i]! / norm;
 
     return out;
   }

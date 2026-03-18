@@ -3,7 +3,7 @@
  * Premium glass-morphism design with animated cards
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   FlatList,
@@ -24,15 +24,21 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   Layout,
+  useAnimatedScrollHandler,
+  interpolate,
+  Extrapolation,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { getExercises } from '../src/database/service';
+import { queryCache } from '../src/database/queryCache';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 import type { ExerciseWithDetails, Category, Difficulty } from '../src/database/types';
 import { GlassCard, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
 import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
@@ -69,7 +75,6 @@ export default function ExercisesScreen() {
   const router = useRouter();
 
   const [exercises, setExercises] = useState<ExerciseWithDetails[]>([]);
-  const [filteredExercises, setFilteredExercises] = useState<ExerciseWithDetails[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<Set<Category | 'all'>>(new Set(['all']));
   const [selectedDifficulties, setSelectedDifficulties] = useState<Set<string>>(new Set());
   const [selectedEquipment, setSelectedEquipment] = useState<Set<string>>(new Set());
@@ -80,6 +85,31 @@ export default function ExercisesScreen() {
   const [selectedExercise, setSelectedExercise] = useState<ExerciseWithDetails | null>(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Scroll-driven header collapse
+  const scrollY = useSharedValue(0);
+  const lastScrollY = useSharedValue(0);
+  const headerVisible = useSharedValue(1); // 1 = visible, 0 = hidden
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      const y = event.contentOffset.y;
+      const diff = y - lastScrollY.value;
+      // Scrolling down past 60px → hide header; scrolling up → show
+      if (diff > 5 && y > 60) {
+        headerVisible.value = withTiming(0, { duration: 250 });
+      } else if (diff < -5) {
+        headerVisible.value = withTiming(1, { duration: 200 });
+      }
+      lastScrollY.value = y;
+      scrollY.value = y;
+    },
+  });
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    maxHeight: interpolate(headerVisible.value, [0, 1], [0, 200], Extrapolation.CLAMP),
+    opacity: headerVisible.value,
+  }));
 
   const DIFFICULTIES = [
     { key: 'beginner', label: t('exercises.beginner') || 'Beginner', color: theme.colors.accent },
@@ -128,19 +158,46 @@ export default function ExercisesScreen() {
 
   const activeFilterCount = (selectedCategories.has('all') ? 0 : selectedCategories.size) + selectedDifficulties.size + selectedEquipment.size;
 
+  // Debounced search
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  useEffect(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => setDebouncedQuery(searchQuery), 200);
+    return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
+  }, [searchQuery]);
+
   useEffect(() => { if (isReady) loadExercises(); }, [isReady]);
-  useEffect(() => { filterExercises(); }, [exercises, selectedCategories, selectedDifficulties, selectedEquipment, searchQuery]);
+
+  // Memoized filtering — no separate state, derived from source data
+  const filteredExercises = useMemo(() => {
+    let filtered = exercises;
+    if (!selectedCategories.has('all')) {
+      filtered = filtered.filter(ex => selectedCategories.has(ex.category));
+    }
+    if (selectedDifficulties.size > 0) {
+      filtered = filtered.filter(ex => selectedDifficulties.has(ex.difficulty));
+    }
+    if (selectedEquipment.size > 0) {
+      filtered = filtered.filter(ex => selectedEquipment.has(ex.equipment_level));
+    }
+    if (debouncedQuery.trim()) {
+      const q = debouncedQuery.toLowerCase();
+      filtered = filtered.filter(ex =>
+        ex.name.toLowerCase().includes(q) ||
+        ex.primary_muscles.some(m => m.toLowerCase().includes(q)) ||
+        ex.category.toLowerCase().includes(q)
+      );
+    }
+    return filtered;
+  }, [exercises, selectedCategories, selectedDifficulties, selectedEquipment, debouncedQuery]);
 
   const loadExercises = async () => {
     try {
       setLoading(true);
-      console.log('[Exercises] Loading exercises...');
-      const data = await getExercises();
-      console.log(`[Exercises] Loaded ${data.length} exercises`);
+      // Use cache — exercises rarely change
+      const data = await queryCache.getOrFetch('exercises:all', () => getExercises(), 120_000);
       setExercises(data);
-      if (data.length === 0) {
-        console.warn('[Exercises] No exercises returned - database may not be seeded');
-      }
     } catch (error) {
       console.error('[Exercises] Failed to load:', error);
       Alert.alert(t('common.error') || 'Error', t('exercises.loadFailed') || 'Failed to load exercises. Please restart the app.');
@@ -149,34 +206,9 @@ export default function ExercisesScreen() {
     }
   };
 
-  const filterExercises = () => {
-    let filtered = [...exercises];
-    // Category filter (multi-select)
-    if (!selectedCategories.has('all')) {
-      filtered = filtered.filter(ex => selectedCategories.has(ex.category));
-    }
-    // Difficulty filter (multi-select)
-    if (selectedDifficulties.size > 0) {
-      filtered = filtered.filter(ex => selectedDifficulties.has(ex.difficulty));
-    }
-    // Equipment filter (multi-select)
-    if (selectedEquipment.size > 0) {
-      filtered = filtered.filter(ex => selectedEquipment.has(ex.equipment_level));
-    }
-    // Search
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(ex =>
-        ex.name.toLowerCase().includes(q) ||
-        ex.primary_muscles.some(m => m.toLowerCase().includes(q)) ||
-        ex.category.toLowerCase().includes(q)
-      );
-    }
-    setFilteredExercises(filtered);
-  };
-
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
+    queryCache.invalidate('exercises:all');
     await loadExercises();
     setRefreshing(false);
   }, []);
@@ -195,7 +227,11 @@ export default function ExercisesScreen() {
   const renderExercise = ({ item, index }: { item: ExerciseWithDetails; index: number }) => {
     const diffColor = getDifficultyColors(theme.colors)[item.difficulty] || theme.colors.textMuted;
     return (
-      <AnimatedListItem index={index} onPress={() => handleExercisePress(item)} style={{ paddingHorizontal: 16, marginBottom: 10 }}>
+      <AnimatedListItem index={index} onPress={() => handleExercisePress(item)} style={{ paddingHorizontal: 16, marginBottom: 8 }}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.name}, ${item.difficulty}, ${item.category}`}
+        accessibilityHint="Double tap to view exercise details"
+      >
         <View style={[
           styles.exerciseCard,
           {
@@ -263,9 +299,17 @@ export default function ExercisesScreen() {
   }
 
   return (
+    <ScreenErrorBoundary screenName="Exercises" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard' as any)}>
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* ── HEADER ── */}
-      <Animated.View entering={FadeIn.duration(150)}>
+      <ScreenTutorial
+        screenKey="exercises"
+        icon="dumbbell"
+        title="Exercise Library"
+        description="Browse and search all available exercises. Filter by category, difficulty, and equipment to find the perfect exercise for your workout."
+      />
+      {/* ── COLLAPSIBLE HEADER SECTION ── */}
+      <Animated.View style={[styles.headerWrapper, headerAnimatedStyle]}>
+        {/* ── HEADER ── */}
         <View
           style={[
             styles.headerGradient,
@@ -285,61 +329,68 @@ export default function ExercisesScreen() {
             </View>
             <TouchableOpacity
               onPress={() => setShowFilters(!showFilters)}
+              accessibilityRole="button"
+              accessibilityLabel={`Filters${activeFilterCount > 0 ? `, ${activeFilterCount} active` : ''}`}
+              accessibilityState={{ expanded: showFilters }}
               style={[styles.filterToggle, {
                 backgroundColor: activeFilterCount > 0 ? theme.colors.accent + '18' : theme.colors.surfaceVariant,
                 borderColor: activeFilterCount > 0 ? theme.colors.accent : theme.colors.border,
               }]}
             >
-              <MaterialCommunityIcons name="filter-variant" size={18} color={activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary} />
-              <Text style={{ color: activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary, fontSize: 13, fontWeight: '600', marginLeft: 4 }}>
+              <MaterialCommunityIcons name="filter-variant" size={16} color={activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary} />
+              <Text style={{ color: activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginLeft: 3 }}>
                 {t('exercises.filters') || 'Filters'}{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
               </Text>
-              <MaterialCommunityIcons name={showFilters ? 'chevron-up' : 'chevron-down'} size={16} color={theme.colors.textMuted} />
+              <MaterialCommunityIcons name={showFilters ? 'chevron-up' : 'chevron-down'} size={14} color={theme.colors.textMuted} />
             </TouchableOpacity>
           </View>
         </View>
-      </Animated.View>
 
-      {/* ── SEARCH BAR ── */}
-      <Animated.View entering={FadeInDown.delay(100).duration(150)}>
-        <View style={[
-          styles.searchBar,
-          {
-            backgroundColor: theme.colors.surfaceVariant,
-            borderColor: searchFocused ? theme.colors.accent : theme.colors.border,
-          },
-        ]}>
-          <MaterialCommunityIcons name="magnify" size={20} color={searchFocused ? theme.colors.accent : theme.colors.textMuted} />
-          <TextInput
-            style={[styles.searchInput, { color: theme.colors.text }]}
-            placeholder={t('exercises.searchPlaceholder') || 'Search exercises, muscles...'}
-            placeholderTextColor={theme.colors.textMuted}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <MaterialCommunityIcons name="close-circle" size={18} color={theme.colors.textMuted} />
-            </TouchableOpacity>
-          )}
+        {/* ── SEARCH BAR ── */}
+        <View>
+          <View style={[
+            styles.searchBar,
+            {
+              backgroundColor: theme.colors.surfaceVariant,
+              borderColor: searchFocused ? theme.colors.accent : theme.colors.border,
+            },
+          ]}>
+            <MaterialCommunityIcons name="magnify" size={18} color={searchFocused ? theme.colors.accent : theme.colors.textMuted} />
+            <TextInput
+              style={[styles.searchInput, { color: theme.colors.text }]}
+              placeholder={t('exercises.searchPlaceholder') || 'Search exercises, muscles...'}
+              placeholderTextColor={theme.colors.textMuted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              accessibilityLabel="Search exercises"
+              accessibilityRole="search"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityRole="button" accessibilityLabel="Clear search">
+                <MaterialCommunityIcons name="close-circle" size={16} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </Animated.View>
 
-      {/* ── CATEGORY PILLS (always visible) ── */}
-      <Animated.View entering={FadeInDown.delay(150).duration(150)}>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={CATEGORIES}
-          keyExtractor={(item) => item.key}
-          contentContainerStyle={styles.categoryList}
-          renderItem={({ item }) => {
-            const isSelected = selectedCategories.has(item.key);
+        {/* ── CATEGORY PILLS ── */}
+        <View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={CATEGORIES}
+            keyExtractor={(item) => item.key}
+            contentContainerStyle={styles.categoryList}
+            renderItem={({ item }) => {
+              const isSelected = selectedCategories.has(item.key);
             return (
               <TouchableOpacity
                 onPress={() => toggleCategory(item.key)}
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${item.label}`}
+                accessibilityState={{ selected: isSelected }}
                 style={[
                   styles.categoryPill,
                   {
@@ -361,6 +412,7 @@ export default function ExercisesScreen() {
             );
           }}
         />
+      </View>
       </Animated.View>
 
       {/* ── EXPANDED FILTERS (difficulty + equipment) ── */}
@@ -375,6 +427,9 @@ export default function ExercisesScreen() {
                 <TouchableOpacity
                   key={d.key}
                   onPress={() => toggleDifficulty(d.key)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Filter by ${d.label} difficulty`}
+                  accessibilityState={{ selected: isOn }}
                   style={[styles.filterChip, {
                     backgroundColor: isOn ? d.color + '20' : theme.colors.surfaceVariant,
                     borderColor: isOn ? d.color : theme.colors.border,
@@ -396,6 +451,9 @@ export default function ExercisesScreen() {
                 <TouchableOpacity
                   key={eq.key}
                   onPress={() => toggleEquipment(eq.key)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Filter by ${eq.label} equipment`}
+                  accessibilityState={{ selected: isOn }}
                   style={[styles.filterChip, {
                     backgroundColor: isOn ? theme.colors.accent + '20' : theme.colors.surfaceVariant,
                     borderColor: isOn ? theme.colors.accent : theme.colors.border,
@@ -410,7 +468,7 @@ export default function ExercisesScreen() {
 
           {/* Clear all */}
           {activeFilterCount > 0 && (
-            <TouchableOpacity onPress={clearAllFilters} style={{ marginTop: 12, alignSelf: 'flex-end' }}>
+            <TouchableOpacity onPress={clearAllFilters} accessibilityRole="button" accessibilityLabel="Clear all filters" style={{ marginTop: 12, alignSelf: 'flex-end' }}>
               <Text style={{ color: theme.colors.error, fontSize: 13, fontWeight: '600' }}>{t('exercises.clearFilters') || 'Clear all filters'}</Text>
             </TouchableOpacity>
           )}
@@ -425,12 +483,18 @@ export default function ExercisesScreen() {
       </Animated.View>
 
       {/* ── EXERCISE LIST ── */}
-      <FlatList
+      <Animated.FlatList
         data={filteredExercises}
         renderItem={renderExercise}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.accent} />
         }
@@ -450,6 +514,8 @@ export default function ExercisesScreen() {
         style={[styles.fab, { backgroundColor: theme.colors.accent }]}
         onPress={() => router.push('/create-workout' as any)}
         activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel="Create new workout"
       >
         <MaterialCommunityIcons name="playlist-plus" size={26} color="#fff" />
       </TouchableOpacity>
@@ -461,6 +527,7 @@ export default function ExercisesScreen() {
         onClose={handleCloseDetail}
       />
     </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -472,32 +539,33 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 16, fontSize: 14 },
-  headerGradient: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
-  headerTitle: { fontSize: 24, fontWeight: '700' },
-  headerCount: { fontSize: 13, marginTop: 2 },
+  headerWrapper: { zIndex: 10, overflow: 'hidden' },
+  headerGradient: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 6 },
+  headerTitle: { fontSize: 20, fontWeight: '700' },
+  headerCount: { fontSize: 11, marginTop: 1 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 16,
-    marginTop: 12,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 16,
+    marginHorizontal: 12,
+    marginTop: 6,
+    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
     borderWidth: 1,
   },
-  searchInput: { flex: 1, marginLeft: 12, fontSize: 16 },
-  categoryList: { paddingHorizontal: 16, paddingBottom: 12 },
+  searchInput: { flex: 1, marginLeft: 8, fontSize: 14 },
+  categoryList: { paddingHorizontal: 12, paddingBottom: 8 },
   categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 24,
-    marginRight: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    marginRight: 6,
     overflow: 'hidden',
   },
-  categoryLabel: { fontSize: 14, fontWeight: '600', marginLeft: 6 },
+  categoryLabel: { fontSize: 12, fontWeight: '600', marginLeft: 4 },
   resultsRow: { paddingHorizontal: 20, paddingVertical: 8 },
   resultsText: { fontSize: 13, fontWeight: '500' },
   list: { paddingBottom: 112 },
@@ -506,7 +574,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
   },
-  exerciseContent: { flex: 1, padding: 18 },
+  exerciseContent: { flex: 1, padding: 14 },
   exerciseTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   exerciseName: { fontSize: 17, fontWeight: '700', marginBottom: 8 },
   muscleTags: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },

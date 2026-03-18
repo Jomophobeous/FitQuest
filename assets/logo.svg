@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A0E17"/>
+      <stop offset="100%" stop-color="#050810"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#10B981" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <!-- Subtle glow from top -->
+  <ellipse cx="512" cy="280" rx="400" ry="250" fill="url(#glow)"/>
+
+  <!-- Shield outline -->
+  <path d="M512 160 C620 160, 740 200, 800 260 L800 520 C800 680, 680 800, 512 880 C344 800, 224 680, 224 520 L224 260 C284 200, 404 160, 512 160Z"
+        fill="none" stroke="url(#accent)" stroke-width="12" stroke-linejoin="round" filter="url(#shadow)"/>
+
+  <!-- Inner shield fill (subtle) -->
+  <path d="M512 190 C608 190, 718 226, 772 280 L772 515 C772 660, 662 772, 512 846 C362 772, 252 660, 252 515 L252 280 C306 226, 416 190, 512 190Z"
+        fill="#10B981" fill-opacity="0.08"/>
+
+  <!-- Running figure (stylized) -->
+  <!-- Head -->
+  <circle cx="512" cy="330" r="48" fill="url(#accent)"/>
+  <!-- Body -->
+  <line x1="512" y1="378" x2="512" y2="540" stroke="url(#accent)" stroke-width="18" stroke-linecap="round"/>
+  <!-- Left arm up -->
+  <line x1="512" y1="420" x2="430" y2="370" stroke="url(#accent)" stroke-width="16" stroke-linecap="round"/>
+  <!-- Right arm forward -->
+  <line x1="512" y1="420" x2="600" y2="460" stroke="url(#accent)" stroke-width="16" stroke-linecap="round"/>
+  <!-- Left leg -->
+  <line x1="512" y1="540" x2="430" y2="660" stroke="url(#accent)" stroke-width="18" stroke-linecap="round"/>
+  <!-- Right leg forward -->
+  <line x1="512" y1="540" x2="600" y2="650" stroke="url(#accent)" stroke-width="18" stroke-linecap="round"/>
+
+  <!-- "FQ" text at bottom -->
+  <text x="512" y="790" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="96" fill="#F4F5F9" letter-spacing="8">FQ</text>
+</svg>

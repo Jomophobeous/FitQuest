@@ -204,12 +204,12 @@ export class NeuralSummarizer {
     const embeddings = sentences.map(s => this.encodeSentence(s));
 
     // Compute document centroid
-    const dim = embeddings[0].length;
+    const dim = embeddings[0]!.length;
     const centroid = new Float64Array(dim);
     for (const emb of embeddings) {
-      for (let i = 0; i < dim; i++) centroid[i] += emb[i];
+      for (let i = 0; i < dim; i++) centroid[i] = (centroid[i] ?? 0) + emb[i]!;
     }
-    for (let i = 0; i < dim; i++) centroid[i] /= embeddings.length;
+    for (let i = 0; i < dim; i++) centroid[i] = centroid[i]! / embeddings.length;
 
     // Optional: encode query
     let queryEmb: Float64Array | null = null;
@@ -219,7 +219,7 @@ export class NeuralSummarizer {
 
     // Score each sentence
     return sentences.map((text, position) => {
-      const emb = embeddings[position];
+      const emb = embeddings[position]!;
 
       // Centrality score (cosine sim to centroid)
       const centrality = this.cosineSimilarity(emb, centroid);
@@ -234,7 +234,7 @@ export class NeuralSummarizer {
       // Query relevance (if query provided)
       let queryScore = 0;
       if (queryEmb) {
-        queryScore = this.cosineSimilarity(emb, queryEmb);
+        queryScore = this.cosineSimilarity(emb, queryEmb!);
       }
 
       // Combine scores
@@ -260,7 +260,7 @@ export class NeuralSummarizer {
       const wordEmb = this.model!.wordEmbeddings[tokenId] ?? [];
       const posEmb = this.model!.positionEmbeddings[pos] ?? [];
       for (let h = 0; h < hiddenSize; h++) {
-        emb[h] = (wordEmb[h] ?? 0) + (posEmb[h] ?? 0);
+        emb[h] = ((wordEmb[h] as number) ?? 0) + ((posEmb[h] as number) ?? 0);
       }
       return emb;
     });
@@ -273,9 +273,9 @@ export class NeuralSummarizer {
     // Mean pooling
     const pooled = new Float64Array(hiddenSize);
     for (const h of hidden) {
-      for (let i = 0; i < hiddenSize; i++) pooled[i] += h[i];
+      for (let i = 0; i < hiddenSize; i++) pooled[i] = (pooled[i] ?? 0) + h[i]!;
     }
-    for (let i = 0; i < hiddenSize; i++) pooled[i] /= hidden.length;
+    for (let i = 0; i < hiddenSize; i++) pooled[i] = pooled[i]! / hidden.length;
 
     // Project to sentence space
     const sentSize = this.model!.sentenceSize;
@@ -284,7 +284,7 @@ export class NeuralSummarizer {
       let sum = this.model!.poolingBias[i] ?? 0;
       const w = this.model!.poolingWeight[i];
       for (let j = 0; j < hiddenSize; j++) {
-        sum += pooled[j] * (w?.[j] ?? 0);
+        sum += pooled[j]! * (w?.[j] ?? 0);
       }
       sentence[i] = sum;
     }
@@ -293,7 +293,7 @@ export class NeuralSummarizer {
     let norm = 0;
     for (const v of sentence) norm += v * v;
     norm = Math.sqrt(norm) || 1;
-    for (let i = 0; i < sentSize; i++) sentence[i] /= norm;
+    for (let i = 0; i < sentSize; i++) sentence[i] = sentence[i]! / norm;
 
     return sentence;
   }
@@ -360,7 +360,7 @@ export class NeuralSummarizer {
       }
     }
     for (const w of Object.keys(centroid)) {
-      centroid[w] /= n;
+      centroid[w] = centroid[w]! / n;
     }
 
     // Query vector (if provided)
@@ -377,7 +377,7 @@ export class NeuralSummarizer {
 
     // Score
     return sentences.map((text, position) => {
-      const vec = tfidfVectors[position];
+      const vec = tfidfVectors[position]!;
       const centrality = this.cosineSimSparse(vec, centroid);
       const positionScore = 1 / (1 + position * 0.1);
       const words = this.wordCount(text);
@@ -385,7 +385,7 @@ export class NeuralSummarizer {
 
       let queryScore = 0;
       if (queryVec) {
-        queryScore = this.cosineSimSparse(vec, queryVec);
+        queryScore = this.cosineSimSparse(vec, queryVec!);
       }
 
       const score = queryVec

@@ -108,7 +108,7 @@ export class FatigueTracker {
    */
   shouldAvoidExercise(muscle: Muscle): boolean {
     return (
-      this.state.muscle_fatigue_map[muscle] >=
+      (this.state.muscle_fatigue_map[muscle] ?? 0) >=
       FATIGUE_CONSTANTS.FATIGUE_THRESHOLD_FOR_EXERCISE_SKIP
     );
   }
@@ -222,7 +222,7 @@ export class SessionHistoryManager {
    * Get last workout
    */
   getLastWorkout(): SessionRecord | null {
-    return this.sessions.length > 0 ? this.sessions[0] : null;
+    return this.sessions.length > 0 ? (this.sessions[0] ?? null) : null;
   }
 
   /**

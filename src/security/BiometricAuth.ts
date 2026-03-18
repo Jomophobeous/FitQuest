@@ -327,7 +327,7 @@ export class BiometricAuthService {
       SecureStore.deleteItemAsync(SECURE_KEYS.SESSION_EXPIRY),
       SecureStore.deleteItemAsync(SECURE_KEYS.SESSION_METHOD),
     ]);
-    console.log('[FitQuest Auth] Session ended');
+    if (__DEV__) console.log('[FitQuest Auth] Session ended');
   }
 
   /**
@@ -400,7 +400,7 @@ export class BiometricAuthService {
       const lockoutCount = Math.floor(attempts / MAX_FAILED_ATTEMPTS) - 1;
       const duration = LOCKOUT_DURATIONS_MS[
         Math.min(lockoutCount, LOCKOUT_DURATIONS_MS.length - 1)
-      ];
+      ]!;
       const lockoutUntil = Date.now() + duration;
       await SecureStore.setItemAsync(SECURE_KEYS.LOCKOUT_UNTIL, lockoutUntil.toString());
       console.warn(`[FitQuest Auth] Lockout triggered: ${duration / 1000}s`);

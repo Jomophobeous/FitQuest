@@ -23,8 +23,13 @@ import { spacing } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../src/components/ThemedText';
+import FitQuestLogo from '../src/components/FitQuestLogo';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 import { SkeletonDashboard } from '../src/components/ui/Skeleton';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { getUserProgress, getMuscleFatigue, getRecentSessions, getStreak, getDailyStepsForDate, getStepHistory, getAppState } from '../src/database/service';
+import { getCachedReadiness, getStatusDisplay, type ReadinessSnapshot } from '../src/engines/ReadinessEngine';
 import { getXPData } from '../src/services/xpService';
 import { getCurrentRank } from '../src/services/rankingService';
 import { RankBadge } from '../src/components/RankDisplay';
@@ -56,10 +61,12 @@ export default function DashboardScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
+  const { isReady: dbReady } = useDatabase();
   const isCompactScreen = width < 420;
   const [loading, setLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any>(null);
   const [fatigueLevel, setFatigueLevel] = useState(0); // 0-100 scale
+  const [readiness, setReadiness] = useState<ReadinessSnapshot | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [recentWorkout, setRecentWorkout] = useState<RecentWorkout | null>(null);
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
@@ -74,6 +81,8 @@ export default function DashboardScreen() {
   const [realLevel, setRealLevel] = useState(1);
   const [realXP, setRealXP] = useState(0);
   const [displayName, setDisplayName] = useState<string>('Athlete');
+  const [levelUpShown, setLevelUpShown] = useState(false);
+  const prevLevelRef = useRef<number>(0);
 
   // Animated values
   const headerOpacity = useSharedValue(0);
@@ -85,9 +94,10 @@ export default function DashboardScreen() {
   // Debounce loadProgress to prevent triple-calls from focus + sync events
   const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedLoad = useCallback(() => {
+    if (!dbReady) return;
     if (loadTimer.current) clearTimeout(loadTimer.current);
     loadTimer.current = setTimeout(() => { loadProgress(); }, 300);
-  }, []);
+  }, [dbReady]);
 
   // Reload data every time screen gains focus (e.g. after completing a workout)
   useFocusEffect(
@@ -105,124 +115,94 @@ export default function DashboardScreen() {
   const loadProgress = async () => {
     console.log('[Dashboard] loadProgress:start');
     try {
-      // Load user's display name first
-      const savedName = await getAppState('user.display_name');
-      if (savedName) {
-        setDisplayName(savedName);
-      }
+      // Parallel data loading — all independent queries at once
+      const [savedName, progress, streakData, fatigue, sessions, stepsData, xpData, readinessSnap] = await Promise.all([
+        getAppState('user.display_name').catch(() => null as string | null),
+        getUserProgress().catch(() => null),
+        getStreak('user_local_001').catch(() => null),
+        getMuscleFatigue('user_local_001').catch(() => []),
+        getRecentSessions('user_local_001', 5).catch(() => []),
+        getDailyStepsForDate('user_local_001', new Date().toISOString().split('T')[0]!).catch(() => null),
+        getXPData().catch(() => ({ level: 1, totalXP: 0 })),
+        getCachedReadiness('user_local_001').catch(() => null),
+      ]);
 
-      const progress = await getUserProgress();
-      setUserProgress(progress);
-      console.log('[Dashboard] Progress loaded', {
-        weekly_xp: progress?.weekly_xp ?? 0,
-        completed_workouts: progress?.completed_workouts ?? 0,
-      });
-
-      // Load real streak data
-      try {
-        const streakData = await getStreak('user_local_001');
-        if (streakData) {
-          setUserProgress((prev: any) => ({
-            ...prev,
-            current_streak: streakData.current,
-            longest_streak: streakData.longest,
-          }));
-        }
-      } catch (e) {
-        // Streak not available
+      if (savedName) setDisplayName(savedName);
+      
+      // Progress
+      const prog = progress ?? { weekly_xp: 0, total_workouts: 0, completed_workouts: 0 };
+      if (streakData) {
+        setUserProgress({ ...prog, current_streak: streakData.current, longest_streak: streakData.longest });
+      } else {
+        setUserProgress(prog);
       }
       
-      // Calculate overall fatigue from muscle fatigue data
-      try {
-        const fatigue = await getMuscleFatigue('user_local_001');
-        if (fatigue && fatigue.length > 0) {
-          const avgFatigue = fatigue.reduce((sum, m) => sum + (m.fatigue_level || 0), 0) / fatigue.length;
-          setFatigueLevel(Math.round(avgFatigue));
-        } else {
-          setFatigueLevel(0); // No fatigue data = fully recovered
-        }
-      } catch (e) {
-        setFatigueLevel(0); // No fatigue data = fully recovered
+      // Fatigue
+      if (fatigue && fatigue.length > 0) {
+        const avgFatigue = fatigue.reduce((sum: number, m: any) => sum + (m.fatigue_level || 0), 0) / fatigue.length;
+        setFatigueLevel(Math.round(avgFatigue));
+      } else {
+        setFatigueLevel(0);
       }
 
-      // Load recent workout sessions for real data
-      try {
-        const sessions = await getRecentSessions('user_local_001', 5);
-        if (sessions && sessions.length > 0) {
-          console.log('[Dashboard] Recent sessions loaded', { count: sessions.length });
-          const latest = sessions[0];
-          const sessionDate = new Date(latest.started_at);
-          const isToday = sessionDate.toDateString() === new Date().toDateString();
-          const isYesterday = sessionDate.toDateString() === new Date(Date.now() - 86400000).toDateString();
-          const dateLabel = isToday ? t('common.today') : isYesterday ? t('common.yesterday') : sessionDate.toLocaleDateString();
-          
-          setRecentWorkout({
-            id: latest.id,
-            name: latest.completed_exercises > 0
-              ? `${latest.completed_exercises} ${t('dashboard.of')} ${latest.total_exercises} ${t('library.exercises').toLowerCase()}`
-              : t('dashboard.incompleteSession'),
-            date: dateLabel,
-            duration: latest.duration_minutes || 0,
-            caloriesBurned: latest.completed_exercises > 0
-              ? Math.round((latest.duration_minutes || 0) * 5 + (latest.completed_exercises || 0) * 8)
-              : 0, // MET-based: ~5 kcal/min moderate exercise + 8 kcal per exercise effort
-            exercises: latest.completed_exercises || 0,
-            icon: 'arm-flex' as any,
-          });
+      // Sessions
+      if (sessions && sessions.length > 0) {
+        const latest = sessions[0]!;
+        const sessionDate = new Date(latest.started_at);
+        const isToday = sessionDate.toDateString() === new Date().toDateString();
+        const isYesterday = sessionDate.toDateString() === new Date(Date.now() - 86400000).toDateString();
+        const dateLabel = isToday ? t('common.today') : isYesterday ? t('common.yesterday') : sessionDate.toLocaleDateString();
+        
+        setRecentWorkout({
+          id: latest.id,
+          name: latest.completed_exercises > 0
+            ? `${latest.completed_exercises} ${t('dashboard.of')} ${latest.total_exercises} ${t('library.exercises').toLowerCase()}`
+            : t('dashboard.incompleteSession'),
+          date: dateLabel,
+          duration: latest.duration_minutes || 0,
+          caloriesBurned: latest.completed_exercises > 0
+            ? Math.round((latest.duration_minutes || 0) * 5 + (latest.completed_exercises || 0) * 8)
+            : 0,
+          exercises: latest.completed_exercises || 0,
+          icon: 'arm-flex' as any,
+        });
 
-          // Calculate real totals from today's sessions (only count sessions with completed exercises)
-          const todaySessions = sessions.filter(s => {
-            const d = new Date(s.started_at);
-            return d.toDateString() === new Date().toDateString() && (s.completed_exercises || 0) > 0;
-          });
-          // MET-based calorie estimate: ~5 kcal/min moderate exercise + 8 kcal per exercise effort
-          setTotalCalories(todaySessions.reduce((sum, s) => sum + Math.round((s.duration_minutes || 0) * 5 + (s.completed_exercises || 0) * 8), 0));
-          setTotalMinutes(todaySessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0));
+        const todaySessions = sessions.filter(s => {
+          const d = new Date(s.started_at);
+          return d.toDateString() === new Date().toDateString() && (s.completed_exercises || 0) > 0;
+        });
+        setTotalCalories(todaySessions.reduce((sum, s) => sum + Math.round((s.duration_minutes || 0) * 5 + (s.completed_exercises || 0) * 8), 0));
+        setTotalMinutes(todaySessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0));
 
-          // Today's exercise progress (for the main progress ring)
-          const todayDone = todaySessions.reduce((sum, s) => sum + (s.completed_exercises || 0), 0);
-          const todayTarget = todaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
-          // Also count sessions that haven't started yet (target from all today's sessions)
-          const allTodaySessions = sessions.filter(s => {
-            const d = new Date(s.started_at);
-            return d.toDateString() === new Date().toDateString();
-          });
-          const fullTarget = allTodaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
-          setTodayExercisesDone(todayDone);
-          setTodayExercisesTarget(Math.max(fullTarget, todayTarget));
+        const todayDone = todaySessions.reduce((sum, s) => sum + (s.completed_exercises || 0), 0);
+        const allTodaySessions = sessions.filter(s => new Date(s.started_at).toDateString() === new Date().toDateString());
+        const fullTarget = allTodaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
+        setTodayExercisesDone(todayDone);
+        setTodayExercisesTarget(fullTarget);
 
-          // Calculate completion rate from all loaded sessions
-          const completedCount = sessions.filter(s => s.completed_at).length;
-          setCompletionRate(sessions.length > 0 ? Math.round((completedCount / sessions.length) * 100) : 0);
-
-          // Collect workout dates for week calendar
-          const dates = sessions.map(s => s.started_at.split('T')[0]);
-          setWorkoutDates([...new Set(dates)]);
-        }
-      } catch (e) {
-        console.log('[Dashboard] No workout sessions yet');
+        const completedCount = sessions.filter(s => s.completed_at).length;
+        setCompletionRate(sessions.length > 0 ? Math.round((completedCount / sessions.length) * 100) : 0);
+        const dates = sessions.map(s => s.started_at.split('T')[0]!);
+        setWorkoutDates([...new Set(dates)]);
       }
 
-      // Load today's step count
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const stepsData = await getDailyStepsForDate('user_local_001', today);
-        if (stepsData) {
-          setTodaySteps(stepsData.steps);
-          setTodayActiveMinutes(stepsData.active_minutes);
-        }
-      } catch (e) {
-        console.log('[Dashboard] No step data yet');
+      // Steps
+      if (stepsData) {
+        setTodaySteps(stepsData.steps);
+        setTodayActiveMinutes(stepsData.active_minutes);
       }
 
-      // Load real XP & level from xpService (persisted in app_state)
-      try {
-        const xpData = await getXPData();
-        setRealLevel(xpData.level);
-        setRealXP(xpData.totalXP);
-      } catch (e) {
-        console.log('[Dashboard] XP data not available');
+      // XP
+      if (prevLevelRef.current > 0 && xpData.level > prevLevelRef.current) {
+        setLevelUpShown(true);
+        setTimeout(() => setLevelUpShown(false), 3500);
       }
+      prevLevelRef.current = xpData.level;
+      setRealLevel(xpData.level);
+      setRealXP(xpData.totalXP);
+
+      // Readiness
+      if (readinessSnap) setReadiness(readinessSnap);
     } catch (error) {
       console.error('[Dashboard] Failed to load progress:', error);
     } finally {
@@ -237,10 +217,12 @@ export default function DashboardScreen() {
     setRefreshing(false);
   };
 
-  // State-driven UI: determine if recovery is bad (>70% fatigue)
-  const isRecoveryBad = fatigueLevel > 70;
-  const isRecoveryGood = fatigueLevel < 30;
-  const recoveryPercent = 100 - fatigueLevel;
+  // State-driven UI: use readiness engine when available, fallback to fatigue
+  const readinessScore = readiness?.score ?? (100 - fatigueLevel);
+  const isRecoveryBad = readinessScore < 30;
+  const isRecoveryGood = readinessScore >= 65;
+  const recoveryPercent = readinessScore;
+  const statusDisplay = readiness ? getStatusDisplay(readiness) : null;
 
   if (loading) {
     return (
@@ -251,7 +233,7 @@ export default function DashboardScreen() {
   }
 
   const streak = userProgress?.current_streak ?? 0;
-  const totalWorkouts = userProgress?.total_workouts ?? 0;
+  const totalWorkouts = userProgress?.completed_workouts ?? 0;
   const weeklyXP = userProgress?.weekly_xp ?? 0;
   // Today's progress: based on actual exercises completed today (not weekly XP)
   // If no workouts today, check if any minutes/steps activity exists for a small baseline
@@ -261,7 +243,14 @@ export default function DashboardScreen() {
   const level = realLevel;
 
   return (
+    <ScreenErrorBoundary screenName="Dashboard" onGoBack={() => router.canGoBack() ? router.back() : undefined}>
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="dashboard"
+        icon="view-dashboard"
+        title="Your Dashboard"
+        description="Track your daily progress, workout streaks, steps, and XP all in one place. Pull down to refresh your stats."
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -273,22 +262,36 @@ export default function DashboardScreen() {
           />
         }
       >
+        {/* ── LEVEL UP CELEBRATION ── */}
+        {levelUpShown && (
+          <Animated.View entering={FadeInDown.duration(300)} style={[styles.levelUpBanner, { backgroundColor: theme.colors.accent }]}>
+            <MaterialCommunityIcons name="arrow-up-bold-circle" size={22} color="#FFFFFF" />
+            <View style={{ marginLeft: 10, flex: 1 }}>
+              <Text style={styles.levelUpTitle}>Level Up!</Text>
+              <Text style={styles.levelUpSub}>You reached Level {realLevel} 🎉</Text>
+            </View>
+          </Animated.View>
+        )}
+
         {/* ── COMPACT HEADER ── */}
         <Animated.View entering={FadeIn.duration(150)}>
           <View style={[styles.heroHeader, { backgroundColor: theme.colors.background }]}>
             <View style={styles.heroTop}>
-              <View>
-                <ThemedText variant="caption" color="secondary" style={styles.greeting}>
-                  {(() => {
-                    const hour = new Date().getHours();
-                    if (hour < 12) return t('dashboard.goodMorning') || 'Good morning';
-                    if (hour < 18) return t('dashboard.goodAfternoon') || 'Good afternoon';
-                    return t('dashboard.goodEvening') || 'Good evening';
-                  })()}
-                </ThemedText>
-                <ThemedText variant="h2" color="primary" style={styles.heroTitle}>
-                  {displayName}
-                </ThemedText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <FitQuestLogo size={36} />
+                <View>
+                  <ThemedText variant="caption" color="secondary" style={styles.greeting}>
+                    {(() => {
+                      const hour = new Date().getHours();
+                      if (hour < 12) return t('dashboard.goodMorning') || 'Good morning';
+                      if (hour < 18) return t('dashboard.goodAfternoon') || 'Good afternoon';
+                      return t('dashboard.goodEvening') || 'Good evening';
+                    })()}
+                  </ThemedText>
+                  <ThemedText variant="h2" color="primary" style={styles.heroTitle}>
+                    {displayName}
+                  </ThemedText>
+                </View>
               </View>
               {/* Stats row: Numbers visually heavier than labels */}
               <View style={styles.headerStats}>
@@ -322,10 +325,10 @@ export default function DashboardScreen() {
                 </ProgressRing>
               </View>
               <View style={styles.todayGoalRight}>
-                <ThemedText variant="h3" color="primary" style={styles.todayGoalTitle}>
+                <ThemedText variant="h3" color="primary" style={styles.todayGoalTitle} numberOfLines={1} adjustsFontSizeToFit>
                   {t('dashboard.todaysGoal')}
                 </ThemedText>
-                <ThemedText variant="bodySmall" color="secondary" style={styles.todayGoalSub}>
+                <ThemedText variant="bodySmall" color="secondary" style={styles.todayGoalSub} numberOfLines={2}>
                   {todayProgress >= 1 ? (t('dashboard.completed') || 'Completed! 🎉') : (t('dashboard.keepPushing') || 'Keep pushing — you got this!')}
                 </ThemedText>
                 <View style={styles.todayGoalMeta}>
@@ -359,7 +362,7 @@ export default function DashboardScreen() {
         </Animated.View>
 
         {/* ══════════════════════════════════════════════════════════════════
-            PRIORITY 2: RECOVERY STATUS - Full width, warning colors if bad
+            PRIORITY 2: CURRENT STATUS - Readiness score with recommendation
         ══════════════════════════════════════════════════════════════════ */}
         <Animated.View entering={FadeInDown.delay(200).duration(150)}>
           <View style={[
@@ -374,16 +377,27 @@ export default function DashboardScreen() {
             <View style={styles.recoveryInner}>
               <View style={styles.recoveryLeft}>
                 <MaterialCommunityIcons 
-                  name={isRecoveryBad ? 'battery-low' : isRecoveryGood ? 'battery-high' : 'battery-medium'} 
+                  name={(statusDisplay?.icon || (isRecoveryBad ? 'battery-low' : isRecoveryGood ? 'battery-high' : 'battery-medium')) as any} 
                   size={24} 
                   color={isRecoveryBad ? theme.colors.error : isRecoveryGood ? theme.colors.success : theme.colors.warning} 
                 />
-                <ThemedText variant="bodySmall" weight="600" style={[
-                  styles.recoveryTitle,
-                  { color: isRecoveryBad ? theme.colors.error : theme.colors.text }
-                ]}>
-                  {t('dashboard.recovery')}
-                </ThemedText>
+                <View>
+                  <ThemedText variant="bodySmall" weight="600" style={[
+                    styles.recoveryTitle,
+                    { color: isRecoveryBad ? theme.colors.error : theme.colors.text }
+                  ]}>
+                    {statusDisplay?.label || t('dashboard.recovery')}
+                  </ThemedText>
+                  {readiness?.timeSinceLastWorkoutMinutes != null && (
+                    <ThemedText variant="caption" color="muted" style={{ marginLeft: 8 }}>
+                      {readiness.timeSinceLastWorkoutMinutes < 60
+                        ? `Last trained ${readiness.timeSinceLastWorkoutMinutes}m ago`
+                        : readiness.timeSinceLastWorkoutMinutes < 1440
+                          ? `Last trained ${Math.floor(readiness.timeSinceLastWorkoutMinutes / 60)}h ago`
+                          : `Last trained ${Math.floor(readiness.timeSinceLastWorkoutMinutes / 1440)}d ago`}
+                    </ThemedText>
+                  )}
+                </View>
               </View>
               <View style={styles.recoveryRight}>
                 <ThemedText variant="h3" weight="800" style={[
@@ -397,7 +411,12 @@ export default function DashboardScreen() {
                 </ThemedText>
               </View>
             </View>
-            {!!isRecoveryBad && (
+            {readiness?.recommendedIntensity && (
+              <ThemedText variant="caption" color="secondary" style={styles.recoveryWarning}>
+                {readiness.recommendation}
+              </ThemedText>
+            )}
+            {!readiness && !!isRecoveryBad && (
               <ThemedText variant="caption" color="error" style={styles.recoveryWarning}>
                 {t('dashboard.recoveryWarning')}
               </ThemedText>
@@ -501,10 +520,11 @@ export default function DashboardScreen() {
               { label: t('dashboard.health') || 'Health', desc: t('dashboard.healthDesc') || 'Track vitals & wellness', icon: 'heart-pulse' as const, color: theme.colors.error, route: '/health-dashboard' },
               { label: t('dashboard.analytics') || 'Analytics', desc: t('dashboard.analyticsDesc') || 'Progress insights', icon: 'chart-bar' as const, color: theme.colors.blue, route: '/analytics' },
               { label: t('dashboard.coach') || 'Coach', desc: t('dashboard.coachDesc') || 'AI fitness guidance', icon: 'robot-happy' as const, color: theme.colors.purple, route: '/coach' },
-              { label: 'Professor', desc: 'Coming Soon', icon: 'school' as const, color: '#8B5CF6', route: '/professor', comingSoon: true },
+              { label: 'Professor', desc: 'Coming Soon', icon: 'school' as const, color: theme.colors.purple, route: '/professor', comingSoon: true },
               { label: t('dashboard.mealPrep') || 'Meal Prep', desc: t('dashboard.mealPrepDesc') || 'Nutrition planning', icon: 'food-variant' as const, color: theme.colors.accent, route: '/meal-prep' },
               { label: t('dashboard.exercises') || 'Exercises', desc: t('dashboard.exercisesDesc') || 'Exercise library', icon: 'dumbbell' as const, color: theme.colors.warning, route: '/exercises' },
               { label: t('dashboard.myWorkouts') || 'My Workouts', desc: t('dashboard.myWorkoutsDesc') || 'Saved routines', icon: 'folder-star' as const, color: theme.colors.pink, route: '/saved-workouts' },
+              { label: 'Craft My Mind', desc: 'Coming Soon', icon: 'brain' as const, color: theme.colors.skyBlue, route: '/fitmind-library', comingSoon: true },
             ].map((tile, idx) => (
               <AnimatedListItem
                 key={tile.route}
@@ -514,6 +534,9 @@ export default function DashboardScreen() {
                 <TouchableOpacity
                   activeOpacity={0.7}
                   disabled={!!(tile as any).comingSoon}
+                  accessibilityRole="button"
+                  accessibilityLabel={tile.label}
+                  accessibilityHint={tile.desc}
                   onPress={() => {
                     if ((tile as any).comingSoon) return;
                     console.log('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
@@ -585,13 +608,28 @@ export default function DashboardScreen() {
         <View style={{ height: spacing[8] }} />
       </ScrollView>
     </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scrollContent: { paddingBottom: spacing[8] },
+  scrollContent: { paddingBottom: 100 },
+
+  // ── LEVEL UP BANNER ──
+  levelUpBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: spacing[4],
+    marginTop: spacing[2],
+    marginBottom: spacing[2],
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+  },
+  levelUpTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' } as const,
+  levelUpSub: { color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: '500', marginTop: 1 } as const,
   
   // ── HEADER (Compact) ──
   heroHeader: { 

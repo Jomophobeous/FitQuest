@@ -45,7 +45,7 @@ export default function PrivacyPolicyScreen() {
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
           >
             <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
@@ -55,16 +55,22 @@ export default function PrivacyPolicyScreen() {
 
         <GlassCard style={styles.card}>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textMuted }]}>
-            {t('legal.lastUpdated')} 2026-02-17
+            {t('legal.lastUpdated')} 2026-03-13
           </ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.accent }]}>{t('legal.privacy.sections.developerTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.developerBody')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.dataCollectTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.dataCollectBody')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.health')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.biometric')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.location')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.account')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.usage')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.device')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.photos')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.healthConnect')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.storageTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.storageBody')}</ThemedText>
@@ -74,6 +80,10 @@ export default function PrivacyPolicyScreen() {
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.thirdPartyTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.thirdPartyBody')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyAI')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyHealthConnect')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyRevenueCat')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartySentry')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.childrenTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.childrenBody')}</ThemedText>
@@ -87,9 +97,27 @@ export default function PrivacyPolicyScreen() {
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.deleteRight')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.exportRight')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.correctRight')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.objectionRight')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.popiaTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.popiaBody')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.updatesTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.updatesBody')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>Background Health Monitoring</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+            FitQuest periodically collects lightweight health metrics (steps, active minutes, heart rate) while the app is open to provide accurate readiness scores and training recommendations. This data is:
+          </ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• Collected every 1 minute while the app is active for optimal accuracy</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• Stored only on your device using AES-256-GCM encryption</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• Never transmitted to external servers</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• You can disable background collection in Profile → Settings</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>Work Schedule Data</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+            If you optionally provide your work schedule (start/end hours, shift type), this information is used solely to optimize workout timing recommendations. Schedule data is stored locally on your device and is never shared or transmitted.
+          </ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.contactTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.contactBody')}</ThemedText>

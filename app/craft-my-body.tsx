@@ -7,7 +7,7 @@
  * cardio, and nutrition tips.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 import {
   View,
@@ -38,7 +38,10 @@ import {
   type TimelineMonths,
 } from '../src/engines/bodyCraftEngine';
 import { saveBodyCraftAlgorithm, applyAlgorithmToProfile } from '../src/database/bodyCraftService';
+import { getUserProfile } from '../src/database/service';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 // ============================================
 // CONSTANTS
@@ -49,8 +52,11 @@ type Step = (typeof STEPS)[number];
 
 const BODY_TYPES: { key: BodyType; label: string; icon: string; desc: string }[] = [
   { key: 'ectomorph', label: 'Ectomorph', icon: 'human-male', desc: 'Slim build, fast metabolism, lean frame' },
-  { key: 'mesomorph', label: 'Mesomorph', icon: 'human-male', desc: 'Athletic build, gains muscle easily' },
-  { key: 'endomorph', label: 'Endomorph', icon: 'human-male', desc: 'Stocky build, stores fat more easily' },
+  { key: 'mesomorph', label: 'Mesomorph', icon: 'human-male-board', desc: 'Athletic build, gains muscle easily' },
+  { key: 'endomorph', label: 'Endomorph', icon: 'human-greeting-variant', desc: 'Stocky build, stores fat more easily' },
+  { key: 'ecto_mesomorph', label: 'Ecto-Mesomorph', icon: 'run-fast', desc: 'Lean & athletic, builds muscle while staying slim' },
+  { key: 'meso_endomorph', label: 'Meso-Endomorph', icon: 'weight-lifter', desc: 'Strong & powerful, gains muscle and fat easily' },
+  { key: 'endo_ectomorph', label: 'Endo-Ectomorph', icon: 'human-male-height-variant', desc: 'Slim upper body, stores fat around lower body' },
 ];
 
 const FITNESS_LEVELS: { key: FitnessLevel; label: string }[] = [
@@ -107,6 +113,7 @@ export default function CraftMyBodyScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
+  const { isReady: dbReady } = useDatabase();
 
   // Wizard state
   const [stepIndex, setStepIndex] = useState(0);
@@ -135,6 +142,17 @@ export default function CraftMyBodyScreen() {
   const [algorithm, setAlgorithm] = useState<BodyCraftAlgorithm | null>(null);
   const [applied, setApplied] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Pre-fill height/weight/sex from user profile
+  useEffect(() => {
+    if (!dbReady) return;
+    getUserProfile('user_local_001').then(profile => {
+      if (!profile) return;
+      if (profile.height_cm && !heightCm) setHeightCm(String(Math.round(profile.height_cm)));
+      if (profile.weight_kg && !weightKg) setWeightKg(String(Math.round(profile.weight_kg)));
+      if (profile.sex && (profile.sex === 'male' || profile.sex === 'female')) setSex(profile.sex);
+    }).catch(() => {});
+  }, [dbReady]);
 
   // ========== Navigation ==========
 
@@ -191,9 +209,9 @@ export default function CraftMyBodyScreen() {
 
   const toggleMusclePriority = useCallback((key: string) => {
     setMusclePriorities((prev) => {
-      const current = prev[key];
+      const current = prev[key] ?? 'maintain' as MusclePriority;
       const idx = PRIORITY_CYCLE.indexOf(current);
-      const next = PRIORITY_CYCLE[(idx + 1) % PRIORITY_CYCLE.length];
+      const next = PRIORITY_CYCLE[(idx + 1) % PRIORITY_CYCLE.length] ?? ('maintain' as MusclePriority);
       return { ...prev, [key]: next };
     });
   }, []);
@@ -273,6 +291,9 @@ export default function CraftMyBodyScreen() {
             <TouchableOpacity
               key={s}
               onPress={() => setSex(s)}
+              accessibilityRole="radio"
+              accessibilityLabel={s === 'male' ? 'Male' : 'Female'}
+              accessibilityState={{ selected: sex === s }}
               style={[styles.chip, { backgroundColor: sex === s ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', borderColor: sex === s ? colors.accent : 'transparent' }]}
             >
               <MaterialCommunityIcons name={s === 'male' ? 'gender-male' : 'gender-female'} size={18} color={sex === s ? colors.onAccent : colors.textMuted} />
@@ -311,6 +332,9 @@ export default function CraftMyBodyScreen() {
           <TouchableOpacity
             key={bt.key}
             onPress={() => setBodyType(bt.key)}
+            accessibilityRole="radio"
+            accessibilityLabel={`${bt.label}: ${bt.desc}`}
+            accessibilityState={{ selected: bodyType === bt.key }}
             style={[styles.optionRow, { backgroundColor: bodyType === bt.key ? `${colors.accent}18` : 'transparent', borderColor: bodyType === bt.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}
           >
             <MaterialCommunityIcons name={bt.icon as any} size={24} color={bodyType === bt.key ? colors.accent : colors.textMuted} />
@@ -331,6 +355,9 @@ export default function CraftMyBodyScreen() {
             <TouchableOpacity
               key={fl.key}
               onPress={() => setFitnessLevel(fl.key)}
+              accessibilityRole="radio"
+              accessibilityLabel={fl.label}
+              accessibilityState={{ selected: fitnessLevel === fl.key }}
               style={[styles.chip, { backgroundColor: fitnessLevel === fl.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', borderColor: fitnessLevel === fl.key ? colors.accent : 'transparent' }]}
             >
               <Text style={[styles.chipText, { color: fitnessLevel === fl.key ? colors.onAccent : colors.text }]}>{fl.label}</Text>
@@ -387,10 +414,11 @@ export default function CraftMyBodyScreen() {
       <Text style={[styles.focusHint, { color: colors.textMuted }]}>Tap to cycle: Maintain → Priority → Ignore</Text>
       <View style={styles.muscleGrid}>
         {MUSCLE_GROUPS.map((mg) => {
-          const priority = musclePriorities[mg.key];
+          const priority: MusclePriority = musclePriorities[mg.key] ?? 'maintain';
           const cfg = getPriorityConfig(colors)[priority];
           return (
-            <TouchableOpacity key={mg.key} onPress={() => toggleMusclePriority(mg.key)} activeOpacity={0.7}>
+            <TouchableOpacity key={mg.key} onPress={() => toggleMusclePriority(mg.key)} activeOpacity={0.7}
+              accessibilityRole="button" accessibilityLabel={`${mg.label}: ${cfg.label}. Tap to cycle priority`}>
               <GlassCard style={{ ...styles.muscleCard, borderColor: cfg.color, borderWidth: priority === 'priority' ? 2 : 1 }}>
                 <MaterialCommunityIcons name={mg.icon as any} size={28} color={cfg.color} />
                 <Text style={[styles.muscleLabel, { color: colors.text }]}>{mg.label}</Text>
@@ -431,9 +459,9 @@ export default function CraftMyBodyScreen() {
     if (!algorithm) return null;
 
     const macroTotal = algorithm.protein_g * 4 + algorithm.carbs_g * 4 + algorithm.fats_g * 9;
-    const proteinPct = Math.round((algorithm.protein_g * 4 / macroTotal) * 100);
-    const carbsPct = Math.round((algorithm.carbs_g * 4 / macroTotal) * 100);
-    const fatsPct = Math.round((algorithm.fats_g * 9 / macroTotal) * 100);
+    const proteinPct = macroTotal > 0 ? Math.round((algorithm.protein_g * 4 / macroTotal) * 100) : 0;
+    const carbsPct = macroTotal > 0 ? Math.round((algorithm.carbs_g * 4 / macroTotal) * 100) : 0;
+    const fatsPct = macroTotal > 0 ? Math.round((algorithm.fats_g * 9 / macroTotal) * 100) : 0;
 
     return (
       <Animated.View entering={FadeInDown.duration(150)} key="step-results">
@@ -550,39 +578,64 @@ export default function CraftMyBodyScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['bottom']}>
+      <ScreenTutorial
+        screenKey="craft-my-body"
+        icon="human-male-board"
+        title="Craft My Body"
+        description="Build your ideal physique with our AI body-transformation wizard. Enter your stats, choose your goal, select focus areas, and get a personalized plan."
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {stepIndex === 0 && <MedicalDisclaimer screen="craft-my-body" compact />}
         {renderProgressBar()}
-        {stepContent[stepIndex]()}
+        {stepContent[stepIndex]?.()}
       </ScrollView>
 
       {/* Bottom Nav Bar */}
       {stepIndex < 4 && (
         <Animated.View entering={FadeIn.duration(150)} style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          <TouchableOpacity onPress={goBack} style={styles.navBtn}>
-            <MaterialCommunityIcons name="arrow-left" size={22} color={colors.text} />
+          <TouchableOpacity onPress={goBack} style={[styles.navBtn, { backgroundColor: colors.surfaceVariant, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12 }]}>
+            <MaterialCommunityIcons name="arrow-left" size={20} color={colors.textMuted} />
             <Text style={[styles.navBtnText, { color: colors.text }]}>Back</Text>
           </TouchableOpacity>
 
           <Text style={[styles.stepIndicator, { color: colors.textMuted }]}>{stepIndex + 1} / {STEPS.length}</Text>
 
-          <TouchableOpacity onPress={goNext} disabled={!canGoNext()} style={[styles.navBtn, { opacity: canGoNext() ? 1 : 0.4 }]}>
-            <Text style={[styles.navBtnText, { color: colors.accent }]}>{stepIndex === 3 ? 'Generate' : 'Next'}</Text>
-            <MaterialCommunityIcons name={stepIndex === 3 ? 'creation' : 'arrow-right'} size={22} color={colors.accent} />
+          <TouchableOpacity
+            onPress={goNext}
+            disabled={!canGoNext()}
+            accessibilityRole="button"
+            accessibilityLabel={stepIndex === 3 ? 'Generate plan' : 'Next step'}
+            style={[styles.navBtn, {
+              backgroundColor: canGoNext() ? colors.accent + '20' : colors.surfaceVariant,
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: canGoNext() ? colors.accent : colors.border,
+              opacity: canGoNext() ? 1 : 0.6,
+            }]}
+          >
+            <Text style={[styles.navBtnText, { color: canGoNext() ? colors.accent : colors.textMuted, fontWeight: '700' }]}>
+              {stepIndex === 3 ? 'Generate' : 'Next'}
+            </Text>
+            <MaterialCommunityIcons name={stepIndex === 3 ? 'creation' : 'arrow-right'} size={20} color={canGoNext() ? colors.accent : colors.textMuted} />
           </TouchableOpacity>
         </Animated.View>
       )}
 
       {stepIndex === 4 && (
         <Animated.View entering={FadeIn.duration(150)} style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          <TouchableOpacity onPress={goBack} style={styles.navBtn}>
-            <MaterialCommunityIcons name="arrow-left" size={22} color={colors.text} />
+          <TouchableOpacity onPress={goBack} style={[styles.navBtn, { backgroundColor: colors.surfaceVariant, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12 }]}>
+            <MaterialCommunityIcons name="arrow-left" size={20} color={colors.text} />
             <Text style={[styles.navBtnText, { color: colors.text }]}>Edit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')} style={styles.navBtn}>
-            <Text style={[styles.navBtnText, { color: colors.accent }]}>Done</Text>
-            <MaterialCommunityIcons name="check" size={22} color={colors.accent} />
+          <TouchableOpacity
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
+            style={[styles.navBtn, { backgroundColor: colors.accent + '20', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: colors.accent }]}
+          >
+            <Text style={[styles.navBtnText, { color: colors.accent, fontWeight: '700' }]}>Done</Text>
+            <MaterialCommunityIcons name="check" size={20} color={colors.accent} />
           </TouchableOpacity>
         </Animated.View>
       )}
@@ -679,7 +732,7 @@ const styles = StyleSheet.create({
   applyContainer: { marginTop: 8, marginBottom: 32 },
 
   // Bottom bar
-  bottomBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 16, borderTopWidth: 1 },
+  bottomBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderTopWidth: 1 },
   navBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   navBtnText: { fontSize: 15, fontWeight: '600' },
   stepIndicator: { fontSize: 13, fontWeight: '500' },

@@ -101,7 +101,7 @@ import {
   isInDeload,
 } from './recoveryEngine';
 import { completeWorkoutSession, updateStreak } from '../database/service';
-import { getExerciseById } from '../database/service';
+import { getExercisesByIds } from '../database/service';
 
 /**
  * Complete workflow: Generate → User completes → Record → Update fatigue → Check deload
@@ -152,9 +152,12 @@ export async function completeSession(
   // 1. Record performances and get progression decisions
   const progressionDecisions = await recordSessionPerformance(userId, sessionId, performances);
 
-  // 2. Update fatigue for each exercise
+  // 2. Update fatigue for each exercise (batch-load to avoid N+1)
+  const exerciseIds = performances.map(p => p.exercise_id);
+  const exerciseMap = await getExercisesByIds(exerciseIds);
+
   for (const perf of performances) {
-    const exercise = await getExerciseById(perf.exercise_id);
+    const exercise = exerciseMap.get(perf.exercise_id);
     if (exercise) {
       await accumulateFatigue(
         userId,

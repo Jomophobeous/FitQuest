@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useDatabase, DEFAULT_USER_ID } from '../context/DatabaseContext';
+import { useLanguage } from '../context/LanguageContext';
 
 // Engine imports
 import {
@@ -30,7 +31,7 @@ import {
 } from '../engines/edgeCaseGuards';
 
 import {
-  getExerciseById,
+  getExercisesByIds,
   completeWorkoutSession,
   updateStreak,
   getSessionExercises,
@@ -43,9 +44,12 @@ import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsI
 import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
 import { evaluatePostWorkoutPolicyDecision } from '../services/autonomousPolicyRuntime';
 import { notifyWorkoutCompleted } from '../services/dataSyncService';
+import { invalidateReadinessCache } from '../engines/ReadinessEngine';
+import { logEvent } from '../services/telemetry';
 
 import type { TargetMuscle, ExerciseWithDetails } from '../database/types';
 import { generateWarmupCooldown, type WarmupCooldownExercise } from '../engines/warmupCooldownGenerator';
+import { isMindExercise, generateMindTimeline, getMindDuration, formatMindDuration, type MindTimeline } from '../engines/MindSessionEngine';
 
 // ============================================
 // TYPES
@@ -75,11 +79,15 @@ export interface WorkoutExerciseDisplay {
   instructions: string[];
   completed: boolean;
   difficulty?: number;
+  /** Phase of the workout this exercise belongs to */
+  phase?: 'warmup' | 'main' | 'cooldown';
   // Audio instruction fields for TTS
   audioIntro: string;
   audioSetup: string;
   audioExecution: string;
   audioTransition: string;
+  /** Mind exercise timeline (only set for focus/mindfulness exercises) */
+  mindTimeline?: MindTimeline;
 }
 
 export interface WorkoutState {
@@ -105,6 +113,12 @@ export interface WorkoutCompletionData {
   regressions: number;
   exerciseNames: string[];
   musclesWorked: string[];
+  /** Phase breakdown for summary display */
+  phaseBreakdown?: {
+    warmup: { total: number; completed: number };
+    main: { total: number; completed: number };
+    cooldown: { total: number; completed: number };
+  };
 }
 
 // ============================================
@@ -113,6 +127,7 @@ export interface WorkoutCompletionData {
 
 export function useFitQuestWorkout() {
   const { userProfile, isReady } = useDatabase();
+  const { t } = useLanguage();
   const finishingRef = useRef(false); // Prevent double-tap race condition on finish
   const generatingRef = useRef(false); // Prevent concurrent workout generation
   const [state, setState] = useState<WorkoutState>({
@@ -139,11 +154,26 @@ export function useFitQuestWorkout() {
 
     if (!isReady || !userProfile) {
       generatingRef.current = false;
-      setState((prev: WorkoutState) => ({ ...prev, status: 'error', error: 'Database not ready' }));
+      const detail = !isReady ? 'Database is still initializing' : 'User profile not loaded';
+      console.warn('[FitQuest] generateNewWorkout blocked:', detail);
+      setState((prev: WorkoutState) => ({ ...prev, status: 'error', error: detail }));
       return;
     }
 
     setState((prev: WorkoutState) => ({ ...prev, status: 'generating', error: null }));
+
+    // Timeout to prevent infinite loading on weak devices
+    const GENERATION_TIMEOUT_MS = 20_000;
+    const timeoutId = setTimeout(() => {
+      if (generatingRef.current) {
+        generatingRef.current = false;
+        setState((prev: WorkoutState) => ({
+          ...prev,
+          status: 'error',
+          error: 'Workout generation timed out. Please try again.',
+        }));
+      }
+    }, GENERATION_TIMEOUT_MS);
 
     try {
       // Step 1: Apply daily recovery if needed
@@ -185,7 +215,16 @@ export function useFitQuestWorkout() {
       const exerciseDisplays: WorkoutExerciseDisplay[] = [];
       for (let i = 0; i < generated.exercises.length; i++) {
         const ex = generated.exercises[i];
+        if (!ex) continue;
         const nextEx = generated.exercises[i + 1];
+
+        // Mind exercises: generate guided timeline instead of reps/sets
+        const isMind = isMindExercise(ex.exercise.category);
+        let mindTimeline: MindTimeline | undefined;
+        if (isMind) {
+          const duration = getMindDuration(ex.exercise.name, userProfile.experience);
+          mindTimeline = generateMindTimeline(ex.exercise.name, ex.exercise.category, duration);
+        }
 
         // Build rich audio narration from exercise instructions + muscles
         const richAudio = generateRichAudio(
@@ -197,6 +236,7 @@ export function useFitQuestWorkout() {
             restSeconds: 60,
           },
           nextEx?.exercise?.name,
+          t,
         );
 
         exerciseDisplays.push({
@@ -204,16 +244,18 @@ export function useFitQuestWorkout() {
           exerciseId: ex.exercise.id,
           name: ex.exercise.name,
           category: ex.exercise.category,
-          sets: ex.sets,
-          reps: ex.reps,
-          restSeconds: 60, // Default rest time
+          sets: isMind ? 1 : ex.sets,
+          reps: isMind ? formatMindDuration(mindTimeline!.totalDuration) : ex.reps,
+          restSeconds: isMind ? 0 : 60,
           instructions: ex.exercise.instructions || [],
           completed: false,
+          phase: 'main',
           // Audio: prefer DB-stored custom audio, fall back to rich generated audio
           audioIntro: ex.exercise.audio_intro || richAudio.intro,
           audioSetup: ex.exercise.audio_setup || richAudio.setup,
           audioExecution: ex.exercise.audio_execution || richAudio.execution,
           audioTransition: ex.exercise.audio_transition || richAudio.transition,
+          mindTimeline,
         });
       }
 
@@ -233,6 +275,7 @@ export function useFitQuestWorkout() {
           restSeconds: 15,
           instructions: w.exercise.instructions || [],
           completed: false,
+          phase: 'warmup' as const,
           audioIntro: w.exercise.audio_intro || '',
           audioSetup: w.exercise.audio_setup || '',
           audioExecution: w.exercise.audio_execution || '',
@@ -248,6 +291,7 @@ export function useFitQuestWorkout() {
           restSeconds: 15,
           instructions: c.exercise.instructions || [],
           completed: false,
+          phase: 'cooldown' as const,
           audioIntro: c.exercise.audio_intro || '',
           audioSetup: c.exercise.audio_setup || '',
           audioExecution: c.exercise.audio_execution || '',
@@ -265,9 +309,13 @@ export function useFitQuestWorkout() {
         isDeload
       );
 
+      // Combine warmup → main → cooldown into a single exercises array
+      // so the progression naturally flows through all phases
+      const allExercises = [...warmupDisplays, ...exerciseDisplays, ...cooldownDisplays];
+
       const workout: GeneratedWorkoutDisplay = {
         id: generated.session_id,
-        exercises: exerciseDisplays,
+        exercises: allExercises,
         totalDuration: generated.total_duration_estimate,
         isDeload,
         explanation: summary,
@@ -284,7 +332,7 @@ export function useFitQuestWorkout() {
         error: null,
       });
 
-      console.log('[FitQuest] Workout generated:', workout.id);
+      if (__DEV__) console.log('[FitQuest] Workout generated:', workout.id);
     } catch (err) {
       console.error('[FitQuest] Workout generation failed:', err);
       setState((prev: WorkoutState) => ({
@@ -293,6 +341,7 @@ export function useFitQuestWorkout() {
         error: err instanceof Error ? err.message : 'Failed to generate workout',
       }));
     } finally {
+      clearTimeout(timeoutId);
       generatingRef.current = false;
     }
   }, [isReady, userProfile]);
@@ -334,6 +383,7 @@ export function useFitQuestWorkout() {
             restSeconds: 60,
           },
           sessionExercises[i + 1]?.name,
+          t,
         );
 
         return {
@@ -387,6 +437,9 @@ export function useFitQuestWorkout() {
    */
   const startWorkout = useCallback(() => {
     if (state.workout) {
+      void logEvent('workout_started', {
+        exercise_count: state.workout.exercises.length,
+      });
       setState((prev: WorkoutState) => ({
         ...prev,
         status: 'in_progress',
@@ -406,9 +459,10 @@ export function useFitQuestWorkout() {
       if (!prev.workout) return prev;
 
       const updatedExercises = [...prev.workout.exercises];
-      if (prev.currentExerciseIndex < updatedExercises.length) {
+      const current = updatedExercises[prev.currentExerciseIndex];
+      if (current && prev.currentExerciseIndex < updatedExercises.length) {
         updatedExercises[prev.currentExerciseIndex] = {
-          ...updatedExercises[prev.currentExerciseIndex],
+          ...current,
           completed: true,
           difficulty,
         };
@@ -431,6 +485,12 @@ export function useFitQuestWorkout() {
    */
   const skipExercise = useCallback(() => {
     if (!state.workout) return;
+
+    const skippedExercise = state.workout.exercises[state.currentExerciseIndex];
+    void logEvent('exercise_skipped', {
+      exercise_id: skippedExercise?.exerciseId,
+      exercise_index: state.currentExerciseIndex,
+    });
 
     setState((prev: WorkoutState) => {
       if (!prev.workout) return prev;
@@ -463,8 +523,13 @@ export function useFitQuestWorkout() {
     finishingRef.current = true;
     
     try {
+      // Only track performance and fatigue for main exercises (not warmup/cooldown)
+      const mainOnly = state.workout.exercises.filter(
+        (ex: WorkoutExerciseDisplay) => ex.phase === 'main' || !ex.phase
+      );
+
       // Build performance records
-      const performances: ExercisePerformance[] = state.workout.exercises.map((ex: WorkoutExerciseDisplay) => ({
+      const performances: ExercisePerformance[] = mainOnly.map((ex: WorkoutExerciseDisplay) => ({
         exercise_id: ex.exerciseId,
         prescribed_sets: ex.sets,
         prescribed_reps: ex.reps,
@@ -482,27 +547,31 @@ export function useFitQuestWorkout() {
       );
 
       // Update fatigue with ENGINE 3 (Recovery)
-      for (const ex of state.workout.exercises) {
-        if (ex.completed) {
-          const exercise = await getExerciseById(ex.exerciseId);
-          if (exercise) {
-            // Accumulate fatigue for trained muscles using actual exercise data
-            await accumulateFatigue(
-              DEFAULT_USER_ID,
-              exercise.primary_muscles,
-              exercise.secondary_muscles,
-              ex.sets
-            );
-          }
+      // Batch-load all completed exercises in one query instead of N+1
+      const completedMainExercises = mainOnly.filter((ex: WorkoutExerciseDisplay) => ex.completed);
+      const completedIds = completedMainExercises.map((ex: WorkoutExerciseDisplay) => ex.exerciseId);
+      const exerciseMap = await getExercisesByIds(completedIds);
+
+      for (const ex of completedMainExercises) {
+        const exercise = exerciseMap.get(ex.exerciseId);
+        if (exercise) {
+          // Accumulate fatigue for trained muscles using actual exercise data
+          await accumulateFatigue(
+            DEFAULT_USER_ID,
+            exercise.primary_muscles,
+            exercise.secondary_muscles,
+            ex.sets
+          );
         }
       }
 
-      // Mark session complete
-      const completedCount = state.workout.exercises.filter((e: WorkoutExerciseDisplay) => e.completed).length;
+      // Mark session complete (based on main exercises only)
+      const completedCount = mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).length;
+      const isSuccess = mainOnly.length > 0 && completedCount >= mainOnly.length * 0.8;
       await completeWorkoutSession(
         state.workout.id,
         completedCount,
-        completedCount >= state.workout.exercises.length * 0.8
+        isSuccess
       );
 
       // Update streak
@@ -511,7 +580,7 @@ export function useFitQuestWorkout() {
       // Award XP
       const xpResult = await awardWorkoutXP(
         completedCount,
-        state.workout.exercises.length,
+        mainOnly.length,
         streak.current
       );
       console.log(`[FitQuest] XP earned: ${xpResult.xpEarned} (Level ${xpResult.data.level})`);
@@ -524,12 +593,12 @@ export function useFitQuestWorkout() {
         : `\n⭐ +${xpResult.xpEarned} XP (Level ${xpResult.data.level})`;
       const summary = generatePostWorkoutSummary(
         completedCount,
-        state.workout.exercises.length,
+        mainOnly.length,
         progressions,
         regressions
       ) + xpLine;
 
-      const difficultyValues = state.workout.exercises
+      const difficultyValues = mainOnly
         .map((exercise) => exercise.difficulty)
         .filter((value): value is number => typeof value === 'number');
       const averageDifficulty = difficultyValues.length
@@ -540,14 +609,14 @@ export function useFitQuestWorkout() {
         DEFAULT_USER_ID,
         {
           completedCount,
-          totalCount: state.workout.exercises.length,
+          totalCount: mainOnly.length,
           averageDifficulty,
         }
       );
 
       const adaptiveLine = `\n🧠 Adaptive profile: fatigue ${adaptive.fatigueSensitivity.toFixed(2)} · progression ${adaptive.progressionAggressiveness.toFixed(2)} · volume ${adaptive.volumeTolerance.toFixed(2)}`;
-      const completionRatio = state.workout.exercises.length > 0
-        ? completedCount / state.workout.exercises.length
+      const completionRatio = mainOnly.length > 0
+        ? completedCount / mainOnly.length
         : 0;
 
       const policyDecision = await evaluatePostWorkoutPolicyDecision(DEFAULT_USER_ID, {
@@ -567,7 +636,7 @@ export function useFitQuestWorkout() {
 
       try {
 
-        for (const ex of state.workout.exercises) {
+        for (const ex of mainOnly) {
           await queueAnalyticsEvent({
             event_type: 'exercise_outcome',
             goal: userProfile?.goal || 'unknown',
@@ -584,8 +653,8 @@ export function useFitQuestWorkout() {
           goal: userProfile?.goal || 'unknown',
           experience: userProfile?.experience || 'unknown',
           exercise_id: 'all',
-          success: completedCount >= state.workout.exercises.length * 0.8,
-          sets_completed: state.workout.exercises.reduce((acc, ex) => acc + (ex.completed ? ex.sets : 0), 0),
+          success: mainOnly.length > 0 && completedCount >= mainOnly.length * 0.8,
+          sets_completed: mainOnly.reduce((acc, ex) => acc + (ex.completed ? ex.sets : 0), 0),
           duration_seconds: durationSeconds,
         });
 
@@ -602,27 +671,38 @@ export function useFitQuestWorkout() {
       notifyWorkoutCompleted({
         sessionId: state.workout.id,
         exercisesCompleted: completedCount,
-        totalExercises: state.workout.exercises.length,
+        totalExercises: mainOnly.length,
         durationMinutes: Math.round(durationSeconds / 60),
         xpEarned: xpResult.xpEarned,
       });
 
-      // Collect muscles worked from completed exercises
+      // Refresh readiness score immediately after workout completion
+      invalidateReadinessCache();
+
+      // Collect muscles worked from completed main exercises (reuse batch-loaded data)
       const musclesWorkedSet = new Set<string>();
-      for (const ex of state.workout.exercises) {
-        if (ex.completed) {
-          const exercise = await getExerciseById(ex.exerciseId);
-          if (exercise) {
-            exercise.primary_muscles.forEach((m: string) => musclesWorkedSet.add(m));
-          }
+      for (const ex of completedMainExercises) {
+        const exercise = exerciseMap.get(ex.exerciseId);
+        if (exercise) {
+          exercise.primary_muscles.forEach((m: string) => musclesWorkedSet.add(m));
         }
       }
+
+      // Compute phase breakdown
+      const allExercises = state.workout.exercises;
+      const warmupExercises = allExercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'warmup');
+      const cooldownExercises = allExercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'cooldown');
+      const phaseBreakdown = {
+        warmup: { total: warmupExercises.length, completed: warmupExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length },
+        main: { total: mainOnly.length, completed: completedCount },
+        cooldown: { total: cooldownExercises.length, completed: cooldownExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length },
+      };
 
       return {
         summary: finalSummary,
         streak,
         completedCount,
-        totalCount: state.workout.exercises.length,
+        totalCount: mainOnly.length,
         durationSeconds,
         xpEarned: xpResult.xpEarned,
         level: xpResult.data.level,
@@ -630,8 +710,9 @@ export function useFitQuestWorkout() {
         newLevel: xpResult.newLevel,
         progressions,
         regressions,
-        exerciseNames: state.workout.exercises.filter((e: WorkoutExerciseDisplay) => e.completed).map(e => e.name),
+        exerciseNames: mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).map(e => e.name),
         musclesWorked: Array.from(musclesWorkedSet),
+        phaseBreakdown,
       };
     } catch (err) {
       console.error('[FitQuest] Failed to finish workout:', err);
@@ -667,10 +748,13 @@ export function useFitQuestWorkout() {
   const currentExercise = state.workout?.exercises[state.currentExerciseIndex] || null;
 
   /**
-   * Get progress percentage
+   * Get progress percentage (based on main exercises only)
    */
-  const progressPercentage = state.workout
-    ? (state.workout.exercises.filter((e: WorkoutExerciseDisplay) => e.completed).length / state.workout.exercises.length) * 100
+  const mainExercises = state.workout
+    ? state.workout.exercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'main' || !e.phase)
+    : [];
+  const progressPercentage = mainExercises.length > 0
+    ? (mainExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length / mainExercises.length) * 100
     : 0;
 
   return {

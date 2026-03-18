@@ -8,11 +8,13 @@ import {
   Dimensions,
   TextInput,
   Linking,
+  Platform,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PdfViewer } from '../src/components/PdfViewer';
 import { WebView } from 'react-native-webview';
@@ -22,6 +24,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
 import { getAppState, setAppState } from '../src/database/service';
+import { useDatabase } from '../src/context/DatabaseContext';
+import { awardReadingXP, awardDocumentCompleteXP, getContentQualityMultiplier } from '../src/services/xpService';
 import {
   FitMindService,
   type FitMindDocument,
@@ -73,6 +77,7 @@ export default function FitMindReaderScreen() {
 function FitMindReaderScreenInner() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const router = useRouter();
   const params = useLocalSearchParams<{ id: string }>();
   const docId = params.id;
@@ -122,13 +127,15 @@ function FitMindReaderScreenInner() {
   }, [docId]);
 
   useEffect(() => {
-    loadDocument();
-    void loadProfessorSettings();
+    if (dbReady) {
+      loadDocument();
+      void loadProfessorSettings();
+    }
     return () => {
       // Save reading session on unmount
       saveReadingSession();
     };
-  }, []);
+  }, [dbReady]);
 
   const loadProfessorSettings = async () => {
     try {
@@ -175,11 +182,16 @@ function FitMindReaderScreenInner() {
   };
 
   const loadDocument = async () => {
-    if (!docId) return;
+    if (!docId) {
+      setPageContent('No document ID provided. Please go back and select a document.');
+      setLoading(false);
+      return;
+    }
     try {
       const doc = await FitMindService.getDocument(docId);
       if (!doc) {
-        router.canGoBack() ? router.back() : router.replace('/fitmind-library');
+        setPageContent('Document not found. It may have been deleted.');
+        setLoading(false);
         return;
       }
       setDocument(doc);
@@ -266,7 +278,7 @@ function FitMindReaderScreenInner() {
   const shouldUseWebPdfMode =
     !!document && document.type === 'PDF' && readerEngine === 'web_pdfjs' && !webPdfFailed;
   const shouldUseWebEpubMode =
-    !!document && document.type === 'EPUB' && readerEngine === 'web_epub' && !epubFailed;
+    !!document && document.type === 'EPUB' && (readerEngine === 'web_epub' || readerEngine === 'native_pdf') && !epubFailed;
   const isInAppWebPdfMode =
     shouldUseWebPdfMode && !!webReaderScripts;
   const isInAppEpubMode =
@@ -374,20 +386,54 @@ function FitMindReaderScreenInner() {
   const handleOpenExternalReader = useCallback(async () => {
     if (!document?.file_path) return;
     try {
-      const externalUri = normalizeReaderFileUri(document.file_path);
-      if (!externalUri) return;
-      console.log('[FitMind Reader] Opening external reader', {
-        type: document.type,
-        path: externalUri,
-      });
-      await Linking.openURL(externalUri);
+      const filePath = document.file_path.startsWith('file://') 
+        ? document.file_path.replace('file://', '') 
+        : document.file_path;
+      
+      // Verify file exists
+      const fileInfo = await FileSystem.getInfoAsync(filePath);
+      if (!fileInfo.exists) {
+        console.warn('[FitMind Reader] File not found', { path: filePath });
+        setChatMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: 'The document file was not found on this device.' },
+        ]);
+        return;
+      }
+
+      // On Android, use content:// URI via IntentLauncher for file:// access
+      if (Platform.OS === 'android') {
+        const contentUri = await FileSystem.getContentUriAsync(filePath.startsWith('file://') ? filePath : `file://${filePath}`);
+        const mimeType = document.type === 'PDF' ? 'application/pdf' 
+          : document.type === 'EPUB' ? 'application/epub+zip' 
+          : 'application/octet-stream';
+        const IL = await import('expo-intent-launcher');
+        await IL.startActivityAsync('android.intent.action.VIEW', {
+          data: contentUri,
+          flags: 1, // FLAG_GRANT_READ_URI_PERMISSION
+          type: mimeType,
+        });
+      } else {
+        // iOS: use sharing (lazy-loaded to avoid crash when native module is absent)
+        try {
+          const SharingModule = await import('expo-sharing');
+          const isAvailable = await SharingModule.isAvailableAsync();
+          if (isAvailable) {
+            await SharingModule.shareAsync(filePath.startsWith('file://') ? filePath : `file://${filePath}`);
+          } else {
+            await Linking.openURL(filePath.startsWith('file://') ? filePath : `file://${filePath}`);
+          }
+        } catch {
+          await Linking.openURL(filePath.startsWith('file://') ? filePath : `file://${filePath}`);
+        }
+      }
     } catch (e) {
-      console.warn('[FitMind Reader] Failed to open external reader', { type: document.type });
+      console.warn('[FitMind Reader] Failed to open external reader', { type: document.type, error: String(e) });
       setChatMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: 'Could not open the system reader for this file.',
+          content: 'Could not open the system reader for this file. Please make sure you have a compatible reader app installed.',
         },
       ]);
     }
@@ -430,6 +476,22 @@ function FitMindReaderScreenInner() {
 
     // Update reading streak
     await FitMindService.updateReadingStreak(pagesRead, durationMinutes);
+
+    // Award Mind XP — content quality affects XP (brainrot = less)
+    const quality = getContentQualityMultiplier({
+      reading_level: activeDocument.reading_level,
+      word_count: activeDocument.word_count,
+      category: activeDocument.category,
+    });
+    const xpResult = await awardReadingXP(pagesRead, durationMinutes, quality);
+    if (xpResult.levelUp) {
+      console.log(`[FitMind] Mind level up! Now level ${xpResult.mindLevel} (+${xpResult.xpEarned} XP)`);
+    }
+
+    // Check if document is now completed
+    if (activeDocument.total_pages && activePage >= activeDocument.total_pages) {
+      await awardDocumentCompleteXP(quality);
+    }
   };
 
   const handleAddBookmark = async () => {
@@ -530,7 +592,18 @@ function FitMindReaderScreenInner() {
   if (!document) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <ThemedText variant="body" color="muted">{t('fitmind.reader.notFound')}</ThemedText>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <MaterialCommunityIcons name="book-off-outline" size={48} color={theme.colors.textMuted} />
+          <ThemedText variant="body" color="muted" style={{ textAlign: 'center', marginTop: 12 }}>
+            {pageContent || t('fitmind.reader.notFound')}
+          </ThemedText>
+          <TouchableOpacity
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/fitmind-library')}
+            style={{ marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, backgroundColor: theme.colors.accent + '20', borderRadius: 8 }}
+          >
+            <ThemedText variant="body" color="accent">{'Go back to library'}</ThemedText>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
@@ -917,10 +990,10 @@ function FitMindReaderScreenInner() {
                   <GlassCard style={styles.binaryDocCard}>
                     <MaterialCommunityIcons name="file-document-outline" size={36} color={theme.colors.accent} />
                     <ThemedText variant="body" color="primary" style={{ marginTop: 10, textAlign: 'center' }}>
-                      {t('fitmind.reader.binaryModeTitle') || 'Open in PDF/EPUB Reader'}
+                      {t('fitmind.reader.binaryModeTitle') || 'Open with External Reader'}
                     </ThemedText>
                     <ThemedText variant="caption" color="muted" style={{ marginTop: 6, textAlign: 'center', lineHeight: 18 }}>
-                      {t('fitmind.reader.binaryModeBody') || 'This document uses a binary format. Open it with your device reader for full pagination and rendering.'}
+                      {t('fitmind.reader.binaryModeBody') || 'This document format requires a dedicated viewer. Tap below to open it with your device\u2019s reader app.'}
                     </ThemedText>
                     {isExpoGo && document.type === 'PDF' && (
                       <ThemedText variant="caption" color="muted" style={{ marginTop: 8, textAlign: 'center' }}>
@@ -1026,22 +1099,23 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    minHeight: 40,
   },
   backButton: {
-    padding: 4,
+    padding: 2,
   },
   titleContainer: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 6,
   },
   topActions: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 2,
   },
   iconButton: {
-    padding: 6,
+    padding: 4,
   },
   progressBar: {
     height: 3,
@@ -1057,12 +1131,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   readingPadding: {
-    padding: 24,
-    paddingBottom: 100,
+    paddingHorizontal: Math.min(20, SCREEN_WIDTH * 0.05),
+    paddingTop: 12,
+    paddingBottom: 24,
+    flexGrow: 1,
   },
   readingText: {
-    fontSize: 17,
-    lineHeight: 28,
+    fontSize: Math.min(17, Math.max(15, SCREEN_WIDTH * 0.045)),
+    lineHeight: Math.min(30, Math.max(24, SCREEN_WIDTH * 0.075)),
     letterSpacing: 0.3,
   },
   binaryDocCard: {
@@ -1070,8 +1146,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   pdfContainer: {
-    height: SCREEN_HEIGHT * 0.72,
-    borderRadius: 14,
+    flex: 1,
+    minHeight: SCREEN_HEIGHT * 0.7,
+    borderRadius: 8,
     overflow: 'hidden',
   },
   loadingContainer: {
@@ -1081,8 +1158,8 @@ const styles = StyleSheet.create({
   },
   pdfView: {
     flex: 1,
-    width: SCREEN_WIDTH - 48,
-    height: SCREEN_HEIGHT * 0.72,
+    width: SCREEN_WIDTH - 32,
+    height: SCREEN_HEIGHT * 0.75,
   },
   binaryOpenBtn: {
     marginTop: 12,
@@ -1111,21 +1188,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+    minHeight: 48,
   },
   navButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    padding: 4,
+    padding: 6,
+    minWidth: 72,
   },
   pageIndicator: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 2,
+    minWidth: 80,
+    justifyContent: 'center',
   },
   // Chat styles
   chatContainer: {
@@ -1185,7 +1266,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   chatBubble: {
-    maxWidth: '85%',
+    maxWidth: Math.min(SCREEN_WIDTH * 0.85, 420),
     padding: 16,
     borderRadius: 16,
   },

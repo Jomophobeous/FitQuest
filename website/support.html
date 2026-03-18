@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FitQuest Support — FAQ, troubleshooting, and contact information for FitQuest fitness app.">
+  <meta name="theme-color" content="#0A0E17">
+  <title>Support — FitQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="reading-progress"><div class="reading-progress__bar"></div></div>
+  <div class="nav__overlay" id="navOverlay"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">
+        <div class="nav__logo-icon">⚡</div>
+        FitQuest
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="index.html" class="nav__link">Home</a>
+        <a href="about.html" class="nav__link">About</a>
+        <a href="support.html" class="nav__link nav__link--active">Support</a>
+        <a href="index.html#pricing" class="nav__link">Pricing</a>
+        <a href="index.html#download" class="nav__cta">Get the App</a>
+      </div>
+      <div class="nav__right">
+        <div class="lang-selector">
+          <button class="lang-trigger" aria-label="Select language">
+            <span class="lang-trigger__globe">🌐</span>
+            <span class="lang-trigger__text">EN</span>
+            <span class="lang-trigger__chevron">▼</span>
+          </button>
+          <div class="lang-dropdown">
+            <div class="lang-dropdown__label">Available in App</div>
+            <div class="lang-option active" data-code="EN"><span class="lang-option__flag">🇬🇧</span><span class="lang-option__name">English</span></div>
+            <div class="lang-option" data-code="ST"><span class="lang-option__flag">🇱🇸</span><span class="lang-option__name">Sesotho</span></div>
+            <div class="lang-option" data-code="AF"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">Afrikaans</span></div>
+            <div class="lang-option" data-code="ZU"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiZulu</span></div>
+            <div class="lang-option" data-code="XH"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiXhosa</span></div>
+            <div class="lang-option" data-code="ES"><span class="lang-option__flag">🇪🇸</span><span class="lang-option__name">Español</span></div>
+            <div class="lang-option" data-code="FR"><span class="lang-option__flag">🇫🇷</span><span class="lang-option__name">Français</span></div>
+            <div class="lang-option" data-code="DE"><span class="lang-option__flag">🇩🇪</span><span class="lang-option__name">Deutsch</span></div>
+            <div class="lang-option" data-code="PT"><span class="lang-option__flag">🇧🇷</span><span class="lang-option__name">Português</span></div>
+            <div class="lang-option" data-code="ZH"><span class="lang-option__flag">🇨🇳</span><span class="lang-option__name">中文</span></div>
+            <div class="lang-option" data-code="JA"><span class="lang-option__flag">🇯🇵</span><span class="lang-option__name">日本語</span></div>
+            <div class="lang-option" data-code="KO"><span class="lang-option__flag">🇰🇷</span><span class="lang-option__name">한국어</span></div>
+            <div class="lang-option" data-code="AR"><span class="lang-option__flag">🇸🇦</span><span class="lang-option__name">العربية</span></div>
+            <div class="lang-option" data-code="HI"><span class="lang-option__flag">🇮🇳</span><span class="lang-option__name">हिन्दी</span></div>
+            <div class="lang-option" data-code="SW"><span class="lang-option__flag">🇰🇪</span><span class="lang-option__name">Kiswahili</span></div>
+          </div>
+        </div>
+        <div class="theme-switch" role="switch" aria-label="Toggle dark/light theme" tabindex="0">
+          <div class="theme-switch__track">
+            <span class="theme-switch__icon theme-switch__icon--moon">🌙</span>
+            <span class="theme-switch__icon theme-switch__icon--sun">☀️</span>
+          </div>
+          <div class="theme-switch__indicator"></div>
+        </div>
+        <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="legal-hero">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-header__label">Support</div>
+        <h1 class="section-header__title">How Can We <span class="text-gradient">Help</span>?</h1>
+        <p class="section-header__desc">Find answers to common questions, troubleshooting tips, and how to reach our support team.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Cards -->
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        <div class="glass-card reveal reveal--delay-1" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">📧</div>
+          <h3 class="feature-card__title" data-i18n="support.card.email.title">Contact Us</h3>
+          <p class="feature-card__desc" data-i18n="support.card.email.desc">Get personalized help from our team. We aim to respond within 48 hours.</p>
+          <a href="#contact-form" class="btn btn--outline" style="margin-top: 12px;" data-i18n="support.card.email.cta">Send a Message</a>
+        </div>
+        <div class="glass-card reveal reveal--delay-2" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">📋</div>
+          <h3 class="feature-card__title" data-i18n="support.card.faq.title">FAQ</h3>
+          <p class="feature-card__desc" data-i18n="support.card.faq.desc">Most questions are answered below. Check the frequently asked questions before reaching out.</p>
+          <a href="#faq" class="btn btn--outline" style="margin-top: 12px;" data-i18n="support.card.faq.cta">Browse FAQ</a>
+        </div>
+        <div class="glass-card reveal reveal--delay-3" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">⭐</div>
+          <h3 class="feature-card__title" data-i18n="support.card.review.title">Leave a Review</h3>
+          <p class="feature-card__desc" data-i18n="support.card.review.desc">Love FitQuest? Leave a public review on Google Play and help others discover the app.</p>
+          <a href="https://play.google.com/store/apps/details?id=com.fitquest.app" target="_blank" rel="noopener noreferrer" class="btn btn--outline" style="margin-top: 12px;" data-i18n="support.card.review.cta">Review on Google Play</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GitHub-Style Contact Form -->
+  <section class="section section--alt" id="contact-form">
+    <div class="container" style="max-width: 680px;">
+      <div class="section-header reveal">
+        <div class="section-header__label" data-i18n="support.form.label">Contact</div>
+        <h2 class="section-header__title" data-i18n="support.form.title">Send Us a <span class="text-gradient">Message</span></h2>
+        <p class="section-header__desc" data-i18n="support.form.desc">Choose a category, describe your issue, and we'll get back to you via email.</p>
+      </div>
+
+      <div class="glass-card reveal" style="padding: 32px;">
+        <form id="supportForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Category Selector -->
+          <div>
+            <label for="contactCategory" style="display: block; margin-bottom: 8px; font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;" data-i18n="support.form.category.label">Category</label>
+            <select id="contactCategory" required style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-primary); font-size: 0.9375rem; font-family: inherit; cursor: pointer; appearance: auto;">
+              <option value="" disabled selected data-i18n="support.form.category.placeholder">Select a reason...</option>
+              <option value="Bug Report" data-i18n="support.form.category.bug">Bug Report</option>
+              <option value="Feature Request" data-i18n="support.form.category.feature">Feature Request</option>
+              <option value="Account Issue" data-i18n="support.form.category.account">Account Issue</option>
+              <option value="Billing Question" data-i18n="support.form.category.billing">Billing Question</option>
+              <option value="Data Deletion" data-i18n="support.form.category.deletion">Data Deletion</option>
+              <option value="General Feedback" data-i18n="support.form.category.feedback">General Feedback</option>
+            </select>
+          </div>
+
+          <!-- Title -->
+          <div>
+            <label for="contactTitle" style="display: block; margin-bottom: 8px; font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;" data-i18n="support.form.title.label">Subject</label>
+            <input type="text" id="contactTitle" required maxlength="120" placeholder="Brief summary of your issue" data-i18n-placeholder="support.form.title.placeholder" style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-primary); font-size: 0.9375rem; font-family: inherit;" />
+          </div>
+
+          <!-- Content -->
+          <div>
+            <label for="contactContent" style="display: block; margin-bottom: 8px; font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;" data-i18n="support.form.content.label">Description</label>
+            <textarea id="contactContent" required rows="6" maxlength="2000" placeholder="Describe your issue in detail. Include device model and Android version if reporting a bug." data-i18n-placeholder="support.form.content.placeholder" style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-primary); font-size: 0.9375rem; font-family: inherit; resize: vertical; min-height: 120px;"></textarea>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn--primary" style="width: 100%;" id="supportSubmitBtn" data-i18n="support.form.submit">Send via Email</button>
+
+          <p style="text-align: center; font-size: 0.8125rem; color: var(--text-secondary); margin-top: -8px;" data-i18n="support.form.note">This opens your default email client with the details pre-filled.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section--alt" id="faq">
+    <div class="container" style="max-width: 800px;">
+      <div class="section-header reveal">
+        <div class="section-header__label">FAQ</div>
+        <h2 class="section-header__title">Frequently Asked <span class="text-gradient">Questions</span></h2>
+      </div>
+
+      <!-- General -->
+      <h3 class="reveal" style="margin-bottom: 16px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">General</h3>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>What is FitQuest?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">FitQuest is an AI-powered fitness app that combines adaptive workouts, health monitoring, and cognitive fitness tools into one platform. It works 100% offline, encrypts all sensitive data with AES-256-GCM, and is available in 15 languages. Built in the Kingdom of Lesotho.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>Does FitQuest require an internet connection?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">No. FitQuest is fully offline. The only time internet is needed is for (1) downloading the app from the Play Store / App Store and (2) verifying your subscription status. All workouts, health tracking, and AI features work without connectivity.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>What devices does FitQuest support?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">FitQuest is available on Android (requires Android 8.0+ / API level 26+). iOS support is in development. The app is optimized for budget-to-mid-range devices and has been specifically tested on Samsung Galaxy A-series phones.</p>
+        </div>
+      </div>
+
+      <!-- Subscription -->
+      <h3 class="reveal" style="margin: 32px 0 16px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Subscription &amp; Billing</h3>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>How does the 14-day free trial work?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">When you first install FitQuest, you get 14 days of full premium access — no credit card required. You can use every feature: AI workouts, health monitoring, FitMind, Craft My Body, and more. After 14 days, you choose to subscribe or the premium features lock.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>What are the subscription plans?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);"><strong>Monthly:</strong> M44/month — charged monthly, cancel anytime.<br><strong>Annual:</strong> M35/month billed at M420/year — save M108 (~20% off). Both plans include full access to all features. No ads, no hidden fees.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>How do I cancel my subscription?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">Since all billing is handled by Google Play or the App Store, cancel through your device:<br><strong>Android:</strong> Google Play → Menu → Subscriptions → FitQuest → Cancel.<br><strong>iOS:</strong> Settings → Apple ID → Subscriptions → FitQuest → Cancel.<br>Your premium access continues until the end of the current billing period. Your data is never deleted when you cancel.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>How do I get a refund?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">Refunds are processed by Google Play or Apple, not by FitQuest. Visit the Google Play or Apple support pages for their refund policies. We recommend cancelling your subscription first and then requesting a refund through the platform.</p>
+        </div>
+      </div>
+
+      <!-- Privacy & Security -->
+      <h3 class="reveal" style="margin: 32px 0 16px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Privacy &amp; Security</h3>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>Is my data safe?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">Yes. FitQuest has no servers — all data stays on your device. Sensitive health data (heart rate, sleep, AI conversations) is encrypted with AES-256-GCM. Access requires biometric authentication (fingerprint/face) or a PBKDF2-hardened passcode. After 15 failed auth attempts, encrypted data is automatically wiped.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>Does FitQuest sell my data?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">No. We don't sell, share, or transmit any user data. We literally cannot — we have no servers to receive it. There are no analytics SDKs, no ad trackers, and no data brokers. Your data is yours and only yours.</p>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>How do I delete my data?</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <p style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">Three options: (1) Use the in-app Delete Account feature in Settings. (2) Uninstall the app — this removes all data. (3) For selective deletion, manage data through the app's settings screens. See our <a href="delete-account.html">Data Deletion</a> page for detailed instructions.</p>
+        </div>
+      </div>
+
+      <!-- Troubleshooting -->
+      <h3 class="reveal" style="margin: 32px 0 16px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);">Troubleshooting</h3>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>The app is crashing or not loading</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <div style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">
+            <ol style="padding-left: 18px;">
+              <li>Force-close the app and reopen it.</li>
+              <li>Ensure you're running the latest version from Google Play.</li>
+              <li>Clear the app cache: Settings → Apps → FitQuest → Storage → Clear Cache.</li>
+              <li>Restart your device.</li>
+              <li>If the issue persists, email us at <a href="mailto:fitquestsupp0rt@gmail.com">fitquestsupp0rt@gmail.com</a> with your device model and Android version.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>Steps aren't counting correctly</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <div style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">
+            <ol style="padding-left: 18px;">
+              <li>Ensure FitQuest has permission to access motion sensors (Settings → Apps → FitQuest → Permissions).</li>
+              <li>If using Health Connect, make sure FitQuest has step count read permission.</li>
+              <li>Check that battery optimization isn't killing background processes: Settings → Battery → FitQuest → Unrestricted.</li>
+              <li>FitQuest uses sensor fusion (accelerometer + gyroscope) — accuracy may vary by device hardware.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card faq-item reveal" style="margin-bottom: 12px; cursor: pointer;" onclick="this.classList.toggle('faq-open')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>My subscription isn't being recognized</strong>
+          <span class="faq-toggle" style="font-size: 1.25rem; transition: transform 0.3s;">+</span>
+        </div>
+        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.3s; margin-top: 0;">
+          <div style="padding-top: 12px; font-size: 0.875rem; color: var(--text-secondary);">
+            <ol style="padding-left: 18px;">
+              <li>Ensure you have an active internet connection (needed for subscription verification only).</li>
+              <li>Check your subscription status in Google Play → Subscriptions.</li>
+              <li>Force-close and reopen FitQuest.</li>
+              <li>If you subscribed on a different Google account, ensure the correct account is active on your device.</li>
+              <li>Contact us at <a href="mailto:fitquestsupp0rt@gmail.com">fitquestsupp0rt@gmail.com</a> if the issue continues.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="cta-section__bg"></div>
+    <div class="container">
+      <div class="cta-section__content reveal--scale">
+        <h2 style="margin-bottom: 12px;">Still Need <span class="text-gradient">Help</span>?</h2>
+        <p style="margin-bottom: 32px; font-size: 0.9375rem;">Our team is here for you. Email us and we'll get back to you within 48 hours.</p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <a href="#contact-form" class="btn btn--primary btn--lg" data-i18n="support.cta.contact">Contact Support</a>
+          <a href="delete-account.html" class="btn btn--outline btn--lg" data-i18n="support.cta.delete">Data Deletion Guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a href="index.html" class="nav__logo" style="margin-bottom: 6px;">
+            <div class="nav__logo-icon">⚡</div>
+            FitQuest
+          </a>
+          <p class="footer__brand-desc">Train your body and sharpen your mind with AI-powered adaptive fitness. Privacy-first, offline-first, proudly built in the Kingdom of Lesotho.</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">Product</h4>
+          <a href="index.html#features" class="footer__link">Features</a>
+          <a href="index.html#pricing" class="footer__link">Pricing</a>
+          <a href="index.html#download" class="footer__link">Download</a>
+          <a href="about.html" class="footer__link">About</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Legal</h4>
+          <a href="privacy.html" class="footer__link">Privacy Policy</a>
+          <a href="terms.html" class="footer__link">Terms of Service</a>
+          <a href="delete-account.html" class="footer__link">Delete Account</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Support</h4>
+          <a href="support.html" class="footer__link">Help Center</a>
+          <a href="mailto:fitquestsupp0rt@gmail.com" class="footer__link">Email Support</a>
+          <a href="support.html#faq" class="footer__link">FAQ</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="footer__copy">&copy; 2026 fitquest.dev &middot; Kingdom of Lesotho</span>
+        <div class="footer__bottom-links">
+          <a href="privacy.html" class="footer__bottom-link">Privacy</a>
+          <a href="terms.html" class="footer__bottom-link">Terms</a>
+          <a href="delete-account.html" class="footer__bottom-link">Data Deletion</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  (function() {
+    var form = document.getElementById('supportForm');
+    if (!form) return;
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var category = document.getElementById('contactCategory').value;
+      var title = document.getElementById('contactTitle').value.trim();
+      var content = document.getElementById('contactContent').value.trim();
+      if (!category || !title || !content) return;
+      var subject = encodeURIComponent('[' + category + '] ' + title);
+      var body = encodeURIComponent(
+        'Category: ' + category + '\n' +
+        'Subject: ' + title + '\n\n' +
+        content + '\n\n---\n' +
+        'Sent from fitquest.dev/support'
+      );
+      window.location.href = 'mailto:fitquestsupp0rt@gmail.com?subject=' + subject + '&body=' + body;
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -23,6 +23,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  withRepeat,
+  withSequence,
   Easing,
   FadeIn,
   FadeInDown,
@@ -35,7 +37,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
+import { haptic } from '../../utils/haptics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -92,6 +96,7 @@ export const GlassCard = memo(function GlassCard({
         },
         style,
       ]}
+      accessibilityRole={onPress ? undefined : 'none'}
     >
       {children}
     </Animated.View>
@@ -131,7 +136,7 @@ export function GradientHeader({ title, subtitle, icon, rightContent }: Gradient
   const { theme } = useTheme();
 
   return (
-    <Animated.View entering={FadeIn.duration(150)}>
+    <Animated.View entering={FadeIn.duration(150)} accessibilityRole="header">
       <View
         style={[
           styles.gradientHeader,
@@ -170,17 +175,36 @@ export function PulseDot({
   size = 8, 
   active = true 
 }: { color?: string; size?: number; active?: boolean }) {
-  // No idle animations - static dot only
+  const haloOpacity = useSharedValue(active ? 0.4 : 0);
+
+  useEffect(() => {
+    if (active) {
+      haloOpacity.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.3, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+        ),
+        -1, true,
+      );
+    } else {
+      haloOpacity.value = withTiming(0, { duration: 200 });
+    }
+  }, [active]);
+
+  const haloStyle = useAnimatedStyle(() => ({
+    opacity: haloOpacity.value,
+  }));
+
   return (
     <View style={styles.pulseDotContainer}>
       {!!active && (
-        <View
-          style={{
-            width: size * 2,
-            height: size * 2,
-            borderRadius: size,
-            backgroundColor: color + '25',
-          }}
+        <Animated.View
+          style={[{
+            width: size * 2.5,
+            height: size * 2.5,
+            borderRadius: size * 1.25,
+            backgroundColor: color + '30',
+          }, haloStyle]}
         />
       )}
       <View
@@ -313,7 +337,7 @@ export const GradientButton = memo(function GradientButton({
         activeOpacity={1}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        onPress={onPress}
+        onPress={() => { haptic('buttonPress'); onPress(); }}
         disabled={disabled}
         accessibilityRole="button"
         accessibilityLabel={title}
@@ -330,9 +354,9 @@ export const GradientButton = memo(function GradientButton({
           ]}
         >
           {!!icon && (
-            <MaterialCommunityIcons name={icon} size={fontSize + 4} color={theme.colors.text} style={{ marginRight: 8 }} />
+            <MaterialCommunityIcons name={icon} size={fontSize + 4} color="#FFFFFF" style={{ marginRight: 8 }} />
           )}
-          <Text style={[styles.gradientButtonText, { fontSize, color: theme.colors.text }]}>{title}</Text>
+          <Text style={[styles.gradientButtonText, { fontSize, color: '#FFFFFF' }]}>{title}</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -368,7 +392,7 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
   return (
     <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.weekCalendar}>
       {weekDays.map((day, i) => {
-        const dateStr = day.toISOString().split('T')[0];
+        const dateStr = day.toISOString().split('T')[0]!;
         const isToday = today.toISOString().split('T')[0] === dateStr;
         const isActive = activeDate.toISOString().split('T')[0] === dateStr;
         const hasWorkout = workoutDates.includes(dateStr);
@@ -441,37 +465,47 @@ export function ProgressRing({
 }: ProgressRingProps) {
   const { theme } = useTheme();
   const ringColor = color || theme.colors.accent;
+  const clampedProgress = Math.min(Math.max(progress, 0), 1);
+  const progressPercent = Math.round(clampedProgress * 100);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - Math.min(progress, 1));
+  const strokeDashoffset = circumference * (1 - clampedProgress);
 
   return (
-    <Animated.View entering={ZoomIn.delay(200).duration(150)} style={{ width: size, height: size }}>
+    <Animated.View
+      entering={ZoomIn.delay(200).duration(150)}
+      style={{ width: size, height: size }}
+      accessibilityRole="progressbar"
+      accessibilityLabel={`Progress: ${progressPercent}%`}
+      accessibilityValue={{ min: 0, max: 100, now: progressPercent }}
+    >
+      <Svg width={size} height={size}>
+        {/* Background ring */}
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        {/* Progress arc */}
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={ringColor}
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={`${circumference}`}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </Svg>
       <View style={{ position: 'absolute', width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
         {children}
       </View>
-      {/* Background ring */}
-      <View style={{
-        width: size, height: size, borderRadius: size / 2,
-        borderWidth: strokeWidth,
-        borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-      }} />
-      {/* Progress arc (simplified using border trick) */}
-      <View
-        style={{
-          position: 'absolute',
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth: strokeWidth,
-          borderColor: 'transparent',
-          borderTopColor: ringColor,
-          borderRightColor: progress > 0.25 ? ringColor : 'transparent',
-          borderBottomColor: progress > 0.5 ? ringColor : 'transparent',
-          borderLeftColor: progress > 0.75 ? ringColor : 'transparent',
-          transform: [{ rotate: '-90deg' }],
-        }}
-      />
     </Animated.View>
   );
 }
@@ -513,9 +547,12 @@ interface AnimatedListItemProps {
   index: number;
   style?: ViewStyle;
   onPress?: () => void;
+  accessibilityRole?: 'button' | 'link' | 'none';
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
-export function AnimatedListItem({ children, index, style, onPress }: AnimatedListItemProps) {
+export function AnimatedListItem({ children, index, style, onPress, accessibilityRole: a11yRole, accessibilityLabel, accessibilityHint }: AnimatedListItemProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -526,7 +563,7 @@ export function AnimatedListItem({ children, index, style, onPress }: AnimatedLi
   const content = (
     <Animated.View style={animatedStyle}>
       <Animated.View
-        entering={FadeInRight.delay(index * 40).duration(150)}
+        entering={FadeIn.delay(Math.min(index * 30, 200)).duration(120)}
         style={style}
       >
         {children}
@@ -541,7 +578,9 @@ export function AnimatedListItem({ children, index, style, onPress }: AnimatedLi
         onPressIn={() => { scale.value = withTiming(0.98, { duration: 120 }); }}
         onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
         onPress={onPress}
-        accessibilityRole="button"
+        accessibilityRole={a11yRole || "button"}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
       >
         {content}
       </TouchableOpacity>

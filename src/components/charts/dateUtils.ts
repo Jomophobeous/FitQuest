@@ -23,13 +23,13 @@ export function parseISO(dateStr: string): Date {
 export function formatDate(date: Date, pattern: string): string {
   switch (pattern) {
     case 'EEE':
-      return DAY_NAMES_SHORT[date.getDay()];
+      return DAY_NAMES_SHORT[date.getDay()]!;
     case 'd':
       return String(date.getDate());
     case 'MMM d':
       return `${MONTH_NAMES_SHORT[date.getMonth()]} ${date.getDate()}`;
     case 'yyyy-MM-dd':
-      return date.toISOString().split('T')[0];
+      return date.toISOString().split('T')[0]!;
     case 'MMMM yyyy':
       return `${MONTH_NAMES_FULL[date.getMonth()]} ${date.getFullYear()}`;
     default:

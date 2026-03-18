@@ -48,3 +48,20 @@ agents/alfred/state/*.json
 # Python cache artifacts
 __pycache__/
 *.pyc
+
+# Personal profile (private — do not push)
+PERSONAL_PROFILE.md
+
+# Release keystore (DO NOT COMMIT)
+fitquest-release.keystore
+
+# Release keystore (DO NOT COMMIT)
+fitquest-release.keystore
+
+# Build logs & artifacts
+build.log
+build-r8.log
+*.hprof
+
+# Workspace repos (external exercise content)
+workspace-repos/

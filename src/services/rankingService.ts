@@ -299,7 +299,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
  * Get the current rank for a given level
  */
 export function getCurrentRank(level: number): RankMilestone {
-  let currentRank = RANK_MILESTONES[0];
+  let currentRank = RANK_MILESTONES[0]!;
   for (const milestone of RANK_MILESTONES) {
     if (level >= milestone.level) {
       currentRank = milestone;
@@ -331,7 +331,7 @@ export function getTier(level: number): RankTier {
       return tier;
     }
   }
-  return RANK_TIERS[RANK_TIERS.length - 1]; // Default to highest tier
+  return RANK_TIERS[RANK_TIERS.length - 1]!; // Default to highest tier
 }
 
 /**
@@ -366,6 +366,122 @@ export function getUserRankInfo(level: number): UserRankInfo {
     milestonesAchieved,
     allRanks: RANK_MILESTONES,
   };
+}
+
+// ============================================
+// LEVEL-UP QUOTES — unique quote for every level
+// ============================================
+
+const LEVEL_QUOTES: string[] = [
+  '"The secret of getting ahead is getting started." — Mark Twain',
+  '"It does not matter how slowly you go as long as you do not stop." — Confucius',
+  '"The body achieves what the mind believes." — Napoleon Hill',
+  '"Strength does not come from the body. It comes from the will." — Gandhi',
+  '"We are what we repeatedly do. Excellence is not an act, but a habit." — Aristotle',
+  '"The only bad workout is the one that didn\'t happen."',
+  '"Fall seven times, stand up eight." — Japanese proverb',
+  '"Your body can stand almost anything. It\'s your mind you have to convince."',
+  '"The pain you feel today will be the strength you feel tomorrow."',
+  '"Discipline is choosing between what you want now and what you want most."',
+  '"No matter how slow you go, you are still lapping everybody on the couch."',
+  '"The only person you are destined to become is the person you decide to be." — Emerson',
+  '"Don\'t count the days, make the days count." — Muhammad Ali',
+  '"Success is not final, failure is not fatal: it is the courage to continue that counts." — Churchill',
+  '"The harder the battle, the sweeter the victory." — Les Brown',
+  '"You miss 100% of the shots you don\'t take." — Wayne Gretzky',
+  '"Believe you can and you\'re halfway there." — Theodore Roosevelt',
+  '"What seems impossible today will one day become your warm-up."',
+  '"The greatest glory in living lies not in never falling, but in rising every time we fall." — Mandela',
+  '"Sweat is fat crying."',
+  '"Push yourself, because no one else is going to do it for you."',
+  '"A champion is defined not by their wins but by how they recover when they fall."',
+  '"The only limit is your mind."',
+  '"Train insane or remain the same."',
+  '"Success usually comes to those who are too busy to be looking for it." — Thoreau',
+  '"If you want something you\'ve never had, you must be willing to do something you\'ve never done."',
+  '"The difference between try and triumph is a little \'umph\'."',
+  '"Energy and persistence conquer all things." — Benjamin Franklin',
+  '"It always seems impossible until it\'s done." — Nelson Mandela',
+  '"No citizen has a right to be an amateur in the matter of physical training." — Socrates',
+  '"The iron never lies." — Henry Rollins',
+  '"What hurts today makes you stronger tomorrow."',
+  '"Action is the foundational key to all success." — Pablo Picasso',
+  '"Do something today that your future self will thank you for."',
+  '"Motivation is what gets you started. Habit is what keeps you going."',
+  '"You don\'t have to be great to start, but you have to start to be great." — Zig Ziglar',
+  '"The clock is ticking. Are you becoming the person you want to be?"',
+  '"Strive for progress, not perfection."',
+  '"The mind is the limit. As long as the mind can envision it, you can achieve it." — Arnold',
+  '"Tough times don\'t last. Tough people do." — Robert Schuller',
+  '"Champions aren\'t made in gyms. They are made from something deep inside." — Ali',
+  '"I fear not the man who has practiced 10,000 kicks once, but the man who has practiced one kick 10,000 times." — Bruce Lee',
+  '"He who conquers himself is the mightiest warrior." — Confucius',
+  '"Today I will do what others won\'t, so tomorrow I can accomplish what others can\'t."',
+  '"Be stronger than your strongest excuse."',
+  '"The last three or four reps is what makes the muscle grow." — Arnold Schwarzenegger',
+  '"You are one workout away from a good mood."',
+  '"The only way to define your limits is by going beyond them." — Arthur C. Clarke',
+  '"Dead last finish is greater than did not finish, which trumps did not start."',
+  '"Make yourself proud."',
+  '"When you feel like quitting, think about why you started."',
+  '"Your health is an investment, not an expense."',
+  '"Endurance is not just the ability to bear a hard thing, but to turn it into glory." — William Barclay',
+  '"If it doesn\'t challenge you, it won\'t change you."',
+  '"Rise up, start fresh, see the bright opportunity in each new day."',
+  '"Strength grows in the moments when you think you can\'t go on but you keep going."',
+  '"The real workout starts when you want to stop."',
+  '"Don\'t wish for it, work for it."',
+  '"Your body is a reflection of your lifestyle."',
+  '"The best project you\'ll ever work on is you."',
+  '"A year from now you will wish you had started today."',
+  '"Great things never come from comfort zones."',
+  '"Sore today, strong tomorrow."',
+  '"Excuses don\'t burn calories."',
+  '"Small daily improvements over time lead to stunning results."',
+  '"Every champion was once a contender that refused to give up." — Rocky Balboa',
+  '"Fitness is not about being better than someone else. It\'s about being better than you used to be."',
+  '"You\'re only one workout away from a good mood."',
+  '"Wake up with determination. Go to bed with satisfaction."',
+  '"The only impossible journey is the one you never begin." — Tony Robbins',
+  '"One step at a time. One rep at a time. One day at a time."',
+  '"Success is walking from failure to failure with no loss of enthusiasm." — Churchill',
+  '"Your potential is endless. Go do what you were created to do."',
+  '"If you\'re tired of starting over, stop giving up."',
+  '"The will to win, the desire to succeed, the urge to reach your full potential."',
+  '"Your future is created by what you do today, not tomorrow."',
+  '"Don\'t stop until you\'re proud."',
+  '"The pain of discipline is nothing like the pain of disappointment." — Justin Langer',
+  '"Doubt kills more dreams than failure ever will."',
+  '"It\'s not about having time, it\'s about making time."',
+  '"Be the energy you want to attract."',
+  '"You don\'t find willpower; you create it."',
+  '"If you still look good after your workout, you didn\'t train hard enough."',
+  '"Results happen over time, not overnight. Work hard, stay consistent, and be patient."',
+  '"What we achieve inwardly will change outer reality." — Plutarch',
+  '"Train like a beast, look like a beauty."',
+  '"The only workout you\'ll regret is the one you didn\'t do."',
+  '"Hard work beats talent when talent doesn\'t work hard."',
+  '"Rome was not built in a day, but they worked on it every single day."',
+  '"You are so much stronger than you think."',
+  '"Dream big. Start small. Act now."',
+  '"Be patient with yourself. Self-growth is tender."',
+  '"Respect your body. It\'s the only one you get."',
+  '"Don\'t limit your challenges. Challenge your limits."',
+  '"Mind over matter. If you don\'t mind, it doesn\'t matter."',
+  '"Once you learn to quit, it becomes a habit." — Vince Lombardi',
+  '"Suffer the pain of discipline or suffer the pain of regret."',
+  '"Nothing will work unless you do." — Maya Angelou',
+  '"I hated every minute of training, but I said: Don\'t quit. Suffer now and live the rest of your life as a champion." — Ali',
+  '"Persistence can change failure into extraordinary achievement." — Matt Biondi',
+  '"The difference between a successful person and others is not a lack of strength or knowledge, but a lack of will." — Vince Lombardi',
+];
+
+/**
+ * Get a deterministic motivational quote for any given level.
+ * Returns a unique quote per level, cycling through the pool.
+ */
+export function getLevelQuote(level: number): string {
+  return LEVEL_QUOTES[(level - 1) % LEVEL_QUOTES.length]!;
 }
 
 /**

@@ -33,6 +33,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import FitQuestLogo from '../src/components/FitQuestLogo';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -89,12 +90,13 @@ export default function LoginScreen() {
     process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
   );
 
-  // Google OAuth config - provide empty strings as fallback to prevent hook crash
-  // The hook requires at least one client ID; empty strings are valid but won't work
+  // Google OAuth config — provide placeholder client IDs to prevent hook crash.
+  // The hook requires platform-specific client IDs; placeholders prevent the
+  // "androidClientId must be defined" error but won't trigger real auth.
   const [, googleResponse, promptGoogleSignIn] = Google.useIdTokenAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'disabled',
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || undefined,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || undefined,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || 'disabled',
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'disabled',
   });
 
   const isDark = theme.isDark;
@@ -320,8 +322,10 @@ export default function LoginScreen() {
         await promptBiometric();
         return;
       }
-      // No auth method set up - allow direct access for first-time offline users
-      router.replace('/onboarding');
+      // No auth method — check if onboarding already done
+      const { getAppState: getState } = require('../src/database/service');
+      const onboardingDone = await getState('onboarding_complete').catch(() => null);
+      router.replace(onboardingDone === 'true' ? '/dashboard' : '/onboarding');
     } catch (err: any) {
       setError(err?.message || 'Failed to start offline mode');
     }
@@ -412,7 +416,7 @@ export default function LoginScreen() {
           {/* ── Logo & Branding ── */}
           <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.brandSection}>
             <View style={[styles.logoBg, { backgroundColor: accentColor + '12' }]}>
-              <MaterialCommunityIcons name="lightning-bolt" size={48} color={accentColor} />
+              <FitQuestLogo size={56} showText={false} />
             </View>
             <Text style={[styles.appName, { color: theme.colors.text }]}>FitQuest</Text>
             <Text style={[styles.tagline, { color: theme.colors.textMuted }]}>
@@ -423,7 +427,7 @@ export default function LoginScreen() {
           {/* ── Biometric Mode ── */}
           {mode === 'biometric' && (
             <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-              <TouchableOpacity onPress={promptBiometric} activeOpacity={0.8}>
+              <TouchableOpacity onPress={promptBiometric} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Unlock with biometrics">
                 <Animated.View style={[styles.biometricBtn, pulseStyle]}>
                   <LinearGradient
                     colors={[accentColor + '20', accentColor + '08']}
@@ -502,6 +506,8 @@ export default function LoginScreen() {
                             key={ci}
                             style={styles.numpadBtn}
                             onPress={() => setPasscode(p => p.slice(0, -1))}
+                            accessibilityRole="button"
+                            accessibilityLabel="Delete last digit"
                           >
                             <MaterialCommunityIcons name="backspace-outline" size={24} color={theme.colors.textMuted} />
                           </TouchableOpacity>
@@ -522,6 +528,8 @@ export default function LoginScreen() {
                               }, 100);
                             }
                           }}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Digit ${digit}`}
                         >
                           <Text style={[styles.numpadDigit, { color: theme.colors.text }]}>{digit}</Text>
                         </TouchableOpacity>
@@ -599,6 +607,8 @@ export default function LoginScreen() {
                 onPress={handleEmailSignIn}
                 disabled={submitting}
                 activeOpacity={0.9}
+                accessibilityRole="button"
+                accessibilityLabel="Sign in"
               >
                 {submitting ? (
                   <ActivityIndicator color="#000" />
@@ -608,24 +618,24 @@ export default function LoginScreen() {
               </TouchableOpacity>
 
               <View style={styles.socialWrap}>
-                {/* Continue Offline button - shown prominently when no backend */}
-                {oauthDisabled && (
-                  <TouchableOpacity
-                    style={[
-                      styles.socialBtn,
-                      {
-                        backgroundColor: theme.colors.accent + '20',
-                        borderColor: theme.colors.accent,
-                        borderWidth: 1,
-                      },
-                    ]}
-                    onPress={handleContinueOffline}
-                    activeOpacity={0.9}
-                  >
-                    <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
-                    <Text style={[styles.socialBtnText, { color: theme.colors.accent }]}>{t('login.continueOffline')}</Text>
-                  </TouchableOpacity>
-                )}
+                {/* Continue Offline button - always visible for offline-first app */}
+                <TouchableOpacity
+                  style={[
+                    styles.socialBtn,
+                    {
+                      backgroundColor: theme.colors.accent + '20',
+                      borderColor: theme.colors.accent,
+                      borderWidth: 1,
+                    },
+                  ]}
+                  onPress={handleContinueOffline}
+                  activeOpacity={0.9}
+                  accessibilityRole="button"
+                  accessibilityLabel="Continue offline"
+                >
+                  <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
+                  <Text style={[styles.socialBtnText, { color: theme.colors.accent }]}>{t('login.continueOffline')}</Text>
+                </TouchableOpacity>
 
                 <TouchableOpacity
                   style={[
@@ -639,6 +649,8 @@ export default function LoginScreen() {
                   onPress={handleGoogleSignIn}
                   disabled={socialSubmitting || oauthDisabled}
                   activeOpacity={0.9}
+                  accessibilityRole="button"
+                  accessibilityLabel="Sign in with Google"
                 >
                   <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
                   <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>{t('login.continueGoogle')}</Text>
@@ -657,6 +669,8 @@ export default function LoginScreen() {
                     onPress={handleAppleSignIn}
                     disabled={socialSubmitting || oauthDisabled}
                     activeOpacity={0.9}
+                    accessibilityRole="button"
+                    accessibilityLabel="Sign in with Apple"
                   >
                     <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />
                     <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>{t('login.continueApple')}</Text>

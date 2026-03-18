@@ -16,10 +16,10 @@ import {
   Text,
   TouchableOpacity,
   Modal,
-  SafeAreaView,
   StyleSheet,
   Vibration,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -56,6 +56,8 @@ interface RestTimerOverlayProps {
   remaining: number;
   /** Next exercise (undefined when last) */
   nextExercise?: NextExerciseInfo;
+  /** Current workout phase — drives colour & messaging */
+  phase?: 'warmup' | 'main' | 'cooldown';
   onSkip: () => void;
   onExtend: (seconds: number) => void;
 }
@@ -73,6 +75,7 @@ export default function RestTimerOverlay({
   formattedRemaining,
   remaining,
   nextExercise,
+  phase = 'main',
   onSkip,
   onExtend,
 }: RestTimerOverlayProps) {
@@ -135,8 +138,16 @@ export default function RestTimerOverlay({
     }
   }, [visible, remaining]);
 
-  // ── Ring colour shift in last 5 s ──
-  const ringColor = remaining <= 5 ? theme.colors.error : theme.colors.warning;
+  // ── Ring colour: phase-aware with urgency shift in last 5 s ──
+  const phaseColor = phase === 'warmup' ? theme.colors.success
+    : phase === 'cooldown' ? theme.colors.blue
+    : theme.colors.accent;
+  const ringColor = remaining <= 5 ? theme.colors.error : phaseColor;
+
+  // Phase-specific rest label
+  const restLabelText = phase === 'warmup' ? (t('fitquest.getReady') ?? 'GET READY')
+    : phase === 'cooldown' ? (t('fitquest.recover') ?? 'RECOVER')
+    : (t('fitquest.restTime') ?? 'REST');
 
   if (!visible) return null;
 
@@ -170,7 +181,7 @@ export default function RestTimerOverlay({
                 {formattedRemaining}
               </Text>
               <Text style={[styles.restLabel, { color: theme.colors.textMuted }]}>
-                {t('fitquest.restTime') ?? 'REST'}
+                {restLabelText}
               </Text>
             </CountdownRing>
           </Animated.View>

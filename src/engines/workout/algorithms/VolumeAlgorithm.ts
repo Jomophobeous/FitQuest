@@ -22,7 +22,7 @@ import {
  */
 export function getVolumeLandmarks(muscle: TargetMuscle): VolumeLandmarks {
   const size = getMuscleSize(muscle);
-  return DEFAULT_VOLUME_LANDMARKS[size];
+  return DEFAULT_VOLUME_LANDMARKS[size]!;
 }
 
 /**

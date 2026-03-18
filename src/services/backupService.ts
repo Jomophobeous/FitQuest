@@ -70,7 +70,12 @@ async function restoreDatabaseFromBase64(dbBase64: string): Promise<void> {
 }
 
 async function decodeEncryptedBackup(rawJson: string, passphrase?: string): Promise<{ db_base64: string }> {
-  const parsed = JSON.parse(rawJson) as Partial<EncryptedBackupFile>;
+  let parsed: Partial<EncryptedBackupFile>;
+  try {
+    parsed = JSON.parse(rawJson) as Partial<EncryptedBackupFile>;
+  } catch {
+    throw new Error('[Backup] Invalid backup file (malformed JSON)');
+  }
   if (!parsed?.payload) {
     throw new Error('[Backup] Invalid backup file (missing payload)');
   }
@@ -86,7 +91,12 @@ async function decodeEncryptedBackup(rawJson: string, passphrase?: string): Prom
     throw new Error('[Backup] Unsupported backup payload version');
   }
 
-  const decoded = JSON.parse(decrypted) as { db_base64?: string };
+  let decoded: { db_base64?: string };
+  try {
+    decoded = JSON.parse(decrypted) as { db_base64?: string };
+  } catch {
+    throw new Error('[Backup] Invalid backup payload (malformed JSON after decryption)');
+  }
   if (!decoded?.db_base64) {
     throw new Error('[Backup] Invalid backup payload (missing db_base64)');
   }

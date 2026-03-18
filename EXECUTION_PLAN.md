@@ -3,6 +3,18 @@ Generated: 2026-02-11
 Target Readiness: 85/100
 Timeline: 8 Weeks
 
+## Runtime Sequence
+
+Use this sequence for every major phase going forward.
+
+1. Define or activate a named hardening mini-phase before doing substantial hardening or validation work.
+2. Record that mini-phase in `docs/HARDENING_MINI_PHASES.md` with status, objective, verification commands, and exit criteria.
+3. Execute the work and capture verification evidence before moving the mini-phase to complete.
+4. Update `DEVELOPMENT_LOG.md` with what changed, what was validated, and what remains open.
+5. Keep at most one active hardening mini-phase per major phase unless parallel work is explicitly intended.
+
+Current active mini-phase: `P0.H2 - Native Validation Stabilization`
+
 ## Current State Analysis
 
 Production readiness is blocked by schema drift (FitMind), security policy violations (health data plaintext, AsyncStorage usage, non-AES-GCM crypto), and governance gaps (raw SQL outside approved modules). CI exists but lint/test scripts are missing. Monetization scaffolding is present but not production-ready.

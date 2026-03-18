@@ -293,15 +293,15 @@ class HealthKitAdapter implements IHealthAdapter {
     const dailyMap = new Map<string, DailyAggregate>();
 
     for (const record of steps) {
-      const date = record.startTime.toISOString().split('T')[0];
-      const existing = dailyMap.get(date) || { date };
+      const date = record.startTime.toISOString().split('T')[0]!;
+      const existing = dailyMap.get(date) || { date, steps: 0, caloriesBurned: 0 };
       existing.steps = (existing.steps || 0) + record.value;
       dailyMap.set(date, existing);
     }
 
     for (const record of calories) {
-      const date = record.startTime.toISOString().split('T')[0];
-      const existing = dailyMap.get(date) || { date };
+      const date = record.startTime.toISOString().split('T')[0]!;
+      const existing = dailyMap.get(date) || { date, steps: 0, caloriesBurned: 0 };
       existing.caloriesBurned = (existing.caloriesBurned || 0) + record.value;
       dailyMap.set(date, existing);
     }
@@ -318,7 +318,7 @@ class HealthKitAdapter implements IHealthAdapter {
     const records = await this.readRecords<T>(category, { start: weekAgo, end: now });
     if (records.length === 0) return null;
 
-    return records.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
+    return records.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0] ?? null;
   }
 
   // ============================================

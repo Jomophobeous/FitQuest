@@ -1,14 +1,13 @@
 /**
- * ModelLoader — Async bundled model loader with tiered loading strategy
+ * ModelLoader — Async bundled model loader
  *
- * FitQuest 2.0 MAX — models loaded asynchronously via expo-asset:
- *   Tier 1 (Core):       Intent + Coach + Activity — loaded at startup
- *   Tier 2 (Cognitive):  Summarizer + Search — loaded on FitMind open
- *   Tier 3 (Multimodal): Voice + AR — loaded on voice/camera activation
+ * Active modules:
+ *   - DeepActivityClassifier: CNN+BiLSTM, 9 activities (loaded on Move tab)
+ *   - NeuralSummarizer:       BERT extractive summarization (loaded on FitMind open)
+ *   - SemanticSearch:          MiniLM embeddings + HNSW index (loaded on FitMind open)
+ *   - KnowledgeGraph:         Entity & relationship extraction (no model)
  *
- * Model files use .model extension so Metro treats them as BINARY ASSETS
- * (not source code). This prevents Metro from parsing 18MB+ JSON files
- * synchronously on the JS thread, which would freeze/crash the app.
+ * Model files use .model extension so Metro treats them as BINARY ASSETS.
  *
  * Flow: require('./file.model') → asset ID (number)
  *       → Asset.fromModule(id) → downloadAsync() → localUri
@@ -112,61 +111,15 @@ export type TierStatus = {
 };
 
 const tierState: Record<string, TierStatus> = {
-  core: { loaded: false, modules: {}, loadTimeMs: 0 },
   cognitive: { loaded: false, modules: {}, loadTimeMs: 0 },
-  multimodal: { loaded: false, modules: {}, loadTimeMs: 0 },
 };
-
-/**
- * Tier 1 — Core AI. Loaded SEQUENTIALLY at app startup to avoid OOM.
- * Intent Router → FitCoach → Activity Classifier
- * Each model is loaded, parsed, then the next begins.
- */
-export async function loadCoreAI(): Promise<TierStatus> {
-  if (tierState.core.loaded) return tierState.core;
-  const start = Date.now();
-  const modules: Record<string, boolean> = {};
-
-  // Load sequentially to avoid parallel JSON parsing of large models
-  // (18MB + 13MB + 1MB parsed in parallel would spike memory and crash)
-  try {
-    const { neuralIntentRouter } = await import('./intent/NeuralIntentRouter');
-    modules['neuralIntent'] = await neuralIntentRouter.initialize();
-    console.log(`[AI] Intent Router: ${modules['neuralIntent'] ? '✓' : '✗'}`);
-  } catch (e) {
-    modules['neuralIntent'] = false;
-    console.warn('[AI] Intent Router failed:', e);
-  }
-
-  try {
-    const { transformerFitCoach } = await import('./coach/TransformerFitCoach');
-    modules['transformerCoach'] = await transformerFitCoach.initialize();
-    console.log(`[AI] FitCoach: ${modules['transformerCoach'] ? '✓' : '✗'}`);
-  } catch (e) {
-    modules['transformerCoach'] = false;
-    console.warn('[AI] FitCoach failed:', e);
-  }
-
-  try {
-    const { deepActivityClassifier } = await import('./sensors/DeepActivityClassifier');
-    modules['deepActivity'] = await deepActivityClassifier.initialize();
-    console.log(`[AI] Activity Classifier: ${modules['deepActivity'] ? '✓' : '✗'}`);
-  } catch (e) {
-    modules['deepActivity'] = false;
-    console.warn('[AI] Activity Classifier failed:', e);
-  }
-
-  tierState.core = { loaded: true, modules, loadTimeMs: Date.now() - start };
-  console.log(`[AI] Tier 1 (Core) loaded in ${tierState.core.loadTimeMs}ms`, modules);
-  return tierState.core;
-}
 
 /**
  * Tier 2 — Cognitive AI. Loaded when FitMind opens.
  * Neural Summarizer → Semantic Search → Knowledge Graph
  */
 export async function loadCognitiveAI(): Promise<TierStatus> {
-  if (tierState.cognitive.loaded) return tierState.cognitive;
+  if (tierState.cognitive?.loaded) return tierState.cognitive;
   const start = Date.now();
   const modules: Record<string, boolean> = {};
 
@@ -189,38 +142,6 @@ export async function loadCognitiveAI(): Promise<TierStatus> {
   tierState.cognitive = { loaded: true, modules, loadTimeMs: Date.now() - start };
   console.log(`[AI] Tier 2 (Cognitive) loaded in ${tierState.cognitive.loadTimeMs}ms`, modules);
   return tierState.cognitive;
-}
-
-/**
- * Tier 3 — Multimodal AI (~2MB). Loaded on voice/camera activation.
- * Voice Interface + AR Form Checker
- */
-export async function loadMultimodalAI(): Promise<TierStatus> {
-  if (tierState.multimodal.loaded) return tierState.multimodal;
-  const start = Date.now();
-  const modules: Record<string, boolean> = {};
-
-  const results = await Promise.allSettled([
-    (async () => {
-      const { voiceInterface } = await import('./voice/VoiceInterface');
-      return ['voiceInterface', await voiceInterface.initialize()] as const;
-    })(),
-    (async () => {
-      const { arFormChecker } = await import('./ar/ARFormChecker');
-      return ['arFormChecker', await arFormChecker.initialize()] as const;
-    })(),
-  ]);
-
-  for (const result of results) {
-    if (result.status === 'fulfilled') {
-      const [name, loaded] = result.value;
-      modules[name] = loaded;
-    }
-  }
-
-  tierState.multimodal = { loaded: true, modules, loadTimeMs: Date.now() - start };
-  console.log(`[AI] Tier 3 (Multimodal) loaded in ${tierState.multimodal.loadTimeMs}ms`, modules);
-  return tierState.multimodal;
 }
 
 /**

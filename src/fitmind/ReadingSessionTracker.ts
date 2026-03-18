@@ -300,7 +300,7 @@ export class ReadingSessionTracker {
     let peakWpm = 0;
     for (let i = 0; i < this.pageTimings.length; i++) {
       const wc = this.session.pageWordCounts[i] || DEFAULT_WORDS_PER_PAGE;
-      const wpm = (wc / this.pageTimings[i]) * 60_000;
+      const wpm = (wc / this.pageTimings[i]!) * 60_000;
       if (wpm > peakWpm && wpm <= MAX_REASONABLE_WPM) {
         peakWpm = Math.round(wpm);
       }

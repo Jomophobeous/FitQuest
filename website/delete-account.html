@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FitQuest Data Deletion — How to delete your account and data. Three deletion methods explained.">
+  <meta name="theme-color" content="#0A0E17">
+  <title>Delete Account &amp; Data — FitQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="reading-progress"><div class="reading-progress__bar"></div></div>
+  <div class="nav__overlay" id="navOverlay"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">
+        <div class="nav__logo-icon">⚡</div>
+        FitQuest
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="index.html" class="nav__link">Home</a>
+        <a href="about.html" class="nav__link">About</a>
+        <a href="support.html" class="nav__link">Support</a>
+        <a href="index.html#pricing" class="nav__link">Pricing</a>
+        <a href="index.html#download" class="nav__cta">Get the App</a>
+      </div>
+      <div class="nav__right">
+        <div class="lang-selector">
+          <button class="lang-trigger" aria-label="Select language">
+            <span class="lang-trigger__globe">🌐</span>
+            <span class="lang-trigger__text">EN</span>
+            <span class="lang-trigger__chevron">▼</span>
+          </button>
+          <div class="lang-dropdown">
+            <div class="lang-dropdown__label">Available in App</div>
+            <div class="lang-option active" data-code="EN"><span class="lang-option__flag">🇬🇧</span><span class="lang-option__name">English</span></div>
+            <div class="lang-option" data-code="ST"><span class="lang-option__flag">🇱🇸</span><span class="lang-option__name">Sesotho</span></div>
+            <div class="lang-option" data-code="AF"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">Afrikaans</span></div>
+            <div class="lang-option" data-code="ZU"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiZulu</span></div>
+            <div class="lang-option" data-code="XH"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiXhosa</span></div>
+            <div class="lang-option" data-code="ES"><span class="lang-option__flag">🇪🇸</span><span class="lang-option__name">Español</span></div>
+            <div class="lang-option" data-code="FR"><span class="lang-option__flag">🇫🇷</span><span class="lang-option__name">Français</span></div>
+            <div class="lang-option" data-code="DE"><span class="lang-option__flag">🇩🇪</span><span class="lang-option__name">Deutsch</span></div>
+            <div class="lang-option" data-code="PT"><span class="lang-option__flag">🇧🇷</span><span class="lang-option__name">Português</span></div>
+            <div class="lang-option" data-code="ZH"><span class="lang-option__flag">🇨🇳</span><span class="lang-option__name">中文</span></div>
+            <div class="lang-option" data-code="JA"><span class="lang-option__flag">🇯🇵</span><span class="lang-option__name">日本語</span></div>
+            <div class="lang-option" data-code="KO"><span class="lang-option__flag">🇰🇷</span><span class="lang-option__name">한국어</span></div>
+            <div class="lang-option" data-code="AR"><span class="lang-option__flag">🇸🇦</span><span class="lang-option__name">العربية</span></div>
+            <div class="lang-option" data-code="HI"><span class="lang-option__flag">🇮🇳</span><span class="lang-option__name">हिन्दी</span></div>
+            <div class="lang-option" data-code="SW"><span class="lang-option__flag">🇰🇪</span><span class="lang-option__name">Kiswahili</span></div>
+          </div>
+        </div>
+        <div class="theme-switch" role="switch" aria-label="Toggle dark/light theme" tabindex="0">
+          <div class="theme-switch__track">
+            <span class="theme-switch__icon theme-switch__icon--moon">🌙</span>
+            <span class="theme-switch__icon theme-switch__icon--sun">☀️</span>
+          </div>
+          <div class="theme-switch__indicator"></div>
+        </div>
+        <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="legal-hero">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-header__label">Data Management</div>
+        <h1 class="section-header__title">Delete Your <span class="text-gradient">Account &amp; Data</span></h1>
+        <p class="section-header__desc">Your data, your decision. Here's how to delete everything.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+
+      <div class="glass-card reveal" style="margin-bottom: 24px; border-left: 3px solid var(--accent);">
+        <p style="font-weight: 600; margin-bottom: 6px;">🔑 Key Fact</p>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">FitQuest stores ALL data exclusively on your device. We have no servers and no cloud copies of your data. Deletion is immediate and permanent — there is no "undo" and no backup we can restore from.</p>
+      </div>
+
+      <!-- 3 Deletion Methods -->
+      <div class="section-header reveal" style="margin-bottom: 32px;">
+        <h2 style="margin-bottom: 6px;">Three Ways to Delete Your Data</h2>
+      </div>
+
+      <div class="grid grid--3" style="margin-bottom: 48px;">
+        <!-- Method 1 -->
+        <div class="glass-card reveal reveal--delay-1">
+          <div style="font-size: 36px; margin-bottom: 12px; text-align: center;">📱</div>
+          <h3 class="feature-card__title" style="text-align: center;">In-App Deletion</h3>
+          <p class="feature-card__desc" style="font-size: 0.8125rem;">Full control, selective or complete.</p>
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-top: 12px;">
+            <ol style="padding-left: 18px;">
+              <li style="padding: 3px 0;">Open FitQuest</li>
+              <li style="padding: 3px 0;">Go to <strong>Profile</strong> tab</li>
+              <li style="padding: 3px 0;">Scroll to <strong>Settings</strong></li>
+              <li style="padding: 3px 0;">Tap <strong>"Delete Account"</strong></li>
+              <li style="padding: 3px 0;">Confirm with biometric/passcode</li>
+              <li style="padding: 3px 0;">All data is permanently erased</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Method 2 -->
+        <div class="glass-card reveal reveal--delay-2">
+          <div style="font-size: 36px; margin-bottom: 12px; text-align: center;">🗑️</div>
+          <h3 class="feature-card__title" style="text-align: center;">Uninstall App</h3>
+          <p class="feature-card__desc" style="font-size: 0.8125rem;">Quickest way — removes everything.</p>
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-top: 12px;">
+            <ol style="padding-left: 18px;">
+              <li style="padding: 3px 0;">Long-press the FitQuest icon</li>
+              <li style="padding: 3px 0;">Tap <strong>"Uninstall"</strong></li>
+              <li style="padding: 3px 0;">Confirm</li>
+            </ol>
+            <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">All app data, databases, cached files, encryption keys, and preferences are removed when the app is uninstalled.</p>
+          </div>
+        </div>
+
+        <!-- Method 3 -->
+        <div class="glass-card reveal reveal--delay-3">
+          <div style="font-size: 36px; margin-bottom: 12px; text-align: center;">📧</div>
+          <h3 class="feature-card__title" style="text-align: center;">Email Request</h3>
+          <p class="feature-card__desc" style="font-size: 0.8125rem;">For help or confirmation.</p>
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-top: 12px;">
+            <p>Email <a href="mailto:fitquestsupp0rt@gmail.com">fitquestsupp0rt@gmail.com</a> with subject <strong>"Data Deletion Request"</strong>.</p>
+            <p style="margin-top: 8px;">Since we have no server-side data, we'll respond with confirmation that no data exists on our end and guide you through on-device deletion if needed.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Inventory -->
+      <div class="legal-section reveal">
+        <h2>What Gets Deleted</h2>
+        <p>When you delete your account or uninstall the app, the following data is permanently removed from your device:</p>
+        <table class="legal-table">
+          <thead>
+            <tr><th>Data Category</th><th>Storage Type</th><th>Deleted?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>User profile (sex, weight, height, goals)</td><td>SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Workout sessions &amp; exercise logs</td><td>SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Progress records &amp; streaks</td><td>SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Heart rate &amp; health metrics</td><td>Encrypted SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Sleep analysis data</td><td>Encrypted SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>AI conversation history</td><td>Encrypted SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>FitMind documents &amp; annotations</td><td>SQLite + files</td><td>Yes — permanent</td></tr>
+            <tr><td>Flashcards &amp; reading sessions</td><td>SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Health alerts &amp; anomaly logs</td><td>Encrypted SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Encryption keys</td><td>Secure Enclave</td><td>Yes — permanent</td></tr>
+            <tr><td>App preferences &amp; settings</td><td>SecureStore</td><td>Yes — permanent</td></tr>
+            <tr><td>Jog routes &amp; GPS data</td><td>SQLite</td><td>Yes — permanent</td></tr>
+            <tr><td>Craft My Body plans</td><td>SQLite</td><td>Yes — permanent</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Subscription Warning -->
+      <div class="glass-card reveal" style="margin: 32px 0; border-left: 3px solid #F4A427;">
+        <p style="font-weight: 600; margin-bottom: 6px;">⚠️ Subscription Note</p>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Deleting your data or uninstalling the app does <strong>NOT</strong> cancel your subscription. You must cancel your subscription separately through <strong>Google Play</strong> or the <strong>App Store</strong> to stop future charges.</p>
+        <div style="margin-top: 12px; font-size: 0.8125rem; color: var(--text-secondary);">
+          <p><strong>Android:</strong> Google Play → Menu → Subscriptions → FitQuest → Cancel Subscription</p>
+          <p><strong>iOS:</strong> Settings → Apple ID → Subscriptions → FitQuest → Cancel Subscription</p>
+        </div>
+      </div>
+
+      <!-- No Server Data -->
+      <div class="legal-section reveal">
+        <h2>What About Server-Side Data?</h2>
+        <p>There is none. FitQuest has <strong>no backend servers</strong>, no cloud databases, and no data warehouses. The only external service is <strong>RevenueCat</strong>, which stores an anonymous subscriber token (no personal information) for subscription verification.</p>
+        <p style="margin-top: 8px;">This means:</p>
+        <ul>
+          <li>There is nothing for us to look up or delete on our end.</li>
+          <li>We cannot recover your data after deletion — there are no backups.</li>
+          <li>When data is deleted from your device, it is gone permanently.</li>
+        </ul>
+      </div>
+
+      <!-- Recovery Warning -->
+      <div class="glass-card reveal" style="margin: 32px 0; border-left: 3px solid #EF4444;">
+        <p style="font-weight: 600; margin-bottom: 6px;">🚨 This is Irreversible</p>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Once you delete your data or uninstall FitQuest, <strong>all data is permanently gone</strong>. We have no backup, no cloud copy, and no way to recover it. This includes your workout history, health records, reading progress, flashcards, streaks, XP, and all settings. Make sure this is what you want before proceeding.</p>
+      </div>
+
+      <!-- Contact -->
+      <div class="legal-section reveal">
+        <h2>Need Help?</h2>
+        <p>If you have questions about data deletion or need assistance:</p>
+        <ul>
+          <li><strong>Email:</strong> <a href="mailto:fitquestsupp0rt@gmail.com">fitquestsupp0rt@gmail.com</a></li>
+          <li><strong>Subject:</strong> "Data Deletion Request" or "Account Help"</li>
+          <li><strong>Response time:</strong> Within 48 hours</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a href="index.html" class="nav__logo" style="margin-bottom: 6px;">
+            <div class="nav__logo-icon">⚡</div>
+            FitQuest
+          </a>
+          <p class="footer__brand-desc">Train your body and sharpen your mind with AI-powered adaptive fitness. Privacy-first, offline-first, proudly built in the Kingdom of Lesotho.</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">Product</h4>
+          <a href="index.html#features" class="footer__link">Features</a>
+          <a href="index.html#pricing" class="footer__link">Pricing</a>
+          <a href="index.html#download" class="footer__link">Download</a>
+          <a href="about.html" class="footer__link">About</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Legal</h4>
+          <a href="privacy.html" class="footer__link">Privacy Policy</a>
+          <a href="terms.html" class="footer__link">Terms of Service</a>
+          <a href="delete-account.html" class="footer__link">Delete Account</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Support</h4>
+          <a href="support.html" class="footer__link">Help Center</a>
+          <a href="mailto:fitquestsupp0rt@gmail.com" class="footer__link">Email Support</a>
+          <a href="support.html#faq" class="footer__link">FAQ</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="footer__copy">&copy; 2026 fitquest.dev &middot; Kingdom of Lesotho</span>
+        <div class="footer__bottom-links">
+          <a href="privacy.html" class="footer__bottom-link">Privacy</a>
+          <a href="terms.html" class="footer__bottom-link">Terms</a>
+          <a href="delete-account.html" class="footer__bottom-link">Data Deletion</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="js/main.js"></script>
+</body>
+</html>

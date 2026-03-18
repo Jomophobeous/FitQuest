@@ -21,9 +21,19 @@ import { getDatabase } from './schema';
 import { seedExercises } from './seed';
 import { seedExternalExercises } from './external-seed';
 import { encryptedDB } from '../security/EncryptedDatabase';
+import { initializeExerciseImages } from '../services/exerciseImageService';
 
 let initialized = false;
 let initPromise: Promise<void> | null = null;
+
+/**
+ * Reset init state so the next initializeDatabase() call runs from scratch.
+ * Call this after closeDatabase() when retrying after a failure.
+ */
+export function resetInitState(): void {
+  initialized = false;
+  initPromise = null;
+}
 
 /**
  * Initialize the database (call once at app start)
@@ -52,35 +62,35 @@ export async function initializeDatabase(): Promise<void> {
     // Initialize new module schemas (idempotent — safe to call every start)
     await encryptedDB.initialize();
 
-    // Diagnostic: verify seeding actually worked
-    const exerciseCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercises');
-    const muscleCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercise_muscles');
-    const ttCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercise_training_types');
-    console.log(`[FitQuest DB] exercises: ${exerciseCount?.count}, muscles: ${muscleCount?.count}, training_types: ${ttCount?.count}`);
+    // Initialize exercise image directory and check deployment status
+    try {
+      await initializeExerciseImages();
+    } catch (imgErr) {
+      // Non-critical — images are optional
+      console.warn('[FitQuest DB] Exercise image init skipped:', imgErr);
+    }
 
-    // Category breakdown diagnostic
-    const categoryBreakdown = await db.getAllAsync<{ category: string; count: number }>(
-      'SELECT category, COUNT(*) as count FROM exercises GROUP BY category ORDER BY category'
-    );
-    console.log(`[FitQuest DB] Category breakdown:`, JSON.stringify(categoryBreakdown));
-
-    // Training type breakdown diagnostic
-    const ttBreakdown = await db.getAllAsync<{ training_type: string; count: number }>(
-      'SELECT training_type, COUNT(*) as count FROM exercise_training_types GROUP BY training_type ORDER BY count DESC'
-    );
-    console.log(`[FitQuest DB] Training type breakdown:`, JSON.stringify(ttBreakdown));
+    // Diagnostic: verify seeding worked (single query instead of 3)
+    const counts = await db.getFirstAsync<{ ex: number; mu: number; tt: number }>(`
+      SELECT
+        (SELECT COUNT(*) FROM exercises) as ex,
+        (SELECT COUNT(*) FROM exercise_muscles) as mu,
+        (SELECT COUNT(*) FROM exercise_training_types) as tt
+    `);
+    if (__DEV__) console.log(`[FitQuest DB] exercises: ${counts?.ex}, muscles: ${counts?.mu}, training_types: ${counts?.tt}`);
 
     // If junction tables are empty but exercises exist, force a re-seed
-    if ((exerciseCount?.count ?? 0) > 0 && ((muscleCount?.count ?? 0) === 0 || (ttCount?.count ?? 0) === 0)) {
+    if ((counts?.ex ?? 0) > 0 && ((counts?.mu ?? 0) === 0 || (counts?.tt ?? 0) === 0)) {
       console.warn('[FitQuest DB] Junction tables empty — forcing re-seed');
-      await db.execAsync('DELETE FROM exercise_training_types; DELETE FROM exercise_equipment; DELETE FROM exercise_muscles; DELETE FROM exercises;');
+      await db.execAsync('DELETE FROM exercise_images; DELETE FROM exercise_training_types; DELETE FROM exercise_equipment; DELETE FROM exercise_muscles; DELETE FROM exercises;');
       await seedExercises();
+      await seedExternalExercises();
       const recount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercises');
-      console.log(`[FitQuest DB] After re-seed: ${recount?.count} exercises`);
+      if (__DEV__) console.log(`[FitQuest DB] After re-seed: ${recount?.count} exercises`);
     }
 
     initialized = true;
-    console.log('[FitQuest DB] Full database initialized (core + FitMind + encrypted)');
+    if (__DEV__) console.log('[FitQuest DB] Full database initialized (core + FitMind + encrypted)');
   } catch (error) {
     console.error('Failed to initialize database:', error);
     initPromise = null; // Reset promise on error to allow retry

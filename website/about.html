@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="About FitQuest — The story behind AI-powered fitness from the Kingdom of Lesotho. Our mission, values, and technology.">
+  <meta name="theme-color" content="#0A0E17">
+  <title>About — FitQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+  <div class="grain-overlay"></div>
+  <div class="reading-progress"><div class="reading-progress__bar"></div></div>
+  <div class="particles" id="particles"></div>
+  <div class="nav__overlay" id="navOverlay"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">
+        <div class="nav__logo-icon">⚡</div>
+        FitQuest
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="index.html" class="nav__link">Home</a>
+        <a href="about.html" class="nav__link nav__link--active">About</a>
+        <a href="support.html" class="nav__link">Support</a>
+        <a href="index.html#pricing" class="nav__link">Pricing</a>
+        <a href="index.html#download" class="nav__cta">Get the App</a>
+      </div>
+      <div class="nav__right">
+        <div class="lang-selector">
+          <button class="lang-trigger" aria-label="Select language">
+            <span class="lang-trigger__globe">🌐</span>
+            <span class="lang-trigger__text">EN</span>
+            <span class="lang-trigger__chevron">▼</span>
+          </button>
+          <div class="lang-dropdown">
+            <div class="lang-dropdown__label">Available in App</div>
+            <div class="lang-option active" data-code="EN"><span class="lang-option__flag">🇬🇧</span><span class="lang-option__name">English</span></div>
+            <div class="lang-option" data-code="ST"><span class="lang-option__flag">🇱🇸</span><span class="lang-option__name">Sesotho</span></div>
+            <div class="lang-option" data-code="AF"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">Afrikaans</span></div>
+            <div class="lang-option" data-code="ZU"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiZulu</span></div>
+            <div class="lang-option" data-code="XH"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiXhosa</span></div>
+            <div class="lang-option" data-code="ES"><span class="lang-option__flag">🇪🇸</span><span class="lang-option__name">Español</span></div>
+            <div class="lang-option" data-code="FR"><span class="lang-option__flag">🇫🇷</span><span class="lang-option__name">Français</span></div>
+            <div class="lang-option" data-code="DE"><span class="lang-option__flag">🇩🇪</span><span class="lang-option__name">Deutsch</span></div>
+            <div class="lang-option" data-code="PT"><span class="lang-option__flag">🇧🇷</span><span class="lang-option__name">Português</span></div>
+            <div class="lang-option" data-code="ZH"><span class="lang-option__flag">🇨🇳</span><span class="lang-option__name">中文</span></div>
+            <div class="lang-option" data-code="JA"><span class="lang-option__flag">🇯🇵</span><span class="lang-option__name">日本語</span></div>
+            <div class="lang-option" data-code="KO"><span class="lang-option__flag">🇰🇷</span><span class="lang-option__name">한국어</span></div>
+            <div class="lang-option" data-code="AR"><span class="lang-option__flag">🇸🇦</span><span class="lang-option__name">العربية</span></div>
+            <div class="lang-option" data-code="HI"><span class="lang-option__flag">🇮🇳</span><span class="lang-option__name">हिन्दी</span></div>
+            <div class="lang-option" data-code="SW"><span class="lang-option__flag">🇰🇪</span><span class="lang-option__name">Kiswahili</span></div>
+          </div>
+        </div>
+        <div class="theme-switch" role="switch" aria-label="Toggle dark/light theme" tabindex="0">
+          <div class="theme-switch__track">
+            <span class="theme-switch__icon theme-switch__icon--moon">🌙</span>
+            <span class="theme-switch__icon theme-switch__icon--sun">☀️</span>
+          </div>
+          <div class="theme-switch__indicator"></div>
+        </div>
+        <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" style="min-height: auto; padding: 160px 0 80px;">
+    <div class="hero__bg">
+      <div class="hero__orb hero__orb--1"></div>
+      <div class="hero__orb hero__orb--2"></div>
+    </div>
+    <div class="container">
+      <div class="section-header reveal" style="max-width: 720px; margin: 0 auto;">
+        <div class="section-header__label">Our Story</div>
+        <h1 class="section-header__title">Born in <span class="text-gradient">Lesotho</span>,<br>Built for the World</h1>
+        <p class="section-header__desc">FitQuest started with a simple question: Why isn't there a fitness app that trains your body AND your mind — one that works completely offline and never sells your data?</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Origin Story -->
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <div class="glass-card reveal" style="border-left: 3px solid var(--accent);">
+        <p style="font-size: 1.0625rem; line-height: 1.8; color: var(--text-secondary);">
+          "I grew up in Lesotho — the Mountain Kingdom. A place of breathtaking landscapes but limited access to the resources that fuel personal growth in other parts of the world. Gyms, personal trainers, health tech, cognitive science tools — they were always somewhere else, for someone else. FitQuest was born from that gap. It's the tool I needed but couldn't find. An entire ecosystem — workouts, health tracking, reading, learning — all in one app, working offline, encrypted, and free from the surveillance economy."
+        </p>
+        <div style="margin-top: 16px; font-size: 0.875rem; color: var(--accent); font-weight: 600;">— The Creator</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-header__label">What We Believe</div>
+        <h2 class="section-header__title">Values That <span class="text-gradient">Drive Us</span></h2>
+      </div>
+      <div class="grid grid--3">
+        <div class="glass-card reveal reveal--delay-1" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">🏔️</div>
+          <h3 class="feature-card__title">Accessibility</h3>
+          <p class="feature-card__desc">World-class fitness technology shouldn't require a gym membership or a fast internet connection. FitQuest works anywhere — from Maseru to Manhattan, offline and on.</p>
+        </div>
+        <div class="glass-card reveal reveal--delay-2" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">🔐</div>
+          <h3 class="feature-card__title">Privacy by Design</h3>
+          <p class="feature-card__desc">We chose to have no servers. Not because it's easier — it's harder. Because your health data belongs to you and only you. AES-256-GCM encryption seals that promise.</p>
+        </div>
+        <div class="glass-card reveal reveal--delay-3" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">🧠</div>
+          <h3 class="feature-card__title">Holistic Growth</h3>
+          <p class="feature-card__desc">Physical fitness is only half the equation. FitMind — our cognitive fitness module — trains your mind with spaced repetition, reading analytics, and AI-powered learning.</p>
+        </div>
+        <div class="glass-card reveal reveal--delay-1" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">🧬</div>
+          <h3 class="feature-card__title">Science-Backed</h3>
+          <p class="feature-card__desc">Every algorithm is grounded in published research: Mifflin-St Jeor for BMR, Karvonen for heart rate zones, Brzycki for 1RM, SM-2 for spaced repetition, Navy method for body fat.</p>
+        </div>
+        <div class="glass-card reveal reveal--delay-2" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">🇱🇸</div>
+          <h3 class="feature-card__title">Proudly African</h3>
+          <p class="feature-card__desc">Built in the Kingdom of Lesotho with pride. We believe innovation can come from anywhere — and that Africa has ideas the world needs. This is just the beginning.</p>
+        </div>
+        <div class="glass-card reveal reveal--delay-3" style="text-align: center;">
+          <div style="font-size: 44px; margin-bottom: 16px;">⚡</div>
+          <h3 class="feature-card__title">Evolution, Not Perfection</h3>
+          <p class="feature-card__desc">We don't chase perfection — we chase progress. FitQuest evolves with every update, every user's feedback, and every lesson learned. The journey is the product.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote -->
+  <section class="quote-section">
+    <div class="container">
+      <div class="quote-card reveal--scale">
+        <div class="quote-card__mark">&ldquo;</div>
+        <p class="quote-card__text">FitQuest isn't just an app I built — it's the app I use. Every morning. Every workout. Every page I read. I am my own first user, my own harshest critic, and my own biggest believer. If it's not good enough for me, it's not shipping.</p>
+        <div class="quote-card__author">— The Creator of FitQuest</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-header__label">Under the Hood</div>
+        <h2 class="section-header__title">Technology <span class="text-gradient">Stack</span></h2>
+        <p class="section-header__desc">Engineered for performance, security, and reliability on every device.</p>
+      </div>
+      <div class="grid grid--2" style="max-width: 760px; margin: 0 auto;">
+        <div class="glass-card reveal reveal--delay-1">
+          <h3 class="feature-card__title" style="font-size: 0.9375rem;">Frontend</h3>
+          <ul style="list-style: none; font-size: 0.8125rem; color: var(--text-secondary);">
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> React Native 0.83 + Expo SDK 55</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Expo Router v6 (file-based navigation)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> New Architecture (Fabric + TurboModules)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Reanimated 3 for 60fps animations</li>
+          </ul>
+        </div>
+        <div class="glass-card reveal reveal--delay-2">
+          <h3 class="feature-card__title" style="font-size: 0.9375rem;">Data &amp; Security</h3>
+          <ul style="list-style: none; font-size: 0.8125rem; color: var(--text-secondary);">
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> SQLite (on-device, 15-version schema)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> AES-256-GCM application-layer encryption</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> PBKDF2 key derivation (1000 iterations)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Biometric auth with session management</li>
+          </ul>
+        </div>
+        <div class="glass-card reveal reveal--delay-1">
+          <h3 class="feature-card__title" style="font-size: 0.9375rem;">AI &amp; Analytics</h3>
+          <ul style="list-style: none; font-size: 0.8125rem; color: var(--text-secondary);">
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> On-device AI (template + context injection)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Statistical anomaly detection (Z-score, IQR)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Sensor fusion (accelerometer + gyroscope)</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> SM-2 spaced repetition for flashcards</li>
+          </ul>
+        </div>
+        <div class="glass-card reveal reveal--delay-2">
+          <h3 class="feature-card__title" style="font-size: 0.9375rem;">Health &amp; Fitness</h3>
+          <ul style="list-style: none; font-size: 0.8125rem; color: var(--text-secondary);">
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> 1,300+ exercises across 6 categories</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Fatigue-aware workout generation</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> Sleep analysis &amp; recovery scoring</li>
+            <li style="padding: 4px 0;"><span style="color: var(--accent); font-weight: 600;">→</span> 15-language internationalization</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-bar__inner">
+        <div class="reveal reveal--delay-1">
+          <div class="stat__number" data-count="1300">0</div>
+          <div class="stat__label">Exercises in Database</div>
+        </div>
+        <div class="reveal reveal--delay-2">
+          <div class="stat__number" data-count="15">0</div>
+          <div class="stat__label">Languages Supported</div>
+        </div>
+        <div class="reveal reveal--delay-3">
+          <div class="stat__number" data-count="6">0</div>
+          <div class="stat__label">Training Categories</div>
+        </div>
+        <div class="reveal reveal--delay-4">
+          <div class="stat__number">0</div>
+          <div class="stat__label">Cloud Servers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section" id="download">
+    <div class="cta-section__bg"></div>
+    <div class="container">
+      <div class="cta-section__content reveal--scale">
+        <h2 style="margin-bottom: 12px;">Join the <span class="text-gradient">Movement</span></h2>
+        <p style="margin-bottom: 32px; font-size: 0.9375rem;">Start your 14-day free trial. Train your body, sharpen your mind, own your data.</p>
+        <a href="index.html#download" class="btn btn--primary btn--lg">Start Free Trial</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a href="index.html" class="nav__logo" style="margin-bottom: 6px;">
+            <div class="nav__logo-icon">⚡</div>
+            FitQuest
+          </a>
+          <p class="footer__brand-desc">Train your body and sharpen your mind with AI-powered adaptive fitness. Privacy-first, offline-first, proudly built in the Kingdom of Lesotho.</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">Product</h4>
+          <a href="index.html#features" class="footer__link">Features</a>
+          <a href="index.html#pricing" class="footer__link">Pricing</a>
+          <a href="index.html#download" class="footer__link">Download</a>
+          <a href="about.html" class="footer__link">About</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Legal</h4>
+          <a href="privacy.html" class="footer__link">Privacy Policy</a>
+          <a href="terms.html" class="footer__link">Terms of Service</a>
+          <a href="delete-account.html" class="footer__link">Delete Account</a>
+        </div>
+        <div>
+          <h4 class="footer__heading">Support</h4>
+          <a href="support.html" class="footer__link">Help Center</a>
+          <a href="mailto:fitquestsupp0rt@gmail.com" class="footer__link">Email Support</a>
+          <a href="support.html#faq" class="footer__link">FAQ</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="footer__copy">&copy; 2026 fitquest.dev &middot; Kingdom of Lesotho</span>
+        <div class="footer__bottom-links">
+          <a href="privacy.html" class="footer__bottom-link">Privacy</a>
+          <a href="terms.html" class="footer__bottom-link">Terms</a>
+          <a href="delete-account.html" class="footer__bottom-link">Data Deletion</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="js/main.js"></script>
+</body>
+</html>

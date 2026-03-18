@@ -395,4 +395,62 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 16; // v16: Nuclear category fix — drop exercise tables, force re-seed with correct names
+export const SCHEMA_VERSION = 18; // v18: fix external exercise equipment_level
+
+// ============================================
+// v17 TYPES
+// ============================================
+
+export type PersonalDevelopmentTopic =
+  | 'fitness'
+  | 'nutrition'
+  | 'mental_health'
+  | 'productivity'
+  | 'leadership'
+  | 'financial_literacy'
+  | 'relationships'
+  | 'spirituality'
+  | 'creativity'
+  | 'self_discipline'
+  | 'communication'
+  | 'mindfulness'
+  | 'career_growth'
+  | 'time_management'
+  | 'emotional_intelligence';
+
+export interface UserInterest {
+  user_id: string;
+  topic: PersonalDevelopmentTopic;
+  priority: number; // 1-5
+  created_at: number;
+}
+
+export interface UserPersonalGoal {
+  id: string;
+  user_id: string;
+  goal_text: string;
+  category: string; // freeform user category
+  status: 'active' | 'completed' | 'paused';
+  created_at: number;
+  updated_at: number;
+}
+
+export interface MindXPData {
+  user_id: string;
+  total_mind_xp: number;
+  mind_level: number;
+  pages_read_total: number;
+  flashcards_reviewed_total: number;
+  documents_completed: number;
+  updated_at: number;
+}
+
+export type PricingRegion = 'africa' | 'europe' | 'north_america' | 'south_america' | 'asia' | 'oceania' | 'middle_east';
+
+export interface RegionalPricing {
+  region: PricingRegion;
+  monthly_price: number;
+  annual_price: number;
+  currency_code: string;
+  currency_symbol: string;
+}

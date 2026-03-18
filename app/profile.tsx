@@ -38,11 +38,13 @@ import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
-import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries } from '../src/database/service';
+import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries, getMindXP } from '../src/database/service';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 import { getXPData, XPData } from '../src/services/xpService';
 import { useDataSync } from '../src/services/dataSyncService';
-import { GlassCard, GradientButton, ProgressRing, StatChip, SectionHeader } from '../src/components/ui/GlassUI';
+import { GlassCard, GradientButton, ProgressRing, SectionHeader } from '../src/components/ui/GlassUI';
 import { RankCard, RankBadge, MilestoneList } from '../src/components/RankDisplay';
 import { useAuth } from '../src/context/AuthContext';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../src/services/adaptiveTrainingService';
@@ -67,6 +69,7 @@ import {
   type NotificationReliabilitySettings,
 } from '../src/services/notificationReliabilityService';
 import { BiometricAuthService } from '../src/security/BiometricAuth';
+import { getProfessionSchedule, saveProfessionSchedule, type ProfessionSchedule } from '../src/engines/ReadinessEngine';
 const bioAuth = BiometricAuthService.getInstance();
 
 // ============================================
@@ -94,7 +97,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={modalStyles.overlay} onPress={onClose}>
+      <Pressable style={modalStyles.overlay} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss dialog">
         <Pressable
           style={[modalStyles.content, {
             backgroundColor: theme.colors.surface,
@@ -107,7 +110,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
             <Text style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>{subtitle}</Text>
           )}
 
-          <View style={modalStyles.optionsList}>
+          <ScrollView style={modalStyles.optionsList} showsVerticalScrollIndicator={false} bounces={false}>
             {options.map((opt, i) => {
               const isDestructive = destructiveIndex === i;
               return (
@@ -118,6 +121,8 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
                     borderColor: theme.colors.border,
                   }]}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={opt.label}
                   onPress={() => {
                     onClose();
                     onSelect(opt.value);
@@ -132,7 +137,7 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
                 </TouchableOpacity>
               );
             })}
-          </View>
+          </ScrollView>
 
           <TouchableOpacity
             style={[modalStyles.cancelBtn, {
@@ -140,6 +145,8 @@ function ThemedPickerModal({ visible, title, subtitle, options, onSelect, onClos
             }]}
             onPress={onClose}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel"
           >
             <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.cancel')}</Text>
           </TouchableOpacity>
@@ -238,13 +245,13 @@ interface ProfileCacheSnapshot {
   notifications: NotificationReliabilitySettings;
 }
 
-const GOAL_LABELS: Record<string, { icon: string; color: string }> = {
-  body_control: { icon: 'human-handsup', color: '#5F63FF' },
-  posture: { icon: 'human-male-height', color: '#10B981' },
-  speed: { icon: 'lightning-bolt', color: '#F4A427' },
-  mobility: { icon: 'yoga', color: '#EC4899' },
-  focus: { icon: 'head-snowflake', color: '#8B5CF6' },
-  strength: { icon: 'weight-lifter', color: '#EF4444' },
+const GOAL_LABELS: Record<string, { icon: string; colorKey: keyof typeof import('../src/design/theme-system').colorSystem.dark }> = {
+  body_control: { icon: 'human-handsup', colorKey: 'indigo' },
+  posture: { icon: 'human-male-height', colorKey: 'accent' },
+  speed: { icon: 'lightning-bolt', colorKey: 'warning' },
+  mobility: { icon: 'yoga', colorKey: 'pink' },
+  focus: { icon: 'head-snowflake', colorKey: 'purple' },
+  strength: { icon: 'weight-lifter', colorKey: 'error' },
 };
 
 const MEAL_REGION_VALUES = ['AUTO', 'ZA', 'US', 'GB', 'IN', 'BR', 'AU'] as const;
@@ -275,6 +282,8 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
         onPress={onPress}
         onPressIn={() => { scale.value = withTiming(0.97, { duration: 120 }); }}
         onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
+        accessibilityRole="button"
+        accessibilityLabel={sublabel ? `${label}, ${sublabel}` : label}
         style={[styles.menuItem, {
           backgroundColor: theme.colors.surfaceVariant,
           borderColor: theme.colors.border,
@@ -305,7 +314,7 @@ function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rightConte
 export default function ProfileScreen() {
   const { theme, mode, setMode } = useTheme();
   const { t, languageName } = useLanguage();
-  const { refreshProfile } = useDatabase();
+  const { refreshProfile, isReady: dbReady } = useDatabase();
   const { signOut } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -333,6 +342,7 @@ export default function ProfileScreen() {
   const [healthProviderCode, setHealthProviderCode] = useState<'health_connect' | 'healthkit' | 'google_fit' | 'none' | 'unknown' | 'unavailable'>('none');
   const [healthIntegrationReady, setHealthIntegrationReady] = useState(false);
   const [healthBusy, setHealthBusy] = useState(false);
+  const [healthConnectEnabled, setHealthConnectEnabled] = useState(true);
   const [healthSyncErrors, setHealthSyncErrors] = useState<ErrorEvent[]>([]);
   const [equipmentLevel, setEquipmentLevel] = useState<'none' | 'minimal' | 'playground'>('none');
   const [showAboutModal, setShowAboutModal] = useState(false);
@@ -344,6 +354,12 @@ export default function ProfileScreen() {
   const [totalSteps, setTotalSteps] = useState(0);
   const [totalDistance, setTotalDistance] = useState(0);
   const [recentDistance, setRecentDistance] = useState(0);
+  const [mindXP, setMindXP] = useState<{ total_mind_xp: number; mind_level: number; pages_read_total: number; flashcards_reviewed_total: number; documents_completed: number } | null>(null);
+  const [professionSchedule, setProfessionSchedule] = useState<ProfessionSchedule | null>(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleEdit, setScheduleEdit] = useState({
+    startHour: 8, endHour: 17, shiftType: 'day' as 'day' | 'night' | 'rotating', commute: 30,
+  });
 
   // Themed modal state
   const [pickerModal, setPickerModal] = useState<{
@@ -402,6 +418,16 @@ export default function ProfileScreen() {
         await refreshProfile();
       },
     });
+  };
+
+  const handleWorkSchedule = () => {
+    setScheduleEdit({
+      startHour: professionSchedule?.work_start_hour ?? 8,
+      endHour: professionSchedule?.work_end_hour ?? 17,
+      shiftType: (professionSchedule?.shift_type as 'day' | 'night' | 'rotating') || 'day',
+      commute: professionSchedule?.commute_minutes ?? 30,
+    });
+    setShowScheduleModal(true);
   };
 
   const handleExperience = () => {
@@ -531,6 +557,17 @@ export default function ProfileScreen() {
 
   const refreshHealthIntegrationStatus = useCallback(async () => {
     try {
+      // Check if user has disabled HealthConnect
+      const enabledFlag = await getAppState('healthconnect.enabled');
+      const isEnabled = enabledFlag !== 'false';
+      setHealthConnectEnabled(isEnabled);
+
+      if (!isEnabled) {
+        setHealthProviderCode('none');
+        setHealthIntegrationReady(false);
+        return;
+      }
+
       const available = await isHealthIntegrationAvailable();
       if (!available) {
         setHealthProviderCode('none');
@@ -635,18 +672,58 @@ export default function ProfileScreen() {
     }
   }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
 
+  const handleHealthConnectSettings = useCallback(() => {
+    if (healthConnectEnabled && healthIntegrationReady) {
+      // Already connected — show connect/disconnect picker
+      setPickerModal({
+        visible: true,
+        title: t('profile.healthConnect'),
+        subtitle: t('profile.healthConnectManage') || 'Manage Health Connect integration',
+        options: [
+          { label: t('profile.healthSyncNow') || 'Sync Now', value: 'sync' },
+          { label: t('profile.healthReconnect') || 'Reconnect', value: 'reconnect' },
+          { label: t('profile.healthDisconnect') || 'Disconnect', value: 'disconnect' },
+        ],
+        destructiveIndex: 2,
+        onSelect: async (value: string) => {
+          if (value === 'disconnect') {
+            await setAppState('healthconnect.enabled', 'false');
+            setHealthConnectEnabled(false);
+            setHealthIntegrationReady(false);
+            setHealthProviderCode('none');
+          } else if (value === 'reconnect') {
+            await setAppState('healthconnect.enabled', 'true');
+            await setAppState('healthconnect.permissions_requested', '');
+            setHealthConnectEnabled(true);
+            void handleConnectHealth();
+          } else if (value === 'sync') {
+            void handleSyncHealth();
+          }
+        },
+      });
+    } else {
+      // Not connected — connect directly
+      void (async () => {
+        await setAppState('healthconnect.enabled', 'true');
+        setHealthConnectEnabled(true);
+        await handleConnectHealth();
+      })();
+    }
+  }, [healthConnectEnabled, healthIntegrationReady, handleConnectHealth, handleSyncHealth, t]);
+
   useEffect(() => {
+    if (!dbReady) return;
     void runReplayIfDue({ reason: 'profile_load', cooldownMs: 45 * 1000 });
-    loadData();
+    void loadData();
     void refreshHealthIntegrationStatus();
-    refreshHealthSyncErrors();
-  }, []);
+    void refreshHealthSyncErrors();
+  }, [dbReady]);
 
   // Refresh data when screen gains focus (e.g. navigating back from workout)
   useFocusEffect(
     useCallback(() => {
-      loadData();
-    }, [])
+      if (dbReady) void loadData();
+    }, [dbReady])
   );
 
   // Subscribe to data sync events for real-time updates
@@ -670,40 +747,48 @@ export default function ProfileScreen() {
         setNotificationSettings(cached.value.notifications);
       }
 
-      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications, savedEquipmentLevel, savedName, savedProfilePic] = await Promise.all([
-        getUserProfile('user_local_001'),
-        getUserProgress(),
-        getStreak('user_local_001'),
-        getXPData(),
-        getAdaptiveTrainingProfile('user_local_001'),
-        getSocialLayerSettings('user_local_001'),
-        getAppState('meal.region_override'),
-        getConsentRecord(),
-        getNotificationReliabilitySettings(),
-        getAppState('user.equipment_level'),
-        getAppState('user.display_name'),
-        getAppState('user.profile_pic'),
+      const [userProfile, progress, streak, xp, adaptive, social, savedMealRegion, consentRecord, notifications, savedEquipmentLevel, savedName, savedProfilePic, scheduleData] = await Promise.all([
+        getUserProfile('user_local_001').catch(() => null),
+        getUserProgress().catch(() => ({ total_workouts: 0, completed_workouts: 0, weekly_xp: 0 })),
+        getStreak('user_local_001').catch(() => ({ current: 0, longest: 0 })),
+        getXPData().catch(() => ({ level: 1, totalXP: 0, xpToNextLevel: 500, currentLevelXP: 0 })),
+        getAdaptiveTrainingProfile('user_local_001').catch(() => null),
+        getSocialLayerSettings('user_local_001').catch(() => null),
+        getAppState('meal.region_override').catch(() => null),
+        getConsentRecord().catch(() => ({ timestamp: null, version: null, source: null as 'remote' | 'local' | null })),
+        getNotificationReliabilitySettings().catch(() => ({ enabled: false, reminderHour: 20, permission: 'unknown' as const, lastScheduledAt: null, lastPromptAt: null })),
+        getAppState('user.equipment_level').catch(() => null),
+        getAppState('user.display_name').catch(() => null),
+        getAppState('user.profile_pic').catch(() => null),
+        getProfessionSchedule('user_local_001').catch(() => null),
       ]);
 
       const eqLevel = (['none', 'minimal', 'playground'].includes(savedEquipmentLevel || '') ? savedEquipmentLevel : 'none') as 'none' | 'minimal' | 'playground';
       setEquipmentLevel(eqLevel);
+      if (scheduleData) setProfessionSchedule(scheduleData);
 
       const displayName = savedName || 'Athlete';
       if (savedProfilePic) setProfilePicUri(savedProfilePic);
 
       // Load real step & distance data
       try {
-        const { db } = require('../src/database');
-        const stepsResult = await db.getFirstAsync('SELECT COALESCE(SUM(steps), 0) as total FROM daily_steps WHERE user_id = ?', ['user_local_001']) as { total: number } | null;
+        const stepsResult = await getStepHistory('user_local_001', 365);
+        const totalS = stepsResult.reduce((sum, d) => sum + (d.steps || 0), 0);
+        setTotalSteps(totalS);
+      } catch { /* step data optional */ }
+
+      try {
+        const { getDatabase } = require('../src/database/schema');
+        const db = await getDatabase();
         const jogResult = await db.getFirstAsync(`
           SELECT COALESCE(SUM(distance_meters), 0) as total,
-          COALESCE((SELECT distance_meters FROM jog_sessions WHERE user_id = ? ORDER BY start_time DESC LIMIT 1), 0) as recent
-          FROM jog_sessions WHERE user_id = ?
-        `, ['user_local_001', 'user_local_001']) as { total: number, recent: number } | null;
-        setTotalSteps(stepsResult?.total || 0);
+          COALESCE(MAX(distance_meters), 0) as longest,
+          COUNT(*) as runs
+          FROM jog_sessions WHERE user_id = ? AND end_time IS NOT NULL
+        `, ['user_local_001']) as { total: number, longest: number, runs: number } | null;
         setTotalDistance(Math.round((jogResult?.total || 0) / 1000 * 10) / 10);
-        setRecentDistance(Math.round((jogResult?.recent || 0) / 1000 * 10) / 10);
-      } catch { /* step/jog data optional */ }
+        setRecentDistance(Math.round((jogResult?.longest || 0) / 1000 * 10) / 10);
+      } catch { /* jog data optional */ }
 
       // Calculate more realistic calories from workout sessions
       let estimatedCalories = 0;
@@ -722,7 +807,7 @@ export default function ProfileScreen() {
       }));
 
       setStats({
-        totalWorkouts: progress.total_workouts,
+        totalWorkouts: progress.completed_workouts,
         totalCalories: estimatedCalories,
         streak: streak.current,
         longestStreak: streak.longest,
@@ -752,7 +837,7 @@ export default function ProfileScreen() {
           sessionMinutes: userProfile?.time_per_session_minutes || 30,
         },
         stats: {
-          totalWorkouts: progress.total_workouts,
+          totalWorkouts: progress.completed_workouts,
           totalCalories: estimatedCalories,
           streak: streak.current,
           longestStreak: streak.longest,
@@ -777,6 +862,12 @@ export default function ProfileScreen() {
         const sessionValid = await bioAuth.isSessionValid();
         setBiometricEnabled(sessionValid);
       } catch { /* biometric detection optional */ }
+
+      // Load Mind XP data
+      try {
+        const mxp = await getMindXP('user_local_001');
+        if (mxp) setMindXP(mxp);
+      } catch { /* mind xp optional */ }
     } catch (err) {
       console.error('[Profile] Load failed:', err);
     } finally {
@@ -784,7 +875,8 @@ export default function ProfileScreen() {
     }
   }, []);
 
-  const goalInfo = GOAL_LABELS[profile?.goal || 'body_control'] ?? GOAL_LABELS.body_control;
+  const goalMeta = GOAL_LABELS[profile?.goal || 'body_control'] ?? GOAL_LABELS['body_control']!;
+  const goalInfo = { icon: goalMeta.icon, color: (theme.colors as any)[goalMeta.colorKey] as string };
   const goalLabel = t(`profile.goal.${profile?.goal || 'body_control'}`);
   const xpProgress = stats && stats.xpForNext > 0 ? stats.currentLevelXP / stats.xpForNext : 0;
 
@@ -927,7 +1019,14 @@ export default function ProfileScreen() {
   }
 
   return (
+    <ScreenErrorBoundary screenName="Profile" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard' as any)}>
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="profile"
+        icon="account-circle"
+        title="Your Profile"
+        description="View and edit your fitness profile, track your stats, manage equipment preferences, and customize app settings."
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -943,12 +1042,11 @@ export default function ProfileScreen() {
             <SafeAreaView edges={['top']}>
               <View style={styles.headerContent}>
                 {/* Avatar with tap-to-change photo */}
-                <TouchableOpacity style={styles.avatarGlowWrap} onPress={async () => {
+                <TouchableOpacity style={styles.avatarGlowWrap} accessibilityRole="button" accessibilityLabel="Change profile photo" onPress={async () => {
                   try {
                     const result = await ImagePicker.launchImageLibraryAsync({
                       mediaTypes: ['images'],
-                      allowsEditing: true,
-                      aspect: [1, 1],
+                      allowsEditing: false,
                       quality: 0.7,
                     });
                     if (!result.canceled && result.assets[0]?.uri) {
@@ -993,6 +1091,8 @@ export default function ProfileScreen() {
                         onChangeText={setEditNameValue}
                         autoFocus
                         maxLength={24}
+                        accessibilityLabel="Profile name"
+                        accessibilityHint="Edit your display name, up to 24 characters"
                         onBlur={async () => {
                           const trimmed = editNameValue.trim();
                           if (trimmed) {
@@ -1012,7 +1112,7 @@ export default function ProfileScreen() {
                       />
                     </View>
                   ) : (
-                    <TouchableOpacity onPress={() => { setEditNameValue(profile?.name || 'Athlete'); setIsEditingName(true); }}>
+                    <TouchableOpacity onPress={() => { setEditNameValue(profile?.name || 'Athlete'); setIsEditingName(true); }} accessibilityRole="button" accessibilityLabel="Edit profile name">
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                         <Text style={[styles.profileName, { color: theme.colors.text }]}>
                           {profile?.name || 'Athlete'}
@@ -1058,17 +1158,70 @@ export default function ProfileScreen() {
           </LinearGradient>
         </Animated.View>
 
-        {/* ── STATS ROW ── */}
-        <View style={styles.statsRow}>
-          <StatChip icon="fire" label={t('dashboard.streak')} value={`${stats?.streak || 0}d`} color={theme.colors.warning} delay={200} />
-          <StatChip icon="dumbbell" label={t('dashboard.workouts')} value={`${stats?.totalWorkouts || 0}`} color={theme.colors.accent} delay={300} />
-          <StatChip icon="lightning-bolt" label={t('dashboard.xp')} value={`${stats?.totalXP || 0}`} color={theme.colors.purple} delay={400} />
-        </View>
-        <View style={styles.statsRow}>
-          <StatChip icon="shoe-print" label={t('profile.totalSteps') || 'Steps'} value={totalSteps > 1000 ? `${(totalSteps / 1000).toFixed(1)}k` : `${totalSteps}`} color={theme.colors.blue} delay={450} />
-          <StatChip icon="map-marker-distance" label={t('profile.totalDistance') || 'Distance'} value={`${totalDistance}km`} color={theme.colors.skyBlue} delay={500} />
-          <StatChip icon="run" label={t('profile.lastJog') || 'Last Jog'} value={`${recentDistance}km`} color={theme.colors.orange} delay={550} />
-        </View>
+        {/* ── STATS GRID — Premium Overview ── */}
+        <Animated.View entering={FadeInDown.delay(200).duration(200)} style={styles.statsContainer}>
+          <GlassCard gradient glowColor={theme.colors.accent} style={styles.statsCard}>
+            {/* Primary Stats Row */}
+            <View style={styles.primaryStatsRow}>
+              <View style={styles.primaryStat}>
+                <LinearGradient
+                  colors={[theme.colors.warning + '25', theme.colors.warning + '08'] as [string, string]}
+                  style={styles.statIconCircle}
+                >
+                  <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
+                </LinearGradient>
+                <Text style={[styles.statValue, { color: theme.colors.text }]}>{stats?.streak || 0}</Text>
+                <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.streak')}</Text>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
+              <View style={styles.primaryStat}>
+                <LinearGradient
+                  colors={[theme.colors.accent + '25', theme.colors.accent + '08'] as [string, string]}
+                  style={styles.statIconCircle}
+                >
+                  <MaterialCommunityIcons name="dumbbell" size={20} color={theme.colors.accent} />
+                </LinearGradient>
+                <Text style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalWorkouts || 0}</Text>
+                <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.workouts')}</Text>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
+              <View style={styles.primaryStat}>
+                <LinearGradient
+                  colors={[theme.colors.purple + '25', theme.colors.purple + '08'] as [string, string]}
+                  style={styles.statIconCircle}
+                >
+                  <MaterialCommunityIcons name="lightning-bolt" size={20} color={theme.colors.purple} />
+                </LinearGradient>
+                <Text style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalXP || 0}</Text>
+                <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.xp')}</Text>
+              </View>
+            </View>
+
+            {/* Divider Line */}
+            <View style={[styles.statsFullDivider, { backgroundColor: theme.colors.border }]} />
+
+            {/* Secondary Stats Row */}
+            <View style={styles.secondaryStatsRow}>
+              <View style={styles.secondaryStat}>
+                <MaterialCommunityIcons name="shoe-print" size={16} color={theme.colors.blue} />
+                <Text style={[styles.secondaryValue, { color: theme.colors.text }]}>
+                  {totalSteps > 1000 ? `${(totalSteps / 1000).toFixed(1)}k` : `${totalSteps}`}
+                </Text>
+                <Text style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>{t('profile.totalSteps') || 'Steps'}</Text>
+              </View>
+              <View style={styles.secondaryStat}>
+                <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.colors.skyBlue} />
+                <Text style={[styles.secondaryValue, { color: theme.colors.text }]}>{totalDistance}km</Text>
+                <Text style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>{t('profile.totalDistance') || 'Distance'}</Text>
+              </View>
+              <View style={styles.secondaryStat}>
+                <MaterialCommunityIcons name="run" size={16} color={theme.colors.orange} />
+                <Text style={[styles.secondaryValue, { color: theme.colors.text }]}>{recentDistance}km</Text>
+                <Text style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>{t('profile.bestRun') || 'Best Run'}</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </Animated.View>
 
         {/* ── RANK & MILESTONES ── */}
         <View style={styles.section}>
@@ -1079,6 +1232,51 @@ export default function ProfileScreen() {
               <MilestoneList currentLevel={stats?.level || 1} maxVisible={5} />
             </GlassCard>
           </View>
+        </View>
+
+        {/* ── MIND XP ── */}
+        <View style={styles.section}>
+          <SectionHeader title={'Mind XP'} delay={275} />
+          <GlassCard gradient delay={280}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.purple + '18' }]}>
+                <MaterialCommunityIcons name="head-lightbulb-outline" size={22} color={theme.colors.purple} />
+              </View>
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={[styles.menuLabel, { color: theme.colors.text, fontSize: 16 }]}>
+                  Craft My Mind
+                </Text>
+                <Text style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                  {mindXP?.total_mind_xp || 0} Mind XP
+                </Text>
+              </View>
+              <View style={{ backgroundColor: theme.colors.warning + '25', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                <Text style={{ color: theme.colors.warning, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>COMING SOON</Text>
+              </View>
+            </View>
+            <View style={{ opacity: 0.5 }}>
+            <View style={styles.achievementRow}>
+              <View style={styles.achievementItem}>
+                <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                  {mindXP?.pages_read_total || 0}
+                </Text>
+                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Pages Read</Text>
+              </View>
+              <View style={styles.achievementItem}>
+                <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                  {mindXP?.flashcards_reviewed_total || 0}
+                </Text>
+                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Cards Reviewed</Text>
+              </View>
+              <View style={styles.achievementItem}>
+                <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                  {mindXP?.documents_completed || 0}
+                </Text>
+                <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Books Done</Text>
+              </View>
+            </View>
+            </View>
+          </GlassCard>
         </View>
 
         {/* ── ACHIEVEMENTS CARD ── */}
@@ -1167,6 +1365,16 @@ export default function ProfileScreen() {
             color={theme.colors.pink}
             delay={520}
             onPress={() => router.push('/craft-my-body')}
+          />
+          <MenuItem
+            icon="briefcase-clock-outline"
+            label="Work Schedule"
+            sublabel={professionSchedule
+              ? `${professionSchedule.work_start_hour.toString().padStart(2, '0')}:00–${professionSchedule.work_end_hour.toString().padStart(2, '0')}:00 · ${professionSchedule.shift_type} shift`
+              : 'Set your work hours for smarter scheduling'}
+            color={theme.colors.blue}
+            delay={530}
+            onPress={handleWorkSchedule}
           />
         </View>
 
@@ -1299,14 +1507,17 @@ export default function ProfileScreen() {
                 disabled={socialBusy}
                 trackColor={{ false: theme.colors.border, true: theme.colors.blue + '60' }}
                 thumbColor={(socialSettings?.enabled ?? false) ? theme.colors.blue : theme.colors.surface}
+                accessibilityRole="switch"
+                accessibilityLabel="Social layer"
+                accessibilityState={{ checked: socialSettings?.enabled ?? false }}
               />
             }
           />
           <MenuItem
             icon={mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'weather-night' : 'weather-sunny'}
             label="Theme"
-            sublabel={mode === 'blackGold' ? 'Black & Gold' : mode === 'dark' ? 'Dark' : 'Light'}
-            color={mode === 'blackGold' ? '#D4AF37' : theme.colors.purple}
+            sublabel={mode === 'blackGold' ? 'Premium' : mode === 'dark' ? 'Charcoal' : 'Light'}
+            color={mode === 'blackGold' ? theme.colors.accent3 : theme.colors.purple}
             delay={550}
             onPress={() => setShowThemePicker(true)}
           />
@@ -1337,12 +1548,10 @@ export default function ProfileScreen() {
           <MenuItem
             icon="heart-pulse"
             label={t('profile.healthConnect')}
-            sublabel={`${healthIntegrationReady ? t('profile.statusConnected') : t('profile.statusNotConnected')} · ${healthProviderLabel(healthProviderCode)}`}
-            color={theme.colors.accent}
+            sublabel={`${!healthConnectEnabled ? (t('profile.statusDisabled') || 'Disabled') : healthIntegrationReady ? t('profile.statusConnected') : t('profile.statusNotConnected')} · ${healthProviderLabel(healthProviderCode)}`}
+            color={healthConnectEnabled ? theme.colors.accent : theme.colors.textMuted}
             delay={605}
-            onPress={() => {
-              void handleConnectHealth();
-            }}
+            onPress={handleHealthConnectSettings}
           />
           <MenuItem
             icon="sync"
@@ -1496,6 +1705,14 @@ export default function ProfileScreen() {
             delay={720}
             onPress={() => setShowAboutModal(true)}
           />
+          <MenuItem
+            icon="sitemap"
+            label="App Sitemap"
+            sublabel="All screens & navigation"
+            color={theme.colors.indigo}
+            delay={740}
+            onPress={() => router.push('/sitemap' as any)}
+          />
         </View>
 
         {/* ── LOGOUT ── */}
@@ -1522,9 +1739,9 @@ export default function ProfileScreen() {
         title="Choose Theme"
         subtitle="Select your preferred app appearance"
         options={[
-          { label: '🌙  Dark', value: 'dark' },
+          { label: '🖤  Charcoal', value: 'dark' },
           { label: '☀️  Light', value: 'light' },
-          { label: '👑  Black & Gold', value: 'blackGold' },
+          { label: '👑  Premium', value: 'blackGold' },
         ]}
         onSelect={(value) => setMode(value as 'dark' | 'light' | 'blackGold')}
         onClose={() => setShowThemePicker(false)}
@@ -1546,6 +1763,129 @@ export default function ProfileScreen() {
         onClose={closePicker}
         destructiveIndex={pickerModal.destructiveIndex}
       />
+
+      {/* Work Schedule Modal */}
+      <Modal visible={showScheduleModal} transparent animationType="fade" onRequestClose={() => setShowScheduleModal(false)}>
+        <Pressable style={modalStyles.overlay} onPress={() => setShowScheduleModal(false)}>
+          <Pressable
+            style={[modalStyles.content, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text style={[modalStyles.title, { color: theme.colors.text }]}>Work Schedule</Text>
+            <Text style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>Configure your work hours for optimal training suggestions</Text>
+
+            <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false} bounces={false}>
+              {/* Start Time */}
+              <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6, marginTop: 12 }}>START TIME</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                {Array.from({ length: 17 }, (_, i) => i + 5).map(h => (
+                  <TouchableOpacity
+                    key={`start-${h}`}
+                    onPress={() => setScheduleEdit(prev => ({
+                      ...prev,
+                      startHour: h,
+                      endHour: Math.max(prev.endHour, h + 1),
+                    }))}
+                    style={{
+                      paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, marginRight: 6,
+                      backgroundColor: scheduleEdit.startHour === h ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
+                      borderWidth: scheduleEdit.startHour === h ? 1 : 0,
+                      borderColor: theme.colors.accent,
+                    }}
+                  >
+                    <Text style={{ color: scheduleEdit.startHour === h ? theme.colors.accent : theme.colors.text, fontSize: 13, fontWeight: '600' }}>
+                      {h.toString().padStart(2, '0')}:00
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* End Time */}
+              <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6 }}>END TIME</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                {Array.from({ length: 17 }, (_, i) => i + 5).filter(h => h > scheduleEdit.startHour).map(h => (
+                  <TouchableOpacity
+                    key={`end-${h}`}
+                    onPress={() => setScheduleEdit(prev => ({ ...prev, endHour: h }))}
+                    style={{
+                      paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, marginRight: 6,
+                      backgroundColor: scheduleEdit.endHour === h ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
+                      borderWidth: scheduleEdit.endHour === h ? 1 : 0,
+                      borderColor: theme.colors.accent,
+                    }}
+                  >
+                    <Text style={{ color: scheduleEdit.endHour === h ? theme.colors.accent : theme.colors.text, fontSize: 13, fontWeight: '600' }}>
+                      {h.toString().padStart(2, '0')}:00
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Shift Type */}
+              <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6 }}>SHIFT TYPE</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+                {(['day', 'night', 'rotating'] as const).map(s => (
+                  <TouchableOpacity
+                    key={s}
+                    onPress={() => setScheduleEdit(prev => ({ ...prev, shiftType: s }))}
+                    style={{
+                      flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center',
+                      backgroundColor: scheduleEdit.shiftType === s ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
+                      borderWidth: scheduleEdit.shiftType === s ? 1 : 0,
+                      borderColor: theme.colors.accent,
+                    }}
+                  >
+                    <MaterialCommunityIcons name={s === 'day' ? 'weather-sunny' : s === 'night' ? 'weather-night' : 'sync'} size={18} color={scheduleEdit.shiftType === s ? theme.colors.accent : theme.colors.textMuted} />
+                    <Text style={{ color: scheduleEdit.shiftType === s ? theme.colors.accent : theme.colors.text, fontSize: 12, fontWeight: '600', marginTop: 4 }}>
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Commute */}
+              <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6 }}>COMMUTE (minutes)</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
+                {[0, 10, 15, 20, 30, 45, 60, 90].map(m => (
+                  <TouchableOpacity
+                    key={`com-${m}`}
+                    onPress={() => setScheduleEdit(prev => ({ ...prev, commute: m }))}
+                    style={{
+                      paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, marginRight: 6,
+                      backgroundColor: scheduleEdit.commute === m ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
+                      borderWidth: scheduleEdit.commute === m ? 1 : 0,
+                      borderColor: theme.colors.accent,
+                    }}
+                  >
+                    <Text style={{ color: scheduleEdit.commute === m ? theme.colors.accent : theme.colors.text, fontSize: 13, fontWeight: '600' }}>
+                      {m === 0 ? 'None' : `${m} min`}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </ScrollView>
+
+            {/* Save Button */}
+            <GradientButton
+              title="Save Schedule"
+              variant="primary"
+              onPress={async () => {
+                const schedule: ProfessionSchedule = {
+                  profession_type: professionSchedule?.profession_type || 'office',
+                  work_start_hour: scheduleEdit.startHour,
+                  work_end_hour: scheduleEdit.endHour,
+                  commute_minutes: scheduleEdit.commute,
+                  preferred_windows: scheduleEdit.startHour <= 8 ? ['AFTER_WORK'] : ['BEFORE_WORK', 'AFTER_WORK'],
+                  shift_type: scheduleEdit.shiftType,
+                };
+                await saveProfessionSchedule('user_local_001', schedule);
+                setProfessionSchedule(schedule);
+                setShowScheduleModal(false);
+              }}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {/* Help & Support Modal */}
       <Modal visible={showHelpModal} transparent animationType="fade" onRequestClose={() => setShowHelpModal(false)}>
@@ -1661,6 +2001,7 @@ export default function ProfileScreen() {
         </Pressable>
       </Modal>
     </View>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -1670,7 +2011,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { paddingBottom: 32 },
+  scrollContent: { paddingBottom: 100 },
 
   // Header
   headerGradient: {
@@ -1729,16 +2070,19 @@ const styles = StyleSheet.create({
   goalBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'center',
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
     marginBottom: 16,
+    maxWidth: '80%',
   },
   goalBadgeText: {
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.3,
+    flexShrink: 1,
   },
 
   // XP
@@ -1776,14 +2120,71 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
 
-  // Stats
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 10,
+  // Stats — Premium Grid
+  statsContainer: {
     paddingHorizontal: 16,
     marginTop: -8,
+    marginBottom: 12,
+  },
+  statsCard: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+  },
+  primaryStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  primaryStat: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
+  },
+  statValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  statUnit: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  statDivider: {
+    width: 1,
+    height: 50,
+    opacity: 0.5,
+  },
+  statsFullDivider: {
+    height: 1,
+    marginVertical: 16,
+    marginHorizontal: 10,
+    opacity: 0.4,
+  },
+  secondaryStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  secondaryStat: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 4,
+  },
+  secondaryValue: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  secondaryLabel: {
+    fontSize: 10,
+    fontWeight: '600',
   },
 
   // Achievements

@@ -168,7 +168,18 @@ class HealthConnectAdapter implements IHealthAdapter {
         return perms;
       }).flat();
 
-      const granted = await hc.requestPermission(permissions);
+      let granted: Array<{ accessType: string; recordType: string }> = [];
+      try {
+        granted = await hc.requestPermission(permissions);
+      } catch (permError: any) {
+        // Native requestPermission delegate may not be initialized (requires Activity setup)
+        const msg = permError?.message || String(permError);
+        if (msg.includes('UninitializedPropertyAccessException') || msg.includes('requestPermission has not been initialized')) {
+          console.log('[HealthConnect] Permission dialog unavailable — Activity delegate not initialized. Skipping.');
+          return [];
+        }
+        throw permError;
+      }
 
       // Convert to HealthPermission format
       const result: HealthPermission[] = categories.map(cat => {
@@ -248,6 +259,15 @@ class HealthConnectAdapter implements IHealthAdapter {
 
       await this.initialize();
 
+      // Check permission before reading — avoids SecurityException spam
+      const perms = await this.checkPermissions([category]);
+      if (!perms[0]?.read) {
+        if (__DEV__) {
+          console.log(`[HealthConnect] Skipping ${category} — read permission not granted`);
+        }
+        return [];
+      }
+
       const recordType = CATEGORY_TO_RECORD_TYPE[category];
       const result = await hc.readRecords(recordType, {
         timeRangeFilter: {
@@ -260,6 +280,14 @@ class HealthConnectAdapter implements IHealthAdapter {
       const records = this.normalizeRecords(category, result.records || []);
       return records as T[];
     } catch (error) {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      // SecurityException = permissions not granted — expected, not a real error
+      if (errMsg.includes('SecurityException')) {
+        if (__DEV__) {
+          console.log(`[HealthConnect] ${category}: permission not granted yet`);
+        }
+        return [];
+      }
       await captureHealthError(error instanceof Error ? error : String(error), {
         provider: 'health_connect',
         action: 'read',
@@ -276,39 +304,59 @@ class HealthConnectAdapter implements IHealthAdapter {
 
       await this.initialize();
 
-      // Read steps for the date range
-      const stepsResult = await hc.readRecords('Steps', {
-        timeRangeFilter: {
-          operator: 'between',
-          startTime: dateRange.start.toISOString(),
-          endTime: dateRange.end.toISOString(),
-        },
-      });
+      // Check permissions before reading — avoids SecurityException on startup
+      const perms = await this.checkPermissions(['steps', 'calories']);
+      const canReadSteps = perms.find(p => p.category === 'steps')?.read;
+      const canReadCalories = perms.find(p => p.category === 'calories')?.read;
 
-      // Group by date
       const dailyMap = new Map<string, DailyAggregate>();
 
-      for (const record of (stepsResult.records || [])) {
-        const date = new Date(record.startTime).toISOString().split('T')[0];
-        const existing = dailyMap.get(date) || { date };
-        existing.steps = (existing.steps || 0) + (record.count || 0);
-        dailyMap.set(date, existing);
+      // Read steps (only if permitted)
+      if (canReadSteps) {
+        try {
+          const stepsResult = await hc.readRecords('Steps', {
+            timeRangeFilter: {
+              operator: 'between',
+              startTime: dateRange.start.toISOString(),
+              endTime: dateRange.end.toISOString(),
+            },
+          });
+          for (const record of (stepsResult.records || [])) {
+            const date = new Date(record.startTime).toISOString().split('T')[0]!;
+            const existing = dailyMap.get(date) || { date, steps: 0, caloriesBurned: 0 };
+            existing.steps = (existing.steps || 0) + (record.count || 0);
+            dailyMap.set(date, existing);
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (!msg.includes('SecurityException') && __DEV__) {
+            console.warn('[HealthConnect] Steps aggregate error:', msg);
+          }
+        }
       }
 
-      // Read calories
-      const caloriesResult = await hc.readRecords('TotalCaloriesBurned', {
-        timeRangeFilter: {
-          operator: 'between',
-          startTime: dateRange.start.toISOString(),
-          endTime: dateRange.end.toISOString(),
-        },
-      });
-
-      for (const record of (caloriesResult.records || [])) {
-        const date = new Date(record.startTime).toISOString().split('T')[0];
-        const existing = dailyMap.get(date) || { date };
-        existing.caloriesBurned = (existing.caloriesBurned || 0) + (record.energy?.inKilocalories || 0);
-        dailyMap.set(date, existing);
+      // Read calories (only if permitted)
+      if (canReadCalories) {
+        try {
+          const caloriesResult = await hc.readRecords('TotalCaloriesBurned', {
+            timeRangeFilter: {
+              operator: 'between',
+              startTime: dateRange.start.toISOString(),
+              endTime: dateRange.end.toISOString(),
+            },
+          });
+          for (const record of (caloriesResult.records || [])) {
+            const date = new Date(record.startTime).toISOString().split('T')[0]!;
+            const existing = dailyMap.get(date) || { date, steps: 0, caloriesBurned: 0 };
+            existing.caloriesBurned = (existing.caloriesBurned || 0) + (record.energy?.inKilocalories || 0);
+            dailyMap.set(date, existing);
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (!msg.includes('SecurityException') && __DEV__) {
+            console.warn('[HealthConnect] Calories aggregate error:', msg);
+          }
+        }
       }
 
       return Array.from(dailyMap.values()).sort((a, b) => a.date.localeCompare(b.date));
@@ -332,7 +380,7 @@ class HealthConnectAdapter implements IHealthAdapter {
     if (records.length === 0) return null;
 
     // Return most recent
-    return records.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0];
+    return records.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())[0] ?? null;
   }
 
   // ============================================

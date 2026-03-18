@@ -1,21 +1,102 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { generateAllExercises } from '../src/database/exerciseGeneratorExpanded';
+import { getDefaultAdaptiveTrainingProfile } from '../src/services/adaptiveTrainingMath';
+import type {
+  Difficulty,
+  EquipmentItem,
+  EquipmentLevel,
+  ExerciseFilter,
+  ExerciseWithDetails,
+  MuscleFatigue,
+  ProgressRecord,
+  TargetMuscle,
+  TrainingType,
+  UserInjury,
+  UserProfile,
+  WorkoutSession,
+} from '../src/database/types';
 
 // Define __DEV__ global used by React Native
 (globalThis as any).__DEV__ = false;
 
-// Mock DB layer before importing engine
+const runtimeState = vi.hoisted(() => ({
+  userProfile: null as UserProfile | null,
+  fatigue: [] as MuscleFatigue[],
+  recentSessions: [] as WorkoutSession[],
+  userEquipment: [] as EquipmentItem[],
+  userInjuries: [] as UserInjury[],
+  recentExerciseIds: [] as string[],
+  recentlyTrainedMuscles: [] as TargetMuscle[],
+  progressRecords: [] as ProgressRecord[],
+  appState: new Map<string, string>(),
+}));
+
+function buildRealExerciseCatalog(): ExerciseWithDetails[] {
+  return generateAllExercises().map((exercise) => ({
+    ...exercise,
+    created_at: '2024-01-01',
+    updated_at: '2024-01-01',
+    audio_intro: exercise.audio_intro || '',
+    audio_setup: exercise.audio_setup || '',
+    audio_execution: exercise.audio_execution || '',
+    audio_transition: exercise.audio_transition || '',
+  }));
+}
+
+const REAL_EXERCISES = buildRealExerciseCatalog();
+
+function matchesDifficulty(exerciseDifficulty: Difficulty, allowed?: Difficulty[]): boolean {
+  return !allowed?.length || allowed.includes(exerciseDifficulty);
+}
+
+function matchesTrainingTypes(
+  exerciseTrainingTypes: Array<{ type: TrainingType; effectiveness: number }>,
+  allowed?: TrainingType[]
+): boolean {
+  return !allowed?.length || exerciseTrainingTypes.some(trainingType => allowed.includes(trainingType.type));
+}
+
+function matchesTargetMuscles(exercise: ExerciseWithDetails, targetMuscles?: TargetMuscle[]): boolean {
+  return !targetMuscles?.length || [...exercise.primary_muscles, ...exercise.secondary_muscles].some(muscle => targetMuscles.includes(muscle));
+}
+
+function excludesMuscles(exercise: ExerciseWithDetails, excludedMuscles?: TargetMuscle[]): boolean {
+  return !excludedMuscles?.length || !exercise.primary_muscles.some(muscle => excludedMuscles.includes(muscle));
+}
+
+function filterRealExercises(filter?: ExerciseFilter): ExerciseWithDetails[] {
+  return REAL_EXERCISES.filter((exercise) => {
+    if (filter?.categories?.length && !filter.categories.includes(exercise.category)) return false;
+    if (!matchesDifficulty(exercise.difficulty, filter?.difficulties)) return false;
+    if (filter?.equipment_levels?.length && !filter.equipment_levels.includes(exercise.equipment_level)) return false;
+    if (filter?.impact_levels?.length && !filter.impact_levels.includes(exercise.impact_level)) return false;
+    if (filter?.space_filters?.length && !filter.space_filters.includes(exercise.space_required)) return false;
+    if (filter?.max_time_per_set && exercise.time_per_set_seconds > filter.max_time_per_set) return false;
+    if (!matchesTrainingTypes(exercise.training_types, filter?.training_types)) return false;
+    if (!matchesTargetMuscles(exercise, filter?.target_muscles)) return false;
+    if (!excludesMuscles(exercise, filter?.exclude_muscles)) return false;
+    return true;
+  });
+}
+
+// Mock DB layer before importing engine, but feed it the real exercise catalogue.
 vi.mock('../src/database/service', () => ({
-  getExercises: vi.fn(),
-  getUserProfile: vi.fn(),
-  getMuscleFatigue: vi.fn(),
-  getRecentSessions: vi.fn(),
-  getUserEquipment: vi.fn(),
-  getUserInjuries: vi.fn(),
+  getExercises: vi.fn(async (filter?: ExerciseFilter) => filterRealExercises(filter)),
+  getUserProfile: vi.fn(async () => runtimeState.userProfile),
+  getMuscleFatigue: vi.fn(async () => runtimeState.fatigue),
+  getRecentSessions: vi.fn(async () => runtimeState.recentSessions),
+  getUserEquipment: vi.fn(async () => runtimeState.userEquipment),
+  getUserInjuries: vi.fn(async () => runtimeState.userInjuries),
   createWorkoutSession: vi.fn(),
   addSessionExercise: vi.fn(),
-  getRecentExerciseIds: vi.fn(() => []),
-  getRecentlyTrainedMuscles: vi.fn(() => []),
-  getProgressHistory: vi.fn(() => []),
+  getRecentExerciseIds: vi.fn(async () => runtimeState.recentExerciseIds),
+  getRecentlyTrainedMuscles: vi.fn(async () => runtimeState.recentlyTrainedMuscles),
+  getAllProgressRecords: vi.fn(async (_userId: string, limit = 100) =>
+    [...runtimeState.progressRecords]
+      .sort((left, right) => right.date.localeCompare(left.date))
+      .slice(0, limit)
+  ),
+  getAppState: vi.fn(async (key: string) => runtimeState.appState.get(key) ?? null),
 }));
 vi.mock('../src/database/schema', () => ({
   getDatabase: vi.fn(() => ({
@@ -29,35 +110,31 @@ vi.mock('../src/security/randomId', () => ({
   generateSecureId: vi.fn((prefix: string) => `${prefix}_test_${Date.now()}`),
 }));
 vi.mock('../src/services/adaptiveTrainingService', () => ({
-  getAdaptiveTrainingProfile: vi.fn(() => ({
-    fatigueSensitivity: 1.0,
-    volumePreference: 1.0,
-    recoveryRate: 1.0,
-    progressionAggressiveness: 1.0,
-    varietyPreference: 1.0,
-  })),
+  getAdaptiveTrainingProfile: vi.fn((userId: string) => getDefaultAdaptiveTrainingProfile(userId)),
 }));
 
-import { generateWorkout } from '../src/engines/workoutGenerator';
+import { analyzeWorkoutGeneration, generateWorkout } from '../src/engines/workoutGenerator';
 import {
   getUserProfile,
   getMuscleFatigue,
-  getRecentSessions,
   getExercises,
   getUserEquipment,
   getUserInjuries,
+  getAllProgressRecords,
+  getAppState,
 } from '../src/database/service';
 
 const mockGetUserProfile = vi.mocked(getUserProfile);
 const mockGetMuscleFatigue = vi.mocked(getMuscleFatigue);
-const mockGetRecentSessions = vi.mocked(getRecentSessions);
 const mockGetExercises = vi.mocked(getExercises);
 const mockGetUserEquipment = vi.mocked(getUserEquipment);
 const mockGetUserInjuries = vi.mocked(getUserInjuries);
+const mockGetAllProgressRecords = vi.mocked(getAllProgressRecords);
+const mockGetAppState = vi.mocked(getAppState);
 
 const MOCK_PROFILE = {
   id: 'u1',
-  goal: 'strength' as const,
+  goal: 'body_control' as const,
   experience: 'intermediate' as const,
   training_days_per_week: 4,
   time_per_session_minutes: 45,
@@ -69,85 +146,95 @@ const MOCK_PROFILE = {
   locked: false,
 };
 
-function mockExercise(overrides: Record<string, any> = {}) {
-  return {
-    id: overrides.id || 'ex_1',
-    name: overrides.name || 'Push-up',
-    category: overrides.category || 'strength',
-    difficulty: overrides.difficulty || 'intermediate',
-    equipment_level: overrides.equipment_level || 'none',
-    impact_level: overrides.impact_level || 'low_impact',
-    space_required: overrides.space_required || 'mat_only_1x1',
-    time_per_set_seconds: 30,
-    instructions: [],
-    order_in_category: 0,
-    audio_intro: '',
-    audio_setup: '',
-    audio_execution: '',
-    audio_transition: '',
-    created_at: '2024-01-01',
-    updated_at: '2024-01-01',
-    primary_muscles: overrides.primary_muscles || ['chest_mid'],
-    secondary_muscles: overrides.secondary_muscles || ['triceps'],
-    equipment_required: overrides.equipment_required || [],
-    equipment_optional: [],
-    training_types: overrides.training_types || [{ type: 'hypertrophy', effectiveness: 8 }],
-  };
-}
-
 beforeEach(() => {
   vi.clearAllMocks();
+  runtimeState.userProfile = null;
+  runtimeState.fatigue = [];
+  runtimeState.recentSessions = [];
+  runtimeState.userEquipment = [];
+  runtimeState.userInjuries = [];
+  runtimeState.recentExerciseIds = [];
+  runtimeState.recentlyTrainedMuscles = [];
+  runtimeState.progressRecords = [];
+  runtimeState.appState = new Map();
 });
 
 describe('generateWorkout integration', () => {
   it('throws when no profile exists', async () => {
-    mockGetUserProfile.mockResolvedValue(null);
+    runtimeState.userProfile = null;
     await expect(generateWorkout('u1')).rejects.toThrow('User profile not found');
   });
 
-  it('returns a workout with 4-6 exercises when profile and exercises exist', async () => {
-    mockGetUserProfile.mockResolvedValue(MOCK_PROFILE);
-    mockGetMuscleFatigue.mockResolvedValue([]);
-    mockGetRecentSessions.mockResolvedValue([]);
-    mockGetUserEquipment.mockResolvedValue([]);
-    mockGetUserInjuries.mockResolvedValue([]);
-    // Provide enough exercises for selection
-    const exercises = [
-      mockExercise({ id: 'ex_push1', primary_muscles: ['chest_mid'], training_types: [{ type: 'hypertrophy', effectiveness: 8 }] }),
-      mockExercise({ id: 'ex_push2', name: 'Dip', primary_muscles: ['triceps'], training_types: [{ type: 'hypertrophy', effectiveness: 7 }] }),
-      mockExercise({ id: 'ex_pull1', name: 'Pull-up', primary_muscles: ['lats'], training_types: [{ type: 'strength', effectiveness: 9 }] }),
-      mockExercise({ id: 'ex_pull2', name: 'Row', primary_muscles: ['rhomboids'], training_types: [{ type: 'hypertrophy', effectiveness: 7 }] }),
-      mockExercise({ id: 'ex_leg1', name: 'Squat', primary_muscles: ['quads'], training_types: [{ type: 'hypertrophy', effectiveness: 9 }] }),
-      mockExercise({ id: 'ex_leg2', name: 'Lunge', primary_muscles: ['glutes_max'], training_types: [{ type: 'hypertrophy', effectiveness: 7 }] }),
-      mockExercise({ id: 'ex_core1', name: 'Plank', primary_muscles: ['abs'], training_types: [{ type: 'endurance', effectiveness: 6 }] }),
-      mockExercise({ id: 'ex_core2', name: 'Crunch', primary_muscles: ['obliques'], training_types: [{ type: 'endurance', effectiveness: 5 }] }),
-    ];
-    mockGetExercises.mockResolvedValue(exercises as any);
+  it('returns a workout with 4-6 exercises using the real exercise catalogue', async () => {
+    runtimeState.userProfile = MOCK_PROFILE;
+    runtimeState.appState.set('user.equipment_level', 'none');
 
     const result = await generateWorkout('u1');
+
     expect(result).not.toBeNull();
     expect(result!.exercises.length).toBeGreaterThanOrEqual(4);
     expect(result!.exercises.length).toBeLessThanOrEqual(6);
+    expect(result!.exercises.every(({ exercise }) => exercise.training_types.length > 0)).toBe(true);
+    expect(mockGetExercises).toHaveBeenCalled();
+    expect(mockGetAllProgressRecords).toHaveBeenCalledTimes(1);
+    expect(mockGetAppState).toHaveBeenCalledWith('user.equipment_level');
   });
 
-  it('generates workout with deload intent when deloadFlag is true', async () => {
-    mockGetUserProfile.mockResolvedValue(MOCK_PROFILE);
-    mockGetMuscleFatigue.mockResolvedValue([]);
-    mockGetRecentSessions.mockResolvedValue([]);
-    mockGetUserEquipment.mockResolvedValue([]);
-    mockGetUserInjuries.mockResolvedValue([]);
-    const exercises = [
-      mockExercise({ id: 'ex_1', primary_muscles: ['chest_mid'] }),
-      mockExercise({ id: 'ex_2', primary_muscles: ['lats'] }),
-      mockExercise({ id: 'ex_3', primary_muscles: ['quads'] }),
-      mockExercise({ id: 'ex_4', primary_muscles: ['abs'] }),
-      mockExercise({ id: 'ex_5', primary_muscles: ['triceps'] }),
-    ];
-    mockGetExercises.mockResolvedValue(exercises as any);
+  it('generates a deload workout with reduced volume using the real exercise catalogue', async () => {
+    runtimeState.userProfile = MOCK_PROFILE;
+    runtimeState.appState.set('user.equipment_level', 'none');
 
-    const result = await generateWorkout('u1', true);
+    const normalWorkout = await generateWorkout('u1', false);
+    const deloadWorkout = await generateWorkout('u1', true);
+
+    expect(normalWorkout).not.toBeNull();
+    expect(deloadWorkout).not.toBeNull();
+    expect(deloadWorkout!.intent.is_deload).toBe(true);
+    expect(deloadWorkout!.exercises.length).toBeGreaterThanOrEqual(4);
+
+    const normalById = new Map(normalWorkout!.exercises.map((entry) => [entry.exercise.id, entry.sets]));
+    for (const entry of deloadWorkout!.exercises) {
+      const normalSets = normalById.get(entry.exercise.id);
+      if (normalSets) {
+        expect(entry.sets).toBeLessThanOrEqual(normalSets);
+      }
+    }
+  });
+
+  it('respects equipment-level preference and severe injuries with the real exercise catalogue', async () => {
+    runtimeState.userProfile = MOCK_PROFILE;
+    runtimeState.appState.set('user.equipment_level', 'none');
+    runtimeState.userInjuries = [
+      {
+        user_id: 'u1',
+        muscle: 'chest_mid',
+        severity: 'severe',
+        created_at: '2024-01-01',
+      },
+    ];
+
+    const result = await generateWorkout('u1');
+
     expect(result).not.toBeNull();
-    expect(result!.intent.is_deload).toBe(true);
-    expect(result!.exercises.length).toBeGreaterThanOrEqual(4);
+    expect(result!.exercises.every(({ exercise }) => exercise.equipment_level === 'none')).toBe(true);
+    expect(
+      result!.exercises.some(({ exercise }) => exercise.primary_muscles.includes('chest_mid'))
+    ).toBe(false);
+  });
+
+  it('prioritizes the freshest focus pattern instead of forcing one-per-pattern', async () => {
+    runtimeState.userProfile = MOCK_PROFILE;
+    runtimeState.appState.set('user.equipment_level', 'none');
+    runtimeState.recentlyTrainedMuscles = [
+      'chest_mid', 'chest_upper', 'chest_lower', 'deltoids_front', 'triceps',
+      'lats', 'rhomboids', 'biceps', 'deltoids_rear', 'traps_mid',
+      'quads', 'hamstrings', 'glutes_max', 'calves_gastrocnemius',
+    ];
+
+    const analysis = await analyzeWorkoutGeneration('u1');
+
+    expect(analysis).not.toBeNull();
+    expect(analysis!.intent.focus_pattern).toBe('core');
+    expect(analysis!.selected.filter((entry) => entry.matches_focus_pattern).length).toBeGreaterThanOrEqual(2);
   });
 });

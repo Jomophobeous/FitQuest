@@ -5,6 +5,10 @@
   ],
   "files.exclude": {
     "agents/alfred/vscode-extension/out": true,
-    "agents/alfred/vscode-extension/node_modules": true
+    "agents/alfred/vscode-extension/node_modules": true,
+    "workspace-repos": true
+  },
+  "search.exclude": {
+    "workspace-repos": true
   }
 }

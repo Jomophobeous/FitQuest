@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { useTheme } from '../context/ThemeContext';
 import type { ThemeMode } from '../design/theme-system';
-import { getUserRankInfo, type UserRankInfo, type RankMilestone } from '../services/rankingService';
+import { getUserRankInfo, getLevelQuote, type UserRankInfo, type RankMilestone } from '../services/rankingService';
 import { GlassCard, ProgressRing } from './ui/GlassUI';
 
 /** 
@@ -153,10 +153,10 @@ export function RankCard({ level, totalXP, showQuote = true }: RankCardProps) {
           </View>
         )}
 
-        {/* Motivational quote */}
+        {/* Motivational quote — unique per level */}
         {showQuote && (
           <Text style={[styles.quote, { color: theme.colors.textMuted }]}>
-            {currentRank.quote}
+            {getLevelQuote(level)}
           </Text>
         )}
 

@@ -100,6 +100,7 @@ const REFERENCE_RANGES = {
 // ============================================
 
 export class AnomalyDetector {
+  private static instance: AnomalyDetector | null = null;
   private config: Required<AnomalyConfig>;
   // Deduplication: track recently alerted anomaly types with cooldown
   private recentAlerts: Map<string, number> = new Map(); // key → timestamp
@@ -107,6 +108,13 @@ export class AnomalyDetector {
 
   constructor(config?: AnomalyConfig) {
     this.config = { ...DEFAULT_CONFIG, ...config };
+  }
+
+  static getInstance(config?: AnomalyConfig): AnomalyDetector {
+    if (!AnomalyDetector.instance) {
+      AnomalyDetector.instance = new AnomalyDetector(config);
+    }
+    return AnomalyDetector.instance;
   }
 
   // ============================================
@@ -248,7 +256,7 @@ export class AnomalyDetector {
   async analyzeHeartRate(dataPoints: MetricDataPoint[]): Promise<AnomalyResult[]> {
     const anomalies: AnomalyResult[] = [];
     const values = dataPoints.map((d) => d.value);
-    const latest = values[values.length - 1];
+    const latest = values[values.length - 1]!;
     const ref = REFERENCE_RANGES.restingHeartRate;
 
     // Critical range check
@@ -288,7 +296,7 @@ export class AnomalyDetector {
     if (values.length >= 5) {
       const diffs = [];
       for (let i = 1; i < values.length; i++) {
-        diffs.push(Math.abs(values[i] - values[i - 1]));
+        diffs.push(Math.abs(values[i]! - values[i - 1]!));
       }
       const avgDiff = diffs.reduce((a, b) => a + b, 0) / diffs.length;
       const recentDiffs = diffs.slice(-3);
@@ -323,7 +331,7 @@ export class AnomalyDetector {
     if (sorted.length < 3) return anomalies;
 
     // Check weekly rate of change
-    const latest = sorted[sorted.length - 1];
+    const latest = sorted[sorted.length - 1]!;
     const oneWeekAgo = latest.timestamp - 7 * 86400000;
     const weekAgoPoint = sorted.find((d) => d.timestamp >= oneWeekAgo);
 
@@ -368,7 +376,7 @@ export class AnomalyDetector {
     values: number[],
     type: AnomalyType
   ): AnomalyResult | null {
-    const latest = values[values.length - 1];
+    const latest = values[values.length - 1]!;
     const z = this.calculateZScore(latest, values.slice(0, -1));
 
     if (Math.abs(z) < this.config.zScoreThreshold) return null;
@@ -401,7 +409,7 @@ export class AnomalyDetector {
     values: number[],
     type: AnomalyType
   ): AnomalyResult | null {
-    const latest = values[values.length - 1];
+    const latest = values[values.length - 1]!;
     const sorted = [...values].sort((a, b) => a - b);
 
     const q1 = this.percentile(sorted, 25);
@@ -440,7 +448,7 @@ export class AnomalyDetector {
     dataPoints: MetricDataPoint[],
     type: AnomalyType
   ): AnomalyResult | null {
-    const latest = dataPoints[dataPoints.length - 1];
+    const latest = dataPoints[dataPoints.length - 1]!;
     const prev = dataPoints[dataPoints.length - 2];
 
     if (!prev || prev.value === 0) return null;
@@ -480,7 +488,7 @@ export class AnomalyDetector {
     if (values.length < 7) return null;
 
     const windowSize = Math.min(7, Math.floor(values.length / 2));
-    const latest = values[values.length - 1];
+    const latest = values[values.length - 1]!;
 
     // Calculate moving average of previous values
     const maWindow = values.slice(-windowSize - 1, -1);
@@ -576,8 +584,8 @@ export class AnomalyDetector {
     const idx = (p / 100) * (sorted.length - 1);
     const lower = Math.floor(idx);
     const upper = Math.ceil(idx);
-    if (lower === upper) return sorted[lower];
-    return sorted[lower] + (sorted[upper] - sorted[lower]) * (idx - lower);
+    if (lower === upper) return sorted[lower]!;
+    return sorted[lower]! + (sorted[upper]! - sorted[lower]!) * (idx - lower);
   }
 
   private linearTrend(values: number[]): number {
@@ -587,8 +595,8 @@ export class AnomalyDetector {
     let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
     for (let i = 0; i < n; i++) {
       sumX += i;
-      sumY += values[i];
-      sumXY += i * values[i];
+      sumY += values[i]!;
+      sumXY += i * values[i]!;
       sumXX += i * i;
     }
 
@@ -625,4 +633,4 @@ export class AnomalyDetector {
 }
 
 // Default singleton
-export const anomalyDetector = new AnomalyDetector();
+export const anomalyDetector = AnomalyDetector.getInstance();

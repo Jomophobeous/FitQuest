@@ -14,6 +14,7 @@
 
 import { getAppState, setAppState } from '../database/service';
 import { getXPMultiplier, checkMilestoneReached } from './rankingService';
+import { logEvent } from './telemetry';
 
 // ============================================
 // TYPES
@@ -58,12 +59,13 @@ function calculateLevel(totalXP: number): { level: number; currentLevelXP: numbe
 function buildXPData(totalXP: number): XPData {
   const { level, currentLevelXP } = calculateLevel(totalXP);
   const xpToNext = xpNeededForLevel(level);
+  const safeXpToNext = Math.max(1, xpToNext);
   return {
     totalXP,
     level,
     currentLevelXP,
     xpToNextLevel: xpToNext,
-    progressPercent: Math.round((currentLevelXP / xpToNext) * 100),
+    progressPercent: Math.round((currentLevelXP / safeXpToNext) * 100),
   };
 }
 
@@ -122,7 +124,7 @@ export async function awardWorkoutXP(
  * Tracks previously-awarded steps to give incremental XP
  */
 export async function awardStepXP(steps: number): Promise<XPGainResult | null> {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0]!;
   const lastDate = await getAppState(DAILY_STEP_XP_KEY);
   const prevStepsKey = 'daily_step_xp_prev_steps';
 
@@ -165,6 +167,7 @@ export async function awardProgressPhotoXP(): Promise<XPGainResult> {
  * Generic add XP function
  */
 export async function addXP(amount: number): Promise<XPGainResult> {
+  if (amount <= 0) return { xpEarned: 0, levelUp: false, oldLevel: 0, newLevel: 0, data: buildXPData(await loadTotalXP()) };
   const oldTotal = await loadTotalXP();
   const oldData = buildXPData(oldTotal);
   
@@ -173,6 +176,13 @@ export async function addXP(amount: number): Promise<XPGainResult> {
   
   const newData = buildXPData(newTotal);
   
+  void logEvent('xp_earned', {
+    xp_amount: amount,
+    new_total: newTotal,
+    new_level: newData.level,
+    level_up: newData.level > oldData.level,
+  });
+
   return {
     xpEarned: amount,
     levelUp: newData.level > oldData.level,
@@ -180,4 +190,159 @@ export async function addXP(amount: number): Promise<XPGainResult> {
     newLevel: newData.level,
     data: newData,
   };
+}
+
+// ============================================
+// MIND XP — Cognitive Fitness Leveling
+// ============================================
+
+export interface MindXPData {
+  totalMindXP: number;
+  mindLevel: number;
+  currentLevelXP: number;
+  xpToNextLevel: number;
+  progressPercent: number;
+  pagesReadTotal: number;
+  flashcardsReviewedTotal: number;
+  documentsCompleted: number;
+}
+
+const MIND_XP_PER_LEVEL = 200;
+
+/**
+ * Content quality multiplier — higher-quality material yields more XP.
+ * "Brainrot" (low reading level, very short) provides less XP.
+ */
+export function getContentQualityMultiplier(doc: {
+  reading_level?: string | null;
+  word_count?: number | null;
+  category?: string;
+}): number {
+  let multiplier = 1.0;
+
+  // Reading level affects XP: advanced = 1.5x, intermediate = 1.0x, beginner/low = 0.5x
+  const level = doc.reading_level?.toLowerCase();
+  if (level) {
+    if (level.includes('college') || level.includes('advanced') || level.includes('graduate')) {
+      multiplier = 1.5;
+    } else if (level.includes('high school') || level.includes('intermediate')) {
+      multiplier = 1.0;
+    } else if (level.includes('elementary') || level.includes('beginner') || level.includes('easy')) {
+      multiplier = 0.5;
+    }
+  }
+
+  // Very short documents (< 500 words) are likely low-effort content
+  const words = doc.word_count ?? 0;
+  if (words > 0 && words < 500) {
+    multiplier *= 0.6;
+  } else if (words >= 5000) {
+    multiplier *= 1.2; // Substantial reads get a bonus
+  }
+
+  return Math.max(0.3, Math.min(2.0, multiplier));
+}
+
+/**
+ * Award Mind XP for reading pages
+ * Base: 5 XP per page × content quality multiplier
+ */
+export async function awardReadingXP(
+  pagesRead: number,
+  durationMinutes: number,
+  contentQuality: number = 1.0,
+): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
+  try {
+    const { awardMindXP } = await import('../database/service');
+    const baseXP = pagesRead * 5;
+    const durationBonus = Math.floor(durationMinutes / 10) * 3; // 3 XP per 10 min focused reading
+    const totalXP = Math.max(1, Math.round((baseXP + durationBonus) * contentQuality));
+
+    const result = await awardMindXP('user_local_001', totalXP, 'reading');
+    return {
+      xpEarned: totalXP,
+      mindLevel: result.mind_level,
+      levelUp: result.levelUp,
+    };
+  } catch (e) {
+    console.warn('[XP] Failed to award reading XP:', e);
+    return { xpEarned: 0, mindLevel: 1, levelUp: false };
+  }
+}
+
+/**
+ * Award Mind XP for flashcard review
+ * Base: 3 XP per card, 5 XP if correct
+ */
+export async function awardFlashcardXP(cardsReviewed: number, correctCount: number = 0): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
+  try {
+    const { awardMindXP } = await import('../database/service');
+    const xp = (cardsReviewed * 3) + (correctCount * 2);
+    const result = await awardMindXP('user_local_001', xp, 'flashcard');
+    return { xpEarned: xp, mindLevel: result.mind_level, levelUp: result.levelUp };
+  } catch (e) {
+    console.warn('[XP] Failed to award flashcard XP:', e);
+    return { xpEarned: 0, mindLevel: 1, levelUp: false };
+  }
+}
+
+/**
+ * Award Mind XP for completing a document
+ * Base: 50 XP × content quality multiplier
+ */
+export async function awardDocumentCompleteXP(contentQuality: number = 1.0): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
+  try {
+    const { awardMindXP } = await import('../database/service');
+    const xp = Math.max(10, Math.round(50 * contentQuality));
+    const result = await awardMindXP('user_local_001', xp, 'document_complete');
+    return { xpEarned: xp, mindLevel: result.mind_level, levelUp: result.levelUp };
+  } catch (e) {
+    console.warn('[XP] Failed to award document complete XP:', e);
+    return { xpEarned: 0, mindLevel: 1, levelUp: false };
+  }
+}
+
+/**
+ * Get current Mind XP data
+ */
+export async function getMindXPData(): Promise<MindXPData> {
+  try {
+    const { getMindXP } = await import('../database/service');
+    const data = await getMindXP('user_local_001');
+    if (!data) {
+      return {
+        totalMindXP: 0,
+        mindLevel: 1,
+        currentLevelXP: 0,
+        xpToNextLevel: MIND_XP_PER_LEVEL,
+        progressPercent: 0,
+        pagesReadTotal: 0,
+        flashcardsReviewedTotal: 0,
+        documentsCompleted: 0,
+      };
+    }
+    const currentLevelXP = data.total_mind_xp % MIND_XP_PER_LEVEL;
+    return {
+      totalMindXP: data.total_mind_xp,
+      mindLevel: data.mind_level,
+      currentLevelXP,
+      xpToNextLevel: MIND_XP_PER_LEVEL,
+      progressPercent: Math.round((currentLevelXP / MIND_XP_PER_LEVEL) * 100),
+      pagesReadTotal: data.pages_read_total,
+      flashcardsReviewedTotal: data.flashcards_reviewed_total,
+      documentsCompleted: data.documents_completed,
+    };
+  } catch (e) {
+    console.warn('[XP] Failed to get mind XP data:', e);
+    return {
+      totalMindXP: 0,
+      mindLevel: 1,
+      currentLevelXP: 0,
+      xpToNextLevel: MIND_XP_PER_LEVEL,
+      progressPercent: 0,
+      pagesReadTotal: 0,
+      flashcardsReviewedTotal: 0,
+      documentsCompleted: 0,
+    };
+  }
 }

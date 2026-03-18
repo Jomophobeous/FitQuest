@@ -3,7 +3,7 @@
  * AI-powered meal suggestions with location-based food filtering
  */
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -24,15 +24,15 @@ import { getCached, setCached } from '../src/services/cacheStoreService';
 import {
   GlassCard,
   SectionHeader,
-  AnimatedListItem,
 } from '../src/components/ui/GlassUI';
 import {
   getCurrentLocation,
   getFoodsByLocation,
-  getMealSuggestions,
+  getMealSuggestionsFromFoods,
   type UserLocation,
   type FoodItem,
 } from '../src/services/locationService';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack';
 type MealRegionOverride = 'AUTO' | 'ZA' | 'US' | 'GB' | 'IN' | 'BR' | 'AU';
@@ -96,7 +96,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       alignSelf: 'flex-start',
     },
     locationText: { fontSize: 12, fontWeight: '500', color: theme.colors.textSecondary },
-    mealTabs: { flexGrow: 0, paddingHorizontal: theme.spacing[4], paddingVertical: theme.spacing[2] },
+    mealTabs: { flexGrow: 0, paddingHorizontal: theme.spacing[4], paddingTop: theme.spacing[2], paddingBottom: theme.spacing[3] },
     mealTab: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -108,7 +108,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       marginRight: theme.spacing[2],
     },
     mealTabText: { fontSize: 12 },
-    tipCard: { marginHorizontal: theme.spacing[4], marginTop: theme.spacing[2], padding: theme.spacing[4] },
+    tipCard: { marginHorizontal: theme.spacing[4], marginTop: theme.spacing[3], padding: theme.spacing[4] },
     tipRow: { flexDirection: 'row', alignItems: 'flex-start', gap: theme.spacing[3] },
     tipText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 19, color: theme.colors.text },
     emptyCard: { marginHorizontal: theme.spacing[4], padding: theme.spacing[6], alignItems: 'center' },
@@ -170,16 +170,36 @@ export default function MealPrepScreen() {
   const [location, setLocation] = useState<UserLocation | null>(null);
   const [manualRegionOverride, setManualRegionOverride] = useState<MealRegionOverride>('AUTO');
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
-  const [allFoods, setAllFoods] = useState<FoodItem[]>([]);
-  // Pre-computed meal suggestions per tab (avoids re-filtering on every tab switch)
-  const [mealSuggestionsCache, setMealSuggestionsCache] = useState<Record<MealType, { title: string; foods: FoodItem[]; tip: string }> | null>(null);
+  const [allFoods, setAllFoods] = useState<FoodItem[]>(() => getFoodsByLocation(null));
+  const [showAllFoods, setShowAllFoods] = useState(false);
+  const [showMoreMeal, setShowMoreMeal] = useState(false);
+
+  // Reset expand states when switching meal tabs
+  const handleMealChange = useCallback((meal: MealType) => {
+    setSelectedMeal(meal);
+    setShowMoreMeal(false);
+  }, []);
+
+  // Derive meal suggestions for the ACTIVE tab only (not all 6 tabs)
+  const currentMealSuggestions = useMemo(
+    () => getMealSuggestionsFromFoods(selectedMeal, allFoods),
+    [selectedMeal, allFoods]
+  );
+
+  // Limit meal suggestion display to 15 initially
+  const visibleMealFoods = useMemo(
+    () => showMoreMeal ? currentMealSuggestions.foods : currentMealSuggestions.foods.slice(0, 15),
+    [currentMealSuggestions.foods, showMoreMeal]
+  );
+
+  // Limit "all foods" list to 30 items until user expands
+  const visibleFoods = useMemo(
+    () => showAllFoods ? allFoods : allFoods.slice(0, 30),
+    [allFoods, showAllFoods]
+  );
 
   useEffect(() => {
     loadLocation();
-  }, []);
-
-  useEffect(() => {
-    console.log(`[MealPrep] Bundle signature: ${MEAL_PREP_BUNDLE_SIGNATURE}`);
   }, []);
 
   useEffect(() => {
@@ -195,15 +215,8 @@ export default function MealPrepScreen() {
       const freshFoods = getFoodsByLocation(location);
       if (active) {
         setAllFoods(freshFoods);
-        // Pre-compute all meal suggestions at once to avoid recalculating on tab switch
-        const allSuggestions: Record<string, { title: string; foods: FoodItem[]; tip: string }> = {};
-        const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner', 'pre-workout', 'post-workout', 'snack'];
-        for (const mt of mealTypes) {
-          allSuggestions[mt] = getMealSuggestions(mt, location);
-        }
-        setMealSuggestionsCache(allSuggestions as Record<MealType, { title: string; foods: FoodItem[]; tip: string }>);
-        // Only update cache if component is still mounted
-        await setCached('meal', cacheId, freshFoods);
+        // Write cache in background — don't block UI
+        void setCached('meal', cacheId, freshFoods);
       }
     };
 
@@ -213,10 +226,15 @@ export default function MealPrepScreen() {
     };
   }, [location]);
 
-  const loadLocation = async () => {
+  const loadLocation = useCallback(async () => {
     setIsLoadingLocation(true);
     try {
-      const savedOverride = (await getAppState('meal.region_override')) as MealRegionOverride | null;
+      // Parallelize override check + cache read
+      const [savedOverride, cachedAutoLocation] = await Promise.all([
+        getAppState('meal.region_override').catch(() => null) as Promise<MealRegionOverride | null>,
+        getCached<UserLocation | null>('meal', 'auto_location'),
+      ]);
+
       const activeOverride: MealRegionOverride =
         savedOverride && (savedOverride in REGION_OVERRIDE_LOCATION || savedOverride === 'AUTO')
           ? savedOverride
@@ -234,11 +252,10 @@ export default function MealPrepScreen() {
           isoCountryCode: overrideLocation.isoCountryCode,
         };
         setLocation(overrideResolvedLocation);
-        await setCached('meal', 'auto_location', overrideResolvedLocation, 10 * 60 * 1000);
+        void setCached('meal', 'auto_location', overrideResolvedLocation, 24 * 60 * 60 * 1000);
         return;
       }
 
-      const cachedAutoLocation = await getCached<UserLocation | null>('meal', 'auto_location');
       if (cachedAutoLocation.value) {
         setLocation(cachedAutoLocation.value);
         return;
@@ -246,17 +263,15 @@ export default function MealPrepScreen() {
 
       const loc = await getCurrentLocation();
       setLocation(loc);
-      await setCached('meal', 'auto_location', loc, 10 * 60 * 1000);
+      void setCached('meal', 'auto_location', loc, 24 * 60 * 60 * 1000);
     } catch (e) {
       console.warn('[MealPrep] Failed to load location:', e);
-      // Default to global foods on error
       setLocation(null);
     } finally {
       setIsLoadingLocation(false);
     }
-  };
+  }, []);
 
-  const currentMealSuggestions = mealSuggestionsCache?.[selectedMeal] || getMealSuggestions(selectedMeal, location);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const mealTabColors = useMemo(
@@ -385,6 +400,12 @@ export default function MealPrepScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScreenTutorial
+        screenKey="meal-prep"
+        icon="food-apple"
+        title="Meal Prep"
+        description="Get AI-powered meal suggestions based on your location and fitness goals. Switch between meal types and discover region-specific foods."
+      />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeIn.duration(150)}>
           <LinearGradient
@@ -399,6 +420,7 @@ export default function MealPrepScreen() {
               <View style={styles.headerSpacer} />
             </View>
 
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
             <TouchableOpacity
               onPress={loadLocation}
               style={[styles.locationBadge, dynamicStyles.locationBadge]}
@@ -423,6 +445,22 @@ export default function MealPrepScreen() {
                 </Text>
               )}
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                // Force-refresh: clear cache then reload
+                void setCached('meal', 'auto_location', null, 0);
+                loadLocation();
+              }}
+              style={{
+                padding: theme.spacing[2],
+                borderRadius: theme.borderRadius.full,
+                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+              }}
+            >
+              <MaterialCommunityIcons name="refresh" size={16} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+            </View>
           </LinearGradient>
         </Animated.View>
 
@@ -434,7 +472,7 @@ export default function MealPrepScreen() {
               return (
                 <TouchableOpacity
                   key={tab.key}
-                  onPress={() => setSelectedMeal(tab.key)}
+                  onPress={() => handleMealChange(tab.key)}
                   style={[styles.mealTab, dynamicStyles.mealTabStyle[tab.key]]}
                 >
                   <MaterialCommunityIcons
@@ -468,11 +506,11 @@ export default function MealPrepScreen() {
             </Text>
           </GlassCard>
         ) : (
-          currentMealSuggestions.foods.map((food, idx) => {
+          visibleMealFoods.map((food, idx) => {
             const hasLocalName = food.local_name != null && String(food.local_name).trim().length > 0;
 
             return (
-              <AnimatedListItem key={`${food.name}-${idx}`} index={idx} style={styles.foodItemSpacing}>
+              <View key={`${food.name}-${idx}`} style={styles.foodItemSpacing}>
                 <View style={[styles.foodCard, dynamicStyles.foodCard]}>
                   <View style={[styles.foodIcon, dynamicStyles.categoryIcon[food.category]]}>
                     <MaterialCommunityIcons
@@ -503,15 +541,26 @@ export default function MealPrepScreen() {
                     ) : null}
                   </View>
                 </View>
-              </AnimatedListItem>
+              </View>
             );
           })
         )}
 
+        {!showMoreMeal && currentMealSuggestions.foods.length > 15 && (
+          <TouchableOpacity
+            onPress={() => setShowMoreMeal(true)}
+            style={{ alignItems: 'center', paddingVertical: theme.spacing[3] }}
+          >
+            <Text style={{ color: selectedTabColor, fontWeight: '600', fontSize: 13 }}>
+              {`Show all ${currentMealSuggestions.foods.length} ${selectedMeal} foods`}
+            </Text>
+          </TouchableOpacity>
+        )}
+
         <SectionHeader title={t('meal.section.fullFoodList')} delay={400} />
 
-        {allFoods.map((food, idx) => (
-          <AnimatedListItem key={`all-${food.name}-${idx}`} index={idx} style={styles.compactItemSpacing}>
+        {visibleFoods.map((food, idx) => (
+          <View key={`all-${food.name}-${idx}`} style={styles.compactItemSpacing}>
             <View style={[styles.compactFoodRow, dynamicStyles.compactFoodRow]}>
               <View style={[styles.categoryDot, dynamicStyles.categoryDot[food.category]]} />
               <Text style={styles.compactFoodName}>{food.name}</Text>
@@ -522,8 +571,19 @@ export default function MealPrepScreen() {
                 </Text>
               ) : null}
             </View>
-          </AnimatedListItem>
+          </View>
         ))}
+
+        {!showAllFoods && allFoods.length > 30 && (
+          <TouchableOpacity
+            onPress={() => setShowAllFoods(true)}
+            style={{ alignItems: 'center', paddingVertical: theme.spacing[4] }}
+          >
+            <Text style={{ color: theme.colors.accent, fontWeight: '600', fontSize: 14 }}>
+              {t('meal.showMore') || `Show all ${allFoods.length} foods`}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <GlassCard style={styles.locationInfo} delay={500}>
           <MaterialCommunityIcons name="information-outline" size={16} color={theme.colors.accent} />

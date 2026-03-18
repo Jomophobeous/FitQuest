@@ -40,6 +40,8 @@ import {
   type Flashcard,
 } from '../src/fitmind/schema';
 import { DocumentImportPipeline } from '../src/fitmind/DocumentImportPipeline';
+import { useDatabase } from '../src/context/DatabaseContext';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 type FilterStatus = 'ALL' | DocumentStatus;
 
@@ -51,11 +53,11 @@ const STATUS_FILTERS: { key: FilterStatus; icon: string; label: string }[] = [
   { key: 'ARCHIVED', icon: 'archive', label: 'fitmind.filter.archived' },
 ];
 
-const STATUS_COLORS: Record<string, string> = {
-  UNREAD: '#3B82F6',
-  READING: '#10B981',
-  COMPLETED: '#8B5CF6',
-  ARCHIVED: '#6B7280',
+const STATUS_COLOR_KEYS: Record<string, string> = {
+  UNREAD: 'blue',
+  READING: 'accent',
+  COMPLETED: 'purple',
+  ARCHIVED: 'textMuted',
 };
 
 function generateId(): string {
@@ -65,6 +67,7 @@ function generateId(): string {
 export default function FitMindLibraryScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const router = useRouter();
 
   // Data state
@@ -103,12 +106,12 @@ export default function FitMindLibraryScreen() {
   }, [filter]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (dbReady) void loadData();
+  }, [dbReady, loadData]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    loadData();
+    void loadData();
   }, [loadData]);
 
   const handleAddDocument = async () => {
@@ -138,7 +141,7 @@ export default function FitMindLibraryScreen() {
         word_count: wordCount,
         reading_level: null,
         estimated_minutes: estimatedMinutes,
-        cover_color: ['#10B981', '#3B82F6', '#8B5CF6', '#F4A427', '#EC4899'][Math.floor(Math.random() * 5)],
+        cover_color: ['#10B981', '#3B82F6', '#8B5CF6', '#F4A427', '#EC4899'][Math.floor(Math.random() * 5)] ?? '#10B981',
       });
 
       setNewTitle('');
@@ -190,7 +193,8 @@ export default function FitMindLibraryScreen() {
 
       if (result.canceled || !result.assets?.length) return;
 
-      const asset = result.assets[0];
+      const asset = result.assets?.[0];
+      if (!asset) return;
       setImportingFile(true);
       setImportProgress(0);
 
@@ -226,7 +230,7 @@ export default function FitMindLibraryScreen() {
     router.push({ pathname: '/fitmind-reader', params: { id: docId } });
   };
 
-  const statusColor = (s: string) => STATUS_COLORS[s] || theme.colors.textMuted;
+  const statusColor = (s: string) => (theme.colors as any)[STATUS_COLOR_KEYS[s] ?? 'textMuted'] || theme.colors.textMuted;
 
   const dynamicStyles = {
     surface: { backgroundColor: theme.colors.surface },
@@ -265,29 +269,27 @@ export default function FitMindLibraryScreen() {
       </Animated.View>
 
       {/* Stats Row */}
-      <Animated.View entering={FadeInDown.delay(100).duration(200)}>
-        <View style={styles.statsRow}>
+      <View style={styles.statsRow}>
           <GlassCard style={styles.statCard} delay={0}>
-            <ThemedText variant="h2" color="accent">{readingStreak.currentStreak}</ThemedText>
+            <ThemedText variant="h3" color="accent">{readingStreak.currentStreak}</ThemedText>
             <ThemedText variant="caption" color="muted">{t('fitmind.dayStreak')}</ThemedText>
           </GlassCard>
           <GlassCard style={styles.statCard} delay={50}>
-            <ThemedText variant="h2" color="primary">{readingStreak.totalBooksCompleted}</ThemedText>
+            <ThemedText variant="h3" color="primary">{readingStreak.totalBooksCompleted}</ThemedText>
             <ThemedText variant="caption" color="muted">{t('fitmind.completed')}</ThemedText>
           </GlassCard>
           <GlassCard style={styles.statCard} delay={100}>
-            <ThemedText variant="h2" color="primary">{readingStreak.totalPagesRead}</ThemedText>
+            <ThemedText variant="h3" color="primary">{readingStreak.totalPagesRead}</ThemedText>
             <ThemedText variant="caption" color="muted">{t('fitmind.pagesRead')}</ThemedText>
           </GlassCard>
           <GlassCard style={styles.statCard} delay={150}>
-            <ThemedText variant="h2" color="primary">{dueFlashcards.length}</ThemedText>
+            <ThemedText variant="h3" color="primary">{dueFlashcards.length}</ThemedText>
             <ThemedText variant="caption" color="muted">{t('fitmind.cardsDue')}</ThemedText>
           </GlassCard>
         </View>
-      </Animated.View>
 
       {/* Filter Tabs */}
-      <Animated.View entering={FadeInDown.delay(150).duration(200)}>
+      <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
           {STATUS_FILTERS.map((f) => {
             const active = filter === f.key;
@@ -306,7 +308,7 @@ export default function FitMindLibraryScreen() {
             );
           })}
         </ScrollView>
-      </Animated.View>
+      </View>
 
       {/* Document List Header */}
       <SectionHeader title={`Library (${documents.length})`} delay={200} />
@@ -324,6 +326,12 @@ export default function FitMindLibraryScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenTutorial
+        screenKey="fitmind"
+        icon="book-open-page-variant"
+        title="FitMind Library"
+        description="Your cognitive fitness hub. Import documents, articles, and notes. Read, highlight, create flashcards, and chat with AI to deepen your understanding."
+      />
       <SafeAreaView edges={['top']} style={styles.safeArea}>
         <FlatList
           data={documents}
@@ -481,10 +489,10 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'space-between' },
   addBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
 
-  statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 12 },
-  statCard: { flex: 1, alignItems: 'center', paddingVertical: 12, paddingHorizontal: 4 },
+  statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 16 },
+  statCard: { flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, minWidth: 70 },
 
-  filterRow: { paddingHorizontal: 16, marginBottom: 12 },
+  filterRow: { paddingHorizontal: 16, paddingVertical: 4, marginBottom: 12 },
   filterPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1, marginRight: 8 },
 
   emptyCard: { alignItems: 'center', padding: 32, marginHorizontal: 16 },

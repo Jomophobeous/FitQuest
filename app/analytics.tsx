@@ -52,6 +52,7 @@ import {
   fetchPersonalRecords,
   fetchStreakData,
 } from '../src/services/analyticsDataService';
+import { useDatabase } from '../src/context/DatabaseContext';
 
 // ─── SCREEN WIDTH ──────────────────────────────────────────────
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -91,6 +92,7 @@ function getMonthCalendar(year: number, month: number) {
 export default function AnalyticsScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const [range, setRange] = useState<'weekly' | 'monthly'>('weekly');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -144,14 +146,14 @@ export default function AnalyticsScreen() {
   }, [range]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (dbReady) loadData();
+  }, [dbReady, loadData]);
 
   // Reload data when screen gains focus (e.g. after completing a workout)
   useFocusEffect(
     useCallback(() => {
-      loadData();
-    }, [range])
+      if (dbReady) loadData();
+    }, [dbReady, range])
   );
 
   const handleRefresh = useCallback(async () => {
@@ -185,15 +187,58 @@ export default function AnalyticsScreen() {
           />
         }
       >
-        {/* ─── HEADER ─────────────────────────────── */}
-        <Animated.View entering={FadeInDown.delay(50).duration(150)} style={s.header}>
-          <Text style={s.heroTitle}>{t('analytics.title')}</Text>
-          <Text style={s.heroSub}>{t('analytics.subtitle')}</Text>
+        {/* ─── HERO HEADER ─────────────────────────────── */}
+        <Animated.View entering={FadeInDown.delay(50).duration(200)}>
+          <LinearGradient
+            colors={theme.isDark
+              ? [theme.colors.accent + '12', theme.colors.purple + '08', 'transparent'] as [string, string, string]
+              : [theme.colors.accent + '0A', theme.colors.purple + '05', 'transparent'] as [string, string, string]}
+            style={{ paddingTop: 8, paddingBottom: 20, borderRadius: 20, marginBottom: 4 }}
+          >
+            <Text style={s.heroTitle} numberOfLines={1} adjustsFontSizeToFit>{t('analytics.title')}</Text>
+            <Text style={s.heroSub} numberOfLines={2}>{t('analytics.subtitle')}</Text>
+
+            {/* Quick Stats Summary */}
+            {!loading && (
+              <View style={s.heroStatsRow}>
+                <View style={s.heroStatItem}>
+                  <View style={[s.heroStatIcon, { backgroundColor: theme.colors.warning + '20' }]}>
+                    <MaterialCommunityIcons name="fire" size={18} color={theme.colors.warning} />
+                  </View>
+                  <Text style={[s.heroStatValue, { color: theme.colors.text }]}>{streakData.currentStreak}</Text>
+                  <Text style={[s.heroStatLabel, { color: theme.colors.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{t('analytics.dayStreak')}</Text>
+                </View>
+                <View style={s.heroStatItem}>
+                  <View style={[s.heroStatIcon, { backgroundColor: theme.colors.accent + '20' }]}>
+                    <MaterialCommunityIcons name="dumbbell" size={18} color={theme.colors.accent} />
+                  </View>
+                  <Text style={[s.heroStatValue, { color: theme.colors.text }]}>{streakData.totalWorkouts}</Text>
+                  <Text style={[s.heroStatLabel, { color: theme.colors.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{t('analytics.totalWorkouts')}</Text>
+                </View>
+                <View style={s.heroStatItem}>
+                  <View style={[s.heroStatIcon, { backgroundColor: theme.colors.purple + '20' }]}>
+                    <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme.colors.purple} />
+                  </View>
+                  <Text style={[s.heroStatValue, { color: theme.colors.text }]}>
+                    {xpData.reduce((a, b) => a + b, 0).toLocaleString()}
+                  </Text>
+                  <Text style={[s.heroStatLabel, { color: theme.colors.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{t('analytics.totalXP')}</Text>
+                </View>
+                <View style={s.heroStatItem}>
+                  <View style={[s.heroStatIcon, { backgroundColor: theme.colors.blue + '20' }]}>
+                    <MaterialCommunityIcons name="percent" size={18} color={theme.colors.blue} />
+                  </View>
+                  <Text style={[s.heroStatValue, { color: theme.colors.text }]}>{streakData.consistencyPct}%</Text>
+                  <Text style={[s.heroStatLabel, { color: theme.colors.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{t('analytics.consistency')}</Text>
+                </View>
+              </View>
+            )}
+          </LinearGradient>
         </Animated.View>
 
         {/* ─── RANGE TOGGLE ───────────────────────── */}
         <Animated.View entering={FadeInDown.delay(100).duration(150)}>
-          <GlassCard style={s.toggleRow}>
+          <View style={s.toggleRow}>
             {(['weekly', 'monthly'] as const).map((r) => (
               <TouchableOpacity
                 key={r}
@@ -201,20 +246,26 @@ export default function AnalyticsScreen() {
                 onPress={() => setRange(r)}
                 style={[
                   s.toggleBtn,
-                  range === r && { backgroundColor: theme.colors.accent + '30' },
+                  {
+                    backgroundColor: range === r ? theme.colors.accent : 'transparent',
+                    borderColor: range === r ? theme.colors.accent : theme.colors.border,
+                  },
                 ]}
               >
                 <Text
                   style={[
                     s.toggleLabel,
-                    range === r && { color: theme.colors.accent, fontWeight: '700' },
+                    {
+                      color: range === r ? theme.colors.onAccent : theme.colors.textMuted,
+                      fontWeight: range === r ? '700' : '600',
+                    },
                   ]}
                 >
                   {r === 'weekly' ? t('analytics.weekly') : t('analytics.monthly')}
                 </Text>
               </TouchableOpacity>
             ))}
-          </GlassCard>
+          </View>
         </Animated.View>
 
         {!!loading && (
@@ -234,19 +285,22 @@ export default function AnalyticsScreen() {
                     const pct = bar.count / maxBarCount;
                     return (
                       <View key={`${bar.day}-${i}`} style={s.barCol}>
-                        <Text style={[s.barValue, { color: theme.colors.text }]}>{bar.count}</Text>
+                        <Text style={[s.barValue, { color: bar.count > 0 ? theme.colors.accent : theme.colors.textMuted }]}>{bar.count}</Text>
                         <View style={s.barTrack}>
                           <Animated.View
-                            entering={FadeInUp.delay(250 + i * 60).duration(150)}
-                            style={[
-                              s.barFill,
-                              {
-                                height: `${Math.max(pct * 100, 4)}%`,
-                                backgroundColor: theme.colors.accent,
-                                opacity: 0.5 + pct * 0.5,
-                              },
-                            ]}
-                          />
+                            entering={FadeInUp.delay(250 + i * 60).duration(200)}
+                          >
+                            <LinearGradient
+                              colors={[theme.colors.accent, theme.colors.accent + '60'] as [string, string]}
+                              style={[
+                                s.barFill,
+                                {
+                                  height: Math.max(pct * 100, bar.count > 0 ? 8 : 3),
+                                  opacity: 0.5 + pct * 0.5,
+                                },
+                              ]}
+                            />
+                          </Animated.View>
                         </View>
                         <Text style={[s.barLabel, { color: theme.colors.textMuted }]}>{bar.day}</Text>
                       </View>
@@ -559,20 +613,22 @@ export default function AnalyticsScreen() {
             <SectionHeader title={t('analytics.streakConsistency')} delay={850} />
             <Animated.View entering={FadeInDown.delay(900).duration(150)}>
               {/* Hero Streak Card */}
-              <GlassCard gradient glowColor={theme.colors.warning} style={{ paddingVertical: 24, paddingHorizontal: 20 }}>
+              <GlassCard gradient glowColor={theme.colors.warning} style={{ paddingVertical: 28, paddingHorizontal: 20 }}>
                 {/* Top row: Streak fire + Consistency ring */}
                 <View style={s.streakHeroRow}>
-                  {/* Current Streak - Hero element */}
+                  {/* Current Streak - Hero element with ring */}
                   <View style={s.streakHeroItem}>
-                    <LinearGradient
-                      colors={[theme.colors.warning + '20', theme.colors.warning + '08'] as [string, string]}
-                      style={s.streakFireCircle}
+                    <ProgressRing
+                      progress={Math.min(streakData.currentStreak / Math.max(streakData.longestStreak, 7), 1)}
+                      size={90}
+                      color={theme.colors.warning}
+                      strokeWidth={5}
                     >
-                      <MaterialCommunityIcons name="fire" size={32} color={theme.colors.warning} />
+                      <MaterialCommunityIcons name="fire" size={28} color={theme.colors.warning} />
                       <Text style={[s.streakNumber, { color: theme.colors.text }]}>
                         {streakData.currentStreak}
                       </Text>
-                    </LinearGradient>
+                    </ProgressRing>
                     <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>{t('analytics.dayStreak')}</Text>
                   </View>
 
@@ -625,27 +681,32 @@ export default function AnalyticsScreen() {
 const styles = (theme: any) =>
   StyleSheet.create({
     header: { marginTop: 8, marginBottom: 16 },
-    heroTitle: { fontSize: 30, fontWeight: '800', color: theme.colors.text },
+    heroTitle: { fontSize: 28, fontWeight: '800', color: theme.colors.text, letterSpacing: -0.5 },
     heroSub: { fontSize: 14, fontWeight: '500', color: theme.colors.textMuted, marginTop: 2 },
+    heroStatsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, paddingHorizontal: 4 },
+    heroStatItem: { alignItems: 'center', flex: 1 },
+    heroStatIcon: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
+    heroStatValue: { fontSize: 18, fontWeight: '800', letterSpacing: -0.3 },
+    heroStatLabel: { fontSize: 10, fontWeight: '600', marginTop: 2 },
 
-    toggleRow: { flexDirection: 'row', padding: 4, borderRadius: 14, marginBottom: 8 },
-    toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center' },
-    toggleLabel: { fontSize: 14, fontWeight: '600', color: theme.colors.textMuted },
+    toggleRow: { flexDirection: 'row', padding: 4, borderRadius: 14, marginBottom: 8, gap: 6 },
+    toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center', borderWidth: 1 },
+    toggleLabel: { fontSize: 13, fontWeight: '600' },
 
-    chartCard: { paddingVertical: 16, paddingHorizontal: 12 },
-    barRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 140 },
+    chartCard: { paddingVertical: 18, paddingHorizontal: 14 },
+    barRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 150 },
     barCol: { alignItems: 'center', flex: 1 },
-    barValue: { fontSize: 12, fontWeight: '700', marginBottom: 4 },
+    barValue: { fontSize: 13, fontWeight: '800', marginBottom: 6 },
     barTrack: {
-      width: 22,
-      height: 100,
-      borderRadius: 11,
-      backgroundColor: theme.colors.border + '40',
+      width: 28,
+      height: 110,
+      borderRadius: 14,
+      backgroundColor: theme.colors.border + '30',
       justifyContent: 'flex-end',
       overflow: 'hidden',
     },
-    barFill: { width: '100%', borderRadius: 11 },
-    barLabel: { fontSize: 11, fontWeight: '600', marginTop: 6 },
+    barFill: { width: '100%', borderRadius: 14 },
+    barLabel: { fontSize: 11, fontWeight: '700', marginTop: 8 },
 
     trendContainer: { flexDirection: 'row', height: 140 },
     trendYAxis: { width: 36, justifyContent: 'space-between', alignItems: 'flex-end', paddingRight: 6, paddingVertical: 2 },
@@ -698,13 +759,12 @@ const styles = (theme: any) =>
     prDate: { fontSize: 11, fontWeight: '500', marginTop: 2 },
     prValue: { fontSize: 18, fontWeight: '800' },
 
-    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginBottom: 20 },
+    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginBottom: 24 },
     streakHeroItem: { alignItems: 'center', flex: 1 },
-    streakFireCircle: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: theme.colors.warning + '30' },
     streakDivider: { width: StyleSheet.hairlineWidth, height: 60 },
     ringValue: { fontSize: 16, fontWeight: '800' },
-    streakNumber: { fontSize: 22, fontWeight: '800', marginTop: -2 },
-    streakHeroLabel: { fontSize: 12, fontWeight: '600', marginTop: 8 },
+    streakNumber: { fontSize: 18, fontWeight: '800', marginTop: -4 },
+    streakHeroLabel: { fontSize: 12, fontWeight: '600', marginTop: 10 },
     streakStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 14, borderWidth: 1, overflow: 'hidden' },
     streakStatItem: { width: '50%', flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14, gap: 10 },
     streakStatIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },

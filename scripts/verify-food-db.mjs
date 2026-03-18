@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const FOOD_DB_PATH = path.join(ROOT, 'src', 'services', 'foodDatabase.ts');
+const FOOD_DB_JSON_PATH = path.join(ROOT, 'assets', 'food-data.json');
 
 const EXPECTED_TOTAL = 861;
 const EXPECTED_COUNTS = {
@@ -22,6 +23,10 @@ const REQUIRED_REGIONS = Object.keys(EXPECTED_COUNTS);
 const MIN_PER_REGION = 80;
 
 function parseFoodArray(tsSource) {
+  if (tsSource.includes("require('../../assets/food-data.json')")) {
+    return null;
+  }
+
   const match = tsSource.match(
     /export\s+const\s+REGIONAL_FOOD_DATABASE:\s*RegionalFoodItem\[\]\s*=\s*([\s\S]*?);\s*$/
   );
@@ -31,6 +36,18 @@ function parseFoodArray(tsSource) {
   }
 
   return JSON.parse(match[1]);
+}
+
+async function loadFoods() {
+  const rawSource = await fs.readFile(FOOD_DB_PATH, 'utf8');
+  const inlineFoods = parseFoodArray(rawSource);
+
+  if (inlineFoods) {
+    return inlineFoods;
+  }
+
+  const rawJson = await fs.readFile(FOOD_DB_JSON_PATH, 'utf8');
+  return JSON.parse(rawJson);
 }
 
 function countByRegion(items) {
@@ -69,8 +86,7 @@ async function main() {
   console.log('FitQuest Food DB verification');
   console.log('============================');
 
-  const raw = await fs.readFile(FOOD_DB_PATH, 'utf8');
-  const foods = parseFoodArray(raw);
+  const foods = await loadFoods();
   const counts = countByRegion(foods);
   const duplicates = findDuplicateRegionNameKeys(foods);
 

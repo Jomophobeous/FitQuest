@@ -118,7 +118,12 @@ export class EncryptedDatabaseService {
 
   private async decrypt(blob: string): Promise<string> {
     this.ensureInitialized();
-    const payload = JSON.parse(blob);
+    let payload: any;
+    try {
+      payload = JSON.parse(blob);
+    } catch {
+      throw new Error('[Security] Failed to parse encrypted blob — data may be corrupted');
+    }
 
     if (isV1Payload(payload)) {
       if (!this.legacyKey) {
@@ -139,7 +144,8 @@ export class EncryptedDatabaseService {
   }
 
   private async migrateBlob(blob: string): Promise<string | null> {
-    const payload = JSON.parse(blob);
+    let payload: any;
+    try { payload = JSON.parse(blob); } catch { return null; }
     if (!isV1Payload(payload) && !isV2Payload(payload)) return null;
 
     try {
@@ -185,7 +191,7 @@ export class EncryptedDatabaseService {
       await updateEncryptedHealthRow({ id, data_blob: migrated, updated_at: Date.now() });
     }
 
-    return JSON.parse(plaintext);
+    try { return JSON.parse(plaintext); } catch { return null; }
   }
 
   async getRecentHealthData(category: string, limit = 50): Promise<object[]> {
@@ -196,7 +202,8 @@ export class EncryptedDatabaseService {
     for (const row of rows) {
       try {
         const plaintext = await this.decrypt(row.data_blob);
-        results.push({ id: row.id, ...JSON.parse(plaintext), created_at: row.created_at });
+        const parsed = JSON.parse(plaintext);
+        results.push({ id: row.id, ...(parsed && typeof parsed === 'object' ? parsed : {}), created_at: row.created_at });
 
         const migrated = await this.migrateBlob(row.data_blob);
         if (migrated) {
@@ -256,18 +263,22 @@ export class EncryptedDatabaseService {
     this.ensureInitialized();
     const rows = await getEncryptedAIConversations(personality, limit);
 
-    const results: Array<{ id: string; query: string; response: string; created_at: number }> = [];
-    for (const row of rows) {
-      try {
-        const query = await this.decrypt(row.query_blob);
-        const response = await this.decrypt(row.response_blob);
-        results.push({ id: row.id, query, response, created_at: row.created_at });
-      } catch (e) {
-        console.warn(`[Security] Failed to decrypt conversation ${row.id}:`, e);
-      }
-    }
+    // Decrypt all blobs in parallel (was sequential — 40 ops × 20-40ms = 800-1600ms)
+    const settled = await Promise.allSettled(
+      rows.map(async (row) => {
+        const [query, response] = await Promise.all([
+          this.decrypt(row.query_blob),
+          this.decrypt(row.response_blob),
+        ]);
+        return { id: row.id, query, response, created_at: row.created_at };
+      })
+    );
 
-    return results;
+    return settled
+      .filter((r): r is PromiseFulfilledResult<{ id: string; query: string; response: string; created_at: number }> =>
+        r.status === 'fulfilled'
+      )
+      .map(r => r.value);
   }
 
   // ============================================
@@ -411,7 +422,7 @@ export class EncryptedDatabaseService {
       }
     }
 
-    console.log(`[Security] legacy→v3 migration: ${migrated} migrated, ${errors} errors`);
+    if (__DEV__) console.log(`[Security] legacy→v3 migration: ${migrated} migrated, ${errors} errors`);
     return { migrated, errors };
   }
 

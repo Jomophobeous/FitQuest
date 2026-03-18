@@ -22,6 +22,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  Text,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -49,6 +50,7 @@ import { getStepHistory, getWorkoutCountSince, getWorkoutStreakCurrent } from '.
 import { getHealthAdapter, initializeHealthIntegration, syncHealthData } from '../src/services/healthAdapters';
 import { captureHealthError } from '../src/services/errorTelemetry';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { useRouter } from 'expo-router';
 import { useDataSync } from '../src/services/dataSyncService';
 import {
@@ -58,6 +60,7 @@ import {
   type HealthAlert,
   type TrendPoint,
 } from '../src/components/health/HealthWidgets';
+import ScreenTutorial from '../src/components/ScreenTutorial';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -91,6 +94,7 @@ interface HealthData {
 function HealthDashboardScreenInner() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [healthActionBusy, setHealthActionBusy] = useState(false);
@@ -184,14 +188,14 @@ function HealthDashboardScreenInner() {
       try {
         const dayNames = [t('day.sun'), t('day.mon'), t('day.tue'), t('day.wed'), t('day.thu'), t('day.fri'), t('day.sat')];
         const rows = await getStepHistory('user_local_001', 7);
-        for (const row of rows.reverse()) {
+        for (const row of (rows ?? []).reverse()) {
           const d = new Date(row.date);
-          stepTrend.push({ label: dayNames[d.getDay()], value: row.steps });
+          stepTrend.push({ label: dayNames[d.getDay()]!, value: row.steps });
         }
 
         // Sleep trend from encrypted storage
         const sleepData = await encryptedDB.getRecentHealthData('sleep_session', 7);
-        for (const entry of sleepData) {
+        for (const entry of sleepData ?? []) {
           try {
             const parsed = typeof entry === 'object' ? entry : JSON.parse(String(entry));
             sleepTrendPts.push({
@@ -235,8 +239,8 @@ function HealthDashboardScreenInner() {
   }, []);
 
   useEffect(() => {
-    loadHealthData();
-  }, [loadHealthData]);
+    if (dbReady) loadHealthData();
+  }, [dbReady, loadHealthData]);
 
   // Subscribe to health data events from other screens
   useDataSync('workout_completed', loadHealthData);
@@ -595,8 +599,35 @@ function HealthDashboardScreenInner() {
           </View>
         </Animated.View>
 
-        {/* ── QUICK ACTIONS ── */}
+        {/* ── WEARABLE FEATURES — COMING SOON ── */}
         <Animated.View entering={FadeInDown.delay(700).duration(300)}>
+          <SectionHeader title={t('common.comingSoon') || 'Coming Soon'} />
+          <GlassCard style={{ padding: 16, marginBottom: 16 }}>
+            {[
+              { icon: 'heart-pulse' as const, label: t('health.heartRate') || 'Heart Rate Monitoring', desc: t('health.comingSoonDetail'), color: theme.colors.error },
+              { icon: 'sleep' as const, label: t('health.sleep') || 'Auto Sleep Tracking', desc: t('health.sleepComingSoon'), color: theme.colors.purple },
+              { icon: 'watch' as const, label: 'Wearable Sync', desc: 'Connect your smartwatch for real-time health data.', color: theme.colors.blue },
+            ].map((item, idx) => (
+              <View key={item.label} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderTopWidth: idx > 0 ? 1 : 0, borderTopColor: theme.colors.border }}>
+                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: item.color + '18', justifyContent: 'center', alignItems: 'center' }}>
+                  <MaterialCommunityIcons name={item.icon} size={20} color={item.color} />
+                </View>
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <ThemedText variant="bodySmall" weight="600" color="primary">{item.label}</ThemedText>
+                    <View style={{ backgroundColor: theme.colors.warning + '25', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                      <Text style={{ color: theme.colors.warning, fontSize: 9, fontWeight: '700' }}>SOON</Text>
+                    </View>
+                  </View>
+                  <ThemedText variant="caption" color="muted" numberOfLines={2}>{item.desc}</ThemedText>
+                </View>
+              </View>
+            ))}
+          </GlassCard>
+        </Animated.View>
+
+        {/* ── QUICK ACTIONS ── */}
+        <Animated.View entering={FadeInDown.delay(800).duration(300)}>
           <SectionHeader title={t('health.quickActions')} />
           <View style={styles.actionsRow}>
             <GradientButton
@@ -715,6 +746,12 @@ export default function HealthDashboardScreen() {
   const router = useRouter();
   return (
     <ScreenErrorBoundary screenName="Health Dashboard" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
+      <ScreenTutorial
+        screenKey="health-dashboard"
+        icon="heart-pulse"
+        title="Health Dashboard"
+        description="Monitor your overall health with composite scores, daily metrics, sleep trends, and anomaly alerts. Your health data stays encrypted on-device."
+      />
       <HealthDashboardScreenInner />
     </ScreenErrorBoundary>
   );

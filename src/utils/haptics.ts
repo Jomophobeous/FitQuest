@@ -31,6 +31,14 @@ const PATTERNS = {
   buttonPress: Platform.OS === 'android' ? [0, 15] : [0, 15],
   /** Error/warning */
   error: Platform.OS === 'android' ? [0, 100, 50, 100] : [0, 100],
+
+  // ── Phase-aware patterns ──
+  /** Warmup exercise complete — light double tap */
+  warmupComplete: Platform.OS === 'android' ? [0, 25, 50, 25] : [0, 25, 50, 25],
+  /** Cooldown exercise complete — gentle lingering pulse */
+  cooldownComplete: Platform.OS === 'android' ? [0, 30, 70, 30, 70, 30] : [0, 30, 70, 30],
+  /** Phase transition (warmup→main, main→cooldown) — distinct marker */
+  phaseTransition: Platform.OS === 'android' ? [0, 40, 100, 60, 100, 80] : [0, 40, 100, 60],
 };
 
 export type HapticEvent = keyof typeof PATTERNS;

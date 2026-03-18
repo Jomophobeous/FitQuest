@@ -252,7 +252,7 @@ export function explainDeloadStatus(
   let reason: string;
   if (triggered) {
     if (trigger_factors.length === 1) {
-      reason = trigger_factors[0];
+      reason = trigger_factors[0]!;
     } else {
       reason = 'Multiple recovery indicators triggered deload.';
     }

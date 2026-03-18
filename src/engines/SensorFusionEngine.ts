@@ -200,11 +200,17 @@ export class SensorFusionEngine {
     if (options?.repThreshold) this.repThreshold = options.repThreshold;
 
     // Check availability
-    const [accelAvail, gyroAvail, pedometerAvail] = await Promise.all([
-      Accelerometer.isAvailableAsync(),
-      Gyroscope.isAvailableAsync(),
-      Pedometer.isAvailableAsync(),
-    ]);
+    let accelAvail = false, gyroAvail = false, pedometerAvail = false;
+    try {
+      [accelAvail, gyroAvail, pedometerAvail] = await Promise.all([
+        Accelerometer.isAvailableAsync(),
+        Gyroscope.isAvailableAsync(),
+        Pedometer.isAvailableAsync(),
+      ]);
+    } catch (e) {
+      console.warn('[SensorFusion] Sensor availability check failed:', e);
+      return false;
+    }
 
     if (!accelAvail) {
       console.warn('[SensorFusion] Accelerometer not available');
@@ -501,7 +507,7 @@ export class SensorFusionEngine {
 
     // Try v2.0 CNN-LSTM deep classifier first
     if (this.deepModelReady && this.rawSensorBuffer.length >= 100) {
-      const latestSample = this.rawSensorBuffer[this.rawSensorBuffer.length - 1];
+      const latestSample = this.rawSensorBuffer[this.rawSensorBuffer.length - 1]!;
       const deepResult = deepActivityClassifier.addSample([
         latestSample.accel.x, latestSample.accel.y, latestSample.accel.z,
         latestSample.gyro.x, latestSample.gyro.y, latestSample.gyro.z,
@@ -609,7 +615,7 @@ export class SensorFusionEngine {
     const recent = this.stepTimestamps.slice(-10);
     if (recent.length < 2) return 0;
 
-    const duration = (recent[recent.length - 1] - recent[0]) / 60000; // minutes
+    const duration = (recent[recent.length - 1]! - recent[0]!) / 60000; // minutes
     if (duration <= 0) return 0;
 
     return Math.round((recent.length - 1) / duration);

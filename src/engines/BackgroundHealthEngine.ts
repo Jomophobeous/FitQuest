@@ -29,12 +29,17 @@ import { captureHealthError } from '../services/errorTelemetry';
 import { AnomalyDetector, type MetricDataPoint } from './AnomalyDetector';
 import { SleepAnalysisEngine } from './SleepAnalysisEngine';
 import { RealisticHealthEngine } from './RealisticHealthEngine';
+import { SensorFusionEngine } from './SensorFusionEngine';
+import { HealthMonitorService } from './HealthMonitor';
+import { getCachedReadiness, invalidateReadinessCache } from './ReadinessEngine';
 import { syncHealthData } from '../services/healthAdapters';
 import {
   getAverageFatigueLevel,
+  getAppState,
   getDailyStepsForDate,
   getRecoveryScoresSince,
   getStepHistory,
+  getUserProfile,
   getWorkoutCountSince,
   getWorkoutStreakCurrent,
 } from '../database/service';
@@ -104,7 +109,7 @@ export interface BackgroundHealthConfig {
 // ============================================
 
 const DEFAULT_CONFIG: Required<BackgroundHealthConfig> = {
-  collectionIntervalMs: 5 * 60 * 1000,       // 5 min
+  collectionIntervalMs: 1 * 60 * 1000,       // 1 min
   anomalyCheckIntervalMs: 30 * 60 * 1000,    // 30 min
   dailySummaryTime: '23:30',
   enableAlerts: true,
@@ -205,6 +210,26 @@ export class BackgroundHealthEngine {
       this.handleBatteryStateChange(event);
     });
 
+    // Start sensor fusion for real-time activity detection (step counting, classification)
+    try {
+      const sensorEngine = SensorFusionEngine.getInstance();
+      if (!sensorEngine.isRunning()) {
+        const profile = await getUserProfile('user_local_001');
+        await sensorEngine.start({ weightKg: profile?.weight_kg ?? 70 });
+        if (__DEV__) console.log('[BackgroundHealth] SensorFusion started');
+      }
+    } catch (e) {
+      console.warn('[BackgroundHealth] SensorFusion unavailable (expected in Expo Go):', e);
+    }
+
+    // Initialize health monitor (subscribes to sensor updates + periodic alert checks)
+    try {
+      const monitor = HealthMonitorService.getInstance();
+      await monitor.initialize();
+    } catch (e) {
+      console.warn('[BackgroundHealth] HealthMonitor init failed:', e);
+    }
+
     // Start timers with battery-aware intervals
     this.restartTimers();
 
@@ -227,6 +252,14 @@ export class BackgroundHealthEngine {
     if (this.anomalyTimer) clearInterval(this.anomalyTimer);
     this.appStateSubscription?.remove();
     this.batterySubscription?.remove();
+
+    // Stop sensor subsystems
+    try {
+      SensorFusionEngine.getInstance().stop();
+    } catch { /* already stopped */ }
+    try {
+      HealthMonitorService.getInstance().shutdown();
+    } catch { /* already stopped */ }
 
     this.collectionTimer = null;
     this.anomalyTimer = null;
@@ -274,7 +307,7 @@ export class BackgroundHealthEngine {
 
       // Read from existing health data in SQLite
       // Get today's step data
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split('T')[0]!;
       const stepRow = await getDailyStepsForDate('user_local_001', today);
       if (stepRow) {
         this.todayData.steps = stepRow.steps;
@@ -294,13 +327,33 @@ export class BackgroundHealthEngine {
         );
       }
 
-      // Estimate active minutes from steps (rough: 100 steps/min when walking)
+      // Estimate active minutes: check SensorFusion for real-time activity state, fall back to step estimate
       if (this.todayData.activeMinutes <= 0) {
         this.todayData.activeMinutes = Math.round(this.todayData.steps / 100);
+      } else {
+        // If sensor is running and user is active, increment active minutes
+        try {
+          const sensorEngine = SensorFusionEngine.getInstance();
+          if (sensorEngine.isRunning()) {
+            const snapshot = sensorEngine.getSnapshot();
+            if (snapshot.isActive) {
+              // Each collection tick represents ~1 minute of data
+              this.todayData.activeMinutes += 1;
+            }
+          }
+        } catch { /* sensor data unavailable */ }
       }
 
       // Store periodic snapshot (encrypted)
       await this.storeSnapshot();
+
+      // Refresh readiness cache (lightweight, powers dashboard + coach)
+      try {
+        invalidateReadinessCache();
+        await getCachedReadiness('user_local_001');
+      } catch {
+        // Readiness refresh is non-critical
+      }
     } catch (e) {
       console.warn('[BackgroundHealth] Collection error:', e);
     }
@@ -341,6 +394,12 @@ export class BackgroundHealthEngine {
     if (now - this.lastExternalHealthSyncAt < EXTERNAL_HEALTH_SYNC_INTERVAL_MS) {
       return;
     }
+
+    // Respect user's HealthConnect toggle from profile settings
+    try {
+      const enabled = await getAppState('healthconnect.enabled');
+      if (enabled === 'false') return;
+    } catch { /* proceed if flag unreadable */ }
 
     const fallbackProvider = Platform.OS === 'ios' ? 'healthkit' : 'health_connect';
 
@@ -559,7 +618,7 @@ export class BackgroundHealthEngine {
    * Should be called near end of day (or next morning).
    */
   async generateDailySummary(date?: string): Promise<DailyHealthSummary> {
-    const targetDate = date || new Date().toISOString().split('T')[0];
+    const targetDate = date || new Date().toISOString().split('T')[0]!;
     const healthScore = await this.calculateHealthScore();
 
     const avgHr = this.todayData.heartRateReadings.length > 0
@@ -668,8 +727,8 @@ export class BackgroundHealthEngine {
     );
 
     return {
-      weekStart: weekStart.toISOString().split('T')[0],
-      weekEnd: now.toISOString().split('T')[0],
+      weekStart: weekStart.toISOString().split('T')[0]!,
+      weekEnd: now.toISOString().split('T')[0]!,
       avgDailySteps: avgSteps,
       totalWorkouts,
       avgRecoveryScore: avgRecovery,

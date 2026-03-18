@@ -45,7 +45,7 @@ export default function TermsOfServiceScreen() {
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
           >
             <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
           </TouchableOpacity>
@@ -55,7 +55,7 @@ export default function TermsOfServiceScreen() {
 
         <GlassCard style={styles.card}>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textMuted }]}>
-            {t('legal.lastUpdated')} 2026-02-17
+            {t('legal.lastUpdated')} 2026-03-13
           </ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.terms.sections.useTitle')}</ThemedText>
@@ -67,8 +67,14 @@ export default function TermsOfServiceScreen() {
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.terms.sections.subscriptionTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.terms.sections.subscriptionBody')}</ThemedText>
 
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.terms.sections.ipTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.terms.sections.ipBody')}</ThemedText>
+
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.terms.sections.liabilityTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.terms.sections.liabilityBody')}</ThemedText>
+
+          <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.terms.sections.terminationTitle')}</ThemedText>
+          <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.terms.sections.terminationBody')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.terms.sections.governingLawTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.terms.sections.governingLawBody')}</ThemedText>

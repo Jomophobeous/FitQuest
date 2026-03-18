@@ -65,9 +65,9 @@ export function linearF64(
   const output = new Float64Array(weights.length);
   for (let i = 0; i < weights.length; i++) {
     let sum = bias[i] ?? 0;
-    const w = weights[i];
+    const w = weights[i]!;
     for (let j = 0; j < input.length; j++) {
-      sum += input[j] * (w?.[j] ?? 0);
+      sum += input[j]! * (w[j] ?? 0);
     }
     output[i] = sum;
   }
@@ -86,7 +86,7 @@ export function linearNum(
   for (let i = 0; i < weights.length; i++) {
     let sum = bias[i] ?? 0;
     for (let j = 0; j < input.length; j++) {
-      sum += input[j] * (weights[i]?.[j] ?? 0);
+      sum += input[j]! * (weights[i]?.[j] ?? 0);
     }
     output[i] = sum;
   }
@@ -104,15 +104,15 @@ export function layerNorm(
 ): Float64Array {
   const n = input.length;
   let mean = 0;
-  for (let i = 0; i < n; i++) mean += input[i];
+  for (let i = 0; i < n; i++) mean += input[i]!;
   mean /= n;
   let variance = 0;
-  for (let i = 0; i < n; i++) variance += (input[i] - mean) ** 2;
+  for (let i = 0; i < n; i++) variance += (input[i]! - mean) ** 2;
   variance /= n;
   const std = Math.sqrt(variance + eps);
   const out = new Float64Array(n);
   for (let i = 0; i < n; i++) {
-    out[i] = ((input[i] - mean) / std) * (weight[i] ?? 1) + (bias[i] ?? 0);
+    out[i] = ((input[i]! - mean) / std) * (weight[i] ?? 1) + (bias[i] ?? 0);
   }
   return out;
 }
@@ -140,10 +140,10 @@ export function softmaxF64(logits: Float64Array): Float64Array {
   const out = new Float64Array(logits.length);
   let sum = 0;
   for (let i = 0; i < logits.length; i++) {
-    out[i] = Math.exp(logits[i] - max);
-    sum += out[i];
+    out[i] = Math.exp(logits[i]! - max);
+    sum += out[i]!;
   }
-  for (let i = 0; i < logits.length; i++) out[i] /= sum;
+  for (let i = 0; i < logits.length; i++) out[i] = out[i]! / sum;
   return out;
 }
 
@@ -164,9 +164,9 @@ export function cosineSimilarityF64(a: Float64Array, b: Float64Array): number {
   let dot = 0, normA = 0, normB = 0;
   const len = Math.min(a.length, b.length);
   for (let i = 0; i < len; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+    dot += a[i]! * b[i]!;
+    normA += a[i]! * a[i]!;
+    normB += b[i]! * b[i]!;
   }
   const denom = Math.sqrt(normA) * Math.sqrt(normB);
   return denom > 0 ? dot / denom : 0;
@@ -224,7 +224,7 @@ export function transformerLayer(
         }
         let dot = 0;
         for (let d = 0; d < headDim; d++) {
-          dot += Q[i][offset + d] * K[j][offset + d];
+          dot += Q[i]![offset + d]! * K[j]![offset + d]!;
         }
         scores[j] = dot / scale;
       }
@@ -234,9 +234,9 @@ export function transformerLayer(
       for (let d = 0; d < headDim; d++) {
         let sum = 0;
         for (let j = 0; j < kvLen; j++) {
-          sum += weights[j] * V[j][offset + d];
+          sum += weights[j]! * V[j]![offset + d]!;
         }
-        attnOutput[i][offset + d] = sum;
+        attnOutput[i]![offset + d] = sum;
       }
     }
   }
@@ -249,7 +249,7 @@ export function transformerLayer(
   let output = projected.map((v, i) => {
     const res = new Float64Array(hidden);
     for (let h = 0; h < hidden; h++) {
-      res[h] = input[i][h] + v[h];
+      res[h] = input[i]![h]! + v[h]!;
     }
     return layerNorm(res, layer.attLayerNormWeight, layer.attLayerNormBias);
   });
@@ -258,14 +258,14 @@ export function transformerLayer(
   const ffnOut = output.map(v => {
     const inter = linearF64(v, layer.ffnWeight, layer.ffnBias);
     const activated = new Float64Array(inter.length);
-    for (let k = 0; k < inter.length; k++) activated[k] = gelu(inter[k]);
+    for (let k = 0; k < inter.length; k++) activated[k] = gelu(inter[k]!);
     return linearF64(activated, layer.ffnOutputWeight, layer.ffnOutputBias);
   });
 
   output = output.map((v, i) => {
     const res = new Float64Array(hidden);
     for (let h = 0; h < hidden; h++) {
-      res[h] = v[h] + ffnOut[i][h];
+      res[h] = v[h]! + ffnOut[i]![h]!;
     }
     return layerNorm(res, layer.outputLayerNormWeight, layer.outputLayerNormBias);
   });

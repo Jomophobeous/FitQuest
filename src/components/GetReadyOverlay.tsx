@@ -15,10 +15,10 @@ import {
   View,
   Text,
   Modal,
-  SafeAreaView,
   StyleSheet,
   Vibration,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   ZoomIn,
   FadeIn,

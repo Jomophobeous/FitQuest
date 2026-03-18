@@ -264,7 +264,7 @@ export async function encryptV2(
   
   const ciphertextBytes = new Uint8Array(plaintextBytes.length);
   for (let i = 0; i < plaintextBytes.length; i++) {
-    ciphertextBytes[i] = plaintextBytes[i] ^ keyStream[i];
+    ciphertextBytes[i] = plaintextBytes[i]! ^ keyStream[i]!;
   }
 
   const ct = bytesToBase64(ciphertextBytes);
@@ -341,7 +341,7 @@ export async function decryptV2(
 
   const plaintextBytes = new Uint8Array(ciphertextBytes.length);
   for (let i = 0; i < ciphertextBytes.length; i++) {
-    plaintextBytes[i] = ciphertextBytes[i] ^ keyStream[i];
+    plaintextBytes[i] = ciphertextBytes[i]! ^ keyStream[i]!;
   }
 
   return bytesToString(plaintextBytes);
@@ -414,7 +414,7 @@ export async function decryptV1Legacy(
 
   const plaintextChars: string[] = [];
   for (let i = 0; i < ciphertextBytes.length; i++) {
-    plaintextChars.push(String.fromCharCode(ciphertextBytes[i] ^ stream[i]));
+    plaintextChars.push(String.fromCharCode(ciphertextBytes[i]! ^ stream[i]!));
   }
 
   const plaintext = plaintextChars.join('');

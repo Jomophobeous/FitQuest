@@ -73,7 +73,7 @@ export async function enqueueMutation<TPayload>(
     const existingIndex = queue.findIndex((job) => job.status === 'pending' && job.dedupeKey === dedupeKey);
     if (existingIndex >= 0) {
       queue[existingIndex] = {
-        ...queue[existingIndex],
+        ...queue[existingIndex]!,
         payload,
       };
       await saveQueue(queue);
@@ -107,7 +107,7 @@ export async function flushMutationQueue(
   for (const pendingJob of pendingJobs) {
     const index = queue.findIndex((item) => item.id === pendingJob.id);
     if (index < 0) continue;
-    const job = queue[index];
+    const job = queue[index]!;
 
     const handler = handlers[job.type];
     if (!handler) continue;
@@ -121,7 +121,7 @@ export async function flushMutationQueue(
     };
 
     try {
-      await handler(queue[index]);
+      await handler(queue[index]!);
       queue.splice(index, 1);
       succeeded += 1;
       void logEvent('mutation_queue_job_success', { type: job.type, attempts: nextAttempts });
@@ -129,7 +129,7 @@ export async function flushMutationQueue(
       const message = error instanceof Error ? error.message : String(error);
       const nextStatus = nextAttempts >= maxAttempts ? 'failed' : 'pending';
       queue[index] = {
-        ...queue[index],
+        ...queue[index]!,
         status: nextStatus,
         lastError: message.slice(0, 240),
       };

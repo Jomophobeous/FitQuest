@@ -334,9 +334,9 @@ describe('RealisticHealthEngine.getWorkingWeights', () => {
 
   it('Strength > Hypertrophy > Endurance > Warm-up', () => {
     const w = RealisticHealthEngine.getWorkingWeights(100);
-    expect(w['Strength (80%)']).toBeGreaterThan(w['Hypertrophy (70%)']);
-    expect(w['Hypertrophy (70%)']).toBeGreaterThan(w['Endurance (60%)']);
-    expect(w['Endurance (60%)']).toBeGreaterThan(w['Warm-up (50%)']);
+    expect(w['Strength (80%)']!).toBeGreaterThan(w['Hypertrophy (70%)']!);
+    expect(w['Hypertrophy (70%)']!).toBeGreaterThan(w['Endurance (60%)']!);
+    expect(w['Endurance (60%)']!).toBeGreaterThan(w['Warm-up (50%)']!);
   });
 });
 

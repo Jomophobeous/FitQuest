@@ -178,7 +178,7 @@ function StreakStats({ data, primaryColor, textColor, mutedColor }: StreakStatsP
   
   for (let i = 0; i < sortedDays.length; i++) {
     const expectedDate = addDays(today, -i);
-    const dayDate = parseISO(sortedDays[i].date);
+    const dayDate = parseISO(sortedDays[i]!.date);
     dayDate.setHours(0, 0, 0, 0);
     
     if (isSameDay(dayDate, expectedDate)) {
@@ -196,13 +196,13 @@ function StreakStats({ data, primaryColor, textColor, mutedColor }: StreakStatsP
   );
   
   for (let i = 0; i < allSorted.length; i++) {
-    if (allSorted[i].completed) {
+    if (allSorted[i]!.completed) {
       tempStreak++;
-      if (i === 0 || !allSorted[i - 1].completed) {
+      if (i === 0 || !allSorted[i - 1]?.completed) {
         // Check if consecutive with previous day
         if (i > 0) {
-          const prevDate = parseISO(allSorted[i - 1].date);
-          const currDate = parseISO(allSorted[i].date);
+          const prevDate = parseISO(allSorted[i - 1]!.date);
+          const currDate = parseISO(allSorted[i]!.date);
           const diffDays = Math.round((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
           if (diffDays !== 1) {
             tempStreak = 1;

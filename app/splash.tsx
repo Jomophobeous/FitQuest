@@ -1,12 +1,12 @@
 /**
  * FitQuest Splash Screen
  * 
- * Premium branded loading screen with animated logo and progress.
+ * Premium branded loading screen with cinematic animation sequence.
  * Handles auth token check + routing to login or dashboard.
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, PixelRatio } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,69 +14,131 @@ import Animated, {
   withSequence,
   withDelay,
   withSpring,
+  withRepeat,
   Easing,
-  FadeIn,
-  FadeInUp,
+  interpolate,
+  interpolateColor,
   runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import FitQuestLogo from '../src/components/FitQuestLogo';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { BiometricAuthService } from '../src/security/BiometricAuth';
 
 const { width, height } = Dimensions.get('window');
+const scale = PixelRatio.getFontScale();
+const MIN_SPLASH_MS = 2200;
 
 export default function Splash() {
   const router = useRouter();
   const hasNavigated = useRef(false);
-  const { isReady, userProfile } = useDatabase();
+  const animDone = useRef(false);
+  const { isReady, onboardingComplete, userProfile } = useDatabase();
 
-  // Animations
-  const logoScale = useSharedValue(0.3);
+  // Animation values — cinematic sequence
+  const logoScale = useSharedValue(0);
   const logoOpacity = useSharedValue(0);
+  const logoRotateY = useSharedValue(-90);
   const textOpacity = useSharedValue(0);
+  const textTranslateY = useSharedValue(20);
+  const taglineOpacity = useSharedValue(0);
+  const taglineScale = useSharedValue(0.8);
   const progressWidth = useSharedValue(0);
+  const progressGlow = useSharedValue(0);
   const ringRotation = useSharedValue(0);
+  const ringScale = useSharedValue(0.6);
+  const ringOpacity = useSharedValue(0);
+  const pulseScale = useSharedValue(1);
+  const orb1Opacity = useSharedValue(0);
+  const orb2Opacity = useSharedValue(0);
+  const shimmer = useSharedValue(0);
+  const versionOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // Logo entrance
-    logoOpacity.value = withTiming(1, { duration: 400 });
-    logoScale.value = withSequence(
-      withTiming(1.15, { duration: 500, easing: Easing.out(Easing.back(1.5)) }),
-      withSpring(1, { damping: 8, stiffness: 120 })
+    // Phase 1: Background orbs fade in (0ms)
+    orb1Opacity.value = withTiming(0.06, { duration: 800 });
+    orb2Opacity.value = withDelay(200, withTiming(0.06, { duration: 800 }));
+
+    // Phase 2: Ring appears with scale-up (200ms)
+    ringOpacity.value = withDelay(200, withTiming(0.8, { duration: 400 }));
+    ringScale.value = withDelay(200, withSpring(1, { damping: 12, stiffness: 100 }));
+    ringRotation.value = withDelay(200, 
+      withRepeat(withTiming(360, { duration: 3000, easing: Easing.linear }), -1, false)
     );
 
-    // Rotating ring
-    ringRotation.value = withTiming(360, { duration: 2000, easing: Easing.linear });
+    // Phase 3: Logo 3D flip entrance (400ms)
+    logoOpacity.value = withDelay(400, withTiming(1, { duration: 300 }));
+    logoRotateY.value = withDelay(400, withSpring(0, { damping: 14, stiffness: 100 }));
+    logoScale.value = withDelay(400, 
+      withSequence(
+        withSpring(1.1, { damping: 8, stiffness: 120 }),
+        withSpring(1, { damping: 12, stiffness: 100 })
+      )
+    );
 
-    // Text
-    textOpacity.value = withDelay(400, withTiming(1, { duration: 300 }));
+    // Phase 3b: Gentle pulse on logo
+    pulseScale.value = withDelay(1000,
+      withRepeat(
+        withSequence(
+          withTiming(1.03, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1, true
+      )
+    );
 
-    // Progress bar
-    progressWidth.value = withDelay(300, withTiming(100, { duration: 1500, easing: Easing.inOut(Easing.ease) }));
+    // Phase 4: Brand text rises in (700ms)
+    textOpacity.value = withDelay(700, withTiming(1, { duration: 400, easing: Easing.out(Easing.quad) }));
+    textTranslateY.value = withDelay(700, withSpring(0, { damping: 14, stiffness: 90 }));
+    
+    // Phase 5: Tagline appears with scale (900ms)
+    taglineOpacity.value = withDelay(900, withTiming(1, { duration: 300 }));
+    taglineScale.value = withDelay(900, withSpring(1, { damping: 12, stiffness: 100 }));
+
+    // Phase 6: Progress bar with shimmer (1000ms)
+    progressWidth.value = withDelay(500, withTiming(100, { duration: 2000, easing: Easing.bezier(0.25, 0.1, 0.25, 1) }));
+    progressGlow.value = withDelay(500,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.3, { duration: 800, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1, true
+      )
+    );
+
+    // Shimmer across progress bar
+    shimmer.value = withDelay(800,
+      withRepeat(withTiming(1, { duration: 1500, easing: Easing.linear }), -1, false)
+    );
+
+    // Version text
+    versionOpacity.value = withDelay(1200, withTiming(1, { duration: 400 }));
 
     // Auth check + navigate
     let mounted = true;
     const checkAuth = async () => {
       try {
-        // Give animations time to play
-        await new Promise(res => setTimeout(res, 1800));
+        // Wait for minimum animation duration
+        await new Promise(res => setTimeout(res, MIN_SPLASH_MS));
+        animDone.current = true;
 
         if (!mounted || hasNavigated.current) return;
 
-        // Wait for database to be ready
+        // DB not ready yet — wait for it (re-trigger via effect deps)
         if (!isReady) return;
 
         hasNavigated.current = true;
 
-        if (!userProfile) {
-          // No profile → first-time user
+        // First-time user: no onboarding completed → show onboarding
+        if (!onboardingComplete) {
           if (mounted) router.replace('/onboarding');
           return;
         }
 
-        // Profile exists — check if local auth is configured (biometric / passcode)
+        // Returning user: check biometric/passcode auth
         const bioAuth = BiometricAuthService.getInstance();
         const hasLocalAuth = await bioAuth.hasPasscode();
         const bioCapability = await bioAuth.initialize();
@@ -85,16 +147,14 @@ export default function Splash() {
         if (!mounted) return;
 
         if (hasLocalAuth || bioEnabled) {
-          // Auth configured — send to login for biometric/passcode verification
           router.replace('/login');
         } else {
-          // No local auth configured — go straight to dashboard
           router.replace('/dashboard');
         }
       } catch {
         if (mounted && !hasNavigated.current) {
           hasNavigated.current = true;
-          router.replace('/login');
+          router.replace('/dashboard');
         }
       }
     };
@@ -104,86 +164,132 @@ export default function Splash() {
     return () => {
       mounted = false;
     };
-  }, [isReady, userProfile]);
+  }, [isReady, onboardingComplete]);
 
   const logoAnimStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: logoScale.value }],
+    transform: [
+      { scale: logoScale.value * pulseScale.value },
+      { perspective: 800 },
+      { rotateY: `${logoRotateY.value}deg` },
+    ],
     opacity: logoOpacity.value,
   }));
 
   const textAnimStyle = useAnimatedStyle(() => ({
     opacity: textOpacity.value,
+    transform: [{ translateY: textTranslateY.value }],
+  }));
+
+  const taglineAnimStyle = useAnimatedStyle(() => ({
+    opacity: taglineOpacity.value,
+    transform: [{ scale: taglineScale.value }],
   }));
 
   const ringStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${ringRotation.value}deg` }],
-    opacity: logoOpacity.value,
+    transform: [
+      { rotate: `${ringRotation.value}deg` },
+      { scale: ringScale.value },
+    ],
+    opacity: ringOpacity.value,
   }));
 
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%` as any,
   }));
 
+  const progressGlowStyle = useAnimatedStyle(() => ({
+    opacity: progressGlow.value,
+  }));
+
+  const orb1Style = useAnimatedStyle(() => ({
+    opacity: orb1Opacity.value,
+  }));
+
+  const orb2Style = useAnimatedStyle(() => ({
+    opacity: orb2Opacity.value,
+  }));
+
+  const versionStyle = useAnimatedStyle(() => ({
+    opacity: versionOpacity.value,
+  }));
+
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0A0E17', '#111827', '#0A0E17']}
+        colors={['#0A0E17', '#0D1321', '#0A0E17']}
+        locations={[0, 0.5, 1]}
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Decorative background orbs */}
-      <View style={[styles.orb, styles.orbTopRight]} />
-      <View style={[styles.orb, styles.orbBottomLeft]} />
+      {/* Decorative background orbs with animation */}
+      <Animated.View style={[styles.orb, styles.orbTopRight, orb1Style]} />
+      <Animated.View style={[styles.orb, styles.orbBottomLeft, orb2Style]} />
+      <Animated.View style={[styles.orb, styles.orbCenter, orb2Style]} />
 
       {/* Logo section */}
       <View style={styles.centerContent}>
-        {/* Animated ring behind logo */}
+        {/* Outer ring — rotating gradient */}
         <Animated.View style={[styles.ringOuter, ringStyle]}>
           <LinearGradient
-            colors={['#10B981', '#10B98100', '#10B98140', '#10B98100']}
+            colors={['#10B981', '#10B98100', '#059669', '#10B98100']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.ringGradient}
           />
         </Animated.View>
 
-        {/* Logo icon */}
+        {/* Second ring — counter subtle */}
+        <Animated.View style={[styles.ringInner, ringStyle, { transform: [{ rotate: '-120deg' }] }]}>
+          <LinearGradient
+            colors={['#10B98140', '#10B98100', '#10B98120', '#10B98100']}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.ringGradientInner}
+          />
+        </Animated.View>
+
+        {/* Logo icon with 3D flip */}
         <Animated.View style={[styles.logoWrap, logoAnimStyle]}>
           <LinearGradient
             colors={['#10B98130', '#10B98108']}
             style={styles.logoCircle}
           >
-            <MaterialCommunityIcons name="dumbbell" size={48} color="#10B981" />
+            <FitQuestLogo size={64} showText={false} />
           </LinearGradient>
         </Animated.View>
 
-        {/* Brand name */}
+        {/* Brand name with rise-up */}
         <Animated.View style={textAnimStyle}>
           <Text style={styles.brandName}>FitQuest</Text>
+          <Text style={styles.brandVersion}>2.0</Text>
+        </Animated.View>
+        <Animated.View style={taglineAnimStyle}>
           <Text style={styles.tagline}>Body & Mind</Text>
         </Animated.View>
       </View>
 
-      {/* Progress bar */}
+      {/* Progress bar with glow effect */}
       <View style={styles.progressSection}>
         <View style={styles.progressTrack}>
           <Animated.View style={[styles.progressFill, progressStyle]}>
             <LinearGradient
-              colors={['#10B981', '#059669']}
+              colors={['#10B981', '#059669', '#10B981']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={StyleSheet.absoluteFill}
             />
           </Animated.View>
+          {/* Glow dot at progress tip */}
+          <Animated.View style={[styles.progressDot, progressStyle, progressGlowStyle]} />
         </View>
         <Animated.View style={textAnimStyle}>
-          <Text style={styles.loadingText}>Loading your fitness journey...</Text>
+          <Text style={styles.loadingText}>Preparing your journey</Text>
         </Animated.View>
       </View>
 
-      {/* Version */}
-      <Animated.View style={[styles.versionWrap, textAnimStyle]}>
-        <Text style={styles.versionText}>v2.0</Text>
+      {/* Powered by — subtle footer */}
+      <Animated.View style={[styles.versionWrap, versionStyle]}>
+        <Text style={styles.versionText}>Powered by AI</Text>
       </Animated.View>
     </View>
   );
@@ -192,7 +298,7 @@ export default function Splash() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0E17', // Splash always dark — theme not available pre-mount
+    backgroundColor: '#0A0E17',
   },
   centerContent: {
     flex: 1,
@@ -201,21 +307,36 @@ const styles = StyleSheet.create({
   },
   ringOuter: {
     position: 'absolute',
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    width: 170,
+    height: 170,
+    borderRadius: 85,
     justifyContent: 'center',
     alignItems: 'center',
   },
   ringGradient: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    width: 170,
+    height: 170,
+    borderRadius: 85,
     borderWidth: 2,
-    borderColor: '#10B98125',
+    borderColor: '#10B98120',
+  },
+  ringInner: {
+    position: 'absolute',
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ringGradientInner: {
+    width: 190,
+    height: 190,
+    borderRadius: 95,
+    borderWidth: 1,
+    borderColor: '#10B98110',
   },
   logoWrap: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   logoCircle: {
     width: 110,
@@ -227,59 +348,90 @@ const styles = StyleSheet.create({
     borderColor: '#10B98120',
   },
   brandName: {
-    fontSize: 36,
+    fontSize: Math.min(42, 42 / scale),
     fontWeight: '900',
     color: '#FFFFFF',
     textAlign: 'center',
-    letterSpacing: 1,
+    letterSpacing: 3,
   },
-  tagline: {
-    fontSize: 14,
-    fontWeight: '500',
+  brandVersion: {
+    fontSize: Math.min(12, 12 / scale),
+    fontWeight: '700',
     color: '#10B981',
     textAlign: 'center',
-    marginTop: 6,
-    letterSpacing: 3,
+    letterSpacing: 6,
+    marginTop: 2,
+  },
+  tagline: {
+    fontSize: Math.min(13, 13 / scale),
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'center',
+    marginTop: 10,
+    letterSpacing: 5,
     textTransform: 'uppercase',
   },
   orb: {
     position: 'absolute',
-    width: 200,
-    height: 200,
     borderRadius: 100,
     backgroundColor: '#10B981',
-    opacity: 0.04,
   },
   orbTopRight: {
     top: -60,
     right: -60,
+    width: 200,
+    height: 200,
   },
   orbBottomLeft: {
     bottom: -40,
     left: -80,
+    width: 200,
+    height: 200,
+  },
+  orbCenter: {
+    top: height * 0.35,
+    left: width * 0.3,
+    width: 120,
+    height: 120,
   },
   progressSection: {
     paddingHorizontal: 48,
     paddingBottom: 60,
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
   },
   progressTrack: {
     width: '100%',
     height: 3,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 2,
     overflow: 'hidden',
+    position: 'relative',
   },
   progressFill: {
     height: '100%',
     borderRadius: 2,
     overflow: 'hidden',
   },
+  progressDot: {
+    position: 'absolute',
+    right: -3,
+    top: -2,
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#10B981',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   loadingText: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.4)',
+    fontSize: Math.min(12, 12 / scale),
+    color: 'rgba(255,255,255,0.35)',
     fontWeight: '500',
+    letterSpacing: 0.5,
   },
   versionWrap: {
     position: 'absolute',
@@ -288,7 +440,7 @@ const styles = StyleSheet.create({
   },
   versionText: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.2)',
+    color: 'rgba(255,255,255,0.15)',
     fontWeight: '500',
   },
 });

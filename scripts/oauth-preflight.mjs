@@ -48,11 +48,15 @@ async function run() {
   console.log('=======================');
 
   const rootEnvRaw = await readText(path.join(ROOT, '.env'));
+  const rootEnvLocalRaw = await readText(path.join(ROOT, '.env.local'));
   const serverEnvRaw = await readText(path.join(ROOT, 'server', '.env'));
   const appJsonRaw = await readText(path.join(ROOT, 'app.json'));
   const gradleRaw = await readText(path.join(ROOT, 'android', 'app', 'build.gradle'));
 
-  const rootEnv = parseEnv(rootEnvRaw);
+  const rootEnv = {
+    ...parseEnv(rootEnvRaw),
+    ...parseEnv(rootEnvLocalRaw),
+  };
   const serverEnv = parseEnv(serverEnvRaw);
 
   const appJsonPackage = getByRegex(appJsonRaw, /"package"\s*:\s*"([^"]+)"/);
@@ -65,6 +69,7 @@ async function run() {
   const serverGoogleClient = serverEnv.GOOGLE_CLIENT_ID || '';
 
   const hasAndroidClient = Boolean(mobileAndroidClient);
+  const hasFallbackClient = Boolean(mobileWebClient || mobileIosClient);
   const hasMobileClient = Boolean(mobileAndroidClient || mobileWebClient || mobileIosClient);
   const hasServerClient = Boolean(serverGoogleClient);
   const packageAligned = Boolean(appJsonPackage && gradlePackage && appJsonPackage === gradlePackage);
@@ -75,11 +80,18 @@ async function run() {
   printCheck(Boolean(rootEnvRaw), 'Root .env exists');
   if (!rootEnvRaw) blockers.push('Root .env is missing');
 
+  printCheck(Boolean(rootEnvLocalRaw) || Boolean(rootEnvRaw), 'Root env source available', rootEnvLocalRaw ? '.env.local override loaded' : '.env only');
+
   printCheck(Boolean(serverEnvRaw), 'Server .env exists');
   if (!serverEnvRaw) blockers.push('server/.env is missing');
 
-  printCheck(Boolean(mobileAndroidClient), 'EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID present');
-  if (!mobileAndroidClient) blockers.push('Missing EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID in root .env');
+  printCheck(Boolean(mobileAndroidClient || mobileWebClient || mobileIosClient), 'At least one Google mobile client ID present');
+  if (!hasMobileClient) blockers.push('Missing Google client IDs in root env (.env or .env.local)');
+
+  printCheck(Boolean(mobileAndroidClient) || hasFallbackClient, 'Android sign-in client configuration present', hasAndroidClient ? 'android client' : hasFallbackClient ? 'fallback client' : 'none');
+  if (!hasAndroidClient && hasFallbackClient) {
+    warnings.push('Android-specific Google client ID is missing; using web/iOS fallback for Expo AuthSession');
+  }
 
   printCheck(
     Boolean(mobileWebClient || mobileIosClient || androidOnlyMode),
@@ -114,7 +126,7 @@ async function run() {
     warnings.push('Could not parse package values from app.json/build.gradle');
   }
 
-  const ready = blockers.length === 0 && hasAndroidClient;
+  const ready = blockers.length === 0 && (hasAndroidClient || hasFallbackClient);
   console.log('');
 
   if (warnings.length > 0) {
@@ -126,7 +138,7 @@ async function run() {
   }
 
   if (ready) {
-    console.log('Result: OAuth configuration is ready for Android live sign-in.');
+    console.log('Result: OAuth configuration is ready for Google sign-in.');
     if (!packageAligned) {
       console.log('Note: current native build uses build.gradle applicationId. Keep Google OAuth package consistent with that value until you align package names.');
     }

@@ -39,8 +39,11 @@ import { useLanguage } from '../../src/context/LanguageContext';
 import { PulseDot } from '../../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import { dualAI, type AIResponse, type AIContext } from '../../src/fitmind/DualAIEngine';
+import { encryptedDB } from '../../src/security/EncryptedDatabase';
+import { useDatabase } from '../../src/context/DatabaseContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const MAX_MESSAGE_WIDTH = Math.min(SCREEN_WIDTH * 0.85, 420);
 
 // ============================================
 // TYPES
@@ -111,12 +114,12 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
       {isProfessor && (
         <View style={styles.professorAvatarRow}>
           <LinearGradient
-            colors={['#8B5CF6', '#6366F1'] as [string, string]}
+            colors={[theme.colors.purple, theme.colors.indigo] as [string, string]}
             style={styles.professorAvatarIcon}
           >
-            <MaterialCommunityIcons name="school" size={12} color="#fff" />
+            <MaterialCommunityIcons name="school" size={12} color={theme.colors.onAccent} />
           </LinearGradient>
-          <Text style={[styles.professorLabel, { color: '#8B5CF6' }]}>Professor</Text>
+          <Text style={[styles.professorLabel, { color: theme.colors.purple }]}>Professor</Text>
         </View>
       )}
       {isProfessor ? (
@@ -124,17 +127,17 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
           <SimpleMarkdown
             text={message.text}
             style={[styles.messageText, { color: theme.colors.text }]}
-            boldStyle={{ color: '#8B5CF6' }}
+            boldStyle={{ color: theme.colors.purple }}
           />
         </View>
       ) : (
         <LinearGradient
-          colors={['#8B5CF6', '#6366F1'] as [string, string]}
+          colors={[theme.colors.purple, theme.colors.indigo] as [string, string]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.userBubbleGradient}
         >
-          <Text style={[styles.messageText, { color: '#fff' }]}>{message.text}</Text>
+          <Text style={[styles.messageText, { color: theme.colors.onAccent }]}>{message.text}</Text>
         </LinearGradient>
       )}
       <Text style={[styles.timestamp, { color: theme.colors.textMuted }]}>
@@ -150,7 +153,8 @@ function MessageBubble({ message, index }: { message: ChatMessage; index: number
 
 function ProfessorScreenInner() {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { t, language, languageName } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const scrollRef = useRef<FlatList>(null);
@@ -163,8 +167,8 @@ function ProfessorScreenInner() {
   const [conversationHistory, setConversationHistory] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
 
   useEffect(() => {
-    loadGreeting();
-  }, []);
+    if (dbReady) loadGreeting();
+  }, [dbReady]);
 
   // Handle Android hardware back button on flat Tabs navigator
   useEffect(() => {
@@ -202,6 +206,8 @@ function ProfessorScreenInner() {
       const response = await dualAI.query('hello', {
         personality: 'PROFESSOR',
         conversationHistory: [],
+        language,
+        languageName,
       });
 
       setMessages([{
@@ -223,11 +229,37 @@ function ProfessorScreenInner() {
         timestamp: new Date(),
       }]);
     }
-  };
+    // Load past conversation history
+    try {
+      const history = await encryptedDB.getAIConversations('PROFESSOR', 20);
+      if (history.length > 0) {
+        const pastMessages: ChatMessage[] = [];
+        const pastHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+        for (const entry of history.reverse()) {
+          pastMessages.push({
+            id: `hist_user_${entry.created_at}`,
+            role: 'user',
+            text: entry.query,
+            timestamp: new Date(entry.created_at),
+          });
+          pastMessages.push({
+            id: `hist_prof_${entry.created_at}`,
+            role: 'professor',
+            text: entry.response,
+            timestamp: new Date(entry.created_at),
+          });
+          pastHistory.push({ role: 'user', content: entry.query });
+          pastHistory.push({ role: 'assistant', content: entry.response });
+        }
+        setMessages(prev => [...prev, ...pastMessages]);
+        setConversationHistory(pastHistory);
+      }
+    } catch (e) {
+      console.warn('[Professor] Failed to load conversation history:', e);
+    }  };
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim();
-    if (!text) return;
+  const sendMessageWithText = useCallback(async (text: string) => {
+    if (!text.trim()) return;
 
     const userMsg: ChatMessage = {
       id: `user_${Date.now()}`,
@@ -249,7 +281,9 @@ function ProfessorScreenInner() {
     try {
       const context: AIContext = {
         personality: 'PROFESSOR',
-        conversationHistory: updatedHistory.slice(-10), // Keep last 10 for context
+        conversationHistory: updatedHistory.slice(-10),
+        language,
+        languageName,
       };
 
       const response = await dualAI.query(text, context);
@@ -268,10 +302,14 @@ function ProfessorScreenInner() {
         { role: 'assistant', content: response.message },
       ]);
 
+      encryptedDB.storeAIConversation('PROFESSOR', text, response.message).catch(e =>
+        console.warn('[Professor] Failed to persist conversation:', e)
+      );
+
       if (response.suggestions?.length) {
         setActiveSuggestions(response.suggestions);
       }
-    } catch (e) {
+    } catch {
       setMessages(prev => [...prev, {
         id: `professor_err_${Date.now()}`,
         role: 'professor',
@@ -282,59 +320,21 @@ function ProfessorScreenInner() {
       setIsTyping(false);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
     }
-  }, [input, conversationHistory]);
+  }, [conversationHistory, language, languageName]);
+
+  const sendMessage = useCallback(async () => {
+    const text = input.trim();
+    if (!text) return;
+    sendMessageWithText(text);
+  }, [input, sendMessageWithText]);
 
   const handleSuggestion = useCallback((text: string) => {
     setInput(text);
-    // Trigger send after brief UI update
-    setTimeout(async () => {
-      const userMsg: ChatMessage = {
-        id: `user_${Date.now()}`,
-        role: 'user',
-        text,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMsg]);
-      setIsTyping(true);
-      setActiveSuggestions([]);
-
-      const updatedHistory = [
-        ...conversationHistory,
-        { role: 'user' as const, content: text },
-      ];
-
-      try {
-        const response = await dualAI.query(text, {
-          personality: 'PROFESSOR',
-          conversationHistory: updatedHistory.slice(-10),
-        });
-
-        setMessages(prev => [...prev, {
-          id: `professor_${Date.now()}`,
-          role: 'professor',
-          text: response.message,
-          timestamp: new Date(),
-          suggestions: response.suggestions,
-        }]);
-        setConversationHistory([...updatedHistory, { role: 'assistant', content: response.message }]);
-
-        if (response.suggestions?.length) {
-          setActiveSuggestions(response.suggestions);
-        }
-      } catch {
-        setMessages(prev => [...prev, {
-          id: `professor_err_${Date.now()}`,
-          role: 'professor',
-          text: "I had trouble with that. Let me try a different approach — could you rephrase?",
-          timestamp: new Date(),
-        }]);
-      } finally {
-        setIsTyping(false);
-        setInput('');
-        setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
-      }
+    // Defer to allow React to flush the input state, then trigger send
+    setTimeout(() => {
+      sendMessageWithText(text);
     }, 50);
-  }, [conversationHistory]);
+  }, [conversationHistory, language, languageName]);
 
   const sendAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: inputScale.value }],
@@ -356,9 +356,9 @@ function ProfessorScreenInner() {
   ];
 
   const suggestionColors = [
-    '#8B5CF6', '#6366F1', '#A855F7', '#7C3AED',
-    '#4F46E5', '#818CF8', '#C084FC', '#A78BFA',
-    '#10B981', '#14B8A6', '#06B6D4', '#3B82F6',
+    theme.colors.purple, theme.colors.indigo, theme.colors.purpleLight, theme.colors.purple,
+    theme.colors.indigo, theme.colors.purpleLight, theme.colors.purple, theme.colors.indigo,
+    theme.colors.accent, theme.colors.accent, theme.colors.skyBlue, theme.colors.blue,
   ];
 
   return (
@@ -368,8 +368,8 @@ function ProfessorScreenInner() {
         <Animated.View entering={FadeInDown.duration(150)}>
           <LinearGradient
             colors={theme.isDark
-              ? ['#8B5CF633', '#8B5CF60D', 'transparent'] as [string, string, string]
-              : ['#8B5CF61A', '#8B5CF605', 'transparent'] as [string, string, string]}
+              ? [theme.colors.purple + '33', theme.colors.purple + '0D', 'transparent'] as [string, string, string]
+              : [theme.colors.purple + '1A', theme.colors.purple + '05', 'transparent'] as [string, string, string]}
             style={styles.headerGradient}
           >
             <View style={styles.headerRow}>
@@ -382,21 +382,21 @@ function ProfessorScreenInner() {
 
               <View style={styles.headerCenter}>
                 <LinearGradient
-                  colors={['#8B5CF6', '#6366F1'] as [string, string]}
+                  colors={[theme.colors.purple, theme.colors.indigo] as [string, string]}
                   style={styles.headerAvatar}
                 >
-                  <MaterialCommunityIcons name="school" size={22} color="#fff" />
+                  <MaterialCommunityIcons name="school" size={22} color={theme.colors.onAccent} />
                 </LinearGradient>
                 <View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Professor</Text>
-                    <View style={{ backgroundColor: '#8B5CF625', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
-                      <Text style={{ color: '#8B5CF6', fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>BETA</Text>
+                    <View style={{ backgroundColor: theme.colors.purple + '25', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+                      <Text style={{ color: theme.colors.purple, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>BETA</Text>
                     </View>
                   </View>
                   <View style={styles.headerStatusRow}>
-                    <PulseDot color="#8B5CF6" size={6} />
-                    <Text style={[styles.headerStatus, { color: '#8B5CF6' }]}>Scholarly mode</Text>
+                    <PulseDot color={theme.colors.purple} size={6} />
+                    <Text style={[styles.headerStatus, { color: theme.colors.purple }]}>Scholarly mode</Text>
                   </View>
                 </View>
               </View>
@@ -498,7 +498,7 @@ function ProfessorScreenInner() {
                           activeOpacity={0.7}
                           onPress={() => handleSuggestion(s)}
                         >
-                          <Text style={[styles.followUpText, { color: '#8B5CF6' }]}>{s}</Text>
+                          <Text style={[styles.followUpText, { color: theme.colors.purple }]}>{s}</Text>
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -542,12 +542,12 @@ function ProfessorScreenInner() {
                 >
                   <LinearGradient
                     colors={input.trim()
-                      ? ['#8B5CF6', '#6366F1'] as [string, string]
+                      ? [theme.colors.purple, theme.colors.indigo] as [string, string]
                       : [theme.colors.surfaceVariant, theme.colors.surface] as [string, string]
                     }
                     style={styles.sendButton}
                   >
-                    <MaterialCommunityIcons name="send" size={18} color="#fff" />
+                    <MaterialCommunityIcons name="send" size={18} color={theme.colors.onAccent} />
                   </LinearGradient>
                 </TouchableOpacity>
               </Animated.View>
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   dateBadgeWrap: { alignItems: 'center', marginBottom: 16 },
   dateBadge: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 12 },
   dateBadgeText: { fontSize: 11, fontWeight: '600' },
-  messageBubble: { maxWidth: '85%', marginBottom: 12 },
+  messageBubble: { maxWidth: MAX_MESSAGE_WIDTH, marginBottom: 12 },
   professorBubble: { alignSelf: 'flex-start', padding: 14, borderRadius: 18, borderBottomLeftRadius: 6 },
   professorAvatarRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   professorAvatarIcon: { width: 20, height: 20, borderRadius: 7, justifyContent: 'center', alignItems: 'center' },

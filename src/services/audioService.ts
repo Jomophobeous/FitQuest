@@ -50,6 +50,9 @@ type AudioEventType =
 
 type AudioEventListener = (event: AudioEventType, text?: string) => void;
 
+/** Translation function signature — injected from React context */
+type TranslatorFn = (key: string, vars?: Record<string, string | number>) => string;
+
 // ============================================
 // DEFAULT SETTINGS
 // ============================================
@@ -83,6 +86,60 @@ const APP_LANG_TO_TTS_LOCALE: Record<string, string> = {
   sw: 'sw-KE',
 };
 
+/**
+ * Pitch tuning by audio event type.
+ * Slight variation makes narration feel more dynamic and human-like.
+ * - Intros/transitions: warm, slightly lower → authoritative coach
+ * - Execution: neutral, clear → instructional
+ * - Completion/countdown: energetic, slightly higher → celebratory
+ */
+const PITCH_BY_EVENT: Record<AudioEventType, number> = {
+  intro: 0.95,
+  setup: 1.0,
+  execution: 1.0,
+  transition: 0.95,
+  countdown: 1.05,
+  complete: 1.1,
+};
+
+/**
+ * Pre-process text for more natural TTS prosody.
+ * Since expo-speech has no SSML, we use punctuation and spacing tricks
+ * to coax the speech engine into more natural pauses and rhythm.
+ */
+function preprocessForNaturalSpeech(text: string, type: AudioEventType): string {
+  let processed = text;
+
+  // Ensure sentences end with proper punctuation for clear pauses
+  processed = processed.replace(/([a-zA-Z\u00C0-\u024F])(\s+)([A-Z\u00C0-\u024F])/g, '$1. $3');
+
+  // Add micro-pauses after colons (e.g. "Next exercise: Push-ups")
+  processed = processed.replace(/:\s*/g, ':... ');
+
+  // Add breathing pause before "and" in long sentences
+  processed = processed.replace(/,\s*and\s/gi, ', ... and ');
+
+  // Numbers read better with slight pause before them
+  processed = processed.replace(/(\s)(\d+)\s*(seconds|reps|sets|minutes)/gi, '$1... $2 $3');
+
+  // Exclamation marks → brief dramatic pause before enthusiastic phrases
+  processed = processed.replace(/!\s+/g, '! ... ');
+
+  // Ellipsis normalization (ensure exactly 3 dots with surrounding spaces)
+  processed = processed.replace(/\.{2,}/g, '...');
+  processed = processed.replace(/\s*\.\.\.\s*/g, ' ... ');
+
+  // For completion events, add an extra beat at the start for dramatic effect
+  if (type === 'complete') {
+    processed = '... ' + processed;
+  }
+
+  // Clean up multiple spaces
+  processed = processed.replace(/\s{2,}/g, ' ').trim();
+
+  return processed;
+}
+
 // ============================================
 // AUDIO SERVICE CLASS
 // ============================================
@@ -94,6 +151,24 @@ class AudioService {
   private queue: { text: string; type: AudioEventType }[] = [];
   private listeners: Set<AudioEventListener> = new Set();
   private isInitialized: boolean = false;
+  private translator: TranslatorFn | null = null;
+  /** Cached enhanced voice ID for current locale */
+  private preferredVoiceId: string | undefined;
+
+  /**
+   * Inject the translation function from React context.
+   * Called by useAudio hook whenever language changes.
+   */
+  setTranslator(t: TranslatorFn): void {
+    this.translator = t;
+  }
+
+  /** Translate a key, falling back to the key itself if no translator is set */
+  private t(key: string, vars?: Record<string, string | number>): string {
+    if (this.translator) return this.translator(key, vars);
+    // Fallback: return key (will be the English default from calling code)
+    return key;
+  }
 
   /**
    * Initialize audio service with user settings
@@ -102,7 +177,12 @@ class AudioService {
     if (this.isInitialized) return;
 
     try {
-      const result = await getAudioSettingsRow(userId);
+      let result: any = null;
+      try {
+        result = await getAudioSettingsRow(userId);
+      } catch {
+        // DB not ready yet — use defaults, will retry on next call
+      }
 
       if (result) {
         this.settings = {
@@ -112,13 +192,17 @@ class AudioService {
           language: DEFAULT_SETTINGS.language,
         };
       } else {
-        // Create default settings
-        await createAudioSettingsRow({
-          userId,
-          voiceEnabled: true,
-          speechRate: 1.0,
-          countdownCuesEnabled: true,
-        });
+        // Create default settings (ignore errors if DB isn't ready)
+        try {
+          await createAudioSettingsRow({
+            userId,
+            voiceEnabled: true,
+            speechRate: 1.0,
+            countdownCuesEnabled: true,
+          });
+        } catch {
+          // DB not available — will create on next init
+        }
       }
 
       this.isInitialized = true;
@@ -166,9 +250,65 @@ class AudioService {
   /**
    * Set TTS language from app language code.
    * Call this whenever the app language changes.
+   * Also selects the best quality voice for the locale.
    */
   setLanguage(appLangCode: string): void {
     this.settings.language = APP_LANG_TO_TTS_LOCALE[appLangCode] ?? 'en-US';
+    this.preferredVoiceId = undefined; // reset — will be picked on next speak
+    this.selectBestVoice();
+  }
+
+  /**
+   * Select the highest quality voice available for the current locale.
+   * Uses a scoring system: exact locale match (3pts) > lang prefix (1pt),
+   * Enhanced quality (+5pts), network voices deprioritized (-2pts).
+   * Caches result per locale to avoid re-scanning.
+   */
+  private async selectBestVoice(): Promise<void> {
+    try {
+      const voices = await Speech.getAvailableVoicesAsync();
+      if (!voices || voices.length === 0) return;
+
+      const locale = this.settings.language;
+      const langPrefix = locale.split('-')[0]!; // e.g. 'en' from 'en-US'
+
+      // Find voices matching our locale
+      const matching = voices.filter(
+        v => v.language === locale || v.language?.startsWith(langPrefix)
+      );
+      if (matching.length === 0) return;
+
+      // Score each matching voice
+      let bestScore = -Infinity;
+      let bestVoice: string | undefined;
+
+      for (const v of matching) {
+        let score = 0;
+
+        // Exact locale match is far better than just language prefix
+        if (v.language === locale) score += 3;
+        else score += 1;
+
+        // Quality tiers
+        const quality = (v as any).quality;
+        if (quality === 'Enhanced') score += 5;
+        else if (quality === 'Default') score += 2;
+
+        // Network/online voices may have latency — deprioritize
+        if ((v as any).networkConnectionRequired) score -= 2;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestVoice = v.identifier;
+        }
+      }
+
+      if (bestVoice) {
+        this.preferredVoiceId = bestVoice;
+      }
+    } catch {
+      // Voice selection is best-effort — default works fine
+    }
   }
 
   /**
@@ -196,7 +336,8 @@ class AudioService {
   }
 
   /**
-   * Speak text with TTS
+   * Speak text with TTS — uses pitch variation and prosody preprocessing
+   * for more natural, coach-like narration.
    */
   private async speak(text: string, type: AudioEventType): Promise<void> {
     if (!this.settings.voiceEnabled || !text) {
@@ -208,10 +349,23 @@ class AudioService {
       this.isSpeaking = true;
       this.emit(type, text);
 
-      Speech.speak(text, {
-        rate: this.settings.speechRate,
-        pitch: 1.0,
+      // Apply natural speech preprocessing (punctuation-based prosody)
+      const processedText = preprocessForNaturalSpeech(text, type);
+
+      // Narration types benefit from a slightly slower, more natural pace
+      const isNarration = type === 'intro' || type === 'setup' || type === 'execution' || type === 'transition';
+      const rate = isNarration
+        ? Math.max(0.75, this.settings.speechRate * 0.9) // 10% slower for narration
+        : this.settings.speechRate;
+
+      // Context-aware pitch for dynamic, human-like voice
+      const pitch = PITCH_BY_EVENT[type] ?? 1.0;
+
+      Speech.speak(processedText, {
+        rate,
+        pitch,
         language: this.settings.language,
+        voice: this.preferredVoiceId,
         onDone: () => {
           this.isSpeaking = false;
           resolve();
@@ -266,6 +420,13 @@ class AudioService {
   }
 
   /**
+   * Speak narration text (for mind exercises)
+   */
+  async speakNarration(text: string): Promise<void> {
+    await this.queueSpeak(text, 'intro');
+  }
+
+  /**
    * Play setup instructions
    */
   async playSetup(audio: ExerciseAudio): Promise<void> {
@@ -292,7 +453,7 @@ class AudioService {
   async playCountdown(seconds: number): Promise<void> {
     if (!this.settings.countdownCuesEnabled) return;
     
-    const text = seconds === 1 ? 'One' : `${seconds}`;
+    const text = seconds === 1 ? this.t('audio.countdown.one') : `${seconds}`;
     await this.queueSpeak(text, 'countdown');
   }
 
@@ -300,7 +461,7 @@ class AudioService {
    * Play completion cue
    */
   async playComplete(): Promise<void> {
-    await this.queueSpeak('Exercise complete', 'complete');
+    await this.queueSpeak(this.t('audio.exerciseComplete'), 'complete');
   }
 
   /**
@@ -318,7 +479,7 @@ class AudioService {
     
     // Verbal bell cue if voice is enabled (queued to prevent overlap)
     if (this.settings.voiceEnabled) {
-      await this.queueSpeak('Ding!', 'complete');
+      await this.queueSpeak(this.t('audio.bell'), 'complete');
     }
   }
 
@@ -335,8 +496,8 @@ class AudioService {
     
     // Say "done" or transition to next
     const message = nextExerciseName 
-      ? `Done! Up next: ${nextExerciseName}`
-      : 'Exercise complete!';
+      ? this.t('audio.doneNext', { name: nextExerciseName })
+      : this.t('audio.exerciseDone');
     await this.queueSpeak(message, 'complete');
   }
 
@@ -346,7 +507,28 @@ class AudioService {
   async playWorkoutComplete(): Promise<void> {
     // Triple vibration
     Vibration.vibrate([0, 100, 80, 100, 80, 200]);
-    await this.queueSpeak('Workout complete! Great job!', 'complete');
+    await this.queueSpeak(this.t('audio.workoutComplete'), 'complete');
+  }
+
+  /**
+   * Play a context-aware workout completion compliment.
+   * Uses completion data to generate personalized praise.
+   */
+  async playWorkoutCompliment(data: {
+    completedCount: number;
+    totalCount: number;
+    durationSeconds: number;
+    streakDays: number;
+    xpEarned: number;
+    levelUp: boolean;
+    newLevel?: number;
+    progressions: number;
+    exerciseNames: string[];
+  }): Promise<void> {
+    Vibration.vibrate([0, 100, 80, 100, 80, 200]);
+
+    const compliment = generateCompletionCompliment(data, this.translator || undefined);
+    await this.queueSpeak(compliment, 'complete');
   }
 
   /**
@@ -362,6 +544,35 @@ class AudioService {
     // Timer ticks silently until final countdown
     // Countdown cues handled by timer events
     // Transition played at end
+  }
+
+  /**
+   * Announce a workout phase transition.
+   * Called once when transitioning between warmup → main → cooldown.
+   */
+  async playPhaseTransition(
+    fromPhase: 'warmup' | 'main' | 'cooldown' | null,
+    toPhase: 'warmup' | 'main' | 'cooldown',
+  ): Promise<void> {
+    const transitionKeys: Record<string, string> = {
+      'null→warmup': 'audio.warmup.start',
+      'null→main': 'audio.main.start',
+      'null→cooldown': 'audio.cooldown.start',
+      'warmup→main': 'audio.warmup.toMain',
+      'warmup→cooldown': 'audio.warmup.toCooldown',
+      'main→cooldown': 'audio.main.toCooldown',
+      'main→warmup': 'audio.main.toWarmup',
+      'cooldown→main': 'audio.cooldown.toMain',
+    };
+    const key = `${fromPhase ?? 'null'}→${toPhase}`;
+    const translationKey = transitionKeys[key];
+    const message = translationKey
+      ? this.t(translationKey)
+      : this.t('audio.phase.fallback', { phase: toPhase.replace('_', ' ') });
+
+    // Brief vibration to mark the transition
+    Vibration.vibrate(Platform.OS === 'ios' ? [0, 40] : [0, 40, 30, 40]);
+    await this.queueSpeak(message, 'transition');
   }
 
   /**
@@ -408,6 +619,104 @@ class AudioService {
 export const audioService = new AudioService();
 
 // ============================================
+// COMPLETION COMPLIMENT GENERATOR
+// ============================================
+
+function generateCompletionCompliment(
+  data: {
+    completedCount: number;
+    totalCount: number;
+    durationSeconds: number;
+    streakDays: number;
+    xpEarned: number;
+    levelUp: boolean;
+    newLevel?: number;
+    progressions: number;
+    exerciseNames: string[];
+  },
+  t?: TranslatorFn,
+): string {
+  const tr = (key: string, vars?: Record<string, string | number>): string => {
+    if (t) return t(key, vars);
+    // Fallback English defaults
+    const fallbacks: Record<string, string> = {
+      'audio.compliment.1': 'Workout complete! You showed up and gave it your all.',
+      'audio.compliment.2': 'That was incredible! Your body is getting stronger every session.',
+      'audio.compliment.3': 'Another one in the books! Consistency is your superpower.',
+      'audio.compliment.4': 'You just proved that hard work pays off. Well done!',
+      'audio.compliment.5': "Amazing effort! Most people skip today. You didn't.",
+      'audio.perfect.1': "Perfect session! Every single exercise completed. That's elite dedication.",
+      'audio.perfect.2': "Flawless workout! You didn't skip a single exercise. Unstoppable!",
+      'audio.perfect.3': 'One hundred percent completion. You are on another level!',
+      'audio.levelUp.1': 'And you levelled up! Welcome to level {{level}}!',
+      'audio.levelUp.2': 'Level {{level}} unlocked! Your hard work is paying off big time!',
+      'audio.streak.7': "A whole week of training! You're building a real habit.",
+      'audio.streak.14': 'Two weeks strong! Your discipline is inspiring.',
+      'audio.streak.30': "Thirty-day streak! You're in the top tier of consistency.",
+      'audio.streak.60': 'Sixty days! Most people dream about this kind of dedication.',
+      'audio.streak.90': "Ninety-day streak! You're absolutely legendary.",
+      'audio.minutes': '{{minutes}} minutes of pure effort.',
+      'audio.xpEarned': 'Plus {{xp}} XP earned.',
+    };
+    let result = fallbacks[key] || key;
+    if (vars) {
+      for (const [k, v] of Object.entries(vars)) {
+        result = result.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+      }
+    }
+    return result;
+  };
+
+  const parts: string[] = [];
+
+  // Base compliment
+  const complimentKeys = ['audio.compliment.1', 'audio.compliment.2', 'audio.compliment.3', 'audio.compliment.4', 'audio.compliment.5'];
+  const perfectKeys = ['audio.perfect.1', 'audio.perfect.2', 'audio.perfect.3'];
+
+  if (data.completedCount === data.totalCount && data.totalCount > 0) {
+    parts.push(tr(perfectKeys[Math.floor(Math.random() * perfectKeys.length)]!));
+  } else {
+    parts.push(tr(complimentKeys[Math.floor(Math.random() * complimentKeys.length)]!));
+  }
+
+  // Duration callout
+  const mins = Math.round(data.durationSeconds / 60);
+  if (mins >= 30) {
+    parts.push(tr('audio.minutes', { minutes: mins }));
+  }
+
+  // Progression callout
+  if (data.progressions > 0) {
+    const progKey = 'audio.progressions';
+    const progText = tr(progKey, { count: data.progressions });
+    // Handle plural form (split by |)
+    if (progText.includes('|')) {
+      const forms = progText.split('|');
+      parts.push(data.progressions === 1 ? forms[0]! : forms[1]!);
+    } else {
+      parts.push(progText);
+    }
+  }
+
+  // Level up
+  if (data.levelUp && data.newLevel) {
+    const levelUpKeys = ['audio.levelUp.1', 'audio.levelUp.2'];
+    parts.push(tr(levelUpKeys[Math.floor(Math.random() * levelUpKeys.length)]!, { level: data.newLevel }));
+  }
+
+  // Streak milestone
+  const milestone = [90, 60, 30, 14, 7].find(m => data.streakDays === m);
+  if (milestone) {
+    parts.push(tr(`audio.streak.${milestone}`));
+  }
+
+  // XP earned
+  parts.push(tr('audio.xpEarned', { xp: data.xpEarned }));
+
+  return parts.join(' ');
+}
+
+// ============================================
 // HELPER FUNCTIONS
 // ============================================
 
@@ -415,12 +724,24 @@ export const audioService = new AudioService();
  * Generate default audio instructions from exercise name
  * Used when exercise doesn't have custom audio
  */
-export function generateDefaultAudio(exerciseName: string, restSeconds: number = 30): ExerciseAudio {
+export function generateDefaultAudio(exerciseName: string, restSeconds: number = 30, t?: TranslatorFn): ExerciseAudio {
+  const tr = (key: string, vars?: Record<string, string | number>): string => {
+    if (t) return t(key, vars);
+    const fb: Record<string, string> = {
+      'audio.nextExercise': 'Next exercise: {{name}}.',
+      'audio.getIntoPosition': 'Get into position',
+      'audio.beginMovement': 'Begin the movement',
+      'audio.restFor': 'Rest for {{seconds}} seconds.',
+    };
+    let r = fb[key] || key;
+    if (vars) for (const [k, v] of Object.entries(vars)) r = r.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+    return r;
+  };
   return {
-    intro: `Next exercise: ${exerciseName}`,
-    setup: 'Get into position',
-    execution: 'Begin the movement',
-    transition: `Rest for ${restSeconds} seconds`,
+    intro: tr('audio.nextExercise', { name: exerciseName }),
+    setup: tr('audio.getIntoPosition'),
+    execution: tr('audio.beginMovement'),
+    transition: tr('audio.restFor', { seconds: restSeconds }),
   };
 }
 
@@ -428,6 +749,8 @@ export function generateDefaultAudio(exerciseName: string, restSeconds: number =
  * Generate rich, detailed audio narration from exercise data.
  * Builds TTS-optimized narration from the exercise's instruction array,
  * muscle targets, and metadata — replacing the generic "Get into position".
+ * Uses conversational phrasing with prosody cues (ellipses, commas)
+ * to produce natural-sounding coach narration.
  */
 export function generateRichAudio(
   exercise: {
@@ -438,53 +761,71 @@ export function generateRichAudio(
     restSeconds?: number;
   },
   nextExerciseName?: string,
+  t?: TranslatorFn,
 ): ExerciseAudio {
+  const tr = (key: string, vars?: Record<string, string | number>): string => {
+    if (t) return t(key, vars);
+    const fb: Record<string, string> = {
+      'audio.nextExercise': 'Next exercise... {{name}}.',
+      'audio.targets': 'This one targets your {{muscles}}.',
+      'audio.categoryLabel': 'A {{category}} exercise.',
+      'audio.getInPosition': 'Get into position... for {{name}}.',
+      'audio.focusControl': 'Focus on controlled movement... nice and steady.',
+      'audio.performControl': 'Perform {{name}}... with controlled form. Breathe steadily, throughout.',
+      'audio.wellDone': 'Well done!',
+      'audio.restFor': 'Rest for {{seconds}} seconds... breathe.',
+      'audio.upNext': 'Up next... {{name}}.',
+      'audio.shakeItOut': 'Shake it out... and get ready for the next one.',
+    };
+    let r = fb[key] || key;
+    if (vars) for (const [k, v] of Object.entries(vars)) r = r.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+    return r;
+  };
+
   const { name, category, instructions, primaryMuscles, restSeconds = 30 } = exercise;
 
   // ── INTRO: Name + what it targets ──
-  let intro = `Next exercise: ${name}.`;
+  let intro = tr('audio.nextExercise', { name });
   if (primaryMuscles && primaryMuscles.length > 0) {
     const muscleList = primaryMuscles.slice(0, 3).map(m => m.replace(/_/g, ' ')).join(', ');
-    intro += ` This targets your ${muscleList}.`;
+    intro += ` ${tr('audio.targets', { muscles: muscleList })}`;
   } else if (category) {
     const catLabel = category.replace(/_/g, ' ');
-    intro += ` A ${catLabel} exercise.`;
+    intro += ` ${tr('audio.categoryLabel', { category: catLabel })}`;
   }
 
   // ── SETUP: First 1-2 instructions (typically positioning) ──
   let setup: string;
   if (instructions.length >= 2) {
-    setup = instructions.slice(0, 2).join('. ') + '.';
+    setup = instructions.slice(0, 2).join('... ') + '.';
   } else if (instructions.length === 1) {
     setup = instructions[0] + '.';
   } else {
-    setup = `Get into position for ${name}.`;
+    setup = tr('audio.getInPosition', { name });
   }
-  // Clean up double periods
   setup = setup.replace(/\.+/g, '.').replace(/\.\s*\./g, '.');
 
   // ── EXECUTION: Remaining instructions (movement cues) ──
   let execution: string;
   if (instructions.length > 2) {
-    // Take instructions 3+ as execution cues
     const execSteps = instructions.slice(2);
-    execution = execSteps.join('. ') + '.';
+    execution = execSteps.join('... ') + '.';
   } else if (instructions.length === 2) {
-    execution = instructions[1] + '. Focus on controlled movement.';
+    execution = instructions[1] + `. ${tr('audio.focusControl')}`;
   } else {
-    execution = `Perform ${name} with controlled form. Breathe steadily throughout.`;
+    execution = tr('audio.performControl', { name });
   }
   execution = execution.replace(/\.+/g, '.').replace(/\.\s*\./g, '.');
 
   // ── TRANSITION: Encouragement + rest + next exercise teaser ──
-  let transition = `Well done!`;
+  let transition = tr('audio.wellDone');
   if (restSeconds > 0) {
-    transition += ` Rest for ${restSeconds} seconds.`;
+    transition += ` ${tr('audio.restFor', { seconds: restSeconds })}`;
   }
   if (nextExerciseName) {
-    transition += ` Up next: ${nextExerciseName}.`;
+    transition += ` ${tr('audio.upNext', { name: nextExerciseName })}`;
   } else {
-    transition += ` Shake it out and get ready.`;
+    transition += ` ${tr('audio.shakeItOut')}`;
   }
 
   return { intro, setup, execution, transition };

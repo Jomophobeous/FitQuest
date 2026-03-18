@@ -113,8 +113,8 @@ export class TrainedActivityClassifier {
     const total = entries.reduce((s, [, v]) => s + v, 0) || 1;
 
     return {
-      activity: entries[0][0],
-      confidence: entries[0][1] / total,
+      activity: entries[0]![0],
+      confidence: entries[0]![1] / total,
       allScores: scores,
       inferenceTimeMs: performance.now() - startTime,
     };
@@ -167,8 +167,8 @@ export class TrainedActivityClassifier {
       this.std(gyroMag),
       Math.max(...gyroMag),
       this.dominantFrequency(accelMag, 50),
-      this.correlation(channels[0], channels[1]),
-      this.correlation(channels[1], channels[2]),
+      this.correlation(channels[0]!, channels[1]!),
+      this.correlation(channels[1]!, channels[2]!),
     );
 
     return features;
@@ -256,7 +256,7 @@ export class TrainedActivityClassifier {
       for (const [activity, info] of Object.entries(this.model.decision_rules)) {
         for (const feat of info.key_features) {
           if (feat.index < scaledFeatures.length) {
-            const contribution = Math.abs(scaledFeatures[feat.index]) * feat.importance;
+            const contribution = Math.abs(scaledFeatures[feat.index]!) * feat.importance;
             scores[activity as ActivityType] += contribution * 0.5;
           }
         }
@@ -283,7 +283,7 @@ export class TrainedActivityClassifier {
   private median(arr: number[]): number {
     const sorted = [...arr].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
   }
 
   private percentile(arr: number[], p: number): number {
@@ -292,9 +292,9 @@ export class TrainedActivityClassifier {
     const lower = Math.floor(idx);
     const fraction = idx - lower;
     if (lower + 1 < sorted.length) {
-      return sorted[lower] + fraction * (sorted[lower + 1] - sorted[lower]);
+      return sorted[lower]! + fraction * (sorted[lower + 1]! - sorted[lower]!);
     }
-    return sorted[lower];
+    return sorted[lower]!;
   }
 
   private spectralPower(data: number[]): number {
@@ -308,8 +308,8 @@ export class TrainedActivityClassifier {
       let imagPart = 0;
       for (let t = 0; t < n; t++) {
         const angle = (2 * Math.PI * k * t) / n;
-        realPart += data[t] * Math.cos(angle);
-        imagPart -= data[t] * Math.sin(angle);
+        realPart += data[t]! * Math.cos(angle);
+        imagPart -= data[t]! * Math.sin(angle);
       }
       totalPower += Math.sqrt(realPart ** 2 + imagPart ** 2);
     }
@@ -328,8 +328,8 @@ export class TrainedActivityClassifier {
       let imagPart = 0;
       for (let t = 0; t < n; t++) {
         const angle = (2 * Math.PI * k * t) / n;
-        realPart += data[t] * Math.cos(angle);
-        imagPart -= data[t] * Math.sin(angle);
+        realPart += data[t]! * Math.cos(angle);
+        imagPart -= data[t]! * Math.sin(angle);
       }
       const power = realPart ** 2 + imagPart ** 2;
       if (power > maxPower) {
@@ -348,8 +348,8 @@ export class TrainedActivityClassifier {
     let cov = 0, varA = 0, varB = 0;
 
     for (let i = 0; i < n; i++) {
-      const da = a[i] - meanA;
-      const db = b[i] - meanB;
+      const da = a[i]! - meanA;
+      const db = b[i]! - meanB;
       cov += da * db;
       varA += da * da;
       varB += db * db;

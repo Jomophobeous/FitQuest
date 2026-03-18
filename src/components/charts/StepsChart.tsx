@@ -78,7 +78,7 @@ function SimpleStepsBarChart({
   const chartHeight = height - 40;
   const maxValue = Math.max(...data.map(d => Math.max(d.steps, d.goal)), 1);
   const barWidth = Math.max(8, Math.min(24, (SCREEN_WIDTH - 80) / data.length - 4));
-  const avgGoal = data.length > 0 ? data[0].goal : 10000;
+  const avgGoal = data.length > 0 ? data[0]!.goal : 10000;
   const goalLineY = chartHeight - (avgGoal / maxValue) * chartHeight;
 
   return (

@@ -11,18 +11,19 @@ import {
   getExercises,
   getUserProfile,
   getMuscleFatigue,
-  getRecentSessions,
   getUserEquipment,
   getUserInjuries,
   createWorkoutSession,
   addSessionExercise,
   getRecentExerciseIds,
   getRecentlyTrainedMuscles,
-  getProgressHistory,
+  getAllProgressRecords,
   getAppState,
 } from '../database/service';
 import { generateSecureId } from '../security/randomId';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
+import { getCachedReadiness, type ReadinessSnapshot } from './ReadinessEngine';
+import { calculateProgression, type ProgressionDecision } from './progressionEngine';
 import type {
   ExerciseWithDetails,
   UserProfile,
@@ -30,6 +31,7 @@ import type {
   WorkoutSession,
   SessionExercise,
   Category,
+  ProgressRecord,
   TargetMuscle,
   TrainingType,
   ExerciseFilter,
@@ -142,6 +144,43 @@ interface GeneratedWorkout {
   intent: SessionIntent;
 }
 
+export interface WorkoutGenerationDiagnostics {
+  user_id: string;
+  target_count: number;
+  candidate_count: number;
+  selected_count: number;
+  intent: SessionIntent;
+  candidate_categories: Record<string, number>;
+  top_scored: Array<{
+    id: string;
+    name: string;
+    category: Category;
+    score: number;
+    primary_muscles: TargetMuscle[];
+    matches_focus_pattern: boolean;
+  }>;
+  selected: Array<{
+    id: string;
+    name: string;
+    category: Category;
+    order: number;
+    score: number;
+    primary_muscles: TargetMuscle[];
+    matches_focus_pattern: boolean;
+  }>;
+  warnings: string[];
+}
+
+interface WorkoutPreparation {
+  profile: UserProfile;
+  adaptive: AdaptiveTrainingProfile;
+  intent: SessionIntent;
+  candidates: ExerciseWithDetails[];
+  scored: ScoredExercise[];
+  selected: ScoredExercise[];
+  targetCount: number;
+}
+
 // ============================================
 // STEP 1: DETERMINE SESSION INTENT
 // ============================================
@@ -150,7 +189,6 @@ async function determineSessionIntent(
   userId: string,
   profile: UserProfile,
   fatigueMap: Map<TargetMuscle, number>,
-  recentSessions: WorkoutSession[],
   deloadFlag: boolean
 ): Promise<SessionIntent> {
   // Get recently trained muscles from last 48h
@@ -176,7 +214,7 @@ async function determineSessionIntent(
 
   // Focus muscles = pattern muscles that aren't fatigued
   const focusMuscles = bestPattern
-    ? PATTERN_REQUIREMENTS[bestPattern].filter(m => (fatigueMap.get(m) || 0) < FATIGUE_THRESHOLD)
+    ? (PATTERN_REQUIREMENTS[bestPattern] ?? []).filter(m => (fatigueMap.get(m) || 0) < FATIGUE_THRESHOLD)
     : [];
 
   return {
@@ -234,11 +272,23 @@ async function applyHardFilter(
   // If we have candidates but they all get filtered out by equipment/injuries, we need more candidates!
   
   const filterCandidates = (candList: ExerciseWithDetails[]) => {
+    const isBodyweightOnly = equipmentLevels.length === 1 && equipmentLevels[0] === 'none';
+
     return candList.filter(ex => {
       // Equipment check
       if (ex.equipment_required.length > 0) {
         const hasAllRequired = ex.equipment_required.every(eq => userEquipment.includes(eq));
         if (!hasAllRequired) return false;
+      }
+
+      // Name-based safety net: if user is bodyweight-only, exclude exercises
+      // whose names clearly indicate gym equipment (catches mis-tagged external exercises)
+      if (isBodyweightOnly) {
+        const nameLower = ex.name.toLowerCase();
+        const gymKeywords = ['barbell', 'dumbbell', 'kettlebell', 'cable', 'machine',
+          'smith', 'ez-bar', 'e-z curl', 'lat pulldown', 'leg press', 'hack squat',
+          'pec deck', 'bench press', 'incline press', 'decline press'];
+        if (gymKeywords.some(kw => nameLower.includes(kw))) return false;
       }
 
       // Injury check - exclude if primary muscle is injured
@@ -335,6 +385,7 @@ async function scoreExercises(
   intent: SessionIntent,
   recentExerciseIds: Set<string>
 ): Promise<ScoredExercise[]> {
+  const progressHistoryByExercise = await buildProgressHistoryMap(userId, candidates, 6);
   const scored: ScoredExercise[] = [];
 
   for (const exercise of candidates) {
@@ -356,17 +407,17 @@ async function scoreExercises(
     // 3. Pattern balance (0-100) - bonus if matches focus pattern
     let patternScore = 50; // neutral
     if (intent.focus_pattern) {
-      const patternMuscles = PATTERN_REQUIREMENTS[intent.focus_pattern];
+      const patternMuscles = PATTERN_REQUIREMENTS[intent.focus_pattern] ?? [];
       const matchesPattern = exercise.primary_muscles.some(m => patternMuscles.includes(m));
       patternScore = matchesPattern ? 100 : 30;
     }
 
     // 4. Progression potential (0-100)
-    const progressHistory = await getProgressHistory(userId, exercise.id, 6);
+    const progressHistory = progressHistoryByExercise.get(exercise.id) || [];
     const progressionScore = (() => {
       if (progressHistory.length < 2) return 65;
-      const newest = progressHistory[0];
-      const oldest = progressHistory[progressHistory.length - 1];
+      const newest = progressHistory[0]!;
+      const oldest = progressHistory[progressHistory.length - 1]!;
       const newestSets = newest.sets_completed || 0;
       const oldestSets = oldest.sets_completed || 0;
       const newestReps = parseInt(String(newest.reps_achieved || '').match(/\d+/)?.[0] || '0', 10);
@@ -414,6 +465,29 @@ async function scoreExercises(
   });
 }
 
+async function buildProgressHistoryMap(
+  userId: string,
+  candidates: ExerciseWithDetails[],
+  perExerciseLimit: number
+): Promise<Map<string, ProgressRecord[]>> {
+  const candidateIds = new Set(candidates.map(candidate => candidate.id));
+  const maxRecords = Math.max(300, candidates.length * perExerciseLimit * 4);
+  const allProgress = await getAllProgressRecords(userId, maxRecords);
+  const progressHistoryByExercise = new Map<string, ProgressRecord[]>();
+
+  for (const record of allProgress) {
+    if (!candidateIds.has(record.exercise_id)) continue;
+
+    const history = progressHistoryByExercise.get(record.exercise_id) || [];
+    if (history.length >= perExerciseLimit) continue;
+
+    history.push(record);
+    progressHistoryByExercise.set(record.exercise_id, history);
+  }
+
+  return progressHistoryByExercise;
+}
+
 // ============================================
 // STEP 4: SELECTION
 // ============================================
@@ -427,29 +501,83 @@ function selectExercises(
   const coveredPatterns = new Set<string>();
   const usedExercises = new Set<string>();
 
-  // First pass: ensure pattern coverage
-  for (const [pattern, muscles] of Object.entries(PATTERN_REQUIREMENTS)) {
-    if (coveredPatterns.has(pattern)) continue;
+  const getMatchingPatterns = (exercise: ExerciseWithDetails): string[] => {
+    return Object.entries(PATTERN_REQUIREMENTS)
+      .filter(([, muscles]) => exercise.primary_muscles.some(muscle => muscles.includes(muscle)))
+      .map(([pattern]) => pattern);
+  };
 
-    const patternExercise = scored.find(s =>
-      !usedExercises.has(s.exercise.id) &&
-      s.exercise.primary_muscles.some(m => muscles.includes(m))
+  const overlapsTooMuch = (exercise: ExerciseWithDetails): boolean => {
+    if (selected.length === 0) return false;
+
+    return selected.some((entry) => {
+      const overlapCount = entry.exercise.primary_muscles.filter(muscle => exercise.primary_muscles.includes(muscle)).length;
+      return overlapCount >= Math.min(2, exercise.primary_muscles.length);
+    });
+  };
+
+  const trySelect = (candidate: ScoredExercise | undefined, pattern?: string): boolean => {
+    if (!candidate) return false;
+    if (usedExercises.has(candidate.exercise.id)) return false;
+
+    selected.push(candidate);
+    usedExercises.add(candidate.exercise.id);
+
+    for (const matchedPattern of getMatchingPatterns(candidate.exercise)) {
+      coveredPatterns.add(matchedPattern);
+    }
+    if (pattern) coveredPatterns.add(pattern);
+    return true;
+  };
+
+  const focusPattern = intent.focus_pattern;
+  if (focusPattern) {
+    const focusMuscles = PATTERN_REQUIREMENTS[focusPattern] ?? [];
+    const focusQuota = Math.min(2, Math.max(1, Math.floor(targetCount / 2)));
+    const focusCandidates = scored.filter((entry) =>
+      entry.exercise.primary_muscles.some((muscle) => focusMuscles.includes(muscle))
     );
 
-    if (patternExercise) {
-      selected.push(patternExercise);
-      usedExercises.add(patternExercise.exercise.id);
-      coveredPatterns.add(pattern);
+    for (const candidate of focusCandidates) {
+      if (selected.length >= focusQuota) break;
+      if (overlapsTooMuch(candidate.exercise) && focusCandidates.length > focusQuota) continue;
+      trySelect(candidate, focusPattern);
     }
   }
 
-  // Second pass: fill remaining slots with highest scoring
-  for (const s of scored) {
-    if (selected.length >= targetCount) break;
-    if (usedExercises.has(s.exercise.id)) continue;
+  const orderedPatterns = Object.keys(PATTERN_REQUIREMENTS).sort((left, right) => {
+    if (left === focusPattern) return -1;
+    if (right === focusPattern) return 1;
 
-    selected.push(s);
-    usedExercises.add(s.exercise.id);
+    const bestScore = (pattern: string) =>
+      scored.find((entry) => entry.exercise.primary_muscles.some((muscle) => (PATTERN_REQUIREMENTS[pattern] ?? []).includes(muscle)))?.score || -1;
+
+    return bestScore(right) - bestScore(left);
+  });
+
+  // Second pass: broaden pattern coverage after honoring the focus pattern.
+  for (const pattern of orderedPatterns) {
+    const muscles = PATTERN_REQUIREMENTS[pattern] ?? [];
+    if (coveredPatterns.has(pattern)) continue;
+    if (selected.length >= targetCount) break;
+
+    const patternExercise = scored.find(s =>
+      !usedExercises.has(s.exercise.id) &&
+      s.exercise.primary_muscles.some(m => muscles.includes(m)) &&
+      !overlapsTooMuch(s.exercise)
+    );
+
+    trySelect(patternExercise, pattern);
+  }
+
+  // Final pass: fill remaining slots with highest scoring options, preferring muscle diversity first.
+  for (const allowOverlap of [false, true]) {
+    for (const candidate of scored) {
+      if (selected.length >= targetCount) break;
+      if (usedExercises.has(candidate.exercise.id)) continue;
+      if (!allowOverlap && overlapsTooMuch(candidate.exercise)) continue;
+      trySelect(candidate);
+    }
   }
 
   return selected;
@@ -459,29 +587,69 @@ function selectExercises(
 // STEP 5: VOLUME PRESCRIPTION
 // ============================================
 
+/** Map Category goal to progression engine goal type */
+function mapGoalToProgressionType(goal: Category): 'strength' | 'hypertrophy' | 'endurance' | 'default' {
+  switch (goal) {
+    case 'strength': return 'strength';
+    case 'body_control': return 'hypertrophy';
+    case 'speed': return 'endurance';
+    case 'posture':
+    case 'mobility':
+    case 'focus':
+    default:
+      return 'default';
+  }
+}
+
 function prescribeVolume(
   exercise: ExerciseWithDetails,
   profile: UserProfile,
   isDeload: boolean,
-  adaptive: AdaptiveTrainingProfile
+  adaptive: AdaptiveTrainingProfile,
+  readinessScore?: number,
+  progressionDecision?: ProgressionDecision
 ): { sets: number; reps: string } {
-  const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ||
-    VOLUME_PRESETS.body_control.beginner;
+  // Use progression-based recommendation if available, otherwise fall back to static preset
+  let sets: number;
+  let reps: string;
 
-  let sets = preset.sets;
-  let reps = preset.reps;
+  if (progressionDecision && progressionDecision.action !== 'maintain') {
+    // Progressive prescription: use the engine's per-exercise recommendation
+    sets = progressionDecision.recommendation.sets;
+    reps = progressionDecision.recommendation.reps;
+    if (__DEV__) console.log(`[WorkoutGen] Progressive Rx for ${exercise.name}: ${progressionDecision.action} → ${sets}×${reps}`);
+  } else if (progressionDecision && progressionDecision.action === 'maintain') {
+    // Maintain: use last known volume from the progression engine (keeps the user's actual level)
+    sets = progressionDecision.recommendation.sets;
+    reps = progressionDecision.recommendation.reps;
+    if (__DEV__) console.log(`[WorkoutGen] Maintain Rx for ${exercise.name}: ${sets}×${reps}`);
+  } else {
+    // No history: fall back to static preset for new exercises
+    const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ??
+      VOLUME_PRESETS.body_control['beginner']!;
+    sets = preset.sets;
+    reps = preset.reps;
+  }
 
+  // Apply adaptive volume tolerance modifier
   sets = Math.max(2, Math.round(sets * adaptive.volumeTolerance));
+
+  // Readiness-based volume adjustment
+  if (readinessScore !== undefined && readinessScore < 50) {
+    const readinessFactor = 0.7 + (readinessScore / 50) * 0.3;
+    sets = Math.max(2, Math.round(sets * readinessFactor));
+  }
 
   // Deload reduction
   if (isDeload) {
     sets = Math.max(2, Math.floor(sets * 0.6));
-    // Keep reps the same but intensity lower (user responsibility)
   }
 
-  // Time-based exercises get hold times
+  // Time-based exercises keep hold-time reps from preset (progression doesn't apply to holds)
   if (exercise.category === 'posture' || exercise.category === 'mobility') {
-    reps = preset.reps; // Already holds
+    const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ??
+      VOLUME_PRESETS.body_control['beginner']!;
+    reps = preset.reps;
   }
 
   return { sets, reps };
@@ -491,11 +659,10 @@ function prescribeVolume(
 // MAIN GENERATOR FUNCTION
 // ============================================
 
-export async function generateWorkout(
+async function prepareWorkout(
   userId: string,
   deloadFlag = false
-): Promise<GeneratedWorkout | null> {
-  // 1. Load user state
+): Promise<WorkoutPreparation | null> {
   const profile = await getUserProfile(userId);
   if (!profile) {
     throw new Error('User profile not found');
@@ -508,8 +675,6 @@ export async function generateWorkout(
     fatigueRecords.map(f => [f.muscle as TargetMuscle, f.fatigue_level])
   );
 
-  const recentSessions = await getRecentSessions(userId, 7);
-
   // Get recently used exercise IDs
   const recentExerciseIds = new Set(
     await getRecentExerciseIds(
@@ -519,13 +684,7 @@ export async function generateWorkout(
   );
 
   // 2. Determine intent
-  const intent = await determineSessionIntent(
-    userId,
-    profile,
-    fatigueMap,
-    recentSessions,
-    deloadFlag
-  );
+  const intent = await determineSessionIntent(userId, profile, fatigueMap, deloadFlag);
 
   // 3. Hard filter
   const candidates = await applyHardFilter(userId, profile, fatigueMap, intent, adaptive);
@@ -545,10 +704,110 @@ export async function generateWorkout(
   );
   const selected = selectExercises(scored, intent, targetCount);
 
-  // 6. Prescribe volume
+  return {
+    profile,
+    adaptive,
+    intent,
+    candidates,
+    scored,
+    selected,
+    targetCount,
+  };
+}
+
+export async function analyzeWorkoutGeneration(
+  userId: string,
+  deloadFlag = false
+): Promise<WorkoutGenerationDiagnostics | null> {
+  const prepared = await prepareWorkout(userId, deloadFlag);
+  if (!prepared) return null;
+
+  const candidateCategories: Record<string, number> = {};
+  prepared.candidates.forEach((exercise) => {
+    candidateCategories[exercise.category] = (candidateCategories[exercise.category] || 0) + 1;
+  });
+
+  const focusMuscles = prepared.intent.focus_pattern
+    ? (PATTERN_REQUIREMENTS[prepared.intent.focus_pattern] ?? [])
+    : [];
+
+  return {
+    user_id: userId,
+    target_count: prepared.targetCount,
+    candidate_count: prepared.candidates.length,
+    selected_count: prepared.selected.length,
+    intent: prepared.intent,
+    candidate_categories: candidateCategories,
+    top_scored: prepared.scored.slice(0, 8).map((entry) => ({
+      id: entry.exercise.id,
+      name: entry.exercise.name,
+      category: entry.exercise.category,
+      score: Math.round(entry.score * 100) / 100,
+      primary_muscles: entry.exercise.primary_muscles,
+      matches_focus_pattern: entry.exercise.primary_muscles.some((muscle) => focusMuscles.includes(muscle)),
+    })),
+    selected: prepared.selected.map((entry, index) => ({
+      id: entry.exercise.id,
+      name: entry.exercise.name,
+      category: entry.exercise.category,
+      order: index + 1,
+      score: Math.round(entry.score * 100) / 100,
+      primary_muscles: entry.exercise.primary_muscles,
+      matches_focus_pattern: entry.exercise.primary_muscles.some((muscle) => focusMuscles.includes(muscle)),
+    })),
+    warnings: prepared.selected.length < prepared.targetCount ? ['Generator returned fewer exercises than target count'] : [],
+  };
+}
+
+export async function generateWorkout(
+  userId: string,
+  deloadFlag = false
+): Promise<GeneratedWorkout | null> {
+  const prepared = await prepareWorkout(userId, deloadFlag);
+  if (!prepared) return null;
+
+  // Get readiness score for volume adjustment
+  let readinessScore: number | undefined;
+  try {
+    const readiness = await getCachedReadiness(userId);
+    readinessScore = readiness.score;
+  } catch { /* readiness is optional, generator works without it */ }
+
+  // 6. Progressive analysis: batch-query progression decisions for all selected exercises
+  const progressionGoalType = mapGoalToProgressionType(prepared.profile.goal);
+  const progressionMap = new Map<string, ProgressionDecision>();
+
+  // Get the static fallback to use as "current" volume when querying progression
+  const fallbackPreset = VOLUME_PRESETS[prepared.profile.goal]?.[prepared.profile.experience] ??
+    VOLUME_PRESETS.body_control['beginner']!;
+
+  for (const s of prepared.selected) {
+    try {
+      const decision = await calculateProgression(
+        userId,
+        s.exercise.id,
+        fallbackPreset.sets,
+        fallbackPreset.reps,
+        progressionGoalType
+      );
+      // Only use progression if the engine had actual history to work with
+      if (decision.action !== 'maintain' || decision.reason !== 'Insufficient data or mixed results → maintain current prescription') {
+        progressionMap.set(s.exercise.id, decision);
+      }
+    } catch {
+      // Progression lookup failed for this exercise — fall back to static preset
+    }
+  }
+
+  if (__DEV__ && progressionMap.size > 0) {
+    console.log(`[WorkoutGen] Progressive Rx applied to ${progressionMap.size}/${prepared.selected.length} exercises`);
+  }
+
+  // 7. Prescribe volume (progression-aware)
   const sessionId = await generateSecureId('session');
-  const exercises = selected.map((s, index) => {
-    const volume = prescribeVolume(s.exercise, profile, intent.is_deload, adaptive);
+  const exercises = prepared.selected.map((s, index) => {
+    const decision = progressionMap.get(s.exercise.id);
+    const volume = prescribeVolume(s.exercise, prepared.profile, prepared.intent.is_deload, prepared.adaptive, readinessScore, decision);
     return {
       exercise: s.exercise,
       sets: volume.sets,
@@ -567,7 +826,7 @@ export async function generateWorkout(
     session_id: sessionId,
     exercises,
     total_duration_estimate: Math.round(totalDuration),
-    intent,
+    intent: prepared.intent,
   };
 }
 

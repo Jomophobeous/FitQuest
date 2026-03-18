@@ -25,9 +25,15 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
     try {
       const database = await SQLite.openDatabaseAsync(DATABASE_NAME);
 
-      // Enable foreign key constraint enforcement per-connection
-      // Without this, ON DELETE CASCADE and FK checks are silently ignored
-      await database.execAsync('PRAGMA foreign_keys = ON;');
+      // Performance PRAGMAs — enterprise-grade SQLite tuning
+      await database.execAsync(`
+        PRAGMA journal_mode = WAL;
+        PRAGMA synchronous = NORMAL;
+        PRAGMA cache_size = -8000;
+        PRAGMA mmap_size = 30000000;
+        PRAGMA temp_store = MEMORY;
+        PRAGMA foreign_keys = ON;
+      `);
 
       await initializeSchema(database);
       db = database;
@@ -52,6 +58,16 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
   const currentVersion = versionResult?.user_version ?? 0;
 
   if (currentVersion < SCHEMA_VERSION) {
+    // CRITICAL: Create all tables FIRST (IF NOT EXISTS) so that migration
+    // ALTER TABLE / SELECT statements never hit "no such table" on fresh installs.
+    console.log(`[FitQuest DB] Schema upgrade needed: v${currentVersion} → v${SCHEMA_VERSION}`);
+    try {
+      await createTables(database);
+    } catch (createErr) {
+      console.error('[FitQuest DB] createTables() FAILED:', createErr);
+      throw createErr;
+    }
+
     // Migration v0–v5 → v6+: drop exercise catalogue for clean re-seed (audio_transition bug)
     if (currentVersion >= 1 && currentVersion < 6) {
       console.log(`[FitQuest DB] Migrating v${currentVersion} → v${SCHEMA_VERSION}: dropping exercise tables for clean re-seed`);
@@ -203,6 +219,78 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
         await database.execAsync('PRAGMA foreign_keys = ON');
       } else {
         console.log(`[FitQuest DB] v16: categories already correct`);
+      }
+    }
+
+    // ── v17: User interests, personal goals, mind XP, regional pricing ──
+    if (currentVersion < 17) {
+      console.log('[FitQuest DB] v17: Adding user interests, personal goals, mind XP tables');
+      // Tables created via CREATE IF NOT EXISTS in createTables() — no additional migration needed
+    }
+
+    // ── v18: Fix external exercise equipment_level ──
+    // External exercises from free-exercise-db were all seeded with equipment_level='none'
+    // even when they require barbell, dumbbell, cable, machine, etc.
+    // Fix: update equipment_level based on exercise_equipment table entries.
+    if (currentVersion < 18) {
+      console.log('[FitQuest DB] v18: Fixing external exercise equipment levels');
+      try {
+        // Any exercise that has required equipment entries should NOT be 'none'
+        // Set to 'playground' for gym equipment (barbell, dumbbell, cable, machine, etc.)
+        const fixed = await database.runAsync(`
+          UPDATE exercises SET equipment_level = 'playground'
+          WHERE equipment_level = 'none'
+            AND id LIKE 'fed_%'
+            AND id IN (
+              SELECT DISTINCT exercise_id FROM exercise_equipment
+              WHERE is_required = 1
+                AND equipment IN ('barbell', 'dumbbell', 'kettlebell', 'cable_machine', 'machine', 'exercise_ball', 'medicine_ball')
+            )
+        `);
+        console.log(`[FitQuest DB] v18: Fixed ${fixed.changes} exercises to playground level`);
+
+        // For exercises with name-based equipment hints but no exercise_equipment entries,
+        // update based on exercise name containing equipment keywords
+        const nameFix = await database.runAsync(`
+          UPDATE exercises SET equipment_level = 'playground'
+          WHERE equipment_level = 'none'
+            AND id LIKE 'fed_%'
+            AND (
+              name LIKE '%Barbell%' OR name LIKE '%Dumbbell%' OR name LIKE '%Kettlebell%'
+              OR name LIKE '%Cable%' OR name LIKE '%Machine%' OR name LIKE '%Smith%'
+              OR name LIKE '%EZ-Bar%' OR name LIKE '%E-Z Curl%' OR name LIKE '%Lat Pulldown%'
+              OR name LIKE '%Leg Press%' OR name LIKE '%Hack Squat%' OR name LIKE '%Pec Deck%'
+            )
+        `);
+        console.log(`[FitQuest DB] v18: Fixed ${nameFix.changes} more exercises by name`);
+
+        // Bench/pull-up bar exercises → 'playground'
+        const benchFix = await database.runAsync(`
+          UPDATE exercises SET equipment_level = 'playground'
+          WHERE equipment_level = 'none'
+            AND id LIKE 'fed_%'
+            AND (
+              name LIKE '%Bench Press%' OR name LIKE '%Incline Press%' OR name LIKE '%Decline Press%'
+              OR name LIKE '%Pull-Up%' OR name LIKE '%Pullup%' OR name LIKE '%Chin-Up%'
+              OR name LIKE '%Chinup%' OR name LIKE '%Dip%' OR name LIKE '%Ring%'
+            )
+        `);
+        console.log(`[FitQuest DB] v18: Fixed ${benchFix.changes} more bench/bar exercises`);
+
+        // Band/minimal equipment → 'minimal'
+        const minimalFix = await database.runAsync(`
+          UPDATE exercises SET equipment_level = 'minimal'
+          WHERE equipment_level = 'none'
+            AND id LIKE 'fed_%'
+            AND id IN (
+              SELECT DISTINCT exercise_id FROM exercise_equipment
+              WHERE is_required = 1
+                AND equipment IN ('band', 'foam_roller', 'jump_rope', 'towel', 'strap', 'backpack')
+            )
+        `);
+        console.log(`[FitQuest DB] v18: Fixed ${minimalFix.changes} exercises to minimal level`);
+      } catch (e) {
+        console.warn('[FitQuest DB] v18: Equipment level fix failed:', e);
       }
     }
 
@@ -883,6 +971,7 @@ async function migrateFitMindLegacyTables(database: SQLite.SQLiteDatabase): Prom
  * Create all database tables
  */
 async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[FitQuest DB] createTables() — creating all tables (IF NOT EXISTS)...');
   await database.execAsync(`
     -- ============================================
     -- EXERCISE CATALOGUE TABLES
@@ -952,6 +1041,8 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
     );
 
+    CREATE INDEX IF NOT EXISTS idx_exercise_equipment_exercise ON exercise_equipment(exercise_id);
+
     -- Exercise training type effectiveness (many-to-many with score)
     CREATE TABLE IF NOT EXISTS exercise_training_types (
       exercise_id TEXT NOT NULL,
@@ -964,6 +1055,8 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       PRIMARY KEY (exercise_id, training_type),
       FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
     );
+
+    CREATE INDEX IF NOT EXISTS idx_exercise_training_types_exercise ON exercise_training_types(exercise_id);
 
     -- ============================================
     -- USER STATE TABLES
@@ -1403,6 +1496,16 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
 
     CREATE INDEX IF NOT EXISTS idx_daily_health_date ON daily_health_summaries(user_id, date);
 
+    -- Covering indexes for common query patterns
+    CREATE INDEX IF NOT EXISTS idx_muscle_fatigue_user ON muscle_fatigue(user_id, muscle, fatigue_level);
+    CREATE INDEX IF NOT EXISTS idx_workout_sessions_user_date ON workout_sessions(user_id, completed_at);
+    CREATE INDEX IF NOT EXISTS idx_daily_steps_user_date ON daily_steps(user_id, date);
+    CREATE INDEX IF NOT EXISTS idx_enc_health_updated ON encrypted_health_data(updated_at);
+    CREATE INDEX IF NOT EXISTS idx_health_alerts_ack ON health_alerts(acknowledged_at, severity);
+    CREATE INDEX IF NOT EXISTS idx_fitmind_docs_category ON fitmind_documents(category, status);
+    CREATE INDEX IF NOT EXISTS idx_anomaly_user_date ON anomaly_log(user_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_body_craft_user ON body_craft_algorithms(user_id, active);
+
     -- Content hash index for document deduplication (v8)
     CREATE TABLE IF NOT EXISTS document_content_hashes (
       hash TEXT PRIMARY KEY,
@@ -1410,7 +1513,62 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       created_at INTEGER NOT NULL,
       FOREIGN KEY (document_id) REFERENCES fitmind_documents(id) ON DELETE CASCADE
     );
+
+    -- ============================================
+    -- USER INTERESTS & PERSONAL GOALS (v17)
+    -- ============================================
+
+    CREATE TABLE IF NOT EXISTS user_interests (
+      user_id TEXT NOT NULL,
+      topic TEXT NOT NULL,
+      priority INTEGER NOT NULL DEFAULT 3 CHECK (priority BETWEEN 1 AND 5),
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, topic),
+      FOREIGN KEY (user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS user_personal_goals (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      goal_text TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'general',
+      status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'completed', 'paused')),
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_user_goals_user ON user_personal_goals(user_id, status);
+
+    -- ============================================
+    -- MIND XP TRACKING (v17)
+    -- ============================================
+
+    CREATE TABLE IF NOT EXISTS mind_xp (
+      user_id TEXT PRIMARY KEY,
+      total_mind_xp INTEGER NOT NULL DEFAULT 0,
+      mind_level INTEGER NOT NULL DEFAULT 1,
+      pages_read_total INTEGER NOT NULL DEFAULT 0,
+      flashcards_reviewed_total INTEGER NOT NULL DEFAULT 0,
+      documents_completed INTEGER NOT NULL DEFAULT 0,
+      updated_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES user_profile(id) ON DELETE CASCADE
+    );
+
+    -- ============================================
+    -- DOCUMENT IMPORTANCE SCORES (v17)
+    -- ============================================
+
+    CREATE TABLE IF NOT EXISTS document_importance (
+      document_id TEXT PRIMARY KEY,
+      importance_score INTEGER NOT NULL DEFAULT 50 CHECK (importance_score BETWEEN 0 AND 100),
+      matched_interests TEXT DEFAULT '[]',
+      auto_recommended INTEGER NOT NULL DEFAULT 0,
+      scanned_at INTEGER NOT NULL,
+      FOREIGN KEY (document_id) REFERENCES fitmind_documents(id) ON DELETE CASCADE
+    );
   `);
+  console.log('[FitQuest DB] createTables() — all tables created successfully');
 }
 
 /**

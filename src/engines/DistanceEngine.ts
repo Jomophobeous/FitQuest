@@ -204,12 +204,12 @@ class DistanceEngine extends EventEmitter {
       elevationGainMeters: this.elevationGain,
       elevationLossMeters: this.elevationLoss,
       currentAltitude: this.points.length > 0 
-        ? this.points[this.points.length - 1].altitude 
+        ? this.points[this.points.length - 1]!.altitude 
         : null,
       elapsedSeconds,
       splits: [...this.splits],
       currentSpeedMps: this.points.length > 0 
-        ? this.points[this.points.length - 1].speed 
+        ? this.points[this.points.length - 1]!.speed 
         : null,
       routePoints: [...this.points],
     };
@@ -262,7 +262,7 @@ class DistanceEngine extends EventEmitter {
     }
 
     if (this.points.length > 0) {
-      const prev = this.points[this.points.length - 1];
+      const prev = this.points[this.points.length - 1]!;
       const distance = this.haversineDistance(prev, point);
 
       // GPS jitter filter: require minimum 2m movement
@@ -337,8 +337,8 @@ class DistanceEngine extends EventEmitter {
 
     let gain = 0;
     for (let i = splitStartIdx + 1; i < this.points.length; i++) {
-      const prev = this.points[i - 1];
-      const curr = this.points[i];
+      const prev = this.points[i - 1]!;
+      const curr = this.points[i]!;
       if (prev.altitude !== null && curr.altitude !== null) {
         const delta = curr.altitude - prev.altitude;
         if (delta > 0) gain += delta;
@@ -351,7 +351,7 @@ class DistanceEngine extends EventEmitter {
   private calculateDistanceToPoint(idx: number): number {
     let dist = 0;
     for (let i = 1; i <= idx; i++) {
-      dist += this.haversineDistance(this.points[i - 1], this.points[i]);
+      dist += this.haversineDistance(this.points[i - 1]!, this.points[i]!);
     }
     return dist;
   }
@@ -366,7 +366,7 @@ class DistanceEngine extends EventEmitter {
     const windowSize = Math.min(this.config.paceWindowSize, this.points.length);
     const recentPoints = this.points.slice(-windowSize);
 
-    const timeSpan = (recentPoints[recentPoints.length - 1].timestamp - recentPoints[0].timestamp) / 1000;
+    const timeSpan = (recentPoints[recentPoints.length - 1]!.timestamp - recentPoints[0]!.timestamp) / 1000;
     const distance = this.calculateSegmentDistance(recentPoints);
 
     if (distance < 10) return null; // Need at least 10m to calculate pace
@@ -393,7 +393,7 @@ class DistanceEngine extends EventEmitter {
   private calculateSegmentDistance(points: GeoPoint[]): number {
     let distance = 0;
     for (let i = 1; i < points.length; i++) {
-      distance += this.haversineDistance(points[i - 1], points[i]);
+      distance += this.haversineDistance(points[i - 1]!, points[i]!);
     }
     return distance;
   }

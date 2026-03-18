@@ -19,11 +19,14 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useDatabase } from '../src/context/DatabaseContext';
 import { getExercises, createWorkoutSession, addSessionExercise } from '../src/database/service';
 import { notifyCustomWorkoutCreated } from '../src/services/dataSyncService';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
 import ThemedText from '../src/components/ThemedText';
 import Card from '../src/components/Card';
+import ExerciseImage from '../src/components/ExerciseImage';
+import { audioService } from '../src/services/audioService';
 
 // ============================================
 // TYPES
@@ -67,6 +70,7 @@ const getEquipmentLevels = (t: (key: string) => string): { key: 'all' | 'none' |
 export default function CreateWorkoutScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { isReady: dbReady } = useDatabase();
   const categories = useMemo(() => getCategories(t), [t]);
   const difficulties = useMemo(() => getDifficulties(t, theme.colors), [t, theme.colors]);
   const equipmentLevels = useMemo(() => getEquipmentLevels(t), [t]);
@@ -83,11 +87,12 @@ export default function CreateWorkoutScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selected, setSelected] = useState<SelectedExercise[]>([]);
   const [workoutName, setWorkoutName] = useState('');
+  const [expandedInstructions, setExpandedInstructions] = useState<Record<string, boolean>>({});
 
   // Load exercises
   useEffect(() => {
-    loadExercises();
-  }, []);
+    if (dbReady) loadExercises();
+  }, [dbReady]);
 
   useEffect(() => {
     filterExercises();
@@ -159,7 +164,7 @@ export default function CreateWorkoutScreen() {
     const newSelected = [...selected];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= newSelected.length) return;
-    [newSelected[index], newSelected[targetIndex]] = [newSelected[targetIndex], newSelected[index]];
+    [newSelected[index], newSelected[targetIndex]] = [newSelected[targetIndex]!, newSelected[index]!];
     setSelected(newSelected);
   };
 
@@ -193,6 +198,7 @@ export default function CreateWorkoutScreen() {
 
       for (let i = 0; i < selected.length; i++) {
         const s = selected[i];
+        if (!s) continue;
         await addSessionExercise({
           id: `${sessionId}_ex_${i}`,
           session_id: sessionId,
@@ -218,7 +224,7 @@ export default function CreateWorkoutScreen() {
               params: { sessionId },
             } as any);
           }},
-          { text: t('common.ok'), onPress: () => router.back() },
+          { text: t('common.ok'), onPress: () => router.canGoBack() ? router.back() : router.replace('/dashboard') },
         ]
       );
     } catch (error) {
@@ -233,7 +239,7 @@ export default function CreateWorkoutScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="h3">{t('createWorkout.title')}</ThemedText>
@@ -400,6 +406,13 @@ export default function CreateWorkoutScreen() {
                 ]}>
                   {isSelected && <MaterialCommunityIcons name="check" size={14} color="#fff" />}
                 </View>
+                <ExerciseImage
+                  exerciseId={item.id}
+                  category={item.category}
+                  variant="thumbnail"
+                  animate={false}
+                  style={{ marginLeft: 10 }}
+                />
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <Text style={{ color: theme.colors.text, fontWeight: '600', fontSize: 14 }}>
                     {item.name}
@@ -452,6 +465,13 @@ export default function CreateWorkoutScreen() {
           {selected.map((item, index) => (
             <Card key={item.exercise.id} style={styles.configCard}>
               <View style={styles.configHeader}>
+                <ExerciseImage
+                  exerciseId={item.exercise.id}
+                  category={item.exercise.category}
+                  variant="thumbnail"
+                  animate={false}
+                  style={{ marginRight: 12 }}
+                />
                 <View style={{ flex: 1 }}>
                   <ThemedText variant="body" weight="600">{item.exercise.name}</ThemedText>
                   <ThemedText variant="bodySmall" color="secondary">
@@ -509,6 +529,51 @@ export default function CreateWorkoutScreen() {
                   </View>
                 </View>
               </View>
+
+              {/* Instructions (expandable) */}
+              <TouchableOpacity
+                style={[styles.instructionToggle, { borderTopColor: theme.colors.border }]}
+                onPress={() => setExpandedInstructions(prev => ({
+                  ...prev,
+                  [item.exercise.id]: !prev[item.exercise.id],
+                }))}
+              >
+                <MaterialCommunityIcons
+                  name={expandedInstructions[item.exercise.id] ? 'chevron-up' : 'text-box-outline'}
+                  size={16}
+                  color={theme.colors.accent}
+                />
+                <Text style={{ color: theme.colors.accent, fontSize: 13, fontWeight: '600', marginLeft: 6 }}>
+                  {expandedInstructions[item.exercise.id] ? 'Hide Instructions' : 'Show Instructions'}
+                </Text>
+              </TouchableOpacity>
+
+              {expandedInstructions[item.exercise.id] && item.exercise.instructions.length > 0 && (
+                <View style={[styles.instructionBox, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.border }]}>
+                  {item.exercise.instructions.map((instruction, idx) => (
+                    <View key={idx} style={styles.instructionStep}>
+                      <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '700', width: 20 }}>
+                        {idx + 1}.
+                      </Text>
+                      <Text style={{ color: theme.colors.textSecondary, fontSize: 13, flex: 1, lineHeight: 18 }}>
+                        {instruction}
+                      </Text>
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    style={[styles.narrateBtn, { backgroundColor: theme.colors.accent + '15' }]}
+                    onPress={() => {
+                      const text = `${item.exercise.name}. ${item.exercise.instructions.join('. ')}`;
+                      audioService.speakNarration(text);
+                    }}
+                  >
+                    <MaterialCommunityIcons name="volume-high" size={16} color={theme.colors.accent} />
+                    <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>
+                      Read Aloud
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </Card>
           ))}
         </ScrollView>
@@ -554,11 +619,23 @@ export default function CreateWorkoutScreen() {
               <View style={[styles.orderBadge, { backgroundColor: theme.colors.accent }]}>
                 <Text style={{ color: theme.colors.text, fontWeight: '700', fontSize: 12 }}>{index + 1}</Text>
               </View>
+              <ExerciseImage
+                exerciseId={item.exercise.id}
+                category={item.exercise.category}
+                variant="thumbnail"
+                animate={false}
+                style={{ marginLeft: 10 }}
+              />
               <View style={{ flex: 1, marginLeft: 12 }}>
                 <ThemedText variant="body" weight="600">{item.exercise.name}</ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
                   {item.sets} sets × {item.reps} • {item.restSeconds}s rest
                 </ThemedText>
+                {item.exercise.instructions.length > 0 && (
+                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 4, lineHeight: 16 }} numberOfLines={2}>
+                    {item.exercise.instructions[0]}
+                  </Text>
+                )}
               </View>
             </View>
           </Card>
@@ -781,5 +858,30 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  instructionToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  instructionBox: {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  instructionStep: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  narrateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginTop: 8,
   },
 });

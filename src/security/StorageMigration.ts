@@ -26,11 +26,11 @@ const SENSITIVE_KEYS = [
 ] as const;
 
 /** Mapping of legacy keys to SecureStore keys */
-const KEY_MAP: Record<string, string> = {
+const KEY_MAP = {
   authToken: 'fitquest_auth_token',
   refreshToken: 'fitquest_refresh_token',
   user: 'fitquest_user_profile',
-};
+} as const;
 
 // ============================================
 // TYPES

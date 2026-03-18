@@ -877,6 +877,22 @@ const en = {
   'onboarding.perm.allow': 'Allow',
   'onboarding.perm.skipNote': 'You can skip this — permissions can be enabled later in your profile.',
 
+  // Onboarding — Age Gate
+  'onboarding.ageGate.title': 'Age Verification',
+  'onboarding.ageGate.description': 'FitQuest is designed for users aged 13 and above. By continuing, you confirm that you meet this age requirement.',
+  'onboarding.ageGate.confirm': 'I confirm that I am 13 years of age or older',
+
+  // Onboarding — Data Consent
+  'onboarding.consent.title': 'Your Data, Your Control',
+  'onboarding.consent.subtitle': 'Before we get started, here\'s how FitQuest handles your data.',
+  'onboarding.consent.item.workout': 'Workout history and fitness preferences are stored on your device',
+  'onboarding.consent.item.health': 'Health metrics (heart rate, sleep, steps) are encrypted on-device',
+  'onboarding.consent.item.location': 'Location data is used only during active jog tracking',
+  'onboarding.consent.item.storage': 'All data is protected with AES-256 encryption',
+  'onboarding.consent.item.noShare': 'Your data is never sold or shared with third parties',
+  'onboarding.consent.accept': 'I consent to the collection and processing of my data as described above and in the Privacy Policy',
+  'onboarding.consent.readPolicy': 'Read our Privacy Policy',
+
   // Register
   'register.title': 'Create Account',
   'register.subtitle': 'Start your fitness journey today',

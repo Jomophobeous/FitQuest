@@ -17,6 +17,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "build:aab": "cd android && ./gradlew bundleRelease -x lint --max-workers=1 -Dorg.gradle.jvmargs='-Xmx4096m -XX:+UseSerialGC'",
+    "build:apk": "cd android && ./gradlew assembleRelease -x lint --max-workers=1 -Dorg.gradle.jvmargs='-Xmx4096m -XX:+UseSerialGC'",
     "lint": "npm run typecheck",
     "preflight:oauth": "node scripts/oauth-preflight.mjs",
     "verify:phase2": "node scripts/phase2-verify.mjs",

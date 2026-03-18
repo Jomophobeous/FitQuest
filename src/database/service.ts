@@ -2487,3 +2487,42 @@ export async function getDocumentImportance(documentId: string): Promise<{ impor
     [documentId]
   );
 }
+
+/**
+ * Delete ALL user data from the database (Google Play compliance: data deletion request).
+ * Preserves exercise catalogue (seed data) but removes all user-generated content.
+ */
+export async function deleteAllUserData(userId: string): Promise<void> {
+  const db = await getDatabase();
+  await db.execAsync(`
+    DELETE FROM session_exercises WHERE session_id IN (SELECT id FROM workout_sessions WHERE user_id = '${userId}');
+    DELETE FROM workout_sessions WHERE user_id = '${userId}';
+    DELETE FROM progress_records WHERE user_id = '${userId}';
+    DELETE FROM muscle_fatigue WHERE user_id = '${userId}';
+    DELETE FROM user_injuries WHERE user_id = '${userId}';
+    DELETE FROM user_equipment WHERE user_id = '${userId}';
+    DELETE FROM workout_streaks WHERE user_id = '${userId}';
+    DELETE FROM daily_steps WHERE user_id = '${userId}';
+    DELETE FROM jog_sessions WHERE user_id = '${userId}';
+    DELETE FROM audio_settings WHERE user_id = '${userId}';
+    DELETE FROM body_craft_algorithms WHERE user_id = '${userId}';
+    DELETE FROM subscription_state WHERE user_id = '${userId}';
+    DELETE FROM trial_state WHERE user_id = '${userId}';
+    DELETE FROM encrypted_health_data;
+    DELETE FROM encrypted_ai_conversations;
+    DELETE FROM encrypted_notes;
+    DELETE FROM health_alerts WHERE user_id = '${userId}';
+    DELETE FROM heart_rate_readings WHERE user_id = '${userId}';
+    DELETE FROM anomaly_log WHERE user_id = '${userId}';
+    DELETE FROM daily_health_summaries WHERE user_id = '${userId}';
+    DELETE FROM fitmind_reading_sessions;
+    DELETE FROM fitmind_annotations;
+    DELETE FROM fitmind_flashcards;
+    DELETE FROM fitmind_reading_goals WHERE user_id = '${userId}';
+    DELETE FROM fitmind_reading_streaks WHERE user_id = '${userId}';
+    DELETE FROM fitmind_documents;
+    DELETE FROM document_content_hashes;
+    DELETE FROM app_state;
+    DELETE FROM user_profile WHERE id = '${userId}';
+  `);
+}

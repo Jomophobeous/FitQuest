@@ -38,7 +38,7 @@ import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
-import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries, getMindXP } from '../src/database/service';
+import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries, getMindXP, deleteAllUserData } from '../src/database/service';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
@@ -978,10 +978,7 @@ export default function ProfileScreen() {
           onPress: async () => {
             setPrivacyBusy(true);
             try {
-              // Clear local data from app_state
-              await setAppState('user.display_name', '');
-              await setAppState('user.profile_pic', '');
-              // Sign out & redirect
+              await deleteAllUserData('user_local_001');
               await signOut();
               router.replace('/login');
             } catch (e: any) {

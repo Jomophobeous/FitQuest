@@ -62,9 +62,10 @@
 |---|---|---|---|
 | 4.1 | ✅ Fix fatal crashes (MapLibre removal) | BLOCKER | Done |
 | 4.2 | ✅ Remove SYSTEM_ALERT_WINDOW permission | HIGH | Done |
-| 4.3 | ❌ Add **prominent data consent screen** in onboarding | BLOCKER | Not started |
-| 4.4 | ❌ Add **age verification gate** (13+) before onboarding | HIGH | Not started |
-| 4.5 | ❌ Build **AAB** (`./gradlew bundleRelease`) | BLOCKER | Not started |
+| 4.3 | ✅ Add **prominent data consent screen** in onboarding | BLOCKER | Done — step 1 in onboarding |
+| 4.4 | ✅ Add **age verification gate** (13+) before onboarding | HIGH | Done — step 0 in onboarding |
+| 4.5 | ✅ Build **AAB** (`npm run build:aab`) | BLOCKER | Done — script added to package.json |
+| 4.5b | ✅ **Data deletion mechanism** ("Delete My Data" in profile) | HIGH | Done — `deleteAllUserData()` wipes all user data |
 
 ### 👤 USER Tasks (require human action — Play Console, domain, assets)
 
@@ -129,15 +130,16 @@
 5. ~~Fix MapLibre crash~~ ✅
 6. ~~Remove SYSTEM_ALERT_WINDOW~~ ✅
 7. ~~Test coverage expansion (241 → 350)~~ ✅
-8. **Add consent screen + age gate** ← CURRENT (DEV)
-9. **Build AAB** (DEV)
-10. 👤 **Deploy website** (USER — domain purchase + deploy)
-11. 👤 **Store listing assets** (USER — icon, screenshots, graphics)
-12. 👤 **Play Console forms** (USER — Data Safety, IARC, Health Apps, Export Laws, Signing)
-13. 👤 **Upload AAB + start 14-day closed testing** (USER)
-14. APK/AAB size reduction
-15. Feature polish (ongoing)
-16. 👤 **Production release** (USER)
+8. ~~Add consent screen + age gate~~ ✅
+9. ~~Build AAB script~~ ✅ (`npm run build:aab`)
+10. ~~Data deletion mechanism~~ ✅ (Delete My Data in profile)
+11. 👤 **Deploy website** (USER — domain purchase + deploy) ← NEXT USER ACTION
+12. 👤 **Store listing assets** (USER — icon, screenshots, graphics)
+13. 👤 **Play Console forms** (USER — Data Safety, IARC, Health Apps, Export Laws, Signing)
+14. 👤 **Upload AAB + start 14-day closed testing** (USER)
+15. APK/AAB size reduction
+16. Feature polish (ongoing)
+17. 👤 **Production release** (USER)
 
 ---
 

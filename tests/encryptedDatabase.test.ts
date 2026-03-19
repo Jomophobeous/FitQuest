@@ -233,8 +233,8 @@ describe('EncryptedDatabase', () => {
 
       const convos = await db.getAIConversations('COACH', 10);
       expect(convos).toHaveLength(1);
-      expect(convos[0].query).toBe('What is HIIT?');
-      expect(convos[0].response).toBe('High Intensity Interval Training...');
+      expect(convos[0]!.query).toBe('What is HIIT?');
+      expect(convos[0]!.response).toBe('High Intensity Interval Training...');
     });
 
     it('handles decryption failures gracefully in conversations', async () => {
@@ -296,8 +296,8 @@ describe('EncryptedDatabase', () => {
 
       const alerts = await db.getActiveAlerts();
       expect(alerts).toHaveLength(1);
-      expect(alerts[0].alertType).toBe('HIGH_HR');
-      expect(alerts[0].data).toEqual({ bpm: 195 });
+      expect(alerts[0]!.alertType).toBe('HIGH_HR');
+      expect(alerts[0]!.data).toEqual({ bpm: 195 });
     });
   });
 

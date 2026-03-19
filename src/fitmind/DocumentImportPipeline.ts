@@ -343,14 +343,13 @@ export class DocumentImportPipeline {
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i]!;
-      const itemProgress = (progress: number) => {
-        const overallProgress = Math.round(((i + progress / 100) / items.length) * 100);
-        this.options.onProgress(overallProgress, progress === 100 ? 'COMPLETE' : 'ANALYZING');
-      };
 
       // Temporarily swap progress callback
       const originalCb = this.options.onProgress;
-      this.options.onProgress = (p, s) => itemProgress(p);
+      this.options.onProgress = (progress, _stage) => {
+        const overallProgress = Math.round(((i + progress / 100) / items.length) * 100);
+        originalCb(overallProgress, progress === 100 ? 'COMPLETE' : 'ANALYZING');
+      };
 
       let result: PipelineResult;
       switch (item.type) {

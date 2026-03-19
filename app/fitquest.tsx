@@ -23,7 +23,6 @@ import Animated, {
   ZoomIn,
   SlideInDown,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';

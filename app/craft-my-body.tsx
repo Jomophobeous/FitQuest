@@ -41,7 +41,8 @@ import { saveBodyCraftAlgorithm, applyAlgorithmToProfile } from '../src/database
 import { getUserProfile } from '../src/database/service';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
-import ScreenTutorial from '../src/components/ScreenTutorial';\nimport PremiumGate from '../src/components/PremiumGate';
+import ScreenTutorial from '../src/components/ScreenTutorial';
+import PremiumGate from '../src/components/PremiumGate';
 
 // ============================================
 // CONSTANTS

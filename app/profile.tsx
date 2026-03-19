@@ -39,7 +39,8 @@ import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
 import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries, getMindXP, deleteAllUserData } from '../src/database/service';
-import { useRouter, useFocusEffect } from 'expo-router';\nimport { useSubscription } from '../src/purchases/SubscriptionContext';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useSubscription } from '../src/purchases/SubscriptionContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { getXPData, XPData } from '../src/services/xpService';
@@ -394,7 +395,7 @@ export default function ProfileScreen() {
       })),
       onSelect: async (val) => {
         const d = Number(val);
-        console.log('[Profile] Update training days', { value: d });
+        if (__DEV__) console.log('[Profile] Update training days', { value: d });
         await updateUserProfile('user_local_001', { training_days_per_week: d });
         setProfile(prev => prev ? { ...prev, trainingDays: d } : prev);
         await refreshProfile();
@@ -413,7 +414,7 @@ export default function ProfileScreen() {
       })),
       onSelect: async (val) => {
         const m = Number(val);
-        console.log('[Profile] Update session length', { value: m });
+        if (__DEV__) console.log('[Profile] Update session length', { value: m });
         await updateUserProfile('user_local_001', { time_per_session_minutes: m });
         setProfile(prev => prev ? { ...prev, sessionMinutes: m } : prev);
         await refreshProfile();
@@ -442,7 +443,7 @@ export default function ProfileScreen() {
         { label: t('profile.level.advanced'), value: 'advanced' },
       ],
       onSelect: async (val) => {
-        console.log('[Profile] Update experience', { value: val });
+        if (__DEV__) console.log('[Profile] Update experience', { value: val });
         await updateUserProfile('user_local_001', { experience: val as any });
         setProfile(prev => prev ? { ...prev, experience: val } : prev);
         await refreshProfile();
@@ -464,7 +465,7 @@ export default function ProfileScreen() {
         { label: t('profile.goal.strength'), value: 'strength' },
       ],
       onSelect: async (val) => {
-        console.log('[Profile] Update goal', { value: val });
+        if (__DEV__) console.log('[Profile] Update goal', { value: val });
         await updateUserProfile('user_local_001', { goal: val as any });
         setProfile(prev => prev ? { ...prev, goal: val } : prev);
         await refreshProfile();
@@ -484,7 +485,7 @@ export default function ProfileScreen() {
       ],
       onSelect: async (val) => {
         const level = val as 'none' | 'minimal' | 'playground';
-        console.log('[Profile] Update equipment level', { value: level });
+        if (__DEV__) console.log('[Profile] Update equipment level', { value: level });
         await setAppState('user.equipment_level', level);
         setEquipmentLevel(level);
       },

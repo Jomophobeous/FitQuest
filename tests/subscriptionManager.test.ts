@@ -71,7 +71,7 @@ describe('SubscriptionManager', () => {
 
       // Verify upsertTrialState was called with 14-day window
       expect(mockUpsertTrialState).toHaveBeenCalledTimes(1);
-      const call = mockUpsertTrialState.mock.calls[0][0];
+      const call = mockUpsertTrialState.mock.calls[0]![0];
       expect(call.user_id).toBe('user_local_001');
       const durationMs = call.ends_at - call.started_at;
       expect(durationMs).toBe(14 * 24 * 60 * 60 * 1000);
@@ -274,8 +274,8 @@ describe('SubscriptionManager', () => {
       await mgr.purchaseMonthly();
 
       expect(states.length).toBeGreaterThanOrEqual(1);
-      const lastState = states[states.length - 1];
-      expect(lastState.status).toBe('ACTIVE');
+      const lastState = states[states.length - 1]!;
+      expect(lastState!.status).toBe('ACTIVE');
     });
 
     it('unsubscribe stops notifications', async () => {

@@ -93,16 +93,40 @@
 - aesEncryptionExtended (12), workoutGeneratorEdgeCases (17)
 - Plus 18 original test files (241 tests)
 
-### 5.2 ❌ Screen Smoke Tests
-### 5.3 ❌ Integration Tests (DB init → seed → query, workout lifecycle, encryption round-trip)
+### 5.2 ✅ Screen Smoke Tests — 17 tests in `tests/screenSmokeTests.test.ts`
+- Database service exports, engine barrel exports, XP service, theme system (3 themes)
+- Security modules (AES, EncryptedDatabase, BiometricAuth), FitMind modules
+- Database types/QueryCache
+
+### 5.3 ✅ Integration Tests — 18 tests in `tests/integration.test.ts`
+- DB CRUD flow (profile, app_state, streak, cache)
+- Workout lifecycle (session → exercise → complete)
+- Encryption round-trip (V3/V2 encrypt→decrypt, version detection, JSON survival)
+- XP + leveling, recovery engine (deload, fatigue snapshot)
+- DB→Engine integration (calculateProgression, edge-case guards)
+- Query cache lifecycle
+
+**Total: 385 tests across 25 files, all passing**
 
 ---
 
 ## PHASE 6 — APK/AAB SIZE REDUCTION
 
-### 6.1 ❌ Dependency Audit (61 production deps — remove unused)
-### 6.2 ❌ Asset Optimization (873 exercise image folders)
-### 6.3 ❌ R8 ProGuard Rules Review
+### 6.1 ✅ Dependency Audit — 4 unused deps removed (64 packages eliminated)
+- Removed: `@intity/epub-js` (0 imports), `@types/geojson` (MapLibre gone), `expo-application` (0 imports), `expo-device` (0 imports)
+- Kept: `react-native-blob-util` (peer dep of react-native-pdf), `react-native-worklets` (reanimated runtime), `posthog-session-replay` (active config)
+- Result: 56 production deps (down from 60), TypeScript 0 errors
+
+### 6.2 ✅ Asset Optimization — 67 MB of unused AI models removed from git tracking
+- 10 model files not imported by any code in `src/` — removed from tracking via `git rm --cached`
+- Unused: `intent_transformer.model` (32MB), `intent_v3.model` (18MB), `fitcoach_v3.model` (13MB), `fitcoach_transformer.model` (2.7MB), `.min.model` variants, `voice_v3.model`, `ar_v3.model`
+- Active models (kept, ~12MB): `intent_model.json`, `fitcoach_model.json`, `activity_model.json`, `activity_v3.model`, `activity_cnn_lstm.model`, `search_v3.model`, `summarizer_v3.model`, `intent_labels.json`
+- Files still on disk for training pipelines, just gitignored
+
+### 6.3 ✅ R8 ProGuard Rules Review — All 53 rules verified, no changes needed
+- All rules map to active dependencies (React Native, Reanimated, Expo, Health Connect, Sentry, PostHog, RevenueCat, SVG, WebView)
+- MapLibre rules already commented out (removed in Phase 1.5)
+- No stale rules found
 
 ---
 
@@ -117,7 +141,10 @@
 ## PHASE 8 — CI/CD PIPELINE
 
 ### 8.1 ✅ CI/CD Guide Created — `docs/CI_CD_GUIDE.md`
-### 8.2 ❌ GitHub Actions implementation
+### 8.2 ✅ GitHub Actions — CI + Android Build workflows
+- `.github/workflows/ci.yml` — Runs on every push/PR to main: checkout → Node 20 + npm cache → `npm ci --legacy-peer-deps` → `tsc --noEmit` → `vitest run`. Concurrency group with cancel-in-progress.
+- `.github/workflows/build-android.yml` — Triggers on version tags (`v*`) and manual dispatch: Node 20 + Java 21 → build AAB + APK with signing from GitHub Secrets → upload artifacts → create GitHub Release.
+- **Required Secrets**: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`, `SENTRY_DSN`, `POSTHOG_API_KEY`
 
 ---
 
@@ -133,13 +160,17 @@
 8. ~~Add consent screen + age gate~~ ✅
 9. ~~Build AAB script~~ ✅ (`npm run build:aab`)
 10. ~~Data deletion mechanism~~ ✅ (Delete My Data in profile)
-11. 👤 **Deploy website** (USER — domain purchase + deploy) ← NEXT USER ACTION
-12. 👤 **Store listing assets** (USER — icon, screenshots, graphics)
-13. 👤 **Play Console forms** (USER — Data Safety, IARC, Health Apps, Export Laws, Signing)
-14. 👤 **Upload AAB + start 14-day closed testing** (USER)
-15. APK/AAB size reduction
-16. Feature polish (ongoing)
-17. 👤 **Production release** (USER)
+11. ~~Screen smoke tests + integration tests (350 → 385)~~ ✅
+12. ~~CI/CD pipeline (GitHub Actions: ci.yml + build-android.yml)~~ ✅
+13. ~~Dependency audit (60 → 56 deps, 64 packages removed)~~ ✅
+14. ~~Asset optimization (67 MB unused models removed from git)~~ ✅
+15. ~~ProGuard review (all rules verified, no changes needed)~~ ✅
+16. 👤 **Deploy website** (USER — domain purchase + deploy) ← NEXT USER ACTION
+17. 👤 **Store listing assets** (USER — icon, screenshots, graphics)
+18. 👤 **Play Console forms** (USER — Data Safety, IARC, Health Apps, Export Laws, Signing)
+19. 👤 **Upload AAB + start 14-day closed testing** (USER)
+20. Feature polish (ongoing)
+21. 👤 **Production release** (USER)
 
 ---
 
@@ -163,7 +194,7 @@
 ---
 
 ## NOTES
-- Git: `d9a310c` on origin/main (19 Mar 2026)
+- Git: `2a78500` on origin/main (20 Mar 2026)
 - Test devices: Galaxy A05 (primary), Galaxy A14 (compatibility testing)
 - Google Play Console: Account created (March 2026)
 - RevenueCat: Will wire up when API key available

@@ -65,3 +65,18 @@ build-r8.log
 
 # Workspace repos (external exercise content)
 workspace-repos/
+
+# Unused AI model artifacts (training outputs, not imported by app code)
+# Active models: intent_model.json, fitcoach_model.json, activity_model.json,
+#   activity_v3.model, activity_cnn_lstm.model, search_v3.model,
+#   summarizer_v3.model, intent_labels.json
+assets/models/intent_transformer.model
+assets/models/intent_v3.model
+assets/models/intent_v3_vocab.model
+assets/models/intent_vocab.model
+assets/models/fitcoach_v3.model
+assets/models/fitcoach_transformer.model
+assets/models/fitcoach_transformer.min.model
+assets/models/activity_cnn_lstm.min.model
+assets/models/voice_v3.model
+assets/models/ar_v3.model

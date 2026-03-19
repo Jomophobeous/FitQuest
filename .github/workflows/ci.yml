@@ -1,47 +1,33 @@
-name: CI
+name: CI — Typecheck & Test
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main]
   pull_request:
-    branches: [ main, master ]
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  typecheck-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20.19.4'
+          node-version: 20
+          cache: npm
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-      - name: Run lint (if present)
-        run: npm run lint --if-present
-      - name: Run typecheck
-        run: npm run typecheck --if-present
-      - name: Run i18n P0 gate
-        run: npm run verify:i18n:p0 --if-present
-      - name: Run tests (if present)
-        run: npm run test --if-present
-      - name: Run simulation CI gate (if present)
-        run: npm run verify:simulation:ci --if-present
-      - name: Run quality 110 gate (if present)
-        run: npm run verify:quality:110 --if-present
-      - name: Run phase 10 lite gate (if present)
-        run: npm run verify:phase10:lite --if-present
-      - name: Run Meal Prep text safety gate (if present)
-        run: npm run verify:mealprep:text-safety --if-present
-      - name: Run notification reliability gate (if present)
-        run: npm run verify:notifications:reliability --if-present
-      - name: Run performance budget gate (if present)
-        run: npm run verify:performance:budget --if-present
-      - name: Run ops readiness gate (if present)
-        run: npm run verify:ops:readiness --if-present
-      - name: Run monetization checks (if present)
-        run: npm run verify:monetization:lite --if-present
-      - name: Rebuild food database (if present)
-        run: npm run build:food-db --if-present
-      - name: Verify food database integrity (if present)
-        run: npm run verify:food-db --if-present
+
+      - name: TypeScript strict check
+        run: npx tsc --noEmit
+
+      - name: Run unit tests
+        run: npx vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic

@@ -154,7 +154,7 @@ describe('RealisticHealthEngine — heart rate zones (Karvonen)', () => {
     const { RealisticHealthEngine } = await import('../src/engines/RealisticHealthEngine');
     const zones = RealisticHealthEngine.calculateHRZones({
       age: 30,
-      sex: 'male',
+      sex: 'MALE',
       heightCm: 180,
       weightKg: 80,
       restingHeartRate: 60,
@@ -246,7 +246,7 @@ describe('RealisticHealthEngine — macro calculations', () => {
     const { RealisticHealthEngine } = await import('../src/engines/RealisticHealthEngine');
     const macros = RealisticHealthEngine.calculateMacros({
       age: 25,
-      sex: 'male',
+      sex: 'MALE',
       heightCm: 180,
       weightKg: 80,
       bodyFatPercent: 15,
@@ -263,7 +263,7 @@ describe('RealisticHealthEngine — macro calculations', () => {
     const { RealisticHealthEngine } = await import('../src/engines/RealisticHealthEngine');
     const macros = RealisticHealthEngine.calculateMacros({
       age: 25,
-      sex: 'male',
+      sex: 'MALE',
       heightCm: 180,
       weightKg: 80,
       bodyFatPercent: 20,

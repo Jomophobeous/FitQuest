@@ -110,12 +110,12 @@ import { generateWorkout, analyzeWorkoutGeneration } from '../src/engines/workou
 
 const ALL_MUSCLES: TargetMuscle[] = [
   'chest_upper', 'chest_mid', 'chest_lower',
-  'deltoids_front', 'deltoids_side', 'deltoids_rear',
+  'deltoids_front', 'deltoids_lateral', 'deltoids_rear',
   'triceps', 'biceps', 'forearms',
   'lats', 'rhomboids', 'traps_upper', 'traps_mid',
   'quads', 'hamstrings', 'glutes_max', 'glutes_med',
   'calves_gastrocnemius', 'calves_soleus',
-  'abs_upper', 'abs_lower', 'obliques',
+  'abs', 'obliques', 'core_deep',
 ];
 
 const BASE_PROFILE: UserProfile = {

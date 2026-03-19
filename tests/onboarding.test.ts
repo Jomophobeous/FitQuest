@@ -341,6 +341,7 @@ describe('Onboarding — finishOnboarding DB sequence', () => {
       experience: 'intermediate' as const,
       training_days_per_week: 4,
       time_per_session_minutes: 30,
+      locked: false,
     };
 
     await createUserProfile(profileData);

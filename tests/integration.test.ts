@@ -80,6 +80,7 @@ describe('Integration: Database service CRUD flow', () => {
       experience: 'beginner',
       training_days_per_week: 3,
       time_per_session_minutes: 30,
+      locked: false,
     });
     expect(mocks.mockRunAsync).toHaveBeenCalled();
     const createCall = mocks.mockRunAsync.mock.calls[0];
@@ -152,7 +153,14 @@ describe('Integration: Workout lifecycle', () => {
       await import('../src/database/service');
 
     // Create session
-    await createWorkoutSession('user_local_001', 30, 5);
+    await createWorkoutSession({
+      id: 'test-session-001',
+      user_id: 'user_local_001',
+      duration_minutes: 30,
+      total_exercises: 5,
+      completed_exercises: 0,
+      success: false,
+    });
     expect(mocks.mockRunAsync).toHaveBeenCalled();
 
     // Add an exercise to the session
@@ -163,6 +171,8 @@ describe('Integration: Workout lifecycle', () => {
       order_in_session: 1,
       prescribed_sets: 3,
       prescribed_reps: '8-12',
+      completed_sets: 0,
+      skipped: false,
     });
 
     // Complete session
@@ -179,38 +189,41 @@ describe('Integration: Workout lifecycle', () => {
 // ============================================
 describe('Integration: Encryption round-trip', () => {
   it('V3 encrypt → decrypt preserves plaintext', async () => {
-    const { encryptV3, decryptV3, isV3Payload } = await import('../src/security/AESEncryption');
+    const { encryptV3, decryptV3, isV3Payload, getOrCreateMasterKey } = await import('../src/security/AESEncryption');
     
+    const masterKey = await getOrCreateMasterKey();
     const plaintext = 'Sensitive health data: HR=72bpm, BP=120/80';
-    const encrypted = await encryptV3(plaintext);
+    const encrypted = await encryptV3(plaintext, masterKey);
     
     expect(isV3Payload(encrypted)).toBeTruthy();
     expect(encrypted.v).toBe(3);
     expect(encrypted.ct).not.toBe(plaintext);
     
-    const decrypted = await decryptV3(encrypted);
+    const decrypted = await decryptV3(encrypted, masterKey);
     expect(decrypted).toBe(plaintext);
   });
 
   it('V2 encrypt → decrypt preserves plaintext', async () => {
-    const { encryptV2, decryptV2, isV2Payload } = await import('../src/security/AESEncryption');
+    const { encryptV2, decryptV2, isV2Payload, getOrCreateMasterKey } = await import('../src/security/AESEncryption');
     
+    const masterKey = await getOrCreateMasterKey();
     const plaintext = '{"weight_kg":75,"height_cm":180}';
-    const encrypted = await encryptV2(plaintext);
+    const encrypted = await encryptV2(plaintext, masterKey);
     
     expect(isV2Payload(encrypted)).toBeTruthy();
     expect(encrypted.v).toBe(2);
     
-    const decrypted = await decryptV2(encrypted);
+    const decrypted = await decryptV2(encrypted, masterKey);
     expect(decrypted).toBe(plaintext);
   });
 
   it('version detection correctly distinguishes payloads', async () => {
-    const { encryptV2, encryptV3, isV1Payload, isV2Payload, isV3Payload } =
+    const { encryptV2, encryptV3, isV1Payload, isV2Payload, isV3Payload, getOrCreateMasterKey } =
       await import('../src/security/AESEncryption');
     
-    const v2 = await encryptV2('test');
-    const v3 = await encryptV3('test');
+    const masterKey = await getOrCreateMasterKey();
+    const v2 = await encryptV2('test', masterKey);
+    const v3 = await encryptV3('test', masterKey);
     const v1 = { ciphertext: 'abc', iv: '123', hash: 'xyz' }; // Legacy format
     
     expect(isV2Payload(v2)).toBeTruthy();
@@ -224,16 +237,17 @@ describe('Integration: Encryption round-trip', () => {
   });
 
   it('encrypted data survives JSON serialization (as stored in SQLite)', async () => {
-    const { encryptV3, decryptV3 } = await import('../src/security/AESEncryption');
+    const { encryptV3, decryptV3, getOrCreateMasterKey } = await import('../src/security/AESEncryption');
     
+    const masterKey = await getOrCreateMasterKey();
     const original = 'Heart rate readings: [72, 74, 71, 73, 72]';
-    const encrypted = await encryptV3(original);
+    const encrypted = await encryptV3(original, masterKey);
     
     // Simulate SQLite storage: serialize to JSON string and back
     const jsonBlob = JSON.stringify(encrypted);
     const restored = JSON.parse(jsonBlob);
     
-    const decrypted = await decryptV3(restored);
+    const decrypted = await decryptV3(restored, masterKey);
     expect(decrypted).toBe(original);
   });
 });
@@ -391,7 +405,7 @@ describe('Integration: Database types used across engines', () => {
     const result = await validateWorkoutCanGenerate('user_local_001');
     expect(result).toBeDefined();
     // Should flag that we can't generate without exercises
-    expect(result.canGenerate === false || result.warnings.length > 0).toBe(true);
+    expect(result.canGenerate === false || result.recommendations.length > 0).toBe(true);
   });
 });
 

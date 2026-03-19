@@ -138,7 +138,7 @@ function getBounds(coords: [number, number][]): {
 /** Build GeoJSON LineString from coordinates */
 function routeToGeoJSON(
   coords: [number, number][]
-): GeoJSON.FeatureCollection {
+): { type: string; features: Array<{ type: string; properties: Record<string, unknown>; geometry: { type: string; coordinates: [number, number][] } }> } {
   return {
     type: 'FeatureCollection',
     features: [

@@ -162,7 +162,7 @@ describe('Dashboard — session summarization', () => {
 
 describe('Dashboard — readiness score', () => {
   it('uses cached readiness score when available', () => {
-    const readiness = { score: 75 };
+    const readiness: { score: number } | null = { score: 75 };
     const fatigueLevel = 40;
 
     const readinessScore = readiness?.score ?? (100 - fatigueLevel);
@@ -170,7 +170,7 @@ describe('Dashboard — readiness score', () => {
   });
 
   it('falls back to (100 - fatigueLevel) when no cached readiness', () => {
-    const readiness = null;
+    const readiness = null as { score: number } | null;
     const fatigueLevel = 40;
 
     const readinessScore = readiness?.score ?? (100 - fatigueLevel);
@@ -338,9 +338,9 @@ describe('Create Workout — exercise filtering logic', () => {
   });
 
   it('stacks multiple filters with AND logic', () => {
-    const category = 'strength';
-    const difficulty = 'intermediate';
-    const equipment = 'none';
+    const category: string = 'strength';
+    const difficulty: string = 'intermediate';
+    const equipment: string = 'none';
 
     let filtered = exercises;
     if (category !== 'all') filtered = filtered.filter(e => e.category === category);

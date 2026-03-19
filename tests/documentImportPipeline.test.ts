@@ -137,7 +137,7 @@ describe('DocumentImportPipeline', () => {
 
       // The pipeline sanitizes before passing to DocumentProcessor
       expect(result.success).toBe(true);
-      const passedContent = mockImportFromText.mock.calls[0][0];
+      const passedContent = mockImportFromText.mock.calls[0]![0];
       expect(passedContent).not.toContain('<script>');
     });
 
@@ -153,7 +153,7 @@ describe('DocumentImportPipeline', () => {
         author: 'Author "Foo"',
       });
 
-      const passedMeta = mockImportFromText.mock.calls[0][1];
+      const passedMeta = mockImportFromText.mock.calls[0]![1];
       expect(passedMeta.title).not.toContain('<');
       expect(passedMeta.title).not.toContain('>');
     });
@@ -222,7 +222,7 @@ describe('DocumentImportPipeline', () => {
 
       // The pipeline reads the file and strips dangerous patterns
       if (mockWriteString.mock.calls.length > 0) {
-        const writtenContent = mockWriteString.mock.calls[0][1];
+        const writtenContent = mockWriteString.mock.calls[0]![1];
         expect(writtenContent).not.toContain('<script>');
       }
     });

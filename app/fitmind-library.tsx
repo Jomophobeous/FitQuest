@@ -99,7 +99,7 @@ export default function FitMindLibraryScreen() {
       setReadingStreak(streak);
       setDueFlashcards(flashcards);
     } catch (e) {
-      console.warn('[FitMind] Failed to load data:', e);
+      if (__DEV__) console.warn('[FitMind] Failed to load data:', e);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -152,7 +152,7 @@ export default function FitMindLibraryScreen() {
       loadData();
     } catch (e) {
       Alert.alert(t('common.error'), t('fitmind.addFailed'));
-      console.warn('[FitMind] Add document error:', e);
+      if (__DEV__) console.warn('[FitMind] Add document error:', e);
     } finally {
       setAddingDoc(false);
     }
@@ -172,7 +172,7 @@ export default function FitMindLibraryScreen() {
               await FitMindService.deleteDocument(doc.id);
               loadData();
             } catch (e) {
-              console.warn('[FitMind] Delete error:', e);
+              if (__DEV__) console.warn('[FitMind] Delete error:', e);
             }
           },
         },
@@ -220,7 +220,7 @@ export default function FitMindLibraryScreen() {
       }
     } catch (e: any) {
       Alert.alert(t('common.error'), e.message || t('fitmind.importFailedDetail'));
-      console.warn('[FitMind] Import file error:', e);
+      if (__DEV__) console.warn('[FitMind] Import file error:', e);
     } finally {
       setImportingFile(false);
       setImportProgress(0);

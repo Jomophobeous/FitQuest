@@ -175,7 +175,7 @@ export class SensorFusionEngine {
         if (__DEV__) console.log('[SensorFusion] v1.0 ML activity classifier loaded');
       }
     } catch {
-      console.warn('[SensorFusion] ML model unavailable — using threshold-based fallback');
+      if (__DEV__) console.warn('[SensorFusion] ML model unavailable — using threshold-based fallback');
     }
   }
 
@@ -208,12 +208,12 @@ export class SensorFusionEngine {
         Pedometer.isAvailableAsync(),
       ]);
     } catch (e) {
-      console.warn('[SensorFusion] Sensor availability check failed:', e);
+      if (__DEV__) console.warn('[SensorFusion] Sensor availability check failed:', e);
       return false;
     }
 
     if (!accelAvail) {
-      console.warn('[SensorFusion] Accelerometer not available');
+      if (__DEV__) console.warn('[SensorFusion] Accelerometer not available');
       return false;
     }
 
@@ -631,7 +631,7 @@ export class SensorFusionEngine {
       try {
         cb(snapshot);
       } catch (e) {
-        console.warn('[SensorFusion] Callback error:', e);
+        if (__DEV__) console.warn('[SensorFusion] Callback error:', e);
       }
     }
   }

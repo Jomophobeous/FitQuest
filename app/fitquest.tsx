@@ -113,7 +113,7 @@ function FitQuestScreenInner() {
         const settings = audioService.getSettings();
         setVoiceEnabled(settings.voiceEnabled);
       } catch (e) {
-        console.log('[FitQuest] Audio init skipped:', e);
+        if (__DEV__) console.log('[FitQuest] Audio init skipped:', e);
       }
     };
     initAudio();
@@ -167,7 +167,7 @@ function FitQuestScreenInner() {
             if (speakCancelRef.current !== token) return;
             setIsSpeaking(false);
           } catch (e) {
-            console.warn('[FitQuest] Narration error (non-fatal):', e);
+            if (__DEV__) console.warn('[FitQuest] Narration error (non-fatal):', e);
             setIsSpeaking(false);
           }
         };
@@ -218,7 +218,7 @@ function FitQuestScreenInner() {
   useEffect(() => {
     if (isReady && userProfile && status === 'idle' && !completionResult) {
       // Small delay to let UI render first
-      console.log('[FitQuest] Auto-generating workout (idle state, no completion result)');
+      if (__DEV__) console.log('[FitQuest] Auto-generating workout (idle state, no completion result)');
       const timer = setTimeout(() => generateNewWorkoutRef.current(), 500);
       return () => clearTimeout(timer);
     }
@@ -275,7 +275,7 @@ function FitQuestScreenInner() {
       if (currentPhase === 'warmup' || currentPhase === 'cooldown') {
         completeExercise(5);
         Vibration.vibrate(20);
-        console.log(`[FitQuest] ${currentPhase} rest ended — quick advance`, { next: next?.name });
+        if (__DEV__) console.log(`[FitQuest] ${currentPhase} rest ended — quick advance`, { next: next?.name });
         return;
       }
 
@@ -293,12 +293,12 @@ function FitQuestScreenInner() {
         equipmentChanged: !!categoryChanged,
       });
       setIsGetReady(true);
-      console.log('[FitQuest] Rest ended — showing Get Ready', { nextExercise: next.name, categoryChanged });
+      if (__DEV__) console.log('[FitQuest] Rest ended — showing Get Ready', { nextExercise: next.name, categoryChanged });
     } else {
       // Skipped rest or no next exercise → advance immediately
       completeExercise(5);
       Vibration.vibrate(20);
-      console.log('[FitQuest] Rest ended — advancing immediately', { reason });
+      if (__DEV__) console.log('[FitQuest] Rest ended — advancing immediately', { reason });
     }
   };
 
@@ -307,16 +307,16 @@ function FitQuestScreenInner() {
     setGetReadyExercise(null);
     completeExercise(5);
     Vibration.vibrate(20);
-    console.log('[FitQuest] Get-Ready done — next exercise');
+    if (__DEV__) console.log('[FitQuest] Get-Ready done — next exercise');
   }, [completeExercise]);
 
   const handleExtendRest = useCallback((seconds: number) => {
     extendRest(seconds);
-    console.log('[FitQuest] Rest extended +' + seconds + 's');
+    if (__DEV__) console.log('[FitQuest] Rest extended +' + seconds + 's');
   }, [extendRest]);
 
   const handleFinish = async () => {
-    console.log('[FitQuest] handleFinish called — processing workout completion');
+    if (__DEV__) console.log('[FitQuest] handleFinish called — processing workout completion');
     // Cancel any in-flight narration chain AND stop current audio
     speakCancelRef.current++;
     audioService.stop();
@@ -328,11 +328,11 @@ function FitQuestScreenInner() {
     try {
       result = await finishWorkout();
     } catch (e) {
-      console.error('[FitQuest] finishWorkout threw (non-fatal):', e);
+      if (__DEV__) console.error('[FitQuest] finishWorkout threw (non-fatal):', e);
     }
 
     if (result) {
-      console.log('[FitQuest] Workout finished successfully — showing completion screen');
+      if (__DEV__) console.log('[FitQuest] Workout finished successfully — showing completion screen');
       setCompletionResult(result);
       setWorkoutRating(null);
 
@@ -350,7 +350,7 @@ function FitQuestScreenInner() {
           exerciseNames: result.exerciseNames,
         });
       } catch (e) {
-        console.warn('[FitQuest] Compliment narration error (non-fatal):', e);
+        if (__DEV__) console.warn('[FitQuest] Compliment narration error (non-fatal):', e);
       }
 
       // Store last workout summary so AI Coach can reference it
@@ -362,9 +362,9 @@ function FitQuestScreenInner() {
         xpEarned: result.xpEarned,
         exerciseNames: result.exerciseNames,
         completedAt: Date.now(),
-      })).catch(e => console.warn('[FitQuest] Failed to store last workout:', e));
+      })).catch(e => { if (__DEV__) console.warn('[FitQuest] Failed to store last workout:', e); });
     } else {
-      console.warn('[FitQuest] finishWorkout returned null — may have already been called');
+      if (__DEV__) console.warn('[FitQuest] finishWorkout returned null — may have already been called');
     }
   };
 
@@ -721,7 +721,7 @@ function FitQuestScreenInner() {
             return ne ? { exerciseId: ne.exerciseId, name: ne.name, category: ne.category, sets: ne.sets, reps: ne.reps } : undefined;
           })()}
           onSkip={() => {
-            console.log('[FitQuest] Rest skipped by user');
+            if (__DEV__) console.log('[FitQuest] Rest skipped by user');
             haptic('restOver');
             void advanceAfterRest('skip');
           }}
@@ -866,7 +866,7 @@ function FitQuestScreenInner() {
             timeline={currentExercise.mindTimeline}
             voiceEnabled={voiceEnabled}
             onComplete={() => {
-              console.log('[FitQuest] Mind exercise completed:', currentExercise.name);
+              if (__DEV__) console.log('[FitQuest] Mind exercise completed:', currentExercise.name);
               haptic('exerciseComplete');
               setShowCompleteBadge(true);
               setTimeout(() => setShowCompleteBadge(false), 1300);
@@ -1002,11 +1002,13 @@ function FitQuestScreenInner() {
                 icon={isLastExercise ? "check-all" : (currentExercise.phase === 'warmup' || currentExercise.phase === 'cooldown') ? "arrow-right" : "check"}
                 onPress={async () => {
                   if (isResting) return;
-                  console.log('[FitQuest] Action:complete_or_next', {
+                  if (__DEV__) {
+                    console.log('[FitQuest] Action:complete_or_next', {
                     isLastExercise,
                     index: currentExerciseIndex,
                     total: workout.exercises.length,
-                  });
+                    });
+                  }
                   speakCancelRef.current++;
                   audioService.stop();
                   stopAll();
@@ -1022,7 +1024,7 @@ function FitQuestScreenInner() {
                     audioService.stop();
                     // Light completion: just vibration, no voice (user requested instant silence)
                     Vibration.vibrate([0, 100, 80, 100, 80, 200]);
-                    console.log('[FitQuest] Last exercise completed — waiting for useEffect to trigger handleFinish');
+                    if (__DEV__) console.log('[FitQuest] Last exercise completed — waiting for useEffect to trigger handleFinish');
                   } else {
                     const currentPhase = currentExercise.phase || 'main';
                     const nextExercise = workout.exercises[currentExerciseIndex + 1];
@@ -1058,11 +1060,13 @@ function FitQuestScreenInner() {
                         setIsResting(true);
                         startRest(currentPhase === 'warmup' ? 10 : 8);
                       }
-                      console.log(`[FitQuest] ${currentPhase} exercise done`, {
+                      if (__DEV__) {
+                        console.log(`[FitQuest] ${currentPhase} exercise done`, {
                         phaseChanging,
                         nextPhase,
                         next: nextExercise?.name,
-                      });
+                        });
+                      }
                     } else {
                       // Main exercises: full rest timer with breathing guide
                       // Play transition narration (rich: "Well done! Rest for Xs. Up next: Y")
@@ -1076,12 +1080,14 @@ function FitQuestScreenInner() {
                       try {
                         await audioService.playTransition(transitionAudio);
                       } catch (e) {
-                        console.warn('[FitQuest] Transition audio error (non-fatal):', e);
+                        if (__DEV__) console.warn('[FitQuest] Transition audio error (non-fatal):', e);
                       }
-                      console.log('[FitQuest] Set complete — entering rest overlay immediately', {
+                      if (__DEV__) {
+                        console.log('[FitQuest] Set complete — entering rest overlay immediately', {
                         currentExercise: currentExercise.name,
                         nextExercise: nextExercise?.name,
-                      });
+                        });
+                      }
                       haptic('exerciseComplete');
                       setShowCompleteBadge(true);
                       setTimeout(() => setShowCompleteBadge(false), 1300);

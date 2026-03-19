@@ -185,7 +185,7 @@ export class AnomalyDetector {
             );
             this.recentAlerts.set(dedupKey, now);
           } catch (e) {
-            console.warn('[AnomalyDetector] Failed to create alert:', e);
+            if (__DEV__) console.warn('[AnomalyDetector] Failed to create alert:', e);
           }
         }
       }

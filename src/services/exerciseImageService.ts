@@ -205,7 +205,7 @@ export async function initializeExerciseImages(): Promise<void> {
         }
       }
       // Flag was set but images are missing — clear it and re-deploy
-      console.log('[ExerciseImages] Flag set but images missing on disk — re-deploying...');
+      if (__DEV__) console.log('[ExerciseImages] Flag set but images missing on disk — re-deploying...');
       const db = await getDatabase();
       await db.runAsync(
         `DELETE FROM app_state WHERE key = ?`,
@@ -218,9 +218,9 @@ export async function initializeExerciseImages(): Promise<void> {
 
   if (Platform.OS === 'android') {
     // Copy from APK assets to documentDirectory
-    console.log('[ExerciseImages] Deploying images from APK assets...');
+    if (__DEV__) console.log('[ExerciseImages] Deploying images from APK assets...');
     const count = await deployAndroidAssetImages();
-    console.log(`[ExerciseImages] Deployed ${count} images to documentDirectory`);
+    if (__DEV__) console.log(`[ExerciseImages] Deployed ${count} images to documentDirectory`);
     if (count > 0) {
       await markImagesDeployed();
     }
@@ -230,12 +230,12 @@ export async function initializeExerciseImages(): Promise<void> {
   // Non-Android: check if images already exist on disk (e.g., from a prior adb push)
   const diagnostics = await getImageDiagnostics();
   if (diagnostics.deployedCount > 0) {
-    console.log(`[ExerciseImages] Found ${diagnostics.deployedCount} images already on device`);
+    if (__DEV__) console.log(`[ExerciseImages] Found ${diagnostics.deployedCount} images already on device`);
     await markImagesDeployed();
   } else {
     if (__DEV__) {
       console.log('[ExerciseImages] No exercise images on device — users will see placeholders');
-      console.log('[ExerciseImages] Deploy via: npm run deploy:images (requires adb for Android)');
+      if (__DEV__) console.log('[ExerciseImages] Deploy via: npm run deploy:images (requires adb for Android)');
     }
   }
 }

@@ -899,7 +899,7 @@ export class DualAIEngine {
         const memory = await this.loadConversationMemory(context.personality, 10);
         enrichedContext = { ...context, memory };
       } catch (e) {
-        console.warn('[DualAI] Failed to load memory:', e);
+        if (__DEV__) console.warn('[DualAI] Failed to load memory:', e);
       }
     }
 
@@ -943,10 +943,12 @@ export class DualAIEngine {
       try {
         return await this.queryProfessorViaOpenAI(input, professorContext, options);
       } catch (error: any) {
-        console.warn('[DualAI] OpenAI Professor failed, falling back to local', {
+        if (__DEV__) {
+          console.warn('[DualAI] OpenAI Professor failed, falling back to local', {
           message: error?.message,
           model: options.model || 'gpt-4.1-mini',
-        });
+          });
+        }
         const fallback = await this.query(input, professorContext);
         return {
           ...fallback,
@@ -1717,7 +1719,7 @@ export class DualAIEngine {
     }
     } catch (intentError) {
       // Guard against neural model crashes (encoding failures, HNSW errors, etc.)
-      console.warn('[DualAI] Professor intent processing failed, using fallback:', intentError);
+      if (__DEV__) console.warn('[DualAI] Professor intent processing failed, using fallback:', intentError);
       message = this.pickRandomAvoidingRepeats(PROFESSOR_TEMPLATES.comprehension_check, 'prof_comprehension');
       confidence = 0.4;
     }

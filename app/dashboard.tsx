@@ -113,7 +113,7 @@ export default function DashboardScreen() {
   );
 
   const loadProgress = async () => {
-    console.log('[Dashboard] loadProgress:start');
+    if (__DEV__) console.log('[Dashboard] loadProgress:start');
     try {
       // Parallel data loading — all independent queries at once
       const [savedName, progress, streakData, fatigue, sessions, stepsData, xpData, readinessSnap] = await Promise.all([
@@ -204,10 +204,10 @@ export default function DashboardScreen() {
       // Readiness
       if (readinessSnap) setReadiness(readinessSnap);
     } catch (error) {
-      console.error('[Dashboard] Failed to load progress:', error);
+      if (__DEV__) console.error('[Dashboard] Failed to load progress:', error);
     } finally {
       setLoading(false);
-      console.log('[Dashboard] loadProgress:complete');
+      if (__DEV__) console.log('[Dashboard] loadProgress:complete');
     }
   };
 
@@ -349,7 +349,7 @@ export default function DashboardScreen() {
                     title={t('dashboard.startWorkout')}
                     icon="lightning-bolt"
                     onPress={() => {
-                      console.log('[Dashboard] CTA:startWorkout');
+                      if (__DEV__) console.log('[Dashboard] CTA:startWorkout');
                       router.push('/fitquest');
                     }}
                     variant="primary"
@@ -539,7 +539,7 @@ export default function DashboardScreen() {
                   accessibilityHint={tile.desc}
                   onPress={() => {
                     if ((tile as any).comingSoon) return;
-                    console.log('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
+                    if (__DEV__) console.log('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
                     router.push(tile.route as any);
                   }}
                   style={[

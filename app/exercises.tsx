@@ -199,7 +199,7 @@ export default function ExercisesScreen() {
       const data = await queryCache.getOrFetch('exercises:all', () => getExercises(), 120_000);
       setExercises(data);
     } catch (error) {
-      console.error('[Exercises] Failed to load:', error);
+      if (__DEV__) console.error('[Exercises] Failed to load:', error);
       Alert.alert(t('common.error') || 'Error', t('exercises.loadFailed') || 'Failed to load exercises. Please restart the app.');
     } finally {
       setLoading(false);

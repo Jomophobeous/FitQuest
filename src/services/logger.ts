@@ -55,18 +55,18 @@ export function redactForLog<T>(input: T): T {
 
 export function safeInfo(message: string, data?: Record<string, unknown>): void {
   if (data) {
-    console.log(message, redactForLog(data));
+    if (__DEV__) console.log(message, redactForLog(data));
     return;
   }
-  console.log(message);
+  if (__DEV__) console.log(message);
 }
 
 export function safeWarn(message: string, data?: Record<string, unknown>): void {
   if (data) {
-    console.warn(message, redactForLog(data));
+    if (__DEV__) console.warn(message, redactForLog(data));
     return;
   }
-  console.warn(message);
+  if (__DEV__) console.warn(message);
 }
 
 export async function safeError(
@@ -83,5 +83,5 @@ export async function safeError(
         : undefined,
   };
 
-  console.error(message, redactForLog(payload));
+  if (__DEV__) console.error(message, redactForLog(payload));
 }

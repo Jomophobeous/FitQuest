@@ -111,10 +111,10 @@ export class TrainedIntentRouter {
       );
 
       this.isLoaded = true;
-      console.log(`[TrainedIntentRouter] Model loaded: ${this.modelData.labels.length} classes, ${this.vocabMap.size} vocab`);
+      if (__DEV__) console.log(`[TrainedIntentRouter] Model loaded: ${this.modelData.labels.length} classes, ${this.vocabMap.size} vocab`);
       return true;
     } catch (error) {
-      console.warn('[TrainedIntentRouter] Failed to load model, will use keyword fallback:', error);
+      if (__DEV__) console.warn('[TrainedIntentRouter] Failed to load model, will use keyword fallback:', error);
       this.isLoaded = false;
       return false;
     }

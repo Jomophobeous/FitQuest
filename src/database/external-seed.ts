@@ -66,11 +66,11 @@ async function removeDuplicateExercises(): Promise<number> {
 export async function seedExternalExercises(): Promise<void> {
   // Check if already seeded
   if (await hasExternalExercises()) {
-    console.log('[ExternalSeed] External exercises already seeded, skipping');
+    if (__DEV__) console.log('[ExternalSeed] External exercises already seeded, skipping');
     return;
   }
 
-  console.log('[ExternalSeed] Seeding 868 external exercises...');
+  if (__DEV__) console.log('[ExternalSeed] Seeding 868 external exercises...');
 
   const db = await getDatabase();
   
@@ -84,20 +84,20 @@ export async function seedExternalExercises(): Promise<void> {
     
     // Remove duplicates that match core exercises
     const removed = await removeDuplicateExercises();
-    console.log(`[ExternalSeed] Removed ${removed} duplicate exercises`);
+    if (__DEV__) console.log(`[ExternalSeed] Removed ${removed} duplicate exercises`);
     
     // Verify the seed
     const count = await getExternalExerciseCount();
-    console.log(`[ExternalSeed] Seeded ${count} external exercises (after dedup)`);
+    if (__DEV__) console.log(`[ExternalSeed] Seeded ${count} external exercises (after dedup)`);
     
     // Log category breakdown
     const categoryBreakdown = await db.getAllAsync<{ category: string; count: number }>(
       `SELECT category, COUNT(*) as count FROM exercises WHERE external_id IS NOT NULL GROUP BY category ORDER BY count DESC`
     );
-    console.log('[ExternalSeed] Category breakdown:', JSON.stringify(categoryBreakdown));
+    if (__DEV__) console.log('[ExternalSeed] Category breakdown:', JSON.stringify(categoryBreakdown));
     
   } catch (error) {
-    console.error('[ExternalSeed] Failed to seed external exercises:', error);
+    if (__DEV__) console.error('[ExternalSeed] Failed to seed external exercises:', error);
     // Non-fatal - app can work without external exercises
   }
 }

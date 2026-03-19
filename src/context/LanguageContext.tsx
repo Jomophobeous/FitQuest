@@ -31,7 +31,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           setLanguageState(saved);
         }
       } catch (e) {
-        console.warn('Failed to load language preference:', e);
+        if (__DEV__) console.warn('Failed to load language preference:', e);
       }
     })();
   }, []);
@@ -42,7 +42,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     try {
       await SecureStore.setItemAsync(LANGUAGE_STORAGE_KEY, code);
     } catch (e) {
-      console.warn('Failed to save language preference:', e);
+      if (__DEV__) console.warn('Failed to save language preference:', e);
     }
   }, []);
 

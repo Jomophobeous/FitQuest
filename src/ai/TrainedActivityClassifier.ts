@@ -69,10 +69,10 @@ export class TrainedActivityClassifier {
       const modelJson = require('../../assets/models/activity_model.json');
       this.model = modelJson as ActivityModelData;
       this.isLoaded = true;
-      console.log(`[TrainedActivityClassifier] Model loaded: ${this.model.labels.length} activities, ${this.model.n_features} features`);
+      if (__DEV__) console.log(`[TrainedActivityClassifier] Model loaded: ${this.model.labels.length} activities, ${this.model.n_features} features`);
       return true;
     } catch (error) {
-      console.warn('[TrainedActivityClassifier] Model not loaded, using heuristic fallback');
+      if (__DEV__) console.warn('[TrainedActivityClassifier] Model not loaded, using heuristic fallback');
       this.isLoaded = false;
       return false;
     }

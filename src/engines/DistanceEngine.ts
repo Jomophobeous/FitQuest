@@ -142,7 +142,7 @@ class DistanceEngine extends EventEmitter {
     // Request permission
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.error('[DistanceEngine] Location permission denied');
+      if (__DEV__) console.error('[DistanceEngine] Location permission denied');
       this.emit('error', { type: 'permission', message: 'Location permission denied' });
       return false;
     }
@@ -166,7 +166,7 @@ class DistanceEngine extends EventEmitter {
       if (__DEV__) console.log('[DistanceEngine] Tracking started');
       return true;
     } catch (error) {
-      console.error('[DistanceEngine] Failed to start tracking:', error);
+      if (__DEV__) console.error('[DistanceEngine] Failed to start tracking:', error);
       this.isRunning = false;
       this.emit('error', { type: 'start', message: String(error) });
       return false;

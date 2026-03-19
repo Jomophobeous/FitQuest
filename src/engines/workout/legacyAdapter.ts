@@ -142,7 +142,7 @@ export async function generateWorkoutUnified(
       const plan = await engine.generateWorkout(userId, {});
       return adaptWorkoutPlanToLegacy(plan);
     } catch (error) {
-      console.warn('[LegacyAdapter] New engine failed, falling back to legacy:', error);
+      if (__DEV__) console.warn('[LegacyAdapter] New engine failed, falling back to legacy:', error);
       // Fall through to legacy
     }
   }

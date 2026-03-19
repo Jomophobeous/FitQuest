@@ -740,7 +740,7 @@ export function generateAllExercises(): GeneratedExercise[] {
     exercise.order_in_category = categoryCounters[exercise.category]!++;
   }
   
-  console.log(`[ExerciseGenerator] Generated ${exercises.length} exercises from ${allTemplates.length} templates`);
+  if (__DEV__) console.log(`[ExerciseGenerator] Generated ${exercises.length} exercises from ${allTemplates.length} templates`);
   return exercises;
 }
 

@@ -145,9 +145,9 @@ function FitMindReaderScreenInner() {
       ]);
       if (storedKey) setOpenAIKey(storedKey);
       if (storedModel) setOpenAIModel(storedModel);
-      console.log('[FitMind Reader] Professor settings loaded');
+      if (__DEV__) console.log('[FitMind Reader] Professor settings loaded');
     } catch (e) {
-      console.warn('[FitMind Reader] Failed to load Professor settings');
+      if (__DEV__) console.warn('[FitMind Reader] Failed to load Professor settings');
     }
   };
 
@@ -163,17 +163,19 @@ function FitMindReaderScreenInner() {
       }
       await SecureStore.setItemAsync(OPENAI_MODEL_STORAGE, modelTrimmed);
       setOpenAIModel(modelTrimmed);
-      console.log('[FitMind Reader] Professor settings saved', {
+      if (__DEV__) {
+        console.log('[FitMind Reader] Professor settings saved', {
         provider: professorProvider,
         model: modelTrimmed,
         hasKey: !!keyTrimmed,
-      });
+        });
+      }
       setChatMessages((prev) => [...prev, {
         role: 'assistant',
         content: 'Professor cloud settings saved.',
       }]);
     } catch (e) {
-      console.warn('[FitMind Reader] Failed to save Professor settings');
+      if (__DEV__) console.warn('[FitMind Reader] Failed to save Professor settings');
       setChatMessages((prev) => [...prev, {
         role: 'assistant',
         content: 'Could not save Professor settings. Please try again.',
@@ -238,7 +240,7 @@ function FitMindReaderScreenInner() {
       }
       await loadAnnotations(startPage);
     } catch (e) {
-      console.error('[FitMind Reader] Load error:', e);
+      if (__DEV__) console.error('[FitMind Reader] Load error:', e);
       captureReaderError(e instanceof Error ? e : String(e), {
         engine: readerEngine,
         documentType: document?.type,
@@ -269,7 +271,7 @@ function FitMindReaderScreenInner() {
       setHasPrev(result.hasPrev);
     } catch (e) {
       setPageContent(t('fitmind.reader.loadError'));
-      console.error('[FitMind Reader] Page load error:', e);
+      if (__DEV__) console.error('[FitMind Reader] Page load error:', e);
     }
   };
 
@@ -300,7 +302,7 @@ function FitMindReaderScreenInner() {
     try {
       await FitMindService.updateProgress(docId, page);
     } catch (e) {
-      console.warn('[FitMind Reader] Failed to persist PDF page progress');
+      if (__DEV__) console.warn('[FitMind Reader] Failed to persist PDF page progress');
     }
   }, [docId]);
 
@@ -320,7 +322,7 @@ function FitMindReaderScreenInner() {
           setWebReaderScripts(scripts);
         }
       } catch (e) {
-        console.warn('[FitMind Reader] Failed to load local web reader scripts');
+        if (__DEV__) console.warn('[FitMind Reader] Failed to load local web reader scripts');
         if (!mounted) return;
         if (shouldUseWebPdfMode) {
           setWebPdfFailed(true);
@@ -393,7 +395,7 @@ function FitMindReaderScreenInner() {
       // Verify file exists
       const fileInfo = await FileSystem.getInfoAsync(filePath);
       if (!fileInfo.exists) {
-        console.warn('[FitMind Reader] File not found', { path: filePath });
+        if (__DEV__) console.warn('[FitMind Reader] File not found', { path: filePath });
         setChatMessages((prev) => [
           ...prev,
           { role: 'assistant', content: 'The document file was not found on this device.' },
@@ -428,7 +430,7 @@ function FitMindReaderScreenInner() {
         }
       }
     } catch (e) {
-      console.warn('[FitMind Reader] Failed to open external reader', { type: document.type, error: String(e) });
+      if (__DEV__) console.warn('[FitMind Reader] Failed to open external reader', { type: document.type, error: String(e) });
       setChatMessages((prev) => [
         ...prev,
         {
@@ -485,7 +487,7 @@ function FitMindReaderScreenInner() {
     });
     const xpResult = await awardReadingXP(pagesRead, durationMinutes, quality);
     if (xpResult.levelUp) {
-      console.log(`[FitMind] Mind level up! Now level ${xpResult.mindLevel} (+${xpResult.xpEarned} XP)`);
+      if (__DEV__) console.log(`[FitMind] Mind level up! Now level ${xpResult.mindLevel} (+${xpResult.xpEarned} XP)`);
     }
 
     // Check if document is now completed
@@ -526,11 +528,13 @@ function FitMindReaderScreenInner() {
     setChatLoading(true);
 
     try {
-      console.log('[FitMind Reader] Professor query:start', {
+      if (__DEV__) {
+        console.log('[FitMind Reader] Professor query:start', {
         provider: professorProvider,
         model: professorProvider === 'OPENAI' ? openAIModel : 'on-device',
         page: currentPage,
-      });
+        });
+      }
 
       const response = await dualAI.queryProfessorWithModel(
         input,
@@ -550,11 +554,13 @@ function FitMindReaderScreenInner() {
         }
       );
 
-      console.log('[FitMind Reader] Professor query:complete', {
+      if (__DEV__) {
+        console.log('[FitMind Reader] Professor query:complete', {
         provider: professorProvider,
         latencyMs: response.processingTimeMs,
         confidence: response.confidence,
-      });
+        });
+      }
 
       setChatMessages((prev) => [
         ...prev,
@@ -565,10 +571,12 @@ function FitMindReaderScreenInner() {
         },
       ]);
     } catch (e: any) {
-      console.warn('[FitMind Reader] Professor query failed', {
+      if (__DEV__) {
+        console.warn('[FitMind Reader] Professor query failed', {
         provider: professorProvider,
         message: e?.message,
-      });
+        });
+      }
       setChatMessages((prev) => [
         ...prev,
         {
@@ -660,7 +668,7 @@ function FitMindReaderScreenInner() {
               <TouchableOpacity
                 onPress={() => {
                   setProfessorProvider('LOCAL');
-                  console.log('[FitMind Reader] Professor provider switched', { provider: 'LOCAL' });
+                  if (__DEV__) console.log('[FitMind Reader] Professor provider switched', { provider: 'LOCAL' });
                 }}
                 style={[
                   styles.providerChip,
@@ -678,7 +686,7 @@ function FitMindReaderScreenInner() {
               <TouchableOpacity
                 onPress={() => {
                   setProfessorProvider('OPENAI');
-                  console.log('[FitMind Reader] Professor provider switched', { provider: 'OPENAI' });
+                  if (__DEV__) console.log('[FitMind Reader] Professor provider switched', { provider: 'OPENAI' });
                 }}
                 style={[
                   styles.providerChip,
@@ -847,18 +855,22 @@ function FitMindReaderScreenInner() {
                         if (document.total_pages !== totalPages) {
                           setDocument((prev) => prev ? { ...prev, total_pages: totalPages } : prev);
                         }
-                        console.log('[FitMind Reader] PDF loaded', {
+                        if (__DEV__) {
+                          console.log('[FitMind Reader] PDF loaded', {
                           pages: totalPages,
                           engine: readerEngine,
-                        });
+                          });
+                        }
                       }}
                       onPageChanged={(page) => {
                         void handlePdfPageChanged(page);
                       }}
                       onError={(error) => {
-                        console.warn('[FitMind Reader] PDF render failed; fallback to external reader', {
+                        if (__DEV__) {
+                          console.warn('[FitMind Reader] PDF render failed; fallback to external reader', {
                           message: String(error),
-                        });
+                          });
+                        }
                         captureReaderError(String(error), {
                           engine: readerEngine,
                           documentType: document?.type,
@@ -898,17 +910,19 @@ function FitMindReaderScreenInner() {
                               void FitMindService.updateProgress(docId!, page);
                             }
                             if (data.type === 'error') {
-                              console.warn('[FitMind Reader] web_pdfjs render failed; fallback to external reader', {
+                              if (__DEV__) {
+                                console.warn('[FitMind Reader] web_pdfjs render failed; fallback to external reader', {
                                 message: String(data.payload?.message || 'unknown'),
-                              });
+                                });
+                              }
                               setWebPdfFailed(true);
                             }
                           } catch {
-                            console.warn('[FitMind Reader] web_pdfjs message parse failed');
+                            if (__DEV__) console.warn('[FitMind Reader] web_pdfjs message parse failed');
                           }
                         }}
                         onError={() => {
-                          console.warn('[FitMind Reader] web_pdfjs WebView error; fallback to external reader');
+                          if (__DEV__) console.warn('[FitMind Reader] web_pdfjs WebView error; fallback to external reader');
                           setWebPdfFailed(true);
                         }}
                       />
@@ -966,14 +980,16 @@ function FitMindReaderScreenInner() {
                           }
 
                           if (message.type === 'error') {
-                            console.warn('[FitMind Reader] EPUB render failed; fallback to external reader', {
+                            if (__DEV__) {
+                              console.warn('[FitMind Reader] EPUB render failed; fallback to external reader', {
                               message: message.message,
-                            });
+                              });
+                            }
                             setEpubFailed(true);
                           }
                         }}
                         onError={() => {
-                          console.warn('[FitMind Reader] EPUB WebView error; fallback to external reader');
+                          if (__DEV__) console.warn('[FitMind Reader] EPUB WebView error; fallback to external reader');
                           setEpubFailed(true);
                         }}
                       />

@@ -139,7 +139,7 @@ export default function AnalyticsScreen() {
       setPersonalRecords(prs);
       setStreakData(streak);
     } catch (e) {
-      console.warn('[Analytics] Data load error:', e);
+      if (__DEV__) console.warn('[Analytics] Data load error:', e);
     } finally {
       setLoading(false);
     }

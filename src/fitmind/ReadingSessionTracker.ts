@@ -124,7 +124,7 @@ export class ReadingSessionTracker {
     totalPages: number;
   }): void {
     if (this.session?.state === 'ACTIVE') {
-      console.warn('[ReadingTracker] Session already active. End it first.');
+      if (__DEV__) console.warn('[ReadingTracker] Session already active. End it first.');
       return;
     }
 
@@ -157,7 +157,7 @@ export class ReadingSessionTracker {
     // Listen for app state changes (background detection)
     this.appStateSubscription = AppState.addEventListener('change', this.handleAppState);
 
-    console.log(`[ReadingTracker] Session started: doc=${config.documentId}, page=${config.startPage}`);
+    if (__DEV__) console.log(`[ReadingTracker] Session started: doc=${config.documentId}, page=${config.startPage}`);
   }
 
   /**
@@ -195,7 +195,7 @@ export class ReadingSessionTracker {
     // Update active time up to this point
     this.updateActiveTime();
 
-    console.log('[ReadingTracker] Session paused');
+    if (__DEV__) console.log('[ReadingTracker] Session paused');
   }
 
   /**
@@ -213,7 +213,7 @@ export class ReadingSessionTracker {
     this.session.lastActivityAt = Date.now();
     this.lastPageTurnAt = Date.now();
 
-    console.log('[ReadingTracker] Session resumed');
+    if (__DEV__) console.log('[ReadingTracker] Session resumed');
   }
 
   /**
@@ -257,11 +257,13 @@ export class ReadingSessionTracker {
       const minutesRead = Math.max(1, Math.round(this.session.totalActiveMs / 60000));
       await FitMindService.updateReadingStreak(pagesRead, minutesRead);
 
-      console.log(
+      if (__DEV__) {
+        console.log(
         `[ReadingTracker] Session saved: ${pagesRead} pages, ${summary.readingSpeedWpm} WPM, focus: ${summary.focusScore}`
-      );
+        );
+      }
     } else {
-      console.log('[ReadingTracker] Session too short to save');
+      if (__DEV__) console.log('[ReadingTracker] Session too short to save');
     }
 
     this.session = null;
@@ -378,7 +380,7 @@ export class ReadingSessionTracker {
 
     // Idle detection
     if (timeSinceActivity > IDLE_TIMEOUT_MS) {
-      console.log('[ReadingTracker] Idle timeout — auto-pausing');
+      if (__DEV__) console.log('[ReadingTracker] Idle timeout — auto-pausing');
       this.idleTimeouts++;
       this.pause();
       return;

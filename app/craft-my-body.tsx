@@ -225,7 +225,7 @@ export default function CraftMyBodyScreen() {
       setApplied(true);
       Alert.alert(t('craftBody.appliedAlert'), t('craftBody.appliedDetail'));
     } catch (e) {
-      console.error('[CraftMyBody] Failed to apply algorithm:', e);
+      if (__DEV__) console.error('[CraftMyBody] Failed to apply algorithm:', e);
       Alert.alert(t('craftBody.errorAlert'), t('craftBody.errorDetail'));
     }
   }, [algorithm]);

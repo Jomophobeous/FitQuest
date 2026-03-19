@@ -99,21 +99,23 @@ export class NeuralSummarizer {
         'summarizer_v3.model'
       );
       if (!modelData) {
-        console.log('[NeuralSummarizer] Model not found — using TF-IDF fallback');
+        if (__DEV__) console.log('[NeuralSummarizer] Model not found — using TF-IDF fallback');
         return false;
       }
       this.model = modelData;
 
       this.isLoaded = true;
       const version = (this.model as any).version ?? '3.0.0';
-      console.log(
+      if (__DEV__) {
+        console.log(
         `[NeuralSummarizer] v${version}: ${this.model.numLayers} layers, ` +
         `hidden=${this.model.hiddenSize}, ` +
         `sentence_dim=${this.model.sentenceSize}`
-      );
+        );
+      }
       return true;
     } catch (error) {
-      console.warn('[NeuralSummarizer] Failed to load:', error);
+      if (__DEV__) console.warn('[NeuralSummarizer] Failed to load:', error);
       return false;
     }
   }

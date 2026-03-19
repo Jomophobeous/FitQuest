@@ -228,7 +228,7 @@ export default function CreateWorkoutScreen() {
         ]
       );
     } catch (error) {
-      console.error('[CreateWorkout] Failed to save:', error);
+      if (__DEV__) console.error('[CreateWorkout] Failed to save:', error);
       Alert.alert(t('error.title'), t('createWorkout.saveFailed'));
     }
   };

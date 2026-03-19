@@ -690,7 +690,7 @@ async function prepareWorkout(
   const candidates = await applyHardFilter(userId, profile, fatigueMap, intent, adaptive);
 
   if (candidates.length < MIN_EXERCISES) {
-    console.warn('Not enough exercises pass hard filter');
+    if (__DEV__) console.warn('Not enough exercises pass hard filter');
     return null;
   }
 

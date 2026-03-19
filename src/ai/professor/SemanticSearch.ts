@@ -312,20 +312,22 @@ export class SemanticSearch {
         'search_v3.model'
       );
       if (!modelData) {
-        console.log('[SemanticSearch] Encoder not found — using TF-IDF fallback');
+        if (__DEV__) console.log('[SemanticSearch] Encoder not found — using TF-IDF fallback');
         return false;
       }
       this.model = modelData;
 
       this.isLoaded = true;
       const version = (this.model as any).version ?? '3.0.0';
-      console.log(
+      if (__DEV__) {
+        console.log(
         `[SemanticSearch] v${version}: ${this.model.numLayers} layers, ` +
         `dim=${this.model.sentenceSize}`
-      );
+        );
+      }
       return true;
     } catch (error) {
-      console.warn('[SemanticSearch] Failed to load encoder:', error);
+      if (__DEV__) console.warn('[SemanticSearch] Failed to load encoder:', error);
       return false;
     }
   }

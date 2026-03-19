@@ -390,7 +390,7 @@ export class BiometricAuthService {
 
     // Emergency data wipe after excessive failures
     if (attempts >= EMERGENCY_WIPE_THRESHOLD) {
-      console.error(`[FitQuest Auth] EMERGENCY: ${attempts} failed attempts — wiping sensitive data`);
+      if (__DEV__) console.error(`[FitQuest Auth] EMERGENCY: ${attempts} failed attempts — wiping sensitive data`);
       await this.emergencyWipe();
       return;
     }
@@ -403,7 +403,7 @@ export class BiometricAuthService {
       ]!;
       const lockoutUntil = Date.now() + duration;
       await SecureStore.setItemAsync(SECURE_KEYS.LOCKOUT_UNTIL, lockoutUntil.toString());
-      console.warn(`[FitQuest Auth] Lockout triggered: ${duration / 1000}s`);
+      if (__DEV__) console.warn(`[FitQuest Auth] Lockout triggered: ${duration / 1000}s`);
     }
   }
 
@@ -557,7 +557,7 @@ export class BiometricAuthService {
 
     this.currentSession = null;
     this.masterKey = null;
-    console.error('[FitQuest Auth] Emergency wipe complete — all encryption keys destroyed');
+    if (__DEV__) console.error('[FitQuest Auth] Emergency wipe complete — all encryption keys destroyed');
   }
 
   /** Expose for external use (e.g., account deletion) */

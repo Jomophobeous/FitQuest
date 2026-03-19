@@ -1442,7 +1442,7 @@ export async function reviewFitMindFlashcard(cardId: string, quality: number): P
     const mod = await import('../fitmind/FSRSService');
     fsrsService = mod.fsrsService;
   } catch {
-    console.warn('[FitMind] FSRS module unavailable, skipping review');
+    if (__DEV__) console.warn('[FitMind] FSRS module unavailable, skipping review');
     return;
   }
   let rating: 'again' | 'hard' | 'good' | 'easy';

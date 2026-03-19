@@ -89,7 +89,7 @@ export class FSRSService {
       enable_short_term: true, // Use (re)learning steps
     });
 
-    console.log('[FSRSService] Initialized with FSRS-5 algorithm');
+    if (__DEV__) console.log('[FSRSService] Initialized with FSRS-5 algorithm');
   }
 
   static getInstance(): FSRSService {

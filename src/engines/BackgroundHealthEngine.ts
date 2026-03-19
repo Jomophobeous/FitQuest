@@ -219,7 +219,7 @@ export class BackgroundHealthEngine {
         if (__DEV__) console.log('[BackgroundHealth] SensorFusion started');
       }
     } catch (e) {
-      console.warn('[BackgroundHealth] SensorFusion unavailable (expected in Expo Go):', e);
+      if (__DEV__) console.warn('[BackgroundHealth] SensorFusion unavailable (expected in Expo Go):', e);
     }
 
     // Initialize health monitor (subscribes to sensor updates + periodic alert checks)
@@ -227,7 +227,7 @@ export class BackgroundHealthEngine {
       const monitor = HealthMonitorService.getInstance();
       await monitor.initialize();
     } catch (e) {
-      console.warn('[BackgroundHealth] HealthMonitor init failed:', e);
+      if (__DEV__) console.warn('[BackgroundHealth] HealthMonitor init failed:', e);
     }
 
     // Start timers with battery-aware intervals
@@ -355,7 +355,7 @@ export class BackgroundHealthEngine {
         // Readiness refresh is non-critical
       }
     } catch (e) {
-      console.warn('[BackgroundHealth] Collection error:', e);
+      if (__DEV__) console.warn('[BackgroundHealth] Collection error:', e);
     }
   }
 
@@ -370,7 +370,7 @@ export class BackgroundHealthEngine {
         source: 'MANUAL',
         recorded_at: Date.now(),
       }).catch((error) => {
-        console.warn('[BackgroundHealth] Failed to store heart rate:', error);
+        if (__DEV__) console.warn('[BackgroundHealth] Failed to store heart rate:', error);
       });
     }
   }
@@ -488,7 +488,7 @@ export class BackgroundHealthEngine {
         if (__DEV__) console.log(`[BackgroundHealth] ${anomalies.length} anomalies detected`);
       }
     } catch (e) {
-      console.warn('[BackgroundHealth] Anomaly check error:', e);
+      if (__DEV__) console.warn('[BackgroundHealth] Anomaly check error:', e);
     }
   }
 

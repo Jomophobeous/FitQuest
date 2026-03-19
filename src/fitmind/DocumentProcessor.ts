@@ -159,7 +159,7 @@ export class DocumentProcessor {
 
       return { success: true, documentId: id, document: processed };
     } catch (e: any) {
-      console.error('[DocumentProcessor] Import failed:', e);
+      if (__DEV__) console.error('[DocumentProcessor] Import failed:', e);
       return { success: false, error: e.message || 'Import failed' };
     }
   }
@@ -400,7 +400,7 @@ export class DocumentProcessor {
         await FileSystem.deleteAsync(filePath);
       }
     } catch (e) {
-      console.warn('[DocumentProcessor] Failed to delete file:', e);
+      if (__DEV__) console.warn('[DocumentProcessor] Failed to delete file:', e);
     }
   }
 
@@ -496,7 +496,7 @@ export class DocumentProcessor {
         : content;
       return DocumentProcessor.analyzeText(cleanContent);
     } catch (e) {
-      console.warn('[DocumentProcessor] Analysis failed, using defaults:', e);
+      if (__DEV__) console.warn('[DocumentProcessor] Analysis failed, using defaults:', e);
       return {
         wordCount: 0,
         sentenceCount: 0,

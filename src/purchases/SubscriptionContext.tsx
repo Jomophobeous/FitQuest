@@ -106,7 +106,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setState(newState);
         });
       } catch (error) {
-        console.warn('[SubscriptionProvider] Init failed:', error);
+        if (__DEV__) console.warn('[SubscriptionProvider] Init failed:', error);
       } finally {
         setIsLoading(false);
       }

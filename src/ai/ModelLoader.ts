@@ -64,7 +64,7 @@ export async function loadBundledModelWithFallback<T = any>(
     try {
       return await loadBundledModel<T>(assetModuleId);
     } catch (e) {
-      console.warn(`[ModelLoader] Bundled load failed for ${fallbackFilename}:`, e);
+      if (__DEV__) console.warn(`[ModelLoader] Bundled load failed for ${fallbackFilename}:`, e);
     }
   }
 
@@ -77,7 +77,7 @@ export async function loadBundledModelWithFallback<T = any>(
       return JSON.parse(str) as T;
     }
   } catch (e) {
-    console.warn(`[ModelLoader] Fallback load failed for ${fallbackFilename}:`, e);
+    if (__DEV__) console.warn(`[ModelLoader] Fallback load failed for ${fallbackFilename}:`, e);
   }
 
   return null;
@@ -91,7 +91,7 @@ export function safeRequire(requireFn: () => number): number | null {
   try {
     const result = requireFn();
     if (typeof result !== 'number') {
-      console.warn('[ModelLoader] require() returned non-number — file may not be registered as asset');
+      if (__DEV__) console.warn('[ModelLoader] require() returned non-number — file may not be registered as asset');
       return null;
     }
     return result;
@@ -140,7 +140,7 @@ export async function loadCognitiveAI(): Promise<TierStatus> {
   modules['knowledgeGraph'] = true; // No model needed
 
   tierState.cognitive = { loaded: true, modules, loadTimeMs: Date.now() - start };
-  console.log(`[AI] Tier 2 (Cognitive) loaded in ${tierState.cognitive.loadTimeMs}ms`, modules);
+  if (__DEV__) console.log(`[AI] Tier 2 (Cognitive) loaded in ${tierState.cognitive.loadTimeMs}ms`, modules);
   return tierState.cognitive;
 }
 

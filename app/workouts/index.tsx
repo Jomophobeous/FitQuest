@@ -48,7 +48,7 @@ export default function WorkoutsScreen() {
       const data = await getRecentSessions(userId, 50);
       setSessions(data || []);
     } catch (e) {
-      console.error('[Workouts] Load failed:', e);
+      if (__DEV__) console.error('[Workouts] Load failed:', e);
     } finally {
       setLoading(false);
     }

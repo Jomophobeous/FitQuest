@@ -736,7 +736,7 @@ function CoachScreenInner() {
           }
         }
       } catch (e) {
-        console.warn('[Coach] DualAI greeting failed, using fallback:', e);
+        if (__DEV__) console.warn('[Coach] DualAI greeting failed, using fallback:', e);
         const greetings = [
           "What can I help you with today?",
           "Ready to crush it? What's on your mind?",
@@ -766,7 +766,7 @@ function CoachScreenInner() {
           }
         }
       } catch (e) {
-        console.warn('[Coach] Failed to load conversation history:', e);
+        if (__DEV__) console.warn('[Coach] Failed to load conversation history:', e);
       }
 
       // Greeting appears AFTER history — it's the latest message the user sees
@@ -993,7 +993,7 @@ function CoachScreenInner() {
           modelLabel = aiResp.model && aiResp.tier ? `${aiResp.tier} · ${aiResp.model}` : aiResp.model;
         }
       } catch (e) {
-        console.warn('[Coach] AI provider failed:', e);
+        if (__DEV__) console.warn('[Coach] AI provider failed:', e);
         if (isWorkoutRequest) {
           // Even if AI failed, create workout directly from DB
           try {

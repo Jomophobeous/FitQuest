@@ -38,7 +38,7 @@ export default function WorkoutDetail() {
           setSession({ id, notes: 'Workout session not found' });
         }
       } catch (e) {
-        console.warn('Failed to load workout details', e);
+        if (__DEV__) console.warn('Failed to load workout details', e);
         setSession({ id, notes: 'Could not load workout details' });
       } finally {
         setLoading(false);

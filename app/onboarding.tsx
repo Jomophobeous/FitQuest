@@ -261,7 +261,7 @@ export default function OnboardingScreen() {
         equipment_count: data.equipment.length,
       });
     } catch (e) {
-      console.warn('[Onboarding] Profile save error:', e);
+      if (__DEV__) console.warn('[Onboarding] Profile save error:', e);
       setSaving(false);
       Alert.alert(
         t('common.error') || 'Error',
@@ -911,7 +911,7 @@ export default function OnboardingScreen() {
               );
             }
           } catch (err) {
-            console.warn('[FitQuest] Health Connect permission failed:', err);
+            if (__DEV__) console.warn('[FitQuest] Health Connect permission failed:', err);
             setPermissionsGranted(prev => ({ ...prev, healthConnect: false }));
             Alert.alert(
               'Health Connect',

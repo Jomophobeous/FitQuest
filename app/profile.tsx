@@ -871,7 +871,7 @@ export default function ProfileScreen() {
         if (mxp) setMindXP(mxp);
       } catch { /* mind xp optional */ }
     } catch (err) {
-      console.error('[Profile] Load failed:', err);
+      if (__DEV__) console.error('[Profile] Load failed:', err);
     } finally {
       setLoading(false);
     }
@@ -1054,7 +1054,7 @@ export default function ProfileScreen() {
                       setProfilePicUri(destUri);
                       await setAppState('user.profile_pic', destUri);
                     }
-                  } catch (e) { console.warn('[Profile] Photo pick failed:', e); }
+                  } catch (e) { if (__DEV__) console.warn('[Profile] Photo pick failed:', e); }
                 }}>
                   <LinearGradient
                     colors={[theme.colors.accent, theme.colors.purple, theme.colors.pink] as [string, string, string]}
@@ -1656,7 +1656,7 @@ export default function ProfileScreen() {
                   Alert.alert(t('profile.security') || 'Security', result.error || 'Authentication failed.');
                 }
               } catch (e) {
-                console.warn('[Profile] Biometric test failed:', e);
+                if (__DEV__) console.warn('[Profile] Biometric test failed:', e);
               }
             }}
           />

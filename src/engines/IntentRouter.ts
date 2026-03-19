@@ -222,7 +222,7 @@ export class IntentRouter {
         console.log('[IntentRouter] v1.0 ML model loaded — using trained classifier');
       }
     } catch {
-      console.warn('[IntentRouter] ML model unavailable — using keyword fallback');
+      if (__DEV__) console.warn('[IntentRouter] ML model unavailable — using keyword fallback');
     }
   }
 

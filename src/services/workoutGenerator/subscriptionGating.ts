@@ -50,7 +50,7 @@ export class SubscriptionManager {
       this.lastVerifiedAt = new Date().toISOString();
       return true;
     } catch (err) {
-      console.error('Receipt verification failed:', err);
+      if (__DEV__) console.error('Receipt verification failed:', err);
       return false;
     }
   }

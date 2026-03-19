@@ -265,7 +265,7 @@ export async function awardReadingXP(
       levelUp: result.levelUp,
     };
   } catch (e) {
-    console.warn('[XP] Failed to award reading XP:', e);
+    if (__DEV__) console.warn('[XP] Failed to award reading XP:', e);
     return { xpEarned: 0, mindLevel: 1, levelUp: false };
   }
 }
@@ -281,7 +281,7 @@ export async function awardFlashcardXP(cardsReviewed: number, correctCount: numb
     const result = await awardMindXP('user_local_001', xp, 'flashcard');
     return { xpEarned: xp, mindLevel: result.mind_level, levelUp: result.levelUp };
   } catch (e) {
-    console.warn('[XP] Failed to award flashcard XP:', e);
+    if (__DEV__) console.warn('[XP] Failed to award flashcard XP:', e);
     return { xpEarned: 0, mindLevel: 1, levelUp: false };
   }
 }
@@ -297,7 +297,7 @@ export async function awardDocumentCompleteXP(contentQuality: number = 1.0): Pro
     const result = await awardMindXP('user_local_001', xp, 'document_complete');
     return { xpEarned: xp, mindLevel: result.mind_level, levelUp: result.levelUp };
   } catch (e) {
-    console.warn('[XP] Failed to award document complete XP:', e);
+    if (__DEV__) console.warn('[XP] Failed to award document complete XP:', e);
     return { xpEarned: 0, mindLevel: 1, levelUp: false };
   }
 }
@@ -333,7 +333,7 @@ export async function getMindXPData(): Promise<MindXPData> {
       documentsCompleted: data.documents_completed,
     };
   } catch (e) {
-    console.warn('[XP] Failed to get mind XP data:', e);
+    if (__DEV__) console.warn('[XP] Failed to get mind XP data:', e);
     return {
       totalMindXP: 0,
       mindLevel: 1,

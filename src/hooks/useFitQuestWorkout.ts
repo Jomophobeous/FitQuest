@@ -147,7 +147,7 @@ export function useFitQuestWorkout() {
   const generateNewWorkout = useCallback(async () => {
     // Prevent concurrent generation (double-tap protection)
     if (generatingRef.current) {
-      console.log('[FitQuest] Already generating workout, ignoring duplicate call');
+      if (__DEV__) console.log('[FitQuest] Already generating workout, ignoring duplicate call');
       return;
     }
     generatingRef.current = true;
@@ -155,7 +155,7 @@ export function useFitQuestWorkout() {
     if (!isReady || !userProfile) {
       generatingRef.current = false;
       const detail = !isReady ? 'Database is still initializing' : 'User profile not loaded';
-      console.warn('[FitQuest] generateNewWorkout blocked:', detail);
+      if (__DEV__) console.warn('[FitQuest] generateNewWorkout blocked:', detail);
       setState((prev: WorkoutState) => ({ ...prev, status: 'error', error: detail }));
       return;
     }
@@ -179,7 +179,7 @@ export function useFitQuestWorkout() {
       // Step 1: Apply daily recovery if needed
       if (await needsRecoveryTick(DEFAULT_USER_ID)) {
         await applyDailyRecoveryTick(DEFAULT_USER_ID);
-        console.log('[FitQuest] Applied daily recovery tick');
+        if (__DEV__) console.log('[FitQuest] Applied daily recovery tick');
       }
 
       // Step 2: Check deload status
@@ -298,7 +298,7 @@ export function useFitQuestWorkout() {
           audioTransition: c.exercise.audio_transition || '',
         }));
       } catch (wcErr) {
-        console.warn('[FitQuest] Warmup/cooldown generation failed (non-fatal):', wcErr);
+        if (__DEV__) console.warn('[FitQuest] Warmup/cooldown generation failed (non-fatal):', wcErr);
       }
 
       // Step 8: Generate explanation
@@ -334,7 +334,7 @@ export function useFitQuestWorkout() {
 
       if (__DEV__) console.log('[FitQuest] Workout generated:', workout.id);
     } catch (err) {
-      console.error('[FitQuest] Workout generation failed:', err);
+      if (__DEV__) console.error('[FitQuest] Workout generation failed:', err);
       setState((prev: WorkoutState) => ({
         ...prev,
         status: 'error',
@@ -422,9 +422,9 @@ export function useFitQuestWorkout() {
         error: null,
       });
 
-      console.log('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
+      if (__DEV__) console.log('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
     } catch (err) {
-      console.error('[FitQuest] Failed to load custom workout:', err);
+      if (__DEV__) console.error('[FitQuest] Failed to load custom workout:', err);
       setState((prev: WorkoutState) => ({
         ...prev,
         status: 'error',
@@ -513,7 +513,7 @@ export function useFitQuestWorkout() {
   const finishWorkout = useCallback(async (): Promise<WorkoutCompletionData | null> => {
     // Prevent double-tap race condition
     if (finishingRef.current) {
-      console.log('[FitQuest] finishWorkout already in progress, ignoring duplicate call');
+      if (__DEV__) console.log('[FitQuest] finishWorkout already in progress, ignoring duplicate call');
       return null;
     }
     
@@ -583,7 +583,7 @@ export function useFitQuestWorkout() {
         mainOnly.length,
         streak.current
       );
-      console.log(`[FitQuest] XP earned: ${xpResult.xpEarned} (Level ${xpResult.data.level})`);
+      if (__DEV__) console.log(`[FitQuest] XP earned: ${xpResult.xpEarned} (Level ${xpResult.data.level})`);
 
       // Generate summary
       const progressions = progressionDecisions.filter((p: ProgressionDecision) => p.action === 'progress').length;
@@ -628,7 +628,7 @@ export function useFitQuestWorkout() {
       const policyLine = `\n🤖 Policy decision: ${policyDecision.decision.action} (${Math.round(policyDecision.decision.confidence * 100)}%)`;
       const finalSummary = summary + adaptiveLine + policyLine;
 
-      console.log('[FitQuest] Workout completed:', finalSummary);
+      if (__DEV__) console.log('[FitQuest] Workout completed:', finalSummary);
 
       const durationSeconds = state.startTime
         ? Math.max(0, Math.floor((Date.now() - state.startTime.getTime()) / 1000))
@@ -660,12 +660,12 @@ export function useFitQuestWorkout() {
 
         await flushAnalyticsQueue(120);
       } catch (analyticsError) {
-        console.warn('[FitQuest] Analytics queue/flush failed:', analyticsError);
+        if (__DEV__) console.warn('[FitQuest] Analytics queue/flush failed:', analyticsError);
       }
 
       // Keep status as 'completed' — the component will reset when user taps "New Workout"
       // DO NOT reset to 'idle' here — it triggers auto-generate before completionResult is set
-      console.log('[FitQuest] Workout finished successfully, keeping completed state');
+      if (__DEV__) console.log('[FitQuest] Workout finished successfully, keeping completed state');
 
       // Notify all subscribed screens that workout data changed
       notifyWorkoutCompleted({
@@ -715,7 +715,7 @@ export function useFitQuestWorkout() {
         phaseBreakdown,
       };
     } catch (err) {
-      console.error('[FitQuest] Failed to finish workout:', err);
+      if (__DEV__) console.error('[FitQuest] Failed to finish workout:', err);
       setState({
         status: 'error',
         workout: null,

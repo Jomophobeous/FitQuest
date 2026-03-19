@@ -417,7 +417,7 @@ export class HealthMonitorService {
         this.todayWorkouts = (todaySummary as any).workoutCount || 0;
       }
     } catch (e) {
-      console.warn('[HealthMonitor] Failed to load today\'s summary:', e);
+      if (__DEV__) console.warn('[HealthMonitor] Failed to load today\'s summary:', e);
     }
   }
 
@@ -428,7 +428,7 @@ export class HealthMonitorService {
         this.goals = { ...DEFAULT_GOALS, ...JSON.parse(value) };
       }
     } catch (e) {
-      console.warn('[HealthMonitor] Failed to load goals, using defaults');
+      if (__DEV__) console.warn('[HealthMonitor] Failed to load goals, using defaults');
     }
   }
 

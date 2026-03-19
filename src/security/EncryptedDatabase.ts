@@ -152,7 +152,7 @@ export class EncryptedDatabaseService {
       const plaintext = await this.decrypt(blob);
       return this.encrypt(plaintext);
     } catch (e) {
-      console.warn('[Security] v1→v2 migration failed for blob:', e);
+      if (__DEV__) console.warn('[Security] v1→v2 migration failed for blob:', e);
       return null;
     }
   }
@@ -214,7 +214,7 @@ export class EncryptedDatabaseService {
           });
         }
       } catch (e) {
-        console.warn(`[Security] Failed to decrypt health data ${row.id}:`, e);
+        if (__DEV__) console.warn(`[Security] Failed to decrypt health data ${row.id}:`, e);
       }
     }
 
@@ -334,7 +334,7 @@ export class EncryptedDatabaseService {
           created_at: row.created_at,
         });
       } catch (e) {
-        console.warn(`[Security] Failed to decrypt alert ${row.id}:`, e);
+        if (__DEV__) console.warn(`[Security] Failed to decrypt alert ${row.id}:`, e);
       }
     }
 

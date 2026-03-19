@@ -115,7 +115,7 @@ export default function SavedWorkoutsScreen() {
       );
       setWorkouts(custom);
     } catch (err) {
-      console.warn('[SavedWorkouts] Failed to load:', err);
+      if (__DEV__) console.warn('[SavedWorkouts] Failed to load:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);

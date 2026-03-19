@@ -72,7 +72,7 @@ const READER_REGISTRY: Record<DocumentType, ReaderComponent> = {
 export function getReaderComponent(type: DocumentType): React.ComponentType<BaseReaderProps> {
   const reader = READER_REGISTRY[type];
   if (!reader) {
-    console.warn(`[ReaderFactory] Unknown document type: ${type}, falling back to TextReader`);
+    if (__DEV__) console.warn(`[ReaderFactory] Unknown document type: ${type}, falling back to TextReader`);
     return TextReader as React.ComponentType<BaseReaderProps>;
   }
   return reader.Component;

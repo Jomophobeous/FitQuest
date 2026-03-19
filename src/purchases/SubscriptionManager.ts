@@ -332,7 +332,7 @@ export class SubscriptionManager {
         : offerings.current?.annual;
 
       if (!pkg) {
-        console.warn(`[SubscriptionManager] ${plan} package not found`);
+        if (__DEV__) console.warn(`[SubscriptionManager] ${plan} package not found`);
         return false;
       }
 
@@ -345,7 +345,7 @@ export class SubscriptionManager {
       try {
         const Purchases = await this.getRevenueCatModule();
         if (Purchases && !Purchases.isCancelError?.(error)) {
-          console.error('[SubscriptionManager] Purchase failed:', error);
+          if (__DEV__) console.error('[SubscriptionManager] Purchase failed:', error);
         }
       } catch { /* swallow */ }
       return false;

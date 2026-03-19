@@ -217,7 +217,7 @@ class AudioService {
         });
       }
     } catch (error) {
-      console.error('[AudioService] Initialization failed:', error);
+      if (__DEV__) console.error('[AudioService] Initialization failed:', error);
       // Use defaults on failure
     }
   }
@@ -236,7 +236,7 @@ class AudioService {
         countdownCuesEnabled: this.settings.countdownCuesEnabled,
       });
     } catch (error) {
-      console.error('[AudioService] Failed to save settings:', error);
+      if (__DEV__) console.error('[AudioService] Failed to save settings:', error);
     }
   }
 
@@ -371,7 +371,7 @@ class AudioService {
           resolve();
         },
         onError: (error: { message?: string }) => {
-          console.warn('[AudioService] Speech error:', error);
+          if (__DEV__) console.warn('[AudioService] Speech error:', error);
           this.isSpeaking = false;
           resolve();
         },

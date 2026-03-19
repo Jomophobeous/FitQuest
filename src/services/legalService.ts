@@ -21,8 +21,8 @@ export interface LegalLinks {
 }
 
 const DEFAULT_LINKS: LegalLinks = {
-  privacyPolicyUrl: 'https://fitquest.dev/privacy',
-  termsOfServiceUrl: 'https://fitquest.dev/terms',
+  privacyPolicyUrl: 'https://jomo-playground.github.io/FitQ/privacy.html',
+  termsOfServiceUrl: 'https://jomo-playground.github.io/FitQ/terms.html',
 };
 
 export async function getConsentRecord(): Promise<ConsentRecord> {

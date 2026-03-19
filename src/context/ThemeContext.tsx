@@ -41,7 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           setModeState(systemColorScheme);
         }
       } catch (e) {
-        console.warn('Failed to load theme preference:', e);
+        if (__DEV__) console.warn('Failed to load theme preference:', e);
       }
     })();
   }, [systemColorScheme]);
@@ -51,7 +51,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       await SecureStore.setItemAsync(THEME_STORAGE_KEY, newMode);
     } catch (e) {
-      console.warn('Failed to save theme preference:', e);
+      if (__DEV__) console.warn('Failed to save theme preference:', e);
     }
   }, []);
 

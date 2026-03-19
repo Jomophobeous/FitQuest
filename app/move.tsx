@@ -70,7 +70,6 @@ export default function MoveScreen() {
     isJogging,
     jogStats,
     cadence,
-    activity,
     estimatedDistance,
     startTracking,
     stopTracking,
@@ -144,10 +143,10 @@ export default function MoveScreen() {
       try {
         if (!isTracking) await startTracking();
       } catch (e) {
-        console.warn('[Move] Step tracking start failed (non-critical):', e);
+        if (__DEV__) console.warn('[Move] Step tracking start failed (non-critical):', e);
       }
     } catch (error) {
-      console.warn('[Move] Failed to start jog:', error);
+      if (__DEV__) console.warn('[Move] Failed to start jog:', error);
       const msg = error instanceof Error ? error.message : String(error);
       if (msg.includes('FOREIGN KEY') || msg.includes('user_profile')) {
         setJogError('Profile not ready. Please complete onboarding first, then try again.');
@@ -185,7 +184,7 @@ export default function MoveScreen() {
         loadHistory();
       }
     } catch (error) {
-      console.warn('[Move] Failed to stop jog:', error);
+      if (__DEV__) console.warn('[Move] Failed to stop jog:', error);
       setJogError('Something went wrong stopping your jog. Please try again.');
     }
   };
@@ -320,7 +319,7 @@ export default function MoveScreen() {
                     await awardStepXP(todaySteps);
                     notifyStepsUpdated(todaySteps);
                   } catch (e) {
-                    console.warn('[Move] Stop tracking error:', e);
+                    if (__DEV__) console.warn('[Move] Stop tracking error:', e);
                   }
                 }}
                 accessibilityRole="button"
@@ -700,7 +699,7 @@ export default function MoveScreen() {
                         setReviewRoute(route);
                         setReviewJogId(jog.id);
                       } catch (e) {
-                        console.warn('[Move] Failed to load jog route:', e);
+                        if (__DEV__) console.warn('[Move] Failed to load jog route:', e);
                       }
                     }}
                     accessibilityRole="button"

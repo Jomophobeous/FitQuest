@@ -67,7 +67,7 @@ export async function initializeDatabase(): Promise<void> {
       await initializeExerciseImages();
     } catch (imgErr) {
       // Non-critical — images are optional
-      console.warn('[FitQuest DB] Exercise image init skipped:', imgErr);
+      if (__DEV__) console.warn('[FitQuest DB] Exercise image init skipped:', imgErr);
     }
 
     // Diagnostic: verify seeding worked (single query instead of 3)
@@ -81,7 +81,7 @@ export async function initializeDatabase(): Promise<void> {
 
     // If junction tables are empty but exercises exist, force a re-seed
     if ((counts?.ex ?? 0) > 0 && ((counts?.mu ?? 0) === 0 || (counts?.tt ?? 0) === 0)) {
-      console.warn('[FitQuest DB] Junction tables empty — forcing re-seed');
+      if (__DEV__) console.warn('[FitQuest DB] Junction tables empty — forcing re-seed');
       await db.execAsync('DELETE FROM exercise_images; DELETE FROM exercise_training_types; DELETE FROM exercise_equipment; DELETE FROM exercise_muscles; DELETE FROM exercises;');
       await seedExercises();
       await seedExternalExercises();
@@ -92,7 +92,7 @@ export async function initializeDatabase(): Promise<void> {
     initialized = true;
     if (__DEV__) console.log('[FitQuest DB] Full database initialized (core + FitMind + encrypted)');
   } catch (error) {
-    console.error('Failed to initialize database:', error);
+    if (__DEV__) console.error('Failed to initialize database:', error);
     initPromise = null; // Reset promise on error to allow retry
     throw error;
   }

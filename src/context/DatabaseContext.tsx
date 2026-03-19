@@ -43,9 +43,9 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       setError(null);
 
       // Initialize database and seed exercises
-      console.log('[FitQuest] Initializing database...');
+      if (__DEV__) console.log('[FitQuest] Initializing database...');
       await initializeDatabase();
-      console.log('[FitQuest] Database initialized successfully');
+      if (__DEV__) console.log('[FitQuest] Database initialized successfully');
 
       // Check for existing user profile
       let profile = await getUserProfile(DEFAULT_USER_ID);
@@ -55,7 +55,7 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       const didOnboard = onboardingFlag === 'true';
       
       if (!profile) {
-        console.log('[FitQuest] Creating default user profile...');
+        if (__DEV__) console.log('[FitQuest] Creating default user profile...');
         await createUserProfile({
           id: DEFAULT_USER_ID,
           goal: 'body_control',
@@ -69,14 +69,14 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
         await lockUserProfile(DEFAULT_USER_ID);
 
         profile = await getUserProfile(DEFAULT_USER_ID);
-        console.log('[FitQuest] Default profile created and locked');
+        if (__DEV__) console.log('[FitQuest] Default profile created and locked');
       }
 
       // Ensure existing profiles are locked (fixes existing unlocked profiles)
       if (profile && !profile.locked) {
         await lockUserProfile(DEFAULT_USER_ID);
         profile = await getUserProfile(DEFAULT_USER_ID);
-        console.log('[FitQuest] Existing profile locked');
+        if (__DEV__) console.log('[FitQuest] Existing profile locked');
       }
 
       setUserProfile(profile);
@@ -98,14 +98,14 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
         }).catch(() => { /* best-effort */ });
       }
     } catch (err) {
-      console.error('[FitQuest] Database initialization failed:', err);
+      if (__DEV__) console.error('[FitQuest] Database initialization failed:', err);
       const msg = err instanceof Error ? err.message : 'Failed to initialize database';
       
       // Auto-retry with backoff
       if (retryCount.current < MAX_RETRIES) {
         retryCount.current += 1;
         const delay = retryCount.current * 1000;
-        console.log(`[FitQuest] Retrying in ${delay}ms (attempt ${retryCount.current}/${MAX_RETRIES})`);
+        if (__DEV__) console.log(`[FitQuest] Retrying in ${delay}ms (attempt ${retryCount.current}/${MAX_RETRIES})`);
         // Close the broken connection so retry gets a fresh native handle
         try { await closeDatabase(); } catch (_) { /* ignore close errors */ }
         resetInitState();
@@ -137,7 +137,7 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       const onboardingFlag = await getAppState('onboarding_complete');
       setOnboardingComplete(onboardingFlag === 'true');
     } catch (err) {
-      console.warn('[FitQuest] Failed to refresh profile:', err);
+      if (__DEV__) console.warn('[FitQuest] Failed to refresh profile:', err);
     }
   }, []);
 

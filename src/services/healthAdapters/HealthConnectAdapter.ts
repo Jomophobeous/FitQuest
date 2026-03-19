@@ -89,7 +89,7 @@ class HealthConnectAdapter implements IHealthAdapter {
       if (__DEV__) {
         const msg = error instanceof Error ? error.message : String(error);
         if (msg.includes('doesn\'t seem to be linked') || msg.includes('not linked')) {
-          console.log('[HealthConnect] Not linked — expected in Expo Go, use dev-client build');
+          if (__DEV__) console.log('[HealthConnect] Not linked — expected in Expo Go, use dev-client build');
         } else {
           await captureHealthError(error instanceof Error ? error : String(error), {
             provider: 'health_connect',
@@ -175,7 +175,7 @@ class HealthConnectAdapter implements IHealthAdapter {
         // Native requestPermission delegate may not be initialized (requires Activity setup)
         const msg = permError?.message || String(permError);
         if (msg.includes('UninitializedPropertyAccessException') || msg.includes('requestPermission has not been initialized')) {
-          console.log('[HealthConnect] Permission dialog unavailable — Activity delegate not initialized. Skipping.');
+          if (__DEV__) console.log('[HealthConnect] Permission dialog unavailable — Activity delegate not initialized. Skipping.');
           return [];
         }
         throw permError;
@@ -497,7 +497,7 @@ class HealthConnectAdapter implements IHealthAdapter {
         const hcModule = await import('react-native-health-connect');
         // Verify the native module is actually linked (fails in Expo Go)
         if (!hcModule || typeof hcModule.getSdkStatus !== 'function') {
-          console.warn('[HealthConnect] Native module not available (Expo Go?)');
+          if (__DEV__) console.warn('[HealthConnect] Native module not available (Expo Go?)');
           return null;
         }
         this.healthConnect = hcModule;

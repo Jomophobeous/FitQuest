@@ -66,7 +66,7 @@ class ErrorTelemetryService {
       this.initialized = true;
     } catch (error) {
       // Silent fail - telemetry shouldn't crash the app
-      console.warn('[ErrorTelemetry] Failed to initialize:', error);
+      if (__DEV__) console.warn('[ErrorTelemetry] Failed to initialize:', error);
       this.initialized = true;
     }
   }

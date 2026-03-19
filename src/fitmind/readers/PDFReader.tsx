@@ -93,11 +93,11 @@ export function PDFReader({
   }, [onPageChange]);
 
   const handleNativeError = useCallback((error: unknown) => {
-    console.error('[PDFReader] Native error:', error);
+    if (__DEV__) console.error('[PDFReader] Native error:', error);
     
     // Try web fallback on native error
     if (!useWebFallback) {
-      console.log('[PDFReader] Falling back to web PDF renderer');
+      if (__DEV__) console.log('[PDFReader] Falling back to web PDF renderer');
       setUseWebFallback(true);
       return;
     }
@@ -133,7 +133,7 @@ export function PDFReader({
         });
       }
     } catch (e) {
-      console.warn('[PDFReader] Failed to parse web message:', e);
+      if (__DEV__) console.warn('[PDFReader] Failed to parse web message:', e);
     }
   }, [document, currentPage, onPageChange, onLoad, onError, onTextSelect]);
 

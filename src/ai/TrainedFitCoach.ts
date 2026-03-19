@@ -100,10 +100,10 @@ export class TrainedFitCoach {
       const modelJson = require('../../assets/models/fitcoach_model.json');
       this.model = modelJson as MLPModelData;
       this.isLoaded = true;
-      console.log(`[TrainedFitCoach] Model loaded: ${this.model.architecture.hidden_layers.join('→')} architecture`);
+      if (__DEV__) console.log(`[TrainedFitCoach] Model loaded: ${this.model.architecture.hidden_layers.join('→')} architecture`);
       return true;
     } catch (error) {
-      console.warn('[TrainedFitCoach] Failed to load model:', error);
+      if (__DEV__) console.warn('[TrainedFitCoach] Failed to load model:', error);
       this.isLoaded = false;
       return false;
     }

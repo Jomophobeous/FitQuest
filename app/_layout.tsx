@@ -412,7 +412,7 @@ export default function RootLayout() {
         anomalyCheckIntervalMs: 30 * 60 * 1000, // every 30 minutes
         enableAlerts: true,
       }).catch((e) => {
-        console.warn('[BackgroundHealth] Failed to start:', e);
+        if (__DEV__) console.warn('[BackgroundHealth] Failed to start:', e);
       });
 
       // HealthConnect permissions are requested ONLY from Profile screen

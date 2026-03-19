@@ -233,7 +233,7 @@ function HealthDashboardScreenInner() {
         alerts,
       });
     } catch (error) {
-      console.error('[HealthDashboard] Failed to load data:', error);
+      if (__DEV__) console.error('[HealthDashboard] Failed to load data:', error);
     } finally {
       setLoading(false);
     }
@@ -264,7 +264,7 @@ function HealthDashboardScreenInner() {
         anomalyCount: Math.max(0, prev.anomalyCount - 1),
       }));
     } catch (e) {
-      console.error('[HealthDashboard] Failed to dismiss alert:', e);
+      if (__DEV__) console.error('[HealthDashboard] Failed to dismiss alert:', e);
     }
   }, []);
 

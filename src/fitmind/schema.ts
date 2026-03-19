@@ -127,7 +127,7 @@ export class FitMindService {
         ...result,
       };
     } catch (e: any) {
-      console.error('[FitMindService] Index failed:', e);
+      if (__DEV__) console.error('[FitMindService] Index failed:', e);
       return { success: false, error: e.message || 'Indexing failed' };
     }
   }

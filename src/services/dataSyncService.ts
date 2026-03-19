@@ -105,7 +105,7 @@ class DataSyncService {
         try {
           listener(event);
         } catch (e) {
-          console.warn(`[DataSync] Listener error on ${channel}:`, e);
+          if (__DEV__) console.warn(`[DataSync] Listener error on ${channel}:`, e);
         }
       }
     }

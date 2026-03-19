@@ -107,22 +107,24 @@ export class DeepActivityClassifier {
       }
 
       if (!modelData) {
-        console.log('[DeepActivityClassifier] No model available');
+        if (__DEV__) console.log('[DeepActivityClassifier] No model available');
         return false;
       }
       this.model = modelData;
 
       this.isLoaded = true;
       const version = (this.model as any).version ?? '2.0.0';
-      console.log(
+      if (__DEV__) {
+        console.log(
         `[DeepActivityClassifier] v${version}: CNN-LSTM, ` +
         `window=${this.model.windowSize}, ` +
         `classes=${this.model.numClasses}, ` +
         `LSTM hidden=${this.model.lstmHiddenSize}`
-      );
+        );
+      }
       return true;
     } catch (error) {
-      console.warn('[DeepActivityClassifier] Failed to load:', error);
+      if (__DEV__) console.warn('[DeepActivityClassifier] Failed to load:', error);
       return false;
     }
   }
@@ -217,7 +219,7 @@ export class DeepActivityClassifier {
         modelType: 'cnn-lstm',
       };
     } catch (error) {
-      console.warn('[DeepActivityClassifier] Inference error:', error);
+      if (__DEV__) console.warn('[DeepActivityClassifier] Inference error:', error);
       return this.fallbackClassify(window, startTime);
     }
   }

@@ -125,26 +125,26 @@ export class DocumentImportPipeline {
     metadata?: { title?: string; author?: string; category?: string }
   ): Promise<PipelineResult> {
     const warnings: string[] = [];
-    console.log(`[DocumentImport] Starting import pipeline for: ${sourceUri}`);
+    if (__DEV__) console.log(`[DocumentImport] Starting import pipeline for: ${sourceUri}`);
 
     try {
       // Stage 1: Validate
       this.report(5, 'VALIDATING');
-      console.log('[DocumentImport] Stage 1: Validating file...');
+      if (__DEV__) console.log('[DocumentImport] Stage 1: Validating file...');
       const validation = await this.validateFileImport(sourceUri);
       if (!validation.valid) {
-        console.warn(`[DocumentImport] Validation failed: ${validation.error}`);
+        if (__DEV__) console.warn(`[DocumentImport] Validation failed: ${validation.error}`);
         return { success: false, error: validation.error, warnings };
       }
       if (validation.warnings) warnings.push(...validation.warnings);
-      console.log(`[DocumentImport] Validation passed. File size: ${validation.fileSize} bytes`);
+      if (__DEV__) console.log(`[DocumentImport] Validation passed. File size: ${validation.fileSize} bytes`);
 
       // Stage 2: Check storage quota
       this.report(15, 'VALIDATING');
-      console.log('[DocumentImport] Stage 2: Checking storage quota...');
+      if (__DEV__) console.log('[DocumentImport] Stage 2: Checking storage quota...');
       const storageOk = await this.checkStorageQuota(validation.fileSize!);
       if (!storageOk) {
-        console.warn('[DocumentImport] Storage quota exceeded');
+        if (__DEV__) console.warn('[DocumentImport] Storage quota exceeded');
         return { success: false, error: 'Storage quota exceeded. Delete some documents first.', warnings };
       }
 
@@ -160,33 +160,33 @@ export class DocumentImportPipeline {
 
       // Stage 4: Import via DocumentProcessor
       this.report(30, 'COPYING');
-      console.log('[DocumentImport] Stage 4: Importing via DocumentProcessor...');
+      if (__DEV__) console.log('[DocumentImport] Stage 4: Importing via DocumentProcessor...');
       const sanitizedMeta = this.sanitizeMetadata(metadata);
       const result = await DocumentProcessor.importFromFile(sourceUri, sanitizedMeta);
 
       if (!result.success) {
-        console.warn(`[DocumentImport] DocumentProcessor import failed: ${result.error}`);
+        if (__DEV__) console.warn(`[DocumentImport] DocumentProcessor import failed: ${result.error}`);
         return { ...result, warnings };
       }
-      console.log(`[DocumentImport] Import successful. Document ID: ${result.documentId}`);
+      if (__DEV__) console.log(`[DocumentImport] Import successful. Document ID: ${result.documentId}`);
 
       // Stage 5: Chunk content for reader
       this.report(70, 'CHUNKING');
-      console.log('[DocumentImport] Stage 5: Chunking content...');
+      if (__DEV__) console.log('[DocumentImport] Stage 5: Chunking content...');
       let chunkCount = 0;
       if (result.document?.filePath) {
         chunkCount = await this.createChunks(result.document.filePath, result.document.type);
       }
-      console.log(`[DocumentImport] Created ${chunkCount} chunks`);
+      if (__DEV__) console.log(`[DocumentImport] Created ${chunkCount} chunks`);
 
       // Stage 6: Index
       this.report(90, 'INDEXING');
-      console.log('[DocumentImport] Stage 6: Indexing...');
+      if (__DEV__) console.log('[DocumentImport] Stage 6: Indexing...');
       // Content hash for deduplication tracking
       const contentHash = await this.hashFileContent(result.document?.filePath || sourceUri);
 
       this.report(100, 'COMPLETE');
-      console.log(`[DocumentImport] Pipeline complete. Hash: ${contentHash?.substring(0, 16)}...`);
+      if (__DEV__) console.log(`[DocumentImport] Pipeline complete. Hash: ${contentHash?.substring(0, 16)}...`);
       return {
         ...result,
         contentHash,
@@ -194,7 +194,7 @@ export class DocumentImportPipeline {
         warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (e: any) {
-      console.error(`[DocumentImport] Pipeline error:`, e);
+      if (__DEV__) console.error(`[DocumentImport] Pipeline error:`, e);
       this.report(0, 'ERROR');
       return { success: false, error: e.message || 'Pipeline error', warnings };
     }
@@ -416,7 +416,7 @@ export class DocumentImportPipeline {
 
       return chunks.length;
     } catch (e) {
-      console.warn('[Pipeline] Chunking failed:', e);
+      if (__DEV__) console.warn('[Pipeline] Chunking failed:', e);
       return 0;
     }
   }
@@ -607,7 +607,7 @@ export class DocumentImportPipeline {
         await FileSystem.writeAsStringAsync(filePath, content);
       }
     } catch (e) {
-      console.warn('[Pipeline] Failed to sanitize downloaded file:', e);
+      if (__DEV__) console.warn('[Pipeline] Failed to sanitize downloaded file:', e);
     }
   }
 

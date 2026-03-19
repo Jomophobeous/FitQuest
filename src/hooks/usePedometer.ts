@@ -140,7 +140,7 @@ export function usePedometer(): UsePedometerReturn {
         baseStepsRef.current = result.steps;
       }
     } catch (error) {
-      console.error('[Pedometer] Failed to load today steps:', error);
+      if (__DEV__) console.error('[Pedometer] Failed to load today steps:', error);
     }
   };
 
@@ -149,7 +149,7 @@ export function usePedometer(): UsePedometerReturn {
       const today = getTodayDateString();
       await upsertDailySteps(DEFAULT_USER_ID, today, steps, 0);
     } catch (error) {
-      console.error('[Pedometer] Failed to save steps:', error);
+      if (__DEV__) console.error('[Pedometer] Failed to save steps:', error);
     }
   };
 
@@ -173,7 +173,7 @@ export function usePedometer(): UsePedometerReturn {
           setTodaySteps(result.steps);
           await saveTodaySteps(result.steps);
         } catch (e) {
-          console.log('[Pedometer] getStepCountAsync not available, starting from loaded value');
+          if (__DEV__) console.log('[Pedometer] getStepCountAsync not available, starting from loaded value');
         }
       }
 
@@ -187,9 +187,9 @@ export function usePedometer(): UsePedometerReturn {
           saveTodaySteps(newTotal);
         });
         nativePedometerStarted = true;
-        console.log('[Pedometer] Native pedometer subscription started');
+        if (__DEV__) console.log('[Pedometer] Native pedometer subscription started');
       } catch (e) {
-        console.log('[Pedometer] Native pedometer subscription failed:', e);
+        if (__DEV__) console.log('[Pedometer] Native pedometer subscription failed:', e);
       }
 
       // Start SensorFusion as fallback step counter
@@ -198,9 +198,9 @@ export function usePedometer(): UsePedometerReturn {
       if (!engine.isRunning()) {
         try {
           await engine.start();
-          console.log('[Pedometer] SensorFusion fallback started');
+          if (__DEV__) console.log('[Pedometer] SensorFusion fallback started');
         } catch (e) {
-          console.log('[Pedometer] SensorFusion start failed:', e);
+          if (__DEV__) console.log('[Pedometer] SensorFusion start failed:', e);
         }
       }
 
@@ -219,9 +219,9 @@ export function usePedometer(): UsePedometerReturn {
       }, 2000); // Check every 2 seconds
 
       setIsTracking(true);
-      console.log('[Pedometer] Tracking started (native:', nativePedometerStarted, ', fallback: active)');
+      if (__DEV__) console.log('[Pedometer] Tracking started (native:', nativePedometerStarted, ', fallback: active)');
     } catch (error) {
-      console.error('[Pedometer] Failed to start tracking:', error);
+      if (__DEV__) console.error('[Pedometer] Failed to start tracking:', error);
     }
   }, [isTracking, todaySteps]);
 
@@ -283,7 +283,7 @@ export function usePedometer(): UsePedometerReturn {
     try {
       stepCounterEngine.startSession();
     } catch (e) {
-      console.warn('[Pedometer] StepCounter session start failed:', e);
+      if (__DEV__) console.warn('[Pedometer] StepCounter session start failed:', e);
     }
 
     // Start GPS tracking in the background — never block or crash the jog start
@@ -295,22 +295,22 @@ export function usePedometer(): UsePedometerReturn {
           const gpsStarted = await distanceEngine.startTracking();
           if (gpsStarted) {
             jogUsingGPSRef.current = true;
-            console.log('[Pedometer] GPS tracking started for jog');
+            if (__DEV__) console.log('[Pedometer] GPS tracking started for jog');
             const updateStats = () => {
               try {
                 setJogStats(distanceEngine.getStats());
               } catch (e) {
-                console.warn('[Pedometer] GPS stats update failed:', e);
+                if (__DEV__) console.warn('[Pedometer] GPS stats update failed:', e);
               }
             };
             distanceEngine.on('distance', updateStats);
             distanceEngine.on('location', updateStats);
           } else {
-            console.log('[Pedometer] GPS not available, using step-based distance');
+            if (__DEV__) console.log('[Pedometer] GPS not available, using step-based distance');
             startStepFallbackInterval();
           }
         } catch (error) {
-          console.error('[Pedometer] GPS tracking failed:', error);
+          if (__DEV__) console.error('[Pedometer] GPS tracking failed:', error);
           startStepFallbackInterval();
         }
       }, 0);
@@ -342,7 +342,7 @@ export function usePedometer(): UsePedometerReturn {
           routePoints: [],
         });
       } catch (e) {
-        console.warn('[Pedometer] Step fallback update failed:', e);
+        if (__DEV__) console.warn('[Pedometer] Step fallback update failed:', e);
       }
     }, 1000);
   }, []);
@@ -381,22 +381,26 @@ export function usePedometer(): UsePedometerReturn {
       distanceEngine.removeAllListeners('distance');
       distanceEngine.removeAllListeners('location');
       
-      console.log('[Pedometer] Jog stopped with GPS data:', {
+      if (__DEV__) {
+        console.log('[Pedometer] Jog stopped with GPS data:', {
         distance: distanceMeters,
         pace: avgPacePerKm,
         elevation: elevationGainMeters,
         splits: splits?.length,
-      });
+        });
+      }
     } else {
       // Fallback to step-based estimation using StepCounterEngine
       distanceMeters = stepSessionData.distanceMeters || Math.max(stepSessionData.steps * 0.8, 1);
       avgPacePerKm = distanceMeters > 10 ? (durationSeconds / (distanceMeters / 1000)) : undefined;
       caloriesEstimate = stepSessionData.caloriesBurned;
       
-      console.log('[Pedometer] Jog stopped with step-based data:', {
+      if (__DEV__) {
+        console.log('[Pedometer] Jog stopped with step-based data:', {
         distance: distanceMeters,
         steps: stepSessionData.steps,
-      });
+        });
+      }
     }
 
     const completedSession: JogSession = {
@@ -421,7 +425,7 @@ export function usePedometer(): UsePedometerReturn {
         routeData: routePoints ? JSON.stringify(routePoints) : null,
       });
     } catch (error) {
-      console.error('[Pedometer] Failed to save jog session:', error);
+      if (__DEV__) console.error('[Pedometer] Failed to save jog session:', error);
     }
 
     jogUsingGPSRef.current = false;
@@ -446,7 +450,7 @@ export function usePedometer(): UsePedometerReturn {
         activeMinutes: r.active_minutes,
       }));
     } catch (error) {
-      console.error('[Pedometer] Failed to get step history:', error);
+      if (__DEV__) console.error('[Pedometer] Failed to get step history:', error);
       return [];
     }
   }, []);
@@ -466,7 +470,7 @@ export function usePedometer(): UsePedometerReturn {
         caloriesEstimate: r.calories_estimate || undefined,
       }));
     } catch (error) {
-      console.error('[Pedometer] Failed to get jog history:', error);
+      if (__DEV__) console.error('[Pedometer] Failed to get jog history:', error);
       return [];
     }
   }, []);

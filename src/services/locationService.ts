@@ -55,14 +55,14 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
     // First check if location services are enabled
     const servicesEnabled = await Location.hasServicesEnabledAsync();
     if (!servicesEnabled) {
-      console.log('[Location] Location services disabled on device');
+      if (__DEV__) console.log('[Location] Location services disabled on device');
       // Return a default location for development/fallback
       return getDefaultLocation();
     }
 
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.log('[Location] Permission denied');
+      if (__DEV__) console.log('[Location] Permission denied');
       return getDefaultLocation();
     }
 
@@ -80,7 +80,7 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
     const location = await Promise.race([locationPromise, timeoutPromise]) as Location.LocationObject | null;
 
     if (!location) {
-      console.log('[Location] Location request timed out');
+      if (__DEV__) console.log('[Location] Location request timed out');
       return getDefaultLocation();
     }
 
@@ -100,12 +100,12 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
         };
       }
     } catch (geoError) {
-      console.warn('[Location] Reverse geocode failed:', geoError);
+      if (__DEV__) console.warn('[Location] Reverse geocode failed:', geoError);
     }
 
     return { latitude, longitude };
   } catch (error) {
-    console.warn('[Location] Failed to get location, using fallback:', error);
+    if (__DEV__) console.warn('[Location] Failed to get location, using fallback:', error);
     return getDefaultLocation();
   }
 }

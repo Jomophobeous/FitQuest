@@ -117,7 +117,7 @@ export function useReadiness(): UseReadinessResult {
         setLoading(false);
       }
     } catch (e) {
-      console.warn('[DerivedMetrics] Failed to load readiness:', e);
+      if (__DEV__) console.warn('[DerivedMetrics] Failed to load readiness:', e);
       if (mountedRef.current) setLoading(false);
     }
   }, [dbReady]);

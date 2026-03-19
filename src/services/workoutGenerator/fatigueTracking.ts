@@ -314,7 +314,7 @@ export async function saveState(state: WorkoutGeneratorState): Promise<void> {
     // For now, stub:
     localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(state));
   } catch (err) {
-    console.error('Failed to save state:', err);
+    if (__DEV__) console.error('Failed to save state:', err);
   }
 }
 
@@ -324,7 +324,7 @@ export async function loadState(): Promise<WorkoutGeneratorState | null> {
     const stored = localStorage.getItem(STATE_STORAGE_KEY);
     return stored ? JSON.parse(stored) : null;
   } catch (err) {
-    console.error('Failed to load state:', err);
+    if (__DEV__) console.error('Failed to load state:', err);
     return null;
   }
 }
@@ -333,7 +333,7 @@ export async function saveHistory(history: SessionRecord[]): Promise<void> {
   try {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
   } catch (err) {
-    console.error('Failed to save history:', err);
+    if (__DEV__) console.error('Failed to save history:', err);
   }
 }
 
@@ -342,7 +342,7 @@ export async function loadHistory(): Promise<SessionRecord[]> {
     const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch (err) {
-    console.error('Failed to load history:', err);
+    if (__DEV__) console.error('Failed to load history:', err);
     return [];
   }
 }

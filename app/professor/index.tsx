@@ -255,7 +255,7 @@ function ProfessorScreenInner() {
         setConversationHistory(pastHistory);
       }
     } catch (e) {
-      console.warn('[Professor] Failed to load conversation history:', e);
+      if (__DEV__) console.warn('[Professor] Failed to load conversation history:', e);
     }  };
 
   const sendMessageWithText = useCallback(async (text: string) => {
@@ -302,9 +302,9 @@ function ProfessorScreenInner() {
         { role: 'assistant', content: response.message },
       ]);
 
-      encryptedDB.storeAIConversation('PROFESSOR', text, response.message).catch(e =>
-        console.warn('[Professor] Failed to persist conversation:', e)
-      );
+      encryptedDB.storeAIConversation('PROFESSOR', text, response.message).catch(e => {
+        if (__DEV__) console.warn('[Professor] Failed to persist conversation:', e);
+      });
 
       if (response.suggestions?.length) {
         setActiveSuggestions(response.suggestions);

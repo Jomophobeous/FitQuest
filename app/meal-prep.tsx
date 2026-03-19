@@ -266,7 +266,7 @@ export default function MealPrepScreen() {
       setLocation(loc);
       void setCached('meal', 'auto_location', loc, 24 * 60 * 60 * 1000);
     } catch (e) {
-      console.warn('[MealPrep] Failed to load location:', e);
+      if (__DEV__) console.warn('[MealPrep] Failed to load location:', e);
       setLocation(null);
     } finally {
       setIsLoadingLocation(false);

@@ -90,7 +90,7 @@ export function EPUBReader({
       
       setEpubBase64(base64);
     } catch (error) {
-      console.error('[EPUBReader] Failed to load EPUB:', error);
+      if (__DEV__) console.error('[EPUBReader] Failed to load EPUB:', error);
       onError?.(error instanceof Error ? error : new Error(String(error)));
       setLoadFailed(true);
     }
@@ -136,7 +136,7 @@ export function EPUBReader({
         break;
         
       case 'error':
-        console.error('[EPUBReader] WebView error:', parsed.message);
+        if (__DEV__) console.error('[EPUBReader] WebView error:', parsed.message);
         setLoadFailed(true);
         onError?.(new Error(parsed.message));
         break;

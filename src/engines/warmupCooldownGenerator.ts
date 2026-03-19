@@ -217,7 +217,7 @@ async function fetchCandidates(
     });
     return exercises;
   } catch (e) {
-    console.warn('[WarmupCooldown] Failed to fetch candidates:', e);
+    if (__DEV__) console.warn('[WarmupCooldown] Failed to fetch candidates:', e);
     return [];
   }
 }

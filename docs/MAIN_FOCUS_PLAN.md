@@ -39,8 +39,9 @@
 - `strict: true` + `noUncheckedIndexedAccess: true` enabled
 - **529 errors → 0 errors** across 73+ files
 
-### 2.2 ❌ ESLint Strict Rules
-- Enable `no-undef`, `no-unused-vars`, `@typescript-eslint/strict`
+### 2.2 🔧 ESLint Strict Rules
+- ESLint added to devDependencies and CI (`continue-on-error: true` until all warnings resolved)
+- Enable full `@typescript-eslint/strict` once existing warnings cleared
 
 ---
 

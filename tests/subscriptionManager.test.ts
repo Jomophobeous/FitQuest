@@ -275,7 +275,7 @@ describe('SubscriptionManager', () => {
 
       expect(states.length).toBeGreaterThanOrEqual(1);
       const lastState = states[states.length - 1]!;
-      expect(lastState!.status).toBe('ACTIVE');
+      expect(lastState.status).toBe('ACTIVE');
     });
 
     it('unsubscribe stops notifications', async () => {

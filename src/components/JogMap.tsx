@@ -191,6 +191,60 @@ class MapErrorBoundary extends Component<MapErrorBoundaryProps, MapErrorBoundary
 }
 
 // ============================================
+// MINI ROUTE VISUALIZATION (no native map needed)
+// ============================================
+
+/** Renders a simple SVG-like route path using React Native Views */
+function MiniRoute({ coords, color, width: w, height: h }: {
+  coords: [number, number][];
+  color: string;
+  width: number;
+  height: number;
+}) {
+  if (coords.length < 2) return null;
+
+  // Normalize coordinates to pixel positions
+  const lngs = coords.map(c => c[0]);
+  const lats = coords.map(c => c[1]);
+  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const lngRange = maxLng - minLng || 0.001;
+  const latRange = maxLat - minLat || 0.001;
+  const padding = 12;
+  const usableW = w - padding * 2;
+  const usableH = h - padding * 2;
+
+  // Sample at most 40 points for performance
+  const step = Math.max(1, Math.floor(coords.length / 40));
+  const sampled = coords.filter((_, i) => i % step === 0 || i === coords.length - 1);
+
+  const dots = sampled.map((c, i) => ({
+    x: padding + ((c[0] - minLng) / lngRange) * usableW,
+    y: padding + (1 - (c[1] - minLat) / latRange) * usableH,
+    isEnd: i === 0 || i === sampled.length - 1,
+  }));
+
+  return (
+    <View style={{ width: w, height: h, position: 'relative' }}>
+      {dots.map((dot, i) => (
+        <View
+          key={i}
+          style={{
+            position: 'absolute',
+            left: dot.x - (dot.isEnd ? 4 : 2),
+            top: dot.y - (dot.isEnd ? 4 : 2),
+            width: dot.isEnd ? 8 : 4,
+            height: dot.isEnd ? 8 : 4,
+            borderRadius: dot.isEnd ? 4 : 2,
+            backgroundColor: dot.isEnd ? color : color + '80',
+          }}
+        />
+      ))}
+    </View>
+  );
+}
+
+// ============================================
 // COMPONENT
 // ============================================
 
@@ -237,22 +291,71 @@ const JogMap = memo(function JogMap({
   }, [isLive, endPoint]);
 
   // Fallback when MapLibre native module is not available
+  // Shows a rich route stats card with mini route visualization
   if (!mapLibreAvailable) {
-    if (__DEV__) console.warn('[JogMap] MapLibre native module unavailable (dev-client build required)');
+    const hasRoute = coords.length >= 2;
+    const durationLabel = pace || '';
     return (
-      <View style={[styles.emptyContainer, { height, backgroundColor: theme.colors.surfaceVariant }]}> 
-        <MaterialCommunityIcons name="map-marker-path" size={36} color={theme.colors.textMuted} />
-        <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 8 }]}> 
-          {isLive ? 'Live map requires native build' : 'Map unavailable'}
-        </Text>
-        {distanceMeters != null && distanceMeters > 0 && (
-          <Text style={[styles.distanceText, { color: theme.colors.accent, marginTop: 8 }]}> 
-            {formatDistance(distanceMeters)}
-          </Text>
+      <View style={[styles.fallbackCard, { height, backgroundColor: theme.colors.surfaceVariant }]}>
+        {/* Mini route path visualization (simple polyline) */}
+        {hasRoute && (
+          <View style={styles.miniRouteWrap}>
+            <MiniRoute coords={coords} color={theme.colors.accent} width={styles.miniRouteWrap.width} height={styles.miniRouteWrap.height} />
+          </View>
         )}
-        {pace && (
-          <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 4 }]}>
-            {pace}
+
+        {/* Route icon and status */}
+        <View style={{ alignItems: 'center', gap: 6 }}>
+          <View style={[styles.fallbackIconCircle, { backgroundColor: theme.colors.accent + '20' }]}>
+            <MaterialCommunityIcons
+              name={isLive ? 'run-fast' : hasRoute ? 'map-marker-check' : 'map-marker-path'}
+              size={28}
+              color={theme.colors.accent}
+            />
+          </View>
+
+          {isLive && (
+            <View style={[styles.fallbackLiveBadge, { backgroundColor: theme.colors.error }]}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>TRACKING</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Distance + pace row */}
+        {(distanceMeters != null && distanceMeters > 0) && (
+          <View style={styles.fallbackStatsRow}>
+            <View style={styles.fallbackStat}>
+              <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.colors.accent} />
+              <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>
+                {formatDistance(distanceMeters)}
+              </Text>
+              <Text style={[styles.fallbackStatLabel, { color: theme.colors.textMuted }]}>Distance</Text>
+            </View>
+            {durationLabel ? (
+              <View style={styles.fallbackStat}>
+                <MaterialCommunityIcons name="speedometer" size={16} color={theme.colors.warning} />
+                <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>
+                  {durationLabel}
+                </Text>
+                <Text style={[styles.fallbackStatLabel, { color: theme.colors.textMuted }]}>Pace</Text>
+              </View>
+            ) : null}
+            {hasRoute && (
+              <View style={styles.fallbackStat}>
+                <MaterialCommunityIcons name="map-marker" size={16} color={theme.colors.indigo} />
+                <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>
+                  {coords.length}
+                </Text>
+                <Text style={[styles.fallbackStatLabel, { color: theme.colors.textMuted }]}>Points</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {!distanceMeters && !isLive && (
+          <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
+            Map requires native build
           </Text>
         )}
       </View>
@@ -528,5 +631,57 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 12,
     fontWeight: '500',
+  },
+
+  // Fallback card (no MapLibre)
+  fallbackCard: {
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+  },
+  fallbackIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fallbackLiveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  fallbackStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 24,
+    marginTop: 4,
+  },
+  fallbackStat: {
+    alignItems: 'center',
+    gap: 2,
+  },
+  fallbackStatValue: {
+    fontSize: 16,
+    fontWeight: '800',
+    fontVariant: ['tabular-nums'] as any,
+  },
+  fallbackStatLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  miniRouteWrap: {
+    width: 180,
+    height: 80,
+    opacity: 0.6,
+    position: 'absolute',
+    top: 8,
+    alignSelf: 'center',
   },
 });

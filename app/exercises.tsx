@@ -258,6 +258,11 @@ export default function ExercisesScreen() {
                       <Text style={[styles.muscleTagText, { color: theme.colors.textSecondary }]}>{m}</Text>
                     </View>
                   ))}
+                  {item.primary_muscles.length > 2 && (
+                    <View style={[styles.muscleTag, { backgroundColor: theme.colors.surfaceVariant }]}>
+                      <Text style={[styles.muscleTagText, { color: theme.colors.textMuted }]}>+{item.primary_muscles.length - 2}</Text>
+                    </View>
+                  )}
                 </View>
               </View>
               <View style={[styles.diffBadge, { backgroundColor: diffColor + '12' }]}>

@@ -564,7 +564,7 @@ export default function WorkoutScreen() {
                   )}
                 </View>
 
-                <ExerciseImage exerciseId={ex.exerciseId} category={ex.category} variant="thumbnail" />
+                <ExerciseImage exerciseId={ex.exerciseId} category={ex.category} variant="card" />
 
                 <View style={[styles.exDetails, { marginLeft: 10 }]}>
                   <Text style={[

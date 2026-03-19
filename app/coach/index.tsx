@@ -20,6 +20,7 @@ import {
   Share,
   Modal,
   Pressable,
+  Keyboard,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -571,6 +572,20 @@ function CoachScreenInner() {
   const [showModelPicker, setShowModelPicker] = useState(false);
   const [typingModelName, setTypingModelName] = useState<string | undefined>();
   const [lastWorkoutResult, setLastWorkoutResult] = useState<AIWorkoutResult | null>(null);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  // Track keyboard visibility for bottom padding
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardVisible(true),
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardVisible(false),
+    );
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
 
   // Keep refs in sync — avoids re-creating useCallbacks when messages/ctx change
   useEffect(() => { messagesRef.current = messages; }, [messages]);
@@ -581,6 +596,11 @@ function CoachScreenInner() {
   const scrollToBottom = useCallback(() => {
     requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
   }, []);
+
+  // Auto-scroll when keyboard opens so latest messages stay visible
+  useEffect(() => {
+    if (keyboardVisible) setTimeout(scrollToBottom, 100);
+  }, [keyboardVisible, scrollToBottom]);
 
   useEffect(() => { if (dbReady) loadCoachContext(); }, [dbReady]);
 
@@ -1260,8 +1280,8 @@ function CoachScreenInner() {
 
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 24}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
         >
           {/* ── MESSAGES ── */}
           <FlatList
@@ -1437,7 +1457,7 @@ function CoachScreenInner() {
             style={[styles.inputBarWrap, {
               backgroundColor: theme.colors.background,
               borderTopColor: theme.colors.border,
-              paddingBottom: Math.max(12, insets.bottom + 72),
+              paddingBottom: keyboardVisible ? 12 : Math.max(12, insets.bottom + 72),
             }]}
           >
             <View style={[styles.inputRow, {

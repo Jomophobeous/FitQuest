@@ -92,7 +92,13 @@ export class SubscriptionManager {
       if (Purchases) {
         const apiKey = RC_PUBLIC_API_KEY;
 
-        if (apiKey && !apiKey.includes('your_key_here')) {
+        // Never configure RevenueCat with a test key in production —
+        // it causes a fatal SimulatedStoreErrorDialogActivity crash
+        const isTestKey = apiKey?.startsWith('test_');
+        if (isTestKey && !__DEV__) {
+          if (__DEV__) console.warn('[SubscriptionManager] Skipping RevenueCat: test key in production');
+          this.revenueCatAvailable = false;
+        } else if (apiKey && !apiKey.includes('your_key_here')) {
           Purchases.configure({ apiKey: apiKey.trim() });
           this.revenueCatAvailable = true;
 

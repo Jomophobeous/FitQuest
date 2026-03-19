@@ -229,7 +229,7 @@ function computeFatigueScore(avgDecayedFatigue: number): number {
 
 /** Bell curve: peaks at 24-48h since last workout */
 function computeRecencyScore(minutesSinceLastWorkout: number | null): number {
-  if (minutesSinceLastWorkout === null) return 50; // no data, neutral
+  if (minutesSinceLastWorkout === null) return 80; // no workout history = fully rested
 
   const hours = minutesSinceLastWorkout / 60;
   const minH = READINESS_CONFIG.optimal_rest_hours_min;
@@ -251,6 +251,7 @@ function computeRecencyScore(minutesSinceLastWorkout: number | null): number {
 
 /** Rewards consistency, caps at 14-day streak */
 function computeStreakScore(currentStreak: number): number {
+  if (currentStreak === 0) return 50; // no streak yet ≠ broken streak
   return Math.min(100, currentStreak * 7);
 }
 

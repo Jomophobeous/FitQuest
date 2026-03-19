@@ -53,7 +53,7 @@ interface ExerciseImageProps {
   /** Pre-resolved image paths (from batch getExerciseImageMap) to skip DB query */
   imagePaths?: string[];
   /** Display variant */
-  variant?: 'thumbnail' | 'detail' | 'hero';
+  variant?: 'thumbnail' | 'card' | 'detail' | 'hero';
   /** Whether to animate between start/end frames */
   animate?: boolean;
   /** Custom container style */
@@ -74,6 +74,7 @@ export default function ExerciseImage({
   const [resolvedUris, setResolvedUris] = useState<string[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [hasError, setHasError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const catTheme = categoryTheme[category] || defaultCategoryTheme;
@@ -194,8 +195,22 @@ export default function ExerciseImage({
   }, [animate, resolvedUris.length]);
 
   const handleError = useCallback(() => {
+    // On first error with APK asset URI, try alternate format (.webp ↔ .jpg)
+    if (retryCount === 0 && resolvedUris.length > 0 && Platform.OS === 'android') {
+      const altUris = resolvedUris.map(uri => {
+        if (uri.endsWith('.webp')) return uri.replace(/\.webp$/, '.jpg');
+        if (uri.endsWith('.jpg')) return uri.replace(/\.jpg$/, '.webp');
+        return uri;
+      });
+      // Only retry if the alternatives are different
+      if (altUris.some((u, i) => u !== resolvedUris[i])) {
+        setRetryCount(1);
+        setResolvedUris(altUris);
+        return;
+      }
+    }
     setHasError(true);
-  }, []);
+  }, [retryCount, resolvedUris]);
 
   // Show real image
   if (resolvedUris.length > 0 && !hasError) {
@@ -301,8 +316,9 @@ export default function ExerciseImage({
 
 const VARIANT_DIMENSIONS: Record<string, { width: number; height: number }> = {
   thumbnail: { width: 56, height: 56 },
+  card: { width: 72, height: 72 },
   detail: { width: 120, height: 120 },
-  hero: { width: 999, height: 240 }, // width: 999 means "use flex"
+  hero: { width: 999, height: 300 }, // width: 999 means "use flex"
 };
 
 // ─── Styles ───

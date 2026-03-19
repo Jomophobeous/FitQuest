@@ -76,8 +76,9 @@ function ThemedTabs() {
           fontSize: 18,
         },
         headerRight: () => <DropdownMenu />,
-        // Smooth cross-fade transition (enterprise-grade, 60fps)
-        animation: 'fade',
+        // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
+        // Reanimated entering animations (which causes visible twitching with 'fade')
+        animation: 'shift',
         // @ts-expect-error animationDuration exists at runtime but missing from BottomTabNavigationOptions type
         animationDuration: 200,
         tabBarStyle: {

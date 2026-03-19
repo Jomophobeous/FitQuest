@@ -180,8 +180,8 @@ export default function DashboardScreen() {
         setTodayExercisesDone(todayDone);
         setTodayExercisesTarget(fullTarget);
 
-        const completedCount = sessions.filter(s => s.completed_at).length;
-        setCompletionRate(sessions.length > 0 ? Math.round((completedCount / sessions.length) * 100) : 0);
+        const completedCount = allTodaySessions.filter(s => s.completed_at).length;
+        setCompletionRate(allTodaySessions.length > 0 ? Math.round((completedCount / allTodaySessions.length) * 100) : 0);
         const dates = sessions.map(s => s.started_at.split('T')[0]!);
         setWorkoutDates([...new Set(dates)]);
       }
@@ -197,7 +197,9 @@ export default function DashboardScreen() {
         setLevelUpShown(true);
         setTimeout(() => setLevelUpShown(false), 3500);
       }
-      prevLevelRef.current = xpData.level;
+      // Prime ref so first load doesn't trigger false level-up
+      if (prevLevelRef.current === 0) prevLevelRef.current = xpData.level;
+      else prevLevelRef.current = xpData.level;
       setRealLevel(xpData.level);
       setRealXP(xpData.totalXP);
 

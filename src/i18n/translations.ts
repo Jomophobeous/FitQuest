@@ -893,6 +893,16 @@ const en = {
   'onboarding.consent.accept': 'I consent to the collection and processing of my data as described above and in the Privacy Policy',
   'onboarding.consent.readPolicy': 'Read our Privacy Policy',
 
+  // Onboarding — Medical Disclaimer
+  'onboarding.disclaimer.title': 'Health & Safety Disclaimer',
+  'onboarding.disclaimer.subtitle': 'Please read and acknowledge before starting your fitness journey.',
+  'onboarding.disclaimer.item.notMedical': 'FitQuest is not a medical device and does not provide medical advice',
+  'onboarding.disclaimer.item.consultDoctor': 'Consult a doctor before starting any new exercise program',
+  'onboarding.disclaimer.item.healthData': 'Health metrics shown are estimates and should not replace professional medical assessments',
+  'onboarding.disclaimer.item.stopIfPain': 'Stop exercising immediately if you experience pain, dizziness, or shortness of breath',
+  'onboarding.disclaimer.item.responsibility': 'You exercise at your own risk and are responsible for your own safety',
+  'onboarding.disclaimer.accept': 'I understand that FitQuest does not provide medical advice and I exercise at my own risk',
+
   // Register
   'register.title': 'Create Account',
   'register.subtitle': 'Start your fitness journey today',

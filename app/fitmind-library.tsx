@@ -42,6 +42,7 @@ import {
 import { DocumentImportPipeline } from '../src/fitmind/DocumentImportPipeline';
 import { useDatabase } from '../src/context/DatabaseContext';
 import ScreenTutorial from '../src/components/ScreenTutorial';
+import PremiumGate from '../src/components/PremiumGate';
 
 type FilterStatus = 'ALL' | DocumentStatus;
 
@@ -325,6 +326,7 @@ export default function FitMindLibraryScreen() {
   );
 
   return (
+    <PremiumGate featureName="FitMind Library">
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScreenTutorial
         screenKey="fitmind"
@@ -478,6 +480,7 @@ export default function FitMindLibraryScreen() {
         </Modal>
       </SafeAreaView>
     </View>
+    </PremiumGate>
   );
 }
 

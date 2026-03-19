@@ -41,7 +41,7 @@ import { saveBodyCraftAlgorithm, applyAlgorithmToProfile } from '../src/database
 import { getUserProfile } from '../src/database/service';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
-import ScreenTutorial from '../src/components/ScreenTutorial';
+import ScreenTutorial from '../src/components/ScreenTutorial';\nimport PremiumGate from '../src/components/PremiumGate';
 
 // ============================================
 // CONSTANTS
@@ -577,6 +577,7 @@ export default function CraftMyBodyScreen() {
   const stepContent = [renderAssessment, renderGoalSelection, renderFocusAreas, renderTimeline, renderResults];
 
   return (
+    <PremiumGate featureName="Body Craft Algorithm">
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['bottom']}>
       <ScreenTutorial
         screenKey="craft-my-body"
@@ -640,6 +641,7 @@ export default function CraftMyBodyScreen() {
         </Animated.View>
       )}
     </SafeAreaView>
+    </PremiumGate>
   );
 }
 

@@ -61,6 +61,7 @@ import {
   type TrendPoint,
 } from '../src/components/health/HealthWidgets';
 import ScreenTutorial from '../src/components/ScreenTutorial';
+import PremiumGate from '../src/components/PremiumGate';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -746,13 +747,15 @@ export default function HealthDashboardScreen() {
   const router = useRouter();
   return (
     <ScreenErrorBoundary screenName="Health Dashboard" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
-      <ScreenTutorial
-        screenKey="health-dashboard"
-        icon="heart-pulse"
-        title="Health Dashboard"
-        description="Monitor your overall health with composite scores, daily metrics, sleep trends, and anomaly alerts. Your health data stays encrypted on-device."
-      />
-      <HealthDashboardScreenInner />
+      <PremiumGate featureName="Health Dashboard">
+        <ScreenTutorial
+          screenKey="health-dashboard"
+          icon="heart-pulse"
+          title="Health Dashboard"
+          description="Monitor your overall health with composite scores, daily metrics, sleep trends, and anomaly alerts. Your health data stays encrypted on-device."
+        />
+        <HealthDashboardScreenInner />
+      </PremiumGate>
     </ScreenErrorBoundary>
   );
 }

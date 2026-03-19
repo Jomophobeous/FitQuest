@@ -51,6 +51,7 @@ import MindExerciseView from '../src/components/MindExerciseView';
 import { haptic } from '../src/utils/haptics';
 import { useRouter } from 'expo-router';
 import ScreenTutorial from '../src/components/ScreenTutorial';
+import PremiumGate from '../src/components/PremiumGate';
 
 function FitQuestScreenInner() {
   const { width } = useWindowDimensions();
@@ -1323,13 +1324,15 @@ export default function FitQuestScreen() {
   const router = useRouter();
   return (
     <ScreenErrorBoundary screenName="FitQuest" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
-      <ScreenTutorial
-        screenKey="fitquest"
-        icon="sword-cross"
-        title="FitQuest Training"
-        description="Your personalized workout generator. Tap 'Generate Workout' to get an AI-tailored exercise session based on your goals, equipment, and recovery status."
-      />
-      <FitQuestScreenInner />
+      <PremiumGate featureName="AI Workout Generator">
+        <ScreenTutorial
+          screenKey="fitquest"
+          icon="sword-cross"
+          title="FitQuest Training"
+          description="Your personalized workout generator. Tap 'Generate Workout' to get an AI-tailored exercise session based on your goals, equipment, and recovery status."
+        />
+        <FitQuestScreenInner />
+      </PremiumGate>
     </ScreenErrorBoundary>
   );
 }

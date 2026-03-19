@@ -54,6 +54,7 @@ import { getCachedReadiness, formatStatusForAI } from '../../src/engines/Readine
 import { PulseDot } from '../../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../../src/components/ScreenTutorial';
+import PremiumGate from '../../src/components/PremiumGate';
 import { intentRouter } from '../../src/engines/IntentRouter';
 import { dualAI, type ConversationMemory } from '../../src/fitmind/DualAIEngine';
 import { encryptedDB } from '../../src/security/EncryptedDatabase';
@@ -1858,13 +1859,15 @@ export default function CoachScreen() {
   const handleBack = () => router.canGoBack() ? router.back() : router.replace('/dashboard');
   return (
     <ScreenErrorBoundary screenName="AI Coach" onGoBack={handleBack}>
-      <ScreenTutorial
-        screenKey="ai-coach"
-        icon="robot-happy"
-        title="AI Coach"
-        description="Chat with your AI fitness coach for personalised workout advice, form tips, and motivation. Start a new chat anytime to keep things fresh."
-      />
-      <CoachScreenInner />
+      <PremiumGate featureName="AI Coach">
+        <ScreenTutorial
+          screenKey="ai-coach"
+          icon="robot-happy"
+          title="AI Coach"
+          description="Chat with your AI fitness coach for personalised workout advice, form tips, and motivation. Start a new chat anytime to keep things fresh."
+        />
+        <CoachScreenInner />
+      </PremiumGate>
     </ScreenErrorBoundary>
   );
 }

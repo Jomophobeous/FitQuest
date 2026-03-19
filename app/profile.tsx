@@ -39,7 +39,7 @@ import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { LanguageSelector } from '../src/components/LanguageSelector';
 import { getUserProgress, getStreak, getUserProfile, updateUserProfile, getAppState, setAppState, getUserEquipment, setUserEquipment, getRecentSessions, getMuscleFatigue, getStepHistory, getAllProgressRecords, getUserInjuries, getMindXP, deleteAllUserData } from '../src/database/service';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';\nimport { useSubscription } from '../src/purchases/SubscriptionContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { getXPData, XPData } from '../src/services/xpService';
@@ -317,6 +317,7 @@ export default function ProfileScreen() {
   const { refreshProfile, isReady: dbReady } = useDatabase();
   const { signOut } = useAuth();
   const router = useRouter();
+  const subState = useSubscription();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1310,6 +1311,42 @@ export default function ProfileScreen() {
               </View>
             </View>
           </GlassCard>
+        </View>
+
+        {/* ── SUBSCRIPTION ── */}
+        <View style={styles.section}>
+          <SectionHeader title="Subscription" delay={350} />
+          <MenuItem
+            icon={subState.hasAccess ? 'check-decagram' : 'lock-outline'}
+            label={subState.hasAccess
+              ? (subState.state.isTrial ? 'Free Trial' : 'Premium Active')
+              : 'Upgrade to Premium'}
+            sublabel={subState.hasAccess
+              ? (subState.state.isTrial
+                ? `${subState.trialDaysRemaining} days remaining`
+                : `${subState.state.productIdentifier === 'fitquest_annual' ? 'Annual' : 'Monthly'} plan`)
+              : 'Unlock all features'}
+            color={subState.hasAccess ? theme.colors.accent : theme.colors.warning}
+            delay={370}
+            onPress={() => router.push('/paywall')}
+          />
+          {subState.hasAccess && !subState.state.isTrial && (
+            <MenuItem
+              icon="restore"
+              label="Restore Purchases"
+              sublabel="Recover a previous subscription"
+              color={theme.colors.textMuted}
+              delay={390}
+              onPress={async () => {
+                try {
+                  await subState.restorePurchases();
+                  Alert.alert('Restored', 'Your purchases have been restored.');
+                } catch {
+                  Alert.alert('Error', 'Could not restore purchases. Please try again.');
+                }
+              }}
+            />
+          )}
         </View>
 
         {/* ── TRAINING PROFILE ── */}

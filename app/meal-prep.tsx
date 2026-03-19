@@ -33,6 +33,7 @@ import {
   type FoodItem,
 } from '../src/services/locationService';
 import ScreenTutorial from '../src/components/ScreenTutorial';
+import PremiumGate from '../src/components/PremiumGate';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack';
 type MealRegionOverride = 'AUTO' | 'ZA' | 'US' | 'GB' | 'IN' | 'BR' | 'AU';
@@ -399,6 +400,7 @@ export default function MealPrepScreen() {
     : t('meal.location.yourArea').toLowerCase();
 
   return (
+    <PremiumGate featureName="Meal Planning">
     <SafeAreaView style={styles.container}>
       <ScreenTutorial
         screenKey="meal-prep"
@@ -597,6 +599,7 @@ export default function MealPrepScreen() {
         <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
+    </PremiumGate>
   );
 }
 

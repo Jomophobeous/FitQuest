@@ -59,7 +59,7 @@ interface OnboardingData {
   personalGoal: string;
 }
 
-const TOTAL_STEPS = 10;
+const TOTAL_STEPS = 11;
 
 const INTEREST_OPTIONS: { id: PersonalDevelopmentTopic; icon: string; label: string }[] = [
   { id: 'fitness', icon: 'dumbbell', label: 'Fitness & Training' },
@@ -128,19 +128,21 @@ export default function OnboardingScreen() {
   const [permissionsGranted, setPermissionsGranted] = useState<Record<string, boolean>>({});
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [dataConsentAccepted, setDataConsentAccepted] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   const canAdvance = (): boolean => {
     switch (step) {
       case 0: return ageConfirmed; // Age gate — must confirm 13+
       case 1: return dataConsentAccepted; // Data consent — must accept
-      case 2: return true; // Welcome
-      case 3: return true; // Personal goals & interests — optional
-      case 4: return !!data.goal;
-      case 5: return !!data.experience;
-      case 6: return true; // Body profile is optional
-      case 7: return data.trainingDays > 0;
-      case 8: return true; // Equipment is optional
-      case 9: return true; // Permissions are optional — user can skip
+      case 2: return disclaimerAccepted; // Medical disclaimer — must acknowledge
+      case 3: return true; // Welcome
+      case 4: return true; // Personal goals & interests — optional
+      case 5: return !!data.goal;
+      case 6: return !!data.experience;
+      case 7: return true; // Body profile is optional
+      case 8: return data.trainingDays > 0;
+      case 9: return true; // Equipment is optional
+      case 10: return true; // Permissions are optional — user can skip
       default: return false;
     }
   };
@@ -251,6 +253,7 @@ export default function OnboardingScreen() {
       await setAppState('onboarding_complete', 'true');
       await setAppState('age_verified_13_plus', 'true');
       await setAppState('data_consent_accepted', String(Date.now()));
+      await setAppState('medical_disclaimer_accepted', String(Date.now()));
       void logEvent('onboarding_completed', {
         goal: data.goal,
         experience: data.experience,
@@ -385,8 +388,63 @@ export default function OnboardingScreen() {
           </Animated.View>
         );
 
-      // ── Welcome ──
+      // ── Medical Disclaimer ──
       case 2:
+        return (
+          <Animated.View entering={FadeInDown.duration(300)} style={styles.stepContainer}>
+            <View style={[styles.consentIconWrap, { backgroundColor: theme.colors.warning + '15', alignSelf: 'center' }]}>
+              <MaterialCommunityIcons name="medical-bag" size={48} color={theme.colors.warning} />
+            </View>
+            <Text style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: 20 }]}>
+              {t('onboarding.disclaimer.title')}
+            </Text>
+            <Text style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
+              {t('onboarding.disclaimer.subtitle')}
+            </Text>
+
+            <View style={[styles.consentCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              {[
+                { icon: 'stethoscope' as const, text: t('onboarding.disclaimer.item.notMedical') },
+                { icon: 'doctor' as const, text: t('onboarding.disclaimer.item.consultDoctor') },
+                { icon: 'heart-pulse' as const, text: t('onboarding.disclaimer.item.healthData') },
+                { icon: 'alert-circle-outline' as const, text: t('onboarding.disclaimer.item.stopIfPain') },
+                { icon: 'account-check' as const, text: t('onboarding.disclaimer.item.responsibility') },
+              ].map((item, i) => (
+                <Animated.View key={i} entering={FadeInRight.delay(i * 60).duration(200)}>
+                  <View style={styles.consentItem}>
+                    <MaterialCommunityIcons name={item.icon} size={20} color={theme.colors.warning} />
+                    <Text style={[styles.consentItemText, { color: theme.colors.text }]}>{item.text}</Text>
+                  </View>
+                </Animated.View>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setDisclaimerAccepted(!disclaimerAccepted)}
+              style={[styles.consentCheckRow, { marginTop: 20 }]}
+              accessibilityRole="checkbox"
+              accessibilityLabel={t('onboarding.disclaimer.accept')}
+              accessibilityState={{ checked: disclaimerAccepted }}
+            >
+              <View style={[
+                styles.consentCheckbox,
+                {
+                  borderColor: disclaimerAccepted ? theme.colors.accent : theme.colors.border,
+                  backgroundColor: disclaimerAccepted ? theme.colors.accent : 'transparent',
+                },
+              ]}>
+                {disclaimerAccepted && <MaterialCommunityIcons name="check" size={16} color={theme.colors.onAccent} />}
+              </View>
+              <Text style={[styles.consentCheckText, { color: theme.colors.text }]}>
+                {t('onboarding.disclaimer.accept')}
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        );
+
+      // ── Welcome ──
+      case 3:
         return (
           <Animated.View entering={FadeInDown.duration(300)} style={[styles.stepContainer, { alignItems: 'center', justifyContent: 'center', flex: 1 }]}>
             <View style={styles.welcomeIconWrap}>
@@ -420,7 +478,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Interests & Personal Goals ──
-      case 3:
+      case 4:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
@@ -493,7 +551,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Goals ──
-      case 4:
+      case 5:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.goalTitle')}</Text>
@@ -536,7 +594,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Experience ──
-      case 5:
+      case 6:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.experienceTitle')}</Text>
@@ -580,7 +638,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Body Profile ──
-      case 6:
+      case 7:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.bodyProfileTitle')}</Text>
@@ -654,7 +712,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Schedule ──
-      case 7:
+      case 8:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.scheduleTitle')}</Text>
@@ -714,7 +772,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Equipment ──
-      case 8:
+      case 9:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
             <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.equipmentTitle')}</Text>
@@ -763,7 +821,7 @@ export default function OnboardingScreen() {
         );
 
       // ── Permissions ──
-      case 9: {
+      case 10: {
         const PERMISSION_ITEMS = [
           {
             id: 'notifications',
@@ -1029,11 +1087,12 @@ export default function OnboardingScreen() {
           )}
         </TouchableOpacity>
 
-        {step === 2 && (
+        {step === 3 && (
           <TouchableOpacity onPress={async () => {
             await setAppState('onboarding_complete', 'true');
             await setAppState('age_verified_13_plus', 'true');
             await setAppState('data_consent_accepted', String(Date.now()));
+            await setAppState('medical_disclaimer_accepted', String(Date.now()));
             await refreshProfile();
             router.replace('/dashboard');
           }} style={{ marginTop: 12 }}>

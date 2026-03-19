@@ -284,9 +284,9 @@ describe('Onboarding — step advancement rules', () => {
     expect(0 > 0).toBe(false);
   });
 
-  it('steps 2,3,6,8,9 always allow advancement', () => {
+  it('steps 3,4,7,9,10 always allow advancement', () => {
     // These steps have no validation gate
-    [2, 3, 6, 8, 9].forEach(step => {
+    [3, 4, 7, 9, 10].forEach(step => {
       expect(true).toBe(true); // Always returns true
     });
   });

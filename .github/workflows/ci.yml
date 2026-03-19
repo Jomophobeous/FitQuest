@@ -29,5 +29,9 @@ jobs:
       - name: TypeScript strict check
         run: npx tsc --noEmit
 
+      - name: Lint check
+        run: npm run lint
+        continue-on-error: true
+
       - name: Run unit tests
         run: npx vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic

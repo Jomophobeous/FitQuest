@@ -19,7 +19,7 @@
     "web": "expo start --web",
     "build:aab": "cd android && ./gradlew bundleRelease -x lint --max-workers=1 -Dorg.gradle.jvmargs='-Xmx4096m -XX:+UseSerialGC'",
     "build:apk": "cd android && ./gradlew assembleRelease -x lint --max-workers=1 -Dorg.gradle.jvmargs='-Xmx4096m -XX:+UseSerialGC'",
-    "lint": "npm run typecheck",
+    "lint": "eslint app/ src/ --max-warnings 0",
     "preflight:oauth": "node scripts/oauth-preflight.mjs",
     "verify:phase2": "node scripts/phase2-verify.mjs",
     "verify:phase2:lite": "node scripts/phase2-verify-lite.mjs",
@@ -117,9 +117,11 @@
     "@types/node": "^20.11.30",
     "@types/react": "^19.1.10",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "eslint": "^9.39.4",
     "eslint-plugin-react-native": "^5.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1",
     "vitest": "^2.1.9"
   },
   "overrides": {

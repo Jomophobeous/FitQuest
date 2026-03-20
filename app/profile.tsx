@@ -168,7 +168,7 @@ const modalStyles = StyleSheet.create({
   content: {
     width: '100%',
     maxWidth: 340,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 20,
     borderWidth: 1,
     maxHeight: '80%',
@@ -1132,7 +1132,7 @@ export default function ProfileScreen() {
                 {/* Level & XP bar */}
                 <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.xpWrap}>
                   <View style={styles.xpRow}>
-                    <View style={[styles.levelBadge, { backgroundColor: theme.colors.accent + '25' }]}>
+                    <View style={[styles.levelBadge, { backgroundColor: theme.colors.accent + '25' }]} accessibilityLabel={`Level ${stats?.level || 1}`}>
                       <Text style={[styles.levelText, { color: theme.colors.accent }]}>
                         LVL {stats?.level || 1}
                       </Text>
@@ -2109,7 +2109,7 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 9999,
     marginBottom: 16,
     maxWidth: '80%',
   },

@@ -154,7 +154,9 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     await manager.refresh();
   }, [manager]);
 
-  const hasAccess = manager?.hasAccess() ?? false; // Default to false while loading
+  const hasAccess = isLoading
+    ? true  // Default to unlocked while loading (trial assumption — don't flash lock screen)
+    : state.status === 'TRIAL' || state.status === 'ACTIVE' || state.status === 'LIFETIME';
   const trialDaysRemaining = manager?.getTrialDaysRemaining() ?? 14;
 
   const value: SubscriptionContextType = {

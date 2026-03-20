@@ -402,7 +402,7 @@ function createProviders(): Record<AIProviderName, ProviderConfig> {
       displayName: 'OpenRouter',
       apiKey: process.env.EXPO_PUBLIC_OPENROUTER_API_KEY || '',
       endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-      timeoutMs: 10000,
+      timeoutMs: 30000,
       enabled: false,
     },
   };

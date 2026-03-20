@@ -19,7 +19,7 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
-import { spacing } from '../src/design/theme-system';
+import { spacing, radius } from '../src/design/theme-system';
 import { useLanguage } from '../src/context/LanguageContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../src/components/ThemedText';
@@ -267,10 +267,10 @@ export default function DashboardScreen() {
         {/* ── LEVEL UP CELEBRATION ── */}
         {levelUpShown && (
           <Animated.View entering={FadeInDown.duration(300)} style={[styles.levelUpBanner, { backgroundColor: theme.colors.accent }]}>
-            <MaterialCommunityIcons name="arrow-up-bold-circle" size={22} color="#FFFFFF" />
-            <View style={{ marginLeft: 10, flex: 1 }}>
-              <Text style={styles.levelUpTitle}>Level Up!</Text>
-              <Text style={styles.levelUpSub}>You reached Level {realLevel} 🎉</Text>
+            <MaterialCommunityIcons name="arrow-up-bold-circle" size={22} color={theme.colors.onAccent} />
+            <View style={{ marginLeft: 12, flex: 1 }}>
+              <Text style={[styles.levelUpTitle, { color: theme.colors.onAccent }]}>Level Up!</Text>
+              <Text style={[styles.levelUpSub, { color: theme.colors.onAccent + 'CC' }]}>You reached Level {realLevel} 🎉</Text>
             </View>
           </Animated.View>
         )}
@@ -626,12 +626,12 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing[4],
     marginTop: spacing[2],
     marginBottom: spacing[2],
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 14,
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.lg,
   },
-  levelUpTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' } as const,
-  levelUpSub: { color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: '500', marginTop: 1 } as const,
+  levelUpTitle: { fontSize: 16, fontWeight: '800' } as const,
+  levelUpSub: { fontSize: 12, fontWeight: '500', marginTop: 1 } as const,
   
   // ── HEADER (Compact) ──
   heroHeader: { 
@@ -656,9 +656,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 10,
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[1],
+    borderRadius: radius.md,
   },
   statValue: { 
     fontSize: 16, 
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   workoutCard: { 
-    padding: spacing[2] + 2, // ~10px (within rhythm: closest to 8)
+    padding: spacing[3],
   },
   workoutRow: { 
     flexDirection: 'row', 
@@ -796,8 +796,8 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   workoutIcon: { 
-    width: 36, // Reduced from 44
-    height: 36, 
+    width: 32,
+    height: 32, 
     borderRadius: 8, 
     justifyContent: 'center', 
     alignItems: 'center',
@@ -884,7 +884,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     minHeight: 74,
   },
@@ -930,10 +930,10 @@ const styles = StyleSheet.create({
   quickTileIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: spacing[1],
   },
   quickTileLabel: {
     fontSize: 11,

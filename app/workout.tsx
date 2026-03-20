@@ -460,7 +460,7 @@ export default function WorkoutScreen() {
               {exerciseTimer.state === 'running' && (
                 <View style={styles.exerciseTimerWrap}>
                   <ProgressRing progress={exerciseTimer.progress} size={120} color={theme.colors.accent} strokeWidth={8}>
-                    <Text style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: 28 }]}>
+                    <Text style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: 32 }]}>
                       {exerciseTimer.formattedRemaining}
                     </Text>
                     <Text style={[styles.exerciseTimerLabel, { color: theme.colors.textMuted }]}>
@@ -546,7 +546,7 @@ export default function WorkoutScreen() {
               : theme.colors.textMuted;
 
           return (
-            <AnimatedListItem key={ex.id || `ex-${i}`} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
+            <AnimatedListItem key={ex.id || `ex-${i}`} index={i} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
               <View style={[styles.exListItem, {
                 backgroundColor: isActive
                   ? (theme.isDark ? theme.colors.accent + '10' : theme.colors.accent + '08')
@@ -556,7 +556,7 @@ export default function WorkoutScreen() {
               }]}>
                 <View style={[styles.exStatusDot, { backgroundColor: statusColor }]}>
                   {isDone ? (
-                    <MaterialCommunityIcons name="check" size={12} color="#FFF" />
+                    <MaterialCommunityIcons name="check" size={12} color={theme.colors.onAccent} />
                   ) : isActive ? (
                     <PulseDot color={theme.colors.accent} size={8} />
                   ) : (
@@ -566,7 +566,7 @@ export default function WorkoutScreen() {
 
                 <ExerciseImage exerciseId={ex.exerciseId} category={ex.category} variant="card" />
 
-                <View style={[styles.exDetails, { marginLeft: 10 }]}>
+                <View style={[styles.exDetails, { marginLeft: 12 }]}>
                   <Text style={[
                     styles.exName,
                     { color: isDone ? theme.colors.textMuted : theme.colors.text },
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
   emptySub: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
   topBar: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
   topBarRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+  backBtn: { width: 36, height: 36, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   topBarCenter: { flex: 1 },
   workoutName: { fontSize: 17, fontWeight: '700' },
   topBarMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
@@ -708,9 +708,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: 12,
   },
   exStatusDot: {
     width: 26,

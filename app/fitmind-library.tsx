@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
   statCard: { flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, minWidth: 70 },
 
   filterRow: { paddingHorizontal: 16, paddingVertical: 4, marginBottom: 12 },
-  filterPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1, marginRight: 8 },
+  filterPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 9999, borderWidth: 1, marginRight: 8 },
 
   emptyCard: { alignItems: 'center', padding: 32, marginHorizontal: 16 },
   emptyText: { textAlign: 'center', marginTop: 12, lineHeight: 20 },

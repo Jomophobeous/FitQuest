@@ -134,35 +134,45 @@ export default function ExerciseImage({
         const validUris: string[] = [];
         // Deduplicate paths — the same folder may appear with both .webp and .jpg
         const seen = new Set<string>();
-        for (const imgPath of paths) {
-          if (validUris.length >= 2) break; // Only need 2 frames max
-          if (seen.has(imgPath)) continue;
-          seen.add(imgPath);
 
-          const fullPath = `${IMAGE_BASE_DIR}${imgPath}`;
-          // Also try .webp variant if the path is .jpg/.png (APK may only have .webp)
-          const webpPath = imgPath.replace(/\.(jpg|png)$/i, '.webp');
-          const fullWebpPath = `${IMAGE_BASE_DIR}${webpPath}`;
-
-          // Try documentDirectory first (both webp and original)
-          for (const candidate of webpPath !== imgPath ? [fullWebpPath, fullPath] : [fullPath]) {
-            try {
-              const info = await FileSystem.getInfoAsync(candidate);
-              if (info.exists) {
-                validUris.push(candidate);
-                break;
-              }
-            } catch {
-              // Skip
-            }
+        // On Android, skip slow file system checks and use APK assets directly.
+        // <Image> can load file:///android_asset/ URIs even without getInfoAsync.
+        if (Platform.OS === 'android') {
+          const addedFolders = new Set<string>();
+          for (const imgPath of paths) {
+            if (validUris.length >= 2) break;
+            // Extract folder, e.g. "3_4_Sit-Up" from "3_4_Sit-Up/0.jpg"
+            const folder = imgPath.split('/')[0];
+            const frame = imgPath.split('/')[1];
+            if (!folder || !frame) continue;
+            const frameKey = `${folder}/${frame?.replace(/\.(jpg|png|webp)$/i, '')}`;
+            if (addedFolders.has(frameKey)) continue;
+            addedFolders.add(frameKey);
+            // Prefer .webp (APK assets are webp), fallback to .jpg
+            const webpUri = `${APK_ASSETS_DIR}${folder}/${frame.replace(/\.(jpg|png)$/i, '.webp')}`;
+            validUris.push(webpUri);
           }
-          if (validUris.length > seen.size - 1) continue; // Found one, move on
+        } else {
+          for (const imgPath of paths) {
+            if (validUris.length >= 2) break;
+            if (seen.has(imgPath)) continue;
+            seen.add(imgPath);
 
-          // Android: load directly from APK assets — getInfoAsync doesn't work
-          // for file:///android_asset/ (compressed archive), but <Image> can load them.
-          // Prefer .webp since APK assets were converted to webp.
-          if (Platform.OS === 'android') {
-            validUris.push(`${APK_ASSETS_DIR}${webpPath !== imgPath ? webpPath : imgPath}`);
+            const fullPath = `${IMAGE_BASE_DIR}${imgPath}`;
+            const webpPath = imgPath.replace(/\.(jpg|png)$/i, '.webp');
+            const fullWebpPath = `${IMAGE_BASE_DIR}${webpPath}`;
+
+            for (const candidate of webpPath !== imgPath ? [fullWebpPath, fullPath] : [fullPath]) {
+              try {
+                const info = await FileSystem.getInfoAsync(candidate);
+                if (info.exists) {
+                  validUris.push(candidate);
+                  break;
+                }
+              } catch {
+                // Skip
+              }
+            }
           }
         }
 
@@ -195,17 +205,32 @@ export default function ExerciseImage({
   }, [animate, resolvedUris.length]);
 
   const handleError = useCallback(() => {
-    // On first error with APK asset URI, try alternate format (.webp ↔ .jpg)
+    // On first error, try alternate format (.webp ↔ .jpg) for APK assets
     if (retryCount === 0 && resolvedUris.length > 0 && Platform.OS === 'android') {
       const altUris = resolvedUris.map(uri => {
         if (uri.endsWith('.webp')) return uri.replace(/\.webp$/, '.jpg');
         if (uri.endsWith('.jpg')) return uri.replace(/\.jpg$/, '.webp');
         return uri;
       });
-      // Only retry if the alternatives are different
       if (altUris.some((u, i) => u !== resolvedUris[i])) {
         setRetryCount(1);
         setResolvedUris(altUris);
+        return;
+      }
+    }
+    // On second error, try documentDirectory as last resort
+    if (retryCount === 1 && resolvedUris.length > 0) {
+      const docUris = resolvedUris.map(uri => {
+        const assetPrefix = APK_ASSETS_DIR;
+        if (uri.startsWith(assetPrefix)) {
+          const relPath = uri.slice(assetPrefix.length);
+          return `${IMAGE_BASE_DIR}${relPath}`;
+        }
+        return uri;
+      });
+      if (docUris.some((u, i) => u !== resolvedUris[i])) {
+        setRetryCount(2);
+        setResolvedUris(docUris);
         return;
       }
     }

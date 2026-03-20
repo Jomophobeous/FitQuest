@@ -52,6 +52,25 @@ import { useRouter } from 'expo-router';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
 
+/** Self-contained session clock — re-renders only itself every second */
+function SessionClock({ startRef, active, style }: {
+  startRef: React.MutableRefObject<number | null>;
+  active: boolean;
+  style: any;
+}) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (!active || !startRef.current) { setElapsed(0); return; }
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current!) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [active, startRef]);
+  const m = Math.floor(elapsed / 60);
+  const s = elapsed % 60;
+  return <Text style={style}>{`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`}</Text>;
+}
+
 function FitQuestScreenInner() {
   const { width } = useWindowDimensions();
   const { theme } = useTheme();
@@ -94,7 +113,6 @@ function FitQuestScreenInner() {
   } = useTimer();
 
   // Session clock (elapsed time)
-  const [sessionElapsed, setSessionElapsed] = useState(0);
   const sessionStartRef = useRef<number | null>(null);
   
   // TTS state
@@ -186,16 +204,6 @@ function FitQuestScreenInner() {
       audioService.stop();
     }
   };
-
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (status === 'in_progress' && sessionStartRef.current) {
-      interval = setInterval(() => {
-        setSessionElapsed(Math.floor((Date.now() - sessionStartRef.current!) / 1000));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [status]);
 
   // Rest timer state
   const [isResting, setIsResting] = useState(false);
@@ -523,7 +531,7 @@ function FitQuestScreenInner() {
 
           {/* Warnings */}
           {workout.warnings?.length > 0 && (
-            <Animated.View entering={FadeInDown.delay(150).duration(150)}>
+            <Animated.View entering={FadeInDown.delay(150).duration(150)} accessibilityRole="alert" accessibilityLabel="Workout warnings">
               <GlassCard
                 style={{ marginHorizontal: 16, marginTop: 8 }}
               >
@@ -574,7 +582,7 @@ function FitQuestScreenInner() {
                 <Animated.View
                   key={exercise.id}
                   entering={FadeInRight.delay(270 + index * 30).duration(120)}
-                  style={{ paddingHorizontal: 16, marginBottom: 6 }}
+                  style={{ paddingHorizontal: 16, marginBottom: 8 }}
                 >
                   <View style={[
                     styles.exercisePreviewCard,
@@ -649,7 +657,7 @@ function FitQuestScreenInner() {
                 <Animated.View
                   key={exercise.id}
                   entering={FadeInRight.delay(390 + index * 30).duration(120)}
-                  style={{ paddingHorizontal: 16, marginBottom: 6 }}
+                  style={{ paddingHorizontal: 16, marginBottom: 8 }}
                 >
                   <View style={[
                     styles.exercisePreviewCard,
@@ -678,7 +686,6 @@ function FitQuestScreenInner() {
                 startWorkout();
                 startSession(60);
                 sessionStartRef.current = Date.now();
-                setSessionElapsed(0);
               }}
               variant="success"
               size="lg"
@@ -702,10 +709,6 @@ function FitQuestScreenInner() {
   // ===== IN PROGRESS STATE =====
   if (status === 'in_progress' && workout && currentExercise) {
     const isLastExercise = currentExerciseIndex === workout.exercises.length - 1;
-
-    const clockMinutes = Math.floor(sessionElapsed / 60);
-    const clockSeconds = sessionElapsed % 60;
-    const clockDisplay = `${clockMinutes.toString().padStart(2, '0')}:${clockSeconds.toString().padStart(2, '0')}`;
 
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -748,7 +751,11 @@ function FitQuestScreenInner() {
         >
           <View style={styles.clockLeft}>
             <PulseDot color={theme.colors.success} size={5} active={true} />
-            <Text style={[styles.clockText, { color: theme.colors.accent }]}>{clockDisplay}</Text>
+            <SessionClock
+              startRef={sessionStartRef}
+              active={status === 'in_progress'}
+              style={[styles.clockText, { color: theme.colors.accent }]}
+            />
           </View>
           
           <View style={styles.clockCenter}>

@@ -329,7 +329,7 @@ export const GradientButton = memo(function GradientButton({
 
   const paddingY = size === 'sm' ? 10 : size === 'lg' ? 18 : 14;
   const fontSize = size === 'sm' ? 13 : size === 'lg' ? 17 : 15;
-  const bgColor = disabled ? '#666' : (colors?.[0] || variantColors[variant]);
+  const bgColor = disabled ? theme.colors.surfaceVariant : (colors?.[0] || variantColors[variant]);
 
   return (
     <Animated.View style={[animatedStyle, containerStyle]}>
@@ -354,9 +354,9 @@ export const GradientButton = memo(function GradientButton({
           ]}
         >
           {!!icon && (
-            <MaterialCommunityIcons name={icon} size={fontSize + 4} color="#FFFFFF" style={{ marginRight: 8 }} />
+            <MaterialCommunityIcons name={icon} size={fontSize + 4} color={theme.colors.onAccent} style={{ marginRight: 8 }} />
           )}
-          <Text style={[styles.gradientButtonText, { fontSize, color: '#FFFFFF' }]}>{title}</Text>
+          <Text style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>{title}</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>

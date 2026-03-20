@@ -908,7 +908,7 @@ export default function MoveScreen() {
                     end={{ x: 1, y: 0 }}
                     style={styles.xpGradient}
                   >
-                    <MaterialCommunityIcons name="star" size={16} color="#FFF" />
+                    <MaterialCommunityIcons name="star" size={16} color={theme.colors.onAccent} />
                     <Text style={[styles.xpText, { color: theme.colors.text }]}>+{jogCompletionData.xpEarned} XP</Text>
                   </LinearGradient>
                 </Animated.View>
@@ -1020,7 +1020,7 @@ const styles = StyleSheet.create({
   // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0,0,0,0.65)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,

@@ -330,7 +330,7 @@ export class SubscriptionManager {
   private async purchaseRevenueCat(plan: 'monthly' | 'annual'): Promise<boolean> {
     try {
       const Purchases = await this.getRevenueCatModule();
-      if (!Purchases) return false;
+      if (!Purchases) return this.purchaseLocal(plan === 'monthly' ? PRODUCT_MONTHLY : PRODUCT_ANNUAL);
 
       const offerings = await Purchases.getOfferings();
       const pkg = plan === 'monthly'
@@ -338,8 +338,8 @@ export class SubscriptionManager {
         : offerings.current?.annual;
 
       if (!pkg) {
-        if (__DEV__) console.warn(`[SubscriptionManager] ${plan} package not found`);
-        return false;
+        if (__DEV__) console.warn(`[SubscriptionManager] ${plan} package not found — falling back to local purchase`);
+        return this.purchaseLocal(plan === 'monthly' ? PRODUCT_MONTHLY : PRODUCT_ANNUAL);
       }
 
       const { customerInfo } = await Purchases.purchasePackage(pkg);
@@ -350,11 +350,13 @@ export class SubscriptionManager {
       // Check if user cancelled
       try {
         const Purchases = await this.getRevenueCatModule();
-        if (Purchases && !Purchases.isCancelError?.(error)) {
-          if (__DEV__) console.error('[SubscriptionManager] Purchase failed:', error);
+        if (Purchases && Purchases.isCancelError?.(error)) {
+          return false; // User cancelled — don't fall back
         }
       } catch { /* swallow */ }
-      return false;
+
+      if (__DEV__) console.warn('[SubscriptionManager] RC purchase failed, falling back to local:', error?.message);
+      return this.purchaseLocal(plan === 'monthly' ? PRODUCT_MONTHLY : PRODUCT_ANNUAL);
     }
   }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { BackHandler } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -40,6 +40,22 @@ function ThemedTabs() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
+  // Memoize tab bar style to avoid re-creating the style object on every render
+  // (prevents layout recalculation that causes visible twitching)
+  const tabBarStyle = useMemo(() => ({
+    backgroundColor: theme.colors.surface,
+    borderTopColor: theme.colors.border,
+    borderTopWidth: 1,
+    position: 'absolute' as const,
+    left: 12,
+    right: 12,
+    bottom: Math.max(8, insets.bottom + 2),
+    borderRadius: 16,
+    paddingTop: 6,
+    paddingBottom: Math.max(8, insets.bottom - 2),
+    height: 64 + Math.max(0, insets.bottom - 4),
+  }), [theme.colors.surface, theme.colors.border, insets.bottom]);
+
   // Handle hardware back button — prevent GO_BACK crashes on root screens
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -79,21 +95,7 @@ function ThemedTabs() {
         // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
         // Reanimated entering animations (which causes visible twitching with 'fade')
         animation: 'shift',
-        // @ts-expect-error animationDuration exists at runtime but missing from BottomTabNavigationOptions type
-        animationDuration: 200,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-          borderTopWidth: 1,
-          position: 'absolute',
-          left: 12,
-          right: 12,
-          bottom: Math.max(8, insets.bottom + 2),
-          borderRadius: 16,
-          paddingTop: 6,
-          paddingBottom: Math.max(8, insets.bottom - 2),
-          height: 64 + Math.max(0, insets.bottom - 4),
-        },
+        tabBarStyle,
         tabBarActiveTintColor: theme.colors.accent,
         tabBarInactiveTintColor: theme.colors.textMuted,
         tabBarLabelStyle: {

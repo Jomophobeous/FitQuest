@@ -469,6 +469,8 @@ const en = {
   'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: If you grant permission, FitQuest reads health metrics from these platform services. Data flows one-way (read only) and is stored encrypted on your device.',
   'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: Manages subscription verification. Receives only purchase tokens and anonymous user identifiers — no health or fitness data.',
   'legal.privacy.bullets.thirdPartySentry': 'Sentry: Crash reporting service that receives anonymized error logs. No personal data or health metrics are included.',
+  'legal.privacy.bullets.thirdPartyPostHog': 'PostHog: App analytics service that collects anonymized usage events (screens viewed, feature usage) and device info (OS, app version). Session replay captures screen recordings at 50% sample rate with all text inputs and images masked. No health data is included. You can opt out in Legal Center.',
+  'legal.privacy.bullets.thirdPartyExpo': 'Expo Updates: On app launch, FitQuest checks for over-the-air updates via Expo servers. This transmits your device type, OS version, and app version. No personal or health data is sent.',
   'legal.privacy.sections.childrenTitle': '5) Children\'s Privacy',
   'legal.privacy.sections.childrenBody': 'FitQuest is designed for users aged 13 and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us data, please contact us at fitquestsupp0rt@gmail.com for immediate deletion.',
   'legal.privacy.sections.retentionTitle': '6) Data Retention',

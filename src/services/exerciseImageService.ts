@@ -220,7 +220,13 @@ export async function initializeExerciseImages(): Promise<void> {
     // Copy from APK assets to documentDirectory
     if (__DEV__) console.log('[ExerciseImages] Deploying images from APK assets...');
     const count = await deployAndroidAssetImages();
-    if (__DEV__) console.log(`[ExerciseImages] Deployed ${count} images to documentDirectory`);
+    if (__DEV__) {
+      if (count > 0) {
+        console.log(`[ExerciseImages] Deployed ${count} images to documentDirectory`);
+      } else {
+        console.log('[ExerciseImages] No images found in APK assets — run "npm run deploy:images" to push via adb');
+      }
+    }
     if (count > 0) {
       await markImagesDeployed();
     }

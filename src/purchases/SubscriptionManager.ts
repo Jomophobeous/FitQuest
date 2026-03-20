@@ -61,6 +61,7 @@ export class SubscriptionManager {
   private currentState: SubscriptionState;
   private listeners: Array<(state: SubscriptionState) => void> = [];
   private revenueCatAvailable = false;
+  private purchaseInProgress = false;
 
   private constructor() {
     this.currentState = {
@@ -314,17 +315,35 @@ export class SubscriptionManager {
   // ── Purchase Methods ──
 
   async purchaseMonthly(): Promise<boolean> {
-    if (this.revenueCatAvailable) {
-      return this.purchaseRevenueCat('monthly');
+    if (this.purchaseInProgress) {
+      if (__DEV__) console.log('[SubscriptionManager] Purchase already in progress, ignoring');
+      return false;
     }
-    return this.purchaseLocal(PRODUCT_MONTHLY);
+    this.purchaseInProgress = true;
+    try {
+      if (this.revenueCatAvailable) {
+        return await this.purchaseRevenueCat('monthly');
+      }
+      return await this.purchaseLocal(PRODUCT_MONTHLY);
+    } finally {
+      this.purchaseInProgress = false;
+    }
   }
 
   async purchaseAnnual(): Promise<boolean> {
-    if (this.revenueCatAvailable) {
-      return this.purchaseRevenueCat('annual');
+    if (this.purchaseInProgress) {
+      if (__DEV__) console.log('[SubscriptionManager] Purchase already in progress, ignoring');
+      return false;
     }
-    return this.purchaseLocal(PRODUCT_ANNUAL);
+    this.purchaseInProgress = true;
+    try {
+      if (this.revenueCatAvailable) {
+        return await this.purchaseRevenueCat('annual');
+      }
+      return await this.purchaseLocal(PRODUCT_ANNUAL);
+    } finally {
+      this.purchaseInProgress = false;
+    }
   }
 
   private async purchaseRevenueCat(plan: 'monthly' | 'annual'): Promise<boolean> {
@@ -381,6 +400,12 @@ export class SubscriptionManager {
   }
 
   async restorePurchases(): Promise<SubscriptionState> {
+    if (this.purchaseInProgress) {
+      if (__DEV__) console.log('[SubscriptionManager] Operation in progress, ignoring restore');
+      return this.currentState;
+    }
+    this.purchaseInProgress = true;
+    try {
     if (this.revenueCatAvailable) {
       try {
         const Purchases = await this.getRevenueCatModule();
@@ -397,6 +422,9 @@ export class SubscriptionManager {
       }
     }
     return this.refresh();
+    } finally {
+      this.purchaseInProgress = false;
+    }
   }
 
   async getOfferings(): Promise<SubscriptionOfferings> {

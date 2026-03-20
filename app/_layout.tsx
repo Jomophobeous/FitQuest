@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { BackHandler } from 'react-native';
+import React, { useEffect, useMemo, useRef, useCallback } from 'react';
+import { BackHandler, InteractionManager } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -78,33 +78,41 @@ function ThemedTabs() {
     }
   }, [insets.bottom, theme.isDark]);
 
+  // Stable headerRight callback to prevent DropdownMenu from re-mounting every render
+  const headerRight = useCallback(() => <DropdownMenu />, []);
+
+  // Memoize screenOptions to prevent the entire tab navigator from recalculating
+  // its config on every render (theme/insets changes are the only valid triggers)
+  const screenOptions = useMemo(() => ({
+    headerStyle: {
+      backgroundColor: theme.colors.surface,
+      borderBottomColor: theme.colors.border,
+      borderBottomWidth: 1,
+    },
+    headerTintColor: theme.colors.text,
+    headerTitleStyle: {
+      fontWeight: '600' as const,
+      fontSize: 18,
+    },
+    headerRight,
+    // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
+    // Reanimated entering animations (which causes visible twitching with 'fade')
+    animation: 'shift' as const,
+    tabBarStyle,
+    tabBarHideOnKeyboard: true,
+    tabBarActiveTintColor: theme.colors.accent,
+    tabBarInactiveTintColor: theme.colors.textMuted,
+    tabBarLabelStyle: {
+      fontSize: 11,
+      fontWeight: '500' as const,
+      marginTop: 2,
+      marginBottom: 4,
+    },
+  }), [theme.colors.surface, theme.colors.border, theme.colors.text, theme.colors.accent, theme.colors.textMuted, tabBarStyle, headerRight]);
+
   return (
     <Tabs
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: theme.colors.surface,
-          borderBottomColor: theme.colors.border,
-          borderBottomWidth: 1,
-        },
-        headerTintColor: theme.colors.text,
-        headerTitleStyle: {
-          fontWeight: '600',
-          fontSize: 18,
-        },
-        headerRight: () => <DropdownMenu />,
-        // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
-        // Reanimated entering animations (which causes visible twitching with 'fade')
-        animation: 'shift',
-        tabBarStyle,
-        tabBarActiveTintColor: theme.colors.accent,
-        tabBarInactiveTintColor: theme.colors.textMuted,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-          marginTop: 2,
-          marginBottom: 4,
-        },
-      }}
+      screenOptions={screenOptions}
     >
       {/* Dashboard Tab */}
       <Tabs.Screen
@@ -385,7 +393,8 @@ export default function RootLayout() {
     logPerf('app_launch', durationMs);
     logEvent('app_launch');
 
-    // Defer non-critical startup work until after first frame
+    // Defer non-critical startup work until after first interaction/animation completes
+    // InteractionManager is load-aware — waits for animations, unlike fixed setTimeout
     const deferStartup = () => {
       void errorTelemetry.initialize().catch(() => {});
       void featureFlags.initialize().catch(() => {});
@@ -393,29 +402,27 @@ export default function RootLayout() {
       // Phase 2: silent periodic backup (no-op unless EXPO_PUBLIC_BACKUP_API_BASE_URL is configured)
       void maybeAutoCloudBackupOncePerDay().catch(() => {});
 
-      // P1: centralized deferred mutation replay
-      void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {
-        // best-effort only
-      });
+      // Phase 3: deferred mutations, notifications, analytics — after interactions settle
+      InteractionManager.runAfterInteractions(() => {
+        // P1: centralized deferred mutation replay
+        void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {});
 
-      // P1: keep local reminder schedule in sync with persisted reliability settings
-      void reconcileNotificationReliability('app_start').catch(() => {
-        // best-effort only
-      });
+        // P1: keep local reminder schedule in sync with persisted reliability settings
+        void reconcileNotificationReliability('app_start').catch(() => {});
 
-      // Phase 4: best-effort anonymized analytics flush (server enforces consent before ingest)
-      void flushAnalyticsQueue().catch(() => {
-        // best-effort only
-      });
+        // Phase 4: best-effort anonymized analytics flush (server enforces consent before ingest)
+        void flushAnalyticsQueue().catch(() => {});
 
-      // Start background health engine (periodic step collection, anomaly detection, daily summaries)
-      // Battery-aware: auto-throttles on low battery, pauses on critical
-      backgroundHealth.start({
-        collectionIntervalMs: 1 * 60 * 1000,    // every 1 minute
-        anomalyCheckIntervalMs: 30 * 60 * 1000, // every 30 minutes
-        enableAlerts: true,
-      }).catch((e) => {
-        if (__DEV__) console.warn('[BackgroundHealth] Failed to start:', e);
+        // Start background health engine last — heaviest service (timers, DB queries, sensors)
+        InteractionManager.runAfterInteractions(() => {
+          backgroundHealth.start({
+            collectionIntervalMs: 1 * 60 * 1000,    // every 1 minute
+            anomalyCheckIntervalMs: 30 * 60 * 1000, // every 30 minutes
+            enableAlerts: true,
+          }).catch((e) => {
+            if (__DEV__) console.warn('[BackgroundHealth] Failed to start:', e);
+          });
+        });
       });
 
       // HealthConnect permissions are requested ONLY from Profile screen

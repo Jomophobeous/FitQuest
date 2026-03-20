@@ -17,12 +17,17 @@ interface PremiumGateProps {
 }
 
 export default function PremiumGate({ children, featureName }: PremiumGateProps) {
-  const { hasAccess, state, isLoading } = useSubscription();
+  const { accessState, state } = useSubscription();
   const { theme } = useTheme();
   const router = useRouter();
 
-  // Don't block access while subscription state is still loading
-  if (isLoading || hasAccess) {
+  // RESOLVING: suppress render until access state is hydrated — avoids layout shift
+  if (accessState === 'RESOLVING') {
+    return null;
+  }
+
+  // TRIAL or FULL: user has legitimate access
+  if (accessState === 'TRIAL' || accessState === 'FULL') {
     return <>{children}</>;
   }
 

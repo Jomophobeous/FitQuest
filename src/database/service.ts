@@ -2494,35 +2494,42 @@ export async function getDocumentImportance(documentId: string): Promise<{ impor
  */
 export async function deleteAllUserData(userId: string): Promise<void> {
   const db = await getDatabase();
-  await db.execAsync(`
-    DELETE FROM session_exercises WHERE session_id IN (SELECT id FROM workout_sessions WHERE user_id = '${userId}');
-    DELETE FROM workout_sessions WHERE user_id = '${userId}';
-    DELETE FROM progress_records WHERE user_id = '${userId}';
-    DELETE FROM muscle_fatigue WHERE user_id = '${userId}';
-    DELETE FROM user_injuries WHERE user_id = '${userId}';
-    DELETE FROM user_equipment WHERE user_id = '${userId}';
-    DELETE FROM workout_streaks WHERE user_id = '${userId}';
-    DELETE FROM daily_steps WHERE user_id = '${userId}';
-    DELETE FROM jog_sessions WHERE user_id = '${userId}';
-    DELETE FROM audio_settings WHERE user_id = '${userId}';
-    DELETE FROM body_craft_algorithms WHERE user_id = '${userId}';
-    DELETE FROM subscription_state WHERE user_id = '${userId}';
-    DELETE FROM trial_state WHERE user_id = '${userId}';
-    DELETE FROM encrypted_health_data;
-    DELETE FROM encrypted_ai_conversations;
-    DELETE FROM encrypted_notes;
-    DELETE FROM health_alerts WHERE user_id = '${userId}';
-    DELETE FROM heart_rate_readings WHERE user_id = '${userId}';
-    DELETE FROM anomaly_log WHERE user_id = '${userId}';
-    DELETE FROM daily_health_summaries WHERE user_id = '${userId}';
-    DELETE FROM fitmind_reading_sessions;
-    DELETE FROM fitmind_annotations;
-    DELETE FROM fitmind_flashcards;
-    DELETE FROM fitmind_reading_goals WHERE user_id = '${userId}';
-    DELETE FROM fitmind_reading_streaks WHERE user_id = '${userId}';
-    DELETE FROM fitmind_documents;
-    DELETE FROM document_content_hashes;
-    DELETE FROM app_state;
-    DELETE FROM user_profile WHERE id = '${userId}';
-  `);
+  const tables = [
+    { table: 'session_exercises', where: `session_id IN (SELECT id FROM workout_sessions WHERE user_id = ?)` },
+    { table: 'workout_sessions', where: `user_id = ?` },
+    { table: 'progress_records', where: `user_id = ?` },
+    { table: 'muscle_fatigue', where: `user_id = ?` },
+    { table: 'user_injuries', where: `user_id = ?` },
+    { table: 'user_equipment', where: `user_id = ?` },
+    { table: 'workout_streaks', where: `user_id = ?` },
+    { table: 'daily_steps', where: `user_id = ?` },
+    { table: 'jog_sessions', where: `user_id = ?` },
+    { table: 'audio_settings', where: `user_id = ?` },
+    { table: 'body_craft_algorithms', where: `user_id = ?` },
+    { table: 'subscription_state', where: `user_id = ?` },
+    { table: 'trial_state', where: `user_id = ?` },
+    { table: 'encrypted_health_data', where: null },
+    { table: 'encrypted_ai_conversations', where: null },
+    { table: 'encrypted_notes', where: null },
+    { table: 'health_alerts', where: `user_id = ?` },
+    { table: 'heart_rate_readings', where: `user_id = ?` },
+    { table: 'anomaly_log', where: `user_id = ?` },
+    { table: 'daily_health_summaries', where: `user_id = ?` },
+    { table: 'fitmind_reading_sessions', where: null },
+    { table: 'fitmind_annotations', where: null },
+    { table: 'fitmind_flashcards', where: null },
+    { table: 'fitmind_reading_goals', where: `user_id = ?` },
+    { table: 'fitmind_reading_streaks', where: `user_id = ?` },
+    { table: 'fitmind_documents', where: null },
+    { table: 'document_content_hashes', where: null },
+    { table: 'app_state', where: null },
+    { table: 'user_profile', where: `id = ?` },
+  ];
+  for (const { table, where } of tables) {
+    if (where) {
+      await db.runAsync(`DELETE FROM ${table} WHERE ${where}`, userId);
+    } else {
+      await db.runAsync(`DELETE FROM ${table}`);
+    }
+  }
 }

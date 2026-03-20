@@ -93,6 +93,7 @@ export default function DashboardScreen() {
 
   // Debounce loadProgress to prevent triple-calls from focus + sync events
   const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isLoadingRef = useRef(false);
   const debouncedLoad = useCallback(() => {
     if (!dbReady) return;
     if (loadTimer.current) clearTimeout(loadTimer.current);
@@ -113,6 +114,11 @@ export default function DashboardScreen() {
   );
 
   const loadProgress = async () => {
+    if (isLoadingRef.current) {
+      if (__DEV__) console.log('[Dashboard] loadProgress:skipped (already loading)');
+      return;
+    }
+    isLoadingRef.current = true;
     if (__DEV__) console.log('[Dashboard] loadProgress:start');
     try {
       // Parallel data loading — all independent queries at once
@@ -209,6 +215,7 @@ export default function DashboardScreen() {
       if (__DEV__) console.error('[Dashboard] Failed to load progress:', error);
     } finally {
       setLoading(false);
+      isLoadingRef.current = false;
       if (__DEV__) console.log('[Dashboard] loadProgress:complete');
     }
   };

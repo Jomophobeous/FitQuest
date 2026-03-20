@@ -55,7 +55,7 @@ export default function PrivacyPolicyScreen() {
 
         <GlassCard style={styles.card}>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textMuted }]}>
-            {t('legal.lastUpdated')} 2026-03-13
+            {t('legal.lastUpdated')} 2026-03-20
           </ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.accent }]}>{t('legal.privacy.sections.developerTitle')}</ThemedText>
@@ -84,6 +84,8 @@ export default function PrivacyPolicyScreen() {
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyHealthConnect')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyRevenueCat')}</ThemedText>
           <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartySentry')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyPostHog')}</ThemedText>
+          <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>• {t('legal.privacy.bullets.thirdPartyExpo')}</ThemedText>
 
           <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('legal.privacy.sections.childrenTitle')}</ThemedText>
           <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>{t('legal.privacy.sections.childrenBody')}</ThemedText>

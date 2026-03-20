@@ -2,8 +2,10 @@ import Constants from 'expo-constants';
 import { deleteAppStateByPrefix, getAppState, setAppState } from '../database/service';
 import { recordConsentTimestamp } from './authApi';
 import { enqueueMutation } from './mutationQueueService';
+import { optOutPostHog, optInPostHog } from './posthogService';
+import { disableCrashReporting, enableCrashReporting } from './crashReporting';
 
-export const LEGAL_POLICY_VERSION = '2026-03-13.1';
+export const LEGAL_POLICY_VERSION = '2026-03-20.1';
 
 const CONSENT_TIMESTAMP_KEY = 'legal.consent.timestamp';
 const CONSENT_VERSION_KEY = 'legal.consent.version';
@@ -56,6 +58,7 @@ export async function storeConsentRecord(record: {
 
 export async function acceptCurrentPolicies(): Promise<{ timestamp: number; source: 'remote' | 'local'; version: string }> {
   const now = Date.now();
+  let result_out: { timestamp: number; source: 'remote' | 'local'; version: string };
   try {
     const result = await recordConsentTimestamp();
     const timestamp = Number(result?.consentTimestamp) || now;
@@ -64,7 +67,7 @@ export async function acceptCurrentPolicies(): Promise<{ timestamp: number; sour
       version: LEGAL_POLICY_VERSION,
       source: 'remote',
     });
-    return { timestamp, source: 'remote', version: LEGAL_POLICY_VERSION };
+    result_out = { timestamp, source: 'remote', version: LEGAL_POLICY_VERSION };
   } catch {
     await storeConsentRecord({
       timestamp: now,
@@ -76,12 +79,17 @@ export async function acceptCurrentPolicies(): Promise<{ timestamp: number; sour
       { timestamp: now, version: LEGAL_POLICY_VERSION },
       { dedupeKey: 'legal.sync_consent.current' },
     );
-    return { timestamp: now, source: 'local', version: LEGAL_POLICY_VERSION };
+    result_out = { timestamp: now, source: 'local', version: LEGAL_POLICY_VERSION };
   }
+  await optInPostHog();
+  enableCrashReporting();
+  return result_out;
 }
 
 export async function withdrawConsentLocally(): Promise<void> {
   await deleteAppStateByPrefix('legal.consent.');
+  await optOutPostHog();
+  disableCrashReporting();
 }
 
 export function getLegalLinks(): LegalLinks {

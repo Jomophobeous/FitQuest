@@ -60,3 +60,35 @@ export function capturePerformanceMetric(name: string, durationMs: number): void
     // no-op fallback
   }
 }
+
+/**
+ * Disable Sentry crash reporting.
+ * Called when user withdraws consent in Legal Center.
+ */
+export function disableCrashReporting(): void {
+  try {
+    const Sentry = require('@sentry/react-native');
+    const client = Sentry.getClient();
+    if (client) {
+      client.getOptions().enabled = false;
+    }
+  } catch {
+    // no-op fallback
+  }
+}
+
+/**
+ * Re-enable Sentry crash reporting.
+ * Called when user re-accepts consent in Legal Center.
+ */
+export function enableCrashReporting(): void {
+  try {
+    const Sentry = require('@sentry/react-native');
+    const client = Sentry.getClient();
+    if (client) {
+      client.getOptions().enabled = true;
+    }
+  } catch {
+    // no-op fallback
+  }
+}

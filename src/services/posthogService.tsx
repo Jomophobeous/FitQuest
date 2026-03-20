@@ -95,3 +95,25 @@ export function PostHogAnalyticsProvider({ children }: { children: React.ReactNo
     </PostHogProvider>
   );
 }
+
+/**
+ * Opt out of PostHog analytics.
+ * Called when user withdraws consent in Legal Center.
+ */
+export async function optOutPostHog(): Promise<void> {
+  const client = await getPostHogClient();
+  if (client) {
+    client.optOut();
+  }
+}
+
+/**
+ * Opt back in to PostHog analytics.
+ * Called when user re-accepts consent in Legal Center.
+ */
+export async function optInPostHog(): Promise<void> {
+  const client = await getPostHogClient();
+  if (client) {
+    client.optIn();
+  }
+}

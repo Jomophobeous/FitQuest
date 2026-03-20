@@ -1318,20 +1318,24 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <SectionHeader title="Subscription" delay={350} />
           <MenuItem
-            icon={subState.hasAccess ? 'check-decagram' : 'lock-outline'}
-            label={subState.hasAccess
-              ? (subState.state.isTrial ? 'Free Trial' : 'Premium Active')
-              : 'Upgrade to Premium'}
-            sublabel={subState.hasAccess
-              ? (subState.state.isTrial
-                ? `${subState.trialDaysRemaining} days remaining`
-                : `${subState.state.productIdentifier === 'fitquest_annual' ? 'Annual' : 'Monthly'} plan`)
-              : 'Unlock all features'}
-            color={subState.hasAccess ? theme.colors.accent : theme.colors.warning}
+            icon={subState.accessState === 'RESOLVING' ? 'loading' : (subState.accessState === 'TRIAL' || subState.accessState === 'FULL') ? 'check-decagram' : 'lock-outline'}
+            label={subState.accessState === 'RESOLVING'
+              ? 'Loading…'
+              : (subState.accessState === 'TRIAL' || subState.accessState === 'FULL')
+                ? (subState.state.isTrial ? 'Free Trial' : 'Premium Active')
+                : 'Upgrade to Premium'}
+            sublabel={subState.accessState === 'RESOLVING'
+              ? 'Checking subscription…'
+              : (subState.accessState === 'TRIAL' || subState.accessState === 'FULL')
+                ? (subState.state.isTrial
+                  ? `${subState.trialDaysRemaining} days remaining`
+                  : `${subState.state.productIdentifier === 'fitquest_annual' ? 'Annual' : 'Monthly'} plan`)
+                : 'Unlock all features'}
+            color={subState.accessState === 'RESOLVING' ? theme.colors.textMuted : (subState.accessState === 'TRIAL' || subState.accessState === 'FULL') ? theme.colors.accent : theme.colors.warning}
             delay={370}
             onPress={() => router.push('/paywall')}
           />
-          {subState.hasAccess && !subState.state.isTrial && (
+          {subState.accessState === 'FULL' && !subState.state.isTrial && (
             <MenuItem
               icon="restore"
               label="Restore Purchases"

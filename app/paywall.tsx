@@ -252,8 +252,7 @@ export default function PaywallScreen() {
     purchaseMonthly,
     purchaseAnnual,
     restorePurchases,
-    hasAccess,
-    isLoading: subLoading,
+    accessState,
   } = useSubscription();
 
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
@@ -264,12 +263,10 @@ export default function PaywallScreen() {
 
   // Only redirect if user is a PAID subscriber (not trial)
   useEffect(() => {
-    // Wait for loading to finish, then check if user is PAID subscriber
-    if (!subLoading && hasAccess && subscriptionState.status === 'ACTIVE') {
-      // Already paid subscriber — don't show paywall
+    if (accessState === 'FULL' && subscriptionState.status === 'ACTIVE') {
       router.replace('/dashboard');
     }
-  }, [hasAccess, subLoading, subscriptionState.status, router]);
+  }, [accessState, subscriptionState.status, router]);
 
   const handleSubscribe = async () => {
     setPurchasing(true);

@@ -20,6 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     'expo-notifications',
     'expo-updates',
     'expo-location',
+    './plugins/withAndroidAaptOptions',
     // '@maplibre/maplibre-react-native', // REMOVED: v10.4.2 incompatible with New Architecture (Bridgeless) — causes fatal ReactNativeHost crash
     [
       'expo-build-properties',

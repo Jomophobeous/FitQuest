@@ -44,6 +44,7 @@ server/.env
 
 # Alfred autonomous runtime state
 agents/alfred/state/*.json
+agents/alfred/state/*.jsonl
 
 # Python cache artifacts
 __pycache__/

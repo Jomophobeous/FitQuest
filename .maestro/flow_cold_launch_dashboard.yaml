@@ -1,0 +1,64 @@
+# Flow 3: Cold Launch → Dashboard Stability
+# Validates: App launches cleanly, dashboard renders without crash,
+#            no blank screens, no infinite loading
+appId: com.hugelet.fitquest
+
+---
+# Kill app completely and relaunch
+- stopApp
+- launchApp
+
+# App should not show error boundary
+- assertNotVisible:
+    text: ".*Something went wrong.*|.*crashed.*"
+    timeout: 3000
+
+# Dashboard should render within 10 seconds
+- assertVisible:
+    text: ".*Dashboard.*|.*FitQuest.*|.*Today.*|.*Welcome.*"
+    timeout: 10000
+
+# Verify key dashboard sections load (no blank state)
+- assertVisible:
+    text: ".*Workout.*|.*Health.*|.*Steps.*|.*Streak.*|.*XP.*"
+    timeout: 8000
+    optional: true
+
+# Quick navigation smoke test — tap each tab and verify no crash
+- tapOn:
+    text: ".*FitQuest.*|.*Train.*"
+    optional: true
+- assertNotVisible:
+    text: ".*Something went wrong.*|.*crashed.*"
+    timeout: 3000
+
+- tapOn:
+    text: ".*Move.*"
+    optional: true
+- assertNotVisible:
+    text: ".*Something went wrong.*|.*crashed.*"
+    timeout: 3000
+
+- tapOn:
+    text: ".*Exercises.*"
+    optional: true
+- assertNotVisible:
+    text: ".*Something went wrong.*|.*crashed.*"
+    timeout: 3000
+
+- tapOn:
+    text: ".*Profile.*|.*Settings.*"
+    optional: true
+- assertNotVisible:
+    text: ".*Something went wrong.*|.*crashed.*"
+    timeout: 3000
+
+# Return to dashboard
+- tapOn:
+    text: ".*Dashboard.*|.*Home.*"
+    optional: true
+
+# Final stability check — dashboard still renders
+- assertVisible:
+    text: ".*Dashboard.*|.*FitQuest.*|.*Today.*"
+    timeout: 5000

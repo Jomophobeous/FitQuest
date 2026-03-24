@@ -3,9 +3,9 @@ module.exports = function(api) {
 
   const plugins = [];
 
-  // Strip console.* calls in production builds to reduce noise and bundle size
+  // Strip console.log/debug/info in production; preserve console.warn/error for Sentry breadcrumbs
   if (process.env.NODE_ENV === 'production' || process.env.BABEL_ENV === 'production') {
-    plugins.push('transform-remove-console');
+    plugins.push(['transform-remove-console', { exclude: ['warn', 'error'] }]);
   }
 
   // Reanimated MUST be last

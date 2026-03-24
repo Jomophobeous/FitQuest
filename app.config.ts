@@ -12,6 +12,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
  */
 
 const IS_DEV_CLIENT = process.env.FITQUEST_DEV_CLIENT === '1';
+const APP_ENV = process.env.EXPO_PUBLIC_ENV || (__DEV__ ? 'development' : 'production');
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   // ── Plugins common to both profiles ──
@@ -55,10 +56,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     version: '2.3.0',
     sdkVersion: '55.0.0',
 
-    // runtimeVersion only needed for dev-client / EAS Update
-    ...(IS_DEV_CLIENT && {
-      runtimeVersion: { policy: 'appVersion' as const },
-    }),
+    // runtimeVersion required for EAS Update on all build profiles
+    runtimeVersion: { policy: 'appVersion' as const },
 
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -152,6 +151,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         termsOfServiceUrl: 'https://fitquest.app/terms',
       },
       profile: IS_DEV_CLIENT ? 'dev' : 'go',
+      appEnv: APP_ENV,
     },
 
     owner: 'hugelet',

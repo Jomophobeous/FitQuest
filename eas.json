@@ -12,6 +12,13 @@
         "FITQUEST_DEV_CLIENT": "1"
       }
     },
+    "staging": {
+      "distribution": "internal",
+      "channel": "staging",
+      "env": {
+        "EXPO_PUBLIC_ENV": "staging"
+      }
+    },
     "preview": {
       "distribution": "internal",
       "channel": "preview"

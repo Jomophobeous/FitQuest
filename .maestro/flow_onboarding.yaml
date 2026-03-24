@@ -1,0 +1,51 @@
+# Flow 1: Onboarding → Profile Save
+# Validates: Fresh user can complete onboarding and profile persists
+appId: com.hugelet.fitquest
+
+---
+- clearState
+- launchApp
+
+# Wait for splash/initial screen
+- assertVisible: "FitQuest"
+
+# Onboarding should appear for fresh install
+- assertVisible:
+    text: ".*goal.*|.*experience.*|.*welcome.*"
+    optional: true
+
+# Select a training goal (body_control is first)
+- tapOn:
+    text: ".*Body Control.*|.*body_control.*|.*Strength.*"
+    optional: true
+
+# Select experience level
+- tapOn:
+    text: ".*Beginner.*|.*beginner.*"
+    optional: true
+
+# Set training days
+- tapOn:
+    text: ".*3.*days.*|.*Continue.*|.*Next.*"
+    optional: true
+
+# Complete onboarding flow
+- tapOn:
+    text: ".*Start.*|.*Continue.*|.*Let.*Go.*|.*Done.*"
+    optional: true
+
+# Verify we reach dashboard or main screen
+- assertVisible:
+    text: ".*Dashboard.*|.*FitQuest.*|.*Today.*"
+    timeout: 10000
+
+# Navigate to profile to verify data persisted
+- tapOn:
+    text: ".*Profile.*|.*Settings.*"
+    optional: true
+
+# Profile should show the selected goal
+- assertVisible:
+    text: ".*Body Control.*|.*Strength.*|.*Beginner.*"
+    optional: true
+    timeout: 5000

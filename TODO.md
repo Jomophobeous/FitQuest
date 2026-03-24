@@ -85,12 +85,13 @@ Last updated: 2026-02-18
 - ⏳ A/B testing via feature flags
 - **Estimated**: 3 weeks
 
-### Sync Phase 3: Native Health Integration (MEDIUM)
-- ⏳ Android Health Connect adapter (react-native-health-connect)
+### Sync Phase 3: Native Health Integration (DEFERRED → v3.0)
+- ⏸️ Android Health Connect adapter — **built but disabled** (`HEALTH_SYNC` flag = false)
 - ⏳ iOS HealthKit adapter (react-native-health)
-- ⏳ Unified HealthDataSource interface
-- ⏳ Permission request UI flow
-- **Estimated**: 2 weeks
+- ✅ Unified HealthDataSource interface — built
+- ✅ Permission request UI flow — built (removed from onboarding, available when flag re-enabled)
+- **Status**: Adapter code complete, gated by feature flag. Native `lateinit` crash blocks production use.
+- **Estimated**: Re-enable after react-native-health-connect stable fix
 
 ### Sync Phase 4: Analytics Visualization (MEDIUM)
 - ⏳ Victory Native integration
@@ -173,6 +174,31 @@ FitQuest already has sophisticated neural models bundled (~143MB):
 | react-native-executorch | Too heavy, limits device compatibility |
 | llama.cpp | Requires significant storage/RAM |
 | Cloud AI | Breaks offline-first philosophy |
+
+---
+
+## ⏸️ Deferred Features (v3.0 — Next Major Version)
+
+Features disabled via feature flags. Code remains intact, gated at runtime.
+
+| Feature | Flag | Reason for Deferral | Re-enable When |
+|---------|------|---------------------|----------------|
+| **Health Connect / Health Sync** | `HEALTH_SYNC = false` | Native `lateinit` crash on permission request. Postinstall Kotlin patch is band-aid. Quarantine system masks but doesn't fix. Adds Google Play compliance burden (Health Connect disclosure). | react-native-health-connect releases stable fix for permission delegate lifecycle; OR replace with direct Health Connect SDK integration |
+| **Victory Native Charts** | `VICTORY_CHARTS = false` | Dependency size, not needed for MVP analytics | Analytics Phase 4 visualization sprint |
+| **Skia Health Card** | `SKIA_HEALTH_CARD = false` | Experimental visualization, not stable | After Victory charts are validated |
+| **AI Phase 4: Expanded Templates** | N/A (not started) | 100+ COACH + 50+ PROFESSOR templates. Quality over quantity — current templates work | Post-launch content sprint |
+| **AI Phase 5: Smart Suggestions** | N/A (not started) | Context-aware quick replies. Nice-to-have, not blocking | Post-launch UX iteration |
+| **Cloud AI** | N/A | Breaks offline-first philosophy | If/when backend is built |
+| **react-native-executorch** | N/A | Too heavy, limits device compatibility | Hardware catches up |
+| **llama.cpp** | N/A | Requires significant storage/RAM | If user demand justifies |
+
+### What's NOT Deferred (Fully Functional)
+- ✅ **FitMind** (Library + Reader + AI + Flashcards) — fully wired, working
+- ✅ **AI Coach / Professor** — template-based + neural models, working
+- ✅ **Health Dashboard** — local data (steps, sleep, workouts), working without HC sync
+- ✅ **Workout Engine** — generation, progression, recovery, all working
+- ✅ **Encrypted DB** — v3 AES-256-GCM, working
+- ✅ **Biometric Auth** — working
 
 ---
 

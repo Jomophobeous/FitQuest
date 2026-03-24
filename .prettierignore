@@ -1,0 +1,12 @@
+node_modules
+android
+ios
+dist
+web-build
+.expo
+agents
+Figma UI
+workspace-repos
+website
+training
+*.md

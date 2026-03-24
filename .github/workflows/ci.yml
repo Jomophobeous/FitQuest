@@ -2,9 +2,9 @@ name: CI — Typecheck & Test
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -29,9 +29,11 @@ jobs:
       - name: TypeScript strict check
         run: npx tsc --noEmit
 
-      - name: Lint check
-        run: npm run lint
-        continue-on-error: true
+      - name: Lint check (zero errors enforced)
+        run: npx eslint app/ src/ --max-warnings 9999
+
+      - name: Format check
+        run: npx prettier --check "app/**/*.{ts,tsx}" "src/**/*.{ts,tsx}"
 
       - name: Run unit tests
         run: npx vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic

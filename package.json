@@ -1,6 +1,6 @@
 {
   "name": "fitquest-mobile",
-  "version": "2.0.0",
+  "version": "2.3.0",
   "private": true,
   "engines": {
     "node": ">=20.19.4"
@@ -20,6 +20,10 @@
     "build:aab": "cd android && ./gradlew bundleRelease -x lint --max-workers=1 -Dorg.gradle.jvmargs='-Xmx4096m -XX:+UseSerialGC'",
     "build:apk": "cd android && ./gradlew assembleRelease -x lint --max-workers=1 -Dorg.gradle.jvmargs='-Xmx4096m -XX:+UseSerialGC'",
     "lint": "eslint app/ src/ --max-warnings 0",
+    "lint:fix": "eslint app/ src/ --fix --max-warnings 0",
+    "format": "prettier --write \"app/**/*.{ts,tsx}\" \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"src/**/*.{ts,tsx}\"",
+    "preflight": "tsc --noEmit && eslint app/ src/ --max-warnings 0",
     "preflight:oauth": "node scripts/oauth-preflight.mjs",
     "verify:phase2": "node scripts/phase2-verify.mjs",
     "verify:phase2:lite": "node scripts/phase2-verify-lite.mjs",
@@ -53,7 +57,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --pool forks --maxWorkers 1 --no-file-parallelism --reporter basic",
     "alfred:run": "./.venv/bin/python agents/alfred/orchestrator.py --repo-root .",
-    "alfred:cycle": "./.venv/bin/python agents/alfred/orchestrator.py --repo-root . --cycles 1 --dry-run"
+    "alfred:cycle": "./.venv/bin/python agents/alfred/orchestrator.py --repo-root . --cycles 1 --dry-run",
+    "postinstall": "bash scripts/patch-health-connect.sh",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -118,8 +124,15 @@
     "@types/react": "^19.1.10",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-native": "^5.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1",
     "vitest": "^2.1.9"
@@ -127,6 +140,16 @@
   "overrides": {
     "esbuild": "0.25.0",
     "@expo/fingerprint": "0.15.4"
+  },
+  "lint-staged": {
+    "app/**/*.{ts,tsx}": [
+      "eslint --max-warnings 0",
+      "prettier --check"
+    ],
+    "src/**/*.{ts,tsx}": [
+      "eslint --max-warnings 0",
+      "prettier --check"
+    ]
   },
   "expo": {
     "doctor": {

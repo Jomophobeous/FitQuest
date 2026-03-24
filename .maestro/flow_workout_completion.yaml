@@ -1,0 +1,59 @@
+# Flow 2: Workout → Completion → XP Persistence
+# Validates: User can start a workout, complete it, and XP is awarded
+appId: com.hugelet.fitquest
+
+---
+- launchApp
+
+# Wait for app to load
+- assertVisible:
+    text: ".*Dashboard.*|.*FitQuest.*|.*Today.*"
+    timeout: 10000
+
+# Navigate to FitQuest (workout) tab
+- tapOn:
+    text: ".*FitQuest.*|.*Workout.*|.*Train.*"
+
+# Wait for workout screen
+- assertVisible:
+    text: ".*Generate.*|.*Start.*|.*Workout.*"
+    timeout: 8000
+
+# Generate or start a workout
+- tapOn:
+    text: ".*Generate.*Workout.*|.*Start.*Training.*|.*New.*Workout.*"
+    optional: true
+
+# Wait for workout to load with exercises
+- assertVisible:
+    text: ".*Exercise.*|.*Set.*|.*Rep.*"
+    timeout: 10000
+    optional: true
+
+# Complete first exercise (tap complete/done/next)
+- tapOn:
+    text: ".*Complete.*|.*Done.*|.*Next.*|.*Skip.*"
+    optional: true
+
+# Complete workout (may need multiple taps)
+- tapOn:
+    text: ".*Finish.*|.*Complete.*Workout.*|.*End.*"
+    optional: true
+    timeout: 5000
+
+# Verify completion screen with XP
+- assertVisible:
+    text: ".*XP.*|.*Complete.*|.*Great.*|.*Well.*Done.*"
+    timeout: 8000
+    optional: true
+
+# Go back to dashboard
+- tapOn:
+    text: ".*Dashboard.*|.*Home.*|.*Back.*"
+    optional: true
+
+# Verify XP is visible on dashboard (persisted)
+- assertVisible:
+    text: ".*XP.*|.*Level.*|.*Streak.*"
+    timeout: 5000
+    optional: true

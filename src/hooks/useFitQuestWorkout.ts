@@ -3,9 +3,10 @@
  * Integrates all three engines for workout generation, progression, and recovery
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDatabase, DEFAULT_USER_ID } from '../context/DatabaseContext';
 import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedExerciseBatch } from '../i18n/ExerciseLocalizationService';
 
 // Engine imports
 import {
@@ -24,11 +25,21 @@ import {
 import {
   generateWorkoutSummary,
   generatePostWorkoutSummary,
+  explainWorkoutSelection,
+  type WorkoutExplanation,
+  type ExerciseReason,
 } from '../engines/transparencyLayer';
 
 import {
-  validateWorkoutCanGenerate,
-} from '../engines/edgeCaseGuards';
+  getLastSessionImpact,
+  getWorkoutDelta,
+  getProgressionNarratives,
+  type LastSessionImpact,
+  type WorkoutDelta,
+  type ExerciseProgressionNarrative,
+} from '../engines/AdaptiveMemoryEngine';
+
+import { validateWorkoutCanGenerate } from '../engines/edgeCaseGuards';
 
 import {
   getExercisesByIds,
@@ -49,7 +60,39 @@ import { logEvent } from '../services/telemetry';
 
 import type { TargetMuscle, ExerciseWithDetails } from '../database/types';
 import { generateWarmupCooldown, type WarmupCooldownExercise } from '../engines/warmupCooldownGenerator';
-import { isMindExercise, generateMindTimeline, getMindDuration, formatMindDuration, type MindTimeline } from '../engines/MindSessionEngine';
+import {
+  isMindExercise,
+  generateMindTimeline,
+  getMindDuration,
+  formatMindDuration,
+  type MindTimeline,
+} from '../engines/MindSessionEngine';
+
+// ============================================
+// RECOVERY REASON MAPPER
+// ============================================
+
+/** Map raw recovery engine reasons to user-friendly messages */
+function mapRecoveryReasonToFriendly(reasons: string[], severity: string): string {
+  if (reasons.length === 0) return 'All systems healthy — ready to train';
+
+  const friendly: string[] = [];
+  for (const r of reasons) {
+    if (/consecutive workout failures/i.test(r)) {
+      friendly.push('Take a recovery day — your body needs rest');
+    } else if (/muscle group.*critical fatigue/i.test(r)) {
+      friendly.push('Some muscles need more recovery time');
+    } else if (/average fatigue.*exceeds/i.test(r)) {
+      friendly.push('Overall fatigue is high — a lighter session is recommended');
+    } else if (/scheduled deload/i.test(r)) {
+      friendly.push('Scheduled recovery week — time to recharge');
+    } else {
+      friendly.push(r);
+    }
+  }
+
+  return friendly.join('. ');
+}
 
 // ============================================
 // TYPES
@@ -62,6 +105,14 @@ export interface GeneratedWorkoutDisplay {
   isDeload: boolean;
   explanation: string;
   warnings: string[];
+  /** Per-exercise AI reasoning from transparency layer */
+  aiInsight: WorkoutExplanation | null;
+  /** Adaptive memory: last session impact */
+  lastImpact: LastSessionImpact | null;
+  /** Adaptive memory: what changed from last workout */
+  workoutDelta: WorkoutDelta | null;
+  /** Adaptive memory: per-exercise progression narrative */
+  progressionNarratives: ExerciseProgressionNarrative[];
   /** P6: warm-up exercises shown before main workout */
   warmup: WorkoutExerciseDisplay[];
   /** P6: cool-down exercises shown after main workout */
@@ -127,9 +178,10 @@ export interface WorkoutCompletionData {
 
 export function useFitQuestWorkout() {
   const { userProfile, isReady } = useDatabase();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const finishingRef = useRef(false); // Prevent double-tap race condition on finish
   const generatingRef = useRef(false); // Prevent concurrent workout generation
+  const mountedRef = useRef(true); // Guard async setState after unmount
   const [state, setState] = useState<WorkoutState>({
     status: 'idle',
     workout: null,
@@ -137,6 +189,14 @@ export function useFitQuestWorkout() {
     startTime: null,
     error: null,
   });
+
+  // Track mount/unmount for async safety
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const [fatigueSnapshot, setFatigueSnapshot] = useState<Map<TargetMuscle, number>>(new Map());
   const [deloadStatus, setDeloadStatus] = useState<{ needed: boolean; reason: string } | null>(null);
@@ -156,16 +216,16 @@ export function useFitQuestWorkout() {
       generatingRef.current = false;
       const detail = !isReady ? 'Database is still initializing' : 'User profile not loaded';
       if (__DEV__) console.warn('[FitQuest] generateNewWorkout blocked:', detail);
-      setState((prev: WorkoutState) => ({ ...prev, status: 'error', error: detail }));
+      if (mountedRef.current) setState((prev: WorkoutState) => ({ ...prev, status: 'error', error: detail }));
       return;
     }
 
-    setState((prev: WorkoutState) => ({ ...prev, status: 'generating', error: null }));
+    if (mountedRef.current) setState((prev: WorkoutState) => ({ ...prev, status: 'generating', error: null }));
 
     // Timeout to prevent infinite loading on weak devices
     const GENERATION_TIMEOUT_MS = 20_000;
     const timeoutId = setTimeout(() => {
-      if (generatingRef.current) {
+      if (generatingRef.current && mountedRef.current) {
         generatingRef.current = false;
         setState((prev: WorkoutState) => ({
           ...prev,
@@ -186,7 +246,7 @@ export function useFitQuestWorkout() {
       const deload = await checkDeloadStatus(DEFAULT_USER_ID);
       setDeloadStatus({
         needed: deload.severity === 'required' || deload.severity === 'recommended',
-        reason: deload.reasons.join('; ') || 'System healthy',
+        reason: mapRecoveryReasonToFriendly(deload.reasons, deload.severity),
       });
 
       // Step 3: Validate generation is possible
@@ -260,7 +320,7 @@ export function useFitQuestWorkout() {
       }
 
       // Step 7: Generate warm-up & cool-down (P6)
-      const mainExerciseIds = new Set(generated.exercises.map(e => e.exercise.id));
+      const mainExerciseIds = new Set(generated.exercises.map((e) => e.exercise.id));
       let warmupDisplays: WorkoutExerciseDisplay[] = [];
       let cooldownDisplays: WorkoutExerciseDisplay[] = [];
       try {
@@ -306,11 +366,73 @@ export function useFitQuestWorkout() {
         exerciseDisplays.length,
         userProfile.goal,
         generated.total_duration_estimate,
-        isDeload
+        isDeload,
       );
+
+      // Step 9: Generate per-exercise AI reasoning
+      let aiInsight: WorkoutExplanation | null = null;
+      try {
+        const exercisesWithDetails = generated.exercises.map((e) => e.exercise);
+        aiInsight = explainWorkoutSelection(exercisesWithDetails, userProfile.goal, fatigueMap, isDeload);
+      } catch {
+        if (__DEV__) console.warn('[FitQuest] AI insight generation failed (non-fatal)');
+      }
+
+      // Step 10: Adaptive Memory — last session impact + workout delta + progression narratives
+      let lastImpact: LastSessionImpact | null = null;
+      let workoutDelta: WorkoutDelta | null = null;
+      let progressionNarratives: ExerciseProgressionNarrative[] = [];
+      try {
+        const mainExerciseIdList = exerciseDisplays.map((e) => e.exerciseId);
+        const nameMap = new Map(exerciseDisplays.map((e) => [e.exerciseId, e.name]));
+        const [impact, delta, narratives] = await Promise.all([
+          getLastSessionImpact(DEFAULT_USER_ID),
+          getWorkoutDelta(DEFAULT_USER_ID, mainExerciseIdList, fatigueMap),
+          getProgressionNarratives(DEFAULT_USER_ID, mainExerciseIdList, nameMap),
+        ]);
+        lastImpact = impact;
+        workoutDelta = delta;
+        progressionNarratives = narratives;
+      } catch {
+        if (__DEV__) console.warn('[FitQuest] Adaptive memory generation failed (non-fatal)');
+      }
 
       // Combine warmup → main → cooldown into a single exercises array
       // so the progression naturally flows through all phases
+
+      // Step 10.5: Overlay localized exercise data (name, instructions, audio)
+      if (language !== 'en') {
+        try {
+          const allIds = [
+            ...exerciseDisplays.map((e) => e.exerciseId),
+            ...warmupDisplays.map((e) => e.exerciseId),
+            ...cooldownDisplays.map((e) => e.exerciseId),
+          ];
+          const localized = await getLocalizedExerciseBatch(allIds, language);
+          const overlayLocalization = (displays: WorkoutExerciseDisplay[]) => {
+            for (let i = 0; i < displays.length; i++) {
+              const loc = localized.get(displays[i]!.exerciseId);
+              if (loc && !loc.isFallback) {
+                displays[i] = {
+                  ...displays[i]!,
+                  name: loc.name,
+                  instructions: loc.instructions,
+                  audioIntro: loc.audioIntro || displays[i]!.audioIntro,
+                  audioSetup: loc.audioSetup || displays[i]!.audioSetup,
+                  audioExecution: loc.audioExecution || displays[i]!.audioExecution,
+                  audioTransition: loc.audioTransition || displays[i]!.audioTransition,
+                };
+              }
+            }
+          };
+          overlayLocalization(exerciseDisplays);
+          overlayLocalization(warmupDisplays);
+          overlayLocalization(cooldownDisplays);
+        } catch (locErr) {
+          if (__DEV__) console.warn('[FitQuest] Exercise localization overlay failed (non-fatal):', locErr);
+        }
+      }
+
       const allExercises = [...warmupDisplays, ...exerciseDisplays, ...cooldownDisplays];
 
       const workout: GeneratedWorkoutDisplay = {
@@ -319,10 +441,16 @@ export function useFitQuestWorkout() {
         totalDuration: generated.total_duration_estimate,
         isDeload,
         explanation: summary,
+        aiInsight,
+        lastImpact,
+        workoutDelta,
+        progressionNarratives,
         warnings: validation.recommendations,
         warmup: warmupDisplays,
         cooldown: cooldownDisplays,
       };
+
+      if (!mountedRef.current) return;
 
       setState({
         status: 'ready',
@@ -335,103 +463,140 @@ export function useFitQuestWorkout() {
       if (__DEV__) console.log('[FitQuest] Workout generated:', workout.id);
     } catch (err) {
       if (__DEV__) console.error('[FitQuest] Workout generation failed:', err);
-      setState((prev: WorkoutState) => ({
-        ...prev,
-        status: 'error',
-        error: err instanceof Error ? err.message : 'Failed to generate workout',
-      }));
+      if (mountedRef.current) {
+        setState((prev: WorkoutState) => ({
+          ...prev,
+          status: 'error',
+          error: err instanceof Error ? err.message : 'Failed to generate workout',
+        }));
+      }
     } finally {
       clearTimeout(timeoutId);
       generatingRef.current = false;
     }
-  }, [isReady, userProfile]);
+  }, [isReady, userProfile, language]);
 
   /**
    * Load a custom (user-created) workout session from the database.
    * Used when launching workouts from saved-workouts or create-workout screens.
    */
-  const loadCustomWorkout = useCallback(async (sessionId: string) => {
-    setState((prev: WorkoutState) => ({ ...prev, status: 'generating', error: null }));
+  const loadCustomWorkout = useCallback(
+    async (sessionId: string) => {
+      if (mountedRef.current) setState((prev: WorkoutState) => ({ ...prev, status: 'generating', error: null }));
 
-    try {
-      const session = await getWorkoutSession(sessionId);
-      if (!session) throw new Error('Workout session not found');
+      try {
+        const session = await getWorkoutSession(sessionId);
+        if (!session) throw new Error('Workout session not found');
 
-      const sessionExercises = await getSessionExercises(sessionId);
-      if (!sessionExercises || sessionExercises.length === 0) {
-        throw new Error('No exercises found in this workout');
-      }
-
-      // Parse instructions safely (may be JSON array or plain text)
-      const safeParseInstructions = (raw: string | null): string[] => {
-        if (!raw) return [];
-        try {
-          const parsed = JSON.parse(raw);
-          return Array.isArray(parsed) ? parsed : [raw];
-        } catch {
-          return raw ? [raw] : [];
+        const sessionExercises = await getSessionExercises(sessionId);
+        if (!sessionExercises || sessionExercises.length === 0) {
+          throw new Error('No exercises found in this workout');
         }
-      };
 
-      const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
-        const richAudio = generateRichAudio(
-          {
+        // Parse instructions safely (may be JSON array or plain text)
+        const safeParseInstructions = (raw: string | null): string[] => {
+          if (!raw) return [];
+          try {
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [raw];
+          } catch {
+            return raw ? [raw] : [];
+          }
+        };
+
+        const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
+          const richAudio = generateRichAudio(
+            {
+              name: se.name,
+              category: se.category,
+              instructions: safeParseInstructions(se.instructions),
+              primaryMuscles: [],
+              restSeconds: 60,
+            },
+            sessionExercises[i + 1]?.name,
+            t,
+          );
+
+          return {
+            id: se.id,
+            exerciseId: se.exercise_id,
             name: se.name,
             category: se.category,
-            instructions: safeParseInstructions(se.instructions),
-            primaryMuscles: [],
+            sets: se.prescribed_sets,
+            reps: se.prescribed_reps,
             restSeconds: 60,
-          },
-          sessionExercises[i + 1]?.name,
-          t,
-        );
+            instructions: safeParseInstructions(se.instructions),
+            completed: false,
+            audioIntro: se.audio_intro || richAudio.intro,
+            audioSetup: se.audio_setup || richAudio.setup,
+            audioExecution: se.audio_execution || richAudio.execution,
+            audioTransition: se.audio_transition || richAudio.transition,
+          };
+        });
 
-        return {
-          id: se.id,
-          exerciseId: se.exercise_id,
-          name: se.name,
-          category: se.category,
-          sets: se.prescribed_sets,
-          reps: se.prescribed_reps,
-          restSeconds: 60,
-          instructions: safeParseInstructions(se.instructions),
-          completed: false,
-          audioIntro: se.audio_intro || richAudio.intro,
-          audioSetup: se.audio_setup || richAudio.setup,
-          audioExecution: se.audio_execution || richAudio.execution,
-          audioTransition: se.audio_transition || richAudio.transition,
+        // Overlay localized exercise data for non-English users
+        if (language !== 'en') {
+          try {
+            const allIds = exerciseDisplays.map((e) => e.exerciseId);
+            const localized = await getLocalizedExerciseBatch(allIds, language);
+            for (let i = 0; i < exerciseDisplays.length; i++) {
+              const loc = localized.get(exerciseDisplays[i]!.exerciseId);
+              if (loc && !loc.isFallback) {
+                exerciseDisplays[i] = {
+                  ...exerciseDisplays[i]!,
+                  name: loc.name,
+                  instructions: loc.instructions,
+                  audioIntro: loc.audioIntro || exerciseDisplays[i]!.audioIntro,
+                  audioSetup: loc.audioSetup || exerciseDisplays[i]!.audioSetup,
+                  audioExecution: loc.audioExecution || exerciseDisplays[i]!.audioExecution,
+                  audioTransition: loc.audioTransition || exerciseDisplays[i]!.audioTransition,
+                };
+              }
+            }
+          } catch (locErr) {
+            if (__DEV__) console.warn('[FitQuest] Custom workout localization failed (non-fatal):', locErr);
+          }
+        }
+
+        const workout: GeneratedWorkoutDisplay = {
+          id: sessionId,
+          exercises: exerciseDisplays,
+          totalDuration: session.duration_minutes || Math.round(sessionExercises.length * 3),
+          isDeload: false,
+          explanation: `Custom workout: ${session.notes?.replace('Custom: ', '') || sessionExercises.length + ' exercises'}`,
+          aiInsight: null,
+          lastImpact: null,
+          workoutDelta: null,
+          progressionNarratives: [],
+          warnings: [],
+          warmup: [],
+          cooldown: [],
         };
-      });
 
-      const workout: GeneratedWorkoutDisplay = {
-        id: sessionId,
-        exercises: exerciseDisplays,
-        totalDuration: session.duration_minutes || Math.round(sessionExercises.length * 3),
-        isDeload: false,
-        explanation: `Custom workout: ${session.notes?.replace('Custom: ', '') || sessionExercises.length + ' exercises'}`,
-        warnings: [],
-        warmup: [],
-        cooldown: [],
-      };
+        if (!mountedRef.current) return;
 
-      setState({
-        status: 'ready',
-        workout,
-        currentExerciseIndex: 0,
-        startTime: null,
-        error: null,
-      });
+        setState({
+          status: 'ready',
+          workout,
+          currentExerciseIndex: 0,
+          startTime: null,
+          error: null,
+        });
 
-      if (__DEV__) console.log('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
-    } catch (err) {
-      if (__DEV__) console.error('[FitQuest] Failed to load custom workout:', err);
-      setState((prev: WorkoutState) => ({
-        ...prev,
-        status: 'error',
-        error: err instanceof Error ? err.message : 'Failed to load custom workout',
-      }));
-    }
-  }, []);
+        if (__DEV__) console.log('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
+      } catch (err) {
+        if (__DEV__) console.error('[FitQuest] Failed to load custom workout:', err);
+        if (mountedRef.current) {
+          setState((prev: WorkoutState) => ({
+            ...prev,
+            status: 'error',
+            error: err instanceof Error ? err.message : 'Failed to load custom workout',
+          }));
+        }
+      }
+    },
+    [language],
+  );
   /**
    * Start the current workout
    */
@@ -452,33 +617,36 @@ export function useFitQuestWorkout() {
   /**
    * Mark current exercise as complete
    */
-  const completeExercise = useCallback((difficulty: number = 5) => {
-    if (!state.workout) return;
+  const completeExercise = useCallback(
+    (difficulty: number = 5) => {
+      if (!state.workout) return;
 
-    setState((prev: WorkoutState) => {
-      if (!prev.workout) return prev;
+      setState((prev: WorkoutState) => {
+        if (!prev.workout) return prev;
 
-      const updatedExercises = [...prev.workout.exercises];
-      const current = updatedExercises[prev.currentExerciseIndex];
-      if (current && prev.currentExerciseIndex < updatedExercises.length) {
-        updatedExercises[prev.currentExerciseIndex] = {
-          ...current,
-          completed: true,
-          difficulty,
+        const updatedExercises = [...prev.workout.exercises];
+        const current = updatedExercises[prev.currentExerciseIndex];
+        if (current && prev.currentExerciseIndex < updatedExercises.length) {
+          updatedExercises[prev.currentExerciseIndex] = {
+            ...current,
+            completed: true,
+            difficulty,
+          };
+        }
+
+        const nextIndex = prev.currentExerciseIndex + 1;
+        const allComplete = nextIndex >= updatedExercises.length;
+
+        return {
+          ...prev,
+          workout: { ...prev.workout, exercises: updatedExercises },
+          currentExerciseIndex: allComplete ? prev.currentExerciseIndex : nextIndex,
+          status: allComplete ? 'completed' : 'in_progress',
         };
-      }
-
-      const nextIndex = prev.currentExerciseIndex + 1;
-      const allComplete = nextIndex >= updatedExercises.length;
-
-      return {
-        ...prev,
-        workout: { ...prev.workout, exercises: updatedExercises },
-        currentExerciseIndex: allComplete ? prev.currentExerciseIndex : nextIndex,
-        status: allComplete ? 'completed' : 'in_progress',
-      };
-    });
-  }, [state.workout]);
+      });
+    },
+    [state.workout],
+  );
 
   /**
    * Skip current exercise
@@ -516,17 +684,15 @@ export function useFitQuestWorkout() {
       if (__DEV__) console.log('[FitQuest] finishWorkout already in progress, ignoring duplicate call');
       return null;
     }
-    
+
     // Allow finishing if we have a workout and are either completed OR in_progress (early finish)
     if (!state.workout || (state.status !== 'completed' && state.status !== 'in_progress')) return null;
 
     finishingRef.current = true;
-    
+
     try {
       // Only track performance and fatigue for main exercises (not warmup/cooldown)
-      const mainOnly = state.workout.exercises.filter(
-        (ex: WorkoutExerciseDisplay) => ex.phase === 'main' || !ex.phase
-      );
+      const mainOnly = state.workout.exercises.filter((ex: WorkoutExerciseDisplay) => ex.phase === 'main' || !ex.phase);
 
       // Build performance records
       const performances: ExercisePerformance[] = mainOnly.map((ex: WorkoutExerciseDisplay) => ({
@@ -540,11 +706,7 @@ export function useFitQuestWorkout() {
       }));
 
       // Record with ENGINE 2 (Progression)
-      const progressionDecisions = await recordSessionPerformance(
-        DEFAULT_USER_ID,
-        state.workout.id,
-        performances
-      );
+      const progressionDecisions = await recordSessionPerformance(DEFAULT_USER_ID, state.workout.id, performances);
 
       // Update fatigue with ENGINE 3 (Recovery)
       // Batch-load all completed exercises in one query instead of N+1
@@ -556,33 +718,20 @@ export function useFitQuestWorkout() {
         const exercise = exerciseMap.get(ex.exerciseId);
         if (exercise) {
           // Accumulate fatigue for trained muscles using actual exercise data
-          await accumulateFatigue(
-            DEFAULT_USER_ID,
-            exercise.primary_muscles,
-            exercise.secondary_muscles,
-            ex.sets
-          );
+          await accumulateFatigue(DEFAULT_USER_ID, exercise.primary_muscles, exercise.secondary_muscles, ex.sets);
         }
       }
 
       // Mark session complete (based on main exercises only)
       const completedCount = mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).length;
       const isSuccess = mainOnly.length > 0 && completedCount >= mainOnly.length * 0.8;
-      await completeWorkoutSession(
-        state.workout.id,
-        completedCount,
-        isSuccess
-      );
+      await completeWorkoutSession(state.workout.id, completedCount, isSuccess);
 
       // Update streak
       const streak = await updateStreak(DEFAULT_USER_ID);
 
       // Award XP
-      const xpResult = await awardWorkoutXP(
-        completedCount,
-        mainOnly.length,
-        streak.current
-      );
+      const xpResult = await awardWorkoutXP(completedCount, mainOnly.length, streak.current);
       if (__DEV__) console.log(`[FitQuest] XP earned: ${xpResult.xpEarned} (Level ${xpResult.data.level})`);
 
       // Generate summary
@@ -591,12 +740,7 @@ export function useFitQuestWorkout() {
       const xpLine = xpResult.levelUp
         ? `\n🎉 LEVEL UP! You reached Level ${xpResult.newLevel}!`
         : `\n⭐ +${xpResult.xpEarned} XP (Level ${xpResult.data.level})`;
-      const summary = generatePostWorkoutSummary(
-        completedCount,
-        mainOnly.length,
-        progressions,
-        regressions
-      ) + xpLine;
+      const summary = generatePostWorkoutSummary(completedCount, mainOnly.length, progressions, regressions) + xpLine;
 
       const difficultyValues = mainOnly
         .map((exercise) => exercise.difficulty)
@@ -605,19 +749,14 @@ export function useFitQuestWorkout() {
         ? difficultyValues.reduce((sum, value) => sum + value, 0) / difficultyValues.length
         : 5;
 
-      const adaptive = await updateAdaptiveTrainingProfileFromSession(
-        DEFAULT_USER_ID,
-        {
-          completedCount,
-          totalCount: mainOnly.length,
-          averageDifficulty,
-        }
-      );
+      const adaptive = await updateAdaptiveTrainingProfileFromSession(DEFAULT_USER_ID, {
+        completedCount,
+        totalCount: mainOnly.length,
+        averageDifficulty,
+      });
 
       const adaptiveLine = `\n🧠 Adaptive profile: fatigue ${adaptive.fatigueSensitivity.toFixed(2)} · progression ${adaptive.progressionAggressiveness.toFixed(2)} · volume ${adaptive.volumeTolerance.toFixed(2)}`;
-      const completionRatio = mainOnly.length > 0
-        ? completedCount / mainOnly.length
-        : 0;
+      const completionRatio = mainOnly.length > 0 ? completedCount / mainOnly.length : 0;
 
       const policyDecision = await evaluatePostWorkoutPolicyDecision(DEFAULT_USER_ID, {
         completionRatio,
@@ -635,7 +774,6 @@ export function useFitQuestWorkout() {
         : 0;
 
       try {
-
         for (const ex of mainOnly) {
           await queueAnalyticsEvent({
             event_type: 'exercise_outcome',
@@ -693,9 +831,15 @@ export function useFitQuestWorkout() {
       const warmupExercises = allExercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'warmup');
       const cooldownExercises = allExercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'cooldown');
       const phaseBreakdown = {
-        warmup: { total: warmupExercises.length, completed: warmupExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length },
+        warmup: {
+          total: warmupExercises.length,
+          completed: warmupExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length,
+        },
         main: { total: mainOnly.length, completed: completedCount },
-        cooldown: { total: cooldownExercises.length, completed: cooldownExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length },
+        cooldown: {
+          total: cooldownExercises.length,
+          completed: cooldownExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length,
+        },
       };
 
       return {
@@ -710,19 +854,21 @@ export function useFitQuestWorkout() {
         newLevel: xpResult.newLevel,
         progressions,
         regressions,
-        exerciseNames: mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).map(e => e.name),
+        exerciseNames: mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).map((e) => e.name),
         musclesWorked: Array.from(musclesWorkedSet),
         phaseBreakdown,
       };
     } catch (err) {
       if (__DEV__) console.error('[FitQuest] Failed to finish workout:', err);
-      setState({
-        status: 'error',
-        workout: null,
-        currentExerciseIndex: 0,
-        startTime: null,
-        error: err instanceof Error ? err.message : 'Failed to finish workout',
-      });
+      if (mountedRef.current) {
+        setState({
+          status: 'error',
+          workout: null,
+          currentExerciseIndex: 0,
+          startTime: null,
+          error: err instanceof Error ? err.message : 'Failed to finish workout',
+        });
+      }
       return null;
     } finally {
       finishingRef.current = false;
@@ -733,6 +879,9 @@ export function useFitQuestWorkout() {
    * Cancel the current workout
    */
   const cancelWorkout = useCallback(() => {
+    // Cancel any in-flight async operations
+    generatingRef.current = false;
+    finishingRef.current = false;
     setState({
       status: 'idle',
       workout: null,
@@ -753,9 +902,10 @@ export function useFitQuestWorkout() {
   const mainExercises = state.workout
     ? state.workout.exercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'main' || !e.phase)
     : [];
-  const progressPercentage = mainExercises.length > 0
-    ? (mainExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length / mainExercises.length) * 100
-    : 0;
+  const progressPercentage =
+    mainExercises.length > 0
+      ? (mainExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length / mainExercises.length) * 100
+      : 0;
 
   return {
     // State

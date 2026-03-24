@@ -21,7 +21,7 @@
  * Model IDs verified against OpenRouter API — July 2025.
  */
 
-import { dualAI, AIContext, AIResponse } from '../fitmind/DualAIEngine';
+import { dualAI, AIContext, AIResponse } from '../engines/DualAIEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
 
 // ============================================
@@ -38,8 +38,8 @@ export interface ModelInfo {
   provider: AIProviderName;
   displayName: string;
   tier: ModelTier;
-  qualityScore: number;    // 1-5
-  speedScore: number;      // 1-5
+  qualityScore: number; // 1-5
+  speedScore: number; // 1-5
   contextWindow: number;
   description: string;
   maxTokens: number;
@@ -79,10 +79,10 @@ interface CloudResponse {
 // ============================================
 
 export const TIER_LABELS: Record<ModelTier, { label: string; badge: string; color: string }> = {
-  elite:  { label: 'Elite',  badge: '\uD83D\uDC51', color: '#FFD700' }, // crown
+  elite: { label: 'Elite', badge: '\uD83D\uDC51', color: '#FFD700' }, // crown
   strong: { label: 'Strong', badge: '\uD83D\uDCAA', color: '#10B981' }, // muscle
-  fast:   { label: 'Fast',   badge: '\u26A1',       color: '#3B82F6' }, // bolt
-  free:   { label: 'Free',   badge: '\uD83C\uDD93', color: '#A855F7' }, // gift (legacy, kept for type compatibility)
+  fast: { label: 'Fast', badge: '\u26A1', color: '#3B82F6' }, // bolt
+  free: { label: 'Free', badge: '\uD83C\uDD93', color: '#A855F7' }, // gift (legacy, kept for type compatibility)
 };
 
 // ============================================
@@ -98,7 +98,8 @@ const MODEL_REGISTRY: ModelInfo[] = [
     provider: 'groq',
     displayName: 'Llama 3.3 70B',
     tier: 'strong',
-    qualityScore: 5, speedScore: 5,
+    qualityScore: 5,
+    speedScore: 5,
     contextWindow: 32768,
     description: 'Best overall — fast + smart',
     maxTokens: 500,
@@ -108,7 +109,8 @@ const MODEL_REGISTRY: ModelInfo[] = [
     provider: 'groq',
     displayName: 'Qwen QwQ 32B',
     tier: 'strong',
-    qualityScore: 4, speedScore: 4,
+    qualityScore: 4,
+    speedScore: 4,
     contextWindow: 32768,
     description: 'Deep reasoning model',
     maxTokens: 500,
@@ -118,17 +120,19 @@ const MODEL_REGISTRY: ModelInfo[] = [
     provider: 'groq',
     displayName: 'Llama 3.3 70B SpecDec',
     tier: 'strong',
-    qualityScore: 4, speedScore: 5,
+    qualityScore: 4,
+    speedScore: 5,
     contextWindow: 8192,
     description: 'Speculative decoding — very fast',
     maxTokens: 500,
   },
   {
-    id: 'gemma2-9b-it',
+    id: 'llama-3.2-3b-preview',
     provider: 'groq',
-    displayName: 'Gemma 2 9B',
+    displayName: 'Llama 3.2 3B',
     tier: 'fast',
-    qualityScore: 4, speedScore: 5,
+    qualityScore: 3,
+    speedScore: 5,
     contextWindow: 8192,
     description: 'Groq — fast compact model',
     maxTokens: 400,
@@ -138,7 +142,8 @@ const MODEL_REGISTRY: ModelInfo[] = [
     provider: 'groq',
     displayName: 'Llama 3.1 8B',
     tier: 'fast',
-    qualityScore: 3, speedScore: 5,
+    qualityScore: 3,
+    speedScore: 5,
     contextWindow: 8192,
     description: 'Ultra-fast responses',
     maxTokens: 400,
@@ -153,7 +158,8 @@ const MODEL_REGISTRY: ModelInfo[] = [
     provider: 'openrouter',
     displayName: 'Llama 3.3 70B',
     tier: 'elite',
-    qualityScore: 5, speedScore: 3,
+    qualityScore: 5,
+    speedScore: 3,
     contextWindow: 131072,
     description: "Meta's best open model (free fallback)",
     maxTokens: 500,
@@ -163,7 +169,8 @@ const MODEL_REGISTRY: ModelInfo[] = [
     provider: 'openrouter',
     displayName: 'Mistral Small 3.1',
     tier: 'strong',
-    qualityScore: 4, speedScore: 4,
+    qualityScore: 4,
+    speedScore: 4,
     contextWindow: 32768,
     description: 'Mistral — free fallback',
     maxTokens: 400,
@@ -174,9 +181,12 @@ const MODEL_REGISTRY: ModelInfo[] = [
 // QUERY COMPLEXITY ANALYZER
 // ============================================
 
-const COMPLEX_PATTERNS = /\b(plan|program|schedule|design|create|build|compare|analyze|calculat|breakdown|periodiz|macro|split|cycle|deload|progressive|superset|meal\s?plan|routine for|body\s?composition|transformation|what should i eat|weekly|monthly)\b/i;
-const EXPERT_PATTERNS  = /\b(why does|how does|explain the science|research|evidence|difference between|mechanism|biomechanic|kinesiolog|metabol|peer.?review|study shows|optimal|hypertrophy vs|progressive overload theory)\b/i;
-const SIMPLE_PATTERNS  = /^(hi|hey|hello|yo|sup|thanks|thank you|ok|okay|cool|nice|great|got it|yes|no|nah|yep|bye|gm|good morning|good evening|lol|haha|what's up|how are you)\b/i;
+const COMPLEX_PATTERNS =
+  /\b(plan|program|schedule|design|create|build|compare|analyze|calculat|breakdown|periodiz|macro|split|cycle|deload|progressive|superset|meal\s?plan|routine for|body\s?composition|transformation|what should i eat|weekly|monthly)\b/i;
+const EXPERT_PATTERNS =
+  /\b(why does|how does|explain the science|research|evidence|difference between|mechanism|biomechanic|kinesiolog|metabol|peer.?review|study shows|optimal|hypertrophy vs|progressive overload theory)\b/i;
+const SIMPLE_PATTERNS =
+  /^(hi|hey|hello|yo|sup|thanks|thank you|ok|okay|cool|nice|great|got it|yes|no|nah|yep|bye|gm|good morning|good evening|lol|haha|what's up|how are you)\b/i;
 const MODERATE_PATTERNS = /\b(how to|form for|tips for|what is|should i|can i|best for|good for|recommend|suggest)\b/i;
 
 function analyzeComplexity(input: string): QueryComplexity {
@@ -192,10 +202,14 @@ function analyzeComplexity(input: string): QueryComplexity {
 
 function complexityToTier(c: QueryComplexity): ModelTier {
   switch (c) {
-    case 'simple':   return 'fast';
-    case 'moderate': return 'strong';
-    case 'complex':  return 'elite';
-    case 'expert':   return 'elite';
+    case 'simple':
+      return 'fast';
+    case 'moderate':
+      return 'strong';
+    case 'complex':
+      return 'elite';
+    case 'expert':
+      return 'elite';
   }
 }
 
@@ -279,7 +293,7 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
     parts.push(`\nCONTEXT: ${dayOfWeek} late night — focus on recovery, sleep prep, and tomorrow's plan.`);
   }
   if (isWeekend) {
-    parts.push('It\'s the weekend — user may have more time for longer workouts or meal prep.');
+    parts.push("It's the weekend — user may have more time for longer workouts or meal prep.");
   }
 
   // ── Conversation depth adaptation ──
@@ -295,7 +309,9 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
   if (/\b(hurt|pain|injur|sore|strain|torn|swollen)\b/.test(lower)) {
     parts.push('IMPORTANT: User may have an injury. Be cautious. Recommend professional help if serious.');
   } else if (/\b(depress|anxious|stress|mental|overwhelm|burnt?\s*out)\b/.test(lower)) {
-    parts.push('SENSITIVITY: Be extra supportive. Mental health is serious. Suggest professional help when appropriate.');
+    parts.push(
+      'SENSITIVITY: Be extra supportive. Mental health is serious. Suggest professional help when appropriate.',
+    );
   } else if (/\b(plateau|stuck|not\s*seeing|no\s*progress|frustrated)\b/.test(lower)) {
     parts.push('TONE: User is frustrated. Validate their feelings first, then provide actionable solutions.');
   }
@@ -317,9 +333,14 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
     if (profile?.level) parts.push(`- Level: ${profile.level} (${profile.totalXP || 0} XP)`);
     if (profile?.weight) parts.push(`- Weight: ${profile.weight} kg`);
     if (profile?.height) parts.push(`- Height: ${profile.height} cm`);
-    if (profile?.trainingDaysPerWeek) parts.push(`- Training schedule: ${profile.trainingDaysPerWeek} days/week, ${profile.sessionMinutes || 30} min sessions`);
-    if (profile?.injuries && profile.injuries !== 'none') parts.push(`- Active injuries: ${profile.injuries}. Be careful recommending exercises that stress these areas.`);
-    if (profile?.equipment && profile.equipment !== 'bodyweight') parts.push(`- Available equipment: ${profile.equipment}`);
+    if (profile?.trainingDaysPerWeek)
+      parts.push(
+        `- Training schedule: ${profile.trainingDaysPerWeek} days/week, ${profile.sessionMinutes || 30} min sessions`,
+      );
+    if (profile?.injuries && profile.injuries !== 'none')
+      parts.push(`- Active injuries: ${profile.injuries}. Be careful recommending exercises that stress these areas.`);
+    if (profile?.equipment && profile.equipment !== 'bodyweight')
+      parts.push(`- Available equipment: ${profile.equipment}`);
     if ((profile as any)?.bodyCraftPlan) parts.push(`- Body transformation plan: ${(profile as any).bodyCraftPlan}`);
     if (context.totalWorkouts !== undefined) {
       parts.push(`- Workouts completed: ${context.totalWorkouts}`);
@@ -334,10 +355,9 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
     if (workout?.currentExercise) parts.push(`- Currently doing: ${workout.currentExercise}`);
     if (workout?.muscleGroup) parts.push(`- Target muscle: ${workout.muscleGroup}`);
     if (workout?.lastWorkoutDate) {
-      const daysSince = Math.floor(
-        (Date.now() - new Date(workout.lastWorkoutDate).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (daysSince >= 7) parts.push(`- Last workout: ${daysSince} days ago. Be encouraging about coming back, no judgment.`);
+      const daysSince = Math.floor((Date.now() - new Date(workout.lastWorkoutDate).getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSince >= 7)
+        parts.push(`- Last workout: ${daysSince} days ago. Be encouraging about coming back, no judgment.`);
       else if (daysSince >= 3) parts.push(`- Last workout: ${daysSince} days ago (gently encourage comeback)`);
       else if (daysSince === 1) parts.push('- Worked out yesterday — could be slightly sore');
       else if (daysSince === 0) parts.push('- Worked out today — great commitment!');
@@ -349,7 +369,8 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
     const mem = context.memory;
     if (mem.recentTopics.length) parts.push(`- Recent topics: ${mem.recentTopics.join(', ')}`);
     if (mem.userPreferences.length) parts.push(`- Preferences: ${mem.userPreferences.join(', ')}`);
-    if (mem.mentionedExercises.length) parts.push(`- Exercises discussed: ${mem.mentionedExercises.slice(0, 5).join(', ')}`);
+    if (mem.mentionedExercises.length)
+      parts.push(`- Exercises discussed: ${mem.mentionedExercises.slice(0, 5).join(', ')}`);
     if (mem.conversationCount > 0) parts.push(`- Conversations so far: ${mem.conversationCount}`);
   }
 
@@ -362,14 +383,18 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
     if (loc.country) locationParts.push(loc.country);
     if (locationParts.length > 0) {
       parts.push(`\nLOCATION: User is in ${locationParts.join(', ')} (${loc.isoCountryCode || 'unknown'}).`);
-      parts.push('When discussing diet or nutrition, recommend foods and meals that are locally available and culturally relevant to this region. Use local food names and suggest dishes from nearby restaurants or markets when appropriate.');
+      parts.push(
+        'When discussing diet or nutrition, recommend foods and meals that are locally available and culturally relevant to this region. Use local food names and suggest dishes from nearby restaurants or markets when appropriate.',
+      );
     }
   }
 
   // ── Language instruction ──
   if (context.language && context.language !== 'en') {
     const langLabel = context.languageName || context.language;
-    parts.push(`\nLANGUAGE: The user's app is set to ${langLabel}. You MUST respond entirely in ${langLabel}. Use natural, conversational ${langLabel} — not machine-translated phrasing. Keep emoji, markdown formatting, and exercise names (proper nouns) as-is.`);
+    parts.push(
+      `\nLANGUAGE: The user's app is set to ${langLabel}. You MUST respond entirely in ${langLabel}. Use natural, conversational ${langLabel} — not machine-translated phrasing. Keep emoji, markdown formatting, and exercise names (proper nouns) as-is.`,
+    );
   }
 
   return parts.join('\n');
@@ -433,24 +458,24 @@ class AIProvider {
 
   /** All models whose provider is enabled */
   getAvailableModels(): ModelInfo[] {
-    return MODEL_REGISTRY.filter(m => this.providers[m.provider].enabled);
+    return MODEL_REGISTRY.filter((m) => this.providers[m.provider].enabled);
   }
 
   /** Models for a specific tier (sorted by quality desc, speed desc) */
   getModelsForTier(tier: ModelTier): ModelInfo[] {
     return this.getAvailableModels()
-      .filter(m => m.tier === tier)
-      .sort((a, b) => (b.qualityScore + b.speedScore) - (a.qualityScore + a.speedScore));
+      .filter((m) => m.tier === tier)
+      .sort((a, b) => b.qualityScore + b.speedScore - (a.qualityScore + a.speedScore));
   }
 
   /** Models for a specific provider */
   getModelsForProvider(name: AIProviderName): ModelInfo[] {
-    return MODEL_REGISTRY.filter(m => m.provider === name);
+    return MODEL_REGISTRY.filter((m) => m.provider === name);
   }
 
   /** Lookup a single model by its ID */
   getModel(id: string): ModelInfo | undefined {
-    return MODEL_REGISTRY.find(m => m.id === id);
+    return MODEL_REGISTRY.find((m) => m.id === id);
   }
 
   /** Full registry (for settings UI) */
@@ -524,7 +549,7 @@ class AIProvider {
       autoRoute: this._autoRoute,
       cloudAvailable: this.cloudAvailable,
       models: this.getAvailableModels(),
-      providers: Object.values(this.providers).map(p => ({
+      providers: Object.values(this.providers).map((p) => ({
         name: p.name,
         displayName: p.displayName,
         enabled: p.enabled,
@@ -560,13 +585,13 @@ class AIProvider {
 
   /** Build an ordered list of models to try for a given query */
   private buildModelChain(input: string): ModelInfo[] {
-    const available = this.getAvailableModels().filter(m => this.isModelAvailable(m.id));
+    const available = this.getAvailableModels().filter((m) => this.isModelAvailable(m.id));
     if (available.length === 0) return [];
 
     // If locked to a specific model, try it first then failover
     if (!this._autoRoute && this._activeModelId) {
-      const locked = available.find(m => m.id === this._activeModelId);
-      const rest = available.filter(m => m.id !== this._activeModelId);
+      const locked = available.find((m) => m.id === this._activeModelId);
+      const rest = available.filter((m) => m.id !== this._activeModelId);
       return locked ? [locked, ...rest] : rest;
     }
 
@@ -577,10 +602,14 @@ class AIProvider {
     // Tier priority: ideal → adjacent → any
     const tierPriority: ModelTier[] = (() => {
       switch (idealTier) {
-        case 'elite':  return ['elite', 'strong', 'fast', 'free'];
-        case 'strong': return ['strong', 'elite', 'fast', 'free'];
-        case 'fast':   return ['fast', 'strong', 'elite', 'free'];
-        default:       return ['strong', 'elite', 'fast', 'free'];
+        case 'elite':
+          return ['elite', 'strong', 'fast', 'free'];
+        case 'strong':
+          return ['strong', 'elite', 'fast', 'free'];
+        case 'fast':
+          return ['fast', 'strong', 'elite', 'free'];
+        default:
+          return ['strong', 'elite', 'fast', 'free'];
       }
     })();
 
@@ -589,11 +618,13 @@ class AIProvider {
       const aTier = tierPriority.indexOf(a.tier);
       const bTier = tierPriority.indexOf(b.tier);
       if (aTier !== bTier) return aTier - bTier;
-      return (b.qualityScore + b.speedScore) - (a.qualityScore + a.speedScore);
+      return b.qualityScore + b.speedScore - (a.qualityScore + a.speedScore);
     });
 
     if (__DEV__) {
-      console.log(`[AI] Route: "${input.slice(0, 40)}..." → ${complexity} → ${idealTier} tier → trying ${sorted[0]?.displayName}`);
+      console.log(
+        `[AI] Route: "${input.slice(0, 40)}..." → ${complexity} → ${idealTier} tier → trying ${sorted[0]?.displayName}`,
+      );
     }
 
     return sorted;
@@ -615,11 +646,7 @@ class AIProvider {
         this.clearFailures(model.id);
 
         // Persist encrypted
-        encryptedDB.storeAIConversation(
-          context.personality || 'COACH',
-          input,
-          cloud.text,
-        ).catch(() => {});
+        encryptedDB.storeAIConversation(context.personality || 'COACH', input, cloud.text).catch(() => {});
 
         return {
           message: cloud.text,
@@ -639,8 +666,12 @@ class AIProvider {
       }
     }
 
-    // All cloud models exhausted — offline fallback
+    // All cloud models exhausted — offline fallback (English-only templates)
     const templateResponse = await dualAI.query(input, context);
+    // Flag non-English users that response is English due to offline mode
+    if (context.language && context.language !== 'en') {
+      templateResponse.message = `⚡ *Offline mode — English only*\n\n${templateResponse.message}`;
+    }
     return {
       ...templateResponse,
       fromCloud: false,
@@ -674,8 +705,8 @@ class AIProvider {
       if (history.length > maxHistory) {
         const olderMessages = history.slice(0, -maxHistory);
         const topics = olderMessages
-          .filter(m => m.role === 'user')
-          .map(m => m.content.slice(0, 50))
+          .filter((m) => m.role === 'user')
+          .map((m) => m.content.slice(0, 50))
           .slice(-3);
         if (topics.length > 0) {
           messages.push({
@@ -697,7 +728,7 @@ class AIProvider {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${provider.apiKey}`,
+      Authorization: `Bearer ${provider.apiKey}`,
     };
     if (provider.name === 'openrouter') {
       headers['HTTP-Referer'] = 'https://fitquest.app';
@@ -744,6 +775,15 @@ class AIProvider {
       if (status === 404) {
         this.recordFailure(model.id);
         this.recordFailure(model.id);
+        this.recordFailure(model.id);
+      }
+
+      // 429 — rate limited: retry once after backoff before failing
+      if (status === 429) {
+        const retryAfter = response.headers.get('retry-after');
+        const waitMs = retryAfter ? Math.min(parseInt(retryAfter, 10) * 1000, 5000) : 2000;
+        await new Promise((r) => setTimeout(r, waitMs));
+        // Record extra failure to accelerate cooldown for this model
         this.recordFailure(model.id);
       }
 

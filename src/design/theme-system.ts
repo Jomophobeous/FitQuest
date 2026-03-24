@@ -1,6 +1,6 @@
 /**
  * FitQuest Design System
- * 
+ *
  * Philosophy:
  * - Dark Mode: Emotion, immersion, focus (glowing accents, visual drama)
  * - Light Mode: Speed, analysis, accuracy (clinical, sharp, zero glare)
@@ -20,24 +20,24 @@ export const colorSystem = {
     background: '#050507', // Pure charcoal black
     surface: '#0E0E12', // Elevated surface
     surfaceVariant: '#161619', // Secondary surface (cards)
-    
+
     // Text
     text: '#F4F5F9', // Primary text (crisp white)
     textSecondary: '#A8B0C0', // Secondary text
     textMuted: '#6B7590', // Tertiary/meta text
-    
+
     // Dividers
     border: '#1E1E24', // Hairline borders
     divider: '#18181D', // Internal dividers
-    
+
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
-    
+
     // Semantic
     error: '#EF4444',
     warning: '#F4A427',
     success: '#10B981',
-    
+
     // Backward compatibility aliases (use warning/success instead)
     accent2: '#F4A427', // → use warning
     accent3: '#10B981', // → use success/accent
@@ -58,30 +58,30 @@ export const colorSystem = {
     // Chrome
     overlay: 'rgba(0,0,0,0.65)',
   },
-  
+
   light: {
     // Base
     background: '#F5F6F8', // Soft cool gray
     surface: '#FFFFFF', // Primary surface (cards)
     surfaceVariant: '#EBEDF2', // Secondary surface
-    
+
     // Text
     text: '#111318', // Primary text (near-black)
     textSecondary: '#4A4F5C', // Secondary text
     textMuted: '#6D7385', // Tertiary/meta text
-    
+
     // Dividers
     border: '#D0D5DE', // Hairline borders
     divider: '#DCE0E8', // Internal dividers
-    
+
     // Single accent color - GREEN for all primary actions
     accent: '#10B981',
-    
+
     // Semantic
     error: '#DC2626',
     warning: '#F4A427',
     success: '#10B981',
-    
+
     // Backward compatibility aliases (use warning/success instead)
     accent2: '#F4A427', // → use warning
     accent3: '#10B981', // → use success/accent
@@ -163,14 +163,14 @@ export const typography = {
     label: 13,
     caption: 12,
   },
-  
+
   weights: {
     regular: '400',
     medium: '500',
     semibold: '600',
     bold: '700',
   },
-  
+
   lineHeights: {
     tight: 1.2,
     normal: 1.5,
@@ -304,7 +304,7 @@ export const createTheme = (mode: ThemeMode) => {
     borderRadius: radius,
     shadows: shadowConfig,
     motion: animationConfig,
-    
+
     // Utilities for theme switching
     isDark: mode === 'dark' || mode === 'blackGold',
     isLight: mode === 'light',
@@ -316,16 +316,19 @@ export const createTheme = (mode: ThemeMode) => {
 // EXERCISE CATEGORY GRADIENTS & ICONS
 // ============================================================================
 
-export const categoryTheme: Record<string, {
-  colors: [string, string];
-  icon: string;
-}> = {
+export const categoryTheme: Record<
+  string,
+  {
+    colors: [string, string];
+    icon: string;
+  }
+> = {
   body_control: { colors: ['#10B981', '#059669'], icon: 'human-handsup' },
-  posture:      { colors: ['#6366F1', '#4F46E5'], icon: 'human-male-height' },
-  speed:        { colors: ['#F59E0B', '#D97706'], icon: 'lightning-bolt' },
-  mobility:     { colors: ['#EC4899', '#DB2777'], icon: 'yoga' },
-  focus:        { colors: ['#8B5CF6', '#7C3AED'], icon: 'meditation' },
-  strength:     { colors: ['#EF4444', '#DC2626'], icon: 'dumbbell' },
+  posture: { colors: ['#6366F1', '#4F46E5'], icon: 'human-male-height' },
+  speed: { colors: ['#F59E0B', '#D97706'], icon: 'lightning-bolt' },
+  mobility: { colors: ['#EC4899', '#DB2777'], icon: 'yoga' },
+  focus: { colors: ['#8B5CF6', '#7C3AED'], icon: 'meditation' },
+  strength: { colors: ['#EF4444', '#DC2626'], icon: 'dumbbell' },
 };
 
 export const defaultCategoryTheme = { colors: ['#64748B', '#475569'] as [string, string], icon: 'dumbbell' };

@@ -16,7 +16,7 @@ export interface FederationPolicy {
 
 export function canActivateIntegration(
   integration: IntegrationDescriptor,
-  policy: FederationPolicy
+  policy: FederationPolicy,
 ): { allowed: boolean; reason: string } {
   if (!policy.allowImport && !policy.allowExport) {
     return { allowed: false, reason: 'Federation policy disallows both import and export.' };

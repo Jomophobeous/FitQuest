@@ -57,7 +57,7 @@ export async function loadBundledModel<T = any>(assetModuleId: number): Promise<
  */
 export async function loadBundledModelWithFallback<T = any>(
   assetModuleId: number | null,
-  fallbackFilename: string
+  fallbackFilename: string,
 ): Promise<T | null> {
   // Try loading from bundled asset
   if (assetModuleId !== null && typeof assetModuleId === 'number') {

@@ -39,11 +39,7 @@ export interface ValidationResult {
  * Validate a numeric string against a range.
  * Returns the parsed number if valid, or an error message.
  */
-export function validateNumeric(
-  raw: string,
-  range: NumericRange,
-  required = true
-): ValidationResult {
+export function validateNumeric(raw: string, range: NumericRange, required = true): ValidationResult {
   const trimmed = raw.trim();
 
   if (!trimmed) {
@@ -97,7 +93,7 @@ export function sanitizeText(raw: string, maxLength = 500): string {
   return raw
     .trim()
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // strip control chars
-    .replace(/\s+/g, ' ')                                // collapse whitespace
+    .replace(/\s+/g, ' ') // collapse whitespace
     .slice(0, maxLength);
 }
 

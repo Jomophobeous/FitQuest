@@ -1,5 +1,5 @@
 import { getAppState, setAppState } from '../database/service';
-import { captureException, capturePerformanceMetric } from './crashReporting';
+import { captureException, capturePerformanceMetric, captureFatalCrash, getSessionErrorCount } from './crashReporting';
 import { redactForLog, safeWarn } from './logger';
 import { getPostHogClient } from './posthogService';
 
@@ -47,10 +47,7 @@ async function appendTelemetry(entry: TelemetryEntry): Promise<void> {
 }
 
 /** Forward an event to PostHog (fire-and-forget). */
-async function posthogCapture(
-  eventName: string,
-  properties?: Record<string, unknown>
-): Promise<void> {
+async function posthogCapture(eventName: string, properties?: Record<string, unknown>): Promise<void> {
   try {
     const client = await getPostHogClient();
     if (client) {
@@ -72,11 +69,7 @@ export async function logEvent(name: string, data?: Record<string, unknown>): Pr
   });
 }
 
-export async function logPerf(
-  name: string,
-  durationMs: number,
-  data?: Record<string, unknown>
-): Promise<void> {
+export async function logPerf(name: string, durationMs: number, data?: Record<string, unknown>): Promise<void> {
   capturePerformanceMetric(name, durationMs);
   void posthogCapture(`perf_${name}`, { duration_ms: durationMs, ...data });
   await appendTelemetry({
@@ -103,6 +96,31 @@ export async function logError(error: unknown, context?: Record<string, unknown>
     name: error instanceof Error ? error.name : 'Error',
     message,
     data: sanitized,
+    timestamp: Date.now(),
+  });
+}
+
+/**
+ * Log a fatal/unhandled crash.
+ * Distinct from logError: marks as fatal in Sentry, fires `app_crash` to PostHog,
+ * and includes session error count for anomaly detection.
+ */
+export async function logCrash(error: unknown, context?: Record<string, unknown>): Promise<void> {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  const sanitized = redactForLog(context || {});
+  captureFatalCrash(error, sanitized);
+  void posthogCapture('app_crash', {
+    error_name: error instanceof Error ? error.name : 'Error',
+    error_message: message,
+    session_error_count: getSessionErrorCount(),
+    ...sanitized,
+  });
+  await appendTelemetry({
+    id: makeId(),
+    type: 'error',
+    name: `FATAL:${error instanceof Error ? error.name : 'Error'}`,
+    message,
+    data: { ...sanitized, fatal: true },
     timestamp: Date.now(),
   });
 }

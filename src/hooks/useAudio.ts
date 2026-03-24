@@ -85,9 +85,12 @@ export function useAudio(): UseAudioReturn {
     setCurrentPhase(null);
   }, []);
 
-  const generateAudio = useCallback((name: string, restSeconds?: number) => {
-    return generateDefaultAudio(name, restSeconds, t);
-  }, [t]);
+  const generateAudio = useCallback(
+    (name: string, restSeconds?: number) => {
+      return generateDefaultAudio(name, restSeconds, t);
+    },
+    [t],
+  );
 
   return {
     settings,

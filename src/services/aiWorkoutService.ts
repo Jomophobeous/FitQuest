@@ -16,11 +16,7 @@ import {
   createWorkoutSession,
   addSessionExercise,
 } from '../database/service';
-import type {
-  ExerciseWithDetails,
-  Category,
-  TargetMuscle,
-} from '../database/types';
+import type { ExerciseWithDetails, Category, TargetMuscle } from '../database/types';
 import { generateSecureId } from '../security/randomId';
 
 // ============================================
@@ -29,10 +25,10 @@ import { generateSecureId } from '../security/randomId';
 
 export interface AIWorkoutRequest {
   userInput: string;
-  focusArea?: string;       // "upper body", "legs", "core", etc.
-  duration?: number;        // minutes
-  difficulty?: string;      // "easy", "moderate", "hard"
-  equipment?: string;       // "none", "minimal", "playground"
+  focusArea?: string; // "upper body", "legs", "core", etc.
+  duration?: number; // minutes
+  difficulty?: string; // "easy", "moderate", "hard"
+  equipment?: string; // "none", "minimal", "playground"
   category?: Category;
 }
 
@@ -61,10 +57,13 @@ export interface AIWorkoutResult {
 // INTENT DETECTION
 // ============================================
 
-const WORKOUT_CREATE_PATTERNS = /\b(create|make|build|design|generate|give me|plan|set up|put together|suggest)\b.*\b(workout|routine|session|training|exercises?|program)\b/i;
-const WORKOUT_FOCUS_PATTERNS = /\b(upper\s*body|lower\s*body|full\s*body|legs?|arms?|chest|back|core|abs|shoulders?|glutes?|cardio|push|pull|hiit)\b/i;
+const WORKOUT_CREATE_PATTERNS =
+  /\b(create|make|build|design|generate|give me|plan|set up|put together|suggest)\b.*\b(workout|routine|session|training|exercises?|program)\b/i;
+const WORKOUT_FOCUS_PATTERNS =
+  /\b(upper\s*body|lower\s*body|full\s*body|legs?|arms?|chest|back|core|abs|shoulders?|glutes?|cardio|push|pull|hiit)\b/i;
 const DURATION_PATTERNS = /\b(\d+)\s*(min(ute)?s?|hour)\b/i;
-const DIFFICULTY_PATTERNS = /\b(easy|beginner|light|gentle|moderate|medium|hard|intense|advanced|challenging|brutal)\b/i;
+const DIFFICULTY_PATTERNS =
+  /\b(easy|beginner|light|gentle|moderate|medium|hard|intense|advanced|challenging|brutal)\b/i;
 
 export function isWorkoutCreationIntent(input: string): boolean {
   return WORKOUT_CREATE_PATTERNS.test(input);
@@ -87,15 +86,25 @@ export function extractWorkoutParams(input: string): Partial<AIWorkoutRequest> {
 
   // Map focus areas to categories
   const focusToCategory: Record<string, Category> = {
-    core: 'body_control', abs: 'body_control',
-    posture: 'posture', back: 'posture',
-    speed: 'speed', cardio: 'speed', hiit: 'speed',
+    core: 'body_control',
+    abs: 'body_control',
+    posture: 'posture',
+    back: 'posture',
+    speed: 'speed',
+    cardio: 'speed',
+    hiit: 'speed',
     mobility: 'mobility',
     focus: 'focus',
-    strength: 'strength', chest: 'strength', arms: 'strength',
-    shoulders: 'strength', 'upper body': 'strength',
-    legs: 'strength', 'lower body': 'strength', glutes: 'strength',
-    push: 'strength', pull: 'strength',
+    strength: 'strength',
+    chest: 'strength',
+    arms: 'strength',
+    shoulders: 'strength',
+    'upper body': 'strength',
+    legs: 'strength',
+    'lower body': 'strength',
+    glutes: 'strength',
+    push: 'strength',
+    pull: 'strength',
   };
   if (params.focusArea && focusToCategory[params.focusArea]) {
     params.category = focusToCategory[params.focusArea];
@@ -125,30 +134,23 @@ const FOCUS_TO_MUSCLES: Record<string, TargetMuscle[]> = {
   'full body': [],
 };
 
-export async function buildAIWorkoutContext(
-  params: Partial<AIWorkoutRequest>,
-): Promise<string> {
+export async function buildAIWorkoutContext(params: Partial<AIWorkoutRequest>): Promise<string> {
   const userId = 'user_local_001';
   const profile = await getUserProfile(userId);
   const fatigue = await getMuscleFatigue(userId);
 
   // Filter exercises relevant to the request
-  const allExercises = await getExercises(
-    params.category ? { categories: [params.category] } : undefined,
-  );
+  const allExercises = await getExercises(params.category ? { categories: [params.category] } : undefined);
 
   // If focus area maps to muscles, further filter
   const targetMuscles = params.focusArea ? FOCUS_TO_MUSCLES[params.focusArea] : undefined;
   let relevant: ExerciseWithDetails[];
   if (targetMuscles && targetMuscles.length > 0) {
-    relevant = allExercises.filter(ex =>
-      ex.primary_muscles.some(m => targetMuscles.includes(m)),
-    );
+    relevant = allExercises.filter((ex) => ex.primary_muscles.some((m) => targetMuscles.includes(m)));
     // If too few, include secondary muscle matches
     if (relevant.length < 20) {
-      const secondary = allExercises.filter(ex =>
-        !relevant.includes(ex) &&
-        ex.secondary_muscles.some(m => targetMuscles.includes(m)),
+      const secondary = allExercises.filter(
+        (ex) => !relevant.includes(ex) && ex.secondary_muscles.some((m) => targetMuscles.includes(m)),
       );
       relevant = [...relevant, ...secondary];
     }
@@ -172,7 +174,7 @@ export async function buildAIWorkoutContext(
       brutal: ['advanced'],
     };
     const allowed = diffMap[params.difficulty] || ['beginner', 'intermediate'];
-    relevant = relevant.filter(ex => allowed.includes(ex.difficulty));
+    relevant = relevant.filter((ex) => allowed.includes(ex.difficulty));
   }
 
   // Take top 40 to keep context manageable
@@ -180,13 +182,16 @@ export async function buildAIWorkoutContext(
 
   // Build fatigue info
   const highFatigue = fatigue
-    .filter(f => f.fatigue_level > 50)
-    .map(f => `${f.muscle.replace(/_/g, ' ')}: ${f.fatigue_level}%`);
+    .filter((f) => f.fatigue_level > 50)
+    .map((f) => `${f.muscle.replace(/_/g, ' ')}: ${f.fatigue_level}%`);
 
   // Build exercise list for AI — compact format
-  const exerciseList = sample.map(ex =>
-    `- ${ex.name} [${ex.category}/${ex.difficulty}] muscles: ${ex.primary_muscles.join(', ')} | ${ex.time_per_set_seconds}s/set`,
-  ).join('\n');
+  const exerciseList = sample
+    .map(
+      (ex) =>
+        `- ${ex.name} [${ex.category}/${ex.difficulty}] muscles: ${ex.primary_muscles.join(', ')} | ${ex.time_per_set_seconds}s/set`,
+    )
+    .join('\n');
 
   const duration = params.duration || profile?.time_per_session_minutes || 30;
   const exerciseCount = Math.min(6, Math.max(4, Math.floor(duration / 7)));
@@ -226,9 +231,7 @@ RULES:
 // RESPONSE PARSER — AI output → DB workout
 // ============================================
 
-export async function parseAIWorkoutResponse(
-  aiResponse: string,
-): Promise<AIWorkoutResult | null> {
+export async function parseAIWorkoutResponse(aiResponse: string): Promise<AIWorkoutResult | null> {
   // Extract JSON from AI response (may be wrapped in markdown code block)
   let jsonStr = aiResponse;
   const codeBlockMatch = aiResponse.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
@@ -269,9 +272,10 @@ export async function parseAIWorkoutResponse(
     let dbEx = exerciseMap.get(aiEx.name.toLowerCase());
     // Fuzzy match: find closest
     if (!dbEx) {
-      const candidates = allExercises.filter(e =>
-        e.name.toLowerCase().includes(aiEx.name.toLowerCase()) ||
-        aiEx.name.toLowerCase().includes(e.name.toLowerCase()),
+      const candidates = allExercises.filter(
+        (e) =>
+          e.name.toLowerCase().includes(aiEx.name.toLowerCase()) ||
+          aiEx.name.toLowerCase().includes(e.name.toLowerCase()),
       );
       if (candidates.length > 0) dbEx = candidates[0]!;
     }
@@ -288,9 +292,10 @@ export async function parseAIWorkoutResponse(
 
   // Persist to DB as a real session
   const sessionId = await generateSecureId('session');
-  const durationEstimate = matched.reduce((sum, ex) => {
-    return sum + ex.sets * (ex.dbExercise.time_per_set_seconds + 60);
-  }, 0) / 60;
+  const durationEstimate =
+    matched.reduce((sum, ex) => {
+      return sum + ex.sets * (ex.dbExercise.time_per_set_seconds + 60);
+    }, 0) / 60;
 
   await createWorkoutSession({
     id: sessionId,
@@ -321,7 +326,7 @@ export async function parseAIWorkoutResponse(
     name: parsed.name || 'AI Custom Workout',
     exerciseCount: matched.length,
     durationEstimate: Math.round(durationEstimate),
-    exercises: matched.map(m => ({
+    exercises: matched.map((m) => ({
       name: m.dbExercise.name,
       sets: m.sets,
       reps: m.reps,
@@ -337,28 +342,21 @@ export async function parseAIWorkoutResponse(
 // straight from the DB using extracted params.
 // ============================================
 
-export async function createDirectWorkout(
-  params: Partial<AIWorkoutRequest>,
-): Promise<AIWorkoutResult> {
+export async function createDirectWorkout(params: Partial<AIWorkoutRequest>): Promise<AIWorkoutResult> {
   const userId = 'user_local_001';
   const profile = await getUserProfile(userId);
   const fatigue = await getMuscleFatigue(userId);
 
-  const allExercises = await getExercises(
-    params.category ? { categories: [params.category] } : undefined,
-  );
+  const allExercises = await getExercises(params.category ? { categories: [params.category] } : undefined);
 
   // Filter by target muscles
   const targetMuscles = params.focusArea ? FOCUS_TO_MUSCLES[params.focusArea] : undefined;
   let pool: ExerciseWithDetails[];
   if (targetMuscles && targetMuscles.length > 0) {
-    pool = allExercises.filter(ex =>
-      ex.primary_muscles.some(m => targetMuscles.includes(m)),
-    );
+    pool = allExercises.filter((ex) => ex.primary_muscles.some((m) => targetMuscles.includes(m)));
     if (pool.length < 10) {
-      const secondary = allExercises.filter(ex =>
-        !pool.includes(ex) &&
-        ex.secondary_muscles.some(m => targetMuscles.includes(m)),
+      const secondary = allExercises.filter(
+        (ex) => !pool.includes(ex) && ex.secondary_muscles.some((m) => targetMuscles.includes(m)),
       );
       pool = [...pool, ...secondary];
     }
@@ -369,22 +367,25 @@ export async function createDirectWorkout(
   // Difficulty filter
   if (params.difficulty) {
     const diffMap: Record<string, string[]> = {
-      easy: ['beginner'], beginner: ['beginner'], light: ['beginner'], gentle: ['beginner'],
-      moderate: ['beginner', 'intermediate'], medium: ['beginner', 'intermediate'],
-      hard: ['intermediate', 'advanced'], intense: ['intermediate', 'advanced'],
-      advanced: ['advanced'], challenging: ['intermediate', 'advanced'], brutal: ['advanced'],
+      easy: ['beginner'],
+      beginner: ['beginner'],
+      light: ['beginner'],
+      gentle: ['beginner'],
+      moderate: ['beginner', 'intermediate'],
+      medium: ['beginner', 'intermediate'],
+      hard: ['intermediate', 'advanced'],
+      intense: ['intermediate', 'advanced'],
+      advanced: ['advanced'],
+      challenging: ['intermediate', 'advanced'],
+      brutal: ['advanced'],
     };
     const allowed = diffMap[params.difficulty] || ['beginner', 'intermediate'];
-    pool = pool.filter(ex => allowed.includes(ex.difficulty));
+    pool = pool.filter((ex) => allowed.includes(ex.difficulty));
   }
 
   // Avoid fatigued muscles
-  const fatiguedMuscles = new Set(
-    fatigue.filter(f => f.fatigue_level > 60).map(f => f.muscle),
-  );
-  const fresh = pool.filter(ex =>
-    !ex.primary_muscles.some(m => fatiguedMuscles.has(m)),
-  );
+  const fatiguedMuscles = new Set(fatigue.filter((f) => f.fatigue_level > 60).map((f) => f.muscle));
+  const fresh = pool.filter((ex) => !ex.primary_muscles.some((m) => fatiguedMuscles.has(m)));
   if (fresh.length >= 4) pool = fresh;
 
   const duration = params.duration || profile?.time_per_session_minutes || 30;
@@ -398,7 +399,7 @@ export async function createDirectWorkout(
     const primary = ex.primary_muscles[0] ?? '';
     if (!usedMuscles.has(primary) || selected.length >= count - 1) {
       selected.push(ex);
-      ex.primary_muscles.forEach(m => usedMuscles.add(m));
+      ex.primary_muscles.forEach((m) => usedMuscles.add(m));
     }
   }
   // Fill remaining if diversity pass didn't get enough
@@ -414,7 +415,7 @@ export async function createDirectWorkout(
   const getSetsReps = (ex: ExerciseWithDetails, diff?: string): { sets: number; reps: string } => {
     const isHold = ex.category === 'mobility' || ex.category === 'body_control' || ex.category === 'focus';
     const isSpeed = ex.category === 'speed';
-    
+
     if (diff === 'easy' || diff === 'beginner' || diff === 'light' || diff === 'gentle') {
       return isHold ? { sets: 2, reps: '20s hold' } : isSpeed ? { sets: 2, reps: '8-10' } : { sets: 2, reps: '8-10' };
     }
@@ -425,10 +426,11 @@ export async function createDirectWorkout(
     return isHold ? { sets: 3, reps: '30s hold' } : isSpeed ? { sets: 3, reps: '10-12' } : { sets: 3, reps: '8-12' };
   };
 
-  const durationEstimate = selected.reduce((sum, ex) => {
-    const { sets } = getSetsReps(ex, params.difficulty);
-    return sum + sets * (ex.time_per_set_seconds + 60);
-  }, 0) / 60;
+  const durationEstimate =
+    selected.reduce((sum, ex) => {
+      const { sets } = getSetsReps(ex, params.difficulty);
+      return sum + sets * (ex.time_per_set_seconds + 60);
+    }, 0) / 60;
 
   const focusLabel = params.focusArea
     ? params.focusArea.charAt(0).toUpperCase() + params.focusArea.slice(1)
@@ -463,7 +465,7 @@ export async function createDirectWorkout(
     name: `${focusLabel} Workout`,
     exerciseCount: selected.length,
     durationEstimate: Math.round(durationEstimate),
-    exercises: selected.map(ex => {
+    exercises: selected.map((ex) => {
       const { sets, reps } = getSetsReps(ex, params.difficulty);
       return {
         name: ex.name,

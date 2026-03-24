@@ -17,9 +17,15 @@ import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
 // ============================================
 
 export type ActivityClass =
-  | 'STATIONARY' | 'WALKING' | 'RUNNING' | 'CYCLING'
-  | 'EXERCISE' | 'CLIMBING_STAIRS' | 'DESCENDING_STAIRS'
-  | 'JUMPING' | 'UNKNOWN';
+  | 'STATIONARY'
+  | 'WALKING'
+  | 'RUNNING'
+  | 'CYCLING'
+  | 'EXERCISE'
+  | 'CLIMBING_STAIRS'
+  | 'DESCENDING_STAIRS'
+  | 'JUMPING'
+  | 'UNKNOWN';
 
 export interface ClassificationResult {
   activity: ActivityClass;
@@ -34,9 +40,9 @@ export interface ClassificationResult {
 interface CNNLSTMModel {
   version: string;
   architecture: 'cnn-lstm';
-  windowSize: number;     // 128
-  channels: number;       // 6
-  numClasses: number;     // 9
+  windowSize: number; // 128
+  channels: number; // 6
+  numClasses: number; // 9
   classLabels: ActivityClass[];
   // CNN layers
   conv1Filters: number[][][]; // [numFilters, kernelSize, channels]
@@ -53,9 +59,9 @@ interface CNNLSTMModel {
   bn2Mean: number[];
   bn2Var: number[];
   // LSTM
-  lstmInputWeight: number[][];   // [4*hidden, input]
-  lstmHiddenWeight: number[][];  // [4*hidden, hidden]
-  lstmBias: number[];            // [4*hidden]
+  lstmInputWeight: number[][]; // [4*hidden, input]
+  lstmHiddenWeight: number[][]; // [4*hidden, hidden]
+  lstmBias: number[]; // [4*hidden]
   lstmHiddenSize: number;
   // Classification head
   fcWeight: number[][];
@@ -63,8 +69,8 @@ interface CNNLSTMModel {
   // Temperature scaling
   temperature: number;
   // Input normalization
-  inputMean: number[];  // per-channel mean [6]
-  inputStd: number[];   // per-channel std [6]
+  inputMean: number[]; // per-channel mean [6]
+  inputStd: number[]; // per-channel std [6]
 }
 
 // ============================================
@@ -96,13 +102,13 @@ export class DeepActivityClassifier {
       // Try v3 model first, then v2 fallback
       let modelData = await loadBundledModelWithFallback<CNNLSTMModel>(
         safeRequire(() => require('../../../assets/models/activity_v3.model')),
-        'activity_v3.model'
+        'activity_v3.model',
       );
 
       if (!modelData) {
         modelData = await loadBundledModelWithFallback<CNNLSTMModel>(
           safeRequire(() => require('../../../assets/models/activity_cnn_lstm.model')),
-          'activity_cnn_lstm.model'
+          'activity_cnn_lstm.model',
         );
       }
 
@@ -116,10 +122,10 @@ export class DeepActivityClassifier {
       const version = (this.model as any).version ?? '2.0.0';
       if (__DEV__) {
         console.log(
-        `[DeepActivityClassifier] v${version}: CNN-LSTM, ` +
-        `window=${this.model.windowSize}, ` +
-        `classes=${this.model.numClasses}, ` +
-        `LSTM hidden=${this.model.lstmHiddenSize}`
+          `[DeepActivityClassifier] v${version}: CNN-LSTM, ` +
+            `window=${this.model.windowSize}, ` +
+            `classes=${this.model.numClasses}, ` +
+            `LSTM hidden=${this.model.lstmHiddenSize}`,
         );
       }
       return true;
@@ -140,10 +146,7 @@ export class DeepActivityClassifier {
     this.sampleCount++;
 
     // Classify on hop boundaries when we have enough data
-    if (
-      this.sensorBuffer.length >= this.WINDOW_SIZE &&
-      this.sampleCount % this.HOP_SIZE === 0
-    ) {
+    if (this.sensorBuffer.length >= this.WINDOW_SIZE && this.sampleCount % this.HOP_SIZE === 0) {
       const window = this.sensorBuffer.slice(-this.WINDOW_SIZE);
       return this.classifyWindow(window);
     }
@@ -172,19 +175,17 @@ export class DeepActivityClassifier {
       const normalized = this.normalizeInput(window);
 
       // Step 2: CNN feature extraction
-      let features = this.cnnForward(normalized);
+      const features = this.cnnForward(normalized);
 
       // Step 3: LSTM sequence processing
       const lstmOut = this.lstmForward(features);
 
       // Step 4: Classification head
-      const logits = this.matVecMul(
-        this.model.fcWeight, lstmOut, this.model.fcBias
-      );
+      const logits = this.matVecMul(this.model.fcWeight, lstmOut, this.model.fcBias);
 
       // Step 5: Temperature-scaled softmax
       const temperature = this.model.temperature || 1.0;
-      const scaled = logits.map(l => l / temperature);
+      const scaled = logits.map((l) => l / temperature);
       const probs = this.softmax(scaled);
 
       // Find best class
@@ -230,12 +231,12 @@ export class DeepActivityClassifier {
 
   private normalizeInput(window: number[][]): number[][] {
     if (!this.model) return window;
-    return window.map(sample =>
+    return window.map((sample) =>
       sample.map((val, ch) => {
         const mean = this.model!.inputMean[ch] ?? 0;
         const std = this.model!.inputStd[ch] ?? 1;
         return (val - mean) / (std || 1);
-      })
+      }),
     );
   }
 
@@ -246,25 +247,15 @@ export class DeepActivityClassifier {
    */
   private cnnForward(input: number[][]): number[][] {
     // Conv1: [windowSize, channels] → [windowSize, numFilters1]
-    let x = this.conv1d(
-      input,
-      this.model!.conv1Filters,
-      this.model!.conv1Bias
-    );
-    x = this.batchNorm1d(x, this.model!.bn1Gamma, this.model!.bn1Beta,
-                          this.model!.bn1Mean, this.model!.bn1Var);
-    x = x.map(row => row.map(v => Math.max(0, v))); // ReLU
+    let x = this.conv1d(input, this.model!.conv1Filters, this.model!.conv1Bias);
+    x = this.batchNorm1d(x, this.model!.bn1Gamma, this.model!.bn1Beta, this.model!.bn1Mean, this.model!.bn1Var);
+    x = x.map((row) => row.map((v) => Math.max(0, v))); // ReLU
     x = this.maxPool1d(x, 2); // → [windowSize/2, numFilters1]
 
     // Conv2: [windowSize/2, numFilters1] → [windowSize/2, numFilters2]
-    x = this.conv1d(
-      x,
-      this.model!.conv2Filters,
-      this.model!.conv2Bias
-    );
-    x = this.batchNorm1d(x, this.model!.bn2Gamma, this.model!.bn2Beta,
-                          this.model!.bn2Mean, this.model!.bn2Var);
-    x = x.map(row => row.map(v => Math.max(0, v))); // ReLU
+    x = this.conv1d(x, this.model!.conv2Filters, this.model!.conv2Bias);
+    x = this.batchNorm1d(x, this.model!.bn2Gamma, this.model!.bn2Beta, this.model!.bn2Mean, this.model!.bn2Var);
+    x = x.map((row) => row.map((v) => Math.max(0, v))); // ReLU
     x = this.maxPool1d(x, 2); // → [windowSize/4, numFilters2]
 
     return x;
@@ -277,11 +268,7 @@ export class DeepActivityClassifier {
    * bias: [numFilters]
    * output: [seqLen, numFilters] (same padding)
    */
-  private conv1d(
-    input: number[][],
-    filters: number[][][],
-    bias: number[]
-  ): number[][] {
+  private conv1d(input: number[][], filters: number[][][], bias: number[]): number[][] {
     const seqLen = input.length;
     const numFilters = filters.length;
     const kernelSize = filters[0]?.length ?? 3;
@@ -316,16 +303,17 @@ export class DeepActivityClassifier {
    */
   private batchNorm1d(
     input: number[][],
-    gamma: number[], beta: number[],
-    mean: number[], variance: number[],
-    eps = 1e-5
+    gamma: number[],
+    beta: number[],
+    mean: number[],
+    variance: number[],
+    eps = 1e-5,
   ): number[][] {
-    return input.map(row =>
+    return input.map((row) =>
       row.map((val, ch) => {
-        const normalized = (val - (mean[ch] ?? 0)) /
-          Math.sqrt((variance[ch] ?? 1) + eps);
+        const normalized = (val - (mean[ch] ?? 0)) / Math.sqrt((variance[ch] ?? 1) + eps);
         return (gamma[ch] ?? 1) * normalized + (beta[ch] ?? 0);
-      })
+      }),
     );
   }
 
@@ -338,7 +326,7 @@ export class DeepActivityClassifier {
 
     for (let i = 0; i < input.length; i += poolSize) {
       const pooled = new Array(channels).fill(-Infinity);
-      for (let j = 0; j < poolSize && (i + j) < input.length; j++) {
+      for (let j = 0; j < poolSize && i + j < input.length; j++) {
         for (let c = 0; c < channels; c++) {
           pooled[c] = Math.max(pooled[c], input[i + j]?.[c] ?? 0);
         }
@@ -415,20 +403,15 @@ export class DeepActivityClassifier {
   /**
    * Estimate cadence (steps/strides per minute) using FFT on accelerometer magnitude.
    */
-  private estimateCadence(
-    window: number[][],
-    activity: ActivityClass
-  ): number | null {
+  private estimateCadence(window: number[][], activity: ActivityClass): number | null {
     if (activity === 'STATIONARY' || activity === 'UNKNOWN') return null;
 
     // Compute accelerometer magnitude
-    const magnitudes = window.map(s =>
-      Math.sqrt(s[0]! ** 2 + s[1]! ** 2 + s[2]! ** 2)
-    );
+    const magnitudes = window.map((s) => Math.sqrt(s[0]! ** 2 + s[1]! ** 2 + s[2]! ** 2));
 
     // Remove DC component (mean)
     const mean = magnitudes.reduce((a, b) => a + b, 0) / magnitudes.length;
-    const centered = magnitudes.map(m => m - mean);
+    const centered = magnitudes.map((m) => m - mean);
 
     // Simple FFT via DFT (window is small enough: 128 points)
     const n = centered.length;
@@ -443,7 +426,8 @@ export class DeepActivityClassifier {
     let peakBin = minBin;
 
     for (let k = minBin; k <= maxBin; k++) {
-      let real = 0, imag = 0;
+      let real = 0,
+        imag = 0;
       for (let t = 0; t < n; t++) {
         const angle = (2 * Math.PI * k * t) / n;
         real += centered[t]! * Math.cos(angle);
@@ -482,7 +466,7 @@ export class DeepActivityClassifier {
   private getIntensity(
     activity: ActivityClass,
     confidence: number,
-    cadence: number | null
+    cadence: number | null,
   ): 'low' | 'moderate' | 'vigorous' {
     if (activity === 'STATIONARY' || activity === 'UNKNOWN') return 'low';
 
@@ -506,14 +490,9 @@ export class DeepActivityClassifier {
   // FALLBACK CLASSIFIER
   // ============================================
 
-  private fallbackClassify(
-    window: number[][],
-    startTime: number
-  ): ClassificationResult {
+  private fallbackClassify(window: number[][], startTime: number): ClassificationResult {
     // Simple threshold-based classification
-    const magnitudes = window.map(s =>
-      Math.sqrt(s[0]! ** 2 + s[1]! ** 2 + s[2]! ** 2)
-    );
+    const magnitudes = window.map((s) => Math.sqrt(s[0]! ** 2 + s[1]! ** 2 + s[2]! ** 2));
 
     const mean = magnitudes.reduce((a, b) => a + b, 0) / magnitudes.length;
     const variance = magnitudes.reduce((a, b) => a + (b - mean) ** 2, 0) / magnitudes.length;
@@ -537,9 +516,15 @@ export class DeepActivityClassifier {
     }
 
     const allProbabilities: Record<ActivityClass, number> = {
-      STATIONARY: 0, WALKING: 0, RUNNING: 0, CYCLING: 0,
-      EXERCISE: 0, CLIMBING_STAIRS: 0, DESCENDING_STAIRS: 0,
-      JUMPING: 0, UNKNOWN: 0,
+      STATIONARY: 0,
+      WALKING: 0,
+      RUNNING: 0,
+      CYCLING: 0,
+      EXERCISE: 0,
+      CLIMBING_STAIRS: 0,
+      DESCENDING_STAIRS: 0,
+      JUMPING: 0,
+      UNKNOWN: 0,
     };
     allProbabilities[activity] = confidence;
     allProbabilities.UNKNOWN = 1 - confidence;
@@ -559,9 +544,7 @@ export class DeepActivityClassifier {
   // MATH HELPERS
   // ============================================
 
-  private matVecMul(
-    matrix: number[][], vec: number[], bias: number[]
-  ): number[] {
+  private matVecMul(matrix: number[][], vec: number[], bias: number[]): number[] {
     const out = new Array(matrix.length).fill(0);
     for (let i = 0; i < matrix.length; i++) {
       let sum = bias[i] ?? 0;
@@ -575,9 +558,9 @@ export class DeepActivityClassifier {
 
   private softmax(logits: number[]): number[] {
     const max = Math.max(...logits);
-    const exps = logits.map(l => Math.exp(l - max));
+    const exps = logits.map((l) => Math.exp(l - max));
     const sum = exps.reduce((a, b) => a + b, 0);
-    return exps.map(e => e / sum);
+    return exps.map((e) => e / sum);
   }
 
   private sigmoidF64(x: number): number {
@@ -588,7 +571,9 @@ export class DeepActivityClassifier {
   // PUBLIC API
   // ============================================
 
-  get loaded(): boolean { return this.isLoaded; }
+  get loaded(): boolean {
+    return this.isLoaded;
+  }
 
   resetBuffer(): void {
     this.sensorBuffer = [];

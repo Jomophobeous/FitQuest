@@ -31,12 +31,12 @@ interface ConfettiProps {
 interface Particle {
   id: number;
   emoji: string;
-  startX: number;   // % of screen width
-  startY: number;    // % of screen height (top)
-  endX: number;      // lateral drift
-  endY: number;      // fall distance
-  rotation: number;  // degrees
-  delay: number;     // ms
+  startX: number; // % of screen width
+  startY: number; // % of screen height (top)
+  endX: number; // lateral drift
+  endY: number; // fall distance
+  rotation: number; // degrees
+  delay: number; // ms
   scale: number;
 }
 
@@ -44,13 +44,13 @@ function generateParticles(width: number): Particle[] {
   return Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
     id: i,
     emoji: EMOJIS[i % EMOJIS.length]!,
-    startX: 20 + Math.random() * 60,     // 20-80% width
-    startY: -5 - Math.random() * 15,     // above screen
-    endX: (Math.random() - 0.5) * 40,    // ±20% drift
-    endY: 80 + Math.random() * 40,       // fall 80-120%
+    startX: 20 + Math.random() * 60, // 20-80% width
+    startY: -5 - Math.random() * 15, // above screen
+    endX: (Math.random() - 0.5) * 40, // ±20% drift
+    endY: 80 + Math.random() * 40, // fall 80-120%
     rotation: Math.random() * 720 - 360, // ±360°
-    delay: Math.random() * 400,          // stagger 0-400ms
-    scale: 0.6 + Math.random() * 0.8,    // 0.6-1.4×
+    delay: Math.random() * 400, // stagger 0-400ms
+    scale: 0.6 + Math.random() * 0.8, // 0.6-1.4×
   }));
 }
 
@@ -74,14 +74,8 @@ function ConfettiParticle({ particle }: { particle: Particle }) {
       particle.delay,
       withTiming(particle.endX, { duration: DURATION_MS, easing: Easing.inOut(Easing.sin) }),
     );
-    rotate.value = withDelay(
-      particle.delay,
-      withTiming(particle.rotation, { duration: DURATION_MS }),
-    );
-    opacity.value = withDelay(
-      particle.delay + DURATION_MS * 0.6,
-      withTiming(0, { duration: DURATION_MS * 0.4 }),
-    );
+    rotate.value = withDelay(particle.delay, withTiming(particle.rotation, { duration: DURATION_MS }));
+    opacity.value = withDelay(particle.delay + DURATION_MS * 0.6, withTiming(0, { duration: DURATION_MS * 0.4 }));
   }, []);
 
   const animStyle = useAnimatedStyle(() => ({

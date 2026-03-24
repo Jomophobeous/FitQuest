@@ -94,7 +94,8 @@ export function MetricRing({
         {label}
       </ThemedText>
       <ThemedText variant="body" style={{ color, fontWeight: '700', textAlign: 'center' }}>
-        {value.toLocaleString()}{unit}
+        {value.toLocaleString()}
+        {unit}
       </ThemedText>
     </View>
   );

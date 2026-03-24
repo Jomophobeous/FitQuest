@@ -1,6 +1,6 @@
 /**
  * FitQuest Login Screen
- * 
+ *
  * Biometric-first authentication with passcode fallback.
  * Premium dark UI inspired by Figma design system.
  */
@@ -33,17 +33,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import FitQuestLogo from '../src/components/FitQuestLogo';
+import FQLogoMark from '../src/components/FQLogoMark';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../src/context/AuthContext';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
-import {
-  GlassCard,
-  GradientButton,
-} from '../src/components/ui/GlassUI';
+import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
 import { rateLimiter, RATE_LIMITS, formatRetryAfter } from '../src/utils/rateLimiter';
 import { getApiBaseUrl } from '../src/services/apiBaseUrl';
 
@@ -152,8 +150,7 @@ export default function LoginScreen() {
   useEffect(() => {
     const handleGoogleResponse = async () => {
       if (googleResponse?.type !== 'success') return;
-      const idToken = (googleResponse as any)?.authentication?.idToken
-        || (googleResponse as any)?.params?.id_token;
+      const idToken = (googleResponse as any)?.authentication?.idToken || (googleResponse as any)?.params?.id_token;
       if (!idToken || typeof idToken !== 'string') {
         setError(t('login.error.googleNoToken'));
         return;
@@ -195,10 +192,7 @@ export default function LoginScreen() {
   // ── Biometric Prompt ──
   const promptBiometric = async () => {
     setError('');
-    pulseScale.value = withSequence(
-      withTiming(1.1, { duration: 200 }),
-      withTiming(1, { duration: 200 })
-    );
+    pulseScale.value = withSequence(withTiming(1.1, { duration: 200 }), withTiming(1, { duration: 200 }));
 
     const result = await authenticateWithBiometrics(t('login.unlockPrompt'));
     if (result.success) {
@@ -367,7 +361,7 @@ export default function LoginScreen() {
       withTiming(10, { duration: 50 }),
       withTiming(-8, { duration: 50 }),
       withTiming(8, { duration: 50 }),
-      withTiming(0, { duration: 50 })
+      withTiming(0, { duration: 50 }),
     );
   };
 
@@ -382,7 +376,9 @@ export default function LoginScreen() {
     },
     {
       label: t('login.oauth.googleFallbackClientId'),
-      ok: androidOnlyMode || !!(process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID),
+      ok:
+        androidOnlyMode ||
+        !!(process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID),
     },
     {
       label: t('login.oauth.appleAvailability'),
@@ -397,354 +393,400 @@ export default function LoginScreen() {
   // ──────────────────────────────────
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Background glow */}
-      <LinearGradient
-        colors={[accentColor + '08', 'transparent', 'transparent']}
-        style={styles.bgGlow}
-      />
+    <ScreenErrorBoundary screenName="Login" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        {/* Background glow */}
+        <LinearGradient colors={[accentColor + '08', 'transparent', 'transparent']} style={styles.bgGlow} />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* ── Logo & Branding ── */}
-          <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.brandSection}>
-            <View style={[styles.logoBg, { backgroundColor: accentColor + '12' }]}>
-              <FitQuestLogo size={56} showText={false} />
-            </View>
-            <Text style={[styles.appName, { color: theme.colors.text }]}>FitQuest</Text>
-            <Text style={[styles.tagline, { color: theme.colors.textMuted }]}>
-              {t('login.tagline')}
-            </Text>
-          </Animated.View>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* ── Logo & Branding ── */}
+            <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.brandSection}>
+              <View style={[styles.logoBg, { backgroundColor: accentColor + '12' }]}>
+                <FQLogoMark size={64} showGlow={false} />
+              </View>
+              <Text style={[styles.appName, { color: theme.colors.text }]}>FitQuest</Text>
+              <Text style={[styles.tagline, { color: theme.colors.textMuted }]}>{t('login.tagline')}</Text>
+            </Animated.View>
 
-          {/* ── Biometric Mode ── */}
-          {mode === 'biometric' && (
-            <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-              <TouchableOpacity onPress={promptBiometric} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Unlock with biometrics">
-                <Animated.View style={[styles.biometricBtn, pulseStyle]}>
-                  <LinearGradient
-                    colors={[accentColor + '20', accentColor + '08']}
-                    style={styles.biometricGlow}
-                  />
-                  <MaterialCommunityIcons
-                    name={Platform.OS === 'ios' ? 'face-recognition' : 'fingerprint'}
-                    size={64}
-                    color={accentColor}
-                  />
-                </Animated.View>
-              </TouchableOpacity>
-              <Text style={[styles.biometricLabel, { color: theme.colors.text }]}>
-                {Platform.OS === 'ios' ? t('login.tapToUnlockFaceId') : t('login.tapToUnlockFingerprint')}
-              </Text>
+            {/* ── Biometric Mode ── */}
+            {mode === 'biometric' && (
+              <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
+                <TouchableOpacity
+                  onPress={promptBiometric}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Unlock with biometrics"
+                >
+                  <Animated.View style={[styles.biometricBtn, pulseStyle]}>
+                    <LinearGradient colors={[accentColor + '20', accentColor + '08']} style={styles.biometricGlow} />
+                    <MaterialCommunityIcons
+                      name={Platform.OS === 'ios' ? 'face-recognition' : 'fingerprint'}
+                      size={64}
+                      color={accentColor}
+                    />
+                  </Animated.View>
+                </TouchableOpacity>
+                <Text style={[styles.biometricLabel, { color: theme.colors.text }]}>
+                  {Platform.OS === 'ios' ? t('login.tapToUnlockFaceId') : t('login.tapToUnlockFingerprint')}
+                </Text>
 
-              {failedAttempts > 0 && failedAttempts < 5 && (
-                <Animated.View entering={FadeIn.duration(150)}>
-                  <Text style={[styles.attemptsText, { color: theme.colors.warning }]}>
-                    {5 - failedAttempts} {t('login.attemptsRemaining')}
-                  </Text>
-                </Animated.View>
-              )}
+                {failedAttempts > 0 && failedAttempts < 5 && (
+                  <Animated.View entering={FadeIn.duration(150)}>
+                    <Text style={[styles.attemptsText, { color: theme.colors.warning }]}>
+                      {5 - failedAttempts} {t('login.attemptsRemaining')}
+                    </Text>
+                  </Animated.View>
+                )}
 
-              <View style={styles.altAuthRow}>
-                {!!hasExistingPasscode && (
+                <View style={styles.altAuthRow}>
+                  {!!hasExistingPasscode && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setMode('passcode');
+                        setError('');
+                      }}
+                      style={[styles.altBtn, { borderColor: theme.colors.border }]}
+                    >
+                      <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
+                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                        {t('login.usePasscode')}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                   <TouchableOpacity
-                    onPress={() => { setMode('passcode'); setError(''); }}
+                    onPress={() => {
+                      setMode('email');
+                      setError('');
+                    }}
                     style={[styles.altBtn, { borderColor: theme.colors.border }]}
                   >
-                    <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.usePasscode')}</Text>
+                    <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
+                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</Text>
                   </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  onPress={() => { setMode('email'); setError(''); }}
-                  style={[styles.altBtn, { borderColor: theme.colors.border }]}
-                >
-                  <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                  <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</Text>
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-          )}
-
-          {/* ── Passcode Mode ── */}
-          {mode === 'passcode' && (
-            <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-              <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.enterPasscode')}</Text>
-              
-              {/* Passcode dots */}
-              <Animated.View style={[styles.dotsRow, shakeStyle]}>
-                {[0, 1, 2, 3].map(i => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.dot,
-                      {
-                        backgroundColor: passcode.length > i ? accentColor : 'transparent',
-                        borderColor: passcode.length > i ? accentColor : theme.colors.textMuted,
-                      },
-                    ]}
-                  />
-                ))}
+                </View>
               </Animated.View>
+            )}
 
-              {/* Numpad */}
-              <View style={styles.numpad}>
-                {[[1, 2, 3], [4, 5, 6], [7, 8, 9], ['', 0, 'del']].map((row, ri) => (
-                  <View key={ri} style={styles.numpadRow}>
-                    {row.map((digit, ci) => {
-                      if (digit === '') return <View key={ci} style={styles.numpadBtn} />;
-                      if (digit === 'del') {
+            {/* ── Passcode Mode ── */}
+            {mode === 'passcode' && (
+              <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
+                <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.enterPasscode')}</Text>
+
+                {/* Passcode dots */}
+                <Animated.View style={[styles.dotsRow, shakeStyle]}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.dot,
+                        {
+                          backgroundColor: passcode.length > i ? accentColor : 'transparent',
+                          borderColor: passcode.length > i ? accentColor : theme.colors.textMuted,
+                        },
+                      ]}
+                    />
+                  ))}
+                </Animated.View>
+
+                {/* Numpad */}
+                <View style={styles.numpad}>
+                  {[
+                    [1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9],
+                    ['', 0, 'del'],
+                  ].map((row, ri) => (
+                    <View key={ri} style={styles.numpadRow}>
+                      {row.map((digit, ci) => {
+                        if (digit === '') return <View key={ci} style={styles.numpadBtn} />;
+                        if (digit === 'del') {
+                          return (
+                            <TouchableOpacity
+                              key={ci}
+                              style={styles.numpadBtn}
+                              onPress={() => setPasscode((p) => p.slice(0, -1))}
+                              accessibilityRole="button"
+                              accessibilityLabel="Delete last digit"
+                            >
+                              <MaterialCommunityIcons
+                                name="backspace-outline"
+                                size={24}
+                                color={theme.colors.textMuted}
+                              />
+                            </TouchableOpacity>
+                          );
+                        }
                         return (
                           <TouchableOpacity
                             key={ci}
-                            style={styles.numpadBtn}
-                            onPress={() => setPasscode(p => p.slice(0, -1))}
+                            style={[
+                              styles.numpadBtn,
+                              {
+                                backgroundColor: theme.colors.surfaceVariant,
+                              },
+                            ]}
+                            onPress={() => {
+                              const next = passcode + String(digit);
+                              setPasscode(next);
+                              if (next.length === 4) {
+                                setTimeout(() => {
+                                  handlePasscode(next);
+                                }, 100);
+                              }
+                            }}
                             accessibilityRole="button"
-                            accessibilityLabel="Delete last digit"
+                            accessibilityLabel={`Digit ${digit}`}
                           >
-                            <MaterialCommunityIcons name="backspace-outline" size={24} color={theme.colors.textMuted} />
+                            <Text style={[styles.numpadDigit, { color: theme.colors.text }]}>{digit}</Text>
                           </TouchableOpacity>
                         );
-                      }
-                      return (
-                        <TouchableOpacity
-                          key={ci}
-                          style={[styles.numpadBtn, {
-                            backgroundColor: theme.colors.surfaceVariant,
-                          }]}
-                          onPress={() => {
-                            const next = passcode + String(digit);
-                            setPasscode(next);
-                            if (next.length === 4) {
-                              setTimeout(() => {
-                                handlePasscode(next);
-                              }, 100);
-                            }
-                          }}
-                          accessibilityRole="button"
-                          accessibilityLabel={`Digit ${digit}`}
-                        >
-                          <Text style={[styles.numpadDigit, { color: theme.colors.text }]}>{digit}</Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                ))}
-              </View>
+                      })}
+                    </View>
+                  ))}
+                </View>
 
-              <View style={styles.altAuthRow}>
-                {biometricCapability?.isAvailable && (
+                <View style={styles.altAuthRow}>
+                  {biometricCapability?.isAvailable && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setMode('biometric');
+                        setError('');
+                      }}
+                      style={[styles.altBtn, { borderColor: theme.colors.border }]}
+                    >
+                      <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
+                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
+                    </TouchableOpacity>
+                  )}
                   <TouchableOpacity
-                    onPress={() => { setMode('biometric'); setError(''); }}
+                    onPress={() => {
+                      setMode('email');
+                      setError('');
+                    }}
                     style={[styles.altBtn, { borderColor: theme.colors.border }]}
                   >
-                    <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
+                    <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
+                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</Text>
                   </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  onPress={() => { setMode('email'); setError(''); }}
-                  style={[styles.altBtn, { borderColor: theme.colors.border }]}
-                >
-                  <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                  <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</Text>
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-          )}
-
-          {/* ── Email Mode ── */}
-          {mode === 'email' && (
-            <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-              <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.welcomeBack')}</Text>
-
-              <Animated.View style={shakeStyle}>
-                <View style={[styles.inputWrap, {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                }]}>
-                  <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                  <TextInput
-                    style={[styles.input, { color: theme.colors.text }]}
-                    placeholder={t('login.email')}
-                    placeholderTextColor={theme.colors.textMuted}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    editable={!submitting}
-                  />
-                </View>
-
-                <View style={[styles.inputWrap, {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                }]}>
-                  <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
-                  <TextInput
-                    style={[styles.input, { color: theme.colors.text }]}
-                    placeholder={t('login.password')}
-                    placeholderTextColor={theme.colors.textMuted}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    editable={!submitting}
-                  />
                 </View>
               </Animated.View>
+            )}
 
-              <TouchableOpacity
-                style={[styles.emailBtn, { backgroundColor: accentColor, opacity: submitting ? 0.6 : 1 }]}
-                onPress={handleEmailSignIn}
-                disabled={submitting}
-                activeOpacity={0.9}
-                accessibilityRole="button"
-                accessibilityLabel="Sign in"
-              >
-                {submitting ? (
-                  <ActivityIndicator color="#000" />
-                ) : (
-                  <Text style={[styles.emailBtnText, { color: theme.isDark ? theme.colors.background : '#000' }]}>{t('login.signIn')}</Text>
-                )}
-              </TouchableOpacity>
+            {/* ── Email Mode ── */}
+            {mode === 'email' && (
+              <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
+                <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.welcomeBack')}</Text>
 
-              <View style={styles.socialWrap}>
-                {/* Continue Offline button - always visible for offline-first app */}
+                <Animated.View style={shakeStyle}>
+                  <View
+                    style={[
+                      styles.inputWrap,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.border,
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
+                    <TextInput
+                      style={[styles.input, { color: theme.colors.text }]}
+                      placeholder={t('login.email')}
+                      placeholderTextColor={theme.colors.textMuted}
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      editable={!submitting}
+                    />
+                  </View>
+
+                  <View
+                    style={[
+                      styles.inputWrap,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.border,
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
+                    <TextInput
+                      style={[styles.input, { color: theme.colors.text }]}
+                      placeholder={t('login.password')}
+                      placeholderTextColor={theme.colors.textMuted}
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry
+                      autoCapitalize="none"
+                      editable={!submitting}
+                    />
+                  </View>
+                </Animated.View>
+
                 <TouchableOpacity
-                  style={[
-                    styles.socialBtn,
-                    {
-                      backgroundColor: theme.colors.accent + '20',
-                      borderColor: theme.colors.accent,
-                      borderWidth: 1,
-                    },
-                  ]}
-                  onPress={handleContinueOffline}
+                  style={[styles.emailBtn, { backgroundColor: accentColor, opacity: submitting ? 0.6 : 1 }]}
+                  onPress={handleEmailSignIn}
+                  disabled={submitting}
                   activeOpacity={0.9}
                   accessibilityRole="button"
-                  accessibilityLabel="Continue offline"
+                  accessibilityLabel="Sign in"
                 >
-                  <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
-                  <Text style={[styles.socialBtnText, { color: theme.colors.accent }]}>{t('login.continueOffline')}</Text>
+                  {submitting ? (
+                    <ActivityIndicator color="#000" />
+                  ) : (
+                    <Text style={[styles.emailBtnText, { color: theme.isDark ? theme.colors.background : '#000' }]}>
+                      {t('login.signIn')}
+                    </Text>
+                  )}
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={[
-                    styles.socialBtn,
-                    {
-                      backgroundColor: theme.colors.surface,
-                      borderColor: theme.colors.border,
-                      opacity: (socialSubmitting || oauthDisabled) ? 0.4 : 1,
-                    },
-                  ]}
-                  onPress={handleGoogleSignIn}
-                  disabled={socialSubmitting || oauthDisabled}
-                  activeOpacity={0.9}
-                  accessibilityRole="button"
-                  accessibilityLabel="Sign in with Google"
-                >
-                  <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
-                  <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>{t('login.continueGoogle')}</Text>
-                </TouchableOpacity>
+                <View style={styles.socialWrap}>
+                  {/* Continue Offline button - always visible for offline-first app */}
+                  <TouchableOpacity
+                    style={[
+                      styles.socialBtn,
+                      {
+                        backgroundColor: theme.colors.accent + '20',
+                        borderColor: theme.colors.accent,
+                        borderWidth: 1,
+                      },
+                    ]}
+                    onPress={handleContinueOffline}
+                    activeOpacity={0.9}
+                    accessibilityRole="button"
+                    accessibilityLabel="Continue offline"
+                  >
+                    <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
+                    <Text style={[styles.socialBtnText, { color: theme.colors.accent }]}>
+                      {t('login.continueOffline')}
+                    </Text>
+                  </TouchableOpacity>
 
-                {Platform.OS === 'ios' && (
                   <TouchableOpacity
                     style={[
                       styles.socialBtn,
                       {
                         backgroundColor: theme.colors.surface,
                         borderColor: theme.colors.border,
-                        opacity: (socialSubmitting || oauthDisabled) ? 0.4 : 1,
+                        opacity: socialSubmitting || oauthDisabled ? 0.4 : 1,
                       },
                     ]}
-                    onPress={handleAppleSignIn}
+                    onPress={handleGoogleSignIn}
                     disabled={socialSubmitting || oauthDisabled}
                     activeOpacity={0.9}
                     accessibilityRole="button"
-                    accessibilityLabel="Sign in with Apple"
+                    accessibilityLabel="Sign in with Google"
                   >
-                    <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />
-                    <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>{t('login.continueApple')}</Text>
+                    <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
+                    <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>
+                      {t('login.continueGoogle')}
+                    </Text>
                   </TouchableOpacity>
-                )}
 
-                <View
-                  style={[
-                    styles.oauthDiag,
-                    {
-                      borderColor: hasOAuthConfigIssue ? theme.colors.warning : theme.colors.border,
-                      backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : theme.colors.surface,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>{t('login.oauth.readiness')}</Text>
-                  {oauthChecks.map((item) => (
-                    <Text
-                      key={item.label}
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
                       style={[
-                        styles.oauthDiagLine,
+                        styles.socialBtn,
                         {
-                          color: item.ok ? theme.colors.success : theme.colors.warning,
+                          backgroundColor: theme.colors.surface,
+                          borderColor: theme.colors.border,
+                          opacity: socialSubmitting || oauthDisabled ? 0.4 : 1,
                         },
                       ]}
+                      onPress={handleAppleSignIn}
+                      disabled={socialSubmitting || oauthDisabled}
+                      activeOpacity={0.9}
+                      accessibilityRole="button"
+                      accessibilityLabel="Sign in with Apple"
                     >
-                      {item.ok ? '✓' : '•'} {item.label}
+                      <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />
+                      <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>
+                        {t('login.continueApple')}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+
+                  <View
+                    style={[
+                      styles.oauthDiag,
+                      {
+                        borderColor: hasOAuthConfigIssue ? theme.colors.warning : theme.colors.border,
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : theme.colors.surface,
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>
+                      {t('login.oauth.readiness')}
                     </Text>
-                  ))}
+                    {oauthChecks.map((item) => (
+                      <Text
+                        key={item.label}
+                        style={[
+                          styles.oauthDiagLine,
+                          {
+                            color: item.ok ? theme.colors.success : theme.colors.warning,
+                          },
+                        ]}
+                      >
+                        {item.ok ? '✓' : '•'} {item.label}
+                      </Text>
+                    ))}
+                  </View>
                 </View>
-              </View>
 
-              <View style={styles.registerRow}>
-                <Text style={[styles.registerText, { color: theme.colors.textMuted }]}>
-                  {t('login.noAccount')}{' '}
-                </Text>
-                <TouchableOpacity onPress={() => router.push('/register')}>
-                  <Text style={[styles.registerLink, { color: accentColor }]}>{t('login.register')}</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.altAuthRow}>
-                {biometricCapability?.isAvailable && (
-                  <TouchableOpacity
-                    onPress={() => { setMode('biometric'); setError(''); }}
-                    style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
-                  >
-                    <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
+                <View style={styles.registerRow}>
+                  <Text style={[styles.registerText, { color: theme.colors.textMuted }]}>{t('login.noAccount')} </Text>
+                  <TouchableOpacity onPress={() => router.push('/register')}>
+                    <Text style={[styles.registerLink, { color: accentColor }]}>{t('login.register')}</Text>
                   </TouchableOpacity>
-                )}
-                {!!hasExistingPasscode && (
-                  <TouchableOpacity
-                    onPress={() => { setMode('passcode'); setError(''); }}
-                    style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
-                  >
-                    <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.passcode')}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </Animated.View>
-          )}
+                </View>
 
-          {/* ── Error Display ── */}
-          {error !== '' && (
-            <Animated.View entering={FadeIn.duration(150)} style={styles.errorWrap}>
-              <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
-              <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
-            </Animated.View>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+                <View style={styles.altAuthRow}>
+                  {biometricCapability?.isAvailable && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setMode('biometric');
+                        setError('');
+                      }}
+                      style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                    >
+                      <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
+                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
+                    </TouchableOpacity>
+                  )}
+                  {!!hasExistingPasscode && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setMode('passcode');
+                        setError('');
+                      }}
+                      style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                    >
+                      <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
+                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.passcode')}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </Animated.View>
+            )}
+
+            {/* ── Error Display ── */}
+            {error !== '' && (
+              <Animated.View entering={FadeIn.duration(150)} style={styles.errorWrap}>
+                <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
+                <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
+              </Animated.View>
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 

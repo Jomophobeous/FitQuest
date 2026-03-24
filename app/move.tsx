@@ -1,7 +1,7 @@
 /**
  * FitQuest Move Tab
  * Step counting and jog/walk tracking with premium glass UI
- * 
+ *
  * CRITICAL: This is utility mode, NOT training logic.
  * - No fatigue impact
  * - No progression
@@ -9,22 +9,8 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  FadeInRight,
-  ZoomIn,
-  SlideInUp,
-} from 'react-native-reanimated';
+import { View, ScrollView, StyleSheet, Text, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeInUp, FadeInRight, ZoomIn, SlideInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -86,7 +72,7 @@ export default function MoveScreen() {
 
   // Sensor Fusion — activity detection
   const { snapshot, isActive: sensorActive, start: startSensor, stop: stopSensor } = useSensorFusion();
-  
+
   // Jog completion modal state
   const [showJogComplete, setShowJogComplete] = useState(false);
   const [jogCompletionData, setJogCompletionData] = useState<JogCompletionData | null>(null);
@@ -117,7 +103,9 @@ export default function MoveScreen() {
     return () => clearInterval(iv);
   }, [isJogging, currentJog]);
 
-  useEffect(() => { if (dbReady) loadHistory(); }, [dbReady, loadHistory]);
+  useEffect(() => {
+    if (dbReady) loadHistory();
+  }, [dbReady, loadHistory]);
 
   // Subscribe to data sync events from other screens
   useDataSync('workout_completed', loadHistory);
@@ -166,21 +154,24 @@ export default function MoveScreen() {
         // Use glass modal instead of Alert
         setJogCompletionData({
           distance: session.distanceMeters / 1000,
-          duration: (session.startTime && session.endTime) ? formatDuration(session.startTime, session.endTime) : '0:00',
+          duration: session.startTime && session.endTime ? formatDuration(session.startTime, session.endTime) : '0:00',
           calories: session.caloriesEstimate || 0,
           xpEarned: xpResult?.xpEarned || 0,
         });
         setShowJogComplete(true);
-        
+
         // Notify other screens about the jog completion
-        const durationSeconds = (session.startTime && session.endTime) ? Math.floor((session.endTime.getTime() - session.startTime.getTime()) / 1000) : 0;
+        const durationSeconds =
+          session.startTime && session.endTime
+            ? Math.floor((session.endTime.getTime() - session.startTime.getTime()) / 1000)
+            : 0;
         notifyJogCompleted(session.distanceMeters, durationSeconds);
         void logEvent('jog_completed', {
           distance_meters: session.distanceMeters,
           duration_seconds: durationSeconds,
           calories: session.caloriesEstimate || 0,
         });
-        
+
         loadHistory();
       }
     } catch (error) {
@@ -208,728 +199,815 @@ export default function MoveScreen() {
   const calories = Math.round(todaySteps * 0.04);
   const activeMin = Math.round(todaySteps / 100);
 
+  if (!dbReady) {
+    return (
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
+        <ActivityIndicator size="large" color={theme.colors.accent} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <ScreenErrorBoundary screenName="Move" onGoBack={() => {}}>
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScreenTutorial
-        screenKey="move"
-        icon="shoe-print"
-        title="Move & Track"
-        description="Track your daily steps, distance, and active minutes. Start a jog session to log your route and pace."
-      />
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* ── HEADER ── */}
-        <Animated.View entering={FadeIn.duration(150)}>
-          <LinearGradient
-            colors={theme.isDark
-              ? [theme.colors.accent3 + '15', 'transparent']
-              : [theme.colors.accent3 + '08', 'transparent']
-            }
-            style={styles.headerGradient}
-          >
-            <View style={styles.headerRow}>
-              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('tab.move')}</Text>
-              <TouchableOpacity
-                onPress={() => setShowHistory(!showHistory)}
-                accessibilityRole="button"
-                accessibilityLabel={showHistory ? 'Hide history' : 'Show history'}
-                style={[styles.historyToggle, { backgroundColor: theme.colors.accent + '12' }]}
-              >
-                <MaterialCommunityIcons
-                  name={showHistory ? 'chart-line' : 'history'}
-                  size={18}
-                  color={theme.colors.accent}
-                />
-              </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </Animated.View>
-
-        {jogError && (
-          <GlassCard style={styles.errorCard} glowColor={theme.colors.error} delay={150}>
-            <Text style={[styles.errorText, { color: theme.colors.error }]}>{jogError}</Text>
-            <GradientButton
-              title={t('common.tryAgain')}
-              variant="warning"
-              size="sm"
-              onPress={() => {
-                setJogError(null);
-                handleStartJog();
-              }}
-              style={{ marginTop: 8 }}
-            />
-          </GlassCard>
-        )}
-
-        {/* ── STEP COUNTER HERO ── */}
-        <GlassCard style={styles.stepHero} gradient glowColor={theme.colors.accent3} delay={100}>
-          <View style={styles.stepHeroInner}>
-            <ProgressRing progress={stepProgress} size={110} color={theme.colors.accent3} strokeWidth={7}>
-              <MaterialCommunityIcons name="shoe-print" size={28} color={theme.colors.accent3} />
-            </ProgressRing>
-
-            <View style={styles.stepDetails}>
-              <Animated.View entering={ZoomIn.delay(200).duration(150)}>
-                <Text style={[styles.stepCount, { color: theme.colors.text }]}>
-                  {todaySteps.toLocaleString()}
-                </Text>
-              </Animated.View>
-              <Text style={[styles.stepGoal, { color: theme.colors.textMuted }]}>
-                / {DAILY_STEP_GOAL.toLocaleString()} {t('move.goal')}
-              </Text>
-
-              <View style={styles.stepMiniStats}>
-                <View style={[styles.miniStat, { backgroundColor: theme.colors.accent + '15' }]}>
-                  <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.colors.accent} />
-                  <Text style={[styles.miniStatText, { color: theme.colors.accent }]}>{distKm} km</Text>
-                </View>
-                <View style={[styles.miniStat, { backgroundColor: theme.colors.accent2 + '15' }]}>
-                  <MaterialCommunityIcons name="fire" size={14} color={theme.colors.accent2} />
-                  <Text style={[styles.miniStatText, { color: theme.colors.accent2 }]}>{calories} cal</Text>
-                </View>
-                <View style={[styles.miniStat, { backgroundColor: theme.colors.accent3 + '15' }]}>
-                  <MaterialCommunityIcons name="clock-outline" size={14} color={theme.colors.accent3} />
-                  <Text style={[styles.miniStatText, { color: theme.colors.accent3 }]}>{activeMin} min</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {!isTracking ? (
-            <View style={styles.trackingButtonWrap}>
-              <GradientButton
-                title={t('move.startTracking')}
-                icon="play"
-                onPress={handleStartTracking}
-                variant="success"
-              />
-            </View>
-          ) : (
-            <Animated.View entering={FadeIn.delay(300).duration(150)} style={styles.trackingLiveRow}>
-              <View style={styles.trackingStatusRow}>
-                <PulseDot color={theme.colors.success} />
-                <Text style={[styles.trackingText, { color: theme.colors.textSecondary }]}>
-                  {t('move.trackingActive')}
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={async () => {
-                  try {
-                    await stopTracking();
-                    await awardStepXP(todaySteps);
-                    notifyStepsUpdated(todaySteps);
-                  } catch (e) {
-                    if (__DEV__) console.warn('[Move] Stop tracking error:', e);
-                  }
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Stop step tracking"
-                style={[styles.stopTrackingBtn, { backgroundColor: theme.colors.error + '18', borderColor: theme.colors.error + '40' }]}
-              >
-                <MaterialCommunityIcons name="stop" size={16} color={theme.colors.error} />
-                <Text style={[styles.stopTrackingText, { color: theme.colors.error }]}>{t('move.stop')}</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
-        </GlassCard>
-
-        {/* ── WEEKLY STEP TREND ── */}
-        <Animated.View entering={FadeInDown.delay(150).duration(150)}>
-          <GlassCard style={{ marginHorizontal: 16, marginTop: 12, padding: 16 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: theme.colors.text }}>
-                This Week
-              </Text>
-              <Text style={{ fontSize: 12, color: theme.colors.textMuted }}>
-                {t('move.goal')}: {(DAILY_STEP_GOAL / 1000).toFixed(0)}k
-              </Text>
-            </View>
-            <View style={styles.weeklyBars}>
-              {(() => {
-                const days = [];
-                for (let i = 6; i >= 0; i--) {
-                  const d = new Date();
-                  d.setDate(d.getDate() - i);
-                  const dateStr = d.toISOString().split('T')[0];
-                  const dayData = stepHistory.find(h => h.date === dateStr);
-                  days.push({
-                    label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][d.getDay()],
-                    steps: dayData?.steps || 0,
-                    isToday: i === 0,
-                  });
-                }
-                const maxVal = Math.max(DAILY_STEP_GOAL, ...days.map(d => d.steps));
-                const goalPct = (DAILY_STEP_GOAL / maxVal) * 80;
-                return days.map((day, idx) => {
-                  const barH = Math.max(4, (day.steps / maxVal) * 80);
-                  const hitGoal = day.steps >= DAILY_STEP_GOAL;
-                  return (
-                    <View key={idx} style={styles.weeklyBarCol}>
-                      <Text style={[styles.weeklyBarCount, {
-                        color: hitGoal ? theme.colors.accent3 : theme.colors.textMuted,
-                      }]}>
-                        {day.steps > 0 ? (day.steps >= 1000 ? (day.steps / 1000).toFixed(1) + 'k' : String(day.steps)) : '–'}
-                      </Text>
-                      <View style={[styles.weeklyBarTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
-                        <View style={[styles.weeklyGoalMark, { bottom: goalPct, backgroundColor: theme.colors.accent3 + '40' }]} />
-                        <LinearGradient
-                          colors={hitGoal
-                            ? [theme.colors.accent3, theme.colors.accent3 + '70']
-                            : day.isToday
-                              ? [theme.colors.accent, theme.colors.accent + '60']
-                              : [theme.colors.accent + '80', theme.colors.accent + '40']
-                          }
-                          style={[styles.weeklyBarFill, { height: barH }]}
-                        />
-                      </View>
-                      <Text style={[styles.weeklyBarLabel, {
-                        color: day.isToday ? theme.colors.accent : theme.colors.textMuted,
-                        fontWeight: day.isToday ? '700' : '500',
-                      }]}>
-                        {day.label}
-                      </Text>
-                    </View>
-                  );
-                });
-              })()}
-            </View>
-          </GlassCard>
-        </Animated.View>
-
-        {/* ── ACTIVITY DETECTION ── */}
-        <Animated.View entering={FadeInDown.delay(200).duration(150)}>
-          <GlassCard style={sensorStyles.activityCard}>
-            <View style={sensorStyles.activityHeader}>
-              <View style={sensorStyles.activityLeft}>
-                <View style={[sensorStyles.activityIconWrap, {
-                  backgroundColor: sensorActive ? theme.colors.accent + '18' : theme.colors.textMuted + '12',
-                }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <ScreenTutorial
+          screenKey="move"
+          icon="shoe-print"
+          title="Move & Track"
+          description="Track your daily steps, distance, and active minutes. Start a jog session to log your route and pace."
+        />
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* ── HEADER ── */}
+          <Animated.View entering={FadeIn.duration(150)}>
+            <LinearGradient
+              colors={
+                theme.isDark
+                  ? [theme.colors.accent3 + '15', 'transparent']
+                  : [theme.colors.accent3 + '08', 'transparent']
+              }
+              style={styles.headerGradient}
+            >
+              <View style={styles.headerRow}>
+                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('tab.move')}</Text>
+                <TouchableOpacity
+                  onPress={() => setShowHistory(!showHistory)}
+                  accessibilityRole="button"
+                  accessibilityLabel={showHistory ? 'Hide history' : 'Show history'}
+                  style={[styles.historyToggle, { backgroundColor: theme.colors.accent + '12' }]}
+                >
                   <MaterialCommunityIcons
-                    name={getActivityIcon(snapshot.activity)}
-                    size={22}
-                    color={sensorActive ? theme.colors.accent : theme.colors.textMuted}
+                    name={showHistory ? 'chart-line' : 'history'}
+                    size={18}
+                    color={theme.colors.accent}
                   />
-                </View>
-                <View>
-                  <Text style={[sensorStyles.activityType, { color: theme.colors.text }]}>
-                    {formatActivity(snapshot.activity, t)}
-                  </Text>
-                  <View style={sensorStyles.confidenceRow}>
-                    {sensorActive && <PulseDot color={theme.colors.success} size={6} />}
-                    <Text style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                      {sensorActive
-                        ? `${Math.round(snapshot.confidence * 100)}% ${t('move.confidence')}`
-                        : t('move.tapToEnable')}
-                    </Text>
+                </TouchableOpacity>
+              </View>
+            </LinearGradient>
+          </Animated.View>
+
+          {jogError && (
+            <GlassCard style={styles.errorCard} glowColor={theme.colors.error} delay={150}>
+              <Text style={[styles.errorText, { color: theme.colors.error }]}>{jogError}</Text>
+              <GradientButton
+                title={t('common.tryAgain')}
+                variant="warning"
+                size="sm"
+                onPress={() => {
+                  setJogError(null);
+                  handleStartJog();
+                }}
+                style={{ marginTop: 8 }}
+              />
+            </GlassCard>
+          )}
+
+          {/* ── STEP COUNTER HERO ── */}
+          <GlassCard style={styles.stepHero} gradient glowColor={theme.colors.accent3} delay={100}>
+            <View style={styles.stepHeroInner}>
+              <ProgressRing progress={stepProgress} size={110} color={theme.colors.accent3} strokeWidth={7}>
+                <MaterialCommunityIcons name="shoe-print" size={28} color={theme.colors.accent3} />
+              </ProgressRing>
+
+              <View style={styles.stepDetails}>
+                <Animated.View entering={ZoomIn.delay(200).duration(150)}>
+                  <Text style={[styles.stepCount, { color: theme.colors.text }]}>{todaySteps.toLocaleString()}</Text>
+                </Animated.View>
+                <Text style={[styles.stepGoal, { color: theme.colors.textMuted }]}>
+                  / {DAILY_STEP_GOAL.toLocaleString()} {t('move.goal')}
+                </Text>
+
+                <View style={styles.stepMiniStats}>
+                  <View style={[styles.miniStat, { backgroundColor: theme.colors.accent + '15' }]}>
+                    <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.colors.accent} />
+                    <Text style={[styles.miniStatText, { color: theme.colors.accent }]}>{distKm} km</Text>
+                  </View>
+                  <View style={[styles.miniStat, { backgroundColor: theme.colors.accent2 + '15' }]}>
+                    <MaterialCommunityIcons name="fire" size={14} color={theme.colors.accent2} />
+                    <Text style={[styles.miniStatText, { color: theme.colors.accent2 }]}>{calories} cal</Text>
+                  </View>
+                  <View style={[styles.miniStat, { backgroundColor: theme.colors.accent3 + '15' }]}>
+                    <MaterialCommunityIcons name="clock-outline" size={14} color={theme.colors.accent3} />
+                    <Text style={[styles.miniStatText, { color: theme.colors.accent3 }]}>{activeMin} min</Text>
                   </View>
                 </View>
-              </View>
-              <TouchableOpacity
-                onPress={sensorActive ? stopSensor : () => startSensor()}
-                accessibilityRole="button"
-                accessibilityLabel={sensorActive ? 'Stop activity detection' : 'Start activity detection'}
-                style={[sensorStyles.sensorToggle, {
-                  backgroundColor: sensorActive ? theme.colors.error + '15' : theme.colors.accent + '15',
-                  borderColor: sensorActive ? theme.colors.error + '30' : theme.colors.accent + '30',
-                }]}
-              >
-                <MaterialCommunityIcons
-                  name={sensorActive ? 'stop' : 'radar'}
-                  size={16}
-                  color={sensorActive ? theme.colors.error : theme.colors.accent}
-                />
-                <Text style={[sensorStyles.sensorToggleText, {
-                  color: sensorActive ? theme.colors.error : theme.colors.accent,
-                }]}>
-                  {sensorActive ? t('move.stop') : t('move.detect')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {sensorActive && snapshot.activity !== 'STATIONARY' && (
-              <Animated.View entering={FadeInDown.duration(150)} style={sensorStyles.metricsRow}>
-                <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
-                  <MaterialCommunityIcons name="speedometer" size={16} color={theme.colors.accent3} />
-                  <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
-                    {snapshot.intensity.toFixed(1)}
-                  </Text>
-                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.intensity')}</Text>
-                </View>
-                <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
-                  <MaterialCommunityIcons name="metronome" size={16} color={theme.colors.accent} />
-                  <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
-                    {snapshot.currentCadence}
-                  </Text>
-                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.cadence')}</Text>
-                </View>
-                {snapshot.activity === 'EXERCISE' && (
-                <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
-                  <MaterialCommunityIcons name="repeat" size={16} color={theme.colors.accent2} />
-                  <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
-                    {snapshot.repCount}
-                  </Text>
-                  <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>{t('move.reps')}</Text>
-                </View>
-                )}
-              </Animated.View>
-            )}
-            {sensorActive && snapshot.activity === 'STATIONARY' && (
-              <Animated.View entering={FadeIn.duration(150)} style={sensorStyles.metricsRow}>
-                <Text style={[{ color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', flex: 1, paddingVertical: 8 }]}>
-                  {t('move.startMovingForMetrics')}
-                </Text>
-              </Animated.View>
-            )}
-          </GlassCard>
-        </Animated.View>
-
-        {/* ── JOG / WALK SESSION ── */}
-        <View>
-          <GlassCard
-            style={styles.jogCard}
-            gradient={isJogging}
-            gradientColors={isJogging
-              ? [theme.colors.success + '20', theme.colors.success + '05']
-              : undefined
-            }
-            glowColor={isJogging ? theme.colors.success : undefined}
-            delay={250}
-          >
-            <View style={styles.jogHeader}>
-              <View style={[styles.jogIconWrap, {
-                backgroundColor: isJogging ? theme.colors.success + '20' : theme.colors.textMuted + '15',
-              }]}>
-                <MaterialCommunityIcons
-                  name="run-fast"
-                  size={22}
-                  color={isJogging ? theme.colors.success : theme.colors.textMuted}
-                />
-              </View>
-              <View>
-                <Text style={[styles.jogTitle, { color: theme.colors.text }]} numberOfLines={1}>{t('move.jogWalk')}</Text>
-                <Text style={[styles.jogSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                  {isJogging ? t('move.sessionActive') : t('move.tapToStart')}
-                </Text>
               </View>
             </View>
 
-            {isJogging && currentJog ? (
-              <Animated.View entering={FadeInDown.duration(150)} style={styles.activeJog}>
-                <View style={styles.jogTimerDisplay}>
-                  <Text style={[styles.jogTimerText, { color: theme.colors.success }]}>
-                    {jogElapsed}
-                  </Text>
-                </View>
-
-                <View style={styles.jogLiveStats}>
-                  {/* Distance - prefer GPS when available */}
-                  <View style={styles.jogStat}>
-                    <Text style={[styles.jogStatValue, { color: theme.colors.accent }]}>
-                      {jogStats 
-                        ? (jogStats.totalDistanceMeters / 1000).toFixed(2)
-                        : (estimatedDistance / 1000).toFixed(2)
-                      }
-                    </Text>
-                    <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
-                  </View>
-                  <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
-                  
-                  {/* Pace - show when GPS available */}
-                  {jogStats?.currentPaceSecondsPerKm ? (
-                    <View style={styles.jogStat}>
-                      <Text style={[styles.jogStatValue, { color: theme.colors.success }]}>
-                        {formatPace(jogStats.currentPaceSecondsPerKm)}
-                      </Text>
-                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.pace')}</Text>
-                    </View>
-                  ) : (
-                    <View style={styles.jogStat}>
-                      <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
-                        {cadence}
-                      </Text>
-                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.cadence')}</Text>
-                    </View>
-                  )}
-                  <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
-                  
-                  {/* Elevation when GPS available, otherwise calories */}
-                  {jogStats?.elevationGainMeters && jogStats.elevationGainMeters > 0 ? (
-                    <View style={styles.jogStat}>
-                      <Text style={[styles.jogStatValue, { color: theme.colors.accent3 }]}>
-                        {Math.round(jogStats.elevationGainMeters)}
-                      </Text>
-                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>↑m</Text>
-                    </View>
-                  ) : (
-                    <View style={styles.jogStat}>
-                      <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
-                        {Math.round((currentJog.distanceMeters ?? 0) * 0.06)}
-                      </Text>
-                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
-                    </View>
-                  )}
-                </View>
-
-                {/* GPS indicator */}
-                {jogStats && (
-                  <View style={[styles.gpsIndicator, { backgroundColor: theme.colors.success + '15' }]}>
-                    <MaterialCommunityIcons name="satellite-variant" size={12} color={theme.colors.success} />
-                    <Text style={[styles.gpsIndicatorText, { color: theme.colors.success }]}>GPS Active</Text>
-                  </View>
-                )}
-
-                {/* Live Map */}
-                {jogStats && showLiveMap && (
-                  <Animated.View entering={FadeIn.duration(200)}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.textSecondary }}>Route Map</Text>
-                      <TouchableOpacity
-                        onPress={() => setShowLiveMap(false)}
-                        accessibilityRole="button"
-                        accessibilityLabel="Hide map"
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      >
-                        <MaterialCommunityIcons name="chevron-up" size={20} color={theme.colors.textMuted} />
-                      </TouchableOpacity>
-                    </View>
-                    <JogMap
-                      routePoints={jogStats.routePoints}
-                      isLive
-                      height={220}
-                      distanceMeters={jogStats.totalDistanceMeters}
-                      pace={jogStats.currentPaceSecondsPerKm
-                        ? formatPace(jogStats.currentPaceSecondsPerKm)
-                        : undefined
-                      }
-                    />
-                  </Animated.View>
-                )}
-                {jogStats && !showLiveMap && (
-                  <TouchableOpacity
-                    onPress={() => setShowLiveMap(true)}
-                    accessibilityRole="button"
-                    accessibilityLabel="Show map"
-                    style={[styles.showMapBtn, { backgroundColor: theme.colors.accent + '15', borderColor: theme.colors.accent + '30' }]}
-                  >
-                    <MaterialCommunityIcons name="map-outline" size={16} color={theme.colors.accent} />
-                    <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.accent }}>Show Map</Text>
-                  </TouchableOpacity>
-                )}
-
+            {!isTracking ? (
+              <View style={styles.trackingButtonWrap}>
                 <GradientButton
-                  title={t('move.stopSession')}
-                  icon="stop"
-                  onPress={handleStopJog}
-                  colors={[theme.colors.error, '#B91C1C']}
-                />
-              </Animated.View>
-            ) : (
-              <View style={styles.jogStartButtonWrap}>
-                <GradientButton
-                  title={t('move.startJog')}
+                  title={t('move.startTracking')}
                   icon="play"
-                  onPress={handleStartJog}
+                  onPress={handleStartTracking}
                   variant="success"
                 />
               </View>
+            ) : (
+              <Animated.View entering={FadeIn.delay(300).duration(150)} style={styles.trackingLiveRow}>
+                <View style={styles.trackingStatusRow}>
+                  <PulseDot color={theme.colors.success} />
+                  <Text style={[styles.trackingText, { color: theme.colors.textSecondary }]}>
+                    {t('move.trackingActive')}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={async () => {
+                    try {
+                      await stopTracking();
+                      await awardStepXP(todaySteps);
+                      notifyStepsUpdated(todaySteps);
+                    } catch (e) {
+                      if (__DEV__) console.warn('[Move] Stop tracking error:', e);
+                    }
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Stop step tracking"
+                  style={[
+                    styles.stopTrackingBtn,
+                    { backgroundColor: theme.colors.error + '18', borderColor: theme.colors.error + '40' },
+                  ]}
+                >
+                  <MaterialCommunityIcons name="stop" size={16} color={theme.colors.error} />
+                  <Text style={[styles.stopTrackingText, { color: theme.colors.error }]}>{t('move.stop')}</Text>
+                </TouchableOpacity>
+              </Animated.View>
             )}
           </GlassCard>
-        </View>
 
-        {/* ── HISTORY ── */}
-        {!!showHistory && (
-          <Animated.View entering={FadeInDown.duration(150)}>
-            <SectionHeader title={t('move.stepHistory')} delay={0} />
-            {stepHistory.length === 0 ? (
-              <GlassCard style={{ marginHorizontal: 16 }}>
-                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noStepHistory')}</Text>
-              </GlassCard>
-            ) : (
-              stepHistory.map((day, i) => {
-                const pct = Math.min(100, (day.steps / DAILY_STEP_GOAL) * 100);
-                const hitGoal = day.steps >= DAILY_STEP_GOAL;
-                return (
-                  <AnimatedListItem key={day.date} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
-                    <View style={[styles.historyRow, {
-                      backgroundColor: theme.colors.surfaceVariant,
-                      borderColor: theme.colors.border,
-                    }]}>
-                      <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-                          <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
-                          <Text style={[styles.historySteps, { color: hitGoal ? theme.colors.accent3 : theme.colors.accent }]}>
-                            {day.steps.toLocaleString()} {t('move.steps').toLowerCase()}
-                          </Text>
-                        </View>
-                        <View style={[styles.historyProgressTrack, { backgroundColor: theme.colors.border }]}>
+          {/* ── WEEKLY STEP TREND ── */}
+          <Animated.View entering={FadeInDown.delay(150).duration(150)}>
+            <GlassCard style={{ marginHorizontal: 16, marginTop: 12, padding: 16 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 14,
+                }}
+              >
+                <Text style={{ fontSize: 15, fontWeight: '700', color: theme.colors.text }}>This Week</Text>
+                <Text style={{ fontSize: 12, color: theme.colors.textMuted }}>
+                  {t('move.goal')}: {(DAILY_STEP_GOAL / 1000).toFixed(0)}k
+                </Text>
+              </View>
+              <View style={styles.weeklyBars}>
+                {(() => {
+                  const days = [];
+                  for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    const dayData = stepHistory.find((h) => h.date === dateStr);
+                    days.push({
+                      label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][d.getDay()],
+                      steps: dayData?.steps || 0,
+                      isToday: i === 0,
+                    });
+                  }
+                  const maxVal = Math.max(DAILY_STEP_GOAL, ...days.map((d) => d.steps));
+                  const goalPct = (DAILY_STEP_GOAL / maxVal) * 80;
+                  return days.map((day, idx) => {
+                    const barH = Math.max(4, (day.steps / maxVal) * 80);
+                    const hitGoal = day.steps >= DAILY_STEP_GOAL;
+                    return (
+                      <View key={idx} style={styles.weeklyBarCol}>
+                        <Text
+                          style={[
+                            styles.weeklyBarCount,
+                            {
+                              color: hitGoal ? theme.colors.accent3 : theme.colors.textMuted,
+                            },
+                          ]}
+                        >
+                          {day.steps > 0
+                            ? day.steps >= 1000
+                              ? (day.steps / 1000).toFixed(1) + 'k'
+                              : String(day.steps)
+                            : '–'}
+                        </Text>
+                        <View style={[styles.weeklyBarTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
+                          <View
+                            style={[
+                              styles.weeklyGoalMark,
+                              { bottom: goalPct, backgroundColor: theme.colors.accent3 + '40' },
+                            ]}
+                          />
                           <LinearGradient
-                            colors={hitGoal
-                              ? [theme.colors.accent3, theme.colors.accent3 + '80']
-                              : [theme.colors.accent, theme.colors.accent + '60']
+                            colors={
+                              hitGoal
+                                ? [theme.colors.accent3, theme.colors.accent3 + '70']
+                                : day.isToday
+                                  ? [theme.colors.accent, theme.colors.accent + '60']
+                                  : [theme.colors.accent + '80', theme.colors.accent + '40']
                             }
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={[styles.historyProgressFill, { width: `${pct}%` as any }]}
+                            style={[styles.weeklyBarFill, { height: barH }]}
                           />
                         </View>
-                      </View>
-                      {hitGoal && (
-                        <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.accent3} style={{ marginLeft: 10 }} />
-                      )}
-                    </View>
-                  </AnimatedListItem>
-                );
-              })
-            )}
-
-            <SectionHeader title={t('move.jogHistory')} delay={100} />
-            {jogHistory.length === 0 ? (
-              <GlassCard style={{ marginHorizontal: 16 }}>
-                <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noJogHistory')}</Text>
-              </GlassCard>
-            ) : (
-              jogHistory.map((jog, i) => (
-                <AnimatedListItem key={jog.id} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={async () => {
-                      try {
-                        setReviewJog(jog);
-                        const route = await getJogRoute(jog.id);
-                        setReviewRoute(route);
-                        setReviewJogId(jog.id);
-                      } catch (e) {
-                        if (__DEV__) console.warn('[Move] Failed to load jog route:', e);
-                      }
-                    }}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Jog on ${jog.startTime.toLocaleDateString()}, ${(jog.distanceMeters / 1000).toFixed(2)} km`}
-                    accessibilityHint="Double tap to view route"
-                    style={[styles.historyRow, {
-                      backgroundColor: theme.colors.surfaceVariant,
-                      borderColor: theme.colors.border,
-                    }]}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={[styles.historyDate, { color: theme.colors.text }]}>
-                          {jog.startTime.toLocaleDateString()}
-                        </Text>
-                        <Text style={[styles.historySteps, { color: theme.colors.accent2 }]}>
-                          ~{jog.caloriesEstimate} cal
+                        <Text
+                          style={[
+                            styles.weeklyBarLabel,
+                            {
+                              color: day.isToday ? theme.colors.accent : theme.colors.textMuted,
+                              fontWeight: day.isToday ? '700' : '500',
+                            },
+                          ]}
+                        >
+                          {day.label}
                         </Text>
                       </View>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                        <Text style={[{ fontSize: 11, color: theme.colors.textMuted }]}>
-                          {(jog.distanceMeters / 1000).toFixed(2)} km · {formatPace(jog.avgPacePerKm)}
-                        </Text>
-                        <MaterialCommunityIcons name="map-marker-path" size={12} color={theme.colors.accent + '80'} />
-                      </View>
-                    </View>
-                    <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
-                  </TouchableOpacity>
-                </AnimatedListItem>
-              ))
-            )}
+                    );
+                  });
+                })()}
+              </View>
+            </GlassCard>
           </Animated.View>
-        )}
 
-        {/* ── INFO NOTE ── */}
-        <Animated.View entering={FadeInUp.delay(400).duration(150)}>
-          <GlassCard style={styles.infoCard} delay={500}>
-            <MaterialCommunityIcons name="information-outline" size={18} color={theme.colors.accent} />
-            <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>
-              {t('move.infoXpAndFatigue')}
-            </Text>
-          </GlassCard>
-        </Animated.View>
+          {/* ── ACTIVITY DETECTION ── */}
+          <Animated.View entering={FadeInDown.delay(200).duration(150)}>
+            <GlassCard style={sensorStyles.activityCard}>
+              <View style={sensorStyles.activityHeader}>
+                <View style={sensorStyles.activityLeft}>
+                  <View
+                    style={[
+                      sensorStyles.activityIconWrap,
+                      {
+                        backgroundColor: sensorActive ? theme.colors.accent + '18' : theme.colors.textMuted + '12',
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={getActivityIcon(snapshot.activity)}
+                      size={22}
+                      color={sensorActive ? theme.colors.accent : theme.colors.textMuted}
+                    />
+                  </View>
+                  <View>
+                    <Text style={[sensorStyles.activityType, { color: theme.colors.text }]}>
+                      {formatActivity(snapshot.activity, t)}
+                    </Text>
+                    <View style={sensorStyles.confidenceRow}>
+                      {sensorActive && <PulseDot color={theme.colors.success} size={6} />}
+                      <Text style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                        {sensorActive
+                          ? `${Math.round(snapshot.confidence * 100)}% ${t('move.confidence')}`
+                          : t('move.tapToEnable')}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={sensorActive ? stopSensor : () => startSensor()}
+                  accessibilityRole="button"
+                  accessibilityLabel={sensorActive ? 'Stop activity detection' : 'Start activity detection'}
+                  style={[
+                    sensorStyles.sensorToggle,
+                    {
+                      backgroundColor: sensorActive ? theme.colors.error + '15' : theme.colors.accent + '15',
+                      borderColor: sensorActive ? theme.colors.error + '30' : theme.colors.accent + '30',
+                    },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={sensorActive ? 'stop' : 'radar'}
+                    size={16}
+                    color={sensorActive ? theme.colors.error : theme.colors.accent}
+                  />
+                  <Text
+                    style={[
+                      sensorStyles.sensorToggleText,
+                      {
+                        color: sensorActive ? theme.colors.error : theme.colors.accent,
+                      },
+                    ]}
+                  >
+                    {sensorActive ? t('move.stop') : t('move.detect')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-        <View style={{ height: 32 }} />
-      </ScrollView>
+              {sensorActive && snapshot.activity !== 'STATIONARY' && (
+                <Animated.View entering={FadeInDown.duration(150)} style={sensorStyles.metricsRow}>
+                  <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                    <MaterialCommunityIcons name="speedometer" size={16} color={theme.colors.accent3} />
+                    <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
+                      {snapshot.intensity.toFixed(1)}
+                    </Text>
+                    <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
+                      {t('move.intensity')}
+                    </Text>
+                  </View>
+                  <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                    <MaterialCommunityIcons name="metronome" size={16} color={theme.colors.accent} />
+                    <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
+                      {snapshot.currentCadence}
+                    </Text>
+                    <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
+                      {t('move.cadence')}
+                    </Text>
+                  </View>
+                  {snapshot.activity === 'EXERCISE' && (
+                    <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                      <MaterialCommunityIcons name="repeat" size={16} color={theme.colors.accent2} />
+                      <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>{snapshot.repCount}</Text>
+                      <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
+                        {t('move.reps')}
+                      </Text>
+                    </View>
+                  )}
+                </Animated.View>
+              )}
+              {sensorActive && snapshot.activity === 'STATIONARY' && (
+                <Animated.View entering={FadeIn.duration(150)} style={sensorStyles.metricsRow}>
+                  <Text
+                    style={[
+                      { color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', flex: 1, paddingVertical: 8 },
+                    ]}
+                  >
+                    {t('move.startMovingForMetrics')}
+                  </Text>
+                </Animated.View>
+              )}
+            </GlassCard>
+          </Animated.View>
 
-      {/* ── ROUTE REVIEW MODAL ── */}
-      <Modal
-        visible={reviewJogId !== null}
-        transparent
-        animationType="slide"
-        onRequestClose={() => {
-          setReviewJogId(null);
-          setReviewRoute(null);
-          setReviewJog(null);
-        }}
-      >
-        <View style={[styles.routeModalContainer, { backgroundColor: theme.colors.background }]}>
-          {/* Header */}
-          <SafeAreaView edges={['top']}>
-            <View style={styles.routeModalHeader}>
-              <TouchableOpacity
-                onPress={() => {
-                  setReviewJogId(null);
-                  setReviewRoute(null);
-                  setReviewJog(null);
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Close route review"
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              >
-                <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
-              </TouchableOpacity>
-              <Text style={[styles.routeModalTitle, { color: theme.colors.text }]}>
-                Route Review
-              </Text>
-              <View style={{ width: 24 }} />
+          {/* ── JOG / WALK SESSION ── */}
+          <View>
+            <GlassCard
+              style={styles.jogCard}
+              gradient={isJogging}
+              gradientColors={isJogging ? [theme.colors.success + '20', theme.colors.success + '05'] : undefined}
+              glowColor={isJogging ? theme.colors.success : undefined}
+              delay={250}
+            >
+              <View style={styles.jogHeader}>
+                <View
+                  style={[
+                    styles.jogIconWrap,
+                    {
+                      backgroundColor: isJogging ? theme.colors.success + '20' : theme.colors.textMuted + '15',
+                    },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="run-fast"
+                    size={22}
+                    color={isJogging ? theme.colors.success : theme.colors.textMuted}
+                  />
+                </View>
+                <View>
+                  <Text style={[styles.jogTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                    {t('move.jogWalk')}
+                  </Text>
+                  <Text style={[styles.jogSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                    {isJogging ? t('move.sessionActive') : t('move.tapToStart')}
+                  </Text>
+                </View>
+              </View>
+
+              {isJogging && currentJog ? (
+                <Animated.View entering={FadeInDown.duration(150)} style={styles.activeJog}>
+                  <View style={styles.jogTimerDisplay}>
+                    <Text style={[styles.jogTimerText, { color: theme.colors.success }]}>{jogElapsed}</Text>
+                  </View>
+
+                  <View style={styles.jogLiveStats}>
+                    {/* Distance - prefer GPS when available */}
+                    <View style={styles.jogStat}>
+                      <Text style={[styles.jogStatValue, { color: theme.colors.accent }]}>
+                        {jogStats
+                          ? (jogStats.totalDistanceMeters / 1000).toFixed(2)
+                          : (estimatedDistance / 1000).toFixed(2)}
+                      </Text>
+                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
+                    </View>
+                    <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
+
+                    {/* Pace - show when GPS available */}
+                    {jogStats?.currentPaceSecondsPerKm ? (
+                      <View style={styles.jogStat}>
+                        <Text style={[styles.jogStatValue, { color: theme.colors.success }]}>
+                          {formatPace(jogStats.currentPaceSecondsPerKm)}
+                        </Text>
+                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.pace')}</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.jogStat}>
+                        <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>{cadence}</Text>
+                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>
+                          {t('move.cadence')}
+                        </Text>
+                      </View>
+                    )}
+                    <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
+
+                    {/* Elevation when GPS available, otherwise calories */}
+                    {jogStats?.elevationGainMeters && jogStats.elevationGainMeters > 0 ? (
+                      <View style={styles.jogStat}>
+                        <Text style={[styles.jogStatValue, { color: theme.colors.accent3 }]}>
+                          {Math.round(jogStats.elevationGainMeters)}
+                        </Text>
+                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>↑m</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.jogStat}>
+                        <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
+                          {Math.round((currentJog.distanceMeters ?? 0) * 0.06)}
+                        </Text>
+                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>
+                          {t('meal.unit.cal')}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* GPS indicator */}
+                  {jogStats && (
+                    <View style={[styles.gpsIndicator, { backgroundColor: theme.colors.success + '15' }]}>
+                      <MaterialCommunityIcons name="satellite-variant" size={12} color={theme.colors.success} />
+                      <Text style={[styles.gpsIndicatorText, { color: theme.colors.success }]}>GPS Active</Text>
+                    </View>
+                  )}
+
+                  {/* Live Map */}
+                  {jogStats && showLiveMap && (
+                    <Animated.View entering={FadeIn.duration(200)}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 8,
+                        }}
+                      >
+                        <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.textSecondary }}>
+                          Route Map
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => setShowLiveMap(false)}
+                          accessibilityRole="button"
+                          accessibilityLabel="Hide map"
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                          <MaterialCommunityIcons name="chevron-up" size={20} color={theme.colors.textMuted} />
+                        </TouchableOpacity>
+                      </View>
+                      <JogMap
+                        routePoints={jogStats.routePoints}
+                        isLive
+                        height={220}
+                        distanceMeters={jogStats.totalDistanceMeters}
+                        pace={
+                          jogStats.currentPaceSecondsPerKm ? formatPace(jogStats.currentPaceSecondsPerKm) : undefined
+                        }
+                      />
+                    </Animated.View>
+                  )}
+                  {jogStats && !showLiveMap && (
+                    <TouchableOpacity
+                      onPress={() => setShowLiveMap(true)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Show map"
+                      style={[
+                        styles.showMapBtn,
+                        { backgroundColor: theme.colors.accent + '15', borderColor: theme.colors.accent + '30' },
+                      ]}
+                    >
+                      <MaterialCommunityIcons name="map-outline" size={16} color={theme.colors.accent} />
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.accent }}>Show Map</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  <GradientButton
+                    title={t('move.stopSession')}
+                    icon="stop"
+                    onPress={handleStopJog}
+                    colors={[theme.colors.error, (theme.colors as any).errorDark ?? '#B91C1C']}
+                  />
+                </Animated.View>
+              ) : (
+                <View style={styles.jogStartButtonWrap}>
+                  <GradientButton title={t('move.startJog')} icon="play" onPress={handleStartJog} variant="success" />
+                </View>
+              )}
+            </GlassCard>
+          </View>
+
+          {/* ── HISTORY ── */}
+          {!!showHistory && (
+            <Animated.View entering={FadeInDown.duration(150)}>
+              <SectionHeader title={t('move.stepHistory')} delay={0} />
+              {stepHistory.length === 0 ? (
+                <GlassCard style={{ marginHorizontal: 16 }}>
+                  <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noStepHistory')}</Text>
+                </GlassCard>
+              ) : (
+                stepHistory.map((day, i) => {
+                  const pct = Math.min(100, (day.steps / DAILY_STEP_GOAL) * 100);
+                  const hitGoal = day.steps >= DAILY_STEP_GOAL;
+                  return (
+                    <AnimatedListItem key={day.date} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
+                      <View
+                        style={[
+                          styles.historyRow,
+                          {
+                            backgroundColor: theme.colors.surfaceVariant,
+                            borderColor: theme.colors.border,
+                          },
+                        ]}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                            <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
+                            <Text
+                              style={[
+                                styles.historySteps,
+                                { color: hitGoal ? theme.colors.accent3 : theme.colors.accent },
+                              ]}
+                            >
+                              {day.steps.toLocaleString()} {t('move.steps').toLowerCase()}
+                            </Text>
+                          </View>
+                          <View style={[styles.historyProgressTrack, { backgroundColor: theme.colors.border }]}>
+                            <LinearGradient
+                              colors={
+                                hitGoal
+                                  ? [theme.colors.accent3, theme.colors.accent3 + '80']
+                                  : [theme.colors.accent, theme.colors.accent + '60']
+                              }
+                              start={{ x: 0, y: 0 }}
+                              end={{ x: 1, y: 0 }}
+                              style={[styles.historyProgressFill, { width: `${pct}%` as any }]}
+                            />
+                          </View>
+                        </View>
+                        {hitGoal && (
+                          <MaterialCommunityIcons
+                            name="check-circle"
+                            size={18}
+                            color={theme.colors.accent3}
+                            style={{ marginLeft: 10 }}
+                          />
+                        )}
+                      </View>
+                    </AnimatedListItem>
+                  );
+                })
+              )}
+
+              <SectionHeader title={t('move.jogHistory')} delay={100} />
+              {jogHistory.length === 0 ? (
+                <GlassCard style={{ marginHorizontal: 16 }}>
+                  <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noJogHistory')}</Text>
+                </GlassCard>
+              ) : (
+                jogHistory.map((jog, i) => (
+                  <AnimatedListItem key={jog.id} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={async () => {
+                        try {
+                          setReviewJog(jog);
+                          const route = await getJogRoute(jog.id);
+                          setReviewRoute(route);
+                          setReviewJogId(jog.id);
+                        } catch (e) {
+                          if (__DEV__) console.warn('[Move] Failed to load jog route:', e);
+                        }
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Jog on ${jog.startTime.toLocaleDateString()}, ${(jog.distanceMeters / 1000).toFixed(2)} km`}
+                      accessibilityHint="Double tap to view route"
+                      style={[
+                        styles.historyRow,
+                        {
+                          backgroundColor: theme.colors.surfaceVariant,
+                          borderColor: theme.colors.border,
+                        },
+                      ]}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <Text style={[styles.historyDate, { color: theme.colors.text }]}>
+                            {jog.startTime.toLocaleDateString()}
+                          </Text>
+                          <Text style={[styles.historySteps, { color: theme.colors.accent2 }]}>
+                            ~{jog.caloriesEstimate} cal
+                          </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                          <Text style={[{ fontSize: 11, color: theme.colors.textMuted }]}>
+                            {(jog.distanceMeters / 1000).toFixed(2)} km · {formatPace(jog.avgPacePerKm)}
+                          </Text>
+                          <MaterialCommunityIcons name="map-marker-path" size={12} color={theme.colors.accent + '80'} />
+                        </View>
+                      </View>
+                      <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+                    </TouchableOpacity>
+                  </AnimatedListItem>
+                ))
+              )}
+            </Animated.View>
+          )}
+
+          {/* ── INFO NOTE ── */}
+          <Animated.View entering={FadeInUp.delay(400).duration(150)}>
+            <GlassCard style={styles.infoCard} delay={500}>
+              <MaterialCommunityIcons name="information-outline" size={18} color={theme.colors.accent} />
+              <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>{t('move.infoXpAndFatigue')}</Text>
+            </GlassCard>
+          </Animated.View>
+
+          <View style={{ height: 32 }} />
+        </ScrollView>
+
+        {/* ── ROUTE REVIEW MODAL ── */}
+        <Modal
+          visible={reviewJogId !== null}
+          transparent
+          animationType="slide"
+          onRequestClose={() => {
+            setReviewJogId(null);
+            setReviewRoute(null);
+            setReviewJog(null);
+          }}
+        >
+          <View style={[styles.routeModalContainer, { backgroundColor: theme.colors.background }]}>
+            {/* Header */}
+            <SafeAreaView edges={['top']}>
+              <View style={styles.routeModalHeader}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setReviewJogId(null);
+                    setReviewRoute(null);
+                    setReviewJog(null);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close route review"
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
+                </TouchableOpacity>
+                <Text style={[styles.routeModalTitle, { color: theme.colors.text }]}>Route Review</Text>
+                <View style={{ width: 24 }} />
+              </View>
+            </SafeAreaView>
+
+            {/* Map */}
+            <View style={{ flex: 1 }}>
+              {reviewRoute && reviewRoute.length > 0 ? (
+                <JogMap
+                  routePoints={reviewRoute}
+                  isLive={false}
+                  height={400}
+                  distanceMeters={reviewJog?.distanceMeters}
+                  pace={reviewJog?.avgPacePerKm ? formatPace(reviewJog.avgPacePerKm) : undefined}
+                />
+              ) : (
+                <View style={[styles.noRouteContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <MaterialCommunityIcons name="map-marker-off" size={40} color={theme.colors.textMuted} />
+                  <Text style={[styles.noRouteText, { color: theme.colors.textMuted }]}>
+                    No route recorded for this jog
+                  </Text>
+                  <Text style={[styles.noRouteHint, { color: theme.colors.textMuted }]}>
+                    Routes are saved when GPS is active during a jog
+                  </Text>
+                </View>
+              )}
             </View>
-          </SafeAreaView>
 
-          {/* Map */}
-          <View style={{ flex: 1 }}>
-            {reviewRoute && reviewRoute.length > 0 ? (
-              <JogMap
-                routePoints={reviewRoute}
-                isLive={false}
-                height={400}
-                distanceMeters={reviewJog?.distanceMeters}
-                pace={reviewJog?.avgPacePerKm ? formatPace(reviewJog.avgPacePerKm) : undefined}
-              />
-            ) : (
-              <View style={[styles.noRouteContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
-                <MaterialCommunityIcons name="map-marker-off" size={40} color={theme.colors.textMuted} />
-                <Text style={[styles.noRouteText, { color: theme.colors.textMuted }]}>
-                  No route recorded for this jog
-                </Text>
-                <Text style={[styles.noRouteHint, { color: theme.colors.textMuted }]}>
-                  Routes are saved when GPS is active during a jog
-                </Text>
+            {/* Stats Footer */}
+            {reviewJog && (
+              <View
+                style={[
+                  styles.routeStatsFooter,
+                  { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
+                ]}
+              >
+                <View style={styles.routeStatItem}>
+                  <MaterialCommunityIcons name="map-marker-distance" size={18} color={theme.colors.accent} />
+                  <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                    {(reviewJog.distanceMeters / 1000).toFixed(2)} km
+                  </Text>
+                </View>
+                <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
+                <View style={styles.routeStatItem}>
+                  <MaterialCommunityIcons name="speedometer" size={18} color={theme.colors.success} />
+                  <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                    {formatPace(reviewJog.avgPacePerKm)}
+                  </Text>
+                </View>
+                <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
+                <View style={styles.routeStatItem}>
+                  <MaterialCommunityIcons name="fire" size={18} color={theme.colors.accent2} />
+                  <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                    {reviewJog.caloriesEstimate ?? 0} cal
+                  </Text>
+                </View>
+                {reviewJog.endTime && (
+                  <>
+                    <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
+                    <View style={styles.routeStatItem}>
+                      <MaterialCommunityIcons name="timer-outline" size={18} color={theme.colors.accent3} />
+                      <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                        {formatDuration(reviewJog.startTime, reviewJog.endTime)}
+                      </Text>
+                    </View>
+                  </>
+                )}
               </View>
             )}
           </View>
+        </Modal>
 
-          {/* Stats Footer */}
-          {reviewJog && (
-            <View style={[styles.routeStatsFooter, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
-              <View style={styles.routeStatItem}>
-                <MaterialCommunityIcons name="map-marker-distance" size={18} color={theme.colors.accent} />
-                <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                  {(reviewJog.distanceMeters / 1000).toFixed(2)} km
-                </Text>
+        {/* ── JOG COMPLETION MODAL ── */}
+        <Modal
+          visible={showJogComplete}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowJogComplete(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <Animated.View entering={ZoomIn.duration(150)}>
+              <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+                {/* Glow backdrop */}
+                <LinearGradient colors={[theme.colors.success + '25', 'transparent']} style={styles.modalGlow} />
+
+                {/* Trophy icon */}
+                <LinearGradient
+                  colors={[theme.colors.success + '30', theme.colors.success + '08']}
+                  style={styles.trophyGlow}
+                >
+                  <MaterialCommunityIcons name="run" size={48} color={theme.colors.success} />
+                </LinearGradient>
+
+                <Text style={[styles.modalTitle, { color: theme.colors.text }]}>{t('move.jogComplete')}</Text>
+
+                {!!jogCompletionData && (
+                  <View style={styles.statsGrid}>
+                    <View style={[styles.statBox, { backgroundColor: theme.colors.accent + '12' }]}>
+                      <MaterialCommunityIcons name="map-marker-distance" size={20} color={theme.colors.accent} />
+                      <Text style={[styles.statValue, { color: theme.colors.accent }]}>
+                        {jogCompletionData.distance.toFixed(2)}
+                      </Text>
+                      <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
+                    </View>
+
+                    <View style={[styles.statBox, { backgroundColor: theme.colors.accent2 + '12' }]}>
+                      <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.accent2} />
+                      <Text style={[styles.statValue, { color: theme.colors.accent2 }]}>
+                        {jogCompletionData.duration}
+                      </Text>
+                      <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.time')}</Text>
+                    </View>
+
+                    <View style={[styles.statBox, { backgroundColor: theme.colors.warning + '12' }]}>
+                      <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
+                      <Text style={[styles.statValue, { color: theme.colors.warning }]}>
+                        {jogCompletionData.calories}
+                      </Text>
+                      <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
+                    </View>
+                  </View>
+                )}
+
+                {/* XP Earned */}
+                {jogCompletionData && jogCompletionData.xpEarned > 0 && (
+                  <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.xpBadge}>
+                    <LinearGradient
+                      colors={[theme.colors.accent, theme.colors.indigo]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.xpGradient}
+                    >
+                      <MaterialCommunityIcons name="star" size={16} color={theme.colors.onAccent} />
+                      <Text style={[styles.xpText, { color: theme.colors.text }]}>
+                        +{jogCompletionData.xpEarned} XP
+                      </Text>
+                    </LinearGradient>
+                  </Animated.View>
+                )}
+
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: theme.colors.success }]}
+                  onPress={() => {
+                    setShowJogComplete(false);
+                    setJogCompletionData(null);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Dismiss jog completion"
+                >
+                  <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>{t('move.awesome')}</Text>
+                </TouchableOpacity>
               </View>
-              <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
-              <View style={styles.routeStatItem}>
-                <MaterialCommunityIcons name="speedometer" size={18} color={theme.colors.success} />
-                <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                  {formatPace(reviewJog.avgPacePerKm)}
-                </Text>
-              </View>
-              <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
-              <View style={styles.routeStatItem}>
-                <MaterialCommunityIcons name="fire" size={18} color={theme.colors.accent2} />
-                <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                  {reviewJog.caloriesEstimate ?? 0} cal
-                </Text>
-              </View>
-              {reviewJog.endTime && (
-                <>
-                  <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
-                  <View style={styles.routeStatItem}>
-                    <MaterialCommunityIcons name="timer-outline" size={18} color={theme.colors.accent3} />
-                    <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                      {formatDuration(reviewJog.startTime, reviewJog.endTime)}
-                    </Text>
-                  </View>
-                </>
-              )}
-            </View>
-          )}
-        </View>
-      </Modal>
-
-      {/* ── JOG COMPLETION MODAL ── */}
-      <Modal
-        visible={showJogComplete}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowJogComplete(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <Animated.View entering={ZoomIn.duration(150)}>
-            <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
-              {/* Glow backdrop */}
-              <LinearGradient
-                colors={[theme.colors.success + '25', 'transparent']}
-                style={styles.modalGlow}
-              />
-              
-              {/* Trophy icon */}
-              <LinearGradient
-                colors={[theme.colors.success + '30', theme.colors.success + '08']}
-                style={styles.trophyGlow}
-              >
-                <MaterialCommunityIcons name="run" size={48} color={theme.colors.success} />
-              </LinearGradient>
-
-              <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
-                {t('move.jogComplete')}
-              </Text>
-
-              {!!jogCompletionData && (
-                <View style={styles.statsGrid}>
-                  <View style={[styles.statBox, { backgroundColor: theme.colors.accent + '12' }]}>
-                    <MaterialCommunityIcons name="map-marker-distance" size={20} color={theme.colors.accent} />
-                    <Text style={[styles.statValue, { color: theme.colors.accent }]}>
-                      {jogCompletionData.distance.toFixed(2)}
-                    </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
-                  </View>
-
-                  <View style={[styles.statBox, { backgroundColor: theme.colors.accent2 + '12' }]}>
-                    <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.accent2} />
-                    <Text style={[styles.statValue, { color: theme.colors.accent2 }]}>
-                      {jogCompletionData.duration}
-                    </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.time')}</Text>
-                  </View>
-
-                  <View style={[styles.statBox, { backgroundColor: theme.colors.warning + '12' }]}>
-                    <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
-                    <Text style={[styles.statValue, { color: theme.colors.warning }]}>
-                      {jogCompletionData.calories}
-                    </Text>
-                    <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
-                  </View>
-                </View>
-              )}
-
-              {/* XP Earned */}
-              {jogCompletionData && jogCompletionData.xpEarned > 0 && (
-                <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.xpBadge}>
-                  <LinearGradient
-                    colors={[theme.colors.accent, theme.colors.indigo]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.xpGradient}
-                  >
-                    <MaterialCommunityIcons name="star" size={16} color={theme.colors.onAccent} />
-                    <Text style={[styles.xpText, { color: theme.colors.text }]}>+{jogCompletionData.xpEarned} XP</Text>
-                  </LinearGradient>
-                </Animated.View>
-              )}
-
-              <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: theme.colors.success }]}
-                onPress={() => {
-                  setShowJogComplete(false);
-                  setJogCompletionData(null);
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Dismiss jog completion"
-              >
-                <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>{t('move.awesome')}</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+            </Animated.View>
+          </View>
+        </Modal>
+      </SafeAreaView>
     </ScreenErrorBoundary>
   );
 }
@@ -949,13 +1027,34 @@ const styles = StyleSheet.create({
   stepCount: { fontSize: 34, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
   stepGoal: { fontSize: 13, marginTop: 2 },
   stepMiniStats: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
-  miniStat: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  miniStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
   miniStatText: { fontSize: 12, fontWeight: '600' },
   trackingButtonWrap: { marginTop: 16, minHeight: 48 },
-  trackingLiveRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, minHeight: 48 },
+  trackingLiveRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    minHeight: 48,
+  },
   trackingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   trackingText: { fontSize: 13, fontWeight: '500' },
-  stopTrackingBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, borderWidth: 1 },
+  stopTrackingBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
   stopTrackingText: { fontSize: 13, fontWeight: '600' },
   jogCard: { marginHorizontal: 16, marginTop: 12, padding: 18 },
   jogHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
@@ -971,13 +1070,13 @@ const styles = StyleSheet.create({
   jogStatValue: { fontSize: 22, fontWeight: '700' },
   jogStatLabel: { fontSize: 12, marginTop: 2 },
   jogStatDivider: { width: 1, height: 30 },
-  gpsIndicator: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    gap: 4, 
-    alignSelf: 'center', 
-    paddingHorizontal: 10, 
-    paddingVertical: 4, 
+  gpsIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 12,
     marginBottom: 4,
   },
@@ -1005,9 +1104,16 @@ const styles = StyleSheet.create({
   historySteps: { fontSize: 14, fontWeight: '700' },
   historyProgressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
   historyProgressFill: { height: 4, borderRadius: 2 },
-  infoCard: { marginHorizontal: 16, marginTop: 16, flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14 },
+  infoCard: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    padding: 14,
+  },
   infoText: { flex: 1, fontSize: 12, lineHeight: 18 },
-  
+
   // Weekly trend styles
   weeklyBars: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 6 },
   weeklyBarCol: { flex: 1, alignItems: 'center', gap: 4 },

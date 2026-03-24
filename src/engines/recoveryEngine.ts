@@ -1,11 +1,11 @@
 /**
  * ENGINE 3 — Recovery & Deload Engine
- * 
+ *
  * Prevents Burnout: Fatigue management, deload triggers, recovery scheduling
- * 
+ *
  * Consumes: muscle_fatigue, failure patterns, week counters
  * Produces: deload_flag, reduced volume plans
- * 
+ *
  * Core Principle: Fatigue is the hidden weapon. Don't overcomplicate it.
  */
 
@@ -18,6 +18,7 @@ import {
   setAppState,
   getMuscleFatigueLevel,
 } from '../database/service';
+import { walService } from '../services/WriteAheadLogService';
 import { getDatabase } from '../database/schema';
 import type { TargetMuscle, MuscleFatigue, WorkoutSession } from '../database/types';
 import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
@@ -92,15 +93,33 @@ export async function getFatigueSnapshot(userId: string): Promise<FatigueSnapsho
   const now = new Date();
 
   const allMuscles: TargetMuscle[] = [
-    'abs', 'chest_mid', 'chest_upper', 'chest_lower', 'lats', 'rhomboids',
-    'deltoids_front', 'deltoids_lateral', 'deltoids_rear', 'biceps', 'triceps',
-    'forearms', 'quads', 'hamstrings', 'glutes_max', 'glutes_med', 'calves_gastrocnemius',
-    'core_deep', 'lower_back', 'traps_upper', 'traps_mid', 'obliques',
+    'abs',
+    'chest_mid',
+    'chest_upper',
+    'chest_lower',
+    'lats',
+    'rhomboids',
+    'deltoids_front',
+    'deltoids_lateral',
+    'deltoids_rear',
+    'biceps',
+    'triceps',
+    'forearms',
+    'quads',
+    'hamstrings',
+    'glutes_max',
+    'glutes_med',
+    'calves_gastrocnemius',
+    'core_deep',
+    'lower_back',
+    'traps_upper',
+    'traps_mid',
+    'obliques',
   ];
 
-  const fatigueMap = new Map(fatigueRecords.map(f => [f.muscle, f]));
+  const fatigueMap = new Map(fatigueRecords.map((f) => [f.muscle, f]));
 
-  return allMuscles.map(muscle => {
+  return allMuscles.map((muscle) => {
     const record = fatigueMap.get(muscle);
     const level = record?.fatigue_level ?? 0;
 
@@ -146,39 +165,52 @@ export async function accumulateFatigue(
   userId: string,
   primaryMuscles: TargetMuscle[],
   secondaryMuscles: TargetMuscle[],
-  setsCompleted: number
+  setsCompleted: number,
 ): Promise<void> {
-  const db = await getDatabase();
-
-  // Use a transaction with atomic UPDATE to prevent read-modify-write races
-  await db.withTransactionAsync(async () => {
-    // Primary muscles get full fatigue hit — atomic increment, no separate read
-    for (const muscle of primaryMuscles) {
-      const increment = setsCompleted * RECOVERY_CONFIG.fatigue_per_set_primary;
-      await db.runAsync(
-        `INSERT INTO muscle_fatigue (user_id, muscle, fatigue_level, last_trained_at, updated_at)
-         VALUES (?, ?, MIN(100, ?), datetime('now'), datetime('now'))
-         ON CONFLICT(user_id, muscle) DO UPDATE SET
-           fatigue_level = MIN(100, fatigue_level + ?),
-           last_trained_at = datetime('now'),
-           updated_at = datetime('now')`,
-        [userId, muscle, increment, increment]
-      );
-    }
-
-    // Secondary muscles get half fatigue hit
-    for (const muscle of secondaryMuscles) {
-      const increment = setsCompleted * RECOVERY_CONFIG.fatigue_per_set_secondary;
-      await db.runAsync(
-        `INSERT INTO muscle_fatigue (user_id, muscle, fatigue_level, last_trained_at, updated_at)
-         VALUES (?, ?, MIN(100, ?), datetime('now'), datetime('now'))
-         ON CONFLICT(user_id, muscle) DO UPDATE SET
-           fatigue_level = MIN(100, fatigue_level + ?),
-           updated_at = datetime('now')`,
-        [userId, muscle, increment, increment]
-      );
-    }
+  const allMuscles = [...primaryMuscles, ...secondaryMuscles];
+  const walId = await walService.logIntent({
+    operation: 'accumulate_fatigue',
+    table_name: 'muscle_fatigue',
+    record_id: userId,
+    payload: { muscles: allMuscles, setsCompleted },
   });
+  try {
+    const db = await getDatabase();
+
+    // Use a transaction with atomic UPDATE to prevent read-modify-write races
+    await db.withTransactionAsync(async () => {
+      // Primary muscles get full fatigue hit — atomic increment, no separate read
+      for (const muscle of primaryMuscles) {
+        const increment = setsCompleted * RECOVERY_CONFIG.fatigue_per_set_primary;
+        await db.runAsync(
+          `INSERT INTO muscle_fatigue (user_id, muscle, fatigue_level, last_trained_at, updated_at)
+           VALUES (?, ?, MIN(100, ?), datetime('now'), datetime('now'))
+           ON CONFLICT(user_id, muscle) DO UPDATE SET
+             fatigue_level = MIN(100, fatigue_level + ?),
+             last_trained_at = datetime('now'),
+             updated_at = datetime('now')`,
+          [userId, muscle, increment, increment],
+        );
+      }
+
+      // Secondary muscles get half fatigue hit
+      for (const muscle of secondaryMuscles) {
+        const increment = setsCompleted * RECOVERY_CONFIG.fatigue_per_set_secondary;
+        await db.runAsync(
+          `INSERT INTO muscle_fatigue (user_id, muscle, fatigue_level, last_trained_at, updated_at)
+           VALUES (?, ?, MIN(100, ?), datetime('now'), datetime('now'))
+           ON CONFLICT(user_id, muscle) DO UPDATE SET
+             fatigue_level = MIN(100, fatigue_level + ?),
+             updated_at = datetime('now')`,
+          [userId, muscle, increment, increment],
+        );
+      }
+    });
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 async function getCurrentFatigue(userId: string, muscle: TargetMuscle): Promise<number> {
@@ -192,11 +224,7 @@ async function getCurrentFatigue(userId: string, muscle: TargetMuscle): Promise<
 /**
  * Apply daily recovery tick (call once per day, e.g., at midnight or app open)
  */
-export async function applyDailyRecoveryTick(
-  userId: string,
-  isRestDay = false,
-  goodSleep = false
-): Promise<void> {
+export async function applyDailyRecoveryTick(userId: string, isRestDay = false, goodSleep = false): Promise<void> {
   const adaptive = await getAdaptiveTrainingProfile(userId);
   let recoveryRate = RECOVERY_CONFIG.daily_recovery_rate;
 
@@ -242,14 +270,14 @@ export async function checkDeloadStatus(userId: string): Promise<DeloadStatus> {
   let severity: 'none' | 'suggested' | 'recommended' | 'required' = 'none';
 
   const adjustedAvgFatigueTrigger = Math.round(
-    RECOVERY_CONFIG.avg_fatigue_deload_trigger / adaptive.fatigueSensitivity
+    RECOVERY_CONFIG.avg_fatigue_deload_trigger / adaptive.fatigueSensitivity,
   );
   const adjustedCriticalThreshold = Math.round(
-    RECOVERY_CONFIG.fatigue_critical_threshold / adaptive.fatigueSensitivity
+    RECOVERY_CONFIG.fatigue_critical_threshold / adaptive.fatigueSensitivity,
   );
   const adjustedFailureTrigger = Math.max(
     1,
-    Math.round(RECOVERY_CONFIG.consecutive_failures_trigger / adaptive.fatigueSensitivity)
+    Math.round(RECOVERY_CONFIG.consecutive_failures_trigger / adaptive.fatigueSensitivity),
   );
 
   // 1. Check average fatigue
@@ -261,7 +289,7 @@ export async function checkDeloadStatus(userId: string): Promise<DeloadStatus> {
 
   // 2. Check for critical muscles
   const snapshot = await getFatigueSnapshot(userId);
-  const criticalMuscles = snapshot.filter(s => s.level >= adjustedCriticalThreshold);
+  const criticalMuscles = snapshot.filter((s) => s.level >= adjustedCriticalThreshold);
   if (criticalMuscles.length >= 3) {
     reasons.push(`${criticalMuscles.length} muscle groups at critical fatigue (adaptive threshold)`);
     severity = 'required';
@@ -279,7 +307,8 @@ export async function checkDeloadStatus(userId: string): Promise<DeloadStatus> {
 
   // 4. Check scheduled deload
   const weekNumber = await getCurrentWeekNumber(userId);
-  const weeksUntilScheduled = RECOVERY_CONFIG.scheduled_deload_weeks - (weekNumber % RECOVERY_CONFIG.scheduled_deload_weeks);
+  const weeksUntilScheduled =
+    RECOVERY_CONFIG.scheduled_deload_weeks - (weekNumber % RECOVERY_CONFIG.scheduled_deload_weeks);
 
   if (weeksUntilScheduled === 0 || weekNumber % RECOVERY_CONFIG.scheduled_deload_weeks === 0) {
     reasons.push(`Scheduled deload week (week ${weekNumber})`);
@@ -400,13 +429,13 @@ export async function generateRecoveryPlan(userId: string): Promise<RecoveryPlan
 
   // Muscles to avoid (fatigued or critical)
   const musclesToAvoid = snapshot
-    .filter(s => s.status === 'critical' || s.status === 'fatigued')
-    .map(s => s.muscle);
+    .filter((s) => s.status === 'critical' || s.status === 'fatigued')
+    .map((s) => s.muscle);
 
   // Muscles to prioritize (fresh, haven't trained recently)
   const musclesToPrioritize = snapshot
-    .filter(s => s.status === 'fresh' && (s.days_since_trained === null || s.days_since_trained >= 3))
-    .map(s => s.muscle);
+    .filter((s) => s.status === 'fresh' && (s.days_since_trained === null || s.days_since_trained >= 3))
+    .map((s) => s.muscle);
 
   // Generate recommendations
   const recommendations: string[] = [];
@@ -416,8 +445,8 @@ export async function generateRecoveryPlan(userId: string): Promise<RecoveryPlan
     recommendations.push('Reduce weight/difficulty by 30-40%');
     recommendations.push('Prioritize sleep and nutrition');
   } else {
-    const criticalCount = snapshot.filter(s => s.status === 'critical').length;
-    const fatiguedCount = snapshot.filter(s => s.status === 'fatigued').length;
+    const criticalCount = snapshot.filter((s) => s.status === 'critical').length;
+    const fatiguedCount = snapshot.filter((s) => s.status === 'fatigued').length;
 
     if (criticalCount > 0) {
       recommendations.push(`${criticalCount} muscle group(s) need rest. Consider deload.`);

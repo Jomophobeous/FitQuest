@@ -1,6 +1,6 @@
 /**
  * Web PDF Viewer fallback
- * 
+ *
  * react-native-pdf is native-only and cannot be imported on web.
  * This is the web fallback that shows a message.
  * Native platforms use PdfViewer.native.tsx instead.

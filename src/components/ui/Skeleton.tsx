@@ -10,13 +10,7 @@
 
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
 
 // ============================================
@@ -35,11 +29,7 @@ export function Skeleton({ width, height, radius = 'md', style }: SkeletonProps)
   const shimmer = useSharedValue(0.3);
 
   useEffect(() => {
-    shimmer.value = withRepeat(
-      withTiming(0.7, { duration: 800, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true
-    );
+    shimmer.value = withRepeat(withTiming(0.7, { duration: 800, easing: Easing.inOut(Easing.ease) }), -1, true);
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -48,16 +38,18 @@ export function Skeleton({ width, height, radius = 'md', style }: SkeletonProps)
 
   const borderRadius =
     radius === 'full'
-      ? typeof height === 'number' ? height / 2 : 999
+      ? typeof height === 'number'
+        ? height / 2
+        : 999
       : radius === 'none'
-      ? 0
-      : radius === 'sm'
-      ? 4
-      : radius === 'md'
-      ? 8
-      : radius === 'lg'
-      ? 16
-      : radius;
+        ? 0
+        : radius === 'sm'
+          ? 4
+          : radius === 'md'
+            ? 8
+            : radius === 'lg'
+              ? 16
+              : radius;
 
   return (
     <Animated.View

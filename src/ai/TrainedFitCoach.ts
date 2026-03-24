@@ -57,7 +57,7 @@ interface MLPModelData {
     output_dim: number;
   };
   weights: number[][][]; // Layer weights
-  biases: number[][];    // Layer biases
+  biases: number[][]; // Layer biases
   input_scaler: {
     mean: number[];
     scale: number[];
@@ -100,7 +100,8 @@ export class TrainedFitCoach {
       const modelJson = require('../../assets/models/fitcoach_model.json');
       this.model = modelJson as MLPModelData;
       this.isLoaded = true;
-      if (__DEV__) console.log(`[TrainedFitCoach] Model loaded: ${this.model.architecture.hidden_layers.join('→')} architecture`);
+      if (__DEV__)
+        console.log(`[TrainedFitCoach] Model loaded: ${this.model.architecture.hidden_layers.join('→')} architecture`);
       return true;
     } catch (error) {
       if (__DEV__) console.warn('[TrainedFitCoach] Failed to load model:', error);
@@ -150,7 +151,7 @@ export class TrainedFitCoach {
       exercises: finalExercises,
       totalDuration: duration,
       targetGroup: profile.targetGroup,
-      isDeload: Object.values(profile.fatigueMap).some(f => f > 8),
+      isDeload: Object.values(profile.fatigueMap).some((f) => f > 8),
       reasoning: this.generateReasoning(profile, finalExercises),
       inferenceTimeMs: performance.now() - startTime,
     };
@@ -268,7 +269,7 @@ export class TrainedFitCoach {
 
       // Check equipment compatibility
       const hasEquipment = exerciseInfo.equipment.some(
-        (eq: string) => profile.equipment.includes(eq) || eq === 'bodyweight'
+        (eq: string) => profile.equipment.includes(eq) || eq === 'bodyweight',
       );
       if (!hasEquipment) continue;
 
@@ -294,16 +295,15 @@ export class TrainedFitCoach {
   private postProcess(exercises: GeneratedExercise[], profile: UserProfile): GeneratedExercise[] {
     // Remove duplicates
     const seen = new Set<string>();
-    let filtered = exercises.filter(ex => {
+    let filtered = exercises.filter((ex) => {
       if (seen.has(ex.exerciseId)) return false;
       seen.add(ex.exerciseId);
       return true;
     });
 
     // Cap exercise count by time
-    const maxExercises = profile.availableTime <= 30 ? 4 :
-      profile.availableTime <= 45 ? 5 :
-      profile.availableTime <= 60 ? 6 : 8;
+    const maxExercises =
+      profile.availableTime <= 30 ? 4 : profile.availableTime <= 45 ? 5 : profile.availableTime <= 60 ? 6 : 8;
     filtered = filtered.slice(0, maxExercises);
 
     // Ensure at least 2 exercises
@@ -333,7 +333,7 @@ export class TrainedFitCoach {
     };
     reasons.push(goalDescriptions[profile.goal] || 'Balanced approach');
 
-    const compoundCount = exercises.filter(e => e.category === 'compound').length;
+    const compoundCount = exercises.filter((e) => e.category === 'compound').length;
     reasons.push(`${compoundCount} compound and ${exercises.length - compoundCount} isolation exercises selected`);
 
     const highFatigue = Object.entries(profile.fatigueMap)
@@ -356,20 +356,32 @@ export class TrainedFitCoach {
       {
         exerciseId: 'pushup',
         exerciseName: 'Push-Up',
-        sets: 3, reps: 12, restSeconds: 60, rpeTarget: 8,
-        category: 'compound', primaryMuscles: ['chest'],
+        sets: 3,
+        reps: 12,
+        restSeconds: 60,
+        rpeTarget: 8,
+        category: 'compound',
+        primaryMuscles: ['chest'],
       },
       {
         exerciseId: 'squat',
         exerciseName: 'Bodyweight Squat',
-        sets: 3, reps: 15, restSeconds: 60, rpeTarget: 7,
-        category: 'compound', primaryMuscles: ['quadriceps', 'glutes'],
+        sets: 3,
+        reps: 15,
+        restSeconds: 60,
+        rpeTarget: 7,
+        category: 'compound',
+        primaryMuscles: ['quadriceps', 'glutes'],
       },
       {
         exerciseId: 'plank',
         exerciseName: 'Plank',
-        sets: 3, reps: 30, restSeconds: 45, rpeTarget: 7,
-        category: 'isolation', primaryMuscles: ['core'],
+        sets: 3,
+        reps: 30,
+        restSeconds: 45,
+        rpeTarget: 7,
+        category: 'isolation',
+        primaryMuscles: ['core'],
       },
     ];
 

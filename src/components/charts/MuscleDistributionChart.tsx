@@ -1,51 +1,16 @@
 /**
  * Muscle Distribution Chart
- * 
+ *
  * Horizontal bar chart showing muscle group training distribution.
  */
 
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import {
-  ThemedChartWrapper,
-  useChartTheme,
-} from './ThemedChart';
+import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
 import type { MuscleDistributionChartProps, MuscleGroupDataPoint, MUSCLE_GROUP_COLORS } from './types';
+import { formatMuscleName } from '../../utils/formatMuscle';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-// ============================================
-// MUSCLE NAME FORMATTING
-// ============================================
-
-const MUSCLE_DISPLAY_NAMES: Record<string, string> = {
-  chest_mid: 'Chest',
-  chest_upper: 'Upper Chest',
-  chest_lower: 'Lower Chest',
-  lats: 'Lats',
-  rhomboids: 'Upper Back',
-  traps_mid: 'Traps',
-  traps_upper: 'Upper Traps',
-  biceps: 'Biceps',
-  triceps: 'Triceps',
-  deltoids_front: 'Front Delts',
-  deltoids_rear: 'Rear Delts',
-  deltoids_lateral: 'Side Delts',
-  quads: 'Quads',
-  hamstrings: 'Hamstrings',
-  glutes_max: 'Glutes',
-  calves_gastrocnemius: 'Calves',
-  abs: 'Abs',
-  obliques: 'Obliques',
-  core_deep: 'Core',
-  lower_back: 'Lower Back',
-  forearms: 'Forearms',
-};
-
-function formatMuscleName(muscle: string): string {
-  return MUSCLE_DISPLAY_NAMES[muscle] ?? 
-    muscle.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-}
 
 // ============================================
 // COLORS
@@ -74,32 +39,23 @@ interface HorizontalBarChartProps {
   mutedColor: string;
 }
 
-function HorizontalBarChart({
-  data,
-  textColor,
-  mutedColor,
-}: HorizontalBarChartProps) {
-  const maxSets = Math.max(...data.map(d => d.sets), 1);
+function HorizontalBarChart({ data, textColor, mutedColor }: HorizontalBarChartProps) {
+  const maxSets = Math.max(...data.map((d) => d.sets), 1);
   const totalSets = data.reduce((sum, d) => sum + d.sets, 0);
   const maxBarWidth = SCREEN_WIDTH - 140;
 
   // Sort by sets descending and take top 8
-  const sortedData = [...data]
-    .sort((a, b) => b.sets - a.sets)
-    .slice(0, 8);
+  const sortedData = [...data].sort((a, b) => b.sets - a.sets).slice(0, 8);
 
   return (
     <View style={styles.horizontalBarsContainer}>
       {sortedData.map((item, index) => {
         const barWidth = (item.sets / maxSets) * maxBarWidth;
         const percentage = totalSets > 0 ? Math.round((item.sets / totalSets) * 100) : 0;
-        
+
         return (
           <View key={item.muscle} style={styles.horizontalBarRow}>
-            <Text
-              style={[styles.muscleLabel, { color: textColor }]}
-              numberOfLines={1}
-            >
+            <Text style={[styles.muscleLabel, { color: textColor }]} numberOfLines={1}>
               {formatMuscleName(item.muscle)}
             </Text>
             <View style={styles.barWrapper}>
@@ -136,7 +92,7 @@ interface SimplePieChartProps {
 function SimplePieChart({ data, size, textColor }: SimplePieChartProps) {
   const totalSets = data.reduce((sum, d) => sum + d.sets, 0);
   const sortedData = [...data].sort((a, b) => b.sets - a.sets).slice(0, 6);
-  
+
   // Calculate cumulative percentages for segment positioning
   let cumulativePercent = 0;
   const segments = sortedData.map((item, index) => {
@@ -161,24 +117,18 @@ function SimplePieChart({ data, size, textColor }: SimplePieChartProps) {
             styles.pieSegment,
             {
               backgroundColor: seg.color,
-              transform: [
-                { rotate: `${(seg.startPercent / 100) * 360}deg` },
-              ],
+              transform: [{ rotate: `${(seg.startPercent / 100) * 360}deg` }],
               width: size * 0.4,
               height: size * 0.4,
             },
           ]}
         />
       ))}
-      
+
       {/* Center circle */}
       <View style={[styles.pieCenter, { width: size * 0.5, height: size * 0.5 }]}>
-        <Text style={[styles.pieCenterText, { color: textColor }]}>
-          {totalSets}
-        </Text>
-        <Text style={[styles.pieCenterLabel, { color: textColor, opacity: 0.6 }]}>
-          sets
-        </Text>
+        <Text style={[styles.pieCenterText, { color: textColor }]}>{totalSets}</Text>
+        <Text style={[styles.pieCenterLabel, { color: textColor, opacity: 0.6 }]}>sets</Text>
       </View>
 
       {/* Legend */}
@@ -208,12 +158,12 @@ export function MuscleDistributionChart({
 }: MuscleDistributionChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 280;
-  
+
   const isEmpty = data.length === 0;
-  
+
   const totalSets = useMemo(() => data.reduce((sum, d) => sum + d.sets, 0), [data]);
   const muscleCount = data.length;
-  
+
   return (
     <ThemedChartWrapper
       title="Muscle Distribution"
@@ -223,17 +173,9 @@ export function MuscleDistributionChart({
       config={{ ...config, height }}
     >
       {chartType === 'pie' ? (
-        <SimplePieChart
-          data={data}
-          size={180}
-          textColor={chartTheme.text}
-        />
+        <SimplePieChart data={data} size={180} textColor={chartTheme.text} />
       ) : (
-        <HorizontalBarChart
-          data={data}
-          textColor={chartTheme.text}
-          mutedColor={chartTheme.textMuted}
-        />
+        <HorizontalBarChart data={data} textColor={chartTheme.text} mutedColor={chartTheme.textMuted} />
       )}
     </ThemedChartWrapper>
   );

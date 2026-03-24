@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 export function useForm<T extends Record<string, any>>(
   schema: any,
   onSubmit: (data: T) => Promise<void> | void,
-  defaultValues?: Partial<T>
+  defaultValues?: Partial<T>,
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export function useForm<T extends Record<string, any>>(
         setIsSubmitting(false);
       }
     },
-    [onSubmit]
+    [onSubmit],
   );
 
   return {
@@ -48,7 +48,7 @@ interface AsyncState<T> {
 
 export function useAsync<T>(
   asyncFunction: () => Promise<T>,
-  immediate = true
+  immediate = true,
 ): AsyncState<T> & { execute: () => Promise<void> } {
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
@@ -103,7 +103,7 @@ interface PaginationState {
 
 export function usePagination(
   totalItems: number,
-  pageSize: number = 10
+  pageSize: number = 10,
 ): PaginationState & {
   goToPage: (page: number) => void;
   nextPage: () => void;
@@ -148,9 +148,7 @@ export function useFavorites<T extends FavoriteItem>(initialItems: T[] = []) {
   const [items, setItems] = useState(initialItems);
 
   const toggleFavorite = useCallback((id: number) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]
-    );
+    setFavorites((prev) => (prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]));
   }, []);
 
   const isFavorite = useCallback((id: number) => favorites.includes(id), [favorites]);
@@ -183,9 +181,7 @@ export function useFavorites<T extends FavoriteItem>(initialItems: T[] = []) {
 export function useFilter<T>(items: T[], filterFn: (item: T, query: string) => boolean) {
   const [query, setQuery] = useState('');
 
-  const filtered = query
-    ? items.filter((item) => filterFn(item, query.toLowerCase()))
-    : items;
+  const filtered = query ? items.filter((item) => filterFn(item, query.toLowerCase())) : items;
 
   return {
     query,

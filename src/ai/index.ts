@@ -20,12 +20,7 @@
 // MODEL LOADER (async expo-asset pipeline)
 // ============================================
 
-export {
-  loadBundledModel,
-  loadBundledModelWithFallback,
-  loadCognitiveAI,
-  getTierStatus,
-} from './ModelLoader';
+export { loadBundledModel, loadBundledModelWithFallback, loadCognitiveAI, getTierStatus } from './ModelLoader';
 export type { TierStatus } from './ModelLoader';
 
 // ============================================

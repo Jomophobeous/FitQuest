@@ -83,9 +83,8 @@ async function syncPermissionFromSystem(prompt: boolean): Promise<PermissionStat
   }
 
   try {
-    const current = typeof Notifications.getPermissionsAsync === 'function'
-      ? await Notifications.getPermissionsAsync()
-      : null;
+    const current =
+      typeof Notifications.getPermissionsAsync === 'function' ? await Notifications.getPermissionsAsync() : null;
 
     let status = mapPermissionStatus(current?.status);
     if (prompt && status !== 'granted' && typeof Notifications.requestPermissionsAsync === 'function') {
@@ -134,10 +133,7 @@ export async function setNotificationReminderHour(hour: number): Promise<void> {
 }
 
 export async function setNotificationPermissionState(permission: PermissionState): Promise<void> {
-  await Promise.all([
-    setAppState(PERMISSION_KEY, permission),
-    setAppState(LAST_PROMPT_AT_KEY, String(Date.now())),
-  ]);
+  await Promise.all([setAppState(PERMISSION_KEY, permission), setAppState(LAST_PROMPT_AT_KEY, String(Date.now()))]);
   await logEvent('notifications_reliability_permission', { permission });
 }
 
@@ -148,7 +144,7 @@ export async function markNotificationReminderScheduled(): Promise<void> {
 
 export async function scheduleDailyWorkoutReminder(
   hour: number,
-  source: 'profile' | 'app_start' | 'background' = 'profile'
+  source: 'profile' | 'app_start' | 'background' = 'profile',
 ): Promise<ReminderActionResult> {
   const normalizedHour = normalizeHour(hour);
   await setNotificationReminderHour(normalizedHour);
@@ -203,13 +199,10 @@ export async function scheduleDailyWorkoutReminder(
 
 export async function enableDailyWorkoutReminder(
   hour: number,
-  source: 'profile' | 'app_start' | 'background' = 'profile'
+  source: 'profile' | 'app_start' | 'background' = 'profile',
 ): Promise<ReminderActionResult> {
   const normalizedHour = normalizeHour(hour);
-  await Promise.all([
-    setNotificationReliabilityEnabled(true),
-    setNotificationReminderHour(normalizedHour),
-  ]);
+  await Promise.all([setNotificationReliabilityEnabled(true), setNotificationReminderHour(normalizedHour)]);
 
   const permission = await syncPermissionFromSystem(true);
   if (permission !== 'granted') {
@@ -222,7 +215,7 @@ export async function enableDailyWorkoutReminder(
 }
 
 export async function disableDailyWorkoutReminder(
-  source: 'profile' | 'app_start' | 'background' = 'profile'
+  source: 'profile' | 'app_start' | 'background' = 'profile',
 ): Promise<ReminderActionResult> {
   const Notifications = await getNotificationModule();
 
@@ -239,17 +232,14 @@ export async function disableDailyWorkoutReminder(
   }
 
   const permission = await syncPermissionFromSystem(false);
-  await Promise.all([
-    setAppState(ENABLED_KEY, '0'),
-    setAppState(SCHEDULED_ID_KEY, ''),
-  ]);
+  await Promise.all([setAppState(ENABLED_KEY, '0'), setAppState(SCHEDULED_ID_KEY, '')]);
   await logEvent('notifications_daily_disabled', { source });
   return { enabled: false, permission, scheduled: false };
 }
 
 export async function reconcileNotificationReliability(
   source: 'app_start' | 'background' | 'profile' = 'app_start',
-  maxScheduleAgeMs: number = 20 * 60 * 60 * 1000
+  maxScheduleAgeMs: number = 20 * 60 * 60 * 1000,
 ): Promise<ReminderActionResult | null> {
   const settings = await getNotificationReliabilitySettings();
   await setAppState(LAST_RECONCILED_AT_KEY, String(Date.now()));

@@ -51,9 +51,7 @@ export function PdfViewer(props: PdfViewerProps): React.ReactElement {
           Native PDF rendering requires a development build.
           {'\n\n'}Use "Open with System Reader" to view this document.
         </Text>
-        {nativeError && (
-          <Text style={styles.errorDetail}>{nativeError}</Text>
-        )}
+        {nativeError && <Text style={styles.errorDetail}>{nativeError}</Text>}
       </View>
     );
   }

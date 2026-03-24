@@ -40,7 +40,9 @@ export default function ScreenTutorial({ screenKey, icon, title, description }: 
         // DB not ready yet — don't show tutorial
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [screenKey]);
 
   const dismiss = async () => {
@@ -75,16 +77,9 @@ export default function ScreenTutorial({ screenKey, icon, title, description }: 
             <MaterialCommunityIcons name={icon as any} size={32} color={colors.accent} />
           </View>
           <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
-          <Text style={[styles.description, { color: colors.textSecondary }]}>
-            {description}
-          </Text>
-          <TouchableOpacity
-            onPress={dismiss}
-            style={[styles.button, { backgroundColor: colors.accent }]}
-          >
-            <Text style={[styles.buttonText, { color: colors.onAccent }]}>
-              {t('common.gotIt') || 'Got it'}
-            </Text>
+          <Text style={[styles.description, { color: colors.textSecondary }]}>{description}</Text>
+          <TouchableOpacity onPress={dismiss} style={[styles.button, { backgroundColor: colors.accent }]}>
+            <Text style={[styles.buttonText, { color: colors.onAccent }]}>{t('common.gotIt') || 'Got it'}</Text>
           </TouchableOpacity>
         </Animated.View>
       </TouchableOpacity>

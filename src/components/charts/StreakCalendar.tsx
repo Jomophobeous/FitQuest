@@ -1,16 +1,13 @@
 /**
  * Streak Calendar
- * 
+ *
  * Visual calendar showing workout completion streaks.
  */
 
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { formatDate, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, parseISO } from './dateUtils';
-import {
-  ThemedChartWrapper,
-  useChartTheme,
-} from './ThemedChart';
+import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
 import type { StreakCalendarProps, StreakDay } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -53,27 +50,27 @@ function CalendarGrid({
   const firstDayOfMonth = startOfMonth(new Date(year, month));
   const daysInMonth = getDaysInMonth(firstDayOfMonth);
   const startWeekday = getDay(firstDayOfMonth);
-  
+
   // Generate calendar grid
   const weeks: (Date | null)[][] = [];
   let currentWeek: (Date | null)[] = [];
-  
+
   // Pad the first week with nulls
   for (let i = 0; i < startWeekday; i++) {
     currentWeek.push(null);
   }
-  
+
   // Fill in the days
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
     currentWeek.push(date);
-    
+
     if (currentWeek.length === 7) {
       weeks.push(currentWeek);
       currentWeek = [];
     }
   }
-  
+
   // Pad the last week
   while (currentWeek.length > 0 && currentWeek.length < 7) {
     currentWeek.push(null);
@@ -99,10 +96,7 @@ function CalendarGrid({
           {week.map((date, dayIndex) => {
             if (!date) {
               return (
-                <View
-                  key={`empty-${dayIndex}`}
-                  style={[styles.dayCell, { width: CELL_SIZE, height: CELL_SIZE }]}
-                />
+                <View key={`empty-${dayIndex}`} style={[styles.dayCell, { width: CELL_SIZE, height: CELL_SIZE }]} />
               );
             }
 
@@ -165,22 +159,22 @@ interface StreakStatsProps {
 }
 
 function StreakStats({ data, primaryColor, textColor, mutedColor }: StreakStatsProps) {
-  const completedDays = data.filter(d => d.completed).length;
-  
+  const completedDays = data.filter((d) => d.completed).length;
+
   // Calculate current streak
   let currentStreak = 0;
   const sortedDays = [...data]
-    .filter(d => d.completed)
+    .filter((d) => d.completed)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   for (let i = 0; i < sortedDays.length; i++) {
     const expectedDate = addDays(today, -i);
     const dayDate = parseISO(sortedDays[i]!.date);
     dayDate.setHours(0, 0, 0, 0);
-    
+
     if (isSameDay(dayDate, expectedDate)) {
       currentStreak++;
     } else {
@@ -191,10 +185,8 @@ function StreakStats({ data, primaryColor, textColor, mutedColor }: StreakStatsP
   // Calculate longest streak
   let longestStreak = 0;
   let tempStreak = 0;
-  const allSorted = [...data].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-  
+  const allSorted = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
   for (let i = 0; i < allSorted.length; i++) {
     if (allSorted[i]!.completed) {
       tempStreak++;
@@ -241,24 +233,19 @@ function StreakStats({ data, primaryColor, textColor, mutedColor }: StreakStatsP
 // MAIN COMPONENT
 // ============================================
 
-export function StreakCalendar({
-  data,
-  month,
-  year,
-  onDayPress,
-}: StreakCalendarProps) {
+export function StreakCalendar({ data, month, year, onDayPress }: StreakCalendarProps) {
   const chartTheme = useChartTheme();
-  
+
   // Create a map for quick lookup
   const streakDaysMap = useMemo(() => {
     const map = new Map<string, StreakDay>();
-    data.forEach(day => map.set(day.date, day));
+    data.forEach((day) => map.set(day.date, day));
     return map;
   }, [data]);
-  
+
   const monthName = formatDate(new Date(year, month), 'MMMM yyyy');
   const isEmpty = data.length === 0;
-  
+
   return (
     <ThemedChartWrapper
       title="Workout Streak"
@@ -273,7 +260,7 @@ export function StreakCalendar({
         textColor={chartTheme.text}
         mutedColor={chartTheme.textMuted}
       />
-      
+
       <CalendarGrid
         year={year}
         month={month}

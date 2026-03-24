@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { formatMuscleName } from '../src/utils/formatMuscle';
 import {
   View,
   FlatList,
@@ -62,6 +63,94 @@ const getDifficultyColors = (colors: { accent: string; warning: string; error: s
   beginner: colors.accent,
   intermediate: colors.warning,
   advanced: colors.error,
+});
+
+// ============================================
+// MEMOIZED EXERCISE CARD
+// ============================================
+
+const ExerciseCard = React.memo(function ExerciseCard({
+  item,
+  index,
+  theme,
+  t,
+  onPress,
+}: {
+  item: ExerciseWithDetails;
+  index: number;
+  theme: any;
+  t: (key: string) => string | undefined;
+  onPress: (exercise: ExerciseWithDetails) => void;
+}) {
+  const diffColor = getDifficultyColors(theme.colors)[item.difficulty] || theme.colors.textMuted;
+  const handlePress = useCallback(() => onPress(item), [onPress, item]);
+
+  return (
+    <AnimatedListItem
+      index={index}
+      onPress={handlePress}
+      style={{ paddingHorizontal: 16, marginBottom: 8 }}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.name}, ${item.difficulty}, ${item.category}`}
+      accessibilityHint="Double tap to view exercise details"
+    >
+      <View
+        style={[
+          styles.exerciseCard,
+          {
+            backgroundColor: theme.colors.surfaceVariant,
+            borderColor: theme.colors.border,
+          },
+        ]}
+      >
+        <View style={styles.exerciseContent}>
+          <View style={styles.exerciseTop}>
+            <ExerciseImage
+              exerciseId={item.id}
+              category={item.category}
+              variant="thumbnail"
+              animate={false}
+              style={{ marginRight: 12 }}
+            />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.exerciseName, { color: theme.colors.text }]} numberOfLines={1}>
+                {item.name}
+              </Text>
+              <View style={styles.muscleTags}>
+                {item.primary_muscles.slice(0, 2).map((m, i) => (
+                  <View key={i} style={[styles.muscleTag, { backgroundColor: theme.colors.surfaceVariant }]}>
+                    <Text style={[styles.muscleTagText, { color: theme.colors.textSecondary }]}>
+                      {formatMuscleName(m)}
+                    </Text>
+                  </View>
+                ))}
+                {item.primary_muscles.length > 2 && (
+                  <View style={[styles.muscleTag, { backgroundColor: theme.colors.surfaceVariant }]}>
+                    <Text style={[styles.muscleTagText, { color: theme.colors.textMuted }]}>
+                      +{item.primary_muscles.length - 2}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+            <View style={[styles.diffBadge, { backgroundColor: diffColor + '12' }]}>
+              <Text style={[styles.diffText, { color: diffColor }]}>{item.difficulty}</Text>
+            </View>
+          </View>
+
+          <View style={styles.exerciseBottom}>
+            <View style={styles.bottomTag}>
+              <MaterialCommunityIcons name="dumbbell" size={12} color={theme.colors.textMuted} />
+              <Text style={[styles.bottomTagText, { color: theme.colors.textMuted }]}>
+                {item.equipment_level === 'none' ? t('exercises.bodyweight') || 'Bodyweight' : item.equipment_level}
+              </Text>
+            </View>
+            <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+          </View>
+        </View>
+      </View>
+    </AnimatedListItem>
+  );
 });
 
 // ============================================
@@ -124,27 +213,39 @@ export default function ExercisesScreen() {
   ];
 
   const toggleCategory = (key: Category | 'all') => {
-    setSelectedCategories(prev => {
+    setSelectedCategories((prev) => {
       const next = new Set(prev);
       if (key === 'all') return new Set(['all']);
       next.delete('all');
-      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next.size === 0 ? new Set(['all'] as (Category | 'all')[]) : next;
     });
   };
 
   const toggleDifficulty = (key: string) => {
-    setSelectedDifficulties(prev => {
+    setSelectedDifficulties((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next;
     });
   };
 
   const toggleEquipment = (key: string) => {
-    setSelectedEquipment(prev => {
+    setSelectedEquipment((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next;
     });
   };
@@ -156,7 +257,8 @@ export default function ExercisesScreen() {
     setSearchQuery('');
   };
 
-  const activeFilterCount = (selectedCategories.has('all') ? 0 : selectedCategories.size) + selectedDifficulties.size + selectedEquipment.size;
+  const activeFilterCount =
+    (selectedCategories.has('all') ? 0 : selectedCategories.size) + selectedDifficulties.size + selectedEquipment.size;
 
   // Debounced search
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -164,29 +266,34 @@ export default function ExercisesScreen() {
   useEffect(() => {
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => setDebouncedQuery(searchQuery), 200);
-    return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
   }, [searchQuery]);
 
-  useEffect(() => { if (isReady) loadExercises(); }, [isReady]);
+  useEffect(() => {
+    if (isReady) loadExercises();
+  }, [isReady]);
 
   // Memoized filtering — no separate state, derived from source data
   const filteredExercises = useMemo(() => {
     let filtered = exercises;
     if (!selectedCategories.has('all')) {
-      filtered = filtered.filter(ex => selectedCategories.has(ex.category));
+      filtered = filtered.filter((ex) => selectedCategories.has(ex.category));
     }
     if (selectedDifficulties.size > 0) {
-      filtered = filtered.filter(ex => selectedDifficulties.has(ex.difficulty));
+      filtered = filtered.filter((ex) => selectedDifficulties.has(ex.difficulty));
     }
     if (selectedEquipment.size > 0) {
-      filtered = filtered.filter(ex => selectedEquipment.has(ex.equipment_level));
+      filtered = filtered.filter((ex) => selectedEquipment.has(ex.equipment_level));
     }
     if (debouncedQuery.trim()) {
       const q = debouncedQuery.toLowerCase();
-      filtered = filtered.filter(ex =>
-        ex.name.toLowerCase().includes(q) ||
-        ex.primary_muscles.some(m => m.toLowerCase().includes(q)) ||
-        ex.category.toLowerCase().includes(q)
+      filtered = filtered.filter(
+        (ex) =>
+          ex.name.toLowerCase().includes(q) ||
+          ex.primary_muscles.some((m) => m.toLowerCase().includes(q)) ||
+          ex.category.toLowerCase().includes(q),
       );
     }
     return filtered;
@@ -200,7 +307,10 @@ export default function ExercisesScreen() {
       setExercises(data);
     } catch (error) {
       if (__DEV__) console.error('[Exercises] Failed to load:', error);
-      Alert.alert(t('common.error') || 'Error', t('exercises.loadFailed') || 'Failed to load exercises. Please restart the app.');
+      Alert.alert(
+        t('common.error') || 'Error',
+        t('exercises.loadFailed') || 'Failed to load exercises. Please restart the app.',
+      );
     } finally {
       setLoading(false);
     }
@@ -213,10 +323,10 @@ export default function ExercisesScreen() {
     setRefreshing(false);
   }, []);
 
-  const handleExercisePress = (exercise: ExerciseWithDetails) => {
+  const handleExercisePress = useCallback((exercise: ExerciseWithDetails) => {
     setSelectedExercise(exercise);
     setDetailVisible(true);
-  };
+  }, []);
 
   const handleCloseDetail = useCallback(() => {
     setDetailVisible(false);
@@ -224,68 +334,12 @@ export default function ExercisesScreen() {
     setTimeout(() => setSelectedExercise(null), 300);
   }, []);
 
-  const renderExercise = ({ item, index }: { item: ExerciseWithDetails; index: number }) => {
-    const diffColor = getDifficultyColors(theme.colors)[item.difficulty] || theme.colors.textMuted;
-    return (
-      <AnimatedListItem index={index} onPress={() => handleExercisePress(item)} style={{ paddingHorizontal: 16, marginBottom: 8 }}
-        accessibilityRole="button"
-        accessibilityLabel={`${item.name}, ${item.difficulty}, ${item.category}`}
-        accessibilityHint="Double tap to view exercise details"
-      >
-        <View style={[
-          styles.exerciseCard,
-          {
-            backgroundColor: theme.colors.surfaceVariant,
-            borderColor: theme.colors.border,
-          },
-        ]}>
-          <View style={styles.exerciseContent}>
-            <View style={styles.exerciseTop}>
-              <ExerciseImage
-                exerciseId={item.id}
-                category={item.category}
-                variant="thumbnail"
-                animate={false}
-                style={{ marginRight: 12 }}
-              />
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.exerciseName, { color: theme.colors.text }]} numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <View style={styles.muscleTags}>
-                  {item.primary_muscles.slice(0, 2).map((m, i) => (
-                    <View key={i} style={[styles.muscleTag, { backgroundColor: theme.colors.surfaceVariant }]}>
-                      <Text style={[styles.muscleTagText, { color: theme.colors.textSecondary }]}>{m}</Text>
-                    </View>
-                  ))}
-                  {item.primary_muscles.length > 2 && (
-                    <View style={[styles.muscleTag, { backgroundColor: theme.colors.surfaceVariant }]}>
-                      <Text style={[styles.muscleTagText, { color: theme.colors.textMuted }]}>+{item.primary_muscles.length - 2}</Text>
-                    </View>
-                  )}
-                </View>
-              </View>
-              <View style={[styles.diffBadge, { backgroundColor: diffColor + '12' }]}>
-                <Text style={[styles.diffText, { color: diffColor }]}>
-                  {item.difficulty}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.exerciseBottom}>
-              <View style={styles.bottomTag}>
-                <MaterialCommunityIcons name="dumbbell" size={12} color={theme.colors.textMuted} />
-                <Text style={[styles.bottomTagText, { color: theme.colors.textMuted }]}>
-                  {item.equipment_level === 'none' ? (t('exercises.bodyweight') || 'Bodyweight') : item.equipment_level}
-                </Text>
-              </View>
-              <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
-            </View>
-          </View>
-        </View>
-      </AnimatedListItem>
-    );
-  };
+  const renderExercise = useCallback(
+    ({ item, index }: { item: ExerciseWithDetails; index: number }) => (
+      <ExerciseCard item={item} index={index} theme={theme} t={t} onPress={handleExercisePress} />
+    ),
+    [theme, t, handleExercisePress],
+  );
 
   if (loading) {
     return (
@@ -304,234 +358,308 @@ export default function ExercisesScreen() {
   }
 
   return (
-    <ScreenErrorBoundary screenName="Exercises" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard' as any)}>
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScreenTutorial
-        screenKey="exercises"
-        icon="dumbbell"
-        title="Exercise Library"
-        description="Browse and search all available exercises. Filter by category, difficulty, and equipment to find the perfect exercise for your workout."
-      />
-      {/* ── COLLAPSIBLE HEADER SECTION ── */}
-      <Animated.View style={[styles.headerWrapper, headerAnimatedStyle]}>
-        {/* ── HEADER ── */}
-        <View
-          style={[
-            styles.headerGradient,
-            {
-              backgroundColor: theme.isDark ? theme.colors.surfaceVariant : theme.colors.surface,
-              borderBottomWidth: 1,
-              borderBottomColor: theme.colors.border,
-            },
-          ]}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View>
-              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('exercises.library') || 'Library'}</Text>
-              <Text style={[styles.headerCount, { color: theme.colors.textSecondary }]}> 
-                {filteredExercises.length} {t('exercises.of') || 'of'} {exercises.length} {t('library.exercises') || 'exercises'}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => setShowFilters(!showFilters)}
-              accessibilityRole="button"
-              accessibilityLabel={`Filters${activeFilterCount > 0 ? `, ${activeFilterCount} active` : ''}`}
-              accessibilityState={{ expanded: showFilters }}
-              style={[styles.filterToggle, {
-                backgroundColor: activeFilterCount > 0 ? theme.colors.accent + '18' : theme.colors.surfaceVariant,
-                borderColor: activeFilterCount > 0 ? theme.colors.accent : theme.colors.border,
-              }]}
-            >
-              <MaterialCommunityIcons name="filter-variant" size={16} color={activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary} />
-              <Text style={{ color: activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginLeft: 3 }}>
-                {t('exercises.filters') || 'Filters'}{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
-              </Text>
-              <MaterialCommunityIcons name={showFilters ? 'chevron-up' : 'chevron-down'} size={14} color={theme.colors.textMuted} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* ── SEARCH BAR ── */}
-        <View>
-          <View style={[
-            styles.searchBar,
-            {
-              backgroundColor: theme.colors.surfaceVariant,
-              borderColor: searchFocused ? theme.colors.accent : theme.colors.border,
-            },
-          ]}>
-            <MaterialCommunityIcons name="magnify" size={18} color={searchFocused ? theme.colors.accent : theme.colors.textMuted} />
-            <TextInput
-              style={[styles.searchInput, { color: theme.colors.text }]}
-              placeholder={t('exercises.searchPlaceholder') || 'Search exercises, muscles...'}
-              placeholderTextColor={theme.colors.textMuted}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              accessibilityLabel="Search exercises"
-              accessibilityRole="search"
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityRole="button" accessibilityLabel="Clear search">
-                <MaterialCommunityIcons name="close-circle" size={16} color={theme.colors.textMuted} />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-
-        {/* ── CATEGORY PILLS ── */}
-        <View>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={CATEGORIES}
-            keyExtractor={(item) => item.key}
-            contentContainerStyle={styles.categoryList}
-            renderItem={({ item }) => {
-              const isSelected = selectedCategories.has(item.key);
-            return (
+    <ScreenErrorBoundary
+      screenName="Exercises"
+      onGoBack={() => (router.canGoBack() ? router.back() : router.replace('/dashboard' as any))}
+    >
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <ScreenTutorial
+          screenKey="exercises"
+          icon="dumbbell"
+          title="Exercise Library"
+          description="Browse and search all available exercises. Filter by category, difficulty, and equipment to find the perfect exercise for your workout."
+        />
+        {/* ── COLLAPSIBLE HEADER SECTION ── */}
+        <Animated.View style={[styles.headerWrapper, headerAnimatedStyle]}>
+          {/* ── HEADER ── */}
+          <View
+            style={[
+              styles.headerGradient,
+              {
+                backgroundColor: theme.isDark ? theme.colors.surfaceVariant : theme.colors.surface,
+                borderBottomWidth: 1,
+                borderBottomColor: theme.colors.border,
+              },
+            ]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+                  {t('exercises.library') || 'Library'}
+                </Text>
+                <Text style={[styles.headerCount, { color: theme.colors.textSecondary }]}>
+                  {filteredExercises.length} {t('exercises.of') || 'of'} {exercises.length}{' '}
+                  {t('library.exercises') || 'exercises'}
+                </Text>
+              </View>
               <TouchableOpacity
-                onPress={() => toggleCategory(item.key)}
+                onPress={() => setShowFilters(!showFilters)}
                 accessibilityRole="button"
-                accessibilityLabel={`Filter by ${item.label}`}
-                accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={`Filters${activeFilterCount > 0 ? `, ${activeFilterCount} active` : ''}`}
+                accessibilityState={{ expanded: showFilters }}
                 style={[
-                  styles.categoryPill,
+                  styles.filterToggle,
                   {
-                    backgroundColor: isSelected ? theme.colors.accent : theme.colors.surfaceVariant,
-                    borderWidth: isSelected ? 0 : 1,
-                    borderColor: theme.colors.border,
+                    backgroundColor: activeFilterCount > 0 ? theme.colors.accent + '18' : theme.colors.surfaceVariant,
+                    borderColor: activeFilterCount > 0 ? theme.colors.accent : theme.colors.border,
                   },
                 ]}
               >
                 <MaterialCommunityIcons
-                  name={item.icon}
-                  size={15}
-                  color={isSelected ? theme.colors.onAccent : theme.colors.textSecondary}
+                  name="filter-variant"
+                  size={16}
+                  color={activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary}
                 />
-                <Text style={[styles.categoryLabel, { color: isSelected ? theme.colors.onAccent : theme.colors.text }]}>
-                  {t(`exercises.category.${item.key}`) || item.label}
+                <Text
+                  style={{
+                    color: activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: '600',
+                    marginLeft: 3,
+                  }}
+                >
+                  {t('exercises.filters') || 'Filters'}
+                  {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+                </Text>
+                <MaterialCommunityIcons
+                  name={showFilters ? 'chevron-up' : 'chevron-down'}
+                  size={14}
+                  color={theme.colors.textMuted}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* ── SEARCH BAR ── */}
+          <View>
+            <View
+              style={[
+                styles.searchBar,
+                {
+                  backgroundColor: theme.colors.surfaceVariant,
+                  borderColor: searchFocused ? theme.colors.accent : theme.colors.border,
+                },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="magnify"
+                size={18}
+                color={searchFocused ? theme.colors.accent : theme.colors.textMuted}
+              />
+              <TextInput
+                style={[styles.searchInput, { color: theme.colors.text }]}
+                placeholder={t('exercises.searchPlaceholder') || 'Search exercises, muscles...'}
+                placeholderTextColor={theme.colors.textMuted}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                accessibilityLabel="Search exercises"
+                accessibilityRole="search"
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => setSearchQuery('')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear search"
+                >
+                  <MaterialCommunityIcons name="close-circle" size={16} color={theme.colors.textMuted} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* ── CATEGORY PILLS ── */}
+          <View>
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={CATEGORIES}
+              keyExtractor={(item) => item.key}
+              contentContainerStyle={styles.categoryList}
+              renderItem={({ item }) => {
+                const isSelected = selectedCategories.has(item.key);
+                return (
+                  <TouchableOpacity
+                    onPress={() => toggleCategory(item.key)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Filter by ${item.label}`}
+                    accessibilityState={{ selected: isSelected }}
+                    style={[
+                      styles.categoryPill,
+                      {
+                        backgroundColor: isSelected ? theme.colors.accent : theme.colors.surfaceVariant,
+                        borderWidth: isSelected ? 0 : 1,
+                        borderColor: theme.colors.border,
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={item.icon}
+                      size={15}
+                      color={isSelected ? theme.colors.onAccent : theme.colors.textSecondary}
+                    />
+                    <Text
+                      style={[styles.categoryLabel, { color: isSelected ? theme.colors.onAccent : theme.colors.text }]}
+                    >
+                      {t(`exercises.category.${item.key}`) || item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        </Animated.View>
+
+        {/* ── EXPANDED FILTERS (difficulty + equipment) ── */}
+        {showFilters && (
+          <Animated.View
+            entering={FadeInDown.duration(200)}
+            style={[
+              styles.expandedFilters,
+              { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+            ]}
+          >
+            {/* Difficulty */}
+            <Text style={[styles.filterSectionLabel, { color: theme.colors.textSecondary }]}>
+              {t('exercises.difficulty') || 'Difficulty'}
+            </Text>
+            <View style={styles.filterChipsRow}>
+              {DIFFICULTIES.map((d) => {
+                const isOn = selectedDifficulties.has(d.key);
+                return (
+                  <TouchableOpacity
+                    key={d.key}
+                    onPress={() => toggleDifficulty(d.key)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Filter by ${d.label} difficulty`}
+                    accessibilityState={{ selected: isOn }}
+                    style={[
+                      styles.filterChip,
+                      {
+                        backgroundColor: isOn ? d.color + '20' : theme.colors.surfaceVariant,
+                        borderColor: isOn ? d.color : theme.colors.border,
+                      },
+                    ]}
+                  >
+                    <View style={[styles.filterDot, { backgroundColor: d.color }]} />
+                    <Text style={{ color: isOn ? d.color : theme.colors.text, fontSize: 13, fontWeight: '600' }}>
+                      {d.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Equipment */}
+            <Text style={[styles.filterSectionLabel, { color: theme.colors.textSecondary, marginTop: 12 }]}>
+              {t('exercises.equipment') || 'Equipment'}
+            </Text>
+            <View style={styles.filterChipsRow}>
+              {EQUIPMENT.map((eq) => {
+                const isOn = selectedEquipment.has(eq.key);
+                return (
+                  <TouchableOpacity
+                    key={eq.key}
+                    onPress={() => toggleEquipment(eq.key)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Filter by ${eq.label} equipment`}
+                    accessibilityState={{ selected: isOn }}
+                    style={[
+                      styles.filterChip,
+                      {
+                        backgroundColor: isOn ? theme.colors.accent + '20' : theme.colors.surfaceVariant,
+                        borderColor: isOn ? theme.colors.accent : theme.colors.border,
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={eq.icon}
+                      size={14}
+                      color={isOn ? theme.colors.accent : theme.colors.textSecondary}
+                    />
+                    <Text
+                      style={{
+                        color: isOn ? theme.colors.accent : theme.colors.text,
+                        fontSize: 13,
+                        fontWeight: '600',
+                        marginLeft: 4,
+                      }}
+                    >
+                      {eq.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Clear all */}
+            {activeFilterCount > 0 && (
+              <TouchableOpacity
+                onPress={clearAllFilters}
+                accessibilityRole="button"
+                accessibilityLabel="Clear all filters"
+                style={{ marginTop: 12, alignSelf: 'flex-end' }}
+              >
+                <Text style={{ color: theme.colors.error, fontSize: 13, fontWeight: '600' }}>
+                  {t('exercises.clearFilters') || 'Clear all filters'}
                 </Text>
               </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-      </Animated.View>
-
-      {/* ── EXPANDED FILTERS (difficulty + equipment) ── */}
-      {showFilters && (
-        <Animated.View entering={FadeInDown.duration(200)} style={[styles.expandedFilters, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-          {/* Difficulty */}
-          <Text style={[styles.filterSectionLabel, { color: theme.colors.textSecondary }]}>{t('exercises.difficulty') || 'Difficulty'}</Text>
-          <View style={styles.filterChipsRow}>
-            {DIFFICULTIES.map(d => {
-              const isOn = selectedDifficulties.has(d.key);
-              return (
-                <TouchableOpacity
-                  key={d.key}
-                  onPress={() => toggleDifficulty(d.key)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Filter by ${d.label} difficulty`}
-                  accessibilityState={{ selected: isOn }}
-                  style={[styles.filterChip, {
-                    backgroundColor: isOn ? d.color + '20' : theme.colors.surfaceVariant,
-                    borderColor: isOn ? d.color : theme.colors.border,
-                  }]}
-                >
-                  <View style={[styles.filterDot, { backgroundColor: d.color }]} />
-                  <Text style={{ color: isOn ? d.color : theme.colors.text, fontSize: 13, fontWeight: '600' }}>{d.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Equipment */}
-          <Text style={[styles.filterSectionLabel, { color: theme.colors.textSecondary, marginTop: 12 }]}>{t('exercises.equipment') || 'Equipment'}</Text>
-          <View style={styles.filterChipsRow}>
-            {EQUIPMENT.map(eq => {
-              const isOn = selectedEquipment.has(eq.key);
-              return (
-                <TouchableOpacity
-                  key={eq.key}
-                  onPress={() => toggleEquipment(eq.key)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Filter by ${eq.label} equipment`}
-                  accessibilityState={{ selected: isOn }}
-                  style={[styles.filterChip, {
-                    backgroundColor: isOn ? theme.colors.accent + '20' : theme.colors.surfaceVariant,
-                    borderColor: isOn ? theme.colors.accent : theme.colors.border,
-                  }]}
-                >
-                  <MaterialCommunityIcons name={eq.icon} size={14} color={isOn ? theme.colors.accent : theme.colors.textSecondary} />
-                  <Text style={{ color: isOn ? theme.colors.accent : theme.colors.text, fontSize: 13, fontWeight: '600', marginLeft: 4 }}>{eq.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Clear all */}
-          {activeFilterCount > 0 && (
-            <TouchableOpacity onPress={clearAllFilters} accessibilityRole="button" accessibilityLabel="Clear all filters" style={{ marginTop: 12, alignSelf: 'flex-end' }}>
-              <Text style={{ color: theme.colors.error, fontSize: 13, fontWeight: '600' }}>{t('exercises.clearFilters') || 'Clear all filters'}</Text>
-            </TouchableOpacity>
-          )}
-        </Animated.View>
-      )}
-
-      {/* ── RESULTS COUNT ── */}
-      <Animated.View entering={FadeIn.delay(200).duration(150)} style={styles.resultsRow}>
-        <Text style={[styles.resultsText, { color: theme.colors.textSecondary }]}>
-          {filteredExercises.length} {t('exercises.results') || 'result'}{filteredExercises.length !== 1 ? 's' : ''}
-        </Text>
-      </Animated.View>
-
-      {/* ── EXERCISE LIST ── */}
-      <Animated.FlatList
-        data={filteredExercises}
-        renderItem={renderExercise}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-        showsVerticalScrollIndicator={false}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
-        windowSize={5}
-        removeClippedSubviews={true}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.accent} />
-        }
-        ListEmptyComponent={
-          <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.emptyState}>
-            <MaterialCommunityIcons name="magnify-close" size={48} color={theme.colors.textMuted} />
-            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('exercises.noResults') || 'No exercises found'}</Text>
-            <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
-              {t('exercises.adjustFilters') || 'Try adjusting your search or filters'}
-            </Text>
+            )}
           </Animated.View>
-        }
-      />
+        )}
 
-      {/* ── FAB: CREATE WORKOUT ── */}
-      <TouchableOpacity
-        style={[styles.fab, { backgroundColor: theme.colors.accent }]}
-        onPress={() => router.push('/create-workout' as any)}
-        activeOpacity={0.85}
-        accessibilityRole="button"
-        accessibilityLabel="Create new workout"
-      >
-        <MaterialCommunityIcons name="playlist-plus" size={26} color="#fff" />
-      </TouchableOpacity>
+        {/* ── RESULTS COUNT ── */}
+        <Animated.View entering={FadeIn.delay(200).duration(150)} style={styles.resultsRow}>
+          <Text style={[styles.resultsText, { color: theme.colors.textSecondary }]}>
+            {filteredExercises.length} {t('exercises.results') || 'exercises'}
+          </Text>
+        </Animated.View>
 
-      {/* ── EXERCISE DETAIL SHEET ── */}
-      <ExerciseDetailSheet
-        exercise={selectedExercise}
-        visible={detailVisible}
-        onClose={handleCloseDetail}
-      />
-    </SafeAreaView>
+        {/* ── EXERCISE LIST ── */}
+        <Animated.FlatList
+          data={filteredExercises}
+          renderItem={renderExercise}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={true}
+          getItemLayout={(_data, index) => ({ length: 130, offset: 130 * index, index })}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.accent} />
+          }
+          ListEmptyComponent={
+            <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.emptyState}>
+              <MaterialCommunityIcons name="magnify-close" size={48} color={theme.colors.textMuted} />
+              <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+                {t('exercises.noResults') || 'No exercises found'}
+              </Text>
+              <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
+                {t('exercises.adjustFilters') || 'Try adjusting your search or filters'}
+              </Text>
+            </Animated.View>
+          }
+        />
+
+        {/* ── FAB: CREATE WORKOUT ── */}
+        <TouchableOpacity
+          style={[styles.fab, { backgroundColor: theme.colors.accent }]}
+          onPress={() => router.push('/create-workout' as any)}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Create new workout"
+        >
+          <MaterialCommunityIcons name="playlist-plus" size={26} color="#fff" />
+        </TouchableOpacity>
+
+        {/* ── EXERCISE DETAIL SHEET ── */}
+        <ExerciseDetailSheet exercise={selectedExercise} visible={detailVisible} onClose={handleCloseDetail} />
+      </SafeAreaView>
     </ScreenErrorBoundary>
   );
 }
@@ -564,8 +692,9 @@ const styles = StyleSheet.create({
   categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    minHeight: 44,
     borderRadius: 16,
     marginRight: 6,
     overflow: 'hidden',

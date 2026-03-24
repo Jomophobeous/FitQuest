@@ -71,7 +71,7 @@ export const RANK_TIERS: RankTier[] = [
   {
     name: 'Mastery',
     levelRange: [150, 399],
-    description: 'Discipline becomes identity. You don\'t just train — you are the training.',
+    description: "Discipline becomes identity. You don't just train — you are the training.",
     color: '#3B82F6', // blue
   },
   {
@@ -253,7 +253,8 @@ export const RANK_MILESTONES: RankMilestone[] = [
     icon: 'lightning-bolt',
     color: '#F43F5E',
     xpMultiplier: 1.7,
-    quote: '"I fear not the man who has practiced 10,000 kicks once, but the man who has practiced one kick 10,000 times." — Bruce Lee',
+    quote:
+      '"I fear not the man who has practiced 10,000 kicks once, but the man who has practiced one kick 10,000 times." — Bruce Lee',
     badge: 'MYT',
   },
   {
@@ -342,7 +343,7 @@ export function getUserRankInfo(level: number): UserRankInfo {
   const nextRank = getNextRank(level);
   const tier = getTier(level);
 
-  const milestonesAchieved = RANK_MILESTONES.filter(m => level >= m.level).length;
+  const milestonesAchieved = RANK_MILESTONES.filter((m) => level >= m.level).length;
 
   // Progress to next milestone
   let progressToNext = 0;

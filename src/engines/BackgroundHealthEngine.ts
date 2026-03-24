@@ -1,23 +1,23 @@
 /**
  * FitQuest Background Health Engine
- * 
+ *
  * Orchestrates all health monitoring subsystems with periodic
  * data collection, anomaly detection, and insight generation.
- * 
+ *
  * Runs as a foreground polling service (React Native doesn't
  * support true background tasks without native modules, but
  * this engine can be wired into expo-task-manager if needed).
- * 
+ *
  * Subsystems orchestrated:
  * - HealthMonitor (steps, calories, goals)
  * - SensorFusionEngine (activity detection, rep counting)
  * - SleepAnalysisEngine (quality, stages, debt)
  * - AnomalyDetector (outlier detection, alerts)
  * - RealisticHealthEngine (BMR, TDEE, recovery scoring)
- * 
+ *
  * Data pipeline:
  *   Sensors → Collect → Aggregate → Analyze → Detect → Alert → Store
- * 
+ *
  * All sensitive data encrypted. Runs at configurable intervals.
  */
 
@@ -33,6 +33,7 @@ import { SensorFusionEngine } from './SensorFusionEngine';
 import { HealthMonitorService } from './HealthMonitor';
 import { getCachedReadiness, invalidateReadinessCache } from './ReadinessEngine';
 import { syncHealthData } from '../services/healthAdapters';
+import { systemGuard } from '../services/SystemGuard';
 import {
   getAverageFatigueLevel,
   getAppState,
@@ -59,11 +60,11 @@ export interface HealthSnapshot {
   recoveryScore: number;
   sleepQuality: number | null;
   anomaliesDetected: number;
-  overallScore: number;        // 0-100 composite health score
+  overallScore: number; // 0-100 composite health score
 }
 
 export interface DailyHealthSummary {
-  date: string;               // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   totalSteps: number;
   totalCalories: number;
   activeMinutes: number;
@@ -72,7 +73,7 @@ export interface DailyHealthSummary {
   sleepHours: number | null;
   sleepQuality: number | null;
   recoveryScore: number;
-  healthScore: number;         // 0-100
+  healthScore: number; // 0-100
   anomalies: string[];
 }
 
@@ -109,12 +110,12 @@ export interface BackgroundHealthConfig {
 // ============================================
 
 const DEFAULT_CONFIG: Required<BackgroundHealthConfig> = {
-  collectionIntervalMs: 1 * 60 * 1000,       // 1 min
-  anomalyCheckIntervalMs: 30 * 60 * 1000,    // 30 min
+  collectionIntervalMs: 1 * 60 * 1000, // 1 min
+  anomalyCheckIntervalMs: 30 * 60 * 1000, // 30 min
   dailySummaryTime: '23:30',
   enableAlerts: true,
-  lowBatteryThreshold: 0.20,
-  criticalBatteryThreshold: 0.10,
+  lowBatteryThreshold: 0.2,
+  criticalBatteryThreshold: 0.1,
 };
 
 /** Interval multipliers based on battery state */
@@ -131,7 +132,7 @@ type BatteryTier = 'NORMAL' | 'LOW' | 'CRITICAL' | 'CHARGING';
 
 // Health score weights
 const SCORE_WEIGHTS = {
-  STEPS: 0.20,
+  STEPS: 0.2,
   ACTIVITY: 0.15,
   RECOVERY: 0.25,
   SLEEP: 0.25,
@@ -159,10 +160,12 @@ export class BackgroundHealthEngine {
   private config: Required<BackgroundHealthConfig>;
   private collectionTimer: ReturnType<typeof setInterval> | null = null;
   private anomalyTimer: ReturnType<typeof setInterval> | null = null;
+  private collectInProgress = false; // mutex for collectAndProcess
   private appStateSubscription: any = null;
   private batterySubscription: EventSubscription | null = null;
   private currentBatteryTier: BatteryTier = 'NORMAL';
   private lastExternalHealthSyncAt = 0;
+  private lastForegroundCollect = 0;
   private anomalyDetector: AnomalyDetector;
   private sleepEngine: SleepAnalysisEngine;
   private todayData: {
@@ -197,6 +200,10 @@ export class BackgroundHealthEngine {
    */
   async start(config?: BackgroundHealthConfig): Promise<void> {
     if (this.state === 'RUNNING') return;
+    if (!systemGuard.isReady) {
+      if (__DEV__) console.warn('[BackgroundHealth] Cannot start — system not READY');
+      return;
+    }
 
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.state = 'RUNNING';
@@ -256,10 +263,14 @@ export class BackgroundHealthEngine {
     // Stop sensor subsystems
     try {
       SensorFusionEngine.getInstance().stop();
-    } catch { /* already stopped */ }
+    } catch {
+      /* already stopped */
+    }
     try {
       HealthMonitorService.getInstance().shutdown();
-    } catch { /* already stopped */ }
+    } catch {
+      /* already stopped */
+    }
 
     this.collectionTimer = null;
     this.anomalyTimer = null;
@@ -301,6 +312,8 @@ export class BackgroundHealthEngine {
    */
   private async collectAndProcess(): Promise<void> {
     if (this.state !== 'RUNNING') return;
+    if (this.collectInProgress) return; // prevent overlapping cycles
+    this.collectInProgress = true;
 
     try {
       await this.syncExternalHealthProvidersIfDue();
@@ -321,10 +334,7 @@ export class BackgroundHealthEngine {
 
       // Estimate active calories from steps + workouts
       if (this.todayData.calories <= 0) {
-        this.todayData.calories = this.estimateActiveCalories(
-          this.todayData.steps,
-          this.todayData.workoutsCompleted
-        );
+        this.todayData.calories = this.estimateActiveCalories(this.todayData.steps, this.todayData.workoutsCompleted);
       }
 
       // Estimate active minutes: check SensorFusion for real-time activity state, fall back to step estimate
@@ -341,7 +351,9 @@ export class BackgroundHealthEngine {
               this.todayData.activeMinutes += 1;
             }
           }
-        } catch { /* sensor data unavailable */ }
+        } catch {
+          /* sensor data unavailable */
+        }
       }
 
       // Store periodic snapshot (encrypted)
@@ -356,6 +368,8 @@ export class BackgroundHealthEngine {
       }
     } catch (e) {
       if (__DEV__) console.warn('[BackgroundHealth] Collection error:', e);
+    } finally {
+      this.collectInProgress = false;
     }
   }
 
@@ -365,13 +379,15 @@ export class BackgroundHealthEngine {
   recordHeartRate(bpm: number): void {
     if (bpm >= 30 && bpm <= 220) {
       this.todayData.heartRateReadings.push(bpm);
-      encryptedDB.storeHealthData('heart_rate', {
-        bpm,
-        source: 'MANUAL',
-        recorded_at: Date.now(),
-      }).catch((error) => {
-        if (__DEV__) console.warn('[BackgroundHealth] Failed to store heart rate:', error);
-      });
+      encryptedDB
+        .storeHealthData('heart_rate', {
+          bpm,
+          source: 'MANUAL',
+          recorded_at: Date.now(),
+        })
+        .catch((error) => {
+          if (__DEV__) console.warn('[BackgroundHealth] Failed to store heart rate:', error);
+        });
     }
   }
 
@@ -399,7 +415,9 @@ export class BackgroundHealthEngine {
     try {
       const enabled = await getAppState('healthconnect.enabled');
       if (enabled === 'false') return;
-    } catch { /* proceed if flag unreadable */ }
+    } catch {
+      /* proceed if flag unreadable */
+    }
 
     const fallbackProvider = Platform.OS === 'ios' ? 'healthkit' : 'health_connect';
 
@@ -417,14 +435,11 @@ export class BackgroundHealthEngine {
         });
       }
     } catch (error) {
-      await captureHealthError(
-        error instanceof Error ? error : 'Background health sync failed',
-        {
-          provider: fallbackProvider,
-          action: 'sync',
-          dataType: 'batch',
-        }
-      );
+      await captureHealthError(error instanceof Error ? error : 'Background health sync failed', {
+        provider: fallbackProvider,
+        action: 'sync',
+        dataType: 'batch',
+      });
     } finally {
       this.lastExternalHealthSyncAt = now;
     }
@@ -442,7 +457,13 @@ export class BackgroundHealthEngine {
 
     const sumSince = (records: object[]) =>
       records.reduce((total, record) => {
-        const entry = record as { created_at?: number; value?: number; bpm?: number; startTime?: string; endTime?: string };
+        const entry = record as {
+          created_at?: number;
+          value?: number;
+          bpm?: number;
+          startTime?: string;
+          endTime?: string;
+        };
         if ((entry.created_at ?? 0) < dayAgo) return total;
         if (typeof entry.value === 'number') return total + entry.value;
         return total;
@@ -581,12 +602,12 @@ export class BackgroundHealthEngine {
   async getSnapshot(): Promise<HealthSnapshot> {
     const healthScore = await this.calculateHealthScore();
 
-    const avgHr = this.todayData.heartRateReadings.length > 0
-      ? Math.round(
-          this.todayData.heartRateReadings.reduce((a, b) => a + b, 0) /
-            this.todayData.heartRateReadings.length
-        )
-      : null;
+    const avgHr =
+      this.todayData.heartRateReadings.length > 0
+        ? Math.round(
+            this.todayData.heartRateReadings.reduce((a, b) => a + b, 0) / this.todayData.heartRateReadings.length,
+          )
+        : null;
 
     let sleepQuality: number | null = null;
     try {
@@ -621,20 +642,18 @@ export class BackgroundHealthEngine {
     const targetDate = date || new Date().toISOString().split('T')[0]!;
     const healthScore = await this.calculateHealthScore();
 
-    const avgHr = this.todayData.heartRateReadings.length > 0
-      ? Math.round(
-          this.todayData.heartRateReadings.reduce((a, b) => a + b, 0) /
-            this.todayData.heartRateReadings.length
-        )
-      : null;
+    const avgHr =
+      this.todayData.heartRateReadings.length > 0
+        ? Math.round(
+            this.todayData.heartRateReadings.reduce((a, b) => a + b, 0) / this.todayData.heartRateReadings.length,
+          )
+        : null;
 
     let sleepHours: number | null = null;
     let sleepQuality: number | null = null;
     try {
       const analytics = await this.sleepEngine.getAnalytics(1);
-      sleepHours = analytics.avgDurationMs > 0
-        ? Math.round((analytics.avgDurationMs / 3600000) * 10) / 10
-        : null;
+      sleepHours = analytics.avgDurationMs > 0 ? Math.round((analytics.avgDurationMs / 3600000) * 10) / 10 : null;
       sleepQuality = analytics.avgQualityScore || null;
     } catch {
       // No sleep data
@@ -689,24 +708,22 @@ export class BackgroundHealthEngine {
     const rawSummaries = await encryptedDB.getRecentHealthData('daily_summary', 7);
     const summaries = rawSummaries as DailyHealthSummary[];
 
-    const avgSteps = summaries.length > 0
-      ? Math.round(summaries.reduce((a, b) => a + b.totalSteps, 0) / summaries.length)
-      : 0;
+    const avgSteps =
+      summaries.length > 0 ? Math.round(summaries.reduce((a, b) => a + b.totalSteps, 0) / summaries.length) : 0;
 
     const totalWorkouts = summaries.reduce((a, b) => a + b.workoutsCompleted, 0);
 
-    const avgRecovery = summaries.length > 0
-      ? Math.round(summaries.reduce((a, b) => a + b.recoveryScore, 0) / summaries.length)
-      : 0;
+    const avgRecovery =
+      summaries.length > 0 ? Math.round(summaries.reduce((a, b) => a + b.recoveryScore, 0) / summaries.length) : 0;
 
     const sleepSummaries = summaries.filter((s) => s.sleepQuality != null);
-    const avgSleepQuality = sleepSummaries.length > 0
-      ? Math.round(sleepSummaries.reduce((a, b) => a + (b.sleepQuality || 0), 0) / sleepSummaries.length)
-      : 0;
+    const avgSleepQuality =
+      sleepSummaries.length > 0
+        ? Math.round(sleepSummaries.reduce((a, b) => a + (b.sleepQuality || 0), 0) / sleepSummaries.length)
+        : 0;
 
-    const avgHealthScore = summaries.length > 0
-      ? Math.round(summaries.reduce((a, b) => a + b.healthScore, 0) / summaries.length)
-      : 0;
+    const avgHealthScore =
+      summaries.length > 0 ? Math.round(summaries.reduce((a, b) => a + b.healthScore, 0) / summaries.length) : 0;
 
     // Trend: compare first half to second half
     let trend: 'IMPROVING' | 'DECLINING' | 'STABLE' = 'STABLE';
@@ -723,7 +740,11 @@ export class BackgroundHealthEngine {
 
     // Generate recommendations
     const recommendations = this.generateWeeklyRecommendations(
-      avgSteps, totalWorkouts, avgSleepQuality, avgRecovery, trend
+      avgSteps,
+      totalWorkouts,
+      avgSleepQuality,
+      avgRecovery,
+      trend,
     );
 
     return {
@@ -753,14 +774,9 @@ export class BackgroundHealthEngine {
    */
   private async updateBatteryTier(): Promise<void> {
     try {
-      const [level, batteryState] = await Promise.all([
-        Battery.getBatteryLevelAsync(),
-        Battery.getBatteryStateAsync(),
-      ]);
+      const [level, batteryState] = await Promise.all([Battery.getBatteryLevelAsync(), Battery.getBatteryStateAsync()]);
 
-      const isCharging =
-        batteryState === Battery.BatteryState.CHARGING ||
-        batteryState === Battery.BatteryState.FULL;
+      const isCharging = batteryState === Battery.BatteryState.CHARGING || batteryState === Battery.BatteryState.FULL;
 
       if (isCharging) {
         this.currentBatteryTier = 'CHARGING';
@@ -781,7 +797,11 @@ export class BackgroundHealthEngine {
    * Handle battery state changes (charging/unplugged).
    * Re-evaluates tier and restarts timers with adjusted intervals.
    */
-  private handleBatteryStateChange = async ({ batteryState }: { batteryState: Battery.BatteryState }): Promise<void> => {
+  private handleBatteryStateChange = async ({
+    batteryState,
+  }: {
+    batteryState: Battery.BatteryState;
+  }): Promise<void> => {
     const previousTier = this.currentBatteryTier;
     await this.updateBatteryTier();
 
@@ -796,9 +816,12 @@ export class BackgroundHealthEngine {
    */
   private getIntervalMultiplier(): number {
     switch (this.currentBatteryTier) {
-      case 'CHARGING': return BATTERY_THROTTLE.CHARGING;
-      case 'LOW': return BATTERY_THROTTLE.LOW;
-      case 'CRITICAL': return 0; // No polling — paused
+      case 'CHARGING':
+        return BATTERY_THROTTLE.CHARGING;
+      case 'LOW':
+        return BATTERY_THROTTLE.LOW;
+      case 'CRITICAL':
+        return 0; // No polling — paused
       case 'NORMAL':
       default:
         return BATTERY_THROTTLE.NORMAL;
@@ -853,11 +876,20 @@ export class BackgroundHealthEngine {
       // Store snapshot before going to background
       this.storeSnapshot().catch(() => {});
     } else if (nextState === 'active') {
-      // Re-check battery state when foregrounded
+      // Re-check battery state when foregrounded — only restart timers if tier changed
+      const prevTier = this.currentBatteryTier;
       await this.updateBatteryTier();
-      this.restartTimers();
-      // Resume collection
-      if (this.state === 'RUNNING' && this.currentBatteryTier !== 'CRITICAL') {
+      if (this.currentBatteryTier !== prevTier) {
+        this.restartTimers();
+      }
+      // Resume collection (throttle: at most once per 30s on foreground)
+      const now = Date.now();
+      if (
+        this.state === 'RUNNING' &&
+        this.currentBatteryTier !== 'CRITICAL' &&
+        now - this.lastForegroundCollect > 30_000
+      ) {
+        this.lastForegroundCollect = now;
         this.collectAndProcess();
       }
     }
@@ -892,12 +924,7 @@ export class BackgroundHealthEngine {
     };
   }
 
-  private generateTopInsight(
-    avgSteps: number,
-    totalWorkouts: number,
-    avgSleep: number,
-    avgRecovery: number
-  ): string {
+  private generateTopInsight(avgSteps: number, totalWorkouts: number, avgSleep: number, avgRecovery: number): string {
     if (avgRecovery < 40) {
       return 'Recovery is low — your body needs rest. Consider lighter workouts this week.';
     }
@@ -911,7 +938,7 @@ export class BackgroundHealthEngine {
       return 'Activity levels are low. Try adding 10-minute walks throughout the day.';
     }
     if (avgSteps > 12000) {
-      return 'Great activity levels! You\'re well above the recommended daily step count.';
+      return "Great activity levels! You're well above the recommended daily step count.";
     }
     return 'Keep up your current routine — consistency is the key to long-term health.';
   }
@@ -921,19 +948,20 @@ export class BackgroundHealthEngine {
     totalWorkouts: number,
     avgSleep: number,
     avgRecovery: number,
-    trend: string
+    trend: string,
   ): string[] {
     const recs: string[] = [];
 
     if (avgSteps < 7000) recs.push('Aim for 10,000 steps daily — try a post-meal walk.');
     if (totalWorkouts < 3) recs.push('Try to complete at least 3 workouts per week for optimal health.');
-    if (avgSleep < 65 && avgSleep > 0) recs.push('Improve sleep: consistent bedtime, dark room, no screens 1h before bed.');
+    if (avgSleep < 65 && avgSleep > 0)
+      recs.push('Improve sleep: consistent bedtime, dark room, no screens 1h before bed.');
     if (avgRecovery < 50) recs.push('Take a deload week — reduce intensity by 40-50%.');
     if (trend === 'DECLINING') recs.push('Your health metrics are trending down. Review stress, sleep, and nutrition.');
-    if (totalWorkouts > 6) recs.push('You\'re training heavily. Ensure at least 1 full rest day per week.');
+    if (totalWorkouts > 6) recs.push("You're training heavily. Ensure at least 1 full rest day per week.");
 
     if (recs.length === 0) {
-      recs.push('You\'re on track! Maintain your current habits for continued progress.');
+      recs.push("You're on track! Maintain your current habits for continued progress.");
     }
 
     return recs;

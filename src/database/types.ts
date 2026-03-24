@@ -7,13 +7,7 @@
 // FILTER ENUMS (from docx filter catalogue)
 // ============================================
 
-export type Category =
-  | 'body_control'
-  | 'posture'
-  | 'speed'
-  | 'mobility'
-  | 'focus'
-  | 'strength';
+export type Category = 'body_control' | 'posture' | 'speed' | 'mobility' | 'focus' | 'strength';
 
 // v10: Force type from external exercise databases
 export type ForceType = 'push' | 'pull' | 'static' | 'compound' | null;
@@ -106,19 +100,9 @@ export type TrainingType =
   | 'decompression'
   | 'coordination';
 
-export type TimeFilter =
-  | 'under_5_min'
-  | '5_10_min'
-  | '10_20_min'
-  | '20_30_min'
-  | '30_45_min'
-  | 'over_45_min';
+export type TimeFilter = 'under_5_min' | '5_10_min' | '10_20_min' | '20_30_min' | '30_45_min' | 'over_45_min';
 
-export type SpaceFilter =
-  | 'mat_only_1x1'
-  | 'small_bedroom_2x2'
-  | 'living_room_3x3'
-  | 'outdoors_hall';
+export type SpaceFilter = 'mat_only_1x1' | 'small_bedroom_2x2' | 'living_room_3x3' | 'outdoors_hall';
 
 export type ImpactLevel = 'no_impact' | 'low_impact' | 'high_impact';
 
@@ -140,9 +124,9 @@ export interface Exercise {
   created_at: string;
   updated_at: string;
   // Audio instruction fields (TTS-optimized, ≤2 sentences each)
-  audio_intro: string;      // "Next exercise: Push-ups"
-  audio_setup: string;      // "Hands under shoulders. Body straight."
-  audio_execution: string;  // "Lower under control. Push explosively."
+  audio_intro: string; // "Next exercise: Push-ups"
+  audio_setup: string; // "Hands under shoulders. Body straight."
+  audio_execution: string; // "Lower under control. Push explosively."
   audio_transition: string; // "Rest for 30 seconds."
   // v10 fields for external exercise database
   external_id?: string;
@@ -166,6 +150,18 @@ export interface ExerciseTrainingType {
   exercise_id: string;
   training_type: TrainingType;
   effectiveness: number; // 1-10 scale
+}
+
+export interface ExerciseTranslation {
+  exercise_id: string;
+  language: string;
+  name: string;
+  instructions: string; // JSON array of instruction steps
+  audio_intro: string;
+  audio_setup: string;
+  audio_execution: string;
+  audio_transition: string;
+  created_at: string;
 }
 
 // ============================================
@@ -273,7 +269,7 @@ export interface Annotation {
 /**
  * Flashcard with FSRS (Free Spaced Repetition Scheduler) fields.
  * FSRS provides ~40% better retention than SM-2.
- * 
+ *
  * State progression: New(0) → Learning(1) → Review(2) ↔ Relearning(3)
  */
 export interface Flashcard {
@@ -282,19 +278,19 @@ export interface Flashcard {
   front: string;
   back: string;
   // FSRS core fields
-  difficulty: number;     // FSRS difficulty (1-10 scale, ~5 is neutral)
-  stability: number;      // Memory stability in days (how long until 90% retention drops)
-  state: FlashcardState;  // Current learning state (0=New, 1=Learning, 2=Review, 3=Relearning)
+  difficulty: number; // FSRS difficulty (1-10 scale, ~5 is neutral)
+  stability: number; // Memory stability in days (how long until 90% retention drops)
+  state: FlashcardState; // Current learning state (0=New, 1=Learning, 2=Review, 3=Relearning)
   // Scheduling
-  due: number;            // Next review timestamp (Unix ms) — replaces next_review
+  due: number; // Next review timestamp (Unix ms) — replaces next_review
   scheduled_days: number; // Days until next review — replaces interval_days
   last_review: number | null; // Timestamp of last review
   // Progress tracking
-  reps: number;           // Total successful reviews — replaces repetitions
-  lapses: number;         // Number of times card was forgotten
+  reps: number; // Total successful reviews — replaces repetitions
+  lapses: number; // Number of times card was forgotten
   learning_steps: number; // Current step in (re)learning sequence
   // Legacy compatibility (for migration)
-  ease_factor: number;    // SM-2 ease factor (kept for backwards compat)
+  ease_factor: number; // SM-2 ease factor (kept for backwards compat)
   created_at: number;
 }
 
@@ -395,7 +391,7 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 18; // v18: fix external exercise equipment_level
+export const SCHEMA_VERSION = 20; // v20: exercise_translations table for i18n
 
 // ============================================
 // v17 TYPES
@@ -445,7 +441,14 @@ export interface MindXPData {
   updated_at: number;
 }
 
-export type PricingRegion = 'africa' | 'europe' | 'north_america' | 'south_america' | 'asia' | 'oceania' | 'middle_east';
+export type PricingRegion =
+  | 'africa'
+  | 'europe'
+  | 'north_america'
+  | 'south_america'
+  | 'asia'
+  | 'oceania'
+  | 'middle_east';
 
 export interface RegionalPricing {
   region: PricingRegion;

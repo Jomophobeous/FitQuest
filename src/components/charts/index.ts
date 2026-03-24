@@ -1,17 +1,17 @@
 /**
  * Charts Module
- * 
+ *
  * Reusable chart components for FitQuest analytics.
  * Uses themed styling with fallback visualizations.
- * 
+ *
  * Victory-native integration planned for future enhancement.
- * 
+ *
  * Usage:
  * ```tsx
- * import { 
- *   WorkoutTrendChart, 
- *   StepsChart, 
- *   StreakCalendar 
+ * import {
+ *   WorkoutTrendChart,
+ *   StepsChart,
+ *   StreakCalendar
  * } from '../components/charts';
  * ```
  */
@@ -52,13 +52,7 @@ export {
 } from './types';
 
 // Themed Components
-export {
-  ThemedChartWrapper,
-  useChartTheme,
-  DateRangeSelector,
-  MiniStat,
-  ChartLegend,
-} from './ThemedChart';
+export { ThemedChartWrapper, useChartTheme, DateRangeSelector, MiniStat, ChartLegend } from './ThemedChart';
 
 // Chart Components
 export { WorkoutTrendChart } from './WorkoutTrendChart';

@@ -1,13 +1,13 @@
 /**
  * FitQuest Storage Migration
- * 
+ *
  * One-time storage initialization for SecureStore keys.
- * 
+ *
  * Migrated keys:
  * - authToken → SecureStore
  * - refreshToken → SecureStore
  * - user → SecureStore
- * 
+ *
  * Run once on app startup. Idempotent — safe to call multiple times.
  */
 import * as SecureStore from 'expo-secure-store';
@@ -19,11 +19,7 @@ import * as SecureStore from 'expo-secure-store';
 const MIGRATION_FLAG = 'fitquest_storage_migration_v1';
 
 /** Keys tracked in SecureStore */
-const SENSITIVE_KEYS = [
-  'authToken',
-  'refreshToken',
-  'user',
-] as const;
+const SENSITIVE_KEYS = ['authToken', 'refreshToken', 'user'] as const;
 
 /** Mapping of legacy keys to SecureStore keys */
 const KEY_MAP = {
@@ -49,7 +45,7 @@ export interface MigrationResult {
 
 /**
  * Ensure SecureStore is initialized for auth keys.
- * 
+ *
  * @returns MigrationResult with details of what was migrated
  */
 export async function migrateToSecureStorage(): Promise<MigrationResult> {
@@ -109,7 +105,11 @@ export async function getRefreshToken(): Promise<string | null> {
 export async function getUserProfile(): Promise<object | null> {
   const secure = await SecureStore.getItemAsync(KEY_MAP.user);
   if (secure) {
-    try { return JSON.parse(secure); } catch { return null; }
+    try {
+      return JSON.parse(secure);
+    } catch {
+      return null;
+    }
   }
   return null;
 }
@@ -117,17 +117,11 @@ export async function getUserProfile(): Promise<object | null> {
 /**
  * Store auth credentials in SecureStore (new writes always go to SecureStore).
  */
-export async function setAuthCredentials(
-  token: string,
-  user: object,
-  refreshToken?: string
-): Promise<void> {
+export async function setAuthCredentials(token: string, user: object, refreshToken?: string): Promise<void> {
   await Promise.all([
     SecureStore.setItemAsync(KEY_MAP.authToken, token),
     SecureStore.setItemAsync(KEY_MAP.user, JSON.stringify(user)),
-    refreshToken
-      ? SecureStore.setItemAsync(KEY_MAP.refreshToken, refreshToken)
-      : Promise.resolve(),
+    refreshToken ? SecureStore.setItemAsync(KEY_MAP.refreshToken, refreshToken) : Promise.resolve(),
   ]);
 }
 

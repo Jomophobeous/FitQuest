@@ -1,11 +1,11 @@
 /**
  * FitQuest Pedometer Hook
  * Step counting and activity tracking with GPS distance during jogs
- * 
+ *
  * Uses native sensors:
  * - Android: Step Sensor / Activity Recognition + GPS
  * - iOS: Core Motion (CMPedometer) + GPS
- * 
+ *
  * Characteristics:
  * - Low battery (steps)
  * - GPS accuracy for jogs
@@ -59,24 +59,24 @@ export interface UsePedometerReturn {
   todaySteps: number;
   isAvailable: boolean;
   isTracking: boolean;
-  
+
   // Enhanced step data
   stepData: StepData | null;
   cadence: number;
   activity: ActivityMode;
   estimatedDistance: number;
-  
+
   // Jog session
   currentJog: JogSession | null;
   isJogging: boolean;
   jogStats: DistanceStats | null;
-  
+
   // Actions
   startTracking: () => Promise<void>;
   stopTracking: () => void;
   startJog: (useGPS?: boolean) => Promise<void>;
   stopJog: () => Promise<JogSession | null>;
-  
+
   // History
   getStepHistory: (days: number) => Promise<DailySteps[]>;
   getJogHistory: (limit: number) => Promise<JogSession[]>;
@@ -103,18 +103,18 @@ export function usePedometer(): UsePedometerReturn {
   const [isAvailable, setIsAvailable] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
   const [currentJog, setCurrentJog] = useState<JogSession | null>(null);
-  
+
   // Enhanced step counter state
   const [stepData, setStepData] = useState<StepData | null>(null);
   const [cadence, setCadence] = useState(0);
   const [activity, setActivity] = useState<ActivityMode>('STATIONARY');
   const [estimatedDistance, setEstimatedDistance] = useState(0);
-  
+
   // GPS jog state
   const [jogStats, setJogStats] = useState<DistanceStats | null>(null);
   const jogUsingGPSRef = useRef(false);
   const jogStatsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  
+
   const subscriptionRef = useRef<ReturnType<typeof Pedometer.watchStepCount> | null>(null);
   const baseStepsRef = useRef(0);
   const sensorFallbackRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -362,43 +362,43 @@ export function usePedometer(): UsePedometerReturn {
 
     // End step counter session
     const stepSessionData = stepCounterEngine.endSession();
-    
+
     // Get GPS data if available
     if (jogUsingGPSRef.current && distanceEngine.isTracking()) {
       const gpsStats = await distanceEngine.stopTracking();
-      
+
       // Use GPS distance (more accurate than step-based)
       distanceMeters = gpsStats.totalDistanceMeters;
       avgPacePerKm = gpsStats.averagePaceSecondsPerKm ?? undefined;
       elevationGainMeters = gpsStats.elevationGainMeters;
       splits = gpsStats.splits;
-      routePoints = gpsStats.routePoints.map(p => [p.lat, p.lng] as [number, number]);
-      
+      routePoints = gpsStats.routePoints.map((p) => [p.lat, p.lng] as [number, number]);
+
       // Use enhanced calorie estimate from step counter
       caloriesEstimate = stepSessionData.caloriesBurned;
-      
+
       // Remove GPS listeners
       distanceEngine.removeAllListeners('distance');
       distanceEngine.removeAllListeners('location');
-      
+
       if (__DEV__) {
         console.log('[Pedometer] Jog stopped with GPS data:', {
-        distance: distanceMeters,
-        pace: avgPacePerKm,
-        elevation: elevationGainMeters,
-        splits: splits?.length,
+          distance: distanceMeters,
+          pace: avgPacePerKm,
+          elevation: elevationGainMeters,
+          splits: splits?.length,
         });
       }
     } else {
       // Fallback to step-based estimation using StepCounterEngine
       distanceMeters = stepSessionData.distanceMeters || Math.max(stepSessionData.steps * 0.8, 1);
-      avgPacePerKm = distanceMeters > 10 ? (durationSeconds / (distanceMeters / 1000)) : undefined;
+      avgPacePerKm = distanceMeters > 10 ? durationSeconds / (distanceMeters / 1000) : undefined;
       caloriesEstimate = stepSessionData.caloriesBurned;
-      
+
       if (__DEV__) {
         console.log('[Pedometer] Jog stopped with step-based data:', {
-        distance: distanceMeters,
-        steps: stepSessionData.steps,
+          distance: distanceMeters,
+          steps: stepSessionData.steps,
         });
       }
     }
@@ -444,7 +444,7 @@ export function usePedometer(): UsePedometerReturn {
     try {
       const results = await fetchStepHistory(DEFAULT_USER_ID, days);
 
-      return results.map(r => ({
+      return results.map((r) => ({
         date: r.date,
         steps: r.steps,
         activeMinutes: r.active_minutes,
@@ -457,11 +457,9 @@ export function usePedometer(): UsePedometerReturn {
 
   const getJogHistory = useCallback(async (limit: number): Promise<JogSession[]> => {
     try {
-      const results = (await fetchJogHistory(DEFAULT_USER_ID, limit)).filter(
-        (r) => r.end_time !== null
-      );
+      const results = (await fetchJogHistory(DEFAULT_USER_ID, limit)).filter((r) => r.end_time !== null);
 
-      return results.map(r => ({
+      return results.map((r) => ({
         id: r.id,
         startTime: new Date(r.start_time),
         endTime: r.end_time ? new Date(r.end_time) : undefined,
@@ -508,18 +506,18 @@ export function usePedometer(): UsePedometerReturn {
     todaySteps,
     isAvailable,
     isTracking,
-    
+
     // Enhanced step data
     stepData,
     cadence,
     activity,
     estimatedDistance,
-    
+
     // Jog data
     currentJog,
     isJogging: currentJog !== null,
     jogStats,
-    
+
     // Actions
     startTracking,
     stopTracking,

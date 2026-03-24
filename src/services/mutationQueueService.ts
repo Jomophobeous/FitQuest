@@ -5,10 +5,7 @@ const MUTATION_QUEUE_KEY = 'sync.mutation.queue.v1';
 const MAX_QUEUE_ITEMS = 300;
 let sequence = 0;
 
-export type MutationJobType =
-  | 'legal.sync_consent'
-  | 'backup.upload_latest'
-  | 'sync.on_demand';
+export type MutationJobType = 'legal.sync_consent' | 'backup.upload_latest' | 'sync.on_demand';
 
 export interface MutationJob<TPayload = unknown> {
   id: string;
@@ -134,7 +131,11 @@ export async function flushMutationQueue(
         lastError: message.slice(0, 240),
       };
       failed += 1;
-      void logError(error, { module: 'mutationQueueService.flushMutationQueue', type: job.type, attempts: nextAttempts });
+      void logError(error, {
+        module: 'mutationQueueService.flushMutationQueue',
+        type: job.type,
+        attempts: nextAttempts,
+      });
     }
   }
 

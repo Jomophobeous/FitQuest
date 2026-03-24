@@ -34,31 +34,31 @@ export type ShiftType = 'day' | 'night' | 'rotating';
 
 export interface ProfessionSchedule {
   profession_type: string;
-  work_start_hour: number;   // 0-23
-  work_end_hour: number;     // 0-23
+  work_start_hour: number; // 0-23
+  work_end_hour: number; // 0-23
   commute_minutes: number;
   preferred_windows: TrainingWindow[];
   shift_type: ShiftType;
 }
 
 export interface ReadinessSnapshot {
-  score: number;             // 0-100
+  score: number; // 0-100
   status: ReadinessStatus;
   timeSinceLastWorkoutMinutes: number | null;
-  globalFatigue: number;     // 0-100, time-adjusted average
+  globalFatigue: number; // 0-100, time-adjusted average
   freshMuscleCount: number;
   fatiguedMuscleCount: number;
   currentWindow: TrainingWindow;
   recommendedIntensity: 'low' | 'moderate' | 'high';
   recommendation: string;
   muscleFatigueMap: MuscleFatigueDecay[];
-  updatedAt: number;         // Unix ms
+  updatedAt: number; // Unix ms
 }
 
 export interface MuscleFatigueDecay {
   muscle: TargetMuscle;
-  rawLevel: number;          // stored fatigue 0-100
-  decayedLevel: number;      // time-adjusted fatigue 0-100
+  rawLevel: number; // stored fatigue 0-100
+  decayedLevel: number; // time-adjusted fatigue 0-100
   hoursSinceTrained: number | null;
   status: 'fresh' | 'moderate' | 'fatigued' | 'critical';
 }
@@ -73,11 +73,11 @@ const READINESS_CONFIG = {
 
   // Score weights for composite readiness
   weights: {
-    fatigue: 0.40,      // How recovered muscles are
-    recency: 0.25,      // Time since last workout (too soon = bad, too long = bad)
-    streak: 0.15,       // Training consistency
-    sleep_proxy: 0.10,  // Time-of-day circadian proxy
-    volume_trend: 0.10, // Recent training volume trend
+    fatigue: 0.4, // How recovered muscles are
+    recency: 0.25, // Time since last workout (too soon = bad, too long = bad)
+    streak: 0.15, // Training consistency
+    sleep_proxy: 0.1, // Time-of-day circadian proxy
+    volume_trend: 0.1, // Recent training volume trend
   },
 
   // Optimal hours between workouts
@@ -114,12 +114,13 @@ export async function getReadinessSnapshot(userId: string): Promise<ReadinessSna
 
   // 1. Time-adjusted muscle fatigue
   const muscleFatigueMap = computeDecayedFatigue(fatigue, now);
-  const avgDecayedFatigue = muscleFatigueMap.length > 0
-    ? muscleFatigueMap.reduce((sum, m) => sum + m.decayedLevel, 0) / muscleFatigueMap.length
-    : 0;
+  const avgDecayedFatigue =
+    muscleFatigueMap.length > 0
+      ? muscleFatigueMap.reduce((sum, m) => sum + m.decayedLevel, 0) / muscleFatigueMap.length
+      : 0;
 
   // 2. Time since last workout
-  const lastCompleted = sessions.find(s => s.completed_at);
+  const lastCompleted = sessions.find((s) => s.completed_at);
   const timeSinceLastWorkoutMinutes = lastCompleted?.completed_at
     ? Math.floor((now - new Date(lastCompleted.completed_at).getTime()) / 60000)
     : null;
@@ -146,7 +147,13 @@ export async function getReadinessSnapshot(userId: string): Promise<ReadinessSna
 
   // 6. Training window
   let schedule: ProfessionSchedule | null = null;
-  if (scheduleRaw) { try { schedule = JSON.parse(scheduleRaw) as ProfessionSchedule; } catch { /* corrupted */ } }
+  if (scheduleRaw) {
+    try {
+      schedule = JSON.parse(scheduleRaw) as ProfessionSchedule;
+    } catch {
+      /* corrupted */
+    }
+  }
   const currentWindow = getCurrentTrainingWindow(new Date().getHours(), schedule);
 
   // 7. Intensity recommendation
@@ -155,8 +162,8 @@ export async function getReadinessSnapshot(userId: string): Promise<ReadinessSna
   // 8. Human-readable recommendation
   const recommendation = buildRecommendation(status, currentWindow, timeSinceLastWorkoutMinutes, avgDecayedFatigue);
 
-  const freshCount = muscleFatigueMap.filter(m => m.status === 'fresh').length;
-  const fatiguedCount = muscleFatigueMap.filter(m => m.status === 'fatigued' || m.status === 'critical').length;
+  const freshCount = muscleFatigueMap.filter((m) => m.status === 'fresh').length;
+  const fatiguedCount = muscleFatigueMap.filter((m) => m.status === 'fatigued' || m.status === 'critical').length;
 
   // Telemetry: track computation latency and result quality
   logPerf('readiness_snapshot', Date.now() - startMs, {
@@ -192,7 +199,7 @@ export async function getReadinessSnapshot(userId: string): Promise<ReadinessSna
 function computeDecayedFatigue(records: MuscleFatigue[], nowMs: number): MuscleFatigueDecay[] {
   const halfLife = READINESS_CONFIG.fatigue_half_life_hours;
 
-  return records.map(record => {
+  return records.map((record) => {
     const hoursSinceTrained = record.last_trained_at
       ? (nowMs - new Date(record.last_trained_at).getTime()) / 3600000
       : null;
@@ -273,9 +280,9 @@ function computeCircadianScore(hour: number): number {
 function computeVolumeScore(sessions: WorkoutSession[]): number {
   if (sessions.length === 0) return 50;
 
-  const lastWeek = sessions.filter(s => {
+  const lastWeek = sessions.filter((s) => {
     const d = new Date(s.started_at);
-    return (Date.now() - d.getTime()) < 7 * 86400000;
+    return Date.now() - d.getTime() < 7 * 86400000;
   });
 
   const weeklyVolume = lastWeek.reduce((sum, s) => sum + (s.completed_exercises || 0), 0);
@@ -314,10 +321,7 @@ function getCurrentTrainingWindow(hour: number, schedule: ProfessionSchedule | n
   return 'FLEXIBLE';
 }
 
-function getRecommendedIntensity(
-  score: number,
-  window: TrainingWindow,
-): 'low' | 'moderate' | 'high' {
+function getRecommendedIntensity(score: number, window: TrainingWindow): 'low' | 'moderate' | 'high' {
   // Before work: cap at moderate (preserve energy)
   if (window === 'BEFORE_WORK') {
     return score >= 65 ? 'moderate' : 'low';
@@ -367,10 +371,7 @@ function buildRecommendation(
 /**
  * Save profession schedule to app_state (JSON serialized).
  */
-export async function saveProfessionSchedule(
-  userId: string,
-  schedule: ProfessionSchedule,
-): Promise<void> {
+export async function saveProfessionSchedule(userId: string, schedule: ProfessionSchedule): Promise<void> {
   await setAppState(`${userId}_profession_schedule`, JSON.stringify(schedule));
   logEvent('profession_schedule_saved', {
     shiftType: schedule.shift_type,
@@ -380,12 +381,14 @@ export async function saveProfessionSchedule(
 /**
  * Load profession schedule from app_state.
  */
-export async function getProfessionSchedule(
-  userId: string,
-): Promise<ProfessionSchedule | null> {
+export async function getProfessionSchedule(userId: string): Promise<ProfessionSchedule | null> {
   const raw = await getAppState(`${userId}_profession_schedule`);
   if (!raw) return null;
-  try { return JSON.parse(raw) as ProfessionSchedule; } catch { return null; }
+  try {
+    return JSON.parse(raw) as ProfessionSchedule;
+  } catch {
+    return null;
+  }
 }
 
 // ============================================
@@ -402,7 +405,7 @@ const CACHE_TTL_MS = 60_000; // 1 minute
  */
 export async function getCachedReadiness(userId: string): Promise<ReadinessSnapshot> {
   const now = Date.now();
-  if (_cachedSnapshot && (now - _cacheTimestamp) < CACHE_TTL_MS) {
+  if (_cachedSnapshot && now - _cacheTimestamp < CACHE_TTL_MS) {
     return _cachedSnapshot;
   }
   _cachedSnapshot = await getReadinessSnapshot(userId);
@@ -442,7 +445,9 @@ export function formatStatusForAI(snapshot: ReadinessSnapshot): string {
     parts.push('No recent workouts recorded');
   }
 
-  parts.push(`Fatigue: ${snapshot.globalFatigue}% (${snapshot.freshMuscleCount} fresh, ${snapshot.fatiguedMuscleCount} fatigued)`);
+  parts.push(
+    `Fatigue: ${snapshot.globalFatigue}% (${snapshot.freshMuscleCount} fresh, ${snapshot.fatiguedMuscleCount} fatigued)`,
+  );
   parts.push(`Recommended intensity: ${snapshot.recommendedIntensity}`);
 
   if (snapshot.currentWindow !== 'FLEXIBLE') {

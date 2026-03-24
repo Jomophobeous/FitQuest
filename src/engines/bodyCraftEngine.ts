@@ -269,9 +269,12 @@ function getNutritionTips(goal_type: GoalType, body_type: BodyType): string[] {
     ectomorph: 'As an ectomorph, increase meal frequency and add calorie-dense snacks (nuts, nut butters).',
     mesomorph: 'As a mesomorph, you respond well to balanced macros — maintain consistency.',
     endomorph: 'As an endomorph, prioritize protein and fiber to manage satiety and reduce fat gain.',
-    ecto_mesomorph: 'As an ecto-mesomorph, you build lean muscle well — focus on slightly higher calories with clean protein sources.',
-    meso_endomorph: 'As a meso-endomorph, you gain muscle easily but watch carb intake on rest days to manage body fat.',
-    endo_ectomorph: 'As an endo-ectomorph, use carb cycling — higher carbs on training days, lower on rest days — to stay lean while building.',
+    ecto_mesomorph:
+      'As an ecto-mesomorph, you build lean muscle well — focus on slightly higher calories with clean protein sources.',
+    meso_endomorph:
+      'As a meso-endomorph, you gain muscle easily but watch carb intake on rest days to manage body fat.',
+    endo_ectomorph:
+      'As an endo-ectomorph, use carb cycling — higher carbs on training days, lower on rest days — to stay lean while building.',
   };
 
   return [...universal, ...(goalTips[goal_type] || []), bodyTips[body_type]];
@@ -327,10 +330,7 @@ export function generateBodyCraftAlgorithm(inputs: BodyCraftInputs, userId: stri
   // Boost weights for priority muscle areas (shift towards strength if user has many priority areas)
   const priorityCount = Object.values(muscle_priorities).filter((v) => v === 'priority').length;
   if (priorityCount >= 4 && goal_type !== 'muscular_powerful') {
-    exercise_category_weights.strength = Math.min(
-      1,
-      (exercise_category_weights.strength || 0) + 0.1
-    );
+    exercise_category_weights.strength = Math.min(1, (exercise_category_weights.strength || 0) + 0.1);
     // Re-normalize
     const total = Object.values(exercise_category_weights).reduce((s, v) => s + v, 0);
     for (const key of Object.keys(exercise_category_weights)) {

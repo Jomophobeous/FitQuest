@@ -1,8 +1,8 @@
 /**
  * ENGINE 1 — Workout Generator
- * 
+ *
  * The Brain: Deterministic, rule-based workout generation
- * 
+ *
  * Consumes: exercises, user_profile, muscle_fatigue, workout_sessions
  * Produces: workout_sessions (planned), session_exercises (prescribed)
  */
@@ -52,7 +52,7 @@ const RECENCY_PENALTY_HOURS = 48;
 const SCORE_WEIGHTS = {
   muscle_freshness: 0.35,
   goal_alignment: 0.25,
-  pattern_balance: 0.20,
+  pattern_balance: 0.2,
   progression_potential: 0.15,
   variety: 0.05,
 };
@@ -71,7 +71,7 @@ const GOAL_TRAINING_TYPES: Record<Category, TrainingType[]> = {
   posture: ['decompression', 'mobility', 'posture'],
   speed: ['speed_power', 'endurance', 'coordination'],
   mobility: ['mobility', 'recovery'],
-  focus: ['mindfulness', 'recovery', 'balance'],
+  focus: ['balance', 'coordination', 'mindfulness', 'recovery'],
   strength: ['hypertrophy', 'strength'],
 };
 
@@ -103,9 +103,9 @@ const VOLUME_PRESETS: Record<Category, Record<string, { sets: number; reps: stri
     advanced: { sets: 3, reps: '60s hold' },
   },
   focus: {
-    beginner: { sets: 2, reps: '60s hold' },
-    intermediate: { sets: 3, reps: '90s hold' },
-    advanced: { sets: 3, reps: '120s hold' },
+    beginner: { sets: 2, reps: '8-12' },
+    intermediate: { sets: 3, reps: '10-15' },
+    advanced: { sets: 3, reps: '12-20' },
   },
 };
 
@@ -189,7 +189,7 @@ async function determineSessionIntent(
   userId: string,
   profile: UserProfile,
   fatigueMap: Map<TargetMuscle, number>,
-  deloadFlag: boolean
+  deloadFlag: boolean,
 ): Promise<SessionIntent> {
   // Get recently trained muscles from last 48h
   const recentlyTrained = new Set<TargetMuscle>();
@@ -202,7 +202,7 @@ async function determineSessionIntent(
   let lowestFatigue = Infinity;
 
   for (const [pattern, muscles] of Object.entries(PATTERN_REQUIREMENTS)) {
-    const patternMuscles = muscles.filter(m => !recentlyTrained.has(m));
+    const patternMuscles = muscles.filter((m) => !recentlyTrained.has(m));
     if (patternMuscles.length === 0) continue;
 
     const avgFatigue = patternMuscles.reduce((sum, m) => sum + (fatigueMap.get(m) || 0), 0) / patternMuscles.length;
@@ -214,7 +214,7 @@ async function determineSessionIntent(
 
   // Focus muscles = pattern muscles that aren't fatigued
   const focusMuscles = bestPattern
-    ? (PATTERN_REQUIREMENTS[bestPattern] ?? []).filter(m => (fatigueMap.get(m) || 0) < FATIGUE_THRESHOLD)
+    ? (PATTERN_REQUIREMENTS[bestPattern] ?? []).filter((m) => (fatigueMap.get(m) || 0) < FATIGUE_THRESHOLD)
     : [];
 
   return {
@@ -234,28 +234,35 @@ async function applyHardFilter(
   profile: UserProfile,
   fatigueMap: Map<TargetMuscle, number>,
   intent: SessionIntent,
-  adaptive: AdaptiveTrainingProfile
+  adaptive: AdaptiveTrainingProfile,
 ): Promise<ExerciseWithDetails[]> {
   // Get user's available equipment
   const userEquipment = await getUserEquipment(userId);
   const injuries = await getUserInjuries(userId);
-  const injuredMuscles = new Set(injuries.filter(i => i.severity !== 'mild').map(i => i.muscle));
+  const injuredMuscles = new Set(injuries.filter((i) => i.severity !== 'mild').map((i) => i.muscle));
 
   // Get user's equipment level preference
-  const equipmentLevelPref = await getAppState('user.equipment_level') as EquipmentLevel | null;
-  
+  const equipmentLevelPref = (await getAppState('user.equipment_level')) as EquipmentLevel | null;
+
   // Build equipment levels array based on preference (inclusive downward)
   // 'none' -> only none, 'minimal' -> none + minimal, 'playground' -> all
   const getEquipmentLevels = (level: EquipmentLevel | null): EquipmentLevel[] => {
     switch (level) {
-      case 'none': return ['none'];
-      case 'minimal': return ['none', 'minimal'];
-      case 'playground': return ['none', 'minimal', 'playground'];
-      default: return ['none', 'minimal', 'playground']; // No preference = show all
+      case 'none':
+        return ['none'];
+      case 'minimal':
+        return ['none', 'minimal'];
+      case 'playground':
+        return ['none', 'minimal', 'playground'];
+      default:
+        return ['none', 'minimal', 'playground']; // No preference = show all
     }
   };
   const equipmentLevels = getEquipmentLevels(equipmentLevelPref);
-  if (__DEV__) console.log(`[WorkoutGen] Equipment level pref: ${equipmentLevelPref || 'none set'} -> filtering to: ${equipmentLevels.join(', ')}`);
+  if (__DEV__)
+    console.log(
+      `[WorkoutGen] Equipment level pref: ${equipmentLevelPref || 'none set'} -> filtering to: ${equipmentLevels.join(', ')}`,
+    );
 
   // Build filter for primary goal
   const filter: ExerciseFilter = {
@@ -265,19 +272,22 @@ async function applyHardFilter(
     equipment_levels: equipmentLevels,
   };
 
-  if (__DEV__) console.log(`[WorkoutGen] Hard filter: goal="${profile.goal}", difficulties=${JSON.stringify(getDifficultyRange(profile.experience))}, training_types=${JSON.stringify(intent.training_types)}`);
+  if (__DEV__)
+    console.log(
+      `[WorkoutGen] Hard filter: goal="${profile.goal}", difficulties=${JSON.stringify(getDifficultyRange(profile.experience))}, training_types=${JSON.stringify(intent.training_types)}`,
+    );
 
   // Hard filters that need post-processing
   // FIX: Run fallback logic on the FILTERED candidates, not the raw DB result
   // If we have candidates but they all get filtered out by equipment/injuries, we need more candidates!
-  
+
   const filterCandidates = (candList: ExerciseWithDetails[]) => {
     const isBodyweightOnly = equipmentLevels.length === 1 && equipmentLevels[0] === 'none';
 
-    return candList.filter(ex => {
+    return candList.filter((ex) => {
       // Equipment check
       if (ex.equipment_required.length > 0) {
-        const hasAllRequired = ex.equipment_required.every(eq => userEquipment.includes(eq));
+        const hasAllRequired = ex.equipment_required.every((eq) => userEquipment.includes(eq));
         if (!hasAllRequired) return false;
       }
 
@@ -285,10 +295,24 @@ async function applyHardFilter(
       // whose names clearly indicate gym equipment (catches mis-tagged external exercises)
       if (isBodyweightOnly) {
         const nameLower = ex.name.toLowerCase();
-        const gymKeywords = ['barbell', 'dumbbell', 'kettlebell', 'cable', 'machine',
-          'smith', 'ez-bar', 'e-z curl', 'lat pulldown', 'leg press', 'hack squat',
-          'pec deck', 'bench press', 'incline press', 'decline press'];
-        if (gymKeywords.some(kw => nameLower.includes(kw))) return false;
+        const gymKeywords = [
+          'barbell',
+          'dumbbell',
+          'kettlebell',
+          'cable',
+          'machine',
+          'smith',
+          'ez-bar',
+          'e-z curl',
+          'lat pulldown',
+          'leg press',
+          'hack squat',
+          'pec deck',
+          'bench press',
+          'incline press',
+          'decline press',
+        ];
+        if (gymKeywords.some((kw) => nameLower.includes(kw))) return false;
       }
 
       // Injury check - exclude if primary muscle is injured
@@ -297,9 +321,7 @@ async function applyHardFilter(
       }
 
       // Fatigue check - skip if ANY primary muscle is over threshold
-      const fatigueThreshold = Math.round(
-        FATIGUE_THRESHOLD - (adaptive.fatigueSensitivity - 1) * 20
-      );
+      const fatigueThreshold = Math.round(FATIGUE_THRESHOLD - (adaptive.fatigueSensitivity - 1) * 20);
       for (const muscle of ex.primary_muscles) {
         const fatigue = fatigueMap.get(muscle) || 0;
         if (fatigue > fatigueThreshold) return false;
@@ -312,7 +334,8 @@ async function applyHardFilter(
   // 1. Try Primary Filter
   let rawCandidates = await getExercises(filter);
   let validCandidates = filterCandidates(rawCandidates);
-  if (__DEV__) console.log(`[WorkoutGen] Primary filter: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+  if (__DEV__)
+    console.log(`[WorkoutGen] Primary filter: ${rawCandidates.length} found, ${validCandidates.length} valid`);
 
   // 2. Fallback: Category Only
   if (validCandidates.length < 4) {
@@ -324,7 +347,8 @@ async function applyHardFilter(
     };
     rawCandidates = await getExercises(expandedFilter);
     validCandidates = filterCandidates(rawCandidates); // Re-filter
-    if (__DEV__) console.log(`[WorkoutGen] Category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+    if (__DEV__)
+      console.log(`[WorkoutGen] Category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
   }
 
   // 3. Fallback: Cross-Category (Training Type match)
@@ -337,7 +361,10 @@ async function applyHardFilter(
     };
     rawCandidates = await getExercises(crossCategoryFilter);
     validCandidates = filterCandidates(rawCandidates);
-    if (__DEV__) console.log(`[WorkoutGen] Cross-category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+    if (__DEV__)
+      console.log(
+        `[WorkoutGen] Cross-category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`,
+      );
   }
 
   // 4. Fallback: Difficulty Only (Universal)
@@ -349,12 +376,15 @@ async function applyHardFilter(
     };
     rawCandidates = await getExercises(fallbackFilter);
     validCandidates = filterCandidates(rawCandidates);
-    if (__DEV__) console.log(`[WorkoutGen] Universal fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+    if (__DEV__)
+      console.log(`[WorkoutGen] Universal fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
   }
 
   if (validCandidates.length > 0) {
     const catCounts: Record<string, number> = {};
-    validCandidates.forEach(ex => { catCounts[ex.category] = (catCounts[ex.category] || 0) + 1; });
+    validCandidates.forEach((ex) => {
+      catCounts[ex.category] = (catCounts[ex.category] || 0) + 1;
+    });
     if (__DEV__) console.log(`[WorkoutGen] FINAL CANDIDATES by category:`, JSON.stringify(catCounts));
   }
 
@@ -383,17 +413,16 @@ async function scoreExercises(
   candidates: ExerciseWithDetails[],
   fatigueMap: Map<TargetMuscle, number>,
   intent: SessionIntent,
-  recentExerciseIds: Set<string>
+  recentExerciseIds: Set<string>,
 ): Promise<ScoredExercise[]> {
   const progressHistoryByExercise = await buildProgressHistoryMap(userId, candidates, 6);
   const scored: ScoredExercise[] = [];
 
   for (const exercise of candidates) {
     // 1. Muscle freshness (0-100) - higher = fresher
-    const primaryFatigue = exercise.primary_muscles.reduce(
-      (sum, m) => sum + (fatigueMap.get(m) || 0),
-      0
-    ) / Math.max(exercise.primary_muscles.length, 1);
+    const primaryFatigue =
+      exercise.primary_muscles.reduce((sum, m) => sum + (fatigueMap.get(m) || 0), 0) /
+      Math.max(exercise.primary_muscles.length, 1);
     const freshness = Math.max(0, 100 - primaryFatigue);
 
     // 2. Goal alignment (0-100)
@@ -408,7 +437,7 @@ async function scoreExercises(
     let patternScore = 50; // neutral
     if (intent.focus_pattern) {
       const patternMuscles = PATTERN_REQUIREMENTS[intent.focus_pattern] ?? [];
-      const matchesPattern = exercise.primary_muscles.some(m => patternMuscles.includes(m));
+      const matchesPattern = exercise.primary_muscles.some((m) => patternMuscles.includes(m));
       patternScore = matchesPattern ? 100 : 30;
     }
 
@@ -468,9 +497,9 @@ async function scoreExercises(
 async function buildProgressHistoryMap(
   userId: string,
   candidates: ExerciseWithDetails[],
-  perExerciseLimit: number
+  perExerciseLimit: number,
 ): Promise<Map<string, ProgressRecord[]>> {
-  const candidateIds = new Set(candidates.map(candidate => candidate.id));
+  const candidateIds = new Set(candidates.map((candidate) => candidate.id));
   const maxRecords = Math.max(300, candidates.length * perExerciseLimit * 4);
   const allProgress = await getAllProgressRecords(userId, maxRecords);
   const progressHistoryByExercise = new Map<string, ProgressRecord[]>();
@@ -492,18 +521,14 @@ async function buildProgressHistoryMap(
 // STEP 4: SELECTION
 // ============================================
 
-function selectExercises(
-  scored: ScoredExercise[],
-  intent: SessionIntent,
-  targetCount: number
-): ScoredExercise[] {
+function selectExercises(scored: ScoredExercise[], intent: SessionIntent, targetCount: number): ScoredExercise[] {
   const selected: ScoredExercise[] = [];
   const coveredPatterns = new Set<string>();
   const usedExercises = new Set<string>();
 
   const getMatchingPatterns = (exercise: ExerciseWithDetails): string[] => {
     return Object.entries(PATTERN_REQUIREMENTS)
-      .filter(([, muscles]) => exercise.primary_muscles.some(muscle => muscles.includes(muscle)))
+      .filter(([, muscles]) => exercise.primary_muscles.some((muscle) => muscles.includes(muscle)))
       .map(([pattern]) => pattern);
   };
 
@@ -511,7 +536,9 @@ function selectExercises(
     if (selected.length === 0) return false;
 
     return selected.some((entry) => {
-      const overlapCount = entry.exercise.primary_muscles.filter(muscle => exercise.primary_muscles.includes(muscle)).length;
+      const overlapCount = entry.exercise.primary_muscles.filter((muscle) =>
+        exercise.primary_muscles.includes(muscle),
+      ).length;
       return overlapCount >= Math.min(2, exercise.primary_muscles.length);
     });
   };
@@ -535,7 +562,7 @@ function selectExercises(
     const focusMuscles = PATTERN_REQUIREMENTS[focusPattern] ?? [];
     const focusQuota = Math.min(2, Math.max(1, Math.floor(targetCount / 2)));
     const focusCandidates = scored.filter((entry) =>
-      entry.exercise.primary_muscles.some((muscle) => focusMuscles.includes(muscle))
+      entry.exercise.primary_muscles.some((muscle) => focusMuscles.includes(muscle)),
     );
 
     for (const candidate of focusCandidates) {
@@ -550,7 +577,9 @@ function selectExercises(
     if (right === focusPattern) return 1;
 
     const bestScore = (pattern: string) =>
-      scored.find((entry) => entry.exercise.primary_muscles.some((muscle) => (PATTERN_REQUIREMENTS[pattern] ?? []).includes(muscle)))?.score || -1;
+      scored.find((entry) =>
+        entry.exercise.primary_muscles.some((muscle) => (PATTERN_REQUIREMENTS[pattern] ?? []).includes(muscle)),
+      )?.score || -1;
 
     return bestScore(right) - bestScore(left);
   });
@@ -561,10 +590,11 @@ function selectExercises(
     if (coveredPatterns.has(pattern)) continue;
     if (selected.length >= targetCount) break;
 
-    const patternExercise = scored.find(s =>
-      !usedExercises.has(s.exercise.id) &&
-      s.exercise.primary_muscles.some(m => muscles.includes(m)) &&
-      !overlapsTooMuch(s.exercise)
+    const patternExercise = scored.find(
+      (s) =>
+        !usedExercises.has(s.exercise.id) &&
+        s.exercise.primary_muscles.some((m) => muscles.includes(m)) &&
+        !overlapsTooMuch(s.exercise),
     );
 
     trySelect(patternExercise, pattern);
@@ -590,9 +620,12 @@ function selectExercises(
 /** Map Category goal to progression engine goal type */
 function mapGoalToProgressionType(goal: Category): 'strength' | 'hypertrophy' | 'endurance' | 'default' {
   switch (goal) {
-    case 'strength': return 'strength';
-    case 'body_control': return 'hypertrophy';
-    case 'speed': return 'endurance';
+    case 'strength':
+      return 'strength';
+    case 'body_control':
+      return 'hypertrophy';
+    case 'speed':
+      return 'endurance';
     case 'posture':
     case 'mobility':
     case 'focus':
@@ -607,7 +640,7 @@ function prescribeVolume(
   isDeload: boolean,
   adaptive: AdaptiveTrainingProfile,
   readinessScore?: number,
-  progressionDecision?: ProgressionDecision
+  progressionDecision?: ProgressionDecision,
 ): { sets: number; reps: string } {
   // Use progression-based recommendation if available, otherwise fall back to static preset
   let sets: number;
@@ -617,7 +650,8 @@ function prescribeVolume(
     // Progressive prescription: use the engine's per-exercise recommendation
     sets = progressionDecision.recommendation.sets;
     reps = progressionDecision.recommendation.reps;
-    if (__DEV__) console.log(`[WorkoutGen] Progressive Rx for ${exercise.name}: ${progressionDecision.action} → ${sets}×${reps}`);
+    if (__DEV__)
+      console.log(`[WorkoutGen] Progressive Rx for ${exercise.name}: ${progressionDecision.action} → ${sets}×${reps}`);
   } else if (progressionDecision && progressionDecision.action === 'maintain') {
     // Maintain: use last known volume from the progression engine (keeps the user's actual level)
     sets = progressionDecision.recommendation.sets;
@@ -625,8 +659,7 @@ function prescribeVolume(
     if (__DEV__) console.log(`[WorkoutGen] Maintain Rx for ${exercise.name}: ${sets}×${reps}`);
   } else {
     // No history: fall back to static preset for new exercises
-    const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ??
-      VOLUME_PRESETS.body_control['beginner']!;
+    const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ?? VOLUME_PRESETS.body_control['beginner']!;
     sets = preset.sets;
     reps = preset.reps;
   }
@@ -647,8 +680,7 @@ function prescribeVolume(
 
   // Time-based exercises keep hold-time reps from preset (progression doesn't apply to holds)
   if (exercise.category === 'posture' || exercise.category === 'mobility') {
-    const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ??
-      VOLUME_PRESETS.body_control['beginner']!;
+    const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ?? VOLUME_PRESETS.body_control['beginner']!;
     reps = preset.reps;
   }
 
@@ -659,10 +691,7 @@ function prescribeVolume(
 // MAIN GENERATOR FUNCTION
 // ============================================
 
-async function prepareWorkout(
-  userId: string,
-  deloadFlag = false
-): Promise<WorkoutPreparation | null> {
+async function prepareWorkout(userId: string, deloadFlag = false): Promise<WorkoutPreparation | null> {
   const profile = await getUserProfile(userId);
   if (!profile) {
     throw new Error('User profile not found');
@@ -672,15 +701,12 @@ async function prepareWorkout(
 
   const fatigueRecords = await getMuscleFatigue(userId);
   const fatigueMap = new Map<TargetMuscle, number>(
-    fatigueRecords.map(f => [f.muscle as TargetMuscle, f.fatigue_level])
+    fatigueRecords.map((f) => [f.muscle as TargetMuscle, f.fatigue_level]),
   );
 
   // Get recently used exercise IDs
   const recentExerciseIds = new Set(
-    await getRecentExerciseIds(
-      userId,
-      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    )
+    await getRecentExerciseIds(userId, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
   );
 
   // 2. Determine intent
@@ -700,7 +726,7 @@ async function prepareWorkout(
   // 5. Select
   const targetCount = Math.min(
     MAX_EXERCISES,
-    Math.max(MIN_EXERCISES, Math.floor(profile.time_per_session_minutes / 8))
+    Math.max(MIN_EXERCISES, Math.floor(profile.time_per_session_minutes / 8)),
   );
   const selected = selectExercises(scored, intent, targetCount);
 
@@ -717,7 +743,7 @@ async function prepareWorkout(
 
 export async function analyzeWorkoutGeneration(
   userId: string,
-  deloadFlag = false
+  deloadFlag = false,
 ): Promise<WorkoutGenerationDiagnostics | null> {
   const prepared = await prepareWorkout(userId, deloadFlag);
   if (!prepared) return null;
@@ -727,9 +753,7 @@ export async function analyzeWorkoutGeneration(
     candidateCategories[exercise.category] = (candidateCategories[exercise.category] || 0) + 1;
   });
 
-  const focusMuscles = prepared.intent.focus_pattern
-    ? (PATTERN_REQUIREMENTS[prepared.intent.focus_pattern] ?? [])
-    : [];
+  const focusMuscles = prepared.intent.focus_pattern ? (PATTERN_REQUIREMENTS[prepared.intent.focus_pattern] ?? []) : [];
 
   return {
     user_id: userId,
@@ -755,14 +779,12 @@ export async function analyzeWorkoutGeneration(
       primary_muscles: entry.exercise.primary_muscles,
       matches_focus_pattern: entry.exercise.primary_muscles.some((muscle) => focusMuscles.includes(muscle)),
     })),
-    warnings: prepared.selected.length < prepared.targetCount ? ['Generator returned fewer exercises than target count'] : [],
+    warnings:
+      prepared.selected.length < prepared.targetCount ? ['Generator returned fewer exercises than target count'] : [],
   };
 }
 
-export async function generateWorkout(
-  userId: string,
-  deloadFlag = false
-): Promise<GeneratedWorkout | null> {
+export async function generateWorkout(userId: string, deloadFlag = false): Promise<GeneratedWorkout | null> {
   const prepared = await prepareWorkout(userId, deloadFlag);
   if (!prepared) return null;
 
@@ -771,15 +793,17 @@ export async function generateWorkout(
   try {
     const readiness = await getCachedReadiness(userId);
     readinessScore = readiness.score;
-  } catch { /* readiness is optional, generator works without it */ }
+  } catch {
+    /* readiness is optional, generator works without it */
+  }
 
   // 6. Progressive analysis: batch-query progression decisions for all selected exercises
   const progressionGoalType = mapGoalToProgressionType(prepared.profile.goal);
   const progressionMap = new Map<string, ProgressionDecision>();
 
   // Get the static fallback to use as "current" volume when querying progression
-  const fallbackPreset = VOLUME_PRESETS[prepared.profile.goal]?.[prepared.profile.experience] ??
-    VOLUME_PRESETS.body_control['beginner']!;
+  const fallbackPreset =
+    VOLUME_PRESETS[prepared.profile.goal]?.[prepared.profile.experience] ?? VOLUME_PRESETS.body_control['beginner']!;
 
   for (const s of prepared.selected) {
     try {
@@ -788,10 +812,13 @@ export async function generateWorkout(
         s.exercise.id,
         fallbackPreset.sets,
         fallbackPreset.reps,
-        progressionGoalType
+        progressionGoalType,
       );
       // Only use progression if the engine had actual history to work with
-      if (decision.action !== 'maintain' || decision.reason !== 'Insufficient data or mixed results → maintain current prescription') {
+      if (
+        decision.action !== 'maintain' ||
+        decision.reason !== 'Insufficient data or mixed results → maintain current prescription'
+      ) {
         progressionMap.set(s.exercise.id, decision);
       }
     } catch {
@@ -807,7 +834,14 @@ export async function generateWorkout(
   const sessionId = await generateSecureId('session');
   const exercises = prepared.selected.map((s, index) => {
     const decision = progressionMap.get(s.exercise.id);
-    const volume = prescribeVolume(s.exercise, prepared.profile, prepared.intent.is_deload, prepared.adaptive, readinessScore, decision);
+    const volume = prescribeVolume(
+      s.exercise,
+      prepared.profile,
+      prepared.intent.is_deload,
+      prepared.adaptive,
+      readinessScore,
+      decision,
+    );
     return {
       exercise: s.exercise,
       sets: volume.sets,
@@ -817,10 +851,11 @@ export async function generateWorkout(
   });
 
   // Estimate duration
-  const totalDuration = exercises.reduce((sum, ex) => {
-    const setsTime = ex.sets * (ex.exercise.time_per_set_seconds + 60); // +60s rest
-    return sum + setsTime;
-  }, 0) / 60; // Convert to minutes
+  const totalDuration =
+    exercises.reduce((sum, ex) => {
+      const setsTime = ex.sets * (ex.exercise.time_per_set_seconds + 60); // +60s rest
+      return sum + setsTime;
+    }, 0) / 60; // Convert to minutes
 
   return {
     session_id: sessionId,
@@ -834,10 +869,7 @@ export async function generateWorkout(
 // PERSIST GENERATED WORKOUT
 // ============================================
 
-export async function persistWorkout(
-  userId: string,
-  workout: GeneratedWorkout
-): Promise<string> {
+export async function persistWorkout(userId: string, workout: GeneratedWorkout): Promise<string> {
   // Create session record
   await createWorkoutSession({
     id: workout.session_id,
@@ -870,10 +902,7 @@ export async function persistWorkout(
 // QUICK WORKOUT (GENERATE + PERSIST)
 // ============================================
 
-export async function createWorkout(
-  userId: string,
-  deloadFlag = false
-): Promise<GeneratedWorkout | null> {
+export async function createWorkout(userId: string, deloadFlag = false): Promise<GeneratedWorkout | null> {
   const workout = await generateWorkout(userId, deloadFlag);
   if (workout) {
     await persistWorkout(userId, workout);

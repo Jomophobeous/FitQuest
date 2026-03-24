@@ -58,7 +58,11 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
-function scoreFromWorkout(completionRatio: number, averageDifficulty: number, isDeload: boolean): {
+function scoreFromWorkout(
+  completionRatio: number,
+  averageDifficulty: number,
+  isDeload: boolean,
+): {
   readinessScore: number;
   strainScore: number;
 } {
@@ -82,7 +86,7 @@ function scoreFromWorkout(completionRatio: number, averageDifficulty: number, is
 function withSafetyPolicy(
   policy: AutomationPolicy,
   decision: AutomationDecision,
-  strainScore: number
+  strainScore: number,
 ): AutomationDecision {
   if (policy.safetyMode === 'CONSERVATIVE' && decision.action === 'INCREASE_LOAD') {
     return {
@@ -114,7 +118,7 @@ export async function getAutomationPolicy(userId: string): Promise<AutomationPol
 
 export async function updateAutomationPolicy(
   userId: string,
-  patch: Partial<Pick<AutomationPolicy, 'name' | 'safetyMode' | 'maxDailyAdjustments' | 'requiresHumanReview'>>
+  patch: Partial<Pick<AutomationPolicy, 'name' | 'safetyMode' | 'maxDailyAdjustments' | 'requiresHumanReview'>>,
 ): Promise<AutomationPolicy> {
   const current = await getAutomationPolicy(userId);
   const next: AutomationPolicy = {
@@ -138,13 +142,13 @@ export async function evaluatePostWorkoutPolicyDecision(
     completionRatio: number;
     averageDifficulty: number;
     isDeload: boolean;
-  }
+  },
 ): Promise<PolicyDecisionRecord> {
   const policy = await getAutomationPolicy(userId);
   const { readinessScore, strainScore } = scoreFromWorkout(
     input.completionRatio,
     input.averageDifficulty,
-    input.isDeload
+    input.isDeload,
   );
 
   const baseDecision = decideAutomationAction(policy, readinessScore, strainScore);

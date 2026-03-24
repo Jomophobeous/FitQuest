@@ -1,8 +1,4 @@
-export type PlatformCapability =
-  | 'COACH_TOOLING'
-  | 'PROGRAM_BUILDER'
-  | 'SDK_EXPORT'
-  | 'TEMPLATE_MARKETPLACE';
+export type PlatformCapability = 'COACH_TOOLING' | 'PROGRAM_BUILDER' | 'SDK_EXPORT' | 'TEMPLATE_MARKETPLACE';
 
 export interface ProgramTemplateDefinition {
   id: string;

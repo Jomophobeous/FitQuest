@@ -1,13 +1,14 @@
 /**
  * FitQuest Transparency Layer
- * 
+ *
  * Provides human-readable explanations for every system decision.
  * Users should always know WHY something happened.
- * 
+ *
  * "Trust > aesthetics" - One sentence each, no charts needed.
  */
 
 import type { Exercise, UserProfile, TargetMuscle, Category, ExerciseWithDetails } from '../database/types';
+import { formatMuscleName } from '../utils/formatMuscle';
 
 // ============================================
 // TYPES
@@ -67,14 +68,14 @@ export function explainWorkoutSelection(
   userGoal: Category,
   fatigueMap: Map<TargetMuscle, number>,
   isDeload: boolean,
-  patternFocus?: string
+  patternFocus?: string,
 ): WorkoutExplanation {
-  const exercise_reasons: ExerciseReason[] = selectedExercises.map(ex => {
+  const exercise_reasons: ExerciseReason[] = selectedExercises.map((ex) => {
     const primaryMuscle = ex.primary_muscles[0];
-    const primaryFatigue = primaryMuscle ? (fatigueMap.get(primaryMuscle) || 0) : 0;
-    
+    const primaryFatigue = primaryMuscle ? fatigueMap.get(primaryMuscle) || 0 : 0;
+
     let reason: string;
-    
+
     if (isDeload) {
       reason = `Low-intensity recovery movement targeting ${formatMuscles(ex.primary_muscles)}`;
     } else if (primaryFatigue < 30) {
@@ -113,8 +114,8 @@ export function explainWorkoutSelection(
   const volume_reason = isDeload
     ? 'Volume reduced by 40% for active recovery.'
     : avgFatigue > 50
-    ? 'Moderate volume due to accumulated fatigue.'
-    : 'Standard volume based on your experience level.';
+      ? 'Moderate volume due to accumulated fatigue.'
+      : 'Standard volume based on your experience level.';
 
   const general_notes: string[] = [];
   if (avgFatigue > 60) {
@@ -138,12 +139,10 @@ export function explainWorkoutSelection(
 export function explainWorkoutSelectionBasic(
   selectedExercises: Exercise[],
   userGoal: Category,
-  isDeload: boolean
+  isDeload: boolean,
 ): WorkoutExplanation {
-  const exercise_reasons: ExerciseReason[] = selectedExercises.map(ex => {
-    const reason = isDeload
-      ? `Low-intensity recovery movement`
-      : `Selected for ${ex.category} training`;
+  const exercise_reasons: ExerciseReason[] = selectedExercises.map((ex) => {
+    const reason = isDeload ? `Low-intensity recovery movement` : `Selected for ${ex.category} training`;
 
     return {
       exercise_id: ex.id,
@@ -179,7 +178,7 @@ export function explainProgressionDecision(
   currentSets: number,
   currentReps: string,
   newSets?: number,
-  newReps?: string
+  newReps?: string,
 ): ProgressionExplanation {
   let reason: string;
   let history_summary: string;
@@ -189,8 +188,8 @@ export function explainProgressionDecision(
     case 'progress':
       reason = `You completed ${exerciseName} successfully ${consecutiveSuccesses} times in a row. Time to increase the challenge!`;
       history_summary = `${consecutiveSuccesses} consecutive successful sessions`;
-      next_target = newReps 
-        ? `Target: ${newSets || currentSets} sets × ${newReps}` 
+      next_target = newReps
+        ? `Target: ${newSets || currentSets} sets × ${newReps}`
         : `Target: ${(newSets || currentSets) + 1} sets × ${currentReps}`;
       break;
 
@@ -203,9 +202,10 @@ export function explainProgressionDecision(
     case 'maintain':
     default:
       reason = `Keep working at current level for ${exerciseName}. Consistency builds strength.`;
-      history_summary = consecutiveSuccesses > 0 
-        ? `${consecutiveSuccesses} successful session(s) – one more to progress!`
-        : 'Mixed recent results';
+      history_summary =
+        consecutiveSuccesses > 0
+          ? `${consecutiveSuccesses} successful session(s) – one more to progress!`
+          : 'Mixed recent results';
       next_target = `Target: ${currentSets} sets × ${currentReps}`;
       break;
   }
@@ -231,7 +231,7 @@ export function explainDeloadStatus(
   criticalMuscleCount: number,
   consecutiveFailures: number,
   weeksSinceLastDeload: number,
-  scheduledDeloadWeek: number
+  scheduledDeloadWeek: number,
 ): DeloadExplanation {
   const trigger_factors: string[] = [];
   const recommendations: string[] = [];
@@ -289,7 +289,7 @@ export function explainMuscleRecovery(
   muscle: TargetMuscle,
   fatigueLevel: number,
   daysSinceTraining: number,
-  lastTrainingIntensity: 'light' | 'moderate' | 'heavy'
+  lastTrainingIntensity: 'light' | 'moderate' | 'heavy',
 ): RecoveryExplanation {
   let status: 'fresh' | 'moderate' | 'fatigued' | 'critical';
   let reason: string;
@@ -297,19 +297,19 @@ export function explainMuscleRecovery(
 
   if (fatigueLevel < 30) {
     status = 'fresh';
-    reason = `${formatMuscle(muscle)} is fully recovered and ready for training.`;
+    reason = `${formatMuscleName(muscle)} is fully recovered and ready for training.`;
     recovery_estimate = 'Ready now';
   } else if (fatigueLevel < 50) {
     status = 'moderate';
-    reason = `${formatMuscle(muscle)} has some residual fatigue from recent training.`;
+    reason = `${formatMuscleName(muscle)} has some residual fatigue from recent training.`;
     recovery_estimate = `~${Math.ceil((fatigueLevel - 30) / 8)} day(s) to full recovery`;
   } else if (fatigueLevel < 70) {
     status = 'fatigued';
-    reason = `${formatMuscle(muscle)} is fatigued. Training possible but not optimal.`;
+    reason = `${formatMuscleName(muscle)} is fatigued. Training possible but not optimal.`;
     recovery_estimate = `~${Math.ceil((fatigueLevel - 30) / 8)} day(s) to full recovery`;
   } else {
     status = 'critical';
-    reason = `${formatMuscle(muscle)} needs rest. Training now risks overuse.`;
+    reason = `${formatMuscleName(muscle)} needs rest. Training now risks overuse.`;
     recovery_estimate = `${Math.ceil((fatigueLevel - 30) / 8)}+ days recommended`;
   }
 
@@ -331,20 +331,13 @@ export function explainMuscleRecovery(
 // HELPER FORMATTERS
 // ============================================
 
-function formatMuscle(muscle: TargetMuscle): string {
-  return muscle
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
 function formatMuscles(muscles: string[]): string {
   if (muscles.length === 0) return 'general muscles';
-  if (muscles.length === 1) return formatMuscle(muscles[0] as TargetMuscle);
+  if (muscles.length === 1) return formatMuscleName(muscles[0]!);
   if (muscles.length === 2) {
-    return `${formatMuscle(muscles[0] as TargetMuscle)} and ${formatMuscle(muscles[1] as TargetMuscle)}`;
+    return `${formatMuscleName(muscles[0]!)} and ${formatMuscleName(muscles[1]!)}`;
   }
-  return `${formatMuscle(muscles[0] as TargetMuscle)}, ${formatMuscle(muscles[1] as TargetMuscle)}, and others`;
+  return `${formatMuscleName(muscles[0]!)}, ${formatMuscleName(muscles[1]!)}, and others`;
 }
 
 function formatGoal(goal: Category): string {
@@ -370,7 +363,7 @@ export function generateWorkoutSummary(
   exerciseCount: number,
   primaryFocus: string,
   estimatedDuration: number,
-  isDeload: boolean
+  isDeload: boolean,
 ): string {
   if (isDeload) {
     return `Recovery session: ${exerciseCount} light exercises, ~${estimatedDuration} minutes.`;
@@ -385,18 +378,18 @@ export function generatePostWorkoutSummary(
   completedCount: number,
   totalCount: number,
   progressions: number,
-  regressions: number
+  regressions: number,
 ): string {
   const completionRate = Math.round((completedCount / totalCount) * 100);
-  
+
   let summary = `Completed ${completedCount}/${totalCount} exercises (${completionRate}%).`;
-  
+
   if (progressions > 0) {
     summary += ` 🎯 ${progressions} exercise(s) ready to progress!`;
   }
   if (regressions > 0) {
     summary += ` Adjusted ${regressions} exercise(s) for next session.`;
   }
-  
+
   return summary;
 }

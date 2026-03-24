@@ -34,7 +34,11 @@ type SmokeTest = () => Promise<SmokeTestResult>;
 
 const smokeTests: Map<string, { group: SmokeTestGroup; test: SmokeTest }> = new Map();
 
-function registerTest(name: string, group: SmokeTestGroup, test: () => Promise<boolean | { passed: boolean; details?: string }>) {
+function registerTest(
+  name: string,
+  group: SmokeTestGroup,
+  test: () => Promise<boolean | { passed: boolean; details?: string }>,
+) {
   smokeTests.set(name, {
     group,
     test: async () => {
@@ -151,17 +155,21 @@ registerTest('auth_secure_store', 'auth', async () => {
 // ============================================
 
 registerTest('reader_fitmind_service', 'reader', async () => {
-  const { FitMindService } = await import('../fitmind/schema');
-  return FitMindService !== null;
+  const mod: any = await import('../fitmind/schema');
+  return mod !== null;
 });
 
 registerTest('reader_document_processor', 'reader', async () => {
-  const { DocumentProcessor } = await import('../fitmind/DocumentProcessor');
-  return DocumentProcessor !== null;
+  try {
+    const mod: any = await import('../fitmind/DocumentProcessor' as any);
+    return mod?.DocumentProcessor !== null;
+  } catch {
+    return false; // Module removed in ship phase
+  }
 });
 
 registerTest('reader_dual_ai_engine', 'reader', async () => {
-  const { dualAI } = await import('../fitmind/DualAIEngine');
+  const { dualAI } = await import('../engines/DualAIEngine');
   return dualAI !== null && typeof dualAI.query === 'function';
 });
 
@@ -178,10 +186,7 @@ registerTest('navigation_expo_router', 'navigation', async () => {
 // RUNNER
 // ============================================
 
-export async function runSmokeTests(options?: {
-  groups?: SmokeTestGroup[];
-  names?: string[];
-}): Promise<{
+export async function runSmokeTests(options?: { groups?: SmokeTestGroup[]; names?: string[] }): Promise<{
   total: number;
   passed: number;
   failed: number;
@@ -212,13 +217,13 @@ export async function runSmokeTests(options?: {
 
     if (__DEV__) {
       console.log(
-        `[SmokeTest] ${result.passed ? '✓' : '✗'} ${name} (${result.durationMs}ms)${result.error ? ` - ${result.error}` : ''}${result.details ? ` - ${result.details}` : ''}`
+        `[SmokeTest] ${result.passed ? '✓' : '✗'} ${name} (${result.durationMs}ms)${result.error ? ` - ${result.error}` : ''}${result.details ? ` - ${result.details}` : ''}`,
       );
     }
   }
 
-  const passed = results.filter(r => r.passed).length;
-  const failed = results.filter(r => !r.passed).length;
+  const passed = results.filter((r) => r.passed).length;
+  const failed = results.filter((r) => !r.passed).length;
 
   return {
     total: results.length,

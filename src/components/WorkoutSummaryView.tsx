@@ -13,12 +13,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Animated, {
   ZoomIn,
   FadeIn,
@@ -35,11 +30,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
-import {
-  GlassCard,
-  GradientButton,
-} from '../components/ui/GlassUI';
+import { GlassCard, GradientButton } from '../components/ui/GlassUI';
 import type { WorkoutCompletionData } from '../hooks/useFitQuestWorkout';
+import { formatMuscleName } from '../utils/formatMuscle';
 
 // ─── Types ────────────────────────────────────────────
 interface WorkoutSummaryViewProps {
@@ -71,20 +64,11 @@ function AnimatedXPCounter({ target, color }: { target: number; color: string })
     return () => clearInterval(iv);
   }, [target]);
 
-  return (
-    <Text style={[styles.xpValue, { color }]}>
-      +{display}
-    </Text>
-  );
+  return <Text style={[styles.xpValue, { color }]}>+{display}</Text>;
 }
 
 // ─── Component ────────────────────────────────────────
-export default function WorkoutSummaryView({
-  data,
-  rating,
-  onRate,
-  onNewWorkout,
-}: WorkoutSummaryViewProps) {
+export default function WorkoutSummaryView({ data, rating, onRate, onNewWorkout }: WorkoutSummaryViewProps) {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
@@ -125,13 +109,19 @@ export default function WorkoutSummaryView({
           </Animated.View>
         </Animated.View>
 
-        <Animated.Text entering={FadeInUp.delay(100).duration(200)} style={[styles.title, { color: theme.colors.text }]}>
+        <Animated.Text
+          entering={FadeInUp.delay(100).duration(200)}
+          style={[styles.title, { color: theme.colors.text }]}
+        >
           {t('fitquest.workoutComplete') ?? 'Workout Complete!'}
         </Animated.Text>
 
         {/* ── Level Up Banner ── */}
         {data.levelUp && (
-          <Animated.View entering={ZoomIn.delay(150).duration(300)} style={[styles.levelUpBanner, { backgroundColor: theme.colors.warning + '18' }]}>
+          <Animated.View
+            entering={ZoomIn.delay(150).duration(300)}
+            style={[styles.levelUpBanner, { backgroundColor: theme.colors.warning + '18' }]}
+          >
             <MaterialCommunityIcons name="star-four-points" size={24} color={theme.colors.warning} />
             <Text style={[styles.levelUpText, { color: theme.colors.warning }]}>
               {t('fitquest.levelUp') ?? 'LEVEL UP!'} Level {data.newLevel ?? data.level}
@@ -146,28 +136,48 @@ export default function WorkoutSummaryView({
             <AnimatedXPCounter target={data.xpEarned} color={theme.colors.accent} />
             <Text style={[styles.xpLabel, { color: theme.colors.textMuted }]}>XP Earned</Text>
             <View style={[styles.levelBadge, { backgroundColor: theme.colors.accent + '15' }]}>
-              <Text style={[styles.levelBadgeText, { color: theme.colors.accent }]}>
-                Level {data.level}
-              </Text>
+              <Text style={[styles.levelBadgeText, { color: theme.colors.accent }]}>Level {data.level}</Text>
             </View>
           </GlassCard>
         </Animated.View>
 
         {/* ── Stat Grid ── */}
         <Animated.View entering={FadeInDown.delay(280).duration(200)} style={styles.statGrid}>
-          <StatTile icon="clock-outline" value={`${durationMin} min`} label={t('fitquest.duration') ?? 'Duration'} color={theme.colors.accent} theme={theme} />
-          <StatTile icon="dumbbell" value={`${data.completedCount}/${data.totalCount}`} label={t('library.exercises') ?? 'Exercises'} color={theme.colors.success} theme={theme} />
-          <StatTile icon="percent" value={`${completionPct}%`} label={t('fitquest.completion') ?? 'Completion'} color={completionPct >= 80 ? theme.colors.success : theme.colors.warning} theme={theme} />
-          <StatTile icon="trending-up" value={`${data.progressions}`} label={t('fitquest.progressions') ?? 'Levelled Up'} color={theme.colors.accent} theme={theme} />
+          <StatTile
+            icon="clock-outline"
+            value={`${durationMin} min`}
+            label={t('fitquest.duration') ?? 'Duration'}
+            color={theme.colors.accent}
+            theme={theme}
+          />
+          <StatTile
+            icon="dumbbell"
+            value={`${data.completedCount}/${data.totalCount}`}
+            label={t('library.exercises') ?? 'Exercises'}
+            color={theme.colors.success}
+            theme={theme}
+          />
+          <StatTile
+            icon="percent"
+            value={`${completionPct}%`}
+            label={t('fitquest.completion') ?? 'Completion'}
+            color={completionPct >= 80 ? theme.colors.success : theme.colors.warning}
+            theme={theme}
+          />
+          <StatTile
+            icon="trending-up"
+            value={`${data.progressions}`}
+            label={t('fitquest.progressions') ?? 'Levelled Up'}
+            color={theme.colors.accent}
+            theme={theme}
+          />
         </Animated.View>
 
         {/* ── Phase Breakdown ── */}
         {data.phaseBreakdown && (data.phaseBreakdown.warmup.total > 0 || data.phaseBreakdown.cooldown.total > 0) && (
           <Animated.View entering={FadeInDown.delay(320).duration(200)}>
             <GlassCard style={styles.phaseCard}>
-              <Text style={[styles.sectionLabel, { color: theme.colors.text }]}>
-                Session Breakdown
-              </Text>
+              <Text style={[styles.sectionLabel, { color: theme.colors.text }]}>Session Breakdown</Text>
               {data.phaseBreakdown.warmup.total > 0 && (
                 <PhaseRow
                   icon="fire"
@@ -212,9 +222,14 @@ export default function WorkoutSummaryView({
                   <Animated.View
                     key={muscle}
                     entering={FadeIn.delay(350 + i * 30).duration(150)}
-                    style={[styles.muscleTag, { backgroundColor: theme.colors.accent + '12', borderColor: theme.colors.accent + '30' }]}
+                    style={[
+                      styles.muscleTag,
+                      { backgroundColor: theme.colors.accent + '12', borderColor: theme.colors.accent + '30' },
+                    ]}
                   >
-                    <Text style={[styles.muscleTagText, { color: theme.colors.accent }]}>{formatMuscleName(muscle)}</Text>
+                    <Text style={[styles.muscleTagText, { color: theme.colors.accent }]}>
+                      {formatMuscleName(muscle)}
+                    </Text>
                   </Animated.View>
                 ))}
               </View>
@@ -232,7 +247,8 @@ export default function WorkoutSummaryView({
                   {data.streak.current} {t('fitquest.dayStreak') ?? 'Day Streak'}
                 </Text>
                 <Text style={[styles.streakBest, { color: theme.colors.textMuted }]}>
-                  {t('fitquest.best') ?? 'Best'}: {data.streak.longest} {t('common.days') ?? 'days'}
+                  {t('fitquest.best') ?? 'Best'}: {data.streak.longest}{' '}
+                  {data.streak.longest === 1 ? (t('common.day') ?? 'day') : (t('common.days') ?? 'days')}
                 </Text>
               </View>
             </View>
@@ -262,7 +278,10 @@ export default function WorkoutSummaryView({
               })}
             </View>
             {rating !== null && (
-              <Animated.Text entering={FadeIn.duration(150)} style={[styles.ratingFeedback, { color: theme.colors.accent }]}>
+              <Animated.Text
+                entering={FadeIn.duration(150)}
+                style={[styles.ratingFeedback, { color: theme.colors.accent }]}
+              >
                 {ratingLabels[rating - 1]}
               </Animated.Text>
             )}
@@ -271,7 +290,11 @@ export default function WorkoutSummaryView({
 
         {/* ── CTA ── */}
         <Animated.View entering={FadeInUp.delay(550).duration(200)} style={styles.ctaWrap}>
-          <GradientButton title={t('fitquest.generateNewWorkout') ?? 'New Workout'} icon="refresh" onPress={onNewWorkout} />
+          <GradientButton
+            title={t('fitquest.generateNewWorkout') ?? 'New Workout'}
+            icon="refresh"
+            onPress={onNewWorkout}
+          />
         </Animated.View>
 
         <View style={{ height: 40 }} />
@@ -281,8 +304,18 @@ export default function WorkoutSummaryView({
 }
 
 // ─── Stat Tile ────────────────────────────────────────
-function StatTile({ icon, value, label, color, theme }: {
-  icon: string; value: string; label: string; color: string; theme: any;
+function StatTile({
+  icon,
+  value,
+  label,
+  color,
+  theme,
+}: {
+  icon: string;
+  value: string;
+  label: string;
+  color: string;
+  theme: any;
 }) {
   return (
     <GlassCard style={styles.statTile}>
@@ -294,8 +327,20 @@ function StatTile({ icon, value, label, color, theme }: {
 }
 
 // ─── Phase Row ────────────────────────────────────────
-function PhaseRow({ icon, label, completed, total, color, theme }: {
-  icon: string; label: string; completed: number; total: number; color: string; theme: any;
+function PhaseRow({
+  icon,
+  label,
+  completed,
+  total,
+  color,
+  theme,
+}: {
+  icon: string;
+  label: string;
+  completed: number;
+  total: number;
+  color: string;
+  theme: any;
 }) {
   const pct = total > 0 ? (completed / total) * 100 : 0;
   return (
@@ -308,19 +353,12 @@ function PhaseRow({ icon, label, completed, total, color, theme }: {
       <Text style={[styles.phaseCount, { color: theme.colors.textMuted }]}>
         {completed}/{total}
       </Text>
-      {completed >= total && (
-        <MaterialCommunityIcons name="check-circle" size={16} color={color} />
-      )}
+      {completed >= total && <MaterialCommunityIcons name="check-circle" size={16} color={color} />}
     </View>
   );
 }
 
 // ─── Helpers ──────────────────────────────────────────
-function formatMuscleName(muscle: string): string {
-  return muscle
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 // ─── Styles ───────────────────────────────────────────
 const styles = StyleSheet.create({
@@ -358,7 +396,14 @@ const styles = StyleSheet.create({
   levelBadgeText: { fontSize: 13, fontWeight: '700' },
 
   // Stat grid
-  statGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%', gap: 8, marginBottom: 12 },
+  statGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 8,
+    marginBottom: 12,
+  },
   statTile: { width: '48%', alignItems: 'center', paddingVertical: 16, gap: 6 },
   statValue: { fontSize: 20, fontWeight: '700' },
   statLabel: { fontSize: 11, fontWeight: '500' },
@@ -369,7 +414,13 @@ const styles = StyleSheet.create({
   phaseLabel: { fontSize: 13, fontWeight: '600', width: 72 },
   phaseBar: { flex: 1, height: 6, borderRadius: 3, overflow: 'hidden' as const },
   phaseBarFill: { height: 6, borderRadius: 3 },
-  phaseCount: { fontSize: 12, fontWeight: '600', fontVariant: ['tabular-nums'] as any, width: 30, textAlign: 'right' as const },
+  phaseCount: {
+    fontSize: 12,
+    fontWeight: '600',
+    fontVariant: ['tabular-nums'] as any,
+    width: 30,
+    textAlign: 'right' as const,
+  },
 
   // Muscles
   musclesCard: { width: '100%', padding: 16, marginBottom: 12 },

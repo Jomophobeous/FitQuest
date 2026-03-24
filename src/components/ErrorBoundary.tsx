@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { logError } from '../services/telemetry';
+import { logCrash } from '../services/telemetry';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -74,8 +74,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    logError(error, {
+    logCrash(error, {
       componentStack: info.componentStack?.split('\n').slice(0, 5).join('\n'),
+      boundary: 'global',
     });
   }
 

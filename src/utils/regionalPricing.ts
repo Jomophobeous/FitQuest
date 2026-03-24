@@ -1,6 +1,6 @@
 /**
  * Regional Pricing Utility
- * 
+ *
  * Provides locale-based pricing fallbacks when RevenueCat offerings
  * are not yet loaded or unavailable. Actual store prices from RevenueCat
  * always take precedence.
@@ -8,7 +8,14 @@
 
 import { Platform, NativeModules } from 'react-native';
 
-export type PricingRegion = 'africa' | 'europe' | 'north_america' | 'south_america' | 'asia' | 'oceania' | 'middle_east';
+export type PricingRegion =
+  | 'africa'
+  | 'europe'
+  | 'north_america'
+  | 'south_america'
+  | 'asia'
+  | 'oceania'
+  | 'middle_east';
 
 interface RegionalPrice {
   monthly: string;
@@ -81,37 +88,109 @@ const PRICING_TABLE: Record<PricingRegion, RegionalPrice> = {
 // Map country codes to regions
 const COUNTRY_TO_REGION: Record<string, PricingRegion> = {
   // Africa
-  ZA: 'africa', NG: 'africa', KE: 'africa', GH: 'africa', TZ: 'africa',
-  UG: 'africa', ET: 'africa', EG: 'africa', MA: 'africa', DZ: 'africa',
-  TN: 'africa', SN: 'africa', CM: 'africa', CI: 'africa', BW: 'africa',
-  MZ: 'africa', ZW: 'africa', NA: 'africa', RW: 'africa', MW: 'africa',
+  ZA: 'africa',
+  NG: 'africa',
+  KE: 'africa',
+  GH: 'africa',
+  TZ: 'africa',
+  UG: 'africa',
+  ET: 'africa',
+  EG: 'africa',
+  MA: 'africa',
+  DZ: 'africa',
+  TN: 'africa',
+  SN: 'africa',
+  CM: 'africa',
+  CI: 'africa',
+  BW: 'africa',
+  MZ: 'africa',
+  ZW: 'africa',
+  NA: 'africa',
+  RW: 'africa',
+  MW: 'africa',
   // Europe
-  GB: 'europe', DE: 'europe', FR: 'europe', ES: 'europe', IT: 'europe',
-  NL: 'europe', BE: 'europe', PT: 'europe', SE: 'europe', NO: 'europe',
-  DK: 'europe', FI: 'europe', AT: 'europe', CH: 'europe', IE: 'europe',
-  PL: 'europe', CZ: 'europe', RO: 'europe', HU: 'europe', GR: 'europe',
-  HR: 'europe', BG: 'europe', SK: 'europe', LT: 'europe', LV: 'europe',
-  EE: 'europe', SI: 'europe', LU: 'europe', MT: 'europe', CY: 'europe',
-  UA: 'europe', RU: 'europe', TR: 'europe',
+  GB: 'europe',
+  DE: 'europe',
+  FR: 'europe',
+  ES: 'europe',
+  IT: 'europe',
+  NL: 'europe',
+  BE: 'europe',
+  PT: 'europe',
+  SE: 'europe',
+  NO: 'europe',
+  DK: 'europe',
+  FI: 'europe',
+  AT: 'europe',
+  CH: 'europe',
+  IE: 'europe',
+  PL: 'europe',
+  CZ: 'europe',
+  RO: 'europe',
+  HU: 'europe',
+  GR: 'europe',
+  HR: 'europe',
+  BG: 'europe',
+  SK: 'europe',
+  LT: 'europe',
+  LV: 'europe',
+  EE: 'europe',
+  SI: 'europe',
+  LU: 'europe',
+  MT: 'europe',
+  CY: 'europe',
+  UA: 'europe',
+  RU: 'europe',
+  TR: 'europe',
   // North America
-  US: 'north_america', CA: 'north_america', MX: 'north_america',
+  US: 'north_america',
+  CA: 'north_america',
+  MX: 'north_america',
   // South America
-  BR: 'south_america', AR: 'south_america', CL: 'south_america',
-  CO: 'south_america', PE: 'south_america', VE: 'south_america',
-  EC: 'south_america', UY: 'south_america', PY: 'south_america',
+  BR: 'south_america',
+  AR: 'south_america',
+  CL: 'south_america',
+  CO: 'south_america',
+  PE: 'south_america',
+  VE: 'south_america',
+  EC: 'south_america',
+  UY: 'south_america',
+  PY: 'south_america',
   BO: 'south_america',
   // Asia
-  CN: 'asia', JP: 'asia', KR: 'asia', IN: 'asia', ID: 'asia',
-  TH: 'asia', VN: 'asia', PH: 'asia', MY: 'asia', SG: 'asia',
-  PK: 'asia', BD: 'asia', LK: 'asia', MM: 'asia', KH: 'asia',
-  NP: 'asia', TW: 'asia', HK: 'asia',
+  CN: 'asia',
+  JP: 'asia',
+  KR: 'asia',
+  IN: 'asia',
+  ID: 'asia',
+  TH: 'asia',
+  VN: 'asia',
+  PH: 'asia',
+  MY: 'asia',
+  SG: 'asia',
+  PK: 'asia',
+  BD: 'asia',
+  LK: 'asia',
+  MM: 'asia',
+  KH: 'asia',
+  NP: 'asia',
+  TW: 'asia',
+  HK: 'asia',
   // Oceania
-  AU: 'oceania', NZ: 'oceania',
+  AU: 'oceania',
+  NZ: 'oceania',
   // Middle East
-  AE: 'middle_east', SA: 'middle_east', QA: 'middle_east',
-  KW: 'middle_east', BH: 'middle_east', OM: 'middle_east',
-  JO: 'middle_east', LB: 'middle_east', IQ: 'middle_east',
-  IL: 'middle_east', IR: 'middle_east',
+  AE: 'middle_east',
+  SA: 'middle_east',
+  QA: 'middle_east',
+  KW: 'middle_east',
+  BH: 'middle_east',
+  OM: 'middle_east',
+  JO: 'middle_east',
+  LB: 'middle_east',
+  IQ: 'middle_east',
+  IL: 'middle_east',
+  IR: 'middle_east',
 };
 
 /**

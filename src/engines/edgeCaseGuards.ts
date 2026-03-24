@@ -1,12 +1,19 @@
 /**
  * FitQuest Edge-Case Guards
- * 
+ *
  * Ensures the system never produces empty/broken workouts
  * by gracefully relaxing constraints when filter pool is depleted.
  */
 
 import { getExercises, getMuscleFatigue, getUserProfile } from '../database/service';
-import type { Exercise, ExerciseFilter, UserProfile, MuscleFatigue, TargetMuscle, ExerciseWithDetails } from '../database/types';
+import type {
+  Exercise,
+  ExerciseFilter,
+  UserProfile,
+  MuscleFatigue,
+  TargetMuscle,
+  ExerciseWithDetails,
+} from '../database/types';
 import { RECOVERY_CONFIG } from './recoveryEngine';
 
 // ============================================
@@ -16,22 +23,22 @@ import { RECOVERY_CONFIG } from './recoveryEngine';
 export const GUARD_CONFIG = {
   // Minimum exercises required for a valid workout
   minimum_exercises: 3,
-  
+
   // Minimum exercises per pattern before relaxing
   minimum_per_pattern: 1,
-  
+
   // Constraint relaxation order (lowest priority first)
   relaxation_order: [
-    'variety_filter',      // First: allow repeats from recent sessions
-    'fatigue_threshold',   // Second: raise fatigue tolerance
-    'difficulty_match',    // Third: allow off-difficulty exercises
-    'equipment_strict',    // Fourth: suggest bodyweight alternatives
-    'goal_alignment',      // Last resort: cross-goal exercises
+    'variety_filter', // First: allow repeats from recent sessions
+    'fatigue_threshold', // Second: raise fatigue tolerance
+    'difficulty_match', // Third: allow off-difficulty exercises
+    'equipment_strict', // Fourth: suggest bodyweight alternatives
+    'goal_alignment', // Last resort: cross-goal exercises
   ] as const,
-  
+
   // Fatigue relaxation steps (percentage points)
   fatigue_relaxation_steps: [10, 20, 30],
-  
+
   // Deload minimum exercises (should still feel like a workout)
   deload_minimum_exercises: 3,
 };
@@ -66,14 +73,12 @@ export interface ConstraintState {
 export async function findValidExercisesWithGuards(
   userId: string,
   baseFilter: ExerciseFilter,
-  isDeload: boolean = false
+  isDeload: boolean = false,
 ): Promise<GuardResult> {
   const relaxations_applied: string[] = [];
   const warnings: string[] = [];
-  
-  const minRequired = isDeload 
-    ? GUARD_CONFIG.deload_minimum_exercises 
-    : GUARD_CONFIG.minimum_exercises;
+
+  const minRequired = isDeload ? GUARD_CONFIG.deload_minimum_exercises : GUARD_CONFIG.minimum_exercises;
 
   // Start with strictest constraints
   let currentFilter = { ...baseFilter };
@@ -105,7 +110,7 @@ export async function findValidExercisesWithGuards(
           const newThreshold = RECOVERY_CONFIG.fatigue_soft_threshold + step;
           relaxations_applied.push(`fatigue_threshold_+${step}`);
           warnings.push(`Fatigue tolerance raised by ${step}%`);
-          
+
           // Re-query with relaxed mental model (actual filtering is separate)
           exercises = await getExercises(currentFilter);
           if (exercises.length >= minRequired) {
@@ -165,7 +170,7 @@ export async function findValidExercisesWithGuards(
     relaxations_applied,
     warnings: [
       ...warnings,
-      exercises.length === 0 
+      exercises.length === 0
         ? 'No valid exercises found. Please adjust your profile settings.'
         : `Only ${exercises.length} exercises available. Workout may be shorter than usual.`,
     ],
@@ -182,25 +187,23 @@ export async function findValidExercisesWithGuards(
  */
 export async function ensureDeloadQuality(
   exercises: Exercise[],
-  userId: string
+  userId: string,
 ): Promise<{
   exercises: Exercise[];
   adjustments: string[];
 }> {
   const adjustments: string[] = [];
-  
+
   if (exercises.length < GUARD_CONFIG.deload_minimum_exercises) {
     // Try to add low-intensity mobility work
     const mobilityExercises = await getExercises({
       categories: ['mobility'],
       difficulties: ['beginner'],
     });
-    
+
     const needed = GUARD_CONFIG.deload_minimum_exercises - exercises.length;
-    const additions = mobilityExercises
-      .filter(m => !exercises.find(e => e.id === m.id))
-      .slice(0, needed);
-    
+    const additions = mobilityExercises.filter((m) => !exercises.find((e) => e.id === m.id)).slice(0, needed);
+
     if (additions.length > 0) {
       exercises = [...exercises, ...additions];
       adjustments.push(`Added ${additions.length} mobility exercise(s) to fill deload session`);
@@ -222,9 +225,7 @@ export async function ensureDeloadQuality(
 /**
  * Pre-flight check before workout generation
  */
-export async function validateWorkoutCanGenerate(
-  userId: string
-): Promise<{
+export async function validateWorkoutCanGenerate(userId: string): Promise<{
   canGenerate: boolean;
   blockers: string[];
   recommendations: string[];
@@ -253,21 +254,15 @@ export async function validateWorkoutCanGenerate(
   }
 
   if (exercises.length < GUARD_CONFIG.minimum_exercises) {
-    recommendations.push(
-      `Limited exercise variety for ${profile.goal}. Consider expanding equipment options.`
-    );
+    recommendations.push(`Limited exercise variety for ${profile.goal}. Consider expanding equipment options.`);
   }
 
   // Check fatigue levels
   const fatigue = await getMuscleFatigue(userId);
-  const criticalFatigue = fatigue.filter(
-    f => f.fatigue_level >= RECOVERY_CONFIG.fatigue_critical_threshold
-  );
-  
+  const criticalFatigue = fatigue.filter((f) => f.fatigue_level >= RECOVERY_CONFIG.fatigue_critical_threshold);
+
   if (criticalFatigue.length > 3) {
-    recommendations.push(
-      'Multiple muscle groups at critical fatigue. Consider a rest day or deload.'
-    );
+    recommendations.push('Multiple muscle groups at critical fatigue. Consider a rest day or deload.');
   }
 
   return {

@@ -42,9 +42,9 @@ interface SeedExercise {
   equipment_optional: EquipmentItem[];
   training_types: { type: TrainingType; effectiveness: number }[];
   // Audio fields for TTS (each ≤2 sentences)
-  audio_intro?: string;      // What the exercise is and main benefit
-  audio_setup?: string;      // How to get into position
-  audio_execution?: string;  // How to perform the movement
+  audio_intro?: string; // What the exercise is and main benefit
+  audio_setup?: string; // How to get into position
+  audio_execution?: string; // How to perform the movement
   audio_transition?: string; // What to do after (rest, next exercise)
 }
 
@@ -335,7 +335,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
       'Slowly lower RIGHT arm overhead and LEFT leg out until heel almost touches floor.',
       'Keep back glued down—if it arches, shorten range.',
       'Return to start; repeat opposite sides.',
-      'That\'s 1 rep. Move slowly 3 s out, 3 s back.',
+      "That's 1 rep. Move slowly 3 s out, 3 s back.",
     ],
     order_in_category: 11,
     primary_muscles: ['core_deep', 'abs'],
@@ -359,7 +359,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
     instructions: [
       'Lie on side, elbow under shoulder, legs straight, top foot in front of bottom for balance.',
       'Lift hips so body is straight line head-heels.',
-      'Lower hip toward floor (but don\'t touch), then lift back up.',
+      "Lower hip toward floor (but don't touch), then lift back up.",
       'Small, controlled 2-2 tempo.',
       'Do all reps on one side, then switch.',
     ],
@@ -490,7 +490,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
       'Drop into quarter-squat, swing arms back.',
       'Explode up, spread legs wider than shoulders and raise arms to form an "X" in air.',
       'Land softly feet together, arms back at sides.',
-      'That\'s 1 rep; use springy rhythm.',
+      "That's 1 rep; use springy rhythm.",
     ],
     order_in_category: 20,
     primary_muscles: ['quads', 'glutes_max'],
@@ -671,7 +671,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
       'Pull shoulder blades down and back.',
       'Pull chin over bar by driving elbows down.',
       'Lower with control until arms straight.',
-      'Don\'t swing or kip.',
+      "Don't swing or kip.",
     ],
     order_in_category: 35,
     primary_muscles: ['lats', 'biceps'],
@@ -800,7 +800,7 @@ const CALISTHENICS_EXERCISES: SeedExercise[] = [
       'Press shoulders down (depress scapula).',
       'Lift legs straight until parallel to floor (form an "L").',
       'Hold time prescribed; keep chin neutral, core tight.',
-      'Can\'t lift both? Keep one foot on floor or tuck one knee.',
+      "Can't lift both? Keep one foot on floor or tuck one knee.",
     ],
     order_in_category: 50,
     primary_muscles: ['abs', 'hip_flexors'],
@@ -834,7 +834,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
       'Let body weight sink you down; relax shoulders away from ears.',
       'Keep arms straight, slight bend OK to avoid hyper-extension.',
       'Breathe deeply; hold 30-45 s.',
-      'Step down gently—don\'t drop from height.',
+      "Step down gently—don't drop from height.",
     ],
     order_in_category: 1,
     primary_muscles: ['lats', 'forearms'],
@@ -859,7 +859,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
       'Hang straight arms from bar.',
       'Without bending arms, pull shoulder blades DOWN (away from ears) so body rises 2-3 cm.',
       'Slowly let shoulders rise back up (relax).',
-      'That\'s 1 rep—small but powerful.',
+      "That's 1 rep—small but powerful.",
       'Move comes from shoulder blades only, not arms.',
     ],
     order_in_category: 3,
@@ -925,7 +925,7 @@ const GETTING_TALLER_EXERCISES: SeedExercise[] = [
   },
   {
     id: 'tall_005',
-    name: 'Child\'s Pose Reach',
+    name: "Child's Pose Reach",
     category: 'posture',
     difficulty: 'beginner',
     equipment_level: 'none',
@@ -1099,7 +1099,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
     instructions: [
       'Stand tall, feet together.',
       'Bend right knee and grab ankle with right hand (or use strap).',
-      'Keep knees side-by-side; don\'t let right thigh drift forward.',
+      "Keep knees side-by-side; don't let right thigh drift forward.",
       'Gently pull heel toward glute until stretch felt down front of thigh.',
       'Hold 30-45 s, breathe; switch legs.',
     ],
@@ -1151,7 +1151,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
     instructions: [
       'Lie on back; bring soles of feet together, knees drop out.',
       'Place hands on inner thighs for gentle extra weight.',
-      'Keep low-back neutral (don\'t force knees to floor).',
+      "Keep low-back neutral (don't force knees to floor).",
       'Hold 60 s; breathe into belly.',
     ],
     order_in_category: 3,
@@ -1211,9 +1211,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
     secondary_muscles: ['glutes_max', 'quads'],
     equipment_required: [],
     equipment_optional: [],
-    training_types: [
-      { type: 'mobility', effectiveness: 8 },
-    ],
+    training_types: [{ type: 'mobility', effectiveness: 8 }],
   },
   {
     id: 'flex_006',
@@ -1236,9 +1234,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
     secondary_muscles: ['hip_flexors', 'glutes_med'],
     equipment_required: [],
     equipment_optional: [],
-    training_types: [
-      { type: 'mobility', effectiveness: 9 },
-    ],
+    training_types: [{ type: 'mobility', effectiveness: 9 }],
   },
   {
     id: 'flex_007',
@@ -1287,9 +1283,7 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
     secondary_muscles: ['glutes_max', 'core_deep'],
     equipment_required: ['bench'],
     equipment_optional: ['chair'],
-    training_types: [
-      { type: 'mobility', effectiveness: 9 },
-    ],
+    training_types: [{ type: 'mobility', effectiveness: 9 }],
   },
 ];
 
@@ -1304,13 +1298,13 @@ const FLEXIBLE_EXERCISES: SeedExercise[] = [
 function generateDefaultAudioIntro(exercise: SeedExercise): string {
   const muscle = exercise.primary_muscles[0]?.replace(/_/g, ' ') || 'multiple muscles';
   const categoryName = exercise.category.replace(/_/g, ' ');
-  
+
   const difficultyDesc = {
     beginner: 'beginner-friendly',
     intermediate: 'moderate',
     advanced: 'challenging',
   }[exercise.difficulty];
-  
+
   return `${exercise.name} is a ${difficultyDesc} ${categoryName} exercise. It primarily targets your ${muscle}.`;
 }
 
@@ -1321,7 +1315,7 @@ function generateDefaultAudioIntro(exercise: SeedExercise): string {
 function generateDefaultAudioSetup(exercise: SeedExercise): string {
   // Use first 1-2 instructions as setup
   const setupInstructions = exercise.instructions.slice(0, 2).join(' ');
-  
+
   // Truncate if too long
   if (setupInstructions.length > 150) {
     return setupInstructions.substring(0, 147) + '...';
@@ -1338,7 +1332,7 @@ function generateDefaultAudioExecution(exercise: SeedExercise): string {
   const midStart = Math.min(2, exercise.instructions.length - 1);
   const midEnd = Math.min(4, exercise.instructions.length);
   const execInstructions = exercise.instructions.slice(midStart, midEnd).join(' ');
-  
+
   // Truncate if too long
   if (execInstructions.length > 150) {
     return execInstructions.substring(0, 147) + '...';
@@ -1402,36 +1396,40 @@ export async function seedExercises(): Promise<void> {
   }
 
   // Get handcrafted exercises
-  const handcraftedExercises = [
-    ...CALISTHENICS_EXERCISES,
-    ...GETTING_TALLER_EXERCISES,
-    ...FLEXIBLE_EXERCISES,
-  ];
-  
+  const handcraftedExercises = [...CALISTHENICS_EXERCISES, ...GETTING_TALLER_EXERCISES, ...FLEXIBLE_EXERCISES];
+
   // Get generated exercises and convert them
   const generatedExercises = generateAllExercises().map(convertGeneratedExercise);
-  
+
   // Merge: use handcrafted first (better quality), then add generated ones with unique IDs
-  const handcraftedIds = new Set(handcraftedExercises.map(e => e.id));
-  const uniqueGenerated = generatedExercises.filter(e => !handcraftedIds.has(e.id));
-  
+  const handcraftedIds = new Set(handcraftedExercises.map((e) => e.id));
+  const handcraftedNames = new Set(handcraftedExercises.map((e) => `${e.name.toLowerCase()}|${e.category}`));
+  const uniqueGenerated = generatedExercises.filter(
+    (e) => !handcraftedIds.has(e.id) && !handcraftedNames.has(`${e.name.toLowerCase()}|${e.category}`),
+  );
+
   const merged = [...handcraftedExercises, ...uniqueGenerated];
-  
-  // Global deduplication by ID (in case generator produces duplicate IDs)
+
+  // Global deduplication by ID and name+category
   const seenIds = new Set<string>();
-  const allExercises = merged.filter(e => {
-    if (seenIds.has(e.id)) {
-      return false;
-    }
+  const seenNames = new Set<string>();
+  const allExercises = merged.filter((e) => {
+    if (seenIds.has(e.id)) return false;
+    const nameKey = `${e.name.toLowerCase()}|${e.category}`;
+    if (seenNames.has(nameKey)) return false;
     seenIds.add(e.id);
+    seenNames.add(nameKey);
     return true;
   });
 
-  if (__DEV__) console.log(`Seeding ${allExercises.length} exercises (${merged.length - allExercises.length} duplicates removed)...`);
+  if (__DEV__)
+    console.log(
+      `Seeding ${allExercises.length} exercises (${merged.length - allExercises.length} duplicates removed)...`,
+    );
 
   // Use a transaction for massive performance improvement (700+ exercises)
   await beginSeedTransaction();
-  
+
   try {
     for (const exercise of allExercises) {
       // Insert exercise with audio fields
@@ -1463,7 +1461,7 @@ export async function seedExercises(): Promise<void> {
       }
 
       // Insert secondary muscles (deduplicated, skip if already primary)
-      const secondaryMuscles = [...new Set(exercise.secondary_muscles)].filter(m => !primaryMuscles.includes(m));
+      const secondaryMuscles = [...new Set(exercise.secondary_muscles)].filter((m) => !primaryMuscles.includes(m));
       for (const muscle of secondaryMuscles) {
         await insertSeedExerciseMuscle({
           exerciseId: exercise.id,
@@ -1483,7 +1481,7 @@ export async function seedExercises(): Promise<void> {
       }
 
       // Insert optional equipment (deduplicated, skip if already required)
-      const optionalEquip = [...new Set(exercise.equipment_optional)].filter(e => !requiredEquip.includes(e));
+      const optionalEquip = [...new Set(exercise.equipment_optional)].filter((e) => !requiredEquip.includes(e));
       for (const equip of optionalEquip) {
         await insertSeedExerciseEquipment({
           exerciseId: exercise.id,

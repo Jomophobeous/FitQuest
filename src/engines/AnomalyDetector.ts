@@ -1,23 +1,23 @@
 /**
  * FitQuest Anomaly Detector Engine
- * 
+ *
  * Statistical anomaly detection for health metrics using
  * on-device algorithms (no ML framework required).
- * 
+ *
  * Detection methods:
  * - Z-score detection (normal distribution outliers)
  * - IQR (Interquartile Range) for robust outlier detection
  * - Rate-of-change detection (sudden spikes/drops)
  * - Moving average deviation (trend breaks)
  * - Multi-metric correlation anomalies
- * 
+ *
  * Supported metrics:
  * - Heart rate (resting, active, recovery)
  * - Step count patterns
  * - Workout performance (volume, intensity deviations)
  * - Sleep quality (when SleepAnalysisEngine data available)
  * - Recovery score trends
- * 
+ *
  * Generates health alerts via EncryptedDatabase when anomalies
  * exceed severity thresholds.
  */
@@ -128,7 +128,7 @@ export class AnomalyDetector {
   async analyzeMetric(
     metricName: string,
     dataPoints: MetricDataPoint[],
-    anomalyType: AnomalyType
+    anomalyType: AnomalyType,
   ): Promise<AnomalyResult[]> {
     if (dataPoints.length < this.config.minDataPoints) {
       return []; // Not enough data for reliable detection
@@ -171,18 +171,14 @@ export class AnomalyDetector {
           }
 
           try {
-            await encryptedDB.createHealthAlert(
-              anomaly.type,
-              anomaly.severity,
-              {
-                metric: anomaly.metric,
-                value: anomaly.currentValue,
-                expectedRange: anomaly.expectedRange,
-                zScore: anomaly.zScore,
-                message: anomaly.message,
-                recommendation: anomaly.recommendation,
-              }
-            );
+            await encryptedDB.createHealthAlert(anomaly.type, anomaly.severity, {
+              metric: anomaly.metric,
+              value: anomaly.currentValue,
+              expectedRange: anomaly.expectedRange,
+              zScore: anomaly.zScore,
+              message: anomaly.message,
+              recommendation: anomaly.recommendation,
+            });
             this.recentAlerts.set(dedupKey, now);
           } catch (e) {
             if (__DEV__) console.warn('[AnomalyDetector] Failed to create alert:', e);
@@ -270,7 +266,8 @@ export class AnomalyDetector {
         expectedRange: { min: ref.min, max: ref.max },
         zScore: this.calculateZScore(latest, values),
         message: `Heart rate critically elevated: ${latest} BPM`,
-        recommendation: 'Seek immediate medical attention if accompanied by chest pain, dizziness, or shortness of breath.',
+        recommendation:
+          'Seek immediate medical attention if accompanied by chest pain, dizziness, or shortness of breath.',
         timestamp: Date.now(),
       });
     } else if (latest <= ref.criticalMin) {
@@ -351,11 +348,15 @@ export class AnomalyDetector {
             min: weekAgoPoint.value + ref.minChangePerWeek,
             max: weekAgoPoint.value + ref.maxChangePerWeek,
           },
-          zScore: this.calculateZScore(weeklyChange, sorted.map((d) => d.value)),
+          zScore: this.calculateZScore(
+            weeklyChange,
+            sorted.map((d) => d.value),
+          ),
           message: `Rapid weight ${direction}: ${Math.abs(weeklyChange).toFixed(1)} kg in 7 days`,
-          recommendation: direction === 'loss'
-            ? 'Rapid weight loss may indicate dehydration, inadequate nutrition, or illness. Consult a healthcare provider.'
-            : 'Rapid weight gain may indicate fluid retention or caloric surplus. Monitor hydration and diet.',
+          recommendation:
+            direction === 'loss'
+              ? 'Rapid weight loss may indicate dehydration, inadequate nutrition, or illness. Consult a healthcare provider.'
+              : 'Rapid weight gain may indicate fluid retention or caloric surplus. Monitor hydration and diet.',
           timestamp: Date.now(),
         });
       }
@@ -371,11 +372,7 @@ export class AnomalyDetector {
   /**
    * Z-score based detection on the latest value.
    */
-  private detectZScore(
-    metricName: string,
-    values: number[],
-    type: AnomalyType
-  ): AnomalyResult | null {
+  private detectZScore(metricName: string, values: number[], type: AnomalyType): AnomalyResult | null {
     const latest = values[values.length - 1]!;
     const z = this.calculateZScore(latest, values.slice(0, -1));
 
@@ -404,11 +401,7 @@ export class AnomalyDetector {
   /**
    * IQR-based outlier detection (more robust to skewed data).
    */
-  private detectIQR(
-    metricName: string,
-    values: number[],
-    type: AnomalyType
-  ): AnomalyResult | null {
+  private detectIQR(metricName: string, values: number[], type: AnomalyType): AnomalyResult | null {
     const latest = values[values.length - 1]!;
     const sorted = [...values].sort((a, b) => a - b);
 
@@ -446,7 +439,7 @@ export class AnomalyDetector {
   private detectRateOfChange(
     metricName: string,
     dataPoints: MetricDataPoint[],
-    type: AnomalyType
+    type: AnomalyType,
   ): AnomalyResult | null {
     const latest = dataPoints[dataPoints.length - 1]!;
     const prev = dataPoints[dataPoints.length - 2];
@@ -480,11 +473,7 @@ export class AnomalyDetector {
   /**
    * Moving average deviation detection.
    */
-  private detectMovingAverageDeviation(
-    metricName: string,
-    values: number[],
-    type: AnomalyType
-  ): AnomalyResult | null {
+  private detectMovingAverageDeviation(metricName: string, values: number[], type: AnomalyType): AnomalyResult | null {
     if (values.length < 7) return null;
 
     const windowSize = Math.min(7, Math.floor(values.length / 2));
@@ -522,10 +511,7 @@ export class AnomalyDetector {
    * Cross-metric correlation anomaly.
    * E.g., heart rate rising while recovery score drops → overtraining signal.
    */
-  private detectCorrelationAnomaly(
-    metricA: MetricDataPoint[],
-    metricB: MetricDataPoint[]
-  ): AnomalyResult | null {
+  private detectCorrelationAnomaly(metricA: MetricDataPoint[], metricB: MetricDataPoint[]): AnomalyResult | null {
     if (metricA.length < 5 || metricB.length < 5) return null;
 
     const aVals = metricA.slice(-7).map((d) => d.value);
@@ -549,7 +535,8 @@ export class AnomalyDetector {
         expectedRange: { min: -1, max: 1 },
         zScore: Math.abs(aTrend - bTrend),
         message: 'Heart rate trending up while recovery score trends down — possible overtraining',
-        recommendation: 'Consider reducing workout intensity or taking a rest day. Ensure adequate sleep and nutrition.',
+        recommendation:
+          'Consider reducing workout intensity or taking a rest day. Ensure adequate sleep and nutrition.',
         timestamp: Date.now(),
       };
     }
@@ -592,7 +579,10 @@ export class AnomalyDetector {
     const n = values.length;
     if (n < 2) return 0;
 
-    let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    let sumX = 0,
+      sumY = 0,
+      sumXY = 0,
+      sumXX = 0;
     for (let i = 0; i < n; i++) {
       sumX += i;
       sumY += values[i]!;
@@ -623,8 +613,10 @@ export class AnomalyDetector {
       ACTIVITY_DROP: 'Activity has decreased significantly. Consider light movement or stretching.',
       RECOVERY_DECLINE: 'Recovery trending down. Prioritize sleep, hydration, and reduce training load.',
       WORKOUT_OVERTRAINING: 'Signs of overtraining detected. Take a deload week with 50% intensity.',
-      SLEEP_DISRUPTION: 'Sleep pattern disrupted. Maintain consistent sleep/wake times and limit screen time before bed.',
-      WEIGHT_RAPID_CHANGE: 'Rapid weight change detected. Review diet and hydration. Consult a professional if unintentional.',
+      SLEEP_DISRUPTION:
+        'Sleep pattern disrupted. Maintain consistent sleep/wake times and limit screen time before bed.',
+      WEIGHT_RAPID_CHANGE:
+        'Rapid weight change detected. Review diet and hydration. Consult a professional if unintentional.',
       METRIC_CORRELATION: 'Multiple health metrics showing unusual correlation. Review overall wellness habits.',
     };
 

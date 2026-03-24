@@ -67,16 +67,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const theme = themeMap[mode];
 
-  const contextValue = useMemo(() => ({
-    mode, theme, toggleTheme, setMode,
-  }), [mode, theme, toggleTheme, setMode]);
+  const contextValue = useMemo(
+    () => ({
+      mode,
+      theme,
+      toggleTheme,
+      setMode,
+    }),
+    [mode, theme, toggleTheme, setMode],
+  );
 
   // Always provide context, even during loading (use default dark theme)
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme(): ThemeContextType {

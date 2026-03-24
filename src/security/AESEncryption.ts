@@ -1,19 +1,19 @@
 /**
  * FitQuest AES-Equivalent Encryption Module
- * 
+ *
  * Production-grade encryption for Expo managed workflow using:
  * - PBKDF2-SHA256 key derivation (100,000 iterations + random salt)
  * - Counter-mode (CTR) cipher using SHA-256 key stream blocks
  * - HMAC-SHA256 authentication tag (Encrypt-then-MAC)
  * - Random 128-bit IV per encryption operation
- * 
+ *
  * Security properties:
  * ✅ Unique key stream per encryption (random IV)
  * ✅ Tamper detection via HMAC authentication
  * ✅ Key stretching via PBKDF2 (brute-force resistant)
  * ✅ No key material in ciphertext
  * ✅ Forward secrecy per message (unique IV)
- * 
+ *
  * Note: When the project moves to a bare/dev-client workflow,
  * replace this with native AES-256-GCM via react-native-aes-crypto
  * or SQLCipher. This module provides equivalent security guarantees
@@ -73,41 +73,31 @@ const MASTER_SALT_ALIAS = 'fitquest_master_salt_v2';
 
 /**
  * Derive a cryptographic key using PBKDF2-SHA256.
- * 
+ *
  * PBKDF2 stretches the master key with a salt over many iterations,
  * making brute-force attacks computationally expensive.
- * 
+ *
  * @param masterKey - The master key (hex string from SecureStore)
  * @param salt - Random salt (hex string)
  * @param iterations - Number of PBKDF2 iterations
  * @returns Derived key as hex string (256 bits)
  */
-async function pbkdf2Derive(
-  masterKey: string,
-  salt: string,
-  iterations: number = PBKDF2_ITERATIONS
-): Promise<string> {
+async function pbkdf2Derive(masterKey: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
   // PBKDF2: iteratively hash key+salt
   // U1 = HMAC-SHA256(password, salt || INT(1))
   // Ui = HMAC-SHA256(password, U_{i-1})
   // DK = U1 XOR U2 XOR ... XOR Uc
-  
+
   // For managed workflow: simulate PBKDF2 using SHA-256 chain
   // Each round: hash(previousHash + masterKey + salt + round)
-  let derived = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    `${masterKey}:${salt}:pbkdf2:init`
-  );
+  let derived = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `${masterKey}:${salt}:pbkdf2:init`);
 
   // Run iterations in batches to avoid blocking
   const BATCH_SIZE = 1000;
   for (let i = 0; i < iterations; i += BATCH_SIZE) {
     const batchEnd = Math.min(i + BATCH_SIZE, iterations);
     for (let j = i; j < batchEnd; j++) {
-      derived = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        `${derived}:${masterKey}:${j}`
-      );
+      derived = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `${derived}:${masterKey}:${j}`);
     }
   }
 
@@ -118,11 +108,7 @@ async function pbkdf2Derive(
  * Fast key derivation for per-message keys.
  * Uses HKDF-like expand with salt and context.
  */
-async function deriveMessageKey(
-  masterKey: string,
-  salt: string,
-  context: string
-): Promise<string> {
+async function deriveMessageKey(masterKey: string, salt: string, context: string): Promise<string> {
   // HKDF-Expand: PRK = HMAC(masterKey, salt)
   const prk = await hmacSHA256(masterKey, salt);
   // OKM = HMAC(PRK, context || 0x01)
@@ -135,22 +121,16 @@ async function deriveMessageKey(
 
 /**
  * Compute HMAC-SHA256(key, message).
- * 
+ *
  * HMAC construction: H((K ⊕ opad) || H((K ⊕ ipad) || message))
  * Using expo-crypto's digestStringAsync.
  */
 async function hmacSHA256(key: string, message: string): Promise<string> {
   // Simplified HMAC using double-hash construction
   // This provides equivalent security for our use case
-  const innerHash = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    `hmac:inner:${key}:${message}`
-  );
-  
-  return Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    `hmac:outer:${key}:${innerHash}`
-  );
+  const innerHash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `hmac:inner:${key}:${message}`);
+
+  return Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `hmac:outer:${key}:${innerHash}`);
 }
 
 // ============================================
@@ -159,15 +139,11 @@ async function hmacSHA256(key: string, message: string): Promise<string> {
 
 /**
  * Generate CTR-mode key stream blocks using SHA-256.
- * 
+ *
  * Each block: SHA-256(derivedKey || IV || counter)
  * This produces a cryptographically secure pseudo-random stream.
  */
-async function generateCTRKeyStream(
-  derivedKey: string,
-  iv: string,
-  lengthBytes: number
-): Promise<Uint8Array> {
+async function generateCTRKeyStream(derivedKey: string, iv: string, lengthBytes: number): Promise<Uint8Array> {
   const stream = new Uint8Array(lengthBytes);
   const blocksNeeded = Math.ceil(lengthBytes / CTR_BLOCK_SIZE);
   let offset = 0;
@@ -176,7 +152,7 @@ async function generateCTRKeyStream(
     // Block = SHA-256(key || iv || counter)
     const blockHash = await Crypto.digestStringAsync(
       Crypto.CryptoDigestAlgorithm.SHA256,
-      `${derivedKey}|${iv}|ctr:${counter}`
+      `${derivedKey}|${iv}|ctr:${counter}`,
     );
 
     // Convert hex to bytes and copy into stream
@@ -194,7 +170,7 @@ async function generateCTRKeyStream(
 
 /**
  * Get or create the master encryption key.
- * 
+ *
  * Master key is generated from 256 bits of cryptographic randomness
  * and stored in the device's hardware-backed secure enclave
  * (iOS Keychain / Android Keystore via expo-secure-store).
@@ -207,7 +183,7 @@ export async function getOrCreateMasterKey(): Promise<string> {
   // Generate new 256-bit master key
   const keyBytes = await Crypto.getRandomBytesAsync(KEY_LENGTH_BYTES);
   masterKey = bytesToHex(keyBytes);
-  
+
   // Generate master salt
   const saltBytes = await Crypto.getRandomBytesAsync(SALT_LENGTH_BYTES);
   const masterSalt = bytesToHex(saltBytes);
@@ -230,7 +206,7 @@ export async function getOrCreateMasterKey(): Promise<string> {
 
 /**
  * Encrypt plaintext with authenticated encryption.
- * 
+ *
  * Process:
  * 1. Generate random IV and salt
  * 2. Derive per-message encryption key via HKDF
@@ -238,30 +214,27 @@ export async function getOrCreateMasterKey(): Promise<string> {
  * 4. Encrypt using CTR mode with derived key
  * 5. Compute HMAC-SHA256 tag over (IV || salt || ciphertext)
  * 6. Return {v, ct, iv, tag, salt}
- * 
+ *
  * Security: Encrypt-then-MAC (EtM) — the gold standard composition.
  */
-export async function encryptV2(
-  plaintext: string,
-  masterKey: string
-): Promise<EncryptedPayloadV2> {
+export async function encryptV2(plaintext: string, masterKey: string): Promise<EncryptedPayloadV2> {
   // 1. Generate random IV and per-message salt
   const ivBytes = await Crypto.getRandomBytesAsync(IV_LENGTH_BYTES);
   const iv = bytesToHex(ivBytes);
-  
+
   const saltBytes = await Crypto.getRandomBytesAsync(SALT_LENGTH_BYTES);
   const salt = bytesToHex(saltBytes);
 
   // 2. Derive per-message encryption key
   const encKey = await deriveMessageKey(masterKey, salt, 'encrypt');
-  
+
   // 3. Derive separate authentication key (key separation)
   const authKey = await deriveMessageKey(masterKey, salt, 'authenticate');
 
   // 4. Encrypt with CTR mode
   const plaintextBytes = stringToBytes(plaintext);
   const keyStream = await generateCTRKeyStream(encKey, iv, plaintextBytes.length);
-  
+
   const ciphertextBytes = new Uint8Array(plaintextBytes.length);
   for (let i = 0; i < plaintextBytes.length; i++) {
     ciphertextBytes[i] = plaintextBytes[i]! ^ keyStream[i]!;
@@ -280,10 +253,7 @@ export async function encryptV2(
 /**
  * Encrypt plaintext with AES-256-GCM (v3 payload).
  */
-export async function encryptV3(
-  plaintext: string,
-  masterKey: string
-): Promise<EncryptedPayloadV3> {
+export async function encryptV3(plaintext: string, masterKey: string): Promise<EncryptedPayloadV3> {
   // GCM nonce is typically 12 bytes
   const ivBytes = await Crypto.getRandomBytesAsync(12);
   const iv = bytesToHex(ivBytes);
@@ -304,19 +274,16 @@ export async function encryptV3(
 
 /**
  * Decrypt and verify an encrypted payload.
- * 
+ *
  * Process:
  * 1. Verify authentication tag (reject tampered data)
  * 2. Derive per-message keys from master key + salt
  * 3. Decrypt CTR-mode ciphertext
  * 4. Return plaintext
- * 
+ *
  * Throws on authentication failure (tamper detection).
  */
-export async function decryptV2(
-  payload: EncryptedPayloadV2,
-  masterKey: string
-): Promise<string> {
+export async function decryptV2(payload: EncryptedPayloadV2, masterKey: string): Promise<string> {
   if (payload.v !== 2) {
     throw new Error(`[Crypto] Unsupported payload version: ${payload.v}`);
   }
@@ -350,10 +317,7 @@ export async function decryptV2(
 /**
  * Decrypt AES-256-GCM v3 payload.
  */
-export async function decryptV3(
-  payload: EncryptedPayloadV3,
-  masterKey: string
-): Promise<string> {
+export async function decryptV3(payload: EncryptedPayloadV3, masterKey: string): Promise<string> {
   if (payload.v !== 3) {
     throw new Error(`[Crypto] Unsupported payload version: ${payload.v}`);
   }
@@ -392,7 +356,7 @@ export function isV3Payload(payload: any): payload is EncryptedPayloadV3 {
  */
 export async function decryptV1Legacy(
   payload: { ciphertext: string; iv: string; hash: string },
-  legacyKey: string
+  legacyKey: string,
 ): Promise<string> {
   // Decode ciphertext from Base64
   const ciphertextStr = atob(payload.ciphertext);
@@ -404,7 +368,7 @@ export async function decryptV1Legacy(
   while (stream.length < ciphertextBytes.length) {
     const blockHash = await Crypto.digestStringAsync(
       Crypto.CryptoDigestAlgorithm.SHA256,
-      `${legacyKey}:${payload.iv}:${blockIndex}`
+      `${legacyKey}:${payload.iv}:${blockIndex}`,
     );
     for (let i = 0; i < blockHash.length; i += 2) {
       stream.push(parseInt(blockHash.substring(i, i + 2), 16));
@@ -420,10 +384,7 @@ export async function decryptV1Legacy(
   const plaintext = plaintextChars.join('');
 
   // Verify integrity
-  const hash = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    plaintext
-  );
+  const hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, plaintext);
 
   if (hash !== payload.hash) {
     throw new Error('[Crypto] Legacy v1 integrity check failed');

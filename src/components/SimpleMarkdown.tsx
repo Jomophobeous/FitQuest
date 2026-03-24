@@ -1,6 +1,6 @@
 /**
  * SimpleMarkdown — Lightweight inline markdown renderer for chat messages
- * 
+ *
  * Supports: **bold**, *italic*, \n, headers (# ## ###), bullet lists (- *),
  * numbered lists (1. 2.), inline code (`code`). Pure RN Text components.
  */
@@ -85,7 +85,12 @@ function parseInlineFormatting(line: string): TextSegment[] {
 
     if (italicMatch && italicMatch.index !== undefined) {
       if (!nextMatch || italicMatch.index < nextMatch.index) {
-        nextMatch = { index: italicMatch.index, length: italicMatch[0].length, content: italicMatch[1]!, type: 'italic' };
+        nextMatch = {
+          index: italicMatch.index,
+          length: italicMatch[0].length,
+          content: italicMatch[1]!,
+          type: 'italic',
+        };
       }
     }
 
@@ -111,18 +116,21 @@ function parseInlineFormatting(line: string): TextSegment[] {
   return segments;
 }
 
-function renderSegments(
-  segments: TextSegment[],
-  boldStyle?: TextStyle,
-  italicStyle?: TextStyle,
-  accentColor?: string,
-) {
+function renderSegments(segments: TextSegment[], boldStyle?: TextStyle, italicStyle?: TextStyle, accentColor?: string) {
   return segments.map((seg, idx) => {
     if (seg.bold) {
-      return <Text key={idx} style={[{ fontWeight: '700' }, boldStyle]}>{seg.text}</Text>;
+      return (
+        <Text key={idx} style={[{ fontWeight: '700' }, boldStyle]}>
+          {seg.text}
+        </Text>
+      );
     }
     if (seg.italic) {
-      return <Text key={idx} style={[{ fontStyle: 'italic' }, italicStyle]}>{seg.text}</Text>;
+      return (
+        <Text key={idx} style={[{ fontStyle: 'italic' }, italicStyle]}>
+          {seg.text}
+        </Text>
+      );
     }
     if (seg.code) {
       return (
@@ -170,14 +178,18 @@ export default function SimpleMarkdown({ text, style, boldStyle, italicStyle, ac
           case 'bullet':
             return (
               <View key={lineIdx} style={mdStyles.listRow}>
-                <Text style={[style, mdStyles.bullet, accentColor ? { color: accentColor } : undefined]}>{'  \u2022  '}</Text>
+                <Text style={[style, mdStyles.bullet, accentColor ? { color: accentColor } : undefined]}>
+                  {'  \u2022  '}
+                </Text>
                 <Text style={[style, mdStyles.listText]}>{rendered}</Text>
               </View>
             );
           case 'numbered':
             return (
               <View key={lineIdx} style={mdStyles.listRow}>
-                <Text style={[style, mdStyles.number, accentColor ? { color: accentColor } : undefined]}>{`  ${line.number}.  `}</Text>
+                <Text
+                  style={[style, mdStyles.number, accentColor ? { color: accentColor } : undefined]}
+                >{`  ${line.number}.  `}</Text>
                 <Text style={[style, mdStyles.listText]}>{rendered}</Text>
               </View>
             );

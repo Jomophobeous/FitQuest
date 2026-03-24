@@ -9,12 +9,7 @@ interface ProgressBarProps {
   showGlow?: boolean; // Glow effect in dark mode
 }
 
-export default function ProgressBar({
-  progress,
-  height = 6,
-  variant = 'progress',
-  showGlow = true,
-}: ProgressBarProps) {
+export default function ProgressBar({ progress, height = 6, variant = 'progress', showGlow = true }: ProgressBarProps) {
   const { theme } = useTheme();
   const animated = useRef(new Animated.Value(0)).current;
 

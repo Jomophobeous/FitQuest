@@ -1,10 +1,10 @@
 /**
  * FitQuest Timer Service
  * Unified timer control for workout sessions
- * 
+ *
  * Timer is the authority - UI and Audio subscribe to events.
  * This prevents desync bugs.
- * 
+ *
  * Three timer types:
  * - Exercise Timer: Active work tracking
  * - Rest Timer: Auto-starts after set completion
@@ -74,7 +74,7 @@ class Timer {
       totalSeconds: this.totalSeconds,
       elapsedSeconds: this.elapsedSeconds,
     };
-    this.listeners.forEach(listener => listener(event));
+    this.listeners.forEach((listener) => listener(event));
   }
 
   /**
@@ -87,7 +87,7 @@ class Timer {
     this.elapsedSeconds = 0;
     this.state = 'running';
     this.countdownSpoken.clear();
-    
+
     this.emit('start');
 
     this.intervalId = setInterval(() => {
@@ -101,7 +101,7 @@ class Timer {
         if (COUNTDOWN_INTERVALS.includes(remaining) && !this.countdownSpoken.has(remaining)) {
           this.countdownSpoken.add(remaining);
           this.emit('finalCountdown');
-          
+
           // Trigger audio countdown
           if (this.type !== 'session') {
             audioService.playCountdown(remaining);
@@ -150,7 +150,7 @@ class Timer {
         if (COUNTDOWN_INTERVALS.includes(remaining) && !this.countdownSpoken.has(remaining)) {
           this.countdownSpoken.add(remaining);
           this.emit('finalCountdown');
-          
+
           if (this.type !== 'session') {
             audioService.playCountdown(remaining);
           }
@@ -286,7 +286,7 @@ class TimerService {
     this.isWorkoutActive = false;
     const state = this.sessionTimer.getState();
     const totalMinutes = Math.ceil(state.elapsed / 60);
-    
+
     this.exerciseTimer.stop();
     this.restTimer.stop();
     this.sessionTimer.stop();

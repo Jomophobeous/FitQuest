@@ -8,6 +8,12 @@ import { initializeDatabase, resetDatabase, closeDatabase, resetInitState } from
 import { getUserProfile, createUserProfile, lockUserProfile, getAppState } from '../database/service';
 import type { UserProfile } from '../database/types';
 import { getPostHogClient } from '../services/posthogService';
+import { systemGuard } from '../services/SystemGuard';
+import { recoveryService } from '../services/RecoveryService';
+import { snapshotService } from '../services/SnapshotService';
+import { walService } from '../services/WriteAheadLogService';
+import { dataSync } from '../services/dataSyncService';
+import DatabaseRecoveryScreen from '../components/DatabaseRecoveryScreen';
 
 interface DatabaseContextType {
   isReady: boolean;
@@ -47,13 +53,38 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       await initializeDatabase();
       if (__DEV__) console.log('[FitQuest] Database initialized successfully');
 
+      // Run recovery check: integrity → WAL → snapshot restore if needed
+      const recovery = await recoveryService.run();
+      if (__DEV__) console.log(`[FitQuest] Recovery: ${recovery.outcome} (${recovery.durationMs}ms)`);
+
+      // Initialize WAL table (idempotent)
+      await walService.initialize();
+
+      // Start periodic snapshots
+      snapshotService.startPeriodicSnapshots();
+
+      // Trigger snapshot on workout completion (critical data event)
+      dataSync.subscribe('workout_completed', () => {
+        snapshotService.createSnapshot('workout_complete').catch(() => {});
+      });
+
+      // Trigger snapshot on profile mutation (user-critical data)
+      dataSync.subscribe('profile_updated', () => {
+        snapshotService.createSnapshot('profile_updated').catch(() => {});
+      });
+
+      // Trigger snapshot on XP milestone (level up = significant state change)
+      dataSync.subscribe('level_up', () => {
+        snapshotService.createSnapshot('xp_milestone').catch(() => {});
+      });
+
       // Check for existing user profile
       let profile = await getUserProfile(DEFAULT_USER_ID);
 
       // Check if onboarding has been completed
       const onboardingFlag = await getAppState('onboarding_complete');
       const didOnboard = onboardingFlag === 'true';
-      
+
       if (!profile) {
         if (__DEV__) console.log('[FitQuest] Creating default user profile...');
         await createUserProfile({
@@ -83,38 +114,51 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       setOnboardingComplete(didOnboard);
       setIsReady(true);
       retryCount.current = 0;
+      systemGuard.markReady();
 
       // Identify user in PostHog with non-PII properties
       if (profile) {
-        getPostHogClient().then(client => {
-          if (client) {
-            client.identify(profile.id, {
-              goal: profile.goal,
-              experience: profile.experience,
-              training_days: profile.training_days_per_week,
-              onboarded: didOnboard,
-            });
-          }
-        }).catch(() => { /* best-effort */ });
+        getPostHogClient()
+          .then((client) => {
+            if (client) {
+              client.identify(profile.id, {
+                goal: profile.goal,
+                experience: profile.experience,
+                training_days: profile.training_days_per_week,
+                onboarded: didOnboard,
+              });
+            }
+          })
+          .catch(() => {
+            /* best-effort */
+          });
       }
     } catch (err) {
       if (__DEV__) console.error('[FitQuest] Database initialization failed:', err);
       const msg = err instanceof Error ? err.message : 'Failed to initialize database';
-      
+
       // Auto-retry with backoff
       if (retryCount.current < MAX_RETRIES) {
         retryCount.current += 1;
         const delay = retryCount.current * 1000;
         if (__DEV__) console.log(`[FitQuest] Retrying in ${delay}ms (attempt ${retryCount.current}/${MAX_RETRIES})`);
+        systemGuard.markRecovering(msg);
         // Close the broken connection so retry gets a fresh native handle
-        try { await closeDatabase(); } catch (_) { /* ignore close errors */ }
+        try {
+          await closeDatabase();
+        } catch (_) {
+          /* ignore close errors */
+        }
         resetInitState();
         retryScheduled = true;
         isInitializing.current = false;
-        setTimeout(() => { initialize(); }, delay);
+        setTimeout(() => {
+          initialize();
+        }, delay);
         return;
       }
-      
+
+      systemGuard.markFailed(msg);
       setError(msg);
     } finally {
       // Only clear loading state when we're done (not when a retry is pending)
@@ -127,6 +171,7 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
 
   const retry = useCallback(() => {
     retryCount.current = 0;
+    systemGuard.markBooting();
     initialize();
   }, [initialize]);
 
@@ -158,22 +203,30 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
     initialize();
   }, [initialize]);
 
-  const contextValue = useMemo(() => ({
-    isReady,
-    isLoading,
-    error,
-    userProfile,
-    onboardingComplete,
-    refreshProfile,
-    resetAll,
-    retry,
-  }), [isReady, isLoading, error, userProfile, onboardingComplete, refreshProfile, resetAll, retry]);
-
-  return (
-    <DatabaseContext.Provider value={contextValue}>
-      {children}
-    </DatabaseContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      isReady,
+      isLoading,
+      error,
+      userProfile,
+      onboardingComplete,
+      refreshProfile,
+      resetAll,
+      retry,
+    }),
+    [isReady, isLoading, error, userProfile, onboardingComplete, refreshProfile, resetAll, retry],
   );
+
+  // Hard failure boundary: if DB failed and not loading (no retry pending), block everything
+  if (error && !isLoading) {
+    return (
+      <DatabaseContext.Provider value={contextValue}>
+        <DatabaseRecoveryScreen error={error} isRecovering={false} onRetry={retry} onReset={resetAll} />
+      </DatabaseContext.Provider>
+    );
+  }
+
+  return <DatabaseContext.Provider value={contextValue}>{children}</DatabaseContext.Provider>;
 }
 
 export function useDatabase() {

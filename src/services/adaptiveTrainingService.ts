@@ -1,9 +1,5 @@
 import { getAppState, setAppState } from '../database/service';
-import {
-  clamp,
-  deriveAdaptiveTrainingProfile,
-  getDefaultAdaptiveTrainingProfile,
-} from './adaptiveTrainingMath';
+import { clamp, deriveAdaptiveTrainingProfile, getDefaultAdaptiveTrainingProfile } from './adaptiveTrainingMath';
 import type { AdaptiveSessionInput, AdaptiveTrainingProfile } from './adaptiveTrainingMath';
 
 export type { AdaptiveSessionInput, AdaptiveTrainingProfile } from './adaptiveTrainingMath';
@@ -45,7 +41,7 @@ export async function getAdaptiveTrainingProfile(userId: string): Promise<Adapti
 
 export async function updateAdaptiveTrainingProfileFromSession(
   userId: string,
-  input: AdaptiveSessionInput
+  input: AdaptiveSessionInput,
 ): Promise<AdaptiveTrainingProfile> {
   const current = await getAdaptiveTrainingProfile(userId);
   const next = deriveAdaptiveTrainingProfile(current, input, Date.now());

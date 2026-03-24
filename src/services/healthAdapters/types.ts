@@ -1,9 +1,9 @@
 /**
  * Health Provider Adapter Interface
- * 
+ *
  * Provider-neutral interface for health data integration.
  * Supports Health Connect (Android), HealthKit (iOS), and Google Fit (fallback).
- * 
+ *
  * All sensitive health data flows through encryptedDB for secure storage.
  */
 
@@ -15,7 +15,7 @@ export type HealthProvider = 'health_connect' | 'healthkit' | 'google_fit' | 'no
 
 export type HealthPermissionStatus = 'granted' | 'denied' | 'not_determined' | 'unavailable';
 
-export type HealthDataCategory = 
+export type HealthDataCategory =
   | 'steps'
   | 'distance'
   | 'calories'
@@ -138,7 +138,7 @@ export interface ProviderStatus {
 
 /**
  * Health Provider Adapter
- * 
+ *
  * Implement this interface for each health provider (Health Connect, HealthKit, etc.)
  * All implementations must:
  * - Normalize data to FitQuest internal models
@@ -180,10 +180,7 @@ export interface IHealthAdapter {
    * @param readOnly If true, only request read permissions
    * @returns List of granted permissions
    */
-  requestPermissions(
-    categories: HealthDataCategory[],
-    readOnly?: boolean
-  ): Promise<HealthPermission[]>;
+  requestPermissions(categories: HealthDataCategory[], readOnly?: boolean): Promise<HealthPermission[]>;
 
   /**
    * Check if specific permissions are granted
@@ -202,10 +199,7 @@ export interface IHealthAdapter {
   /**
    * Read records for a specific category within a date range
    */
-  readRecords<T extends HealthRecord>(
-    category: HealthDataCategory,
-    dateRange: DateRange
-  ): Promise<T[]>;
+  readRecords<T extends HealthRecord>(category: HealthDataCategory, dateRange: DateRange): Promise<T[]>;
 
   /**
    * Get daily aggregates for a date range
@@ -216,9 +210,7 @@ export interface IHealthAdapter {
   /**
    * Get the most recent record for a category
    */
-  getLatestRecord<T extends HealthRecord>(
-    category: HealthDataCategory
-  ): Promise<T | null>;
+  getLatestRecord<T extends HealthRecord>(category: HealthDataCategory): Promise<T | null>;
 
   // ============================================
   // WRITE OPERATIONS
@@ -244,10 +236,7 @@ export interface IHealthAdapter {
    * @param categories Categories to sync (all if not specified)
    * @param since Only sync data modified since this time
    */
-  syncToLocal(
-    categories?: HealthDataCategory[],
-    since?: Date
-  ): Promise<{ synced: number; errors: number }>;
+  syncToLocal(categories?: HealthDataCategory[], since?: Date): Promise<{ synced: number; errors: number }>;
 
   /**
    * Get the timestamp of the last successful sync
@@ -291,13 +280,7 @@ export const SENSITIVE_CATEGORIES: HealthDataCategory[] = [
 ];
 
 /** Categories that are considered activity data (less sensitive) */
-export const ACTIVITY_CATEGORIES: HealthDataCategory[] = [
-  'steps',
-  'distance',
-  'calories',
-  'active_minutes',
-  'workout',
-];
+export const ACTIVITY_CATEGORIES: HealthDataCategory[] = ['steps', 'distance', 'calories', 'active_minutes', 'workout'];
 
 /** Default permissions to request */
 export const DEFAULT_PERMISSIONS: HealthDataCategory[] = [

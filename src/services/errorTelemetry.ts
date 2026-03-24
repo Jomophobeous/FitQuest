@@ -1,15 +1,16 @@
 /**
  * ErrorTelemetry Service
- * 
+ *
  * Centralized error capture and telemetry for FitQuest.
  * Currently stores errors locally in SQLite.
  * Ready to integrate with external services (Sentry, Bugsnag) when needed.
  */
 
 import { Platform } from 'react-native';
+import { systemGuard } from './SystemGuard';
 
 export type ErrorSeverity = 'low' | 'medium' | 'high' | 'critical';
-export type ErrorCategory = 
+export type ErrorCategory =
   | 'reader_boot'
   | 'reader_render'
   | 'document_open'
@@ -51,16 +52,18 @@ class ErrorTelemetryService {
 
   async initialize(): Promise<void> {
     if (this.initialized) return;
-    
+
     try {
-      // Load stored errors from app_state
-      const { getAppState } = await import('../database/service');
-      const stored = await getAppState(ERROR_STORAGE_KEY);
-      if (stored) {
-        try {
-          this.errors = JSON.parse(stored);
-        } catch {
-          this.errors = [];
+      // Only load stored errors if DB is available
+      if (systemGuard.isReady) {
+        const { getAppState } = await import('../database/service');
+        const stored = await getAppState(ERROR_STORAGE_KEY);
+        if (stored) {
+          try {
+            this.errors = JSON.parse(stored);
+          } catch {
+            this.errors = [];
+          }
         }
       }
       this.initialized = true;
@@ -80,10 +83,12 @@ class ErrorTelemetryService {
       category: ErrorCategory;
       severity?: ErrorSeverity;
       context?: Record<string, unknown>;
-    }
+    },
   ): Promise<string> {
     const errorEvent: ErrorEvent = {
-      id: `err_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      id: `err_${Date.now()}_${Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => b.toString(36))
+        .join('')
+        .slice(0, 7)}`,
       category: options.category,
       severity: options.severity || 'medium',
       message: typeof error === 'string' ? error : error.message,
@@ -95,7 +100,7 @@ class ErrorTelemetryService {
     };
 
     this.errors.unshift(errorEvent);
-    
+
     // Trim to max size
     if (this.errors.length > MAX_STORED_ERRORS) {
       this.errors = this.errors.slice(0, MAX_STORED_ERRORS);
@@ -126,10 +131,9 @@ class ErrorTelemetryService {
       documentType?: string;
       documentId?: string;
       phase: 'boot' | 'render' | 'navigate' | 'fallback';
-    }
+    },
   ): Promise<string> {
-    const category: ErrorCategory = 
-      readerContext.phase === 'boot' ? 'reader_boot' : 'reader_render';
+    const category: ErrorCategory = readerContext.phase === 'boot' ? 'reader_boot' : 'reader_render';
 
     return this.captureError(error, {
       category,
@@ -152,7 +156,7 @@ class ErrorTelemetryService {
       provider: 'health_connect' | 'healthkit' | 'google_fit';
       action: 'read' | 'write' | 'sync' | 'auth';
       dataType?: string;
-    }
+    },
   ): Promise<string> {
     return this.captureError(error, {
       category: 'health_sync',
@@ -169,7 +173,7 @@ class ErrorTelemetryService {
    * Mark an error as resolved
    */
   async resolveError(errorId: string): Promise<void> {
-    const error = this.errors.find(e => e.id === errorId);
+    const error = this.errors.find((e) => e.id === errorId);
     if (error) {
       error.resolved = true;
       await this.persistErrors();
@@ -188,13 +192,13 @@ class ErrorTelemetryService {
     let filtered = this.errors;
 
     if (options?.category) {
-      filtered = filtered.filter(e => e.category === options.category);
+      filtered = filtered.filter((e) => e.category === options.category);
     }
     if (options?.severity) {
-      filtered = filtered.filter(e => e.severity === options.severity);
+      filtered = filtered.filter((e) => e.severity === options.severity);
     }
     if (options?.unresolvedOnly) {
-      filtered = filtered.filter(e => !e.resolved);
+      filtered = filtered.filter((e) => !e.resolved);
     }
 
     return filtered.slice(0, options?.limit || 20);
@@ -241,6 +245,7 @@ class ErrorTelemetryService {
   }
 
   private async persistErrors(): Promise<void> {
+    if (!systemGuard.isReady) return; // DB unavailable — skip persist, keep in-memory
     try {
       const { setAppState } = await import('../database/service');
       await setAppState(ERROR_STORAGE_KEY, JSON.stringify(this.errors));

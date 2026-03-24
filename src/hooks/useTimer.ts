@@ -4,7 +4,13 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { timerService, formatTime, formatTimeHuman, TimerEvent, TimerState as ServiceTimerState } from '../services/timerService';
+import {
+  timerService,
+  formatTime,
+  formatTimeHuman,
+  TimerEvent,
+  TimerState as ServiceTimerState,
+} from '../services/timerService';
 
 export interface TimerHookState {
   state: ServiceTimerState;
@@ -20,28 +26,33 @@ export interface UseTimerReturn {
   // Exercise timer
   exerciseTimer: TimerHookState;
   startExercise: (seconds: number) => void;
-  
+
   // Rest timer
   restTimer: TimerHookState;
   startRest: (seconds: number) => void;
   skipRest: () => void;
   extendRest: (seconds: number) => void;
-  
+
   // Session timer
   sessionTimer: TimerHookState;
   startSession: (maxMinutes?: number) => void;
   endSession: () => { totalMinutes: number };
-  
+
   // Control
   pauseAll: () => void;
   resumeAll: () => void;
   stopAll: () => void;
-  
+
   // State
   isActive: boolean;
 }
 
-function createTimerState(timerState: { state: ServiceTimerState; remaining: number; elapsed: number; total: number }): TimerHookState {
+function createTimerState(timerState: {
+  state: ServiceTimerState;
+  remaining: number;
+  elapsed: number;
+  total: number;
+}): TimerHookState {
   return {
     ...timerState,
     formattedRemaining: formatTime(timerState.remaining),
@@ -52,13 +63,11 @@ function createTimerState(timerState: { state: ServiceTimerState; remaining: num
 
 export function useTimer(): UseTimerReturn {
   const [exerciseState, setExerciseState] = useState<TimerHookState>(
-    createTimerState(timerService.getExerciseTimer().getState())
+    createTimerState(timerService.getExerciseTimer().getState()),
   );
-  const [restState, setRestState] = useState<TimerHookState>(
-    createTimerState(timerService.getRestTimer().getState())
-  );
+  const [restState, setRestState] = useState<TimerHookState>(createTimerState(timerService.getRestTimer().getState()));
   const [sessionState, setSessionState] = useState<TimerHookState>(
-    createTimerState(timerService.getSessionTimer().getState())
+    createTimerState(timerService.getSessionTimer().getState()),
   );
   const [isActive, setIsActive] = useState(false);
 

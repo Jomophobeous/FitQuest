@@ -51,22 +51,44 @@ interface ModelData {
 // Entity patterns for extraction
 const ENTITY_PATTERNS: Record<string, string[]> = {
   muscle: [
-    'chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'biceps',
-    'triceps', 'abs', 'glutes', 'quads', 'hamstrings', 'calves',
-    'full body', 'upper body', 'lower body',
+    'chest',
+    'back',
+    'legs',
+    'shoulders',
+    'arms',
+    'core',
+    'biceps',
+    'triceps',
+    'abs',
+    'glutes',
+    'quads',
+    'hamstrings',
+    'calves',
+    'full body',
+    'upper body',
+    'lower body',
   ],
   exercise: [
-    'squat', 'deadlift', 'bench press', 'pullup', 'pushup', 'push-up',
-    'pull-up', 'overhead press', 'row', 'lunge', 'plank', 'dip',
-    'curl', 'crunch', 'burpee', 'clean', 'snatch',
+    'squat',
+    'deadlift',
+    'bench press',
+    'pullup',
+    'pushup',
+    'push-up',
+    'pull-up',
+    'overhead press',
+    'row',
+    'lunge',
+    'plank',
+    'dip',
+    'curl',
+    'crunch',
+    'burpee',
+    'clean',
+    'snatch',
   ],
-  activity: [
-    'run', 'walk', 'jog', 'bike', 'hike', 'swim', 'workout', 'exercise',
-    'sprint', 'cycle',
-  ],
-  body_part: [
-    'knee', 'back', 'shoulder', 'wrist', 'elbow', 'hip', 'neck', 'ankle',
-  ],
+  activity: ['run', 'walk', 'jog', 'bike', 'hike', 'swim', 'workout', 'exercise', 'sprint', 'cycle'],
+  body_part: ['knee', 'back', 'shoulder', 'wrist', 'elbow', 'hip', 'neck', 'ankle'],
 };
 
 const HANDLER_MAPPING: Record<TrainedIntentType, HandlerType> = {
@@ -106,12 +128,13 @@ export class TrainedIntentRouter {
       this.modelData = modelJson as ModelData;
 
       // Build vocabulary lookup
-      this.vocabMap = new Map(
-        Object.entries(this.modelData.vocabulary)
-      );
+      this.vocabMap = new Map(Object.entries(this.modelData.vocabulary));
 
       this.isLoaded = true;
-      if (__DEV__) console.log(`[TrainedIntentRouter] Model loaded: ${this.modelData.labels.length} classes, ${this.vocabMap.size} vocab`);
+      if (__DEV__)
+        console.log(
+          `[TrainedIntentRouter] Model loaded: ${this.modelData.labels.length} classes, ${this.vocabMap.size} vocab`,
+        );
       return true;
     } catch (error) {
       if (__DEV__) console.warn('[TrainedIntentRouter] Failed to load model, will use keyword fallback:', error);
@@ -150,7 +173,7 @@ export class TrainedIntentRouter {
     const topIntent = this.modelData.labels[indexed[0]!.idx] as TrainedIntentType;
     const confidence = indexed[0]!.prob;
 
-    const alternatives = indexed.slice(1, 3).map(s => ({
+    const alternatives = indexed.slice(1, 3).map((s) => ({
       intent: this.modelData!.labels[s.idx]! as TrainedIntentType,
       confidence: s.prob,
     }));
@@ -244,9 +267,9 @@ export class TrainedIntentRouter {
    */
   private softmax(scores: number[]): number[] {
     const maxScore = Math.max(...scores);
-    const exps = scores.map(s => Math.exp(s - maxScore));
+    const exps = scores.map((s) => Math.exp(s - maxScore));
     const sum = exps.reduce((a, b) => a + b, 0);
-    return exps.map(e => e / sum);
+    return exps.map((e) => e / sum);
   }
 
   /**
@@ -307,8 +330,8 @@ export class TrainedIntentRouter {
     if (/\b(calories|heart rate|sleep|bmi|weight|steps|recovery|health)\b/.test(text)) scores.HEALTH_QUERY += 3;
 
     // Activity tracking
-    if (/\b(start|begin|track|log|record)\b/.test(text) &&
-        /\b(run|walk|jog|workout|exercise|tracking)\b/.test(text)) scores.ACTIVITY_TRACKING += 3;
+    if (/\b(start|begin|track|log|record)\b/.test(text) && /\b(run|walk|jog|workout|exercise|tracking)\b/.test(text))
+      scores.ACTIVITY_TRACKING += 3;
 
     // Greeting/farewell
     if (/^(hey|hello|hi|morning|evening|yo|sup|howdy|greetings)\b/.test(text)) scores.GREETING += 5;

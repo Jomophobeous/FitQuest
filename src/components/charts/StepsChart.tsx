@@ -1,17 +1,13 @@
 /**
  * Steps Chart
- * 
+ *
  * Bar chart showing daily steps with goal indicator.
  */
 
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
-import {
-  ThemedChartWrapper,
-  useChartTheme,
-  MiniStat,
-} from './ThemedChart';
+import { ThemedChartWrapper, useChartTheme, MiniStat } from './ThemedChart';
 import type { StepsChartProps, StepDataPoint } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -27,21 +23,17 @@ function calculateStats(data: StepDataPoint[]) {
 
   const totalSteps = data.reduce((sum, d) => sum + d.steps, 0);
   const avgDaily = Math.round(totalSteps / data.length);
-  const bestDay = Math.max(...data.map(d => d.steps));
-  const goalDays = data.filter(d => d.metGoal).length;
+  const bestDay = Math.max(...data.map((d) => d.steps));
+  const goalDays = data.filter((d) => d.metGoal).length;
 
   // Calculate trend
   const midpoint = Math.floor(data.length / 2);
   const firstHalf = data.slice(0, midpoint);
   const secondHalf = data.slice(midpoint);
-  
-  const firstAvg = firstHalf.length > 0
-    ? firstHalf.reduce((s, d) => s + d.steps, 0) / firstHalf.length
-    : 0;
-  const secondAvg = secondHalf.length > 0
-    ? secondHalf.reduce((s, d) => s + d.steps, 0) / secondHalf.length
-    : 0;
-  
+
+  const firstAvg = firstHalf.length > 0 ? firstHalf.reduce((s, d) => s + d.steps, 0) / firstHalf.length : 0;
+  const secondAvg = secondHalf.length > 0 ? secondHalf.reduce((s, d) => s + d.steps, 0) / secondHalf.length : 0;
+
   const trend = firstAvg > 0 ? Math.round(((secondAvg - firstAvg) / firstAvg) * 100) : 0;
 
   return { totalSteps, avgDaily, bestDay, goalDays, trend };
@@ -76,7 +68,7 @@ function SimpleStepsBarChart({
   mutedColor,
 }: SimpleStepsBarChartProps) {
   const chartHeight = height - 40;
-  const maxValue = Math.max(...data.map(d => Math.max(d.steps, d.goal)), 1);
+  const maxValue = Math.max(...data.map((d) => Math.max(d.steps, d.goal)), 1);
   const barWidth = Math.max(8, Math.min(24, (SCREEN_WIDTH - 80) / data.length - 4));
   const avgGoal = data.length > 0 ? data[0]!.goal : 10000;
   const goalLineY = chartHeight - (avgGoal / maxValue) * chartHeight;
@@ -93,16 +85,14 @@ function SimpleStepsBarChart({
           },
         ]}
       >
-        <Text style={[styles.goalLabel, { color: warningColor }]}>
-          Goal: {formatSteps(avgGoal)}
-        </Text>
+        <Text style={[styles.goalLabel, { color: warningColor }]}>Goal: {formatSteps(avgGoal)}</Text>
       </View>
 
       {/* Bars */}
       <View style={styles.barsContainer}>
         {data.map((point, index) => {
           const barHeight = (point.steps / maxValue) * chartHeight;
-          
+
           return (
             <View key={point.date} style={styles.barColumn}>
               <View
@@ -116,10 +106,7 @@ function SimpleStepsBarChart({
                 ]}
               />
               {data.length <= 14 && (
-                <Text
-                  style={[styles.barLabel, { color: mutedColor }]}
-                  numberOfLines={1}
-                >
+                <Text style={[styles.barLabel, { color: mutedColor }]} numberOfLines={1}>
                   {formatDate(parseISO(point.date), data.length <= 7 ? 'EEE' : 'd')}
                 </Text>
               )}
@@ -130,12 +117,8 @@ function SimpleStepsBarChart({
 
       {/* Y-axis labels */}
       <View style={styles.yAxisLabels}>
-        <Text style={[styles.yLabel, { color: mutedColor }]}>
-          {formatSteps(maxValue)}
-        </Text>
-        <Text style={[styles.yLabel, { color: mutedColor }]}>
-          {formatSteps(Math.round(maxValue / 2))}
-        </Text>
+        <Text style={[styles.yLabel, { color: mutedColor }]}>{formatSteps(maxValue)}</Text>
+        <Text style={[styles.yLabel, { color: mutedColor }]}>{formatSteps(Math.round(maxValue / 2))}</Text>
         <Text style={[styles.yLabel, { color: mutedColor }]}>0</Text>
       </View>
     </View>
@@ -155,11 +138,11 @@ export function StepsChart({
 }: StepsChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 200;
-  
+
   const stats = useMemo(() => calculateStats(data), [data]);
-  
+
   const isEmpty = data.length === 0;
-  
+
   return (
     <ThemedChartWrapper
       title="Daily Steps"
@@ -170,19 +153,9 @@ export function StepsChart({
     >
       {/* Stats Row */}
       <View style={styles.statsRow}>
-        <MiniStat
-          label="Total"
-          value={formatSteps(stats.totalSteps)}
-        />
-        <MiniStat
-          label="Avg/Day"
-          value={formatSteps(stats.avgDaily)}
-          delta={stats.trend}
-        />
-        <MiniStat
-          label="Best Day"
-          value={formatSteps(stats.bestDay)}
-        />
+        <MiniStat label="Total" value={formatSteps(stats.totalSteps)} />
+        <MiniStat label="Avg/Day" value={formatSteps(stats.avgDaily)} delta={stats.trend} />
+        <MiniStat label="Best Day" value={formatSteps(stats.bestDay)} />
       </View>
 
       {/* Chart */}

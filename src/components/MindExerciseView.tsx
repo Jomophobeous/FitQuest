@@ -1,6 +1,6 @@
 /**
  * MindExerciseView
- * 
+ *
  * A completely different exercise experience for focus/mindfulness exercises.
  * Instead of reps, sets, and rest timers, this shows:
  *   - A breathing circle that pulses with the prescribed pattern
@@ -11,15 +11,7 @@
  */
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  useWindowDimensions,
-  TouchableOpacity,
-  Vibration,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions, TouchableOpacity, Vibration } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -48,28 +40,9 @@ const BREATH_CUES = {
     'Fill your lungs',
     'Breathe in, deeply',
   ],
-  holdIn: [
-    'Hold',
-    'Hold gently',
-    'Pause here',
-    'Stay',
-    'Hold it in',
-  ],
-  exhale: [
-    'Release',
-    'Let it go',
-    'Exhale slowly',
-    'Breathe out',
-    'Let the breath flow out',
-    'Release, gently',
-  ],
-  holdOut: [
-    'Rest',
-    'Be still',
-    'Wait',
-    'Empty and still',
-    'Pause',
-  ],
+  holdIn: ['Hold', 'Hold gently', 'Pause here', 'Stay', 'Hold it in'],
+  exhale: ['Release', 'Let it go', 'Exhale slowly', 'Breathe out', 'Let the breath flow out', 'Release, gently'],
+  holdOut: ['Rest', 'Be still', 'Wait', 'Empty and still', 'Pause'],
 } as const;
 
 type BreathPhaseKey = 'inhale' | 'holdIn' | 'exhale' | 'holdOut';
@@ -102,7 +75,7 @@ export default function MindExerciseView({
 }: MindExerciseViewProps) {
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
-  
+
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [phaseElapsed, setPhaseElapsed] = useState(0);
   const [totalElapsed, setTotalElapsed] = useState(0);
@@ -115,7 +88,10 @@ export default function MindExerciseView({
   // Breathing narration tracking
   const prevBreathPhaseRef = useRef<BreathPhaseKey | null>(null);
   const breathCueIndexRef = useRef<Record<BreathPhaseKey, number>>({
-    inhale: 0, holdIn: 0, exhale: 0, holdOut: 0,
+    inhale: 0,
+    holdIn: 0,
+    exhale: 0,
+    holdOut: 0,
   });
 
   // Reset all state when exercise changes (prevents timer bug on 2nd+ exercise)
@@ -145,34 +121,37 @@ export default function MindExerciseView({
   const breathScale = useSharedValue(1);
   const breathOpacity = useSharedValue(0.4);
 
-  const startBreathingAnimation = useCallback((pattern: BreathingPattern) => {
-    const cycleDuration = (pattern.inhale + pattern.holdIn + pattern.exhale + pattern.holdOut) * 1000;
-    const inhaleMs = pattern.inhale * 1000;
-    const holdInMs = pattern.holdIn * 1000;
-    const exhaleMs = pattern.exhale * 1000;
-    const holdOutMs = pattern.holdOut * 1000;
+  const startBreathingAnimation = useCallback(
+    (pattern: BreathingPattern) => {
+      const cycleDuration = (pattern.inhale + pattern.holdIn + pattern.exhale + pattern.holdOut) * 1000;
+      const inhaleMs = pattern.inhale * 1000;
+      const holdInMs = pattern.holdIn * 1000;
+      const exhaleMs = pattern.exhale * 1000;
+      const holdOutMs = pattern.holdOut * 1000;
 
-    breathScale.value = withRepeat(
-      withSequence(
-        withTiming(1.35, { duration: inhaleMs, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1.35, { duration: holdInMs }),
-        withTiming(1.0, { duration: exhaleMs, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1.0, { duration: holdOutMs }),
-      ),
-      -1, // infinite repeat
-      false,
-    );
-    breathOpacity.value = withRepeat(
-      withSequence(
-        withTiming(0.7, { duration: inhaleMs, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.7, { duration: holdInMs }),
-        withTiming(0.3, { duration: exhaleMs, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.3, { duration: holdOutMs }),
-      ),
-      -1,
-      false,
-    );
-  }, [breathScale, breathOpacity]);
+      breathScale.value = withRepeat(
+        withSequence(
+          withTiming(1.35, { duration: inhaleMs, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1.35, { duration: holdInMs }),
+          withTiming(1.0, { duration: exhaleMs, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1.0, { duration: holdOutMs }),
+        ),
+        -1, // infinite repeat
+        false,
+      );
+      breathOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.7, { duration: inhaleMs, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.7, { duration: holdInMs }),
+          withTiming(0.3, { duration: exhaleMs, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.3, { duration: holdOutMs }),
+        ),
+        -1,
+        false,
+      );
+    },
+    [breathScale, breathOpacity],
+  );
 
   const stopBreathingAnimation = useCallback(() => {
     cancelAnimation(breathScale);
@@ -189,10 +168,10 @@ export default function MindExerciseView({
   // Speak narration for current phase
   useEffect(() => {
     if (!voiceEnabled || !currentPhase?.narration || hasSpokenPhase) return;
-    
+
     const cancelToken = speakCancelRef.current;
     setHasSpokenPhase(true);
-    
+
     // Slight delay for bell phases
     const delay = currentPhase.bellAtStart ? 800 : 200;
     const timer = setTimeout(() => {
@@ -201,7 +180,7 @@ export default function MindExerciseView({
         audioService.speakNarration(currentPhase.narration);
       }
     }, delay);
-    
+
     return () => clearTimeout(timer);
   }, [currentPhaseIndex, voiceEnabled, hasSpokenPhase, currentPhase]);
 
@@ -250,7 +229,7 @@ export default function MindExerciseView({
       const now = Date.now();
       const newTotal = Math.floor((now - sessionStartRef.current) / 1000);
       const newPhaseElapsed = Math.floor((now - phaseStartRef.current) / 1000);
-      
+
       setTotalElapsed(newTotal);
       setPhaseElapsed(newPhaseElapsed);
 
@@ -322,22 +301,32 @@ export default function MindExerciseView({
   // Phase icon
   const phaseIcon = (type: MindPhaseType): string => {
     switch (type) {
-      case 'intro': return 'meditation';
-      case 'guided': return 'account-voice';
-      case 'silence': return 'ear-hearing-off';
-      case 'breathing': return 'weather-windy';
-      case 'closing': return 'white-balance-sunny';
-      default: return 'meditation';
+      case 'intro':
+        return 'meditation';
+      case 'guided':
+        return 'account-voice';
+      case 'silence':
+        return 'ear-hearing-off';
+      case 'breathing':
+        return 'weather-windy';
+      case 'closing':
+        return 'white-balance-sunny';
+      default:
+        return 'meditation';
     }
   };
 
   // Archetype color
   const accentColor = (() => {
     switch (timeline.archetype) {
-      case 'breathing': return theme.colors.accent;
-      case 'meditation': return theme.colors.purple;
-      case 'body_awareness': return theme.colors.blue;
-      case 'grounding': return theme.colors.warning;
+      case 'breathing':
+        return theme.colors.accent;
+      case 'meditation':
+        return theme.colors.purple;
+      case 'body_awareness':
+        return theme.colors.blue;
+      case 'grounding':
+        return theme.colors.warning;
     }
   })();
 
@@ -359,142 +348,124 @@ export default function MindExerciseView({
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Subtle background glow */}
-      <LinearGradient
-        colors={[accentColor + '08', 'transparent', 'transparent']}
-        style={StyleSheet.absoluteFill}
-      />
+      <LinearGradient colors={[accentColor + '08', 'transparent', 'transparent']} style={StyleSheet.absoluteFill} />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-      {/* Phase progress dots */}
-      <Animated.View entering={FadeIn.duration(300)} style={styles.phaseDots}>
-        {timeline.phases.map((phase: MindPhase, i: number) => (
-          <View key={i} style={styles.phaseDotWrap}>
-            <View
-              style={[
-                styles.phaseDot,
-                {
-                  backgroundColor: i < currentPhaseIndex
-                    ? accentColor
-                    : i === currentPhaseIndex
-                      ? accentColor
-                      : theme.colors.border,
-                  opacity: i <= currentPhaseIndex ? 1 : 0.4,
-                  width: i === currentPhaseIndex ? 24 : 8,
-                },
-              ]}
-            />
-          </View>
-        ))}
-      </Animated.View>
-
-      {/* Phase label */}
-      <Animated.View entering={FadeInDown.duration(300)} style={styles.phaseHeader}>
-        <MaterialCommunityIcons
-          name={phaseIcon(currentPhase?.type || 'intro') as any}
-          size={18}
-          color={accentColor}
-        />
-        <Text style={[styles.phaseLabel, { color: accentColor }]}>
-          {currentPhase?.label || 'Prepare'}
-        </Text>
-      </Animated.View>
-
-      {/* Breathing circle */}
-      <View style={[styles.circleContainer, { width: breathingCircleSize + 60, height: breathingCircleSize + 60 }]}>
-        {/* Outer ring (overall progress) */}
-        <View style={[styles.outerRing, { width: breathingCircleSize + 40, height: breathingCircleSize + 40, borderColor: accentColor + '15' }]} />
-        
-        {/* Animated breathing circle */}
-        <Animated.View
-          style={[
-            breathingStyle,
-            styles.breathingCircle,
-            {
-              width: breathingCircleSize,
-              height: breathingCircleSize,
-              borderRadius: breathingCircleSize / 2,
-            },
-          ]}
-        >
-          <LinearGradient
-            colors={[accentColor + '20', accentColor + '08']}
-            style={[
-              styles.breathingGradient,
-              { borderRadius: breathingCircleSize / 2 },
-            ]}
-          />
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Phase progress dots */}
+        <Animated.View entering={FadeIn.duration(300)} style={styles.phaseDots}>
+          {timeline.phases.map((phase: MindPhase, i: number) => (
+            <View key={i} style={styles.phaseDotWrap}>
+              <View
+                style={[
+                  styles.phaseDot,
+                  {
+                    backgroundColor:
+                      i < currentPhaseIndex ? accentColor : i === currentPhaseIndex ? accentColor : theme.colors.border,
+                    opacity: i <= currentPhaseIndex ? 1 : 0.4,
+                    width: i === currentPhaseIndex ? 24 : 8,
+                  },
+                ]}
+              />
+            </View>
+          ))}
         </Animated.View>
 
-        {/* Center content */}
-        <View style={styles.circleCenter}>
-          {breathLabel ? (
-            <Text style={[styles.breathText, { color: accentColor }]}>
-              {breathLabel}
-            </Text>
-          ) : currentPhase?.type === 'silence' ? (
-            <MaterialCommunityIcons name="meditation" size={36} color={accentColor + '60'} />
-          ) : (
-            <MaterialCommunityIcons name={phaseIcon(currentPhase?.type || 'intro') as any} size={32} color={accentColor + '50'} />
-          )}
-          
-          {/* Phase remaining */}
-          {currentPhase && (
-            <Text style={[styles.phaseTime, { color: theme.colors.textMuted }]}>
-              {formatTime(Math.max(0, currentPhase.duration - phaseElapsed))}
-            </Text>
-          )}
+        {/* Phase label */}
+        <Animated.View entering={FadeInDown.duration(300)} style={styles.phaseHeader}>
+          <MaterialCommunityIcons
+            name={phaseIcon(currentPhase?.type || 'intro') as any}
+            size={18}
+            color={accentColor}
+          />
+          <Text style={[styles.phaseLabel, { color: accentColor }]}>{currentPhase?.label || 'Prepare'}</Text>
+        </Animated.View>
+
+        {/* Breathing circle */}
+        <View style={[styles.circleContainer, { width: breathingCircleSize + 60, height: breathingCircleSize + 60 }]}>
+          {/* Outer ring (overall progress) */}
+          <View
+            style={[
+              styles.outerRing,
+              { width: breathingCircleSize + 40, height: breathingCircleSize + 40, borderColor: accentColor + '15' },
+            ]}
+          />
+
+          {/* Animated breathing circle */}
+          <Animated.View
+            style={[
+              breathingStyle,
+              styles.breathingCircle,
+              {
+                width: breathingCircleSize,
+                height: breathingCircleSize,
+                borderRadius: breathingCircleSize / 2,
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={[accentColor + '20', accentColor + '08']}
+              style={[styles.breathingGradient, { borderRadius: breathingCircleSize / 2 }]}
+            />
+          </Animated.View>
+
+          {/* Center content */}
+          <View style={styles.circleCenter}>
+            {breathLabel ? (
+              <Text style={[styles.breathText, { color: accentColor }]}>{breathLabel}</Text>
+            ) : currentPhase?.type === 'silence' ? (
+              <MaterialCommunityIcons name="meditation" size={36} color={accentColor + '60'} />
+            ) : (
+              <MaterialCommunityIcons
+                name={phaseIcon(currentPhase?.type || 'intro') as any}
+                size={32}
+                color={accentColor + '50'}
+              />
+            )}
+
+            {/* Phase remaining */}
+            {currentPhase && (
+              <Text style={[styles.phaseTime, { color: theme.colors.textMuted }]}>
+                {formatTime(Math.max(0, currentPhase.duration - phaseElapsed))}
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
 
-      {/* Exercise name */}
-      <Text style={[styles.exerciseName, { color: theme.colors.text }]}>
-        {exerciseName}
-      </Text>
+        {/* Exercise name */}
+        <Text style={[styles.exerciseName, { color: theme.colors.text }]}>{exerciseName}</Text>
 
-      {/* Intention text */}
-      <Text style={[styles.intentionText, { color: theme.colors.textMuted }]}>
-        {timeline.intention}
-      </Text>
+        {/* Intention text */}
+        <Text style={[styles.intentionText, { color: theme.colors.textMuted }]}>{timeline.intention}</Text>
       </ScrollView>
 
       {/* Fixed bottom: progress bar + cancel */}
       <View style={styles.bottomSection}>
         {/* Bottom bar: elapsed + progress */}
         <View style={styles.bottomBar}>
-        <Text style={[styles.elapsedText, { color: theme.colors.textMuted }]}>
-          {formatTime(totalElapsed)}
-        </Text>
-        
-        {/* Overall progress bar */}
-        <View style={[styles.progressTrack, { backgroundColor: theme.colors.border }]}>
-          <View
-            style={[
-              styles.progressFill,
-              {
-                width: `${overallProgress * 100}%`,
-                backgroundColor: accentColor,
-              },
-            ]}
-          />
-        </View>
-        
-        <Text style={[styles.elapsedText, { color: theme.colors.textMuted }]}>
-          {formatTime(timeline.totalDuration)}
-        </Text>
-      </View>
+          <Text style={[styles.elapsedText, { color: theme.colors.textMuted }]}>{formatTime(totalElapsed)}</Text>
 
-      {/* End early button */}
-      <TouchableOpacity
-        style={[styles.endButton, { borderColor: theme.colors.border }]}
-        onPress={onCancel}
-      >
-        <Text style={[styles.endButtonText, { color: theme.colors.textMuted }]}>
-          End Session
-        </Text>
-      </TouchableOpacity>
+          {/* Overall progress bar */}
+          <View style={[styles.progressTrack, { backgroundColor: theme.colors.border }]}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${overallProgress * 100}%`,
+                  backgroundColor: accentColor,
+                },
+              ]}
+            />
+          </View>
+
+          <Text style={[styles.elapsedText, { color: theme.colors.textMuted }]}>
+            {formatTime(timeline.totalDuration)}
+          </Text>
+        </View>
+
+        {/* End early button */}
+        <TouchableOpacity style={[styles.endButton, { borderColor: theme.colors.border }]} onPress={onCancel}>
+          <Text style={[styles.endButtonText, { color: theme.colors.textMuted }]}>End Session</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -3,17 +3,7 @@
  * Replaces generic MaterialCommunityIcons across splash, login, dashboard.
  */
 import React from 'react';
-import Svg, {
-  Defs,
-  LinearGradient,
-  Stop,
-  Rect,
-  Ellipse,
-  Path,
-  Circle,
-  Line,
-  Text as SvgText,
-} from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Stop, Rect, Ellipse, Path, Circle, Line, Text as SvgText } from 'react-native-svg';
 
 interface Props {
   /** Rendered width/height in dp (square) */

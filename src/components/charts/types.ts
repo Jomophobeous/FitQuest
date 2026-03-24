@@ -1,6 +1,6 @@
 /**
  * Chart Types
- * 
+ *
  * Shared type definitions for Victory-native based chart components.
  */
 
@@ -20,7 +20,7 @@ export interface LabeledDataPoint {
 }
 
 export interface WorkoutDataPoint {
-  date: string;           // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   durationMinutes: number;
   exerciseCount: number;
   isDeload?: boolean;
@@ -29,7 +29,7 @@ export interface WorkoutDataPoint {
 export interface XPDataPoint {
   date: string;
   totalXP: number;
-  deltaXP: number;        // XP gained that day
+  deltaXP: number; // XP gained that day
 }
 
 export interface StepDataPoint {
@@ -48,7 +48,7 @@ export interface HeartRateDataPoint {
 export interface SleepDataPoint {
   date: string;
   durationHours: number;
-  quality: number;        // 0-100
+  quality: number; // 0-100
   deepSleepPercent: number;
   remSleepPercent: number;
 }
@@ -60,7 +60,7 @@ export interface MuscleGroupDataPoint {
 }
 
 export interface StreakDay {
-  date: string;           // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   completed: boolean;
   workoutId?: string;
 }
@@ -78,15 +78,15 @@ export const DATE_RANGE_LABELS: Record<DateRangeOption, string> = {
   '30d': '30 Days',
   '90d': '90 Days',
   '1y': '1 Year',
-  'all': 'All Time',
+  all: 'All Time',
 };
 
 export const HEART_RATE_ZONE_COLORS: Record<HeartRateZone, string> = {
-  rest: '#6B7280',     // Gray
+  rest: '#6B7280', // Gray
   fat_burn: '#10B981', // Emerald
-  cardio: '#F59E0B',   // Amber
-  peak: '#EF4444',     // Red
-  max: '#DC2626',      // Dark Red
+  cardio: '#F59E0B', // Amber
+  peak: '#EF4444', // Red
+  max: '#DC2626', // Dark Red
 };
 
 export const MUSCLE_GROUP_COLORS: string[] = [
@@ -215,7 +215,7 @@ export interface MuscleDistributionChartProps extends BaseChartProps {
 
 export interface StreakCalendarProps {
   data: StreakDay[];
-  month: number;  // 0-11
+  month: number; // 0-11
   year: number;
   onDayPress?: (day: StreakDay) => void;
 }

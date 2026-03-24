@@ -11,7 +11,7 @@
  * Glass-morphism UI with animated metric rings and trend charts.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import {
   View,
@@ -23,26 +23,17 @@ import {
   TouchableOpacity,
   Alert,
   Text,
+  Modal,
+  Platform,
 } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  SlideInRight,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInUp, SlideInRight } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
-import {
-  GlassCard,
-  GradientButton,
-  SectionHeader,
-  AnimatedCounter,
-  PulseDot,
-} from '../src/components/ui/GlassUI';
+import { GlassCard, GradientButton, SectionHeader, AnimatedCounter, PulseDot } from '../src/components/ui/GlassUI';
 import { backgroundHealth } from '../src/engines/BackgroundHealthEngine';
 import { sleepEngine } from '../src/engines/SleepAnalysisEngine';
 import { encryptedDB } from '../src/security/EncryptedDatabase';
@@ -99,7 +90,9 @@ function HealthDashboardScreenInner() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [healthActionBusy, setHealthActionBusy] = useState(false);
-  const [healthProviderCode, setHealthProviderCode] = useState<'health_connect' | 'healthkit' | 'google_fit' | 'none' | 'unknown' | 'unavailable'>('none');
+  const [healthProviderCode, setHealthProviderCode] = useState<
+    'health_connect' | 'healthkit' | 'google_fit' | 'none' | 'unknown' | 'unavailable'
+  >('none');
   const [healthLastSyncLabel, setHealthLastSyncLabel] = useState<string>('');
   const [healthData, setHealthData] = useState<HealthData>({
     healthScore: 0,
@@ -112,24 +105,55 @@ function HealthDashboardScreenInner() {
     heartRate: null,
     sleepHours: null,
     sleepQuality: null,
-    recoveryScore: 75,
+    recoveryScore: 0,
     workoutsThisWeek: 0,
     workoutsGoal: 4,
     streakDays: 0,
     anomalyCount: 0,
     alerts: [],
   });
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [stepsTrend, setStepsTrend] = useState<TrendPoint[]>([]);
   const [sleepTrend, setSleepTrend] = useState<TrendPoint[]>([]);
 
+  // Sleep log modal state
+  const [showSleepModal, setShowSleepModal] = useState(false);
+  const [sleepBedHour, setSleepBedHour] = useState(22);
+  const [sleepBedMin, setSleepBedMin] = useState(0);
+  const [sleepWakeHour, setSleepWakeHour] = useState(6);
+  const [sleepWakeMin, setSleepWakeMin] = useState(30);
+  const [sleepSaving, setSleepSaving] = useState(false);
+
+  const isLoadingHealthRef = useRef(false);
+  const lastHealthLoadAt = useRef(0);
+  const HEALTH_LOAD_COOLDOWN_MS = 2000;
+  const healthLoadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const debouncedLoadHealth = useCallback(() => {
+    if (!dbReady) return;
+    if (healthLoadTimer.current) clearTimeout(healthLoadTimer.current);
+    healthLoadTimer.current = setTimeout(() => {
+      if (Date.now() - lastHealthLoadAt.current < HEALTH_LOAD_COOLDOWN_MS) return;
+      loadHealthData();
+    }, 300);
+  }, [dbReady]);
+
   const loadHealthData = useCallback(async () => {
+    if (isLoadingHealthRef.current) {
+      if (__DEV__) console.log('[HealthDashboard] loadHealthData:skipped (already loading)');
+      return;
+    }
+    isLoadingHealthRef.current = true;
+    lastHealthLoadAt.current = Date.now();
     try {
       try {
         const adapter = await getHealthAdapter();
         if (adapter) {
           const status = await adapter.getStatus();
           setHealthProviderCode((status.provider || 'unknown') as typeof healthProviderCode);
-          setHealthLastSyncLabel(status.lastSyncTime ? status.lastSyncTime.toLocaleString() : t('health.lastSyncNever'));
+          setHealthLastSyncLabel(
+            status.lastSyncTime ? status.lastSyncTime.toLocaleString() : t('health.lastSyncNever'),
+          );
         } else {
           setHealthProviderCode('none');
           setHealthLastSyncLabel(t('health.lastSyncNever'));
@@ -138,77 +162,73 @@ function HealthDashboardScreenInner() {
         setHealthProviderCode('unavailable');
       }
 
-      // Get composite health score from engine
-      const score = await backgroundHealth.calculateHealthScore();
-      const snapshot = await backgroundHealth.getSnapshot();
+      // Parallelize independent data fetches for faster loading
+      const weekStart = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const [score, snapshot, sleepResult, alertsResult, workoutResult, trendsResult] = await Promise.all([
+        backgroundHealth.calculateHealthScore().catch(() => 0),
+        backgroundHealth
+          .getSnapshot()
+          .catch(() => ({ steps: 0, activeMinutes: 0, calories: 0, restingHeartRate: null, recoveryScore: 0 })),
+        sleepEngine.getAnalytics(7).catch(() => ({ avgDurationMs: 0, avgQualityScore: 0 })),
+        encryptedDB.getActiveAlerts().catch(() => [] as any[]),
+        Promise.all([
+          getWorkoutCountSince(weekStart).catch(() => 0),
+          getWorkoutStreakCurrent('user_local_001').catch(() => 0),
+        ]),
+        Promise.all([
+          getStepHistory('user_local_001', 7).catch(() => []),
+          encryptedDB.getRecentHealthData('sleep_session', 7).catch(() => []),
+        ]),
+      ]);
 
-      // Get sleep data
+      // Process sleep data
       let sleepHrs: number | null = null;
       let sleepQual: number | null = null;
-      try {
-        const sleepAnalytics = await sleepEngine.getAnalytics(7);
-        if (sleepAnalytics.avgDurationMs > 0) {
-          sleepHrs = Math.round((sleepAnalytics.avgDurationMs / 3600000) * 10) / 10;
-          sleepQual = sleepAnalytics.avgQualityScore;
-        }
-      } catch (e) {
-        // Sleep data not available yet
+      if (sleepResult.avgDurationMs > 0) {
+        sleepHrs = Math.round((sleepResult.avgDurationMs / 3600000) * 10) / 10;
+        sleepQual = sleepResult.avgQualityScore;
       }
 
-      // Get active alerts
-      let alerts: HealthAlert[] = [];
-      let anomalyCount = 0;
-      try {
-        const rawAlerts = await encryptedDB.getActiveAlerts();
-        alerts = rawAlerts.map((a) => ({
-          id: a.id ?? String(Date.now()),
-          type: a.alertType ?? 'health',
-          severity: a.severity ?? 'LOW',
-          message: String((a.data as any)?.message ?? t('health.alert')),
-          created_at: a.created_at ?? Date.now(),
-        }));
-        anomalyCount = alerts.length;
-      } catch (e) {
-        // No alerts
-      }
+      // Process alerts
+      const alerts: HealthAlert[] = alertsResult.map((a: any) => ({
+        id: a.id ?? String(Date.now()),
+        type: a.alertType ?? 'health',
+        severity: a.severity ?? 'LOW',
+        message: String((a.data as any)?.message ?? t('health.alert')),
+        created_at: a.created_at ?? Date.now(),
+      }));
+      const anomalyCount = alerts.length;
 
-      // Get weekly workout count from DB
-      let workoutsThisWeek = 0;
-      let streakDays = 0;
-      try {
-        const weekStart = Date.now() - 7 * 24 * 60 * 60 * 1000;
-        workoutsThisWeek = await getWorkoutCountSince(weekStart);
-        streakDays = await getWorkoutStreakCurrent('user_local_001');
-      } catch (e) {
-        // DB not ready
-      }
+      // Unpack workout results
+      const [workoutsThisWeek, streakDays] = workoutResult;
 
       // Build step trend (last 7 days)
+      const [rows, sleepData] = trendsResult;
       const stepTrend: TrendPoint[] = [];
       const sleepTrendPts: TrendPoint[] = [];
-      try {
-        const dayNames = [t('day.sun'), t('day.mon'), t('day.tue'), t('day.wed'), t('day.thu'), t('day.fri'), t('day.sat')];
-        const rows = await getStepHistory('user_local_001', 7);
-        for (const row of (rows ?? []).reverse()) {
-          const d = new Date(row.date);
-          stepTrend.push({ label: dayNames[d.getDay()]!, value: row.steps });
+      const dayNames = [
+        t('day.sun'),
+        t('day.mon'),
+        t('day.tue'),
+        t('day.wed'),
+        t('day.thu'),
+        t('day.fri'),
+        t('day.sat'),
+      ];
+      for (const row of ((rows as any[]) ?? []).reverse()) {
+        const d = new Date(row.date);
+        stepTrend.push({ label: dayNames[d.getDay()]!, value: row.steps });
+      }
+      for (const entry of (sleepData as any[]) ?? []) {
+        try {
+          const parsed = typeof entry === 'object' ? entry : JSON.parse(String(entry));
+          sleepTrendPts.push({
+            label: t('common.day'),
+            value: (parsed as any)?.qualityScore ?? 0,
+          });
+        } catch {
+          // skip malformed
         }
-
-        // Sleep trend from encrypted storage
-        const sleepData = await encryptedDB.getRecentHealthData('sleep_session', 7);
-        for (const entry of sleepData ?? []) {
-          try {
-            const parsed = typeof entry === 'object' ? entry : JSON.parse(String(entry));
-            sleepTrendPts.push({
-              label: t('common.day'),
-              value: (parsed as any)?.qualityScore ?? 0,
-            });
-          } catch {
-            // skip malformed
-          }
-        }
-      } catch (e) {
-        // Trends not available
       }
 
       setStepsTrend(stepTrend);
@@ -236,6 +256,9 @@ function HealthDashboardScreenInner() {
       if (__DEV__) console.error('[HealthDashboard] Failed to load data:', error);
     } finally {
       setLoading(false);
+      setHasLoadedOnce(true);
+      isLoadingHealthRef.current = false;
+      lastHealthLoadAt.current = Date.now();
     }
   }, []);
 
@@ -243,11 +266,11 @@ function HealthDashboardScreenInner() {
     if (dbReady) loadHealthData();
   }, [dbReady, loadHealthData]);
 
-  // Subscribe to health data events from other screens
-  useDataSync('workout_completed', loadHealthData);
-  useDataSync('jog_completed', loadHealthData);
-  useDataSync('steps_updated', loadHealthData);
-  useDataSync('health_data_updated', loadHealthData);
+  // Subscribe to health data events from other screens (debounced)
+  useDataSync('workout_completed', debouncedLoadHealth);
+  useDataSync('jog_completed', debouncedLoadHealth);
+  useDataSync('steps_updated', debouncedLoadHealth);
+  useDataSync('health_data_updated', debouncedLoadHealth);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -274,22 +297,20 @@ function HealthDashboardScreenInner() {
     try {
       const result = await initializeHealthIntegration();
       if (!result.success) {
-        Alert.alert(
-          t('health.connectProvider'),
-          result.error || t('health.providerConnectFailed')
-        );
+        Alert.alert(t('health.connectProvider'), result.error || t('health.providerConnectFailed'));
         return;
       }
-      Alert.alert(
-        t('health.connectProvider'),
-        t('health.providerConnected')
-      );
+      Alert.alert(t('health.connectProvider'), t('health.providerConnected'));
       await loadHealthData();
     } catch (error) {
       let provider: 'health_connect' | 'healthkit' | 'google_fit' = 'health_connect';
       try {
         const adapter = await getHealthAdapter();
-        if (adapter?.provider === 'health_connect' || adapter?.provider === 'healthkit' || adapter?.provider === 'google_fit') {
+        if (
+          adapter?.provider === 'health_connect' ||
+          adapter?.provider === 'healthkit' ||
+          adapter?.provider === 'google_fit'
+        ) {
           provider = adapter.provider;
         }
       } catch {
@@ -299,10 +320,7 @@ function HealthDashboardScreenInner() {
         provider,
         action: 'auth',
       });
-      Alert.alert(
-        t('health.connectProvider'),
-        t('health.providerConnectFailed')
-      );
+      Alert.alert(t('health.connectProvider'), t('health.providerConnectFailed'));
     } finally {
       setHealthActionBusy(false);
     }
@@ -318,14 +336,18 @@ function HealthDashboardScreenInner() {
       });
       Alert.alert(
         t('health.syncNow'),
-        `${t('health.synced')}: ${result.synced}\n${t('health.errors')}: ${result.errors}`
+        `${t('health.synced')}: ${result.synced}\n${t('health.errors')}: ${result.errors}`,
       );
       await loadHealthData();
     } catch (error) {
       let provider: 'health_connect' | 'healthkit' | 'google_fit' = 'health_connect';
       try {
         const adapter = await getHealthAdapter();
-        if (adapter?.provider === 'health_connect' || adapter?.provider === 'healthkit' || adapter?.provider === 'google_fit') {
+        if (
+          adapter?.provider === 'health_connect' ||
+          adapter?.provider === 'healthkit' ||
+          adapter?.provider === 'google_fit'
+        ) {
           provider = adapter.provider;
         }
       } catch {
@@ -335,24 +357,64 @@ function HealthDashboardScreenInner() {
         provider,
         action: 'sync',
       });
-      Alert.alert(
-        t('health.syncNow'),
-        t('health.syncFailed')
-      );
+      Alert.alert(t('health.syncNow'), t('health.syncFailed'));
     } finally {
       setHealthActionBusy(false);
     }
   }, [healthActionBusy, loadHealthData, t]);
 
+  const handleSaveSleep = useCallback(async () => {
+    if (sleepSaving) return;
+    // Build Date objects: bedtime is "last night", wake is "this morning"
+    const now = new Date();
+    const bedtime = new Date(now);
+    bedtime.setHours(sleepBedHour, sleepBedMin, 0, 0);
+    const wakeTime = new Date(now);
+    wakeTime.setHours(sleepWakeHour, sleepWakeMin, 0, 0);
+    // If bedtime hour >= wake hour, bedtime was yesterday
+    if (bedtime.getTime() >= wakeTime.getTime()) {
+      bedtime.setDate(bedtime.getDate() - 1);
+    }
+    const durationMs = wakeTime.getTime() - bedtime.getTime();
+    if (durationMs <= 0) {
+      Alert.alert(t('health.logSleep'), t('health.sleepInvalidTimes'));
+      return;
+    }
+    if (durationMs > 24 * 60 * 60 * 1000) {
+      Alert.alert(t('health.logSleep'), t('health.sleepTooLong'));
+      return;
+    }
+    setSleepSaving(true);
+    try {
+      await sleepEngine.recordManualSession(bedtime, wakeTime);
+      setShowSleepModal(false);
+      Alert.alert(t('health.logSleep'), t('health.sleepSaved'));
+      await loadHealthData();
+    } catch (e) {
+      if (__DEV__) console.error('[HealthDashboard] Sleep log failed:', e);
+      Alert.alert(t('health.logSleep'), String(e));
+    } finally {
+      setSleepSaving(false);
+    }
+  }, [sleepBedHour, sleepBedMin, sleepWakeHour, sleepWakeMin, sleepSaving, loadHealthData, t]);
+
   // Health score color
-  const scoreColor =
-    healthData.healthScore >= 80
+  const hasAnyMetrics =
+    hasLoadedOnce &&
+    (healthData.healthScore > 0 ||
+      healthData.steps > 0 ||
+      healthData.activeMinutes > 0 ||
+      healthData.calories > 0 ||
+      healthData.workoutsThisWeek > 0);
+  const scoreColor = !hasAnyMetrics
+    ? theme.colors.textMuted
+    : healthData.healthScore >= 80
       ? theme.colors.accent
       : healthData.healthScore >= 60
-      ? theme.colors.warning
-      : healthData.healthScore >= 40
-      ? theme.colors.error
-      : theme.colors.error;
+        ? theme.colors.warning
+        : healthData.healthScore >= 40
+          ? theme.colors.error
+          : theme.colors.error;
 
   if (loading) {
     return (
@@ -373,11 +435,7 @@ function HealthDashboardScreenInner() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={theme.colors.accent}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.accent} />
         }
       >
         {/* ── MEDICAL DISCLAIMER ── */}
@@ -422,17 +480,21 @@ function HealthDashboardScreenInner() {
                     },
                   ]}
                 >
-                  <AnimatedCounter
-                    value={healthData.healthScore}
-                    style={{
-                      fontSize: 36,
-                      fontWeight: '800',
-                      color: scoreColor,
-                    }}
-                  />
+                  {hasAnyMetrics ? (
+                    <AnimatedCounter
+                      value={healthData.healthScore}
+                      style={{
+                        fontSize: 36,
+                        fontWeight: '800',
+                        color: scoreColor,
+                      }}
+                    />
+                  ) : (
+                    <Text style={{ fontSize: 36, fontWeight: '800', color: scoreColor }}>—</Text>
+                  )}
                 </View>
                 <ThemedText variant="caption" color="muted" style={{ marginTop: 8 }}>
-                  {t('health.healthScore')}
+                  {hasAnyMetrics ? t('health.healthScore') : t('health.noDataYet') || 'Start a workout to track'}
                 </ThemedText>
               </View>
 
@@ -459,7 +521,7 @@ function HealthDashboardScreenInner() {
                   <View style={styles.scoreDetailRow}>
                     <MaterialCommunityIcons name="heart-pulse" size={16} color={theme.colors.error} />
                     <ThemedText variant="caption" color="secondary" style={{ marginLeft: 6 }}>
-                    {t('health.heartRate')}: {healthData.heartRate} {t('health.bpm')}
+                      {t('health.heartRate')}: {healthData.heartRate} {t('health.bpm')}
                     </ThemedText>
                   </View>
                 )}
@@ -471,11 +533,7 @@ function HealthDashboardScreenInner() {
         {/* ── DAILY METRICS RINGS ── */}
         <Animated.View entering={FadeInDown.delay(200).duration(300)}>
           <SectionHeader title={t('health.todaysProgress')} />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.metricsRow}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.metricsRow}>
             <MetricRing
               value={healthData.steps}
               max={healthData.stepsGoal}
@@ -522,12 +580,7 @@ function HealthDashboardScreenInner() {
           <Animated.View entering={FadeInDown.delay(300).duration(300)}>
             <SectionHeader title={t('health.activeAlerts')} />
             {healthData.alerts.map((alert) => (
-              <AlertCard
-                key={alert.id}
-                alert={alert}
-                theme={theme}
-                onDismiss={dismissAlert}
-              />
+              <AlertCard key={alert.id} alert={alert} theme={theme} onDismiss={dismissAlert} />
             ))}
           </Animated.View>
         )}
@@ -560,43 +613,58 @@ function HealthDashboardScreenInner() {
               <MaterialCommunityIcons
                 name="shield-check"
                 size={24}
-                color={healthData.recoveryScore > 70 ? theme.colors.accent : theme.colors.warning}
+                color={
+                  hasAnyMetrics && healthData.recoveryScore > 70
+                    ? theme.colors.accent
+                    : hasAnyMetrics
+                      ? theme.colors.warning
+                      : theme.colors.textMuted
+                }
               />
-              <ThemedText variant="h3" style={{ marginTop: 8, color: healthData.recoveryScore > 70 ? theme.colors.accent : theme.colors.warning }}>
-                {healthData.recoveryScore}%
+              <ThemedText
+                variant="h3"
+                style={{
+                  marginTop: 8,
+                  color:
+                    hasAnyMetrics && healthData.recoveryScore > 70
+                      ? theme.colors.accent
+                      : hasAnyMetrics
+                        ? theme.colors.warning
+                        : theme.colors.textMuted,
+                }}
+              >
+                {hasAnyMetrics ? `${healthData.recoveryScore}%` : '—'}
               </ThemedText>
               <ThemedText variant="caption" color="muted">
                 {t('dashboard.recovery')}
               </ThemedText>
               <ThemedText variant="caption" color="muted" style={{ fontSize: 10, marginTop: 4 }}>
-                {healthData.recoveryScore > 80
-                  ? t('health.recoveryReady')
-                  : healthData.recoveryScore > 60
-                  ? t('health.recoveryModerate')
-                  : t('health.recoveryRest')}
+                {!hasAnyMetrics
+                  ? t('health.noDataYet') || 'No data yet'
+                  : healthData.recoveryScore > 80
+                    ? t('health.recoveryReady')
+                    : healthData.recoveryScore > 60
+                      ? t('health.recoveryModerate')
+                      : t('health.recoveryRest')}
               </ThemedText>
             </GlassCard>
 
-            <GlassCard style={{ ...styles.detailCard, flex: 1, marginLeft: 8 }}>
-              <MaterialCommunityIcons
-                name="moon-waning-crescent"
-                size={24}
-                color={theme.colors.purple}
-              />
-              <ThemedText variant="h3" style={{ marginTop: 8, color: theme.colors.purple }}>
-                {healthData.sleepQuality !== null
-                  ? `${healthData.sleepQuality}%`
-                  : '—'}
-              </ThemedText>
-              <ThemedText variant="caption" color="muted">
-                {t('health.sleepQuality')}
-              </ThemedText>
-              <ThemedText variant="caption" color="muted" style={{ fontSize: 10, marginTop: 4 }}>
-                {healthData.sleepHours !== null
-                  ? `${healthData.sleepHours}${t('health.avgThisWeek')}`
-                  : t('health.noSleepData')}
-              </ThemedText>
-            </GlassCard>
+            <TouchableOpacity onPress={() => setShowSleepModal(true)} activeOpacity={0.7}>
+              <GlassCard style={{ ...styles.detailCard, flex: 1, marginLeft: 8 }}>
+                <MaterialCommunityIcons name="moon-waning-crescent" size={24} color={theme.colors.purple} />
+                <ThemedText variant="h3" style={{ marginTop: 8, color: theme.colors.purple }}>
+                  {healthData.sleepQuality !== null ? `${healthData.sleepQuality}%` : '—'}
+                </ThemedText>
+                <ThemedText variant="caption" color="muted">
+                  {t('health.sleepQuality')}
+                </ThemedText>
+                <ThemedText variant="caption" color="muted" style={{ fontSize: 10, marginTop: 4 }}>
+                  {healthData.sleepHours !== null
+                    ? `${healthData.sleepHours}${t('health.avgThisWeek')}`
+                    : t('health.logSleep')}
+                </ThemedText>
+              </GlassCard>
+            </TouchableOpacity>
           </View>
         </Animated.View>
 
@@ -605,22 +673,60 @@ function HealthDashboardScreenInner() {
           <SectionHeader title={t('common.comingSoon') || 'Coming Soon'} />
           <GlassCard style={{ padding: 16, marginBottom: 16 }}>
             {[
-              { icon: 'heart-pulse' as const, label: t('health.heartRate') || 'Heart Rate Monitoring', desc: t('health.comingSoonDetail'), color: theme.colors.error },
-              { icon: 'sleep' as const, label: t('health.sleep') || 'Auto Sleep Tracking', desc: t('health.sleepComingSoon'), color: theme.colors.purple },
-              { icon: 'watch' as const, label: 'Wearable Sync', desc: 'Connect your smartwatch for real-time health data.', color: theme.colors.blue },
+              {
+                icon: 'heart-pulse' as const,
+                label: t('health.heartRate') || 'Heart Rate Monitoring',
+                desc: t('health.comingSoonDetail'),
+                color: theme.colors.error,
+              },
+              {
+                icon: 'watch' as const,
+                label: 'Wearable Sync',
+                desc: 'Connect your smartwatch for real-time health data.',
+                color: theme.colors.blue,
+              },
             ].map((item, idx) => (
-              <View key={item.label} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderTopWidth: idx > 0 ? 1 : 0, borderTopColor: theme.colors.border }}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: item.color + '18', justifyContent: 'center', alignItems: 'center' }}>
+              <View
+                key={item.label}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingVertical: 12,
+                  borderTopWidth: idx > 0 ? 1 : 0,
+                  borderTopColor: theme.colors.border,
+                }}
+              >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: item.color + '18',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
                   <MaterialCommunityIcons name={item.icon} size={20} color={item.color} />
                 </View>
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <ThemedText variant="bodySmall" weight="600" color="primary">{item.label}</ThemedText>
-                    <View style={{ backgroundColor: theme.colors.warning + '25', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                    <ThemedText variant="bodySmall" weight="600" color="primary">
+                      {item.label}
+                    </ThemedText>
+                    <View
+                      style={{
+                        backgroundColor: theme.colors.warning + '25',
+                        paddingHorizontal: 6,
+                        paddingVertical: 2,
+                        borderRadius: 4,
+                      }}
+                    >
                       <Text style={{ color: theme.colors.warning, fontSize: 9, fontWeight: '700' }}>SOON</Text>
                     </View>
                   </View>
-                  <ThemedText variant="caption" color="muted" numberOfLines={2}>{item.desc}</ThemedText>
+                  <ThemedText variant="caption" color="muted" numberOfLines={2}>
+                    {item.desc}
+                  </ThemedText>
                 </View>
               </View>
             ))}
@@ -632,13 +738,21 @@ function HealthDashboardScreenInner() {
           <SectionHeader title={t('health.quickActions')} />
           <View style={styles.actionsRow}>
             <GradientButton
+              title={t('health.logSleep')}
+              icon="moon-waning-crescent"
+              variant="primary"
+              size="sm"
+              onPress={() => setShowSleepModal(true)}
+              style={{ flex: 1, marginRight: 4 }}
+            />
+            <GradientButton
               title={healthActionBusy ? t('health.loading') : t('health.connectProvider')}
               variant="primary"
               size="sm"
               onPress={() => {
                 void handleConnectHealth();
               }}
-              style={{ flex: 1, marginRight: 8 }}
+              style={{ flex: 1, marginHorizontal: 4 }}
             />
             <GradientButton
               title={healthActionBusy ? t('health.loading') : t('health.syncNow')}
@@ -647,7 +761,7 @@ function HealthDashboardScreenInner() {
               onPress={() => {
                 void handleSyncHealth();
               }}
-              style={{ flex: 1, marginLeft: 8 }}
+              style={{ flex: 1, marginLeft: 4 }}
             />
           </View>
         </Animated.View>
@@ -655,9 +769,209 @@ function HealthDashboardScreenInner() {
         {/* Bottom spacer */}
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* ── SLEEP LOG MODAL ── */}
+      <Modal visible={showSleepModal} transparent animationType="fade" onRequestClose={() => setShowSleepModal(false)}>
+        <View style={sleepModalStyles.overlay}>
+          <View style={[sleepModalStyles.content, { backgroundColor: theme.colors.surface }]}>
+            <View style={[sleepModalStyles.iconWrap, { backgroundColor: theme.colors.purple + '18' }]}>
+              <MaterialCommunityIcons name="moon-waning-crescent" size={28} color={theme.colors.purple} />
+            </View>
+            <Text style={[sleepModalStyles.title, { color: theme.colors.text }]}>{t('health.logSleep')}</Text>
+
+            {/* Bedtime picker */}
+            <Text style={[sleepModalStyles.label, { color: theme.colors.textSecondary }]}>
+              {t('health.sleepBedtime')}
+            </Text>
+            <View style={sleepModalStyles.timeRow}>
+              <TimeWheel value={sleepBedHour} max={23} onChange={setSleepBedHour} theme={theme} />
+              <Text style={[sleepModalStyles.colon, { color: theme.colors.text }]}>:</Text>
+              <TimeWheel value={sleepBedMin} max={59} step={5} onChange={setSleepBedMin} theme={theme} />
+            </View>
+
+            {/* Wake time picker */}
+            <Text style={[sleepModalStyles.label, { color: theme.colors.textSecondary, marginTop: 16 }]}>
+              {t('health.sleepWakeTime')}
+            </Text>
+            <View style={sleepModalStyles.timeRow}>
+              <TimeWheel value={sleepWakeHour} max={23} onChange={setSleepWakeHour} theme={theme} />
+              <Text style={[sleepModalStyles.colon, { color: theme.colors.text }]}>:</Text>
+              <TimeWheel value={sleepWakeMin} max={59} step={5} onChange={setSleepWakeMin} theme={theme} />
+            </View>
+
+            {/* Duration preview */}
+            <SleepDurationPreview
+              bedHour={sleepBedHour}
+              bedMin={sleepBedMin}
+              wakeHour={sleepWakeHour}
+              wakeMin={sleepWakeMin}
+              theme={theme}
+            />
+
+            {/* Actions */}
+            <View style={sleepModalStyles.actions}>
+              <TouchableOpacity
+                onPress={() => setShowSleepModal(false)}
+                style={[sleepModalStyles.btn, { borderColor: theme.colors.border, borderWidth: 1 }]}
+              >
+                <Text style={[sleepModalStyles.btnText, { color: theme.colors.text }]}>{t('common.cancel')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => void handleSaveSleep()}
+                disabled={sleepSaving}
+                style={[sleepModalStyles.btn, { backgroundColor: theme.colors.purple, opacity: sleepSaving ? 0.5 : 1 }]}
+              >
+                <Text style={[sleepModalStyles.btnText, { color: theme.colors.onAccent }]}>
+                  {sleepSaving ? '...' : t('common.save')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
+
+// ============================================
+// SLEEP MODAL HELPERS
+// ============================================
+
+function TimeWheel({
+  value,
+  max,
+  step = 1,
+  onChange,
+  theme,
+}: {
+  value: number;
+  max: number;
+  step?: number;
+  onChange: (v: number) => void;
+  theme: any;
+}) {
+  const inc = () => {
+    const next = value + step;
+    onChange(next > max ? 0 : next);
+  };
+  const dec = () => {
+    const next = value - step;
+    // Snap to the highest valid multiple of step within range
+    onChange(next < 0 ? max - (max % step) : next);
+  };
+  const display = String(value).padStart(2, '0');
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <TouchableOpacity onPress={inc} hitSlop={8} accessibilityLabel="Increase">
+        <MaterialCommunityIcons name="chevron-up" size={28} color={theme.colors.textSecondary} />
+      </TouchableOpacity>
+      <View
+        style={{
+          width: 56,
+          height: 48,
+          borderRadius: 12,
+          backgroundColor: theme.colors.surfaceVariant,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 22, fontWeight: '700', color: theme.colors.text }}>{display}</Text>
+      </View>
+      <TouchableOpacity onPress={dec} hitSlop={8} accessibilityLabel="Decrease">
+        <MaterialCommunityIcons name="chevron-down" size={28} color={theme.colors.textSecondary} />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function SleepDurationPreview({
+  bedHour,
+  bedMin,
+  wakeHour,
+  wakeMin,
+  theme,
+}: {
+  bedHour: number;
+  bedMin: number;
+  wakeHour: number;
+  wakeMin: number;
+  theme: any;
+}) {
+  let totalMin = wakeHour * 60 + wakeMin - (bedHour * 60 + bedMin);
+  if (totalMin <= 0) totalMin += 24 * 60;
+  const hrs = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  return (
+    <View style={{ alignItems: 'center', marginTop: 16 }}>
+      <Text style={{ fontSize: 14, color: theme.colors.textMuted }}>
+        {hrs}h {mins > 0 ? `${mins}m` : ''}
+      </Text>
+    </View>
+  );
+}
+
+const sleepModalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  content: {
+    width: '100%',
+    maxWidth: 360,
+    borderRadius: 20,
+    padding: 24,
+    alignItems: 'center',
+  },
+  iconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '800',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '600',
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  colon: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+    marginTop: 24,
+  },
+  btn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnText: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+});
 
 // ============================================
 // STYLES
@@ -746,7 +1060,10 @@ const styles = StyleSheet.create({
 export default function HealthDashboardScreen() {
   const router = useRouter();
   return (
-    <ScreenErrorBoundary screenName="Health Dashboard" onGoBack={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
+    <ScreenErrorBoundary
+      screenName="Health Dashboard"
+      onGoBack={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+    >
       <PremiumGate featureName="Health Dashboard">
         <ScreenTutorial
           screenKey="health-dashboard"

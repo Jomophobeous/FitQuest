@@ -80,6 +80,15 @@ async function decodeEncryptedBackup(rawJson: string, passphrase?: string): Prom
     throw new Error('[Backup] Invalid backup file (missing payload)');
   }
 
+  // Validate schema version compatibility
+  if (parsed.meta?.schema_version != null) {
+    if (parsed.meta.schema_version > SCHEMA_VERSION) {
+      throw new Error(
+        `[Backup] Incompatible backup: schema v${parsed.meta.schema_version} is newer than current v${SCHEMA_VERSION}. Update the app first.`,
+      );
+    }
+  }
+
   const key = await resolveBackupKey(passphrase);
 
   let decrypted: string;
@@ -113,9 +122,7 @@ export async function listEncryptedBackups(): Promise<BackupListItem[]> {
   await ensureDir(BACKUP_DIR);
 
   const names = await FileSystem.readDirectoryAsync(BACKUP_DIR);
-  const backupNames = names
-    .filter((n) => n.startsWith('fitquest_backup_') && n.endsWith('.json'))
-    .sort();
+  const backupNames = names.filter((n) => n.startsWith('fitquest_backup_') && n.endsWith('.json')).sort();
 
   const items: BackupListItem[] = [];
   for (const filename of backupNames) {
@@ -127,10 +134,7 @@ export async function listEncryptedBackups(): Promise<BackupListItem[]> {
       uri,
       filename,
       bytes: info.size ?? 0,
-      modified_at:
-        typeof info.modificationTime === 'number'
-          ? Math.round(info.modificationTime * 1000)
-          : Date.now(),
+      modified_at: typeof info.modificationTime === 'number' ? Math.round(info.modificationTime * 1000) : Date.now(),
     });
   }
 
@@ -151,8 +155,7 @@ export async function deleteEncryptedBackup(backupUri: string): Promise<void> {
 export async function exportEncryptedBackup(options?: {
   passphrase?: string;
   destinationUri?: string;
-}): Promise<{ uri: string; bytes: number }>
-{
+}): Promise<{ uri: string; bytes: number }> {
   const createdAt = Date.now();
   const dbUri = getDatabaseFileUri();
 
@@ -174,10 +177,7 @@ export async function exportEncryptedBackup(options?: {
   };
 
   const key = await resolveBackupKey(options?.passphrase);
-  const payload = await encryptV3(
-    JSON.stringify({ meta, db_base64: dbBase64 }),
-    key
-  );
+  const payload = await encryptV3(JSON.stringify({ meta, db_base64: dbBase64 }), key);
 
   const bundle: EncryptedBackupFile = { meta, payload };
 
@@ -200,10 +200,7 @@ export async function exportEncryptedBackup(options?: {
  *
  * WARNING: This replaces the entire local database.
  */
-export async function importEncryptedBackup(options: {
-  backupUri: string;
-  passphrase?: string;
-}): Promise<void> {
+export async function importEncryptedBackup(options: { backupUri: string; passphrase?: string }): Promise<void> {
   const raw = await FileSystem.readAsStringAsync(options.backupUri, {
     encoding: FileSystem.EncodingType.UTF8,
   });

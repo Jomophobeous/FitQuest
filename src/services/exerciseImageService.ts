@@ -1,15 +1,15 @@
 /**
  * Exercise Image Service
- * 
+ *
  * Manages the exercise image asset pipeline:
  * - On Android: copies bundled APK assets to documentDirectory on first launch
  * - On other platforms: expects images in documentDirectory (deployed via adb push)
  * - Tracks deployment status in app_state
  * - Provides diagnostics (expected vs. actual image count)
- * 
+ *
  * Images are sourced from workspace-repos/exercise-content/free-exercise-db/
  * and deployed to documentDirectory/exercises/{ExerciseName}/{frame}.jpg
- * 
+ *
  * DB stores image_path as "ExerciseName/0.jpg" — files on disk live at:
  *   documentDirectory/exercises/ExerciseName/0.jpg
  */
@@ -31,10 +31,9 @@ const DEPLOYMENT_KEY = 'exercise_images_deployed';
  */
 export async function areImagesDeployed(): Promise<boolean> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<{ value: string }>(
-    `SELECT value FROM app_state WHERE key = ?`,
-    [DEPLOYMENT_KEY]
-  );
+  const result = await db.getFirstAsync<{ value: string }>(`SELECT value FROM app_state WHERE key = ?`, [
+    DEPLOYMENT_KEY,
+  ]);
   return result?.value === 'true';
 }
 
@@ -43,10 +42,9 @@ export async function areImagesDeployed(): Promise<boolean> {
  */
 export async function markImagesDeployed(): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `INSERT OR REPLACE INTO app_state (key, value, updated_at) VALUES (?, 'true', datetime('now'))`,
-    [DEPLOYMENT_KEY]
-  );
+  await db.runAsync(`INSERT OR REPLACE INTO app_state (key, value, updated_at) VALUES (?, 'true', datetime('now'))`, [
+    DEPLOYMENT_KEY,
+  ]);
 }
 
 /**
@@ -62,15 +60,11 @@ export async function getImageDiagnostics(): Promise<{
 }> {
   const db = await getDatabase();
 
-  const expectedResult = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercise_images`
-  );
+  const expectedResult = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM exercise_images`);
   const exercisesWithImagesResult = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(DISTINCT exercise_id) as count FROM exercise_images`
+    `SELECT COUNT(DISTINCT exercise_id) as count FROM exercise_images`,
   );
-  const totalExercisesResult = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercises`
-  );
+  const totalExercisesResult = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM exercises`);
 
   // Count actual files on disk
   let deployedCount = 0;
@@ -83,7 +77,7 @@ export async function getImageDiagnostics(): Promise<{
         const exerciseInfo = await FileSystem.getInfoAsync(exercisePath);
         if (exerciseInfo.isDirectory) {
           const files = await FileSystem.readDirectoryAsync(exercisePath);
-          deployedCount += files.filter(f => f.endsWith('.jpg') || f.endsWith('.png') || f.endsWith('.webp')).length;
+          deployedCount += files.filter((f) => f.endsWith('.jpg') || f.endsWith('.png') || f.endsWith('.webp')).length;
         }
       }
     }
@@ -103,7 +97,7 @@ export async function getImageDiagnostics(): Promise<{
 
 /**
  * Resolve the file system path for an exercise image.
- * 
+ *
  * Given a DB image_path like "3_4_Sit-Up/0.jpg", returns the full file:// URI.
  */
 export function resolveImagePath(imagePath: string): string {
@@ -128,7 +122,7 @@ export async function ensureImageDirectory(): Promise<void> {
 async function deployAndroidAssetImages(): Promise<number> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<{ image_path: string }>(
-    `SELECT DISTINCT image_path FROM exercise_images ORDER BY image_path`
+    `SELECT DISTINCT image_path FROM exercise_images ORDER BY image_path`,
   );
 
   if (rows.length === 0) return 0;
@@ -175,7 +169,7 @@ async function deployAndroidAssetImages(): Promise<number> {
 
     // Yield to UI thread between batches
     if (i + BATCH_SIZE < rows.length) {
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
   }
 
@@ -186,7 +180,7 @@ async function deployAndroidAssetImages(): Promise<number> {
  * Initialize exercise images on first launch.
  * On Android: copies images from APK assets to documentDirectory.
  * On other platforms: creates the base directory and checks deployment status.
- * 
+ *
  * Verifies actual files on disk — re-deploys if the flag was set but images are missing.
  */
 export async function initializeExerciseImages(): Promise<void> {
@@ -207,10 +201,7 @@ export async function initializeExerciseImages(): Promise<void> {
       // Flag was set but images are missing — clear it and re-deploy
       if (__DEV__) console.log('[ExerciseImages] Flag set but images missing on disk — re-deploying...');
       const db = await getDatabase();
-      await db.runAsync(
-        `DELETE FROM app_state WHERE key = ?`,
-        [DEPLOYMENT_KEY]
-      );
+      await db.runAsync(`DELETE FROM app_state WHERE key = ?`, [DEPLOYMENT_KEY]);
     } catch {
       return; // Can't verify — trust the flag
     }

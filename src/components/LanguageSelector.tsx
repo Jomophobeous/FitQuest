@@ -4,16 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Modal,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  TextInput,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Modal, Text, TouchableOpacity, FlatList, TextInput, StyleSheet, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -32,11 +23,7 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
   const filtered = useMemo(() => {
     if (!search.trim()) return SUPPORTED_LANGUAGES;
     const q = search.toLowerCase();
-    return SUPPORTED_LANGUAGES.filter(
-      (l) =>
-        l.name.toLowerCase().includes(q) ||
-        l.code.toLowerCase().includes(q),
-    );
+    return SUPPORTED_LANGUAGES.filter((l) => l.name.toLowerCase().includes(q) || l.code.toLowerCase().includes(q));
   }, [search]);
 
   const handleSelect = (code: string) => {
@@ -57,13 +44,13 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
             backgroundColor: isActive
               ? theme.colors.accent + '18'
               : theme.isDark
-              ? 'rgba(255,255,255,0.05)'
-              : 'rgba(0,0,0,0.03)',
+                ? 'rgba(255,255,255,0.05)'
+                : 'rgba(0,0,0,0.03)',
             borderColor: isActive
               ? theme.colors.accent + '40'
               : theme.isDark
-              ? 'rgba(255,255,255,0.06)'
-              : 'rgba(0,0,0,0.05)',
+                ? 'rgba(255,255,255,0.06)'
+                : 'rgba(0,0,0,0.05)',
           },
         ]}
       >
@@ -80,28 +67,15 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
           >
             {item.name}
           </Text>
-          <Text style={[styles.langCode, { color: theme.colors.textMuted }]}>
-            {item.code.toUpperCase()}
-          </Text>
+          <Text style={[styles.langCode, { color: theme.colors.textMuted }]}>{item.code.toUpperCase()}</Text>
         </View>
-        {!!isActive && (
-          <MaterialCommunityIcons
-            name="check-circle"
-            size={20}
-            color={theme.colors.accent}
-          />
-        )}
+        {!!isActive && <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.accent} />}
       </TouchableOpacity>
     );
   };
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={[styles.overlay, { backgroundColor: theme.colors.overlay }]}>
         <View
           style={[
@@ -114,15 +88,9 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>
-              {t('profile.language')}
-            </Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>{t('profile.language')}</Text>
             <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
-              <MaterialCommunityIcons
-                name="close"
-                size={22}
-                color={theme.colors.textMuted}
-              />
+              <MaterialCommunityIcons name="close" size={22} color={theme.colors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -131,23 +99,15 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
             style={[
               styles.searchWrap,
               {
-                backgroundColor: theme.isDark
-                  ? 'rgba(255,255,255,0.06)'
-                  : 'rgba(0,0,0,0.04)',
-                borderColor: theme.isDark
-                  ? 'rgba(255,255,255,0.08)'
-                  : 'rgba(0,0,0,0.06)',
+                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
               },
             ]}
           >
-            <MaterialCommunityIcons
-              name="magnify"
-              size={18}
-              color={theme.colors.textMuted}
-            />
+            <MaterialCommunityIcons name="magnify" size={18} color={theme.colors.textMuted} />
             <TextInput
               style={[styles.searchInput, { color: theme.colors.text }]}
-              placeholder={t('library.search')}
+              placeholder={t('profile.searchLanguages')}
               placeholderTextColor={theme.colors.textMuted}
               value={search}
               onChangeText={setSearch}

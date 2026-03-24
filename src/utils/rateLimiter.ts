@@ -70,7 +70,7 @@ class RateLimiterService {
 
     // Slide the window — remove expired timestamps
     const windowStart = now - config.windowMs;
-    entry.timestamps = entry.timestamps.filter(t => t > windowStart);
+    entry.timestamps = entry.timestamps.filter((t) => t > windowStart);
 
     // Check rate
     if (entry.timestamps.length >= config.maxAttempts) {
@@ -79,9 +79,7 @@ class RateLimiterService {
         entry.lockedUntil = now + config.lockoutMs;
       }
       const oldestInWindow = entry.timestamps[0] ?? now;
-      const retryAfter = config.lockoutMs > 0
-        ? config.lockoutMs
-        : oldestInWindow + config.windowMs - now;
+      const retryAfter = config.lockoutMs > 0 ? config.lockoutMs : oldestInWindow + config.windowMs - now;
 
       return {
         allowed: false,
@@ -115,7 +113,7 @@ class RateLimiterService {
     }
 
     const windowStart = now - config.windowMs;
-    const activeTimestamps = entry.timestamps.filter(t => t > windowStart);
+    const activeTimestamps = entry.timestamps.filter((t) => t > windowStart);
     const remaining = config.maxAttempts - activeTimestamps.length;
 
     return {

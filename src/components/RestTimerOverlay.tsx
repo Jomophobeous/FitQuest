@@ -11,14 +11,7 @@
  */
 
 import React, { useEffect, useRef, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Vibration,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, Vibration } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
@@ -119,7 +112,7 @@ export default function RestTimerOverlay({
   const breatheLabel = useMemo(() => {
     if (!visible) return '';
     // Approximate which phase based on remaining seconds mod cycle length
-    const cyclePos = ((Date.now() / 1000) % (CYCLE_MS / 1000));
+    const cyclePos = (Date.now() / 1000) % (CYCLE_MS / 1000);
     if (cyclePos < BREATHE_IN_MS / 1000) return t('fitquest.breatheIn') ?? 'Breathe In';
     if (cyclePos < (BREATHE_IN_MS + HOLD_MS) / 1000) return t('fitquest.hold') ?? 'Hold';
     return t('fitquest.breatheOut') ?? 'Breathe Out';
@@ -139,25 +132,22 @@ export default function RestTimerOverlay({
   }, [visible, remaining]);
 
   // ── Ring colour: phase-aware with urgency shift in last 5 s ──
-  const phaseColor = phase === 'warmup' ? theme.colors.success
-    : phase === 'cooldown' ? theme.colors.blue
-    : theme.colors.accent;
+  const phaseColor =
+    phase === 'warmup' ? theme.colors.success : phase === 'cooldown' ? theme.colors.blue : theme.colors.accent;
   const ringColor = remaining <= 5 ? theme.colors.error : phaseColor;
 
   // Phase-specific rest label
-  const restLabelText = phase === 'warmup' ? (t('fitquest.getReady') ?? 'GET READY')
-    : phase === 'cooldown' ? (t('fitquest.recover') ?? 'RECOVER')
-    : (t('fitquest.restTime') ?? 'REST');
+  const restLabelText =
+    phase === 'warmup'
+      ? (t('fitquest.getReady') ?? 'GET READY')
+      : phase === 'cooldown'
+        ? (t('fitquest.recover') ?? 'RECOVER')
+        : (t('fitquest.restTime') ?? 'REST');
 
   if (!visible) return null;
 
   return (
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent={false}
-      statusBarTranslucent
-    >
+    <Modal visible={visible} animationType="fade" transparent={false} statusBarTranslucent>
       <View style={[styles.bg, { backgroundColor: theme.colors.background }]}>
         <SafeAreaView style={styles.safeArea}>
           {/* ── Breathing glow circle (behind ring) ── */}
@@ -177,20 +167,14 @@ export default function RestTimerOverlay({
           {/* ── Countdown Ring ── */}
           <Animated.View entering={ZoomIn.duration(250)} style={styles.ringWrap}>
             <CountdownRing progress={progress} size={220} strokeWidth={12} color={ringColor}>
-              <Text style={[styles.timerDigits, { color: theme.colors.text }]}>
-                {formattedRemaining}
-              </Text>
-              <Text style={[styles.restLabel, { color: theme.colors.textMuted }]}>
-                {restLabelText}
-              </Text>
+              <Text style={[styles.timerDigits, { color: theme.colors.text }]}>{formattedRemaining}</Text>
+              <Text style={[styles.restLabel, { color: theme.colors.textMuted }]}>{restLabelText}</Text>
             </CountdownRing>
           </Animated.View>
 
           {/* ── Breathing label ── */}
           <Animated.View entering={FadeIn.delay(300).duration(200)}>
-            <Text style={[styles.breatheLabel, { color: theme.colors.textSecondary }]}>
-              {breatheLabel}
-            </Text>
+            <Text style={[styles.breatheLabel, { color: theme.colors.textSecondary }]}>{breatheLabel}</Text>
           </Animated.View>
 
           {/* ── Extend Rest +30 s ── */}
@@ -209,10 +193,7 @@ export default function RestTimerOverlay({
           {nextExercise && (
             <Animated.View
               entering={FadeInUp.delay(250).duration(200)}
-              style={[
-                styles.nextCard,
-                { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-              ]}
+              style={[styles.nextCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
             >
               <Text style={[styles.nextLabel, { color: theme.colors.textMuted }]}>
                 {t('fitquest.nextUp') ?? 'UP NEXT'}
@@ -238,7 +219,10 @@ export default function RestTimerOverlay({
           {/* ── Skip Rest ── */}
           <Animated.View entering={FadeInUp.delay(350).duration(200)}>
             <TouchableOpacity
-              style={[styles.skipBtn, { borderColor: theme.colors.accent, backgroundColor: theme.colors.accent + '12' }]}
+              style={[
+                styles.skipBtn,
+                { borderColor: theme.colors.accent, backgroundColor: theme.colors.accent + '12' },
+              ]}
               onPress={onSkip}
               activeOpacity={0.7}
             >

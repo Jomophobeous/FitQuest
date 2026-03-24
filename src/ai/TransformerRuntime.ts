@@ -57,11 +57,7 @@ export interface AttentionOptions {
 /**
  * Matrix-vector multiply (Float64): out[i] = bias[i] + Σ_j(input[j] × weights[i][j])
  */
-export function linearF64(
-  input: Float64Array,
-  weights: number[][],
-  bias: number[]
-): Float64Array {
+export function linearF64(input: Float64Array, weights: number[][], bias: number[]): Float64Array {
   const output = new Float64Array(weights.length);
   for (let i = 0; i < weights.length; i++) {
     let sum = bias[i] ?? 0;
@@ -77,11 +73,7 @@ export function linearF64(
 /**
  * Matrix-vector multiply (number[]): out[i] = bias[i] + Σ_j(input[j] × weights[i][j])
  */
-export function linearNum(
-  input: number[],
-  weights: number[][],
-  bias: number[]
-): number[] {
+export function linearNum(input: number[], weights: number[][], bias: number[]): number[] {
   const output = new Array(weights.length).fill(0);
   for (let i = 0; i < weights.length; i++) {
     let sum = bias[i] ?? 0;
@@ -96,12 +88,7 @@ export function linearNum(
 /**
  * Layer normalization: ((x - μ) / σ) × γ + β
  */
-export function layerNorm(
-  input: Float64Array,
-  weight: number[],
-  bias: number[],
-  eps = 1e-12
-): Float64Array {
+export function layerNorm(input: Float64Array, weight: number[], bias: number[], eps = 1e-12): Float64Array {
   const n = input.length;
   let mean = 0;
   for (let i = 0; i < n; i++) mean += input[i]!;
@@ -152,16 +139,18 @@ export function softmaxF64(logits: Float64Array): Float64Array {
  */
 export function softmax(logits: number[]): number[] {
   const max = Math.max(...logits);
-  const exps = logits.map(l => Math.exp(l - max));
+  const exps = logits.map((l) => Math.exp(l - max));
   const sum = exps.reduce((a, b) => a + b, 0);
-  return exps.map(e => e / sum);
+  return exps.map((e) => e / sum);
 }
 
 /**
  * Cosine similarity between two Float64Array vectors.
  */
 export function cosineSimilarityF64(a: Float64Array, b: Float64Array): number {
-  let dot = 0, normA = 0, normB = 0;
+  let dot = 0,
+    normA = 0,
+    normB = 0;
   const len = Math.min(a.length, b.length);
   for (let i = 0; i < len; i++) {
     dot += a[i]! * b[i]!;
@@ -201,9 +190,9 @@ export function transformerLayer(
   const mask = options?.attentionMask;
 
   // --- Q, K, V projections ---
-  const Q = input.map(h => linearF64(h, layer.queryWeight, layer.queryBias));
-  const K = kvSource.map(h => linearF64(h, layer.keyWeight, layer.keyBias));
-  const V = kvSource.map(h => linearF64(h, layer.valueWeight, layer.valueBias));
+  const Q = input.map((h) => linearF64(h, layer.queryWeight, layer.queryBias));
+  const K = kvSource.map((h) => linearF64(h, layer.keyWeight, layer.keyBias));
+  const V = kvSource.map((h) => linearF64(h, layer.valueWeight, layer.valueBias));
 
   // --- Multi-head attention ---
   const attnOutput = new Array(seqLen).fill(null).map(() => new Float64Array(hidden));
@@ -242,9 +231,7 @@ export function transformerLayer(
   }
 
   // --- Attention output projection + residual + LayerNorm ---
-  const projected = attnOutput.map(v =>
-    linearF64(v, layer.attOutputWeight, layer.attOutputBias)
-  );
+  const projected = attnOutput.map((v) => linearF64(v, layer.attOutputWeight, layer.attOutputBias));
 
   let output = projected.map((v, i) => {
     const res = new Float64Array(hidden);
@@ -255,7 +242,7 @@ export function transformerLayer(
   });
 
   // --- FFN: linear → GELU → linear + residual + LayerNorm ---
-  const ffnOut = output.map(v => {
+  const ffnOut = output.map((v) => {
     const inter = linearF64(v, layer.ffnWeight, layer.ffnBias);
     const activated = new Float64Array(inter.length);
     for (let k = 0; k < inter.length; k++) activated[k] = gelu(inter[k]!);
@@ -281,9 +268,7 @@ export function transformerLayer(
  * Convert NeuralIntentRouter's long field names to canonical short names.
  * Maps: attentionOutputWeight → attOutputWeight, etc.
  */
-export function normalizeLayerWeights(
-  layer: Record<string, any>
-): TransformerLayerWeights {
+export function normalizeLayerWeights(layer: Record<string, any>): TransformerLayerWeights {
   return {
     queryWeight: layer.queryWeight,
     queryBias: layer.queryBias,

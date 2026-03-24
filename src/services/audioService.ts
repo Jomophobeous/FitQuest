@@ -1,11 +1,11 @@
 /**
  * FitQuest Audio Instruction Service
  * Client-side TTS for hands-free workout guidance
- * 
+ *
  * Uses native TTS (expo-speech):
  * - Android: TextToSpeech API
  * - iOS: AVSpeechSynthesizer
- * 
+ *
  * Characteristics:
  * - Offline capable
  * - Zero cost
@@ -15,11 +15,7 @@
 
 import * as Speech from 'expo-speech';
 import { Vibration, Platform } from 'react-native';
-import {
-  createAudioSettingsRow,
-  getAudioSettingsRow,
-  updateAudioSettingsRow,
-} from '../database/service';
+import { createAudioSettingsRow, getAudioSettingsRow, updateAudioSettingsRow } from '../database/service';
 
 // ============================================
 // TYPES
@@ -34,19 +30,13 @@ export interface AudioSettings {
 }
 
 export interface ExerciseAudio {
-  intro: string;      // "Next exercise: Push-ups"
-  setup: string;      // "Hands under shoulders. Body straight."
-  execution: string;  // "Lower under control. Push explosively."
+  intro: string; // "Next exercise: Push-ups"
+  setup: string; // "Hands under shoulders. Body straight."
+  execution: string; // "Lower under control. Push explosively."
   transition: string; // "Rest for 30 seconds."
 }
 
-type AudioEventType = 
-  | 'intro' 
-  | 'setup' 
-  | 'execution' 
-  | 'transition' 
-  | 'countdown' 
-  | 'complete';
+type AudioEventType = 'intro' | 'setup' | 'execution' | 'transition' | 'countdown' | 'complete';
 
 type AudioEventListener = (event: AudioEventType, text?: string) => void;
 
@@ -273,9 +263,7 @@ class AudioService {
       const langPrefix = locale.split('-')[0]!; // e.g. 'en' from 'en-US'
 
       // Find voices matching our locale
-      const matching = voices.filter(
-        v => v.language === locale || v.language?.startsWith(langPrefix)
-      );
+      const matching = voices.filter((v) => v.language === locale || v.language?.startsWith(langPrefix));
       if (matching.length === 0) return;
 
       // Score each matching voice
@@ -323,7 +311,7 @@ class AudioService {
    * Emit event to all listeners
    */
   private emit(event: AudioEventType, text?: string): void {
-    this.listeners.forEach(listener => listener(event, text));
+    this.listeners.forEach((listener) => listener(event, text));
   }
 
   /**
@@ -397,7 +385,7 @@ class AudioService {
   private async processQueue(): Promise<void> {
     // Mutex guard: prevent concurrent processing
     if (this.isProcessingQueue || this.isSpeaking || this.queue.length === 0) return;
-    
+
     this.isProcessingQueue = true;
     try {
       const item = this.queue.shift();
@@ -407,7 +395,7 @@ class AudioService {
     } finally {
       this.isProcessingQueue = false;
     }
-    
+
     // Continue processing remaining items
     await this.processQueue();
   }
@@ -452,7 +440,7 @@ class AudioService {
    */
   async playCountdown(seconds: number): Promise<void> {
     if (!this.settings.countdownCuesEnabled) return;
-    
+
     const text = seconds === 1 ? this.t('audio.countdown.one') : `${seconds}`;
     await this.queueSpeak(text, 'countdown');
   }
@@ -476,7 +464,7 @@ class AudioService {
       // Android: double vibration pattern
       Vibration.vibrate([0, 100, 50, 100]);
     }
-    
+
     // Verbal bell cue if voice is enabled (queued to prevent overlap)
     if (this.settings.voiceEnabled) {
       await this.queueSpeak(this.t('audio.bell'), 'complete');
@@ -493,9 +481,9 @@ class AudioService {
     } else {
       Vibration.vibrate([0, 150, 100, 150]);
     }
-    
+
     // Say "done" or transition to next
-    const message = nextExerciseName 
+    const message = nextExerciseName
       ? this.t('audio.doneNext', { name: nextExerciseName })
       : this.t('audio.exerciseDone');
     await this.queueSpeak(message, 'complete');
@@ -670,7 +658,13 @@ function generateCompletionCompliment(
   const parts: string[] = [];
 
   // Base compliment
-  const complimentKeys = ['audio.compliment.1', 'audio.compliment.2', 'audio.compliment.3', 'audio.compliment.4', 'audio.compliment.5'];
+  const complimentKeys = [
+    'audio.compliment.1',
+    'audio.compliment.2',
+    'audio.compliment.3',
+    'audio.compliment.4',
+    'audio.compliment.5',
+  ];
   const perfectKeys = ['audio.perfect.1', 'audio.perfect.2', 'audio.perfect.3'];
 
   if (data.completedCount === data.totalCount && data.totalCount > 0) {
@@ -705,7 +699,7 @@ function generateCompletionCompliment(
   }
 
   // Streak milestone
-  const milestone = [90, 60, 30, 14, 7].find(m => data.streakDays === m);
+  const milestone = [90, 60, 30, 14, 7].find((m) => data.streakDays === m);
   if (milestone) {
     parts.push(tr(`audio.streak.${milestone}`));
   }
@@ -787,7 +781,10 @@ export function generateRichAudio(
   // ── INTRO: Name + what it targets ──
   let intro = tr('audio.nextExercise', { name });
   if (primaryMuscles && primaryMuscles.length > 0) {
-    const muscleList = primaryMuscles.slice(0, 3).map(m => m.replace(/_/g, ' ')).join(', ');
+    const muscleList = primaryMuscles
+      .slice(0, 3)
+      .map((m) => m.replace(/_/g, ' '))
+      .join(', ');
     intro += ` ${tr('audio.targets', { muscles: muscleList })}`;
   } else if (category) {
     const catLabel = category.replace(/_/g, ' ');
@@ -837,16 +834,16 @@ export function generateRichAudio(
  */
 export function validateAudioContent(text: string): { valid: boolean; issues: string[] } {
   const issues: string[] = [];
-  
+
   if (text.length > 500) {
     issues.push('Text very long (max 500 chars for optimal TTS)');
   }
-  
+
   const sentences = text.split(/[.!?]+/).filter(Boolean);
   if (sentences.length > 8) {
     issues.push('Many sentences — consider breaking into phases');
   }
-  
+
   return {
     valid: issues.length === 0,
     issues,

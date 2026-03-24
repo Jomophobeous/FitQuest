@@ -9,7 +9,6 @@ import {
   setAuthCredentials,
   clearAuthCredentials,
 } from '../security/StorageMigration';
-import { encryptedDB } from '../security/EncryptedDatabase';
 import {
   loginWithAppleIdToken,
   loginWithEmail,
@@ -147,13 +146,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const bioEnabled = await bioAuth.isBiometricEnabled();
       setBiometricEnabledState(bioEnabled);
 
-      // Step 4: Initialize encrypted database layer
-      await encryptedDB.initialize();
-
-      // Step 5: Check for valid session
+      // Step 4: Check for valid session
       const hasSession = await bioAuth.isSessionValid();
 
-      // Step 6: Restore user data + attempt to ensure access token (only if local session is valid)
+      // Step 5: Restore user data + attempt to ensure access token (only if local session is valid)
       const [storedToken, storedUser, storedRefresh] = await Promise.all([
         getAuthToken(),
         getUserProfile(),
@@ -283,7 +279,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Revoke server refresh token when possible.
       // Falls back to local clear if network/server is unavailable.
       if (isServerConfigured) {
-        try { await logoutEverywhere(); } catch { /* offline — skip server logout */ }
+        try {
+          await logoutEverywhere();
+        } catch {
+          /* offline — skip server logout */
+        }
       }
 
       // Defensive clear in case logoutEverywhere throws before cleanup.
@@ -399,30 +399,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // CONTEXT VALUE
   // ============================================
 
-  const contextValue = useMemo<AuthContextType>(() => ({
-    user,
-    token,
-    isLoading,
-    isSignedIn: !!token,
-    isAuthenticated: !!token || isLocallyAuthenticated,
-    isServerConfigured,
-    biometricCapability,
-    biometricEnabled,
-    signIn,
-    signUp,
-    signInWithGoogleToken,
-    signInWithAppleToken,
-    signOut,
-    restoreToken,
-    authenticateWithBiometrics,
-    setupPasscode,
-    verifyPasscode,
-    hasPasscode,
-    setBiometricEnabled,
-    isSessionValid,
-    touchSession,
-    resumeSession,
-  }), [user, token, isLoading, isLocallyAuthenticated, biometricCapability, biometricEnabled]);
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      token,
+      isLoading,
+      isSignedIn: !!token,
+      isAuthenticated: !!token || isLocallyAuthenticated,
+      isServerConfigured,
+      biometricCapability,
+      biometricEnabled,
+      signIn,
+      signUp,
+      signInWithGoogleToken,
+      signInWithAppleToken,
+      signOut,
+      restoreToken,
+      authenticateWithBiometrics,
+      setupPasscode,
+      verifyPasscode,
+      hasPasscode,
+      setBiometricEnabled,
+      isSessionValid,
+      touchSession,
+      resumeSession,
+    }),
+    [user, token, isLoading, isLocallyAuthenticated, biometricCapability, biometricEnabled],
+  );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };

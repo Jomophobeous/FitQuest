@@ -1,6 +1,6 @@
 /**
  * ScreenErrorBoundary — Per-screen error boundary
- * 
+ *
  * Wraps individual screens so a crash in one doesn't take down
  * the entire app. Shows the screen name, error message, and
  * offers both "Try Again" and "Go Back" actions.
@@ -10,7 +10,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
-import { logError } from '../services/telemetry';
+import { logCrash } from '../services/telemetry';
 
 interface ScreenErrorBoundaryProps {
   children: React.ReactNode;
@@ -37,24 +37,13 @@ function ScreenFallback({
   const { theme } = useTheme();
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      accessibilityRole="alert"
-    >
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]} accessibilityRole="alert">
       <View style={[styles.iconWrap, { backgroundColor: theme.colors.error + '15' }]}>
-        <MaterialCommunityIcons
-          name="alert-circle-outline"
-          size={40}
-          color={theme.colors.error}
-        />
+        <MaterialCommunityIcons name="alert-circle-outline" size={40} color={theme.colors.error} />
       </View>
 
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        {screenName} crashed
-      </Text>
-      <Text style={[styles.message, { color: theme.colors.textMuted }]}>
-        {message}
-      </Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>{screenName} crashed</Text>
+      <Text style={[styles.message, { color: theme.colors.textMuted }]}>{message}</Text>
 
       <TouchableOpacity
         style={[styles.primaryBtn, { backgroundColor: theme.colors.accent }]}
@@ -73,19 +62,14 @@ function ScreenFallback({
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <Text style={[styles.secondaryBtnText, { color: theme.colors.textSecondary }]}>
-            Go Back
-          </Text>
+          <Text style={[styles.secondaryBtnText, { color: theme.colors.textSecondary }]}>Go Back</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 }
 
-export class ScreenErrorBoundary extends React.Component<
-  ScreenErrorBoundaryProps,
-  ScreenErrorBoundaryState
-> {
+export class ScreenErrorBoundary extends React.Component<ScreenErrorBoundaryProps, ScreenErrorBoundaryState> {
   state: ScreenErrorBoundaryState = {
     hasError: false,
     message: 'An unexpected error occurred.',
@@ -99,8 +83,9 @@ export class ScreenErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    logError(error, {
+    logCrash(error, {
       screen: this.props.screenName,
+      boundary: 'screen',
       componentStack: info.componentStack?.split('\n').slice(0, 5).join('\n'),
     });
   }

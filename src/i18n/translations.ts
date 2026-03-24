@@ -51,6 +51,7 @@ const en = {
   'dashboard.of': 'of',
   'dashboard.incompleteSession': 'Incomplete Session',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'START NOW',
 
   // FitQuest
   'fitquest.reset.title': 'Reset Database',
@@ -171,11 +172,14 @@ const en = {
   'profile.adaptiveTraining': 'Adaptive Training',
   'profile.adaptiveExplanation': 'These values auto-adjust as you train. Tap each metric to learn more.',
   'profile.fatigueSensitivity': 'Fatigue sensitivity',
-  'profile.fatigueSensitivityDesc': 'How quickly fatigue builds up during workouts. Higher values mean the algorithm gives you more rest between intense sessions. Adjusts based on your workout completion rates and recovery patterns.',
+  'profile.fatigueSensitivityDesc':
+    'How quickly fatigue builds up during workouts. Higher values mean the algorithm gives you more rest between intense sessions. Adjusts based on your workout completion rates and recovery patterns.',
   'profile.progressionPace': 'Progression pace',
-  'profile.progressionPaceDesc': 'How aggressively exercise difficulty increases over time. Higher values mean faster advancement to harder exercises. Adjusts based on whether you complete prescribed sets/reps consistently.',
+  'profile.progressionPaceDesc':
+    'How aggressively exercise difficulty increases over time. Higher values mean faster advancement to harder exercises. Adjusts based on whether you complete prescribed sets/reps consistently.',
   'profile.volumeTolerance': 'Volume tolerance',
-  'profile.volumeToleranceDesc': 'How much total training volume (sets x reps) your body can handle. Higher values mean longer workout sessions with more exercises. Adjusts based on your session completion and skipped exercises.',
+  'profile.volumeToleranceDesc':
+    'How much total training volume (sets x reps) your body can handle. Higher values mean longer workout sessions with more exercises. Adjusts based on your session completion and skipped exercises.',
   'profile.confidence': 'Confidence',
   'profile.samples': 'Samples',
   'profile.rank': 'Rank & Progress',
@@ -248,6 +252,10 @@ const en = {
   'profile.appSection': 'App',
   'profile.backupRestore': 'Backup & Restore',
   'profile.backupRestoreSub': 'Encrypted local backup files',
+  'profile.subscription': 'Subscription',
+  'profile.expired': 'Expired',
+  'profile.subscribeToUnlock': 'Subscribe to unlock all features',
+  'profile.searchLanguages': 'Search languages…',
   'profile.about': 'About FitQuest',
   'profile.version': 'Version',
   'profile.saved': 'Saved',
@@ -417,7 +425,8 @@ const en = {
   'meal.location.tapEnable': 'Tap to enable location',
   'meal.location.infoPrefix': 'Showing foods available in',
   'meal.location.infoSuffix': ', including regional and global options.',
-  'meal.location.infoNoLocation': 'Enable location to see region-specific food suggestions. Tap the location badge above to retry.',
+  'meal.location.infoNoLocation':
+    'Enable location to see region-specific food suggestions. Tap the location badge above to retry.',
 
   // Legal Center
   'legal.title': 'Legal Center',
@@ -448,62 +457,94 @@ const en = {
   'legal.noteCounsel': 'Final legal text and jurisdiction mapping should be reviewed by counsel before release.',
   'legal.lastUpdated': 'Last updated:',
   'legal.privacy.sections.developerTitle': 'Developer',
-  'legal.privacy.sections.developerBody': 'FitQuest is developed and published by fitquest.dev. This privacy policy governs the FitQuest mobile application available on Google Play and the Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest is developed and published by fitquest.dev. This privacy policy governs the FitQuest mobile application available on Google Play and the Apple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Data We Collect',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest processes the following categories of data to deliver personalized fitness and wellness features:',
-  'legal.privacy.bullets.health': 'Health and activity metrics: heart rate, steps, sleep data, workout history, body measurements, and recovery scores',
-  'legal.privacy.bullets.biometric': 'Biometric data: fingerprint or face recognition used for app authentication (processed on-device only, never stored or transmitted)',
-  'legal.privacy.bullets.location': 'Location data: GPS coordinates during jog tracking (only when you actively use the jog feature)',
-  'legal.privacy.bullets.account': 'Profile information: fitness goals, experience level, equipment preferences, and optional work schedule',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest processes the following categories of data to deliver personalized fitness and wellness features:',
+  'legal.privacy.bullets.health':
+    'Health and activity metrics: heart rate, steps, sleep data, workout history, body measurements, and recovery scores',
+  'legal.privacy.bullets.biometric':
+    'Biometric data: fingerprint or face recognition used for app authentication (processed on-device only, never stored or transmitted)',
+  'legal.privacy.bullets.location':
+    'Location data: GPS coordinates during jog tracking (only when you actively use the jog feature)',
+  'legal.privacy.bullets.account':
+    'Profile information: fitness goals, experience level, equipment preferences, and optional work schedule',
   'legal.privacy.bullets.usage': 'App usage patterns and feature interactions (anonymized, used to improve the app)',
   'legal.privacy.bullets.device': 'Device type, OS version, and app version for compatibility and crash reporting',
   'legal.privacy.bullets.photos': 'Profile photos: stored locally on your device if you choose to set one',
-  'legal.privacy.bullets.healthConnect': 'Health Connect / HealthKit data: steps, heart rate, sleep, and workout data (only if you grant explicit permission)',
+  'legal.privacy.bullets.healthConnect':
+    'Health Connect / HealthKit data: steps, heart rate, sleep, and workout data (only if you grant explicit permission)',
   'legal.privacy.sections.storageTitle': '2) Data Storage',
-  'legal.privacy.sections.storageBody': 'FitQuest is designed as an offline-first application. All your fitness data is stored locally on your device using SQLite. No personal data is stored on external servers. Sensitive health records are encrypted before storage using industry-standard AES-256-GCM encryption.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest is designed as an offline-first application. All your fitness data is stored locally on your device using SQLite. No personal data is stored on external servers. Sensitive health records are encrypted before storage using industry-standard AES-256-GCM encryption.',
   'legal.privacy.sections.securityTitle': '3) Data Security',
-  'legal.privacy.sections.securityBody': 'All sensitive health data is encrypted using AES-256-GCM encryption before being stored on your device. Encryption keys are protected by your device\'s secure hardware (Keychain on iOS, Keystore on Android). Biometric authentication provides an additional layer of protection. We employ secure key derivation (PBKDF2) and constant-time comparison to prevent timing attacks.',
+  'legal.privacy.sections.securityBody':
+    "All sensitive health data is encrypted using AES-256-GCM encryption before being stored on your device. Encryption keys are protected by your device's secure hardware (Keychain on iOS, Keystore on Android). Biometric authentication provides an additional layer of protection. We employ secure key derivation (PBKDF2) and constant-time comparison to prevent timing attacks.",
   'legal.privacy.sections.thirdPartyTitle': '4) Third-Party Services',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest does not sell, rent, or trade your personal data. The following third-party integrations may process limited data:',
-  'legal.privacy.bullets.thirdPartyAI': 'AI Features: When you use the AI Coach or Professor, your prompts are sent to OpenRouter (via Llama language models) to generate responses. No personal health data is included in these requests — only the text you type.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: If you grant permission, FitQuest reads health metrics from these platform services. Data flows one-way (read only) and is stored encrypted on your device.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: Manages subscription verification. Receives only purchase tokens and anonymous user identifiers — no health or fitness data.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: Crash reporting service that receives anonymized error logs. No personal data or health metrics are included.',
-  'legal.privacy.bullets.thirdPartyPostHog': 'PostHog: App analytics service that collects anonymized usage events (screens viewed, feature usage) and device info (OS, app version). Session replay captures screen recordings at 50% sample rate with all text inputs and images masked. No health data is included. You can opt out in Legal Center.',
-  'legal.privacy.bullets.thirdPartyExpo': 'Expo Updates: On app launch, FitQuest checks for over-the-air updates via Expo servers. This transmits your device type, OS version, and app version. No personal or health data is sent.',
-  'legal.privacy.sections.childrenTitle': '5) Children\'s Privacy',
-  'legal.privacy.sections.childrenBody': 'FitQuest is designed for users aged 13 and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us data, please contact us at fitquestsupp0rt@gmail.com for immediate deletion.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest does not sell, rent, or trade your personal data. The following third-party integrations may process limited data:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'AI Features: When you use the AI Coach or Professor, your prompts are sent to OpenRouter (via Llama language models) to generate responses. No personal health data is included in these requests — only the text you type.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: If you grant permission, FitQuest reads health metrics from these platform services. Data flows one-way (read only) and is stored encrypted on your device.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: Manages subscription verification. Receives only purchase tokens and anonymous user identifiers — no health or fitness data.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: Crash reporting service that receives anonymized error logs. No personal data or health metrics are included.',
+  'legal.privacy.bullets.thirdPartyPostHog':
+    'PostHog: App analytics service that collects anonymized usage events (screens viewed, feature usage) and device info (OS, app version). Session replay captures screen recordings at 50% sample rate with all text inputs and images masked. No health data is included. You can opt out in Legal Center.',
+  'legal.privacy.bullets.thirdPartyExpo':
+    'Expo Updates: On app launch, FitQuest checks for over-the-air updates via Expo servers. This transmits your device type, OS version, and app version. No personal or health data is sent.',
+  'legal.privacy.sections.childrenTitle': "5) Children's Privacy",
+  'legal.privacy.sections.childrenBody':
+    'FitQuest is designed for users aged 13 and older. We do not knowingly collect personal information from children under 13. If you believe a child has provided us data, please contact us at fitquestsupp0rt@gmail.com for immediate deletion.',
   'legal.privacy.sections.retentionTitle': '6) Data Retention',
-  'legal.privacy.sections.retentionBody': 'Your data is stored locally on your device and retained for as long as the app is installed. You can delete all data at any time through Profile → Settings → Delete All Data. Uninstalling the app removes all local data permanently. You may also request data deletion via our website at https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Your data is stored locally on your device and retained for as long as the app is installed. You can delete all data at any time through Profile → Settings → Delete All Data. Uninstalling the app removes all local data permanently. You may also request data deletion via our website at https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Your Rights',
-  'legal.privacy.sections.rightsBody': 'Under applicable data protection laws (including the Data Protection Act 2011 of Lesotho, GDPR in the EU, and CCPA in California), you have the following rights:',
+  'legal.privacy.sections.rightsBody':
+    'Under applicable data protection laws (including the Data Protection Act 2011 of Lesotho, GDPR in the EU, and CCPA in California), you have the following rights:',
   'legal.privacy.bullets.accessRight': 'Access: View all data the app stores about you via Profile → Export Data',
   'legal.privacy.bullets.deleteRight': 'Deletion: Permanently erase all your data via app settings or our website',
   'legal.privacy.bullets.exportRight': 'Portability: Export your data in JSON format for transfer to another service',
   'legal.privacy.bullets.correctRight': 'Correction: Update or modify your profile information at any time',
-  'legal.privacy.bullets.objectionRight': 'Objection: Withdraw consent for data processing at any time via Legal Center',
+  'legal.privacy.bullets.objectionRight':
+    'Objection: Withdraw consent for data processing at any time via Legal Center',
   'legal.privacy.sections.popiaTitle': '8) Data Protection Compliance (Lesotho)',
-  'legal.privacy.sections.popiaBody': 'In accordance with the Data Protection Act 2011 of the Kingdom of Lesotho, fitquest.dev acts as the responsible party for your personal information. We process your data lawfully, minimize collection to what is necessary, ensure accuracy, and maintain appropriate security safeguards. For cross-border users, we also comply with POPIA (South Africa), GDPR (EU), and CCPA (California) where applicable.',
+  'legal.privacy.sections.popiaBody':
+    'In accordance with the Data Protection Act 2011 of the Kingdom of Lesotho, fitquest.dev acts as the responsible party for your personal information. We process your data lawfully, minimize collection to what is necessary, ensure accuracy, and maintain appropriate security safeguards. For cross-border users, we also comply with POPIA (South Africa), GDPR (EU), and CCPA (California) where applicable.',
   'legal.privacy.sections.updatesTitle': '9) Policy Updates',
-  'legal.privacy.sections.updatesBody': 'We may update this privacy policy from time to time. Any changes will be reflected in the app with an updated "Last Updated" date and you will be prompted to review and accept the updated policy. Continued use of the app after changes constitutes acceptance of the new policy.',
+  'legal.privacy.sections.updatesBody':
+    'We may update this privacy policy from time to time. Any changes will be reflected in the app with an updated "Last Updated" date and you will be prompted to review and accept the updated policy. Continued use of the app after changes constitutes acceptance of the new policy.',
   'legal.privacy.sections.contactTitle': '10) Contact',
-  'legal.privacy.sections.contactBody': 'For privacy requests, email fitquestsupp0rt@gmail.com. You may also visit https://fitquest.dev/support. Include your account identifier when available. We respond within 30 business days.',
+  'legal.privacy.sections.contactBody':
+    'For privacy requests, email fitquestsupp0rt@gmail.com. You may also visit https://fitquest.dev/support. Include your account identifier when available. We respond within 30 business days.',
   'legal.terms.sections.useTitle': '1) Acceptable Use',
-  'legal.terms.sections.useBody': 'You agree to use FitQuest lawfully and not attempt to reverse-engineer, decompile, bypass security controls, subscription mechanisms, or data-protection features. You may not use the app for any unlawful purpose or in violation of any applicable regulations.',
+  'legal.terms.sections.useBody':
+    'You agree to use FitQuest lawfully and not attempt to reverse-engineer, decompile, bypass security controls, subscription mechanisms, or data-protection features. You may not use the app for any unlawful purpose or in violation of any applicable regulations.',
   'legal.terms.sections.medicalTitle': '2) Medical Disclaimer',
-  'legal.terms.sections.medicalBody': 'FitQuest is a fitness and wellness application and is NOT a medical device or service. The app does not provide medical advice, diagnosis, or treatment. Workout suggestions, health scores, recovery recommendations, and AI-generated guidance are for informational and educational purposes only. Always consult a qualified healthcare professional before beginning, modifying, or discontinuing any exercise program, especially if you have pre-existing health conditions, injuries, or concerns. Stop exercising immediately if you experience pain, dizziness, or discomfort.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest is a fitness and wellness application and is NOT a medical device or service. The app does not provide medical advice, diagnosis, or treatment. Workout suggestions, health scores, recovery recommendations, and AI-generated guidance are for informational and educational purposes only. Always consult a qualified healthcare professional before beginning, modifying, or discontinuing any exercise program, especially if you have pre-existing health conditions, injuries, or concerns. Stop exercising immediately if you experience pain, dizziness, or discomfort.',
   'legal.terms.sections.subscriptionTitle': '3) Subscription & Billing',
-  'legal.terms.sections.subscriptionBody': 'FitQuest offers a 14-day free trial of all premium features. After the trial period ends, you may subscribe to continue using premium features or continue with the free tier. Premium subscriptions are billed through the Google Play Store or Apple App Store. Subscriptions auto-renew at the end of each billing period unless cancelled at least 24 hours before the renewal date. You can manage or cancel your subscription through your device\'s app store settings. Refunds are subject to the respective platform\'s refund policy. Prices may vary by region and are displayed in your local currency before purchase.',
+  'legal.terms.sections.subscriptionBody':
+    "FitQuest offers a 14-day free trial of all premium features. After the trial period ends, you may subscribe to continue using premium features or continue with the free tier. Premium subscriptions are billed through the Google Play Store or Apple App Store. Subscriptions auto-renew at the end of each billing period unless cancelled at least 24 hours before the renewal date. You can manage or cancel your subscription through your device's app store settings. Refunds are subject to the respective platform's refund policy. Prices may vary by region and are displayed in your local currency before purchase.",
   'legal.terms.sections.ipTitle': '4) Intellectual Property',
-  'legal.terms.sections.ipBody': 'All content, design, code, algorithms, branding, and materials in FitQuest are the intellectual property of fitquest.dev and are protected by applicable copyright and trademark laws. You may not reproduce, distribute, or create derivative works from any part of the app without prior written permission.',
+  'legal.terms.sections.ipBody':
+    'All content, design, code, algorithms, branding, and materials in FitQuest are the intellectual property of fitquest.dev and are protected by applicable copyright and trademark laws. You may not reproduce, distribute, or create derivative works from any part of the app without prior written permission.',
   'legal.terms.sections.liabilityTitle': '5) Limitation of Liability',
-  'legal.terms.sections.liabilityBody': 'To the maximum extent permitted by law, fitquest.dev shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the app, including but not limited to physical injury, data loss, or service interruption. Our total liability shall not exceed the amount you paid for premium features in the 12 months preceding the claim.',
+  'legal.terms.sections.liabilityBody':
+    'To the maximum extent permitted by law, fitquest.dev shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the app, including but not limited to physical injury, data loss, or service interruption. Our total liability shall not exceed the amount you paid for premium features in the 12 months preceding the claim.',
   'legal.terms.sections.terminationTitle': '6) Termination',
-  'legal.terms.sections.terminationBody': 'We reserve the right to suspend or terminate your access to FitQuest if you violate these terms. You may stop using the app at any time. Upon termination, your locally stored data remains on your device until you delete it or uninstall the app.',
+  'legal.terms.sections.terminationBody':
+    'We reserve the right to suspend or terminate your access to FitQuest if you violate these terms. You may stop using the app at any time. Upon termination, your locally stored data remains on your device until you delete it or uninstall the app.',
   'legal.terms.sections.governingLawTitle': '7) Governing Law',
-  'legal.terms.sections.governingLawBody': 'These terms are governed by and construed in accordance with the laws of the Kingdom of Lesotho. Any disputes arising from these terms or your use of FitQuest shall be subject to the exclusive jurisdiction of the courts of Lesotho. If any provision of these terms is found to be unenforceable, the remaining provisions shall continue in full force and effect.',
-  'legal.terms.bullets.compliance': 'You must comply with all applicable Google Play and Apple App Store policies when using this app',
-  'legal.terms.bullets.accountDelete': 'You may delete your account and all associated data at any time via Profile → Settings or at https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'These terms are governed by and construed in accordance with the laws of the Kingdom of Lesotho. Any disputes arising from these terms or your use of FitQuest shall be subject to the exclusive jurisdiction of the courts of Lesotho. If any provision of these terms is found to be unenforceable, the remaining provisions shall continue in full force and effect.',
+  'legal.terms.bullets.compliance':
+    'You must comply with all applicable Google Play and Apple App Store policies when using this app',
+  'legal.terms.bullets.accountDelete':
+    'You may delete your account and all associated data at any time via Profile → Settings or at https://fitquest.dev/delete-account',
 
   // Common
   'common.save': 'Save',
@@ -581,7 +622,8 @@ const en = {
   'savedWorkouts.startAnytime': 'Start anytime',
   'savedWorkouts.deleteFailed': 'Failed to delete workout. Please try again.',
   'savedWorkouts.emptyTitle': 'No Saved Workouts Yet',
-  'savedWorkouts.emptySubtitle': 'Build your first custom workout by selecting exercises tailored to your goals. It only takes a minute!',
+  'savedWorkouts.emptySubtitle':
+    'Build your first custom workout by selecting exercises tailored to your goals. It only takes a minute!',
   'savedWorkouts.featurePick': 'Pick your exercises',
   'savedWorkouts.featureSet': 'Set reps & rest',
   'savedWorkouts.featureStart': 'Start anytime',
@@ -638,13 +680,14 @@ const en = {
   'help.faqDesc': 'Browse common questions about workouts, nutrition, and app features',
   'help.contactTitle': 'Email Support',
   'help.bugTitle': 'Report a Bug',
-  'help.bugDesc': 'Found something broken? Let us know and we\'ll fix it quickly',
+  'help.bugDesc': "Found something broken? Let us know and we'll fix it quickly",
   'help.featureTitle': 'Suggest a Feature',
-  'help.featureDesc': 'Have an idea to make FitQuest better? We\'d love to hear it',
+  'help.featureDesc': "Have an idea to make FitQuest better? We'd love to hear it",
   'help.responseTime': 'We typically respond within 24-48 hours',
 
   // About
-  'about.description': 'FitQuest is a comprehensive fitness platform designed to help you achieve your training goals. All your data stays on your device, protected by AES-256 encryption.',
+  'about.description':
+    'FitQuest is a comprehensive fitness platform designed to help you achieve your training goals. All your data stays on your device, protected by AES-256 encryption.',
   'about.platform': 'Platform',
   'about.dataStorage': 'Data Storage',
   'about.onDevice': 'On-device only',
@@ -691,6 +734,7 @@ const en = {
   'health.sleepQuality': 'Sleep Quality',
   'health.avgThisWeek': 'h avg this week',
   'health.noSleepData': 'No sleep data yet',
+  'health.noDataYet': 'Start a workout to track',
   'health.quickActions': 'Quick Actions',
   'health.connectProvider': 'Connect Health Provider',
   'health.providerConnectFailed': 'Unable to connect provider on this device.',
@@ -709,6 +753,11 @@ const en = {
   'health.provider.google_fit': 'Google Fit',
   'health.logHeartRate': 'Log Heart Rate',
   'health.logSleep': 'Log Sleep',
+  'health.sleepBedtime': 'Bedtime',
+  'health.sleepWakeTime': 'Wake Time',
+  'health.sleepSaved': 'Sleep session logged!',
+  'health.sleepInvalidTimes': 'Wake time must be after bedtime.',
+  'health.sleepTooLong': 'Sleep duration cannot exceed 24 hours.',
   'health.comingSoonDetail': 'Heart rate logging will be available in a future update.',
   'health.sleepComingSoon': 'Sleep logging will be available in a future update.',
 
@@ -818,7 +867,7 @@ const en = {
 
   // Onboarding
   'onboarding.welcome': 'Welcome to FitQuest',
-  'onboarding.tagline': 'Your AI-powered fitness companion.\nLet\'s personalise your experience.',
+  'onboarding.tagline': "Your AI-powered fitness companion.\nLet's personalise your experience.",
   'onboarding.heroBody': 'Train Smart',
   'onboarding.heroMind': 'Think Sharp',
   'onboarding.heroMove': 'Move More',
@@ -828,7 +877,7 @@ const en = {
   'onboarding.goalTitle': "What's your goal?",
   'onboarding.goalSub': 'Choose your primary focus',
   'onboarding.experienceTitle': 'About You',
-  'onboarding.experienceSub': 'Tell us where you\'re at',
+  'onboarding.experienceSub': "Tell us where you're at",
   'onboarding.scheduleTitle': 'Your Rhythm',
   'onboarding.scheduleSub': 'How often do you want to train?',
   'onboarding.daysPerWeek': 'Days per week:',
@@ -836,7 +885,7 @@ const en = {
   'onboarding.equipmentTitle': 'Your Equipment',
   'onboarding.equipmentSub': 'Select what you have access to',
   'onboarding.saving': 'Saving...',
-  'onboarding.getStarted': 'Let\'s Go',
+  'onboarding.getStarted': "Let's Go",
   'onboarding.continue': 'Continue',
   'onboarding.skip': 'Skip for now',
   'onboarding.goal.buildMuscle': 'Build Strength',
@@ -876,23 +925,31 @@ const en = {
   'onboarding.permSub': 'These help FitQuest work best for you. You can change them anytime in Settings.',
   'onboarding.perm.notifications': 'Workout Reminders',
   'onboarding.perm.notificationsSub': 'Get reminded to stay on track with your training schedule',
+  'onboarding.perm.motion': 'Motion & Activity',
+  'onboarding.perm.motionSub': 'Track steps, detect exercises, and count reps using motion sensors',
+  'onboarding.perm.location': 'Location (Jog Tracking)',
+  'onboarding.perm.locationSub': 'Map your jog routes and calculate distance accurately',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'Sync heart rate, sleep, and workout data with Android Health Connect',
   'onboarding.perm.allow': 'Allow',
   'onboarding.perm.skipNote': 'You can skip this — permissions can be enabled later in your profile.',
 
   // Onboarding — Age Gate
   'onboarding.ageGate.title': 'Age Verification',
-  'onboarding.ageGate.description': 'FitQuest is designed for users aged 13 and above. By continuing, you confirm that you meet this age requirement.',
+  'onboarding.ageGate.description':
+    'FitQuest is designed for users aged 13 and above. By continuing, you confirm that you meet this age requirement.',
   'onboarding.ageGate.confirm': 'I confirm that I am 13 years of age or older',
 
   // Onboarding — Data Consent
   'onboarding.consent.title': 'Your Data, Your Control',
-  'onboarding.consent.subtitle': 'Before we get started, here\'s how FitQuest handles your data.',
+  'onboarding.consent.subtitle': "Before we get started, here's how FitQuest handles your data.",
   'onboarding.consent.item.workout': 'Workout history and fitness preferences are stored on your device',
   'onboarding.consent.item.health': 'Health metrics (heart rate, sleep, steps) are encrypted on-device',
   'onboarding.consent.item.location': 'Location data is used only during active jog tracking',
   'onboarding.consent.item.storage': 'All data is protected with AES-256 encryption',
-  'onboarding.consent.item.noShare': 'Your data is never sold or shared with third parties',
-  'onboarding.consent.accept': 'I consent to the collection and processing of my data as described above and in the Privacy Policy',
+  'onboarding.consent.item.noShare': 'Your health data is never sold. Analytics & crash data are shared anonymously (see Policy)',
+  'onboarding.consent.accept':
+    'I consent to the collection and processing of my data as described above and in the Privacy Policy',
   'onboarding.consent.readPolicy': 'Read our Privacy Policy',
 
   // Onboarding — Medical Disclaimer
@@ -900,10 +957,13 @@ const en = {
   'onboarding.disclaimer.subtitle': 'Please read and acknowledge before starting your fitness journey.',
   'onboarding.disclaimer.item.notMedical': 'FitQuest is not a medical device and does not provide medical advice',
   'onboarding.disclaimer.item.consultDoctor': 'Consult a doctor before starting any new exercise program',
-  'onboarding.disclaimer.item.healthData': 'Health metrics shown are estimates and should not replace professional medical assessments',
-  'onboarding.disclaimer.item.stopIfPain': 'Stop exercising immediately if you experience pain, dizziness, or shortness of breath',
+  'onboarding.disclaimer.item.healthData':
+    'Health metrics shown are estimates and should not replace professional medical assessments',
+  'onboarding.disclaimer.item.stopIfPain':
+    'Stop exercising immediately if you experience pain, dizziness, or shortness of breath',
   'onboarding.disclaimer.item.responsibility': 'You exercise at your own risk and are responsible for your own safety',
-  'onboarding.disclaimer.accept': 'I understand that FitQuest does not provide medical advice and I exercise at my own risk',
+  'onboarding.disclaimer.accept':
+    'I understand that FitQuest does not provide medical advice and I exercise at my own risk',
 
   // Register
   'register.title': 'Create Account',
@@ -1047,6 +1107,12 @@ const en = {
   'analytics.rest': 'Rest',
   'analytics.active': 'Active',
   'analytics.completeWorkoutsForRecords': 'Complete workouts to set records',
+  'analytics.sessionDetail': 'Workout Detail',
+  'analytics.exercises': 'Exercises',
+  'analytics.duration': 'Duration',
+  'analytics.completed': 'Completed',
+  'analytics.noWorkouts': 'No workouts on this day',
+  'analytics.minAbbrev': 'min',
 
   // Day labels (short)
   'day.sun': 'Sun',
@@ -1118,7 +1184,8 @@ const en = {
   'backup.createBackup': 'Create Backup',
   'backup.availableBackups': 'Available Backups',
   'backup.noBackups': 'No backups yet.',
-  'backup.helperText': 'Creates an encrypted backup file of your local database. If you set a passphrase, you must use the same passphrase to restore.',
+  'backup.helperText':
+    'Creates an encrypted backup file of your local database. If you set a passphrase, you must use the same passphrase to restore.',
   'backup.optionalPassphrase': 'Optional passphrase',
   'backup.working': 'Working…',
   'backup.created': 'Backup created',
@@ -1135,7 +1202,8 @@ const en = {
   'backup.uploaded': 'Uploaded',
   'backup.uploadFailed': 'Upload failed',
   'backup.noCloudBackups': 'No cloud backups yet.',
-  'backup.cloudHelper': 'Stores the encrypted backup blob on your Phase 2 backend. The server cannot decrypt your data.',
+  'backup.cloudHelper':
+    'Stores the encrypted backup blob on your Phase 2 backend. The server cannot decrypt your data.',
 
   // Dashboard — daily stats & updates
   'dashboard.stepsToday': 'Steps',
@@ -1167,14 +1235,16 @@ const en = {
   'common.restore': 'Restore',
 
   // Audio Narrator — Phase transitions (punctuation-optimized for TTS prosody)
-  'audio.warmup.start': "Alright... let's start with a warm up. Nice, light movements... to wake up your muscles, and prepare your body for what's ahead.",
+  'audio.warmup.start':
+    "Alright... let's start with a warm up. Nice, light movements... to wake up your muscles, and prepare your body for what's ahead.",
   'audio.main.start': "Okay... let's get into it. Main workout, starting now. Stay focused, stay strong.",
-  'audio.cooldown.start': "And... breathe. Time to cool down. Gentle movements... to help your body recover, and bring your heart rate down.",
+  'audio.cooldown.start':
+    'And... breathe. Time to cool down. Gentle movements... to help your body recover, and bring your heart rate down.',
   'audio.warmup.toMain': "Great warm up! Your body is primed, and ready... Time for the main workout. Let's go!",
   'audio.warmup.toCooldown': "Warm up complete. Let's cool down now... nice and easy.",
   'audio.main.toCooldown': "Main workout... done! Amazing effort. Now, let's cool down... and let your body recover.",
   'audio.main.toWarmup': 'Alright... switching to warm up exercises. Light and easy.',
-  'audio.cooldown.toMain': 'Cool down complete. Back to the main workout... let\'s go.',
+  'audio.cooldown.toMain': "Cool down complete. Back to the main workout... let's go.",
   'audio.phase.fallback': 'Moving to... {{phase}} phase.',
 
   // Audio Narrator — Exercise cues
@@ -1202,7 +1272,7 @@ const en = {
   'audio.compliment.2': 'That was incredible! Your body... is getting stronger, every single session.',
   'audio.compliment.3': 'Another one in the books! Consistency... is your superpower.',
   'audio.compliment.4': 'You just proved... that hard work pays off. Well done!',
-  'audio.compliment.5': "Amazing effort! Most people skip today... but not you.",
+  'audio.compliment.5': 'Amazing effort! Most people skip today... but not you.',
   'audio.perfect.1': "Perfect session! Every single exercise... completed. That's elite dedication.",
   'audio.perfect.2': "Flawless workout! You didn't skip a single exercise... un-stoppable!",
   'audio.perfect.3': 'One hundred percent completion... you are on another level!',
@@ -1212,10 +1282,192 @@ const en = {
   'audio.streak.14': 'Two weeks strong! Your discipline... is truly inspiring.',
   'audio.streak.30': "Thirty day streak! You're in the top tier... of consistency.",
   'audio.streak.60': 'Sixty days! Most people only dream... about this kind of dedication.',
-  'audio.streak.90': "Ninety day streak! You... are absolutely legendary.",
+  'audio.streak.90': 'Ninety day streak! You... are absolutely legendary.',
   'audio.minutes': '{{minutes}} minutes... of pure effort.',
   'audio.progressions': '{{count}} exercise... ready to level up!|{{count}} exercises... ready to level up!',
   'audio.xpEarned': 'Plus... {{xp}} XP earned.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+
+  // Signal: Mode transition
+  'signal.transition.advancing.subtext': 'Progression logic enabled based on recent activity.',
+  'signal.transition.regressing.subtext': 'Session load reduced to match current rhythm.',
+
+  // Signal: First session
+  'signal.firstSession.headline': 'System ready. Start your first session.',
+  'signal.firstSession.subtext': 'Each workout calibrates the system to your capacity.',
+
+  // Signal: Streak at risk
+  'signal.streakAtRisk.headline': '{{streak}} days consistent. Continue today to reinforce it.',
+  'signal.streakAtRisk.subtext.disciplined': 'Consistency drives progression accuracy.',
+  'signal.streakAtRisk.subtext.inconsistent': 'A short session is enough to maintain rhythm.',
+
+  // Signal: Rest advised
+  'signal.restAdvised.headline': 'Recovery recommended based on fatigue.',
+  'signal.restAdvised.subtext.fatigue': 'Fatigue at {{fatigue}}%. Rest accelerates adaptation.',
+  'signal.restAdvised.subtext.readiness': 'Readiness at {{readiness}}%. Recovery in progress.',
+
+  // Signal: Momentum (trained today)
+  'signal.momentum.headline': 'Session complete. Data recorded.',
+  'signal.momentum.subtext.streak': '{{streak}}-day pattern. System refining your program.',
+  'signal.momentum.subtext.default': 'Recovery begins. Next session adjusted accordingly.',
+
+  // Signal: Comeback
+  'signal.comeback.headline.inconsistent': '{{days}} days off. Low-resistance session available.',
+  'signal.comeback.headline.disciplined': '{{days}} days since last session. Intensity recalibrated.',
+  'signal.comeback.subtext.inconsistent': 'System adjusted for easier re-entry.',
+  'signal.comeback.subtext.disciplined': 'Volume adjusted to match current recovery state.',
+
+  // Signal: Recovery ready
+  'signal.recoveryReady.headline.disciplined': 'Readiness optimal. Progression conditions met.',
+  'signal.recoveryReady.headline.inconsistent': 'Recovery complete. Good conditions for a session.',
+  'signal.recoveryReady.subtext': 'Readiness at {{readiness}}%.',
+
+  // Signal: Streak building
+  'signal.streakBuilding.headline': '{{streak}} days consistent. System adapting to your rhythm.',
+  'signal.streakBuilding.subtext.disciplined': 'Volume and intensity increasing based on performance.',
+  'signal.streakBuilding.subtext.inconsistent': 'Consistency building. Challenge increasing gradually.',
+
+  // Signal: Default (expect today)
+  'signal.expectToday.headline.disciplined': 'Training window open. System ready.',
+  'signal.expectToday.headline.inconsistent': 'Session available when you are.',
+  'signal.expectToday.subtext.good': 'Readiness {{readiness}}%. Good conditions.',
+  'signal.expectToday.subtext.moderate': 'Moderate readiness. Light session recommended.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+
+  // Last session impact
+  'memory.noHistory.headline': 'First session ahead. The system learns from every rep.',
+  'memory.noHistory.trendStatement': 'No data yet. Your first workout sets the baseline.',
+  'memory.lastSession.headline.crushed': 'Last session: {{completed}} exercises crushed in {{duration}}min.',
+  'memory.lastSession.headline.adjusted': 'Last session: {{completed}}/{{total}} completed. System adjusted.',
+  'memory.lastSession.headline.tough': 'Last session was tough. {{completed}}/{{total}} completed. Recovery prioritized.',
+
+  // Trend statements
+  'memory.trend.improving': 'Performance trending up. System is increasing challenge.',
+  'memory.trend.declining': 'Recent sessions harder. System adjusted to rebuild momentum.',
+  'memory.trend.steady.data': 'Consistent output. Nearing next progression gate.',
+  'memory.trend.steady.building': 'Building baseline. Keep showing up.',
+
+  // Workout delta
+  'memory.delta.firstWorkout': 'First workout. System is calibrating to your body.',
+  'memory.delta.same': 'Same workout structure. System sees consistency building.',
+  'memory.delta.mixed': '{{total}} changes: {{removed}} rotated out, {{added}} fresh.',
+  'memory.delta.added': '{{count}} new exercise{{plural}} added for variety.',
+  'memory.delta.removed': '{{count}} exercise{{plural}} swapped for recovery.',
+
+  // Exercise progression narratives
+  'memory.progression.firstTime': 'First time. System will calibrate from this session.',
+  'memory.progression.improving': '{{wins}} wins in a row. Progressing.',
+  'memory.progression.declining': 'Recent dip detected. Volume adjusted.',
+  'memory.progression.nearGate': '{{successes}} solid session{{plural}}. One more to unlock progression.',
+  'memory.progression.steady': 'Holding steady. Consistency is the play.',
+
+  // Delta reasons
+  'memory.reason.retained': 'Consistent with your progression path.',
+  'memory.reason.addedBalance': 'Rotated in for muscle recovery balance.',
+  'memory.reason.removedFatigue': 'Rotated out due to accumulated fatigue.',
+  'memory.reason.removedVariety': 'Swapped for muscle balance and variety.',
+
+  // Time since
+  'memory.timeSince.minutes': '{{minutes}}m ago',
+  'memory.timeSince.hours': '{{hours}}h ago',
+  'memory.timeSince.yesterday': 'Yesterday',
+  'memory.timeSince.days': '{{days}} days ago',
+
+  // ============================================
+  // ENGINE — Trial Progression Messages
+  // ============================================
+
+  'trial.welcome.headline': 'Full system access activated.',
+  'trial.welcome.subtext': '14 days to explore every feature. No restrictions.',
+  'trial.firstWin.headline': '{{workouts}} session{{plural}} completed. System learning your patterns.',
+  'trial.firstWin.subtext': 'Each session improves workout accuracy.',
+  'trial.readyForFirst.headline': 'Day {{day}}. System ready for your first session.',
+  'trial.readyForFirst.subtext': 'Start a workout to begin calibration.',
+  'trial.improvementShown.headline': 'Session comparison now available.',
+  'trial.improvementShown.subtext': 'The system can now show what changed and why.',
+  'trial.memoryIntro.headline': 'Workout intelligence expanding.',
+  'trial.memoryIntro.subtext': 'Day {{day}}. More sessions = sharper analysis.',
+  'trial.fullIntelligence.headline': 'Full intelligence active.',
+  'trial.fullIntelligence.subtext': 'Day {{day}}. System adapting to your patterns and capacity.',
+  'trial.transitionClear.headline': '{{days}} day{{plural}} remaining on full access.',
+  'trial.transitionClear.subtext': 'After trial, core features stay available. Intelligence layers require subscription.',
+  'trial.transitionSoft.headline': '{{days}} days remaining.',
+  'trial.transitionSoft.subtext': 'Your workout data and progress are always yours. Subscription continues intelligence features.',
+  'trial.viewPlans': 'View plans',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+
+  'failure.dropOff': 'Drop-off occurred at exercise {{index}} ({{name}}) → reducing volume next session.',
+  'failure.skipHeavy': 'High skip rate detected. Exercises may not match current capacity.',
+  'failure.lowVolume': 'Low volume completion. Session may be too demanding.',
+  'failure.earlyDropout': 'Early drop-off pattern. Session length being reduced.',
+  'failure.lateDropout': 'Endurance drop-off. Lighter exercises placed toward the end.',
+  'failure.noFailure': 'Session completed successfully.',
+
+  // Failure insight strings (engine-level)
+  'failure.insight.none': 'Session completed at {{percent}}%. No adjustments needed.',
+  'failure.insight.earlyDropout': 'Drop-off occurred at exercise {{index}} ({{name}}) → reducing volume next session.',
+  'failure.insight.midDropout': 'Drop-off at set {{index}} ({{name}}) → adjusting exercise count.',
+  'failure.insight.lateDropout': 'Nearly complete ({{percent}}%). Minor adjustment applied.',
+  'failure.insight.skipHeavy': 'Session completed but {{percent}}% exercises skipped. Reviewing exercise selection.',
+  'failure.insight.lowVolume': 'Low volume completion ({{percent}}%). Reducing set prescriptions.',
+  'failure.insight.empty': 'No exercises completed. System reducing next session difficulty.',
+
+  // Failure adjustment reasons
+  'failure.adjustment.none': 'No adjustment needed.',
+  'failure.adjustment.earlyDropout': 'Early drop-off detected. Reducing volume and session length.',
+  'failure.adjustment.midDropout': 'Drop-off at exercise {{index}}. Reducing exercise count.',
+  'failure.adjustment.lateDropout': 'Near-complete session. Minor volume trim.',
+  'failure.adjustment.skipHeavy': 'High skip rate. Exercise selection needs review.',
+  'failure.adjustment.lowVolume': 'Low completed volume. Reducing set count.',
+  'failure.adjustment.empty': 'Empty session. Significant reduction applied.',
+
+  // Failure pattern recommendations
+  'failure.pattern.noData': 'No session data yet.',
+  'failure.pattern.noFailures': 'All recent sessions completed successfully. Conditions support progression.',
+  'failure.pattern.occasional': 'Occasional incomplete sessions. Current volume appears sustainable.',
+  'failure.pattern.earlyDropoffs': 'Frequent early drop-offs. Reducing session length or exercise count recommended.',
+  'failure.pattern.highSkips': 'High skip rate. Exercise selection may need adjustment.',
+  'failure.pattern.worsening': 'Failure rate increasing. Consider volume reduction or recovery focus.',
+  'failure.pattern.general': '{{rate}}% failure rate. Adjusting session difficulty.',
+
+  // ============================================
+  // ENGINE — Trial Expired Messages
+  // ============================================
+
+  'trial.expired.headline': 'Trial complete.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} workouts logged. Core features remain available. Subscribe to restore intelligence layers.',
+  'trial.expired.subtext.noWorkouts': 'Core features remain available. Subscribe to unlock intelligence layers.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+
+  'simulation.skip.streakReset': 'Streak will reset.',
+  'simulation.skip.modeShift': 'May shift to inconsistent mode.',
+  'simulation.skip.fatigueDrop': 'Fatigue drops by {{delta}}.',
+  'simulation.skip.minimal': 'Minimal impact — you have margin.',
+  'simulation.train.fatigueUp': 'Fatigue increases by {{delta}}.',
+  'simulation.train.modeAdvance': 'Moves toward disciplined mode.',
+  'simulation.train.reduceTomorrow': 'Tomorrow should be lighter.',
+  'simulation.train.pushTomorrow': 'Room to push harder tomorrow.',
+  'simulation.rest.recovery': 'Recovery: fatigue drops by {{delta}}.',
+  'simulation.rest.streakReset': 'Streak will reset, but recovery is prioritized.',
+  'simulation.rest.ready': 'Ready for full session tomorrow.',
+
+  // ============================================
+  // ENGINE — Preview / Subscription Gating
+  // ============================================
+
+  'gating.previewMessage': 'Advanced intelligence requires subscription.',
 };
 
 const af: Record<string, string> = {
@@ -1242,7 +1494,7 @@ const af: Record<string, string> = {
   'dashboard.levelShort': 'Lv',
   'dashboard.restRecommended': 'Rus aanbeveel',
   'dashboard.recoveryModerate': 'Matig',
-  'dashboard.recoveryWarning': '⚠️ Hoë moegheid bespeur. Oorweeg \\\\\\\'n ligter oefensessie of rusdag.',
+  'dashboard.recoveryWarning': "⚠️ Hoë moegheid bespeur. Oorweeg \\\\\\'n ligter oefensessie of rusdag.",
   'dashboard.noWorkoutsYet': 'Nog geen oefensessies nie. Begin jou eerste een!',
   'dashboard.createCustom': 'Skep pasgemaak',
   'dashboard.recoveryTrackingActive': 'Herstelnasporing aktief',
@@ -1262,6 +1514,7 @@ const af: Record<string, string> = {
   'dashboard.of': 'van',
   'dashboard.incompleteSession': 'Onvoltooide Sessie',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'BEGIN NOU',
   'dashboard.stepsToday': 'Stappe',
   'dashboard.activeMin': 'Aktiewe min',
   'dashboard.completionRate': 'Voltooiing',
@@ -1384,13 +1637,17 @@ const af: Record<string, string> = {
   'profile.craftMyBody': 'Craft My Body',
   'profile.craftMyBodySub': 'Gepersonaliseerde liggaamstransformasieplan met voeding en opleiding',
   'profile.adaptiveTraining': 'Aanpasbare opleiding',
-  'profile.adaptiveExplanation': 'Hierdie waardes pas outomaties aan soos jy oefen. Tik op elke maatstaf om meer te leer.',
+  'profile.adaptiveExplanation':
+    'Hierdie waardes pas outomaties aan soos jy oefen. Tik op elke maatstaf om meer te leer.',
   'profile.fatigueSensitivity': 'Moegheidsensitiwiteit',
-  'profile.fatigueSensitivityDesc': 'Hoe vinnig moegheid opbou tydens oefensessies. Hoër waardes beteken die algoritme gee jou meer rus tussen intense sessies.',
+  'profile.fatigueSensitivityDesc':
+    'Hoe vinnig moegheid opbou tydens oefensessies. Hoër waardes beteken die algoritme gee jou meer rus tussen intense sessies.',
   'profile.progressionPace': 'Progressietempo',
-  'profile.progressionPaceDesc': 'Hoe aggressief oefeningmoeilikheid mettertyd toeneem. Hoër waardes beteken vinniger vordering na moeiliker oefeninge.',
+  'profile.progressionPaceDesc':
+    'Hoe aggressief oefeningmoeilikheid mettertyd toeneem. Hoër waardes beteken vinniger vordering na moeiliker oefeninge.',
   'profile.volumeTolerance': 'Volume toleransie',
-  'profile.volumeToleranceDesc': 'Hoeveel totale oefeningsvolume jou liggaam kan hanteer. Hoër waardes beteken langer oefensessies met meer oefeninge.',
+  'profile.volumeToleranceDesc':
+    'Hoeveel totale oefeningsvolume jou liggaam kan hanteer. Hoër waardes beteken langer oefensessies met meer oefeninge.',
   'profile.confidence': 'Vertroue',
   'profile.samples': 'Monsters',
   'profile.rank': 'Rang & Vordering',
@@ -1463,6 +1720,10 @@ const af: Record<string, string> = {
   'profile.appSection': 'Toepassing',
   'profile.backupRestore': 'Rugsteun en herstel',
   'profile.backupRestoreSub': 'Geënkripteerde plaaslike rugsteunlêers',
+  'profile.subscription': 'Intekening',
+  'profile.expired': 'Verval',
+  'profile.subscribeToUnlock': 'Teken in om alle kenmerke te ontsluit',
+  'profile.searchLanguages': 'Soek tale…',
   'profile.about': 'Oor FitQuest',
   'profile.version': 'Weergawe',
   'profile.saved': 'Gestoor',
@@ -1497,7 +1758,7 @@ const af: Record<string, string> = {
   'profile.goal.focus': '🧠 Fokus',
   'profile.goal.strength': '🏋️ Sterkte',
   'profile.mealRegion.title': 'Maaltydstreek',
-  'profile.mealRegion.subtitle': 'Kies outomatiese GPS-bespeuring of dwing \\\\\\\'n streek',
+  'profile.mealRegion.subtitle': "Kies outomatiese GPS-bespeuring of dwing \\\\\\'n streek",
   'profile.mealRegion.auto': 'Outomatiese (GPS)',
   'profile.mealRegion.za': 'Suid-Afrika',
   'profile.mealRegion.us': 'Verenigde State',
@@ -1527,11 +1788,11 @@ const af: Record<string, string> = {
   'login.signIn': 'Teken in',
   'login.continueGoogle': 'Gaan voort met Google',
   'login.continueApple': 'Gaan voort met Apple',
-  'login.noAccount': 'Het jy nie \\\\\\\'n rekening nie?',
+  'login.noAccount': "Het jy nie \\\\\\'n rekening nie?",
   'login.register': 'Registreer',
   'login.passcode': 'Wagkode',
   'login.unlockPrompt': 'Ontsluit FitQuest',
-  'login.error.googleNoToken': 'Google-aanmelding het nie \\\\\\\'n ID-teken teruggegee nie',
+  'login.error.googleNoToken': "Google-aanmelding het nie \\\\\\'n ID-teken teruggegee nie",
   'login.error.googleFailed': 'Google-aanmelding het misluk',
   'login.error.sessionExpired': 'Sessie het verval. Meld asseblief weer aan.',
   'login.error.tooManyAttempts': 'Te veel mislukte pogings',
@@ -1542,7 +1803,7 @@ const af: Record<string, string> = {
   'login.error.signInFailed': 'Kon nie aanmeld nie',
   'login.error.googleNotConfigured': 'Google-aanmelding is nie opgestel nie',
   'login.error.appleUnavailable': 'Apple-aanmelding is nie op hierdie toestel beskikbaar nie',
-  'login.error.appleNoToken': 'Apple-aanmelding het nie \\\\\\\'n ID-teken teruggegee nie',
+  'login.error.appleNoToken': "Apple-aanmelding het nie \\\\\\'n ID-teken teruggegee nie",
   'login.error.appleFailed': 'Apple-aanmelding het misluk',
   'login.oauth.readiness': 'OAuth-gereedheid',
   'login.oauth.googleAndroidClientId': 'Google Android-kliënt-ID',
@@ -1557,7 +1818,7 @@ const af: Record<string, string> = {
   'coach.placeholder': 'Vra jou afrigter…',
   'coach.send': 'Stuur',
   'coach.online': 'Aanlyn',
-  'coach.tapToStart': 'Tik \\\\\\\'n onderwerp om te begin',
+  'coach.tapToStart': "Tik \\\\\\'n onderwerp om te begin",
   'coach.relatedTopics': 'Verwante onderwerpe',
   'coach.coachLabel': 'FitQuest Afrigter',
 
@@ -1617,7 +1878,8 @@ const af: Record<string, string> = {
   'move.noStepHistory': 'Nog geen stapgeskiedenis nie',
   'move.jogHistory': 'Draf Geskiedenis',
   'move.noJogHistory': 'Nog geen drafsessies',
-  'move.infoXpAndFatigue': '1 000 treë = 4 XP • Drafstapels verdien 10 XP per 100m\\\\\\\\nBeweging beïnvloed nie oefensessie-moegheid nie',
+  'move.infoXpAndFatigue':
+    '1 000 treë = 4 XP • Drafstapels verdien 10 XP per 100m\\\\\\\\nBeweging beïnvloed nie oefensessie-moegheid nie',
   'move.jogComplete': 'Draf voltooi! 🏃',
   'move.awesome': 'Awesome!',
   'move.km': 'km',
@@ -1651,7 +1913,7 @@ const af: Record<string, string> = {
   'meal.tip.snack': 'Hou porsies klein - streef na 150-200 kalorieë',
   'meal.empty.noFoods': 'Geen kosse beskikbaar vir hierdie maaltydtipe op die oomblik nie.',
   'meal.showMore': 'Wys meer',
-  'meal.empty.tryAnother': 'Probeer \\\\\\\'n ander ete-oortjie of verfris ligging.',
+  'meal.empty.tryAnother': "Probeer \\\\\\'n ander ete-oortjie of verfris ligging.",
   'meal.localPrefix': 'Plaaslik',
   'meal.unit.cal': 'cal',
   'meal.unit.protein': 'proteïen',
@@ -1661,7 +1923,8 @@ const af: Record<string, string> = {
   'meal.location.tapEnable': 'Tik om ligging',
   'meal.location.infoPrefix': 'te aktiveer Wys kosse beskikbaar in',
   'meal.location.infoSuffix': ', insluitend streek- en globale opsies.',
-  'meal.location.infoNoLocation': 'Aktiveer ligging om streekspesifieke kosvoorstelle te sien. Tik die liggingkenteken hierbo om weer te probeer.',
+  'meal.location.infoNoLocation':
+    'Aktiveer ligging om streekspesifieke kosvoorstelle te sien. Tik die liggingkenteken hierbo om weer te probeer.',
 
   'legal.title': 'Regsentrum',
   'legal.documents': 'Dokumente',
@@ -1687,64 +1950,99 @@ const af: Record<string, string> = {
   'legal.termsOfServiceExternal': 'Diensbepalings (Webwerf)',
   'legal.readInApp': 'Lees inprogram',
   'legal.cannotOpenLink': 'Kan nie skakel op hierdie toestel oopmaak nie',
-  'legal.noteMedical': 'Fiksheidsleiding in hierdie toepassing is opvoedkundig en nie \\\\\\\'n plaasvervanger vir mediese advies nie.',
+  'legal.noteMedical':
+    "Fiksheidsleiding in hierdie toepassing is opvoedkundig en nie \\\\\\'n plaasvervanger vir mediese advies nie.",
   'legal.noteCounsel': 'Finale regsteks en jurisdiksiekartering moet deur advokaat hersien word voor vrylating.',
   'legal.lastUpdated': 'Laas opgedateer:',
   'legal.privacy.sections.developerTitle': 'Ontwikkelaar',
-  'legal.privacy.sections.developerBody': 'FitQuest is ontwikkel en gepubliseer deur fitquest.dev. Hierdie privaatheidsbeleid beheer die FitQuest-mobiele toepassing wat op Google Play en die Apple App Store beskikbaar is.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest is ontwikkel en gepubliseer deur fitquest.dev. Hierdie privaatheidsbeleid beheer die FitQuest-mobiele toepassing wat op Google Play en die Apple App Store beskikbaar is.',
   'legal.privacy.sections.dataCollectTitle': '1) Data wat ons versamel',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest verwerk die volgende kategorieë data om gepersonaliseerde fiksheids- en welstandkenmerke te lewer:',
-  'legal.privacy.bullets.health': 'Gesondheid- en aktiwiteitmaatstawwe: hartklop, stappe, slaapdata, oefensessiegeskiedenis, liggaamsmetings en hersteltellings',
-  'legal.privacy.bullets.biometric': 'Biometriese data: vingerafdruk of gesigherkenning wat gebruik word vir app-verifikasie (slegs op die toestel verwerk, nooit gestoor of versend nie)',
-  'legal.privacy.bullets.location': 'Liggingdata: GPS-koördinate tydens drafnasporing (slegs wanneer jy die draffunksie aktief gebruik)',
-  'legal.privacy.bullets.account': 'Profielinligting: fiksheidsdoelwitte, ervaringsvlak, toerustingvoorkeure en opsionele werkskedule',
-  'legal.privacy.bullets.usage': 'Programgebruikpatrone en kenmerkinteraksies (anoniem gemaak, gebruik om die toepassing te verbeter)',
-  'legal.privacy.bullets.device': 'Toesteltipe, OS-weergawe en programweergawe vir versoenbaarheid en omvalverslaggewing',
-  'legal.privacy.bullets.photos': 'Profielfoto\\\\\\\'s: plaaslik op jou toestel gestoor as jy kies om een ​​te stel',
-  'legal.privacy.bullets.healthConnect': 'Health Connect / HealthKit-data: stappe, hartklop, slaap en oefensessiedata (slegs as jy eksplisiete toestemming verleen)',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest verwerk die volgende kategorieë data om gepersonaliseerde fiksheids- en welstandkenmerke te lewer:',
+  'legal.privacy.bullets.health':
+    'Gesondheid- en aktiwiteitmaatstawwe: hartklop, stappe, slaapdata, oefensessiegeskiedenis, liggaamsmetings en hersteltellings',
+  'legal.privacy.bullets.biometric':
+    'Biometriese data: vingerafdruk of gesigherkenning wat gebruik word vir app-verifikasie (slegs op die toestel verwerk, nooit gestoor of versend nie)',
+  'legal.privacy.bullets.location':
+    'Liggingdata: GPS-koördinate tydens drafnasporing (slegs wanneer jy die draffunksie aktief gebruik)',
+  'legal.privacy.bullets.account':
+    'Profielinligting: fiksheidsdoelwitte, ervaringsvlak, toerustingvoorkeure en opsionele werkskedule',
+  'legal.privacy.bullets.usage':
+    'Programgebruikpatrone en kenmerkinteraksies (anoniem gemaak, gebruik om die toepassing te verbeter)',
+  'legal.privacy.bullets.device':
+    'Toesteltipe, OS-weergawe en programweergawe vir versoenbaarheid en omvalverslaggewing',
+  'legal.privacy.bullets.photos': "Profielfoto\\\\\\'s: plaaslik op jou toestel gestoor as jy kies om een ​​te stel",
+  'legal.privacy.bullets.healthConnect':
+    'Health Connect / HealthKit-data: stappe, hartklop, slaap en oefensessiedata (slegs as jy eksplisiete toestemming verleen)',
   'legal.privacy.sections.storageTitle': '2) Databerging',
-  'legal.privacy.sections.storageBody': 'FitQuest is ontwerp as \\\\\\\'n vanlyn-eerste toepassing. Al jou fiksheidsdata word plaaslik op jou toestel gestoor met behulp van SQLite. Geen persoonlike data word op eksterne bedieners gestoor nie. Sensitiewe gesondheidsrekords word geïnkripteer voor berging deur gebruik te maak van industriestandaard AES-256-GCM-enkripsie.',
+  'legal.privacy.sections.storageBody':
+    "FitQuest is ontwerp as \\\\\\'n vanlyn-eerste toepassing. Al jou fiksheidsdata word plaaslik op jou toestel gestoor met behulp van SQLite. Geen persoonlike data word op eksterne bedieners gestoor nie. Sensitiewe gesondheidsrekords word geïnkripteer voor berging deur gebruik te maak van industriestandaard AES-256-GCM-enkripsie.",
   'legal.privacy.sections.securityTitle': '3) Datasekuriteit',
-  'legal.privacy.sections.securityBody': 'Alle sensitiewe gesondheidsdata word geïnkripteer met AES-256-GCM-enkripsie voordat dit op jou toestel gestoor word. Enkripsiesleutels word beskerm deur jou toestel se veilige hardeware (Sleutelhanger op iOS, Keystore op Android). Biometriese verifikasie bied \\\\\\\'n bykomende laag beskerming. Ons gebruik veilige sleutelafleiding (PBKDF2) en konstante tydvergelyking om tydsberekeningaanvalle te voorkom.',
+  'legal.privacy.sections.securityBody':
+    "Alle sensitiewe gesondheidsdata word geïnkripteer met AES-256-GCM-enkripsie voordat dit op jou toestel gestoor word. Enkripsiesleutels word beskerm deur jou toestel se veilige hardeware (Sleutelhanger op iOS, Keystore op Android). Biometriese verifikasie bied \\\\\\'n bykomende laag beskerming. Ons gebruik veilige sleutelafleiding (PBKDF2) en konstante tydvergelyking om tydsberekeningaanvalle te voorkom.",
   'legal.privacy.sections.thirdPartyTitle': '4) Derdepartydienste',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest verkoop, verhuur of verhandel nie jou persoonlike data nie. Die volgende derdeparty-integrasies kan beperkte data verwerk:',
-  'legal.privacy.bullets.thirdPartyAI': 'KI-kenmerke: Wanneer jy die KI-afrigter of professor gebruik, word jou aanwysings na OpenRouter gestuur (via Llama-taalmodelle) om antwoorde te genereer. Geen persoonlike gesondheidsdata is by hierdie versoeke ingesluit nie - slegs die teks wat jy tik.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: As jy toestemming gee, lees FitQuest gesondheidsstatistieke vanaf hierdie platformdienste. Data vloei eenrigting (leesalleen) en word geïnkripteer op jou toestel gestoor.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: Bestuur intekeningverifikasie. Ontvang slegs aankoopbewyse en anonieme gebruikeridentifiseerders – geen gesondheids- of fiksheidsdata nie.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: Omvalverslagdiens wat anonieme foutlogboeke ontvang. Geen persoonlike data of gesondheidsmaatstawwe is ingesluit nie.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest verkoop, verhuur of verhandel nie jou persoonlike data nie. Die volgende derdeparty-integrasies kan beperkte data verwerk:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'KI-kenmerke: Wanneer jy die KI-afrigter of professor gebruik, word jou aanwysings na OpenRouter gestuur (via Llama-taalmodelle) om antwoorde te genereer. Geen persoonlike gesondheidsdata is by hierdie versoeke ingesluit nie - slegs die teks wat jy tik.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: As jy toestemming gee, lees FitQuest gesondheidsstatistieke vanaf hierdie platformdienste. Data vloei eenrigting (leesalleen) en word geïnkripteer op jou toestel gestoor.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: Bestuur intekeningverifikasie. Ontvang slegs aankoopbewyse en anonieme gebruikeridentifiseerders – geen gesondheids- of fiksheidsdata nie.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: Omvalverslagdiens wat anonieme foutlogboeke ontvang. Geen persoonlike data of gesondheidsmaatstawwe is ingesluit nie.',
   'legal.privacy.sections.childrenTitle': '5) Kinders se privaatheid',
-  'legal.privacy.sections.childrenBody': 'FitQuest is ontwerp vir gebruikers van 13 jaar en ouer. Ons samel nie bewustelik persoonlike inligting van kinders onder 13 in nie. As jy glo dat \\\\\\\'n kind data aan ons verskaf het, kontak ons ​​asseblief by fitquestsupp0rt@gmail.com vir onmiddellike uitvee.',
+  'legal.privacy.sections.childrenBody':
+    "FitQuest is ontwerp vir gebruikers van 13 jaar en ouer. Ons samel nie bewustelik persoonlike inligting van kinders onder 13 in nie. As jy glo dat \\\\\\'n kind data aan ons verskaf het, kontak ons ​​asseblief by fitquestsupp0rt@gmail.com vir onmiddellike uitvee.",
   'legal.privacy.sections.retentionTitle': '6) Databehoud',
-  'legal.privacy.sections.retentionBody': 'Jou data word plaaslik op jou toestel gestoor en behou so lank as wat die toepassing geïnstalleer is. U kan alle data enige tyd uitvee deur Profiel → Instellings → Vee alle data uit. As u die toepassing deïnstalleer, word alle plaaslike data permanent verwyder. U kan ook die uitvee van data versoek via ons webwerf by https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Jou data word plaaslik op jou toestel gestoor en behou so lank as wat die toepassing geïnstalleer is. U kan alle data enige tyd uitvee deur Profiel → Instellings → Vee alle data uit. As u die toepassing deïnstalleer, word alle plaaslike data permanent verwyder. U kan ook die uitvee van data versoek via ons webwerf by https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Jou regte',
-  'legal.privacy.sections.rightsBody': 'Kragtens toepaslike databeskermingswette (insluitend die Databeskermingswet 2011 van Lesotho, GDPR in die EU en CCPA in Kalifornië), het jy die volgende regte:',
-  'legal.privacy.bullets.accessRight': 'Toegang: Bekyk alle data wat die toepassing oor jou stoor via Profiel → Voer data uit',
+  'legal.privacy.sections.rightsBody':
+    'Kragtens toepaslike databeskermingswette (insluitend die Databeskermingswet 2011 van Lesotho, GDPR in die EU en CCPA in Kalifornië), het jy die volgende regte:',
+  'legal.privacy.bullets.accessRight':
+    'Toegang: Bekyk alle data wat die toepassing oor jou stoor via Profiel → Voer data uit',
   'legal.privacy.bullets.deleteRight': 'Skrap: Vee al jou data permanent uit via toepassinginstellings of ons webwerf',
-  'legal.privacy.bullets.exportRight': 'Oordraagbaarheid: Voer jou data in JSON-formaat uit vir oordrag na \\\\\\\'n ander diens',
+  'legal.privacy.bullets.exportRight':
+    "Oordraagbaarheid: Voer jou data in JSON-formaat uit vir oordrag na \\\\\\'n ander diens",
   'legal.privacy.bullets.correctRight': 'Regstelling: Dateer jou profielinligting op of wysig enige tyd',
-  'legal.privacy.bullets.objectionRight': 'Beswaar: Onttrek toestemming vir dataverwerking te eniger tyd via Regsentrum',
+  'legal.privacy.bullets.objectionRight':
+    'Beswaar: Onttrek toestemming vir dataverwerking te eniger tyd via Regsentrum',
   'legal.privacy.sections.popiaTitle': '8) Nakoming van databeskerming (Lesotho)',
-  'legal.privacy.sections.popiaBody': 'In ooreenstemming met die Databeskermingswet 2011 van die Koninkryk van Lesotho, tree fitquest.dev op as die verantwoordelike party vir jou persoonlike inligting. Ons verwerk jou data wettig, verminder versameling tot wat nodig is, verseker akkuraatheid en handhaaf toepaslike sekuriteitsmaatreëls. Vir oorgrensgebruikers voldoen ons ook aan POPIA (Suid-Afrika), GDPR (EU) en CCPA (Kalifornië) waar van toepassing.',
+  'legal.privacy.sections.popiaBody':
+    'In ooreenstemming met die Databeskermingswet 2011 van die Koninkryk van Lesotho, tree fitquest.dev op as die verantwoordelike party vir jou persoonlike inligting. Ons verwerk jou data wettig, verminder versameling tot wat nodig is, verseker akkuraatheid en handhaaf toepaslike sekuriteitsmaatreëls. Vir oorgrensgebruikers voldoen ons ook aan POPIA (Suid-Afrika), GDPR (EU) en CCPA (Kalifornië) waar van toepassing.',
   'legal.privacy.sections.updatesTitle': '9) Beleidopdaterings',
-  'legal.privacy.sections.updatesBody': 'Ons kan hierdie privaatheidsbeleid van tyd tot tyd opdateer. Enige veranderinge sal in die toepassing weerspieël word met \\\\\\\'n bygewerkte "Laas Opgedateer"-datum en jy sal gevra word om die opgedateerde beleid te hersien en te aanvaar. Voortgesette gebruik van die toepassing na veranderinge, beteken aanvaarding van die nuwe beleid.',
+  'legal.privacy.sections.updatesBody':
+    'Ons kan hierdie privaatheidsbeleid van tyd tot tyd opdateer. Enige veranderinge sal in die toepassing weerspieël word met \\\\\\\'n bygewerkte "Laas Opgedateer"-datum en jy sal gevra word om die opgedateerde beleid te hersien en te aanvaar. Voortgesette gebruik van die toepassing na veranderinge, beteken aanvaarding van die nuwe beleid.',
   'legal.privacy.sections.contactTitle': '10) Kontak',
-  'legal.privacy.sections.contactBody': 'Vir privaatheidsversoeke, stuur e-pos na fitquestsupp0rt@gmail.com. U kan ook https://fitquest.dev/support besoek. Sluit jou rekeningidentifiseerder in wanneer dit beskikbaar is. Ons reageer binne 30 werksdae.',
+  'legal.privacy.sections.contactBody':
+    'Vir privaatheidsversoeke, stuur e-pos na fitquestsupp0rt@gmail.com. U kan ook https://fitquest.dev/support besoek. Sluit jou rekeningidentifiseerder in wanneer dit beskikbaar is. Ons reageer binne 30 werksdae.',
   'legal.terms.sections.useTitle': '1) Aanvaarbare gebruik',
-  'legal.terms.sections.useBody': 'Jy stem in om FitQuest wettig te gebruik en nie te probeer om sekuriteitskontroles, intekeningmeganismes of databeskermingkenmerke te reverse-engineer, dekompileer, omseil nie. Jy mag nie die toepassing vir enige onwettige doel of in stryd met enige toepaslike regulasies gebruik nie.',
+  'legal.terms.sections.useBody':
+    'Jy stem in om FitQuest wettig te gebruik en nie te probeer om sekuriteitskontroles, intekeningmeganismes of databeskermingkenmerke te reverse-engineer, dekompileer, omseil nie. Jy mag nie die toepassing vir enige onwettige doel of in stryd met enige toepaslike regulasies gebruik nie.',
   'legal.terms.sections.medicalTitle': '2) Mediese vrywaring',
-  'legal.terms.sections.medicalBody': 'FitQuest is \\\\\\\'n fiksheid- en welstandtoepassing en is NIE \\\\\\\'n mediese toestel of diens nie. Die toepassing verskaf nie mediese advies, diagnose of behandeling nie. Oefensessievoorstelle, gesondheidtellings, herstelaanbevelings en KI-gegenereerde leiding is slegs vir inligtings- en opvoedkundige doeleindes. Raadpleeg altyd \\\\\\\'n gekwalifiseerde gesondheidswerker voordat u enige oefenprogram begin, wysig of staak, veral as u reeds bestaande gesondheidstoestande, beserings of bekommernisse het. Hou op om dadelik te oefen as jy pyn, duiseligheid of ongemak ervaar.',
+  'legal.terms.sections.medicalBody':
+    "FitQuest is \\\\\\'n fiksheid- en welstandtoepassing en is NIE \\\\\\'n mediese toestel of diens nie. Die toepassing verskaf nie mediese advies, diagnose of behandeling nie. Oefensessievoorstelle, gesondheidtellings, herstelaanbevelings en KI-gegenereerde leiding is slegs vir inligtings- en opvoedkundige doeleindes. Raadpleeg altyd \\\\\\'n gekwalifiseerde gesondheidswerker voordat u enige oefenprogram begin, wysig of staak, veral as u reeds bestaande gesondheidstoestande, beserings of bekommernisse het. Hou op om dadelik te oefen as jy pyn, duiseligheid of ongemak ervaar.",
   'legal.terms.sections.subscriptionTitle': '3) Intekening en faktuur',
-  'legal.terms.sections.subscriptionBody': 'FitQuest bied \\\\\\\'n gratis proeftydperk van 14 dae van alle premium kenmerke. Nadat die proeftydperk geëindig het, kan jy inteken om voort te gaan om premium-kenmerke te gebruik of voort te gaan met die gratis vlak. Premium-intekeninge word gefaktureer deur die Google Play Winkel of Apple App Store. Intekeninge word outomaties hernu aan die einde van elke faktuurperiode, tensy dit ten minste 24 uur voor die hernuwingsdatum gekanselleer word. Jy kan jou intekening bestuur of kanselleer deur jou toestel se toepassingwinkelinstellings. Terugbetalings is onderhewig aan die onderskeie platform se terugbetalingsbeleid. Pryse kan volgens streek verskil en word voor aankoop in jou plaaslike geldeenheid vertoon.',
+  'legal.terms.sections.subscriptionBody':
+    "FitQuest bied \\\\\\'n gratis proeftydperk van 14 dae van alle premium kenmerke. Nadat die proeftydperk geëindig het, kan jy inteken om voort te gaan om premium-kenmerke te gebruik of voort te gaan met die gratis vlak. Premium-intekeninge word gefaktureer deur die Google Play Winkel of Apple App Store. Intekeninge word outomaties hernu aan die einde van elke faktuurperiode, tensy dit ten minste 24 uur voor die hernuwingsdatum gekanselleer word. Jy kan jou intekening bestuur of kanselleer deur jou toestel se toepassingwinkelinstellings. Terugbetalings is onderhewig aan die onderskeie platform se terugbetalingsbeleid. Pryse kan volgens streek verskil en word voor aankoop in jou plaaslike geldeenheid vertoon.",
   'legal.terms.sections.ipTitle': '4) Intellektuele Eiendom',
-  'legal.terms.sections.ipBody': 'Alle inhoud, ontwerp, kode, algoritmes, handelsmerk en materiaal in FitQuest is die intellektuele eiendom van fitquest.dev en word beskerm deur toepaslike kopiereg- en handelsmerkwette. Jy mag nie afgeleide werke van enige deel van die toepassing reproduseer, versprei of skep sonder vooraf skriftelike toestemming nie.',
+  'legal.terms.sections.ipBody':
+    'Alle inhoud, ontwerp, kode, algoritmes, handelsmerk en materiaal in FitQuest is die intellektuele eiendom van fitquest.dev en word beskerm deur toepaslike kopiereg- en handelsmerkwette. Jy mag nie afgeleide werke van enige deel van die toepassing reproduseer, versprei of skep sonder vooraf skriftelike toestemming nie.',
   'legal.terms.sections.liabilityTitle': '5) Beperking van aanspreeklikheid',
-  'legal.terms.sections.liabilityBody': 'Tot die maksimum mate wat deur die wet toegelaat word, sal fitquest.dev nie aanspreeklik wees vir enige indirekte, toevallige, spesiale, gevolglike of bestraffende skade wat voortspruit uit jou gebruik van die toepassing nie, insluitend maar nie beperk nie tot fisiese besering, verlies van data of diensonderbreking. Ons totale aanspreeklikheid sal nie die bedrag oorskry wat jy vir premium-kenmerke in die 12 maande voor die eis betaal het nie.',
+  'legal.terms.sections.liabilityBody':
+    'Tot die maksimum mate wat deur die wet toegelaat word, sal fitquest.dev nie aanspreeklik wees vir enige indirekte, toevallige, spesiale, gevolglike of bestraffende skade wat voortspruit uit jou gebruik van die toepassing nie, insluitend maar nie beperk nie tot fisiese besering, verlies van data of diensonderbreking. Ons totale aanspreeklikheid sal nie die bedrag oorskry wat jy vir premium-kenmerke in die 12 maande voor die eis betaal het nie.',
   'legal.terms.sections.terminationTitle': '6) Beëindiging',
-  'legal.terms.sections.terminationBody': 'Ons behou die reg voor om jou toegang tot FitQuest op te skort of te beëindig as jy hierdie bepalings oortree. Jy kan enige tyd ophou om die toepassing te gebruik. By beëindiging bly jou plaaslik gestoor data op jou toestel totdat jy dit uitvee of die toepassing deïnstalleer.',
+  'legal.terms.sections.terminationBody':
+    'Ons behou die reg voor om jou toegang tot FitQuest op te skort of te beëindig as jy hierdie bepalings oortree. Jy kan enige tyd ophou om die toepassing te gebruik. By beëindiging bly jou plaaslik gestoor data op jou toestel totdat jy dit uitvee of die toepassing deïnstalleer.',
   'legal.terms.sections.governingLawTitle': '7) Toepaslike Reg',
-  'legal.terms.sections.governingLawBody': 'Hierdie bepalings word beheer deur en vertolk in ooreenstemming met die wette van die Koninkryk van Lesotho. Enige dispute wat voortspruit uit hierdie bepalings of jou gebruik van FitQuest sal onderhewig wees aan die eksklusiewe jurisdiksie van die howe van Lesotho. Indien daar bevind word dat enige bepaling van hierdie bepalings onafdwingbaar is, sal die oorblywende bepalings ten volle van krag en in werking bly.',
-  'legal.terms.bullets.compliance': 'Jy moet aan alle toepaslike Google Play- en Apple App Store-beleide voldoen wanneer jy hierdie toepassing gebruik',
-  'legal.terms.bullets.accountDelete': 'Jy kan jou rekening en alle geassosieerde data enige tyd uitvee via Profiel → Instellings of by https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Hierdie bepalings word beheer deur en vertolk in ooreenstemming met die wette van die Koninkryk van Lesotho. Enige dispute wat voortspruit uit hierdie bepalings of jou gebruik van FitQuest sal onderhewig wees aan die eksklusiewe jurisdiksie van die howe van Lesotho. Indien daar bevind word dat enige bepaling van hierdie bepalings onafdwingbaar is, sal die oorblywende bepalings ten volle van krag en in werking bly.',
+  'legal.terms.bullets.compliance':
+    'Jy moet aan alle toepaslike Google Play- en Apple App Store-beleide voldoen wanneer jy hierdie toepassing gebruik',
+  'legal.terms.bullets.accountDelete':
+    'Jy kan jou rekening en alle geassosieerde data enige tyd uitvee via Profiel → Instellings of by https://fitquest.dev/delete-account',
 
   'common.save': 'Stoor',
   'common.cancel': 'Kanselleer',
@@ -1800,7 +2098,7 @@ const af: Record<string, string> = {
   'common.restore': 'Herstel',
 
   'workout.noActive': 'Geen aktiewe oefensessie',
-  'workout.generateFromTrain': 'Genereer \\\\\\\'n oefensessie vanaf die Trein-oortjie',
+  'workout.generateFromTrain': "Genereer \\\\\\'n oefensessie vanaf die Trein-oortjie",
   'workout.goToTrain': 'Gaan na Trein',
   'workout.cancelTitle': 'Kanselleer oefensessie?',
   'workout.cancelBody': 'Vordering sal verlore gaan as jy kanselleer.',
@@ -1820,7 +2118,8 @@ const af: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Begin enige tyd',
   'savedWorkouts.deleteFailed': 'Kon nie oefensessie uitvee nie. Probeer asseblief weer.',
   'savedWorkouts.emptyTitle': 'Nog geen gestoorde oefensessies nie',
-  'savedWorkouts.emptySubtitle': 'Bou jou eerste pasgemaakte oefensessie deur oefeninge te kies wat aangepas is vir jou doelwitte. Dit neem net \\\\\\\'n minuut!',
+  'savedWorkouts.emptySubtitle':
+    "Bou jou eerste pasgemaakte oefensessie deur oefeninge te kies wat aangepas is vir jou doelwitte. Dit neem net \\\\\\'n minuut!",
   'savedWorkouts.featurePick': 'Kies jou oefeninge',
   'savedWorkouts.featureSet': 'Stel herhalings en rus',
   'savedWorkouts.featureStart': 'Begin enige tyd',
@@ -1837,8 +2136,8 @@ const af: Record<string, string> = {
   'progress.takePhoto': 'uit Neem foto',
   'progress.gallery': 'Galery',
   'progress.permissionNeeded': 'Toestemming benodig',
-  'progress.cameraRequired': 'Kameratoegang word vereis om vorderingsfoto\\\\\\\'s te neem.',
-  'progress.galleryRequired': 'Galerytoegang word vereis om foto\\\\\\\'s te kies.',
+  'progress.cameraRequired': "Kameratoegang word vereis om vorderingsfoto\\\\\\'s te neem.",
+  'progress.galleryRequired': "Galerytoegang word vereis om foto\\\\\\'s te kies.",
   'progress.deleteConfirm': 'Is jy seker jy wil hierdie vorderingsfoto uitvee?',
 
   'exerciseDetail.targetMuscles': 'Teikenspiere',
@@ -1866,13 +2165,14 @@ const af: Record<string, string> = {
   'help.faqTitle': 'Gereelde Vrae',
   'help.faqDesc': 'Blaai deur algemene vrae oor oefeninge, voeding en programkenmerke',
   'help.contactTitle': 'E-pos Ondersteuning',
-  'help.bugTitle': 'Rapporteer \\\\\\\\\\\\\\\'n Fout',
+  'help.bugTitle': "Rapporteer \\\\\\\\\\\\\\'n Fout",
   'help.bugDesc': 'Iets gebreek gevind? Laat ons weet en ons sal dit vinnig regmaak',
-  'help.featureTitle': 'Stel \\\\\\\\\\\\\\\'n Kenmerk Voor',
-  'help.featureDesc': 'Het jy \\\\\\\\\\\\\\\'n idee om FitQuest beter te maak? Ons wil dit graag hoor',
+  'help.featureTitle': "Stel \\\\\\\\\\\\\\'n Kenmerk Voor",
+  'help.featureDesc': "Het jy \\\\\\\\\\\\\\'n idee om FitQuest beter te maak? Ons wil dit graag hoor",
   'help.responseTime': 'Ons reageer gewoonlik binne 24-48 uur',
 
-  'about.description': 'FitQuest is \\\\\\\\\\\\\\\'n omvattende fiksheidsplatform ontwerp om jou te help om jou oefendoelwitte te bereik. Al jou data bly op jou toestel, beskerm deur militêre-graad enkripsie.',
+  'about.description':
+    "FitQuest is \\\\\\\\\\\\\\'n omvattende fiksheidsplatform ontwerp om jou te help om jou oefendoelwitte te bereik. Al jou data bly op jou toestel, beskerm deur militêre-graad enkripsie.",
   'about.platform': 'Platform',
   'about.dataStorage': 'Data Berging',
   'about.onDevice': 'Slegs op toestel',
@@ -1905,7 +2205,7 @@ const af: Record<string, string> = {
 
   'health.loading': 'Laai tans gesondheidsdata...',
   'health.title': 'Gesondheid Dashboard',
-  'health.subtitle': 'Jou welstand in \\\\\\\'n oogopslag',
+  'health.subtitle': "Jou welstand in \\\\\\'n oogopslag",
   'health.alerts': 'waarskuwings',
   'health.alert': 'waarskuwing',
   'health.healthScore': 'Gesondheidtelling',
@@ -1947,13 +2247,13 @@ const af: Record<string, string> = {
   'health.provider.google_fit': 'Google Fiks',
   'health.logHeartRate': 'Teken hartklop aan',
   'health.logSleep': 'Log Slaap',
-  'health.comingSoonDetail': 'Hartklopregistrasie sal in \\\\\\\'n toekomstige opdatering beskikbaar wees.',
-  'health.sleepComingSoon': 'Slaapregistrasie sal in \\\\\\\'n toekomstige opdatering beskikbaar wees.',
+  'health.comingSoonDetail': "Hartklopregistrasie sal in \\\\\\'n toekomstige opdatering beskikbaar wees.",
+  'health.sleepComingSoon': "Slaapregistrasie sal in \\\\\\'n toekomstige opdatering beskikbaar wees.",
 
   'nutrition.title': 'Voeding Sakrekenaar',
   'nutrition.searchPlaceholder': 'Soek kos (bv. hoender, rys, piesang)...',
   'nutrition.foodsFound': 'kos gevind',
-  'nutrition.noFoods': 'Geen kos gevind nie. Probeer \\\\\\\'n ander soektog.',
+  'nutrition.noFoods': "Geen kos gevind nie. Probeer \\\\\\'n ander soektog.",
   'nutrition.myMeal': 'My Ete',
   'nutrition.noItems': 'Nog geen items',
   'nutrition.addPrompt': 'Soek en voeg kos by om te begin dop...',
@@ -2105,6 +2405,12 @@ const af: Record<string, string> = {
   'onboarding.permSub': 'Dit help FitQuest om die beste vir jou te werk. Jy kan dit enige tyd in Instellings verander.',
   'onboarding.perm.notifications': 'Oefening-herinnerings',
   'onboarding.perm.notificationsSub': 'Word herinner om op koers te bly met jou oefenskedule',
+  'onboarding.perm.motion': 'Beweging en Aktiwiteit',
+  'onboarding.perm.motionSub': 'Volg stappe, bespeur oefeninge en tel herhalings met bewegingsensors',
+  'onboarding.perm.location': 'Ligging (Draf Opsporing)',
+  'onboarding.perm.locationSub': 'Karteer jou drafroetes en bereken afstand akkuraat',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'Sinkroniseer hartklop, slaap en oefendata met Android Health Connect',
   'onboarding.perm.allow': 'Laat toe',
   'onboarding.perm.skipNote': 'Jy kan dit oorslaan — toestemmings kan later in jou profiel geaktiveer word.',
 
@@ -2120,7 +2426,7 @@ const af: Record<string, string> = {
   'register.confirmPlaceholder': 'Herhaal wagwoord',
   'register.creating': 'Skep tans rekening...',
   'register.signUp': 'Registreer',
-  'register.alreadyHaveAccount': 'Het jy reeds \\\\\\\'n rekening?',
+  'register.alreadyHaveAccount': "Het jy reeds \\\\\\'n rekening?",
   'register.signIn': 'Teken in',
   'register.passwordsMismatch': 'Wagwoorde stem nie ooreen nie',
   'register.failed': 'Registrasie het misluk. Probeer asseblief weer.',
@@ -2147,7 +2453,7 @@ const af: Record<string, string> = {
   'fitmind.adding': 'Voeg tans by...',
   'fitmind.addToLibrary': 'Voeg by biblioteek',
   'fitmind.titleRequired': 'Titel vereis',
-  'fitmind.titleRequiredDetail': 'Voer asseblief \\\\\\\'n titel vir die dokument in.',
+  'fitmind.titleRequiredDetail': "Voer asseblief \\\\\\'n titel vir die dokument in.",
   'fitmind.addFailed': 'Kon nie dokument byvoeg nie. Probeer asseblief weer.',
   'fitmind.deleteTitle': 'Verwyder dokument',
   'fitmind.deleteConfirm': 'Verwyder uit jou biblioteek? Dit kan nie ongedaan gemaak word nie.',
@@ -2173,7 +2479,7 @@ const af: Record<string, string> = {
   'fitmind.reader.noContent': 'Geen inhoud beskikbaar vir hierdie bladsy nie.',
   'fitmind.reader.prev': 'Vorige',
   'fitmind.reader.next': 'Volgende',
-  'fitmind.reader.errorResponse': 'Jammer, ek het \\\\\\\'n fout teëgekom. Probeer asseblief weer.',
+  'fitmind.reader.errorResponse': "Jammer, ek het \\\\\\'n fout teëgekom. Probeer asseblief weer.",
   'fitmind.reader.rateLimited': 'Tarieflimiet bereik. Wag asseblief...',
   'fitmind.reader.loadError': 'Kan nie bladsyinhoud laai nie.',
   'fitmind.reader.openReader': 'Maak Leser Oop',
@@ -2278,7 +2584,7 @@ const af: Record<string, string> = {
   'backup.createBackup': 'Skep Rugsteun',
   'backup.availableBackups': 'Beskikbare Rugsteune',
   'backup.noBackups': 'Geen rugsteune nog nie.',
-  'backup.helperText': 'Skep \\\\\\\\\\\\\\\'n geënkripteerde rugsteunlêer van jou plaaslike databasis.',
+  'backup.helperText': "Skep \\\\\\\\\\\\\\'n geënkripteerde rugsteunlêer van jou plaaslike databasis.",
   'backup.optionalPassphrase': 'Opsionele wagwoord',
   'backup.working': 'Besig…',
   'backup.created': 'Rugsteun geskep',
@@ -2297,7 +2603,8 @@ const af: Record<string, string> = {
   'backup.noCloudBackups': 'Geen wolk rugsteune nog nie.',
   'backup.cloudHelper': 'Berg die geënkripteerde rugsteun op jou Fase 2-bediener.',
 
-  'audio.warmup.start': 'Kom ons begin met \\\'n opwarming. Ligte bewegings om jou spiere wakker te maak en jou liggaam voor te berei.',
+  'audio.warmup.start':
+    "Kom ons begin met \\'n opwarming. Ligte bewegings om jou spiere wakker te maak en jou liggaam voor te berei.",
   'audio.main.start': 'Kom ons gaan daarin in. Hoofoefensessie begin nou.',
   'audio.cooldown.start': 'Tyd om af te koel. Sagte bewegings om jou liggaam te help herstel.',
   'audio.warmup.toMain': 'Heerlike opwarming! Jou liggaam is voorberei. Tyd vir die hoofoefensessie. Kom ons gaan!',
@@ -2314,7 +2621,7 @@ const af: Record<string, string> = {
   'audio.countdown.one': 'Een',
   'audio.nextExercise': 'Volgende oefening: {{name}}.',
   'audio.targets': 'Dit teiken jou {{muscles}}.',
-  'audio.categoryLabel': '\\\'n {{category}} oefening.',
+  'audio.categoryLabel': "\\'n {{category}} oefening.",
   'audio.getInPosition': 'Kom in posisie vir {{name}}.',
   'audio.focusControl': 'Fokus op beheerde beweging.',
   'audio.performControl': 'Voer {{name}} uit met beheerde vorm. Asem deurgaans bestendig asem.',
@@ -2331,10 +2638,10 @@ const af: Record<string, string> = {
   'audio.compliment.5': 'Ongelooflike moeite! Die meeste mense slaan vandag oor. Jy het nie.',
   'audio.perfect.1': 'Perfekte sessie! Elke oefening voltooi. Dit is elite toewyding.',
   'audio.perfect.2': 'Foutlose oefensessie! Jy het nie een oefening oorgeslaan nie. Onstuitbaar!',
-  'audio.perfect.3': 'Honderd persent voltooiing. Jy is op \\\'n ander vlak!',
+  'audio.perfect.3': "Honderd persent voltooiing. Jy is op \\'n ander vlak!",
   'audio.levelUp.1': 'En jy het gelyk! Welkom by vlak {{level}}!',
   'audio.levelUp.2': 'Vlak {{level}} ontsluit! Jou harde werk werp vrugte af!',
-  'audio.streak.7': '\\\'n Hele week se opleiding! Jy bou \\\'n ware gewoonte op.',
+  'audio.streak.7': "\\'n Hele week se opleiding! Jy bou \\'n ware gewoonte op.",
   'audio.streak.14': 'Twee weke sterk! Jou dissipline is inspirerend.',
   'audio.streak.30': 'Dertig dae lange reeks! Jy is in die boonste vlak van konsekwentheid.',
   'audio.streak.60': 'Sestig dae! Die meeste mense droom oor hierdie soort toewyding.',
@@ -2342,6 +2649,143 @@ const af: Record<string, string> = {
   'audio.minutes': '{{minutes}} minute van pure moeite.',
   'audio.progressions': '{{count}} oefening gereed om vlak te styg!|{{count}} oefeninge gereed om vlak te styg!',
   'audio.xpEarned': 'Plus {{xp}} XP verdien.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Vorderingslogika geaktiveer op grond van onlangse aktiwiteit.',
+  'signal.transition.regressing.subtext': 'Sessielading verminder om by huidige ritme te pas.',
+  'signal.firstSession.headline': 'Stelsel gereed. Begin jou eerste sessie.',
+  'signal.firstSession.subtext': 'Elke oefensessie kalibreer die stelsel na jou kapasiteit.',
+  'signal.streakAtRisk.headline': '{{streak}} dae konsekwent. Gaan vandag voort om dit te versterk.',
+  'signal.streakAtRisk.subtext.disciplined': 'Konsekwentheid dryf vorderingsakkuraatheid.',
+  'signal.streakAtRisk.subtext.inconsistent': 'n Kort sessie is genoeg om ritme te behou.',
+  'signal.restAdvised.headline': 'Herstel word aanbeveel op grond van moegheid.',
+  'signal.restAdvised.subtext.fatigue': 'Moegheid op {{fatigue}}%. Rus versnel aanpassing.',
+  'signal.restAdvised.subtext.readiness': 'Gereedheid op {{readiness}}%. Herstel aan die gang.',
+  'signal.momentum.headline': 'Sessie voltooi. Data aangeteken.',
+  'signal.momentum.subtext.streak': '{{streak}}-dag patroon. Stelsel verfyn jou program.',
+  'signal.momentum.subtext.default': 'Herstel begin. Volgende sessie dienooreenkomstig aangepas.',
+  'signal.comeback.headline.inconsistent': '{{days}} dae af. Laeweerstand-sessie beskikbaar.',
+  'signal.comeback.headline.disciplined': '{{days}} dae sedert laaste sessie. Intensiteit hergekalibreer.',
+  'signal.comeback.subtext.inconsistent': 'Stelsel aangepas vir makliker hertoetrede.',
+  'signal.comeback.subtext.disciplined': 'Volume aangepas om by huidige herstelstaat te pas.',
+  'signal.recoveryReady.headline.disciplined': 'Gereedheid optimaal. Vorderingsvoorwaardes bereik.',
+  'signal.recoveryReady.headline.inconsistent': 'Herstel voltooi. Goeie toestande vir n sessie.',
+  'signal.recoveryReady.subtext': 'Gereedheid op {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} dae konsekwent. Stelsel pas aan by jou ritme.',
+  'signal.streakBuilding.subtext.disciplined': 'Volume en intensiteit neem toe op grond van prestasie.',
+  'signal.streakBuilding.subtext.inconsistent': 'Konsekwentheid bou op. Uitdaging neem geleidelik toe.',
+  'signal.expectToday.headline.disciplined': 'Oefenvenster oop. Stelsel gereed.',
+  'signal.expectToday.headline.inconsistent': 'Sessie beskikbaar wanneer jy gereed is.',
+  'signal.expectToday.subtext.good': 'Gereedheid {{readiness}}%. Goeie toestande.',
+  'signal.expectToday.subtext.moderate': 'Matige gereedheid. Ligte sessie aanbeveel.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Eerste sessie voorle. Die stelsel leer uit elke herhaling.',
+  'memory.noHistory.trendStatement': 'Nog geen data nie. Jou eerste oefensessie stel die basislyne.',
+  'memory.lastSession.headline.crushed': 'Laaste sessie: {{completed}} oefeninge verpletter in {{duration}}min.',
+  'memory.lastSession.headline.adjusted': 'Laaste sessie: {{completed}}/{{total}} voltooi. Stelsel aangepas.',
+  'memory.lastSession.headline.tough': 'Laaste sessie was taai. {{completed}}/{{total}} voltooi. Herstel geprioritiseer.',
+  'memory.trend.improving': 'Prestasie neig opwaarts. Stelsel verhoog uitdaging.',
+  'memory.trend.declining': 'Onlangse sessies moeiliker. Stelsel aangepas om momentum te herbou.',
+  'memory.trend.steady.data': 'Konsekwente uitset. Naby aan volgende vorderingshek.',
+  'memory.trend.steady.building': 'Besig om basislyne te bou. Bly konsekwent.',
+  'memory.delta.firstWorkout': 'Eerste oefensessie. Stelsel kalibreer na jou liggaam.',
+  'memory.delta.same': 'Dieselfde oefenstruktuur. Stelsel sien konsekwentheid bou op.',
+  'memory.delta.mixed': '{{total}} veranderinge: {{removed}} uitgeroteer, {{added}} vars.',
+  'memory.delta.added': '{{count}} nuwe oefening{{plural}} bygevoeg vir verskeidenheid.',
+  'memory.delta.removed': '{{count}} oefening{{plural}} omgeruil vir herstel.',
+  'memory.progression.firstTime': 'Eerste keer. Stelsel sal van hierdie sessie kalibreer.',
+  'memory.progression.improving': '{{wins}} oorwinnings op n ry. Vorder.',
+  'memory.progression.declining': 'Onlangse afname bespeur. Volume aangepas.',
+  'memory.progression.nearGate': '{{successes}} soliede sessie{{plural}}. Nog een om vordering te ontsluit.',
+  'memory.progression.steady': 'Bly stabiel. Konsekwentheid is die plan.',
+  'memory.reason.retained': 'Konsekwent met jou vorderingspad.',
+  'memory.reason.addedBalance': 'Ingeroteer vir spierherstelbalans.',
+  'memory.reason.removedFatigue': 'Uitgeroteer weens opgehoopte moegheid.',
+  'memory.reason.removedVariety': 'Omgeruil vir spierbalans en verskeidenheid.',
+  'memory.timeSince.minutes': '{{minutes}}m gelede',
+  'memory.timeSince.hours': '{{hours}}u gelede',
+  'memory.timeSince.yesterday': 'Gister',
+  'memory.timeSince.days': '{{days}} dae gelede',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Volle stelseltoegang geaktiveer.',
+  'trial.welcome.subtext': '14 dae om elke funksie te verken. Geen beperkings nie.',
+  'trial.firstWin.headline': '{{workouts}} sessie{{plural}} voltooi. Stelsel leer jou patrone.',
+  'trial.firstWin.subtext': 'Elke sessie verbeter oefenakkuraatheid.',
+  'trial.readyForFirst.headline': 'Dag {{day}}. Stelsel gereed vir jou eerste sessie.',
+  'trial.readyForFirst.subtext': 'Begin n oefensessie om kalibrering te begin.',
+  'trial.improvementShown.headline': 'Sessievergelyking nou beskikbaar.',
+  'trial.improvementShown.subtext': 'Die stelsel kan nou wys wat verander het en hoekom.',
+  'trial.memoryIntro.headline': 'Oefenkundigheid brei uit.',
+  'trial.memoryIntro.subtext': 'Dag {{day}}. Meer sessies = skerper ontleding.',
+  'trial.fullIntelligence.headline': 'Volle intelligensie aktief.',
+  'trial.fullIntelligence.subtext': 'Dag {{day}}. Stelsel pas aan by jou patrone en kapasiteit.',
+  'trial.transitionClear.headline': '{{days}} dag{{plural}} oor op volle toegang.',
+  'trial.transitionClear.subtext': 'Na proeftydperk bly kernfunksies beskikbaar. Intelligensielae vereis intekening.',
+  'trial.transitionSoft.headline': '{{days}} dae oor.',
+  'trial.transitionSoft.subtext': 'Jou oefendata en vordering is altyd joune. Intekening stel intelligensie voort.',
+  'trial.viewPlans': 'Bekyk planne',
+  'trial.expired.headline': 'Proeftydperk voltooi.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} oefensessies aangeteken. Kernfunksies bly beskikbaar. Teken in om intelligensielae te herstel.',
+  'trial.expired.subtext.noWorkouts': 'Kernfunksies bly beskikbaar. Teken in om intelligensielae te ontsluit.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Afval by oefening {{index}} ({{name}}) — volume word volgende sessie verminder.',
+  'failure.skipHeavy': 'Hoe oorslaankoers bespeur. Oefeninge pas moontlik nie by huidige kapasiteit nie.',
+  'failure.lowVolume': 'Lae volume-voltooiing. Sessie is moontlik te veeleisend.',
+  'failure.earlyDropout': 'Vroe afvalpatroon. Sessielengte word verminder.',
+  'failure.lateDropout': 'Uithouvermoe-afval. Ligter oefeninge teen die einde geplaas.',
+  'failure.noFailure': 'Sessie suksesvol voltooi.',
+  'failure.insight.none': 'Sessie voltooi op {{percent}}%. Geen aanpassings nodig nie.',
+  'failure.insight.earlyDropout': 'Afval by oefening {{index}} ({{name}}) — volume word volgende sessie verminder.',
+  'failure.insight.midDropout': 'Afval by stel {{index}} ({{name}}) — oefeningtelling word aangepas.',
+  'failure.insight.lateDropout': 'Amper voltooi ({{percent}}%). Geringe aanpassing toegepas.',
+  'failure.insight.skipHeavy': 'Sessie voltooi maar {{percent}}% oefeninge oorgeslaan. Oefeningkeuse word hersien.',
+  'failure.insight.lowVolume': 'Lae volume-voltooiing ({{percent}}%). Stelvoorskrifte word verminder.',
+  'failure.insight.empty': 'Geen oefeninge voltooi nie. Stelsel verminder volgende sessie se moeilikheidsgraad.',
+  'failure.adjustment.none': 'Geen aanpassing nodig nie.',
+  'failure.adjustment.earlyDropout': 'Vroe afval bespeur. Volume en sessielengte word verminder.',
+  'failure.adjustment.midDropout': 'Afval by oefening {{index}}. Oefeningtelling word verminder.',
+  'failure.adjustment.lateDropout': 'Amper voltooide sessie. Geringe volume-vermindering.',
+  'failure.adjustment.skipHeavy': 'Hoe oorslaankoers. Oefeningkeuse moet hersien word.',
+  'failure.adjustment.lowVolume': 'Lae voltooide volume. Steltelling word verminder.',
+  'failure.adjustment.empty': 'Lee sessie. Beduidende vermindering toegepas.',
+  'failure.pattern.noData': 'Nog geen sessiedata nie.',
+  'failure.pattern.noFailures': 'Alle onlangse sessies suksesvol voltooi. Toestande ondersteun vordering.',
+  'failure.pattern.occasional': 'Af en toe onvolledige sessies. Huidige volume lyk volhoubaar.',
+  'failure.pattern.earlyDropoffs': 'Gereelde vroe afvalle. Vermindering van sessielengte of oefeningtelling word aanbeveel.',
+  'failure.pattern.highSkips': 'Hoe oorslaankoers. Oefeningkeuse moet moontlik aangepas word.',
+  'failure.pattern.worsening': 'Mislukkingskoers styg. Oorweeg volume-vermindering of herstelfokus.',
+  'failure.pattern.general': '{{rate}}% mislukkingskoers. Sessie-moeilikheidsgraad word aangepas.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'Reeks sal herstel.',
+  'simulation.skip.modeShift': 'Mag na inkonsekwente modus verskuif.',
+  'simulation.skip.fatigueDrop': 'Moegheid daal met {{delta}}.',
+  'simulation.skip.minimal': 'Minimale impak — jy het marge.',
+  'simulation.train.fatigueUp': 'Moegheid neem toe met {{delta}}.',
+  'simulation.train.modeAdvance': 'Beweeg na gedissiplineerde modus.',
+  'simulation.train.reduceTomorrow': 'More behoort ligter te wees.',
+  'simulation.train.pushTomorrow': 'Ruimte om more harder te druk.',
+  'simulation.rest.recovery': 'Herstel: moegheid daal met {{delta}}.',
+  'simulation.rest.streakReset': 'Reeks sal herstel, maar herstel word geprioritiseer.',
+  'simulation.rest.ready': 'Gereed vir volle sessie more.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'Gevorderde intelligensie vereis intekening.',
 };
 
 const zu: Record<string, string> = {
@@ -2388,6 +2832,7 @@ const zu: Record<string, string> = {
   'dashboard.of': 'kwe',
   'dashboard.incompleteSession': 'Iseshini Engaphelele',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'QALA MANJE',
   'dashboard.stepsToday': 'Izinyathelo',
   'dashboard.activeMin': 'Imizuzu esebenzayo',
   'dashboard.completionRate': 'Ukuqedela',
@@ -2445,7 +2890,8 @@ const zu: Record<string, string> = {
   'fitquest.keepGoing': 'Qhubeka',
   'fitquest.cancelWorkout': 'Khansela Ukujima',
   'fitquest.recordingProgress': 'Irekhoda ukuqhubeka...',
-  'fitquest.idleSub': 'Isizukulwane sokujima esihlakaniphile esinikwa amandla\\\\\\\\izinjini ezintathu ezisebenza ngokuzwana',
+  'fitquest.idleSub':
+    'Isizukulwane sokujima esihlakaniphile esinikwa amandla\\\\\\\\izinjini ezintathu ezisebenza ngokuzwana',
   'fitquest.currentProfile': 'Iphrofayela Yamanje',
   'fitquest.sessions': 'amaseshini',
   'fitquest.generateWorkout': 'Khiqiza Ukujima',
@@ -2510,13 +2956,17 @@ const zu: Record<string, string> = {
   'profile.craftMyBody': 'Yenza Umzimba Wami',
   'profile.craftMyBodySub': 'Uhlelo oluqondene nawe lokuguqula umzimba olunomsoco nokuqeqeshwa',
   'profile.adaptiveTraining': 'Ukuqeqeshwa Okuguquguqukayo',
-  'profile.adaptiveExplanation': 'Lawa manani alungiswa ngokuzenzakalelayo njengoba uziqeqesha. Thepha imethrikhi ngayinye ukuze ufunde kabanzi.',
+  'profile.adaptiveExplanation':
+    'Lawa manani alungiswa ngokuzenzakalelayo njengoba uziqeqesha. Thepha imethrikhi ngayinye ukuze ufunde kabanzi.',
   'profile.fatigueSensitivity': 'Ukuzwela ukukhathala',
-  'profile.fatigueSensitivityDesc': 'Yeka ukuthi ukukhathala kukhula ngokushesha kangakanani phakathi nokuzivocavoca. Amanani aphezulu asho ukuthi i-algorithm ikunikeza ukuphumula okwengeziwe phakathi kwamaseshini aqinile. Ilungisa ngokusekelwe kumazinga akho okuqeda ukujima namaphethini okuthola kabusha.',
+  'profile.fatigueSensitivityDesc':
+    'Yeka ukuthi ukukhathala kukhula ngokushesha kangakanani phakathi nokuzivocavoca. Amanani aphezulu asho ukuthi i-algorithm ikunikeza ukuphumula okwengeziwe phakathi kwamaseshini aqinile. Ilungisa ngokusekelwe kumazinga akho okuqeda ukujima namaphethini okuthola kabusha.',
   'profile.progressionPace': 'Ijubane lokuqhubeka',
-  'profile.progressionPaceDesc': 'Ukuthi ubunzima bokuzivocavoca bukhuphuka kanjani ngokuhamba kwesikhathi. Amanani aphezulu asho ukuthuthukela ngokushesha ekuzilolongeni okunzima. Ilungisa ngokusekelwe ekutheni uqedela amasethi/ama-reps abekiwe ngokuqhubekayo.',
+  'profile.progressionPaceDesc':
+    'Ukuthi ubunzima bokuzivocavoca bukhuphuka kanjani ngokuhamba kwesikhathi. Amanani aphezulu asho ukuthuthukela ngokushesha ekuzilolongeni okunzima. Ilungisa ngokusekelwe ekutheni uqedela amasethi/ama-reps abekiwe ngokuqhubekayo.',
   'profile.volumeTolerance': 'Ukubekezelela ivolumu',
-  'profile.volumeToleranceDesc': 'Ingakanani ivolumu ephelele yokuqeqeshwa (imisa ama-x reps) umzimba wakho ongakwazi ukuyiphatha. Amanani aphezulu asho izikhathi zokujima ezinde ngokuzivocavoca okwengeziwe. Ilungisa ngokusekelwe ekuqedeni kwakho kweseshini kanye nokuzivocavoca okweqiwe.',
+  'profile.volumeToleranceDesc':
+    'Ingakanani ivolumu ephelele yokuqeqeshwa (imisa ama-x reps) umzimba wakho ongakwazi ukuyiphatha. Amanani aphezulu asho izikhathi zokujima ezinde ngokuzivocavoca okwengeziwe. Ilungisa ngokusekelwe ekuqedeni kwakho kweseshini kanye nokuzivocavoca okweqiwe.',
   'profile.confidence': 'Ukuzethemba',
   'profile.samples': 'Amasampula',
   'profile.rank': 'Izinga & Intuthuko',
@@ -2581,7 +3031,8 @@ const zu: Record<string, string> = {
   'profile.exportData': 'Khipha Idatha Yami',
   'profile.exportDataSub': 'Dala ukuthunyelwa kwe-JSON kwasendaweni kwemethadatha yefu + izipele',
   'profile.menu.deleteCloudData': 'Susa Idatha Yefu',
-  'profile.menu.deleteCloudDataConfirm': 'Lokhu kuzisusa unomphela izipele ze-akhawunti yakho kanye nemethadatha yamafu.',
+  'profile.menu.deleteCloudDataConfirm':
+    'Lokhu kuzisusa unomphela izipele ze-akhawunti yakho kanye nemethadatha yamafu.',
   'profile.menu.deletePermanently': 'Susa Unomphela',
   'profile.deleteCloudDataSub': 'Susa unomphela idatha ye-akhawunti yohlangothi lweseva',
   'profile.helpSupport': 'Usizo Nosekelo',
@@ -2589,6 +3040,10 @@ const zu: Record<string, string> = {
   'profile.appSection': 'Uhlelo lokusebenza',
   'profile.backupRestore': 'Yenza ikhophi yasenqolobaneni futhi ubuyisele',
   'profile.backupRestoreSub': 'Amafayela ayisipele endawo abethelwe',
+  'profile.subscription': 'Isibhaliso',
+  'profile.expired': 'Iphelelwe',
+  'profile.subscribeToUnlock': 'Bhalisa ukuvula zonke izici',
+  'profile.searchLanguages': 'Sesha izilimi…',
   'profile.about': 'Mayelana ne-FitQuest',
   'profile.version': 'Inguqulo',
   'profile.saved': 'Kulondoloziwe',
@@ -2743,7 +3198,8 @@ const zu: Record<string, string> = {
   'move.noStepHistory': 'Awukho umlando wesinyathelo okwamanje',
   'move.jogHistory': 'Jog History',
   'move.noJogHistory': 'Awekho amaseshini wokugijima okwamanje',
-  'move.infoXpAndFatigue': 'izinyathelo ezingu-1,000 = 4 XP • Abagijimayo bazuza u-10 XP nge-100m ngayinye\\\\\\\\nUkunyakaza akuthinti ukukhathala kokujima',
+  'move.infoXpAndFatigue':
+    'izinyathelo ezingu-1,000 = 4 XP • Abagijimayo bazuza u-10 XP nge-100m ngayinye\\\\\\\\nUkunyakaza akuthinti ukukhathala kokujima',
   'move.jogComplete': 'Jog Qedile! 🏃',
   'move.awesome': 'Kuhle!',
   'move.km': 'km',
@@ -2787,7 +3243,8 @@ const zu: Record<string, string> = {
   'meal.location.tapEnable': 'Thepha ukuze unike amandla indawo',
   'meal.location.infoPrefix': 'Ibonisa ukudla okutholakala ku',
   'meal.location.infoSuffix': ', okuhlanganisa izinketho zesifunda nezomhlaba jikelele.',
-  'meal.location.infoNoLocation': 'Nika amandla indawo ukuze ubone iziphakamiso zokudla eziqondene nesifunda. Thepha ibheji yendawo ngenhla ukuze uzame futhi.',
+  'meal.location.infoNoLocation':
+    'Nika amandla indawo ukuze ubone iziphakamiso zokudla eziqondene nesifunda. Thepha ibheji yendawo ngenhla ukuze uzame futhi.',
 
   'legal.title': 'Isikhungo Sezomthetho',
   'legal.documents': 'Amadokhumenti',
@@ -2813,64 +3270,103 @@ const zu: Record<string, string> = {
   'legal.termsOfServiceExternal': 'Imigomo Yesevisi (Iwebhusayithi)',
   'legal.readInApp': 'Funda ngaphakathi nohlelo',
   'legal.cannotOpenLink': 'Ayikwazi ukuvula isixhumanisi kule divayisi',
-  'legal.noteMedical': 'Isiqondiso sokufaneleka kulolu hlelo lokusebenza siyafundisa futhi asithathi indawo yeseluleko sezokwelapha.',
-  'legal.noteCounsel': 'Umbhalo wokugcina womthetho kanye nemephu yendawo kufanele kubuyekezwe ummeli ngaphambi kokukhululwa.',
+  'legal.noteMedical':
+    'Isiqondiso sokufaneleka kulolu hlelo lokusebenza siyafundisa futhi asithathi indawo yeseluleko sezokwelapha.',
+  'legal.noteCounsel':
+    'Umbhalo wokugcina womthetho kanye nemephu yendawo kufanele kubuyekezwe ummeli ngaphambi kokukhululwa.',
   'legal.lastUpdated': 'Igcine ukubuyekezwa:',
   'legal.privacy.sections.developerTitle': 'Unjiniyela',
-  'legal.privacy.sections.developerBody': 'I-FitQuest ithuthukiswe futhi ishicilelwe yi-fitquest.dev. Le nqubomgomo yobumfihlo ibusa uhlelo lokusebenza leselula le-FitQuest elitholakala ku-Google Play kanye ne-Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    'I-FitQuest ithuthukiswe futhi ishicilelwe yi-fitquest.dev. Le nqubomgomo yobumfihlo ibusa uhlelo lokusebenza leselula le-FitQuest elitholakala ku-Google Play kanye ne-Apple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Idatha Esiyiqoqayo',
-  'legal.privacy.sections.dataCollectBody': 'I-FitQuest icubungula izigaba ezilandelayo zedatha ukuze ilethe ukufaneleka komuntu siqu nezici zempilo:',
-  'legal.privacy.bullets.health': 'Amamethrikhi ezempilo nomsebenzi: izinga lokushaya kwenhliziyo, izinyathelo, idatha yokulala, umlando wokujima, izilinganiso zomzimba, nezikolo zokululama',
-  'legal.privacy.bullets.biometric': 'Idatha ye-biometric: izigxivizo zeminwe noma ukubonwa kobuso okusetshenziselwa ukufakazela ubuqiniso bohlelo lokusebenza (kucutshungulwa kudivayisi kuphela, akukaze kugcinwe noma kudluliselwe)',
-  'legal.privacy.bullets.location': 'Idatha yendawo: Izixhumanisi ze-GPS ngesikhathi sokulandelela i-jog (kuphela uma usebenzisa isici sokugijima)',
-  'legal.privacy.bullets.account': 'Ulwazi lwephrofayela: imigomo yokufaneleka, ileveli yokuhlangenwe nakho, izintandokazi zesisetshenziswa, kanye neshejuli yomsebenzi ozikhethela yona',
-  'legal.privacy.bullets.usage': 'Amaphethini okusetshenziswa kohlelo lokusebenza nokusebenzisana kwesici (okungaziwa, okusetshenziselwa ukuthuthukisa uhlelo lokusebenza)',
-  'legal.privacy.bullets.device': 'Uhlobo lwedivayisi, inguqulo ye-OS, nenguqulo yohlelo lokusebenza yokuhambisana nokubika kokusaphazeka',
-  'legal.privacy.bullets.photos': 'Izithombe zephrofayela: zigcinwe endaweni kudivayisi yakho uma ukhetha ukusetha eyodwa',
-  'legal.privacy.bullets.healthConnect': 'Idatha ye-Health Connect / HealthKit: izinyathelo, izinga lokushaya kwenhliziyo, ukulala, nedatha yokujima (kuphela uma unikeza imvume ecacile)',
+  'legal.privacy.sections.dataCollectBody':
+    'I-FitQuest icubungula izigaba ezilandelayo zedatha ukuze ilethe ukufaneleka komuntu siqu nezici zempilo:',
+  'legal.privacy.bullets.health':
+    'Amamethrikhi ezempilo nomsebenzi: izinga lokushaya kwenhliziyo, izinyathelo, idatha yokulala, umlando wokujima, izilinganiso zomzimba, nezikolo zokululama',
+  'legal.privacy.bullets.biometric':
+    'Idatha ye-biometric: izigxivizo zeminwe noma ukubonwa kobuso okusetshenziselwa ukufakazela ubuqiniso bohlelo lokusebenza (kucutshungulwa kudivayisi kuphela, akukaze kugcinwe noma kudluliselwe)',
+  'legal.privacy.bullets.location':
+    'Idatha yendawo: Izixhumanisi ze-GPS ngesikhathi sokulandelela i-jog (kuphela uma usebenzisa isici sokugijima)',
+  'legal.privacy.bullets.account':
+    'Ulwazi lwephrofayela: imigomo yokufaneleka, ileveli yokuhlangenwe nakho, izintandokazi zesisetshenziswa, kanye neshejuli yomsebenzi ozikhethela yona',
+  'legal.privacy.bullets.usage':
+    'Amaphethini okusetshenziswa kohlelo lokusebenza nokusebenzisana kwesici (okungaziwa, okusetshenziselwa ukuthuthukisa uhlelo lokusebenza)',
+  'legal.privacy.bullets.device':
+    'Uhlobo lwedivayisi, inguqulo ye-OS, nenguqulo yohlelo lokusebenza yokuhambisana nokubika kokusaphazeka',
+  'legal.privacy.bullets.photos':
+    'Izithombe zephrofayela: zigcinwe endaweni kudivayisi yakho uma ukhetha ukusetha eyodwa',
+  'legal.privacy.bullets.healthConnect':
+    'Idatha ye-Health Connect / HealthKit: izinyathelo, izinga lokushaya kwenhliziyo, ukulala, nedatha yokujima (kuphela uma unikeza imvume ecacile)',
   'legal.privacy.sections.storageTitle': '2) Ukugcinwa Kwedatha',
-  'legal.privacy.sections.storageBody': 'I-FitQuest yakhelwe njengohlelo lokusebenza olungaxhunyiwe ku-inthanethi lokuqala. Yonke idatha yakho yokufaneleka igcinwa endaweni kudivayisi yakho kusetshenziswa i-SQLite. Ayikho idatha yomuntu siqu egcinwe kumaseva angaphandle. Amarekhodi ezempilo azwelayo abethelwa ngaphambi kokugcinwa kusetshenziswa ukubethela okujwayelekile komkhakha kwe-AES-256-GCM.',
+  'legal.privacy.sections.storageBody':
+    'I-FitQuest yakhelwe njengohlelo lokusebenza olungaxhunyiwe ku-inthanethi lokuqala. Yonke idatha yakho yokufaneleka igcinwa endaweni kudivayisi yakho kusetshenziswa i-SQLite. Ayikho idatha yomuntu siqu egcinwe kumaseva angaphandle. Amarekhodi ezempilo azwelayo abethelwa ngaphambi kokugcinwa kusetshenziswa ukubethela okujwayelekile komkhakha kwe-AES-256-GCM.',
   'legal.privacy.sections.securityTitle': '3) Ukuphepha Kwedatha',
-  'legal.privacy.sections.securityBody': 'Yonke idatha yezempilo ebucayi ibethelwa kusetshenziswa ukubethela kwe-AES-256-GCM ngaphambi kokugcinwa kudivayisi yakho. Okhiye bokubethela bavikelwe izingxenyekazi zekhompuyutha ezivikelekile zedivayisi yakho (Keychain ku-iOS, i-Keystore ku-Android). Ukuqinisekiswa kwe-biometric kunikeza isendlalelo esengeziwe sokuvikela. Sisebenzisa ukukhishwa kokhiye ovikelekile (i-PBKDF2) nokuqhathanisa isikhathi eside ukuze sinqande ukuhlaselwa kwesikhathi.',
+  'legal.privacy.sections.securityBody':
+    'Yonke idatha yezempilo ebucayi ibethelwa kusetshenziswa ukubethela kwe-AES-256-GCM ngaphambi kokugcinwa kudivayisi yakho. Okhiye bokubethela bavikelwe izingxenyekazi zekhompuyutha ezivikelekile zedivayisi yakho (Keychain ku-iOS, i-Keystore ku-Android). Ukuqinisekiswa kwe-biometric kunikeza isendlalelo esengeziwe sokuvikela. Sisebenzisa ukukhishwa kokhiye ovikelekile (i-PBKDF2) nokuqhathanisa isikhathi eside ukuze sinqande ukuhlaselwa kwesikhathi.',
   'legal.privacy.sections.thirdPartyTitle': '4) Izinkonzo Zomuntu wesithathu',
-  'legal.privacy.sections.thirdPartyBody': 'I-FitQuest ayithengisi, ayiqashi, noma idayise ngedatha yakho yomuntu siqu. Ukuhlanganiswa okulandelayo okuvela eceleni kungase kucubungule idatha elinganiselwe:',
-  'legal.privacy.bullets.thirdPartyAI': 'Izici ze-AI: Uma usebenzisa Umqeqeshi we-AI noma UProfesa, imiyalo yakho ithunyelwa ku-OpenRouter (ngamamodeli olimi lwe-Llama) ukuze ukhiqize izimpendulo. Ayikho idatha yomuntu siqu yezempilo efakiwe kulezi zicelo — umbhalo owubhalayo kuphela.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'I-Health Connect / HealthKit: Uma unikeza imvume, i-FitQuest ifunda amamethrikhi ezempilo avela kulezi zinsizakalo zenkundla. Idatha ihamba ngendlela eyodwa (funda kuphela) futhi igcinwa ibethelwe kudivayisi yakho.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'I-RevenueCat: Ilawula ukuqinisekiswa kokubhalisa. Yamukela kuphela amathokheni okuthenga nezihlonzi zabasebenzisi ezingaziwa — ayikho idatha yezempilo noma yokufaneleka.',
-  'legal.privacy.bullets.thirdPartySentry': 'Umthumeli: Isevisi yokubika ukuphahlazeka ethola amalogu amaphutha angaziwa. Ayikho idatha yomuntu siqu noma amamethrikhi ezempilo afakiwe.',
+  'legal.privacy.sections.thirdPartyBody':
+    'I-FitQuest ayithengisi, ayiqashi, noma idayise ngedatha yakho yomuntu siqu. Ukuhlanganiswa okulandelayo okuvela eceleni kungase kucubungule idatha elinganiselwe:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'Izici ze-AI: Uma usebenzisa Umqeqeshi we-AI noma UProfesa, imiyalo yakho ithunyelwa ku-OpenRouter (ngamamodeli olimi lwe-Llama) ukuze ukhiqize izimpendulo. Ayikho idatha yomuntu siqu yezempilo efakiwe kulezi zicelo — umbhalo owubhalayo kuphela.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'I-Health Connect / HealthKit: Uma unikeza imvume, i-FitQuest ifunda amamethrikhi ezempilo avela kulezi zinsizakalo zenkundla. Idatha ihamba ngendlela eyodwa (funda kuphela) futhi igcinwa ibethelwe kudivayisi yakho.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'I-RevenueCat: Ilawula ukuqinisekiswa kokubhalisa. Yamukela kuphela amathokheni okuthenga nezihlonzi zabasebenzisi ezingaziwa — ayikho idatha yezempilo noma yokufaneleka.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Umthumeli: Isevisi yokubika ukuphahlazeka ethola amalogu amaphutha angaziwa. Ayikho idatha yomuntu siqu noma amamethrikhi ezempilo afakiwe.',
   'legal.privacy.sections.childrenTitle': '5) Ubumfihlo Bezingane',
-  'legal.privacy.sections.childrenBody': 'I-FitQuest yakhelwe abasebenzisi abaneminyaka engu-13 nangaphezulu. Asikuqoqi ngamabomu imininingwane yomuntu siqu ezinganeni ezingaphansi kweminyaka engu-13. Uma ukholelwa ukuthi ingane isinikeze idatha, sicela usithinte ku-fitquestsupp0rt@gmail.com ukuze isuswe ngokushesha.',
+  'legal.privacy.sections.childrenBody':
+    'I-FitQuest yakhelwe abasebenzisi abaneminyaka engu-13 nangaphezulu. Asikuqoqi ngamabomu imininingwane yomuntu siqu ezinganeni ezingaphansi kweminyaka engu-13. Uma ukholelwa ukuthi ingane isinikeze idatha, sicela usithinte ku-fitquestsupp0rt@gmail.com ukuze isuswe ngokushesha.',
   'legal.privacy.sections.retentionTitle': '6) Ukugcinwa Kwedatha',
-  'legal.privacy.sections.retentionBody': 'Idatha yakho igcinwa endaweni kudivayisi yakho futhi igcinwa inqobo nje uma uhlelo lokusebenza lufakiwe. Ungasusa yonke idatha noma nini ngePhrofayela → Izilungiselelo → Susa Yonke Idatha. Ukukhipha uhlelo lokusebenza kususa yonke idatha yasendaweni unaphakade. Ungase futhi ucele ukususwa kwedatha ngewebhusayithi yethu kokuthi https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Idatha yakho igcinwa endaweni kudivayisi yakho futhi igcinwa inqobo nje uma uhlelo lokusebenza lufakiwe. Ungasusa yonke idatha noma nini ngePhrofayela → Izilungiselelo → Susa Yonke Idatha. Ukukhipha uhlelo lokusebenza kususa yonke idatha yasendaweni unaphakade. Ungase futhi ucele ukususwa kwedatha ngewebhusayithi yethu kokuthi https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Amalungelo Akho',
-  'legal.privacy.sections.rightsBody': 'Ngaphansi kwemithetho esebenzayo yokuvikela idatha (okuhlanganisa uMthetho Wokuvikelwa Kwedatha 2011 waseLesotho, i-GDPR e-EU, ne-CCPA e-California), unamalungelo alandelayo:',
-  'legal.privacy.bullets.accessRight': 'Ukufinyelela: Buka yonke idatha uhlelo lokusebenza olugcina ngawe ngePhrofayela → Thumela Idatha',
-  'legal.privacy.bullets.deleteRight': 'Ukususwa: Sula unaphakade yonke idatha yakho ngezilungiselelo zohlelo lokusebenza noma iwebhusayithi yethu',
-  'legal.privacy.bullets.exportRight': 'Ukuphatheka: Khipha idatha yakho ngefomethi ye-JSON ukuze idluliselwe kwenye isevisi',
-  'legal.privacy.bullets.correctRight': 'Ukulungiswa: Buyekeza noma shintsha imininingwane yephrofayela yakho noma kunini',
-  'legal.privacy.bullets.objectionRight': 'Inqaba: Hoxisa imvume yokucubungula idatha nganoma yisiphi isikhathi ngeSikhungo Sezomthetho',
+  'legal.privacy.sections.rightsBody':
+    'Ngaphansi kwemithetho esebenzayo yokuvikela idatha (okuhlanganisa uMthetho Wokuvikelwa Kwedatha 2011 waseLesotho, i-GDPR e-EU, ne-CCPA e-California), unamalungelo alandelayo:',
+  'legal.privacy.bullets.accessRight':
+    'Ukufinyelela: Buka yonke idatha uhlelo lokusebenza olugcina ngawe ngePhrofayela → Thumela Idatha',
+  'legal.privacy.bullets.deleteRight':
+    'Ukususwa: Sula unaphakade yonke idatha yakho ngezilungiselelo zohlelo lokusebenza noma iwebhusayithi yethu',
+  'legal.privacy.bullets.exportRight':
+    'Ukuphatheka: Khipha idatha yakho ngefomethi ye-JSON ukuze idluliselwe kwenye isevisi',
+  'legal.privacy.bullets.correctRight':
+    'Ukulungiswa: Buyekeza noma shintsha imininingwane yephrofayela yakho noma kunini',
+  'legal.privacy.bullets.objectionRight':
+    'Inqaba: Hoxisa imvume yokucubungula idatha nganoma yisiphi isikhathi ngeSikhungo Sezomthetho',
   'legal.privacy.sections.popiaTitle': '8) Ukuthobela Ukuvikelwa Kwedatha (eLesotho)',
-  'legal.privacy.sections.popiaBody': 'Ngokuhambisana noMthetho Wokuvikelwa Kwedatha 2011 woMbuso WaseLesotho, i-fitquest.dev isebenza njengengxenye enesibopho solwazi lwakho lomuntu siqu. Sicubungula idatha yakho ngokusemthethweni, sinciphisa ukuqoqwa kokudingekile, siqinisekise ukunemba, futhi sigcine izivikelo zokuphepha ezifanele. Kubasebenzisi abawela imingcele, siphinde sithobele i-POPIA (iNingizimu Afrika), i-GDPR (EU), ne-CCPA (California) lapho kufanele khona.',
+  'legal.privacy.sections.popiaBody':
+    'Ngokuhambisana noMthetho Wokuvikelwa Kwedatha 2011 woMbuso WaseLesotho, i-fitquest.dev isebenza njengengxenye enesibopho solwazi lwakho lomuntu siqu. Sicubungula idatha yakho ngokusemthethweni, sinciphisa ukuqoqwa kokudingekile, siqinisekise ukunemba, futhi sigcine izivikelo zokuphepha ezifanele. Kubasebenzisi abawela imingcele, siphinde sithobele i-POPIA (iNingizimu Afrika), i-GDPR (EU), ne-CCPA (California) lapho kufanele khona.',
   'legal.privacy.sections.updatesTitle': '9) Izibuyekezo Zenqubomgomo',
-  'legal.privacy.sections.updatesBody': 'Singabuyekeza le nqubomgomo yobumfihlo ngezikhathi ezithile. Noma yiziphi izinguquko zizobonakala kuhlelo lokusebenza ngedethi ebuyekeziwe "Yokugcina Ukubuyekezwa" futhi uzotshelwa ukuthi ubuyekeze futhi wamukele inqubomgomo ebuyekeziwe. Ukusetshenziswa okuqhubekayo kohlelo lokusebenza ngemva kwezinguquko kuhlanganisa ukwamukela inqubomgomo entsha.',
+  'legal.privacy.sections.updatesBody':
+    'Singabuyekeza le nqubomgomo yobumfihlo ngezikhathi ezithile. Noma yiziphi izinguquko zizobonakala kuhlelo lokusebenza ngedethi ebuyekeziwe "Yokugcina Ukubuyekezwa" futhi uzotshelwa ukuthi ubuyekeze futhi wamukele inqubomgomo ebuyekeziwe. Ukusetshenziswa okuqhubekayo kohlelo lokusebenza ngemva kwezinguquko kuhlanganisa ukwamukela inqubomgomo entsha.',
   'legal.privacy.sections.contactTitle': '10) Xhumana',
-  'legal.privacy.sections.contactBody': 'Ngezicelo zobumfihlo, i-imeyili fitquestsup0rt@gmail.com. Futhi ungavakashela okuthi https://fitquest.dev/support. Faka phakathi isihlonzi se-akhawunti yakho uma sitholakala. Siphendula zingakapheli izinsuku zebhizinisi ezingama-30.',
+  'legal.privacy.sections.contactBody':
+    'Ngezicelo zobumfihlo, i-imeyili fitquestsup0rt@gmail.com. Futhi ungavakashela okuthi https://fitquest.dev/support. Faka phakathi isihlonzi se-akhawunti yakho uma sitholakala. Siphendula zingakapheli izinsuku zebhizinisi ezingama-30.',
   'legal.terms.sections.useTitle': '1) Ukusetshenziswa Okuvumelekile',
-  'legal.terms.sections.useBody': 'Uyavuma ukusebenzisa i-FitQuest ngokusemthethweni futhi ungazami ukuhlehlisa ubunjiniyela, ukuhlakaza, ukudlula izilawuli zokuphepha, izindlela zokubhaliselwe, noma izici zokuvikela idatha. Akumele usebenzise uhlelo lokusebenza nganoma iyiphi injongo engekho emthethweni noma ukwephula noma yimiphi imithetho esebenzayo.',
+  'legal.terms.sections.useBody':
+    'Uyavuma ukusebenzisa i-FitQuest ngokusemthethweni futhi ungazami ukuhlehlisa ubunjiniyela, ukuhlakaza, ukudlula izilawuli zokuphepha, izindlela zokubhaliselwe, noma izici zokuvikela idatha. Akumele usebenzise uhlelo lokusebenza nganoma iyiphi injongo engekho emthethweni noma ukwephula noma yimiphi imithetho esebenzayo.',
   'legal.terms.sections.medicalTitle': '2) Umshwana Wokuzikhipha Emthwalweni Wezempilo',
-  'legal.terms.sections.medicalBody': 'I-FitQuest iwuhlelo lokufaneleka nokuphila kahle futhi AKUYONA idivayisi yezokwelapha noma isevisi. Uhlelo lokusebenza alunikezi iseluleko sezokwelapha, ukuxilongwa, noma ukwelashwa. Iziphakamiso zokujima, amaphuzu ezempilo, izincomo zokutakula, neziqondiso ezikhiqizwe yi-AI ezezinjongo zolwazi nezemfundo kuphela. Hlala uthintana nochwepheshe wezempilo oqeqeshiwe ngaphambi kokuqala, ukulungisa, noma ukuyeka noma yiluphi uhlelo lokuzivocavoca, ikakhulukazi uma unezimo zempilo ezivele zikhona, ukulimala, noma ukukhathazeka. Yeka ukujima ngokushesha uma uzwa ubuhlungu, isiyezi, noma ukungakhululeki.',
+  'legal.terms.sections.medicalBody':
+    'I-FitQuest iwuhlelo lokufaneleka nokuphila kahle futhi AKUYONA idivayisi yezokwelapha noma isevisi. Uhlelo lokusebenza alunikezi iseluleko sezokwelapha, ukuxilongwa, noma ukwelashwa. Iziphakamiso zokujima, amaphuzu ezempilo, izincomo zokutakula, neziqondiso ezikhiqizwe yi-AI ezezinjongo zolwazi nezemfundo kuphela. Hlala uthintana nochwepheshe wezempilo oqeqeshiwe ngaphambi kokuqala, ukulungisa, noma ukuyeka noma yiluphi uhlelo lokuzivocavoca, ikakhulukazi uma unezimo zempilo ezivele zikhona, ukulimala, noma ukukhathazeka. Yeka ukujima ngokushesha uma uzwa ubuhlungu, isiyezi, noma ukungakhululeki.',
   'legal.terms.sections.subscriptionTitle': '3) Ukubhalisa nokukhokhiswa',
-  'legal.terms.sections.subscriptionBody': 'I-FitQuest inikeza isivivinyo samahhala sezinsuku eziyi-14 sazo zonke izici zeprimiyamu. Ngemva kokuphela kwesikhathi sesilingo, ungabhalisa ukuze uqhubeke usebenzisa izici ze-premium noma uqhubeke nesigaba samahhala. Okubhaliselwe kwe-Premium kukhokhiswa nge-Google Play Store noma i-Apple App Store. Okubhaliselwe kuvuselelwa ngokuzenzakalela ekupheleni kwesikhathi ngasinye sokukhokha ngaphandle kwalapho kukhanseliwe okungenani amahora angu-24 ngaphambi kwedethi yokuvuselela. Ungaphatha noma ukhansele ukubhalisa kwakho ngezilungiselelo zesitolo sezinhlelo zokusebenza zedivayisi yakho. Ukubuyiselwa kwemali kungaphansi kwenqubomgomo yembuyiselo yengxenyekazi efanele. Izintengo zingahluka ngendawo futhi ziboniswa ngemali yangakini ngaphambi kokuthenga.',
+  'legal.terms.sections.subscriptionBody':
+    'I-FitQuest inikeza isivivinyo samahhala sezinsuku eziyi-14 sazo zonke izici zeprimiyamu. Ngemva kokuphela kwesikhathi sesilingo, ungabhalisa ukuze uqhubeke usebenzisa izici ze-premium noma uqhubeke nesigaba samahhala. Okubhaliselwe kwe-Premium kukhokhiswa nge-Google Play Store noma i-Apple App Store. Okubhaliselwe kuvuselelwa ngokuzenzakalela ekupheleni kwesikhathi ngasinye sokukhokha ngaphandle kwalapho kukhanseliwe okungenani amahora angu-24 ngaphambi kwedethi yokuvuselela. Ungaphatha noma ukhansele ukubhalisa kwakho ngezilungiselelo zesitolo sezinhlelo zokusebenza zedivayisi yakho. Ukubuyiselwa kwemali kungaphansi kwenqubomgomo yembuyiselo yengxenyekazi efanele. Izintengo zingahluka ngendawo futhi ziboniswa ngemali yangakini ngaphambi kokuthenga.',
   'legal.terms.sections.ipTitle': '4) Impahla Yengqondo',
-  'legal.terms.sections.ipBody': 'Konke okuqukethwe, idizayini, ikhodi, ama-algorithms, ukufaka uphawu, nezinto ezisetshenziswayo ku-FitQuest kuyimpahla yobuhlakani ye-fitquest.dev futhi kuvikelwe imithetho esebenzayo ye-copyright nezimpawu zokuhweba. Akumele ukhiqize kabusha, usabalalise, noma udale imisebenzi esuselwe kunoma iyiphi ingxenye yohlelo lokusebenza ngaphandle kwemvume ebhaliwe ngaphambilini.',
+  'legal.terms.sections.ipBody':
+    'Konke okuqukethwe, idizayini, ikhodi, ama-algorithms, ukufaka uphawu, nezinto ezisetshenziswayo ku-FitQuest kuyimpahla yobuhlakani ye-fitquest.dev futhi kuvikelwe imithetho esebenzayo ye-copyright nezimpawu zokuhweba. Akumele ukhiqize kabusha, usabalalise, noma udale imisebenzi esuselwe kunoma iyiphi ingxenye yohlelo lokusebenza ngaphandle kwemvume ebhaliwe ngaphambilini.',
   'legal.terms.sections.liabilityTitle': '5) Umkhawulo Wesibopho',
-  'legal.terms.sections.liabilityBody': 'Ngokwezinga eliphezulu elivunyelwe umthetho, i-fitquest.dev ngeke ibophezeleke kunoma yimuphi umonakalo ongaqondile, wengozi, okhethekile, olandelanayo, noma wesijeziso ovela ngenxa yokusebenzisa kwakho uhlelo lokusebenza, okuhlanganisa kodwa kungagcini nje ngokulimala ngokomzimba, ukulahleka kwedatha, noma ukuphazamiseka kwesevisi. Isikweletu sethu esiphelele ngeke seqe inani olikhokhele izici zeprimiyamu ezinyangeni eziyi-12 ezandulela isimangalo.',
+  'legal.terms.sections.liabilityBody':
+    'Ngokwezinga eliphezulu elivunyelwe umthetho, i-fitquest.dev ngeke ibophezeleke kunoma yimuphi umonakalo ongaqondile, wengozi, okhethekile, olandelanayo, noma wesijeziso ovela ngenxa yokusebenzisa kwakho uhlelo lokusebenza, okuhlanganisa kodwa kungagcini nje ngokulimala ngokomzimba, ukulahleka kwedatha, noma ukuphazamiseka kwesevisi. Isikweletu sethu esiphelele ngeke seqe inani olikhokhele izici zeprimiyamu ezinyangeni eziyi-12 ezandulela isimangalo.',
   'legal.terms.sections.terminationTitle': '6) Ukunqanyulwa',
-  'legal.terms.sections.terminationBody': 'Sinelungelo lokumisa okwesikhashana noma ukumisa ukufinyelela kwakho ku-FitQuest uma wephula le migomo. Ungayeka ukusebenzisa uhlelo lokusebenza noma kunini. Lapho inqanyulwa, idatha yakho egcinwe endaweni ihlala kudivayisi yakho uze uyisuse noma uyikhiphe.',
+  'legal.terms.sections.terminationBody':
+    'Sinelungelo lokumisa okwesikhashana noma ukumisa ukufinyelela kwakho ku-FitQuest uma wephula le migomo. Ungayeka ukusebenzisa uhlelo lokusebenza noma kunini. Lapho inqanyulwa, idatha yakho egcinwe endaweni ihlala kudivayisi yakho uze uyisuse noma uyikhiphe.',
   'legal.terms.sections.governingLawTitle': '7) Umthetho Ophethe',
-  'legal.terms.sections.governingLawBody': 'Le migomo ibuswa futhi icutshungulwe ngokuhambisana nemithetho yoMbuso WaseLesotho. Noma yiziphi izingxabano ezivela kule migomo noma ukusebenzisa kwakho i-FitQuest zizoba ngaphansi kwegunya elikhethekile lezinkantolo zaseLesotho. Uma noma yikuphi ukuhlinzekwa kwale migomo kutholakala kungasebenziseki, izinhlinzeko ezisele zizoqhubeka nokusebenza ngokugcwele.',
-  'legal.terms.bullets.compliance': 'Kufanele uthobele zonke izinqubomgomo ezisebenzayo ze-Google Play ne-Apple App Store uma usebenzisa lolu hlelo lokusebenza',
-  'legal.terms.bullets.accountDelete': 'Ungasusa i-akhawunti yakho nayo yonke idatha ehlotshaniswayo nganoma isiphi isikhathi ngePhrofayela → Izilungiselelo noma kokuthi https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Le migomo ibuswa futhi icutshungulwe ngokuhambisana nemithetho yoMbuso WaseLesotho. Noma yiziphi izingxabano ezivela kule migomo noma ukusebenzisa kwakho i-FitQuest zizoba ngaphansi kwegunya elikhethekile lezinkantolo zaseLesotho. Uma noma yikuphi ukuhlinzekwa kwale migomo kutholakala kungasebenziseki, izinhlinzeko ezisele zizoqhubeka nokusebenza ngokugcwele.',
+  'legal.terms.bullets.compliance':
+    'Kufanele uthobele zonke izinqubomgomo ezisebenzayo ze-Google Play ne-Apple App Store uma usebenzisa lolu hlelo lokusebenza',
+  'legal.terms.bullets.accountDelete':
+    'Ungasusa i-akhawunti yakho nayo yonke idatha ehlotshaniswayo nganoma isiphi isikhathi ngePhrofayela → Izilungiselelo noma kokuthi https://fitquest.dev/delete-account',
 
   'common.save': 'Londoloza',
   'common.cancel': 'Khansela',
@@ -2946,7 +3442,8 @@ const zu: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Qala noma nini',
   'savedWorkouts.deleteFailed': 'Yehlulekile ukususa ukujima. Sicela uzame futhi.',
   'savedWorkouts.emptyTitle': 'Akukho Ukujima Okulondoloziwe okwamanje',
-  'savedWorkouts.emptySubtitle': 'Yakha ukujima kwakho kokuqala okungokwezifiso ngokukhetha izivivinyo ezifanelana nemigomo yakho. Kuthatha umzuzu nje!',
+  'savedWorkouts.emptySubtitle':
+    'Yakha ukujima kwakho kokuqala okungokwezifiso ngokukhetha izivivinyo ezifanelana nemigomo yakho. Kuthatha umzuzu nje!',
   'savedWorkouts.featurePick': 'Khetha izivivinyo zakho',
   'savedWorkouts.featureSet': 'Setha ama-reps & ukuphumula',
   'savedWorkouts.featureStart': 'Qala noma nini',
@@ -2998,7 +3495,8 @@ const zu: Record<string, string> = {
   'help.featureDesc': 'Unombono wokwenza i-FitQuest ibe ngcono? Singathanda ukuyizwa',
   'help.responseTime': 'Ngokuvamile siphendula phakathi namahora angu-24-48',
 
-  'about.description': 'I-FitQuest iyinkundla yokufaneleka ephelele eklanyelwe ukukusiza ufinyelele imigomo yakho yokuqeqeshwa. Yonke idatha yakho ihlala kudivayisi yakho, ivikelwe ukubethela kwe-AES-256.',
+  'about.description':
+    'I-FitQuest iyinkundla yokufaneleka ephelele eklanyelwe ukukusiza ufinyelele imigomo yakho yokuqeqeshwa. Yonke idatha yakho ihlala kudivayisi yakho, ivikelwe ukubethela kwe-AES-256.',
   'about.platform': 'Inkundla',
   'about.dataStorage': 'Isitoreji Sedatha',
   'about.onDevice': 'Kudivayisi kuphela',
@@ -3173,7 +3671,8 @@ const zu: Record<string, string> = {
   'paywall.features.cloudBackupSub': 'Ungalokothi ulahlekelwe ukuqhubeka kwakho',
 
   'onboarding.welcome': 'Siyakwamukela ku-FitQuest',
-  'onboarding.tagline': 'Umngane wakho wokufaneleka wokuqina we-AI.\\\\\\\\nAke senze okuhlangenwe nakho kwakho kube ngokwakho.',
+  'onboarding.tagline':
+    'Umngane wakho wokufaneleka wokuqina we-AI.\\\\\\\\nAke senze okuhlangenwe nakho kwakho kube ngokwakho.',
   'onboarding.heroBody': 'Isitimela esihlakaniphile',
   'onboarding.heroMind': 'Cabanga Ubukhali',
   'onboarding.heroMove': 'Hambisa Okuningi',
@@ -3231,6 +3730,13 @@ const zu: Record<string, string> = {
   'onboarding.permSub': 'Lezi zisiza i-FitQuest isebenze kangcono kuwe. Ungazishintsha noma nini kuMasethingi.',
   'onboarding.perm.notifications': 'Izikhumbuzo zokuzivocavoca',
   'onboarding.perm.notificationsSub': 'Khumbuzeka ukuhlala emgudwini nesheduli yakho yokuzivocavoca',
+  'onboarding.perm.motion': 'Ukunyakaza Nomsebenzi',
+  'onboarding.perm.motionSub': 'Landelela izinyathelo, thola ukuzivocavoca futhi bala izikhathi ngezinzwa zokunyakaza',
+  'onboarding.perm.location': 'Indawo (Ukugijima)',
+  'onboarding.perm.locationSub': 'Mephu imizila yakho yokugijima futhi ubale ibanga ngokunemba',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    'Vumelanisa isivinini senhliziyo, ubuthongo nedatha yokuzivocavoca ne-Android Health Connect',
   'onboarding.perm.allow': 'Vumela',
   'onboarding.perm.skipNote': 'Ungakweqa lokhu — izimvume zingavunyelwa kamuva kuphrofayela yakho.',
 
@@ -3281,7 +3787,8 @@ const zu: Record<string, string> = {
   'fitmind.importedDetail': 'yengezwe kulabhulali yakho.',
   'fitmind.importFailed': 'Ukungenisa Kwehlulekile',
   'fitmind.importFailedDetail': 'Ayikwazanga ukungenisa leli fayela.',
-  'fitmind.noDocuments': 'Awekho amadokhumenti okwamanje. Thepha + ukuze ungeze incwadi yakho yokuqala noma i-athikili.',
+  'fitmind.noDocuments':
+    'Awekho amadokhumenti okwamanje. Thepha + ukuze ungeze incwadi yakho yokuqala noma i-athikili.',
   'fitmind.dayStreak': 'Usuku Streak',
   'fitmind.completed': 'Kuqediwe',
   'fitmind.pagesRead': 'Amakhasi Afundiwe',
@@ -3404,7 +3911,8 @@ const zu: Record<string, string> = {
   'backup.createBackup': 'Dala Ukugcina',
   'backup.availableBackups': 'Izipele Ezitholakalayo',
   'backup.noBackups': 'Akukho kugcina okwamanje.',
-  'backup.helperText': 'Idala ifayela eliyisipele elibethelwe lesizindalwazi sakho sendawo. Uma usetha umushwana wokungena, kufanele usebenzise umushwana wokungena ofanayo ukuze ubuyisele.',
+  'backup.helperText':
+    'Idala ifayela eliyisipele elibethelwe lesizindalwazi sakho sendawo. Uma usetha umushwana wokungena, kufanele usebenzise umushwana wokungena ofanayo ukuze ubuyisele.',
   'backup.optionalPassphrase': 'Umushwana wokungena ozikhethela',
   'backup.working': 'Iyasebenza...',
   'backup.created': 'Isipele sidaliwe',
@@ -3421,9 +3929,11 @@ const zu: Record<string, string> = {
   'backup.uploaded': 'Kulayishiwe',
   'backup.uploadFailed': 'Ukulayisha kuhlulekile',
   'backup.noCloudBackups': 'Azikho izipele zamafu okwamanje.',
-  'backup.cloudHelper': 'Igcina i-blob eyisipele ebethelwe ku-backend yakho yeSigaba sesi-2. Iseva ayikwazi ukususa ukubethela idatha yakho.',
+  'backup.cloudHelper':
+    'Igcina i-blob eyisipele ebethelwe ku-backend yakho yeSigaba sesi-2. Iseva ayikwazi ukususa ukubethela idatha yakho.',
 
-  'audio.warmup.start': 'Ake siqale ngokufudumeza. Ukunyakaza okulula ukuvusa imisipha yakho futhi ulungiselele umzimba wakho.',
+  'audio.warmup.start':
+    'Ake siqale ngokufudumeza. Ukunyakaza okulula ukuvusa imisipha yakho futhi ulungiselele umzimba wakho.',
   'audio.main.start': 'Asingene kukho. Ukujima okuyinhloko kuqala manje.',
   'audio.cooldown.start': 'Isikhathi sokuphola. Ukunyakaza okuthambile ukusiza umzimba wakho ululame.',
   'audio.warmup.toMain': 'Ukufudumala okukhulu! Umzimba wakho ukhululekile. Isikhathi sokujima okukhulu. Asambe!',
@@ -3468,6 +3978,143 @@ const zu: Record<string, string> = {
   'audio.minutes': '{{minutes}} imizuzu yomzamo omsulwa.',
   'audio.progressions': '{{count}} isivivinyo esilungele ukukhuphuka!|{{count}} izivivinyo ezilungele ukukhuphuka!',
   'audio.xpEarned': 'Kanye ne-{{xp}} XP etholiwe.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Uhlelo lokuthuthuka lusetshenzisiwe ngokwemisebenzi yakamuva.',
+  'signal.transition.regressing.subtext': 'Umthwalo weseshini wehlisiwe ukuze uhambisane nesivinini samanje.',
+  'signal.firstSession.headline': 'Uhlelo selulungile. Qala iseshini yakho yokuqala.',
+  'signal.firstSession.subtext': 'Iseshini ngayinye ikalibhretha uhlelo kumandla akho.',
+  'signal.streakAtRisk.headline': '{{streak}} izinsuku zilandelana. Qhubeka namuhla ukuze ukuqinise.',
+  'signal.streakAtRisk.subtext.disciplined': 'Ukuqhubekela phambili kuqondiswa ukuqina.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Iseshini emfushane yanele ukugcina umjikelezo.',
+  'signal.restAdvised.headline': 'Ukuphumula kunconywa ngokususelwa ekukhathazekeni.',
+  'signal.restAdvised.subtext.fatigue': 'Ukukhathala ku-{{fatigue}}%. Ukuphumula kusheshisa ukuzivumelanisa.',
+  'signal.restAdvised.subtext.readiness': 'Ukulungela ku-{{readiness}}%. Ukululama kuyaqhubeka.',
+  'signal.momentum.headline': 'Iseshini iqediwe. Idatha ibhaliwe.',
+  'signal.momentum.subtext.streak': 'Iphethini yezinsuku ezingu-{{streak}}. Uhlelo lucwengisa uhlelo lwakho.',
+  'signal.momentum.subtext.default': 'Ukululama kuqala. Iseshini elandelayo izolungiswa ngokufanele.',
+  'signal.comeback.headline.inconsistent': '{{days}} izinsuku ziphume. Iseshini enomthwalo ophansi iyatholakala.',
+  'signal.comeback.headline.disciplined': '{{days}} izinsuku kusukela eseshini yokugcina. Ukushisa kukalibhrethiwe kabusha.',
+  'signal.comeback.subtext.inconsistent': 'Uhlelo lulungisiwe ukuze kubelula ukubuya.',
+  'signal.comeback.subtext.disciplined': 'Umthwalo ulungisiwe ukuze uhambisane nesimo sokululama samanje.',
+  'signal.recoveryReady.headline.disciplined': 'Ukulungela kusezingeni eliphezulu. Izimo zokuqhubekela phambili zifinyelelwe.',
+  'signal.recoveryReady.headline.inconsistent': 'Ukululama kuphelile. Izimo ezinhle zeseshini.',
+  'signal.recoveryReady.subtext': 'Ukulungela ku-{{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} izinsuku zilandelana. Uhlelo luzilungisa kumjikelezo wakho.',
+  'signal.streakBuilding.subtext.disciplined': 'Umthwalo nokuqina kuyanda ngokusekelwe ekusebenzeni.',
+  'signal.streakBuilding.subtext.inconsistent': 'Ukuqina kwakhiwa. Inselelo iyanda kancane.',
+  'signal.expectToday.headline.disciplined': 'Iwindi lokuzilolonga livuliwe. Uhlelo selulungile.',
+  'signal.expectToday.headline.inconsistent': 'Iseshini iyatholakala uma ulungile.',
+  'signal.expectToday.subtext.good': 'Ukulungela {{readiness}}%. Izimo ezinhle.',
+  'signal.expectToday.subtext.moderate': 'Ukulungela okumaphakathi. Iseshini elula inconywa.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Iseshini yokuqala izayo. Uhlelo lufunda kuyo yonke i-rep.',
+  'memory.noHistory.trendStatement': 'Ayikho idatha okwamanje. Iseshini yakho yokuqala ibeka isisekelo.',
+  'memory.lastSession.headline.crushed': 'Iseshini yokugcina: {{completed}} izivivinyo zigcinwe ngemizuzu engu-{{duration}}.',
+  'memory.lastSession.headline.adjusted': 'Iseshini yokugcina: {{completed}}/{{total}} kuphelile. Uhlelo lulungisiwe.',
+  'memory.lastSession.headline.tough': 'Iseshini yokugcina ibinzima. {{completed}}/{{total}} kuphelile. Ukululama kunikezwe isiqalo.',
+  'memory.trend.improving': 'Ukusebenza kunyuka. Uhlelo lwandisa inselelo.',
+  'memory.trend.declining': 'Izeshini zakamuva zinzima kakhulu. Uhlelo lulungisiwe ukwakha kabusha umfutho.',
+  'memory.trend.steady.data': 'Imiphumela eqhubekayo. Seduze nesango lokuqhubekela phambili elilandelayo.',
+  'memory.trend.steady.building': 'Ukwakha isisekelo. Qhubeka uvela.',
+  'memory.delta.firstWorkout': 'Iseshini yokuqala. Uhlelo lukalibhretha emzimbeni wakho.',
+  'memory.delta.same': 'Isakhiwo seseshini esifanayo. Uhlelo lubona ukuqina kwakhiwa.',
+  'memory.delta.mixed': '{{total}} izinguquko: {{removed}} ziphume, {{added}} ezintsha.',
+  'memory.delta.added': '{{count}} isivivinyo esisha{{plural}} sengezwe ukwahluka.',
+  'memory.delta.removed': '{{count}} isivivinyo{{plural}} sishintshwe ukululama.',
+  'memory.progression.firstTime': 'Okokuqala. Uhlelo luzokalibhretha kusuka kulesi seshini.',
+  'memory.progression.improving': '{{wins}} ukunqoba ngokulandelana. Uyaqhubeka.',
+  'memory.progression.declining': 'Ukwehla kwakamuva kubonwe. Umthwalo ulungisiwe.',
+  'memory.progression.nearGate': '{{successes}} iseshini{{plural}} eziqinile. Eyodwa engaphezulu ukuvula ukuqhubekela phambili.',
+  'memory.progression.steady': 'Umi endaweni. Ukuqina yisu.',
+  'memory.reason.retained': 'Kuhambisana nendlela yakho yokuqhubekela phambili.',
+  'memory.reason.addedBalance': 'Ifakwe ukuze kulinganiswe ukululama kwemisipha.',
+  'memory.reason.removedFatigue': 'Ikhishwe ngenxa yokukhathala okuqongelene.',
+  'memory.reason.removedVariety': 'Ishintshwe ukuze kulinganiswe imisipha nokuhluka.',
+  'memory.timeSince.minutes': '{{minutes}}m edlule',
+  'memory.timeSince.hours': '{{hours}}h edlule',
+  'memory.timeSince.yesterday': 'Izolo',
+  'memory.timeSince.days': '{{days}} izinsuku ezedlule',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Ukufinyelela okugcwele kuhlelo kusetshenzisiwe.',
+  'trial.welcome.subtext': '14 izinsuku zokuhlola yonke into. Azikho izikhinyabezo.',
+  'trial.firstWin.headline': '{{workouts}} iseshini{{plural}} iphelile. Uhlelo lufunda amaphethini akho.',
+  'trial.firstWin.subtext': 'Iseshini ngayinye ithuthukisa ukunemba kweseshini.',
+  'trial.readyForFirst.headline': 'Usuku {{day}}. Uhlelo lulungele iseshini yakho yokuqala.',
+  'trial.readyForFirst.subtext': 'Qala iseshini ukuze uqale ukukalibhretha.',
+  'trial.improvementShown.headline': 'Ukuqhathanisa kweseshini sekutholakala.',
+  'trial.improvementShown.subtext': 'Uhlelo selukwazi ukukhombisa okushintshiwe nokuthi kungani.',
+  'trial.memoryIntro.headline': 'Ubuhlakani beseshini buyandiswa.',
+  'trial.memoryIntro.subtext': 'Usuku {{day}}. Izeshini eziningi = ukuhlaziya okubukhali.',
+  'trial.fullIntelligence.headline': 'Ubuhlakani obugcwele busebenza.',
+  'trial.fullIntelligence.subtext': 'Usuku {{day}}. Uhlelo luzilungisa kumaphethini akho namandla.',
+  'trial.transitionClear.headline': '{{days}} usuku{{plural}} olusele ekufinyeleleni okugcwele.',
+  'trial.transitionClear.subtext': 'Ngemuva kokuzama, izici eziyinhloko zihlala zitholakala. Izingxenye zobuhlakani zidinga ukubhalisela.',
+  'trial.transitionSoft.headline': '{{days}} izinsuku zisele.',
+  'trial.transitionSoft.subtext': 'Idatha yakho yeseshini nokuqhubekela phambili kuyakho njalo. Ukubhalisela kuqhubeka nezici zobuhlakani.',
+  'trial.viewPlans': 'Buka izinhlelo',
+  'trial.expired.headline': 'Isikhathi sokuzama siphelile.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} izeshini zirekhwodwe. Izici eziyinhloko zihlala zitholakala. Bhalisela ukubuyisela izingxenye zobuhlakani.',
+  'trial.expired.subtext.noWorkouts': 'Izici eziyinhloko zihlala zitholakala. Bhalisela ukuvula izingxenye zobuhlakani.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Ukuwa kwenzeke esivivinyweni {{index}} ({{name}}) — umthwalo uyancishiswa iseshini elandelayo.',
+  'failure.skipHeavy': 'Izinga eliphezulu lokweqa litholakale. Izivivinyo zingase zingahambisani namandla amanje.',
+  'failure.lowVolume': 'Umthwalo ophansi wokuqedwa. Iseshini ingase ibe ngaphezu kwamandla.',
+  'failure.earlyDropout': 'Iphethini yokuwa ekuqaleni. Ubude beseshini buyancishiswa.',
+  'failure.lateDropout': 'Ukuwa kwamandla okuqina. Izivivinyo ezilula zibekwe ngasekugcineni.',
+  'failure.noFailure': 'Iseshini iphumelele.',
+  'failure.insight.none': 'Iseshini iphelile nge-{{percent}}%. Azikho izilungiso ezidingekayo.',
+  'failure.insight.earlyDropout': 'Ukuwa kwenzeke esivivinyweni {{index}} ({{name}}) — umthwalo uyancishiswa iseshini elandelayo.',
+  'failure.insight.midDropout': 'Ukuwa eselini {{index}} ({{name}}) — inombolo yezivivinyo iyalungiswa.',
+  'failure.insight.lateDropout': 'Cishe kuphelile ({{percent}}%). Ukulungiswa okuncane kusetshenzisiwe.',
+  'failure.insight.skipHeavy': 'Iseshini iphelile kodwa {{percent}}% yezivivinyo iqwelwe. Ukukhetha izivivinyo kuyabuyekezwa.',
+  'failure.insight.lowVolume': 'Umthwalo ophansi wokuqedwa ({{percent}}%). Imikhombandlela yesethi iyancishiswa.',
+  'failure.insight.empty': 'Azikho izivivinyo ezifeziwe. Uhlelo lwehla ubunzima beseshini elandelayo.',
+  'failure.adjustment.none': 'Akukho ukulungiswa okudingekayo.',
+  'failure.adjustment.earlyDropout': 'Ukuwa ekuqaleni kubonwe. Umthwalo nobude beseshini kuyancishiswa.',
+  'failure.adjustment.midDropout': 'Ukuwa esivivinyweni {{index}}. Inombolo yezivivinyo iyancishiswa.',
+  'failure.adjustment.lateDropout': 'Iseshini ecishe yaphelela. Ukuncishiswa komthwalo okuncane.',
+  'failure.adjustment.skipHeavy': 'Izinga eliphezulu lokweqa. Ukukhetha izivivinyo kudinga ukubuyekezwa.',
+  'failure.adjustment.lowVolume': 'Umthwalo ophansi oqediwe. Inombolo yesethi iyancishiswa.',
+  'failure.adjustment.empty': 'Iseshini engenalutho. Ukuncishiswa okukhulu kusetshenzisiwe.',
+  'failure.pattern.noData': 'Ayikho idatha yeseshini okwamanje.',
+  'failure.pattern.noFailures': 'Zonke izeshini zakamuva ziphumelele. Izimo zisekela ukuqhubekela phambili.',
+  'failure.pattern.occasional': 'Ngezikhathi ezithile izeshini ezingaphelanga. Umthwalo wamanje ubukeka uyabambelela.',
+  'failure.pattern.earlyDropoffs': 'Ukuwa ekuqaleni okuvame. Ukuncishiswa kobude beseshini noma inombolo yezivivinyo kunconywa.',
+  'failure.pattern.highSkips': 'Izinga eliphezulu lokweqa. Ukukhetha izivivinyo kungadinga ukulungiswa.',
+  'failure.pattern.worsening': 'Izinga lokuhluleka liyanda. Cabanga ngokunciphisa umthwalo noma ukugxila ekululameni.',
+  'failure.pattern.general': '{{rate}}% izinga lokuhluleka. Ubunzima beseshini buyalungiswa.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'Uchungechunge luzosethwa kabusha.',
+  'simulation.skip.modeShift': 'Kungashintsha kumumo ongaqinile.',
+  'simulation.skip.fatigueDrop': 'Ukukhathala kuyehla nge-{{delta}}.',
+  'simulation.skip.minimal': 'Umthelela omncane — unesikhala.',
+  'simulation.train.fatigueUp': 'Ukukhathala kuyenyuka nge-{{delta}}.',
+  'simulation.train.modeAdvance': 'Usondela kumumo oqinile.',
+  'simulation.train.reduceTomorrow': 'Kusasa kufanele kube lula.',
+  'simulation.train.pushTomorrow': 'Isikhala sokufuqa kanzima kusasa.',
+  'simulation.rest.recovery': 'Ukululama: ukukhathala kuyehla nge-{{delta}}.',
+  'simulation.rest.streakReset': 'Uchungechunge luzosethwa kabusha, kodwa ukululama kunikezwe isiqalo.',
+  'simulation.rest.ready': 'Ulungele iseshini ephelele kusasa.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'Ubuhlakani obuthuthukile budinga ukubhalisela.',
 };
 
 const xh: Record<string, string> = {
@@ -3494,7 +4141,8 @@ const xh: Record<string, string> = {
   'dashboard.levelShort': 'Lv',
   'dashboard.restRecommended': 'Ukuphumla kuyacetyiswa',
   'dashboard.recoveryModerate': 'Phakathi',
-  'dashboard.recoveryWarning': '⚠️ Ukudinwa okuphezulu kuchongiwe. Cinga ngokuzivocavoca okulula okanye usuku lokuphumla.',
+  'dashboard.recoveryWarning':
+    '⚠️ Ukudinwa okuphezulu kuchongiwe. Cinga ngokuzivocavoca okulula okanye usuku lokuphumla.',
   'dashboard.noWorkoutsYet': 'Akukho mthambo okwangoku. Qala eyokuqala yakho!',
   'dashboard.createCustom': 'Yenza isiko',
   'dashboard.recoveryTrackingActive': 'Ukulandelela ukubuyisela kuyasebenza',
@@ -3514,6 +4162,7 @@ const xh: Record<string, string> = {
   'dashboard.of': 'ye',
   'dashboard.incompleteSession': 'Iseshoni engagqitywanga',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'QALA NGOKU',
   'dashboard.stepsToday': 'Amanyathelo',
   'dashboard.activeMin': 'Imizuzu esebenzayo',
   'dashboard.completionRate': 'Ukugqitywa',
@@ -3571,7 +4220,8 @@ const xh: Record<string, string> = {
   'fitquest.keepGoing': 'Qhubeka uhamba',
   'fitquest.cancelWorkout': 'Rhoxisa Ukuzilolonga',
   'fitquest.recordingProgress': 'Irekhoda inkqubela...',
-  'fitquest.idleSub': 'Isizukulwana sokuzilolonga esikrelekrele esiqhutywa zii-injini ezintathu ezisebenza ngokuhambelana',
+  'fitquest.idleSub':
+    'Isizukulwana sokuzilolonga esikrelekrele esiqhutywa zii-injini ezintathu ezisebenza ngokuhambelana',
   'fitquest.currentProfile': 'Iprofayile yangoku',
   'fitquest.sessions': 'iiseshini',
   'fitquest.generateWorkout': 'Veza ukujima',
@@ -3636,13 +4286,17 @@ const xh: Record<string, string> = {
   'profile.craftMyBody': 'Yenza Umzimba Wam',
   'profile.craftMyBodySub': 'Isicwangciso sotshintsho lomzimba lomntu siqu kunye nesondlo kunye noqeqesho',
   'profile.adaptiveTraining': 'Uqeqesho oluguquguqukayo',
-  'profile.adaptiveExplanation': 'La maxabiso azilungise ngokuzenzekela xa uqeqesha. Cofa imitha nganye ukuze ufunde ngakumbi.',
+  'profile.adaptiveExplanation':
+    'La maxabiso azilungise ngokuzenzekela xa uqeqesha. Cofa imitha nganye ukuze ufunde ngakumbi.',
   'profile.fatigueSensitivity': 'Uvakalelo lokudinwa',
-  'profile.fatigueSensitivityDesc': 'Ukhawuleza kangakanani ukudinwa ngexesha lokuzilolonga. Amaxabiso aphezulu athetha ukuba i-algorithm ikunika ukuphumla ngakumbi phakathi kweeseshoni ezibukhali. Uhlengahlengiso ngokusekwe kumazinga akho okugqiba umthambo kunye neepatheni zokubuyisela.',
+  'profile.fatigueSensitivityDesc':
+    'Ukhawuleza kangakanani ukudinwa ngexesha lokuzilolonga. Amaxabiso aphezulu athetha ukuba i-algorithm ikunika ukuphumla ngakumbi phakathi kweeseshoni ezibukhali. Uhlengahlengiso ngokusekwe kumazinga akho okugqiba umthambo kunye neepatheni zokubuyisela.',
   'profile.progressionPace': 'Isantya sokuqhubela phambili',
-  'profile.progressionPaceDesc': 'Ubunzima bokwenza umthambo buyanda ngokuhamba kwexesha. Amaxabiso aphezulu athetha ukuqhubela phambili ngokukhawuleza kwimithambo enzima. Uhlengahlengiso olusekwe ekubeni ugqibezela iiseti ezimiselweyo/eziphindaphindwayo ngokungaguqukiyo.',
+  'profile.progressionPaceDesc':
+    'Ubunzima bokwenza umthambo buyanda ngokuhamba kwexesha. Amaxabiso aphezulu athetha ukuqhubela phambili ngokukhawuleza kwimithambo enzima. Uhlengahlengiso olusekwe ekubeni ugqibezela iiseti ezimiselweyo/eziphindaphindwayo ngokungaguqukiyo.',
   'profile.volumeTolerance': 'Ukunyamezela umthamo',
-  'profile.volumeToleranceDesc': 'Ungakanani umthamo opheleleyo woqeqesho (ubeka ii-x reps) umzimba wakho onokuwuphatha. Amaxabiso aphezulu athetha iiseshini zokuzilolonga ezinde kunye nemithambo emininzi. Uhlengahlengiso olusekwe ekugqityweni kweseshoni yakho kunye nokutsiba imithambo.',
+  'profile.volumeToleranceDesc':
+    'Ungakanani umthamo opheleleyo woqeqesho (ubeka ii-x reps) umzimba wakho onokuwuphatha. Amaxabiso aphezulu athetha iiseshini zokuzilolonga ezinde kunye nemithambo emininzi. Uhlengahlengiso olusekwe ekugqityweni kweseshoni yakho kunye nokutsiba imithambo.',
   'profile.confidence': 'Ukuzithemba',
   'profile.samples': 'Iisampulu',
   'profile.rank': 'Isikhundla & nenkqubela phambili',
@@ -3707,7 +4361,8 @@ const xh: Record<string, string> = {
   'profile.exportData': 'Thumela ngaphandle Idatha Yam',
   'profile.exportDataSub': 'Yenza i-JSON yokuthunyelwa ngaphandle kwemetadata yelifu + i-backups',
   'profile.menu.deleteCloudData': 'Cima idatha yefu',
-  'profile.menu.deleteCloudDataConfirm': 'Oku kuzicima ngokusisigxina ii-backups zeakhawunti yakho kunye nemetadata yelifu.',
+  'profile.menu.deleteCloudDataConfirm':
+    'Oku kuzicima ngokusisigxina ii-backups zeakhawunti yakho kunye nemetadata yelifu.',
   'profile.menu.deletePermanently': 'Cima Ngokusisigxina',
   'profile.deleteCloudDataSub': 'Susa ngokusisigxina idatha yeakhawunti yeseva',
   'profile.helpSupport': 'Uncedo & neNkxaso',
@@ -3715,6 +4370,10 @@ const xh: Record<string, string> = {
   'profile.appSection': 'App',
   'profile.backupRestore': 'Backup & Buyisela',
   'profile.backupRestoreSub': 'Iifayile zogcino ezifihliweyo zasekhaya',
+  'profile.subscription': 'Isibhaliso',
+  'profile.expired': 'Iphelelwe',
+  'profile.subscribeToUnlock': 'Bhalisa ukuvula zonke iifitsha',
+  'profile.searchLanguages': 'Khangela iilwimi…',
   'profile.about': 'Malunga neFitQuest',
   'profile.version': 'Inguqulelo',
   'profile.saved': 'Igciniwe',
@@ -3869,7 +4528,8 @@ const xh: Record<string, string> = {
   'move.noStepHistory': 'Akukho mbali yenyathelo okwangoku',
   'move.jogHistory': 'Imbali yeJog',
   'move.noJogHistory': 'Akukho ziseshoni zokubaleka okwangoku',
-  'move.infoXpAndFatigue': '1,000 amanyathelo = 4 XP • IiJogs zifumana i-10 XP nge-100m nganye\\\\\\\\nIntshukumo ayichaphazeli ukudinwa komthambo',
+  'move.infoXpAndFatigue':
+    '1,000 amanyathelo = 4 XP • IiJogs zifumana i-10 XP nge-100m nganye\\\\\\\\nIntshukumo ayichaphazeli ukudinwa komthambo',
   'move.jogComplete': 'Jog Gqibile! 🏃',
   'move.awesome': 'Kuhle!',
   'move.km': 'km',
@@ -3913,7 +4573,8 @@ const xh: Record<string, string> = {
   'meal.location.tapEnable': 'Cofa ukuze uvule indawo',
   'meal.location.infoPrefix': 'Ukubonisa ukutya okukhoyo',
   'meal.location.infoSuffix': ', kubandakanywa iinketho zengingqi kunye nehlabathi jikelele.',
-  'meal.location.infoNoLocation': 'Vula indawo ukuze ubone iingcebiso zokutya ezingqale kwingingqi. Cinezela ibheji yendawo ngasentla ukuze uzame kwakhona.',
+  'meal.location.infoNoLocation':
+    'Vula indawo ukuze ubone iingcebiso zokutya ezingqale kwingingqi. Cinezela ibheji yendawo ngasentla ukuze uzame kwakhona.',
 
   'legal.title': 'Iziko lezoMthetho',
   'legal.documents': 'Amaxwebhu',
@@ -3940,63 +4601,100 @@ const xh: Record<string, string> = {
   'legal.readInApp': 'Funda kwi-app',
   'legal.cannotOpenLink': 'Ayikwazi ukuvula ilinki kwesi sixhobo',
   'legal.noteMedical': 'Isikhokelo sokufaneleka kolu setyenziso siyafundisa kwaye asiyondawo yeengcebiso zonyango.',
-  'legal.noteCounsel': 'Isicatshulwa somthetho sokugqibela kunye nemephu yolawulo kufuneka ihlolwe ngumcebisi ngaphambi kokukhululwa.',
+  'legal.noteCounsel':
+    'Isicatshulwa somthetho sokugqibela kunye nemephu yolawulo kufuneka ihlolwe ngumcebisi ngaphambi kokukhululwa.',
   'legal.lastUpdated': 'Igqityelwe ukuhlaziywa:',
   'legal.privacy.sections.developerTitle': 'Umphuhlisi',
-  'legal.privacy.sections.developerBody': 'IFitQuest iphuhliswe kwaye ipapashwe yifitquest.dev. Lo mgaqo-nkqubo wabucala ulawula usetyenziso lweselula lweFitQuest olufumaneka kuGoogle Play kunye neApple App Store.',
+  'legal.privacy.sections.developerBody':
+    'IFitQuest iphuhliswe kwaye ipapashwe yifitquest.dev. Lo mgaqo-nkqubo wabucala ulawula usetyenziso lweselula lweFitQuest olufumaneka kuGoogle Play kunye neApple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Idatha esiyiqokelelayo',
-  'legal.privacy.sections.dataCollectBody': 'I-FitQuest isebenza ezi ndidi zilandelayo zedatha ukuhambisa ukomelela komntu kunye neempawu zempilo:',
-  'legal.privacy.bullets.health': 'Impilo kunye neemetriki zomsebenzi: izinga lokubetha kwentliziyo, amanyathelo, idatha yokulala, imbali yokuzilolonga, imilinganiselo yomzimba, kunye namanqaku okubuyisela',
-  'legal.privacy.bullets.biometric': 'Idatha yebhayometriki: umnwe okanye ukuqondwa kobuso kusetyenziselwa uqinisekiso lwe-app (esetyenzwa kwisixhobo kuphela, ayizange igcinwe okanye ihanjiswe)',
-  'legal.privacy.bullets.location': 'Idatha yendawo: Ulungelelwaniso lweGPS ngexesha lokulandela umkhondo (kuphela xa usebenzisa inqaku lokubaleka)',
-  'legal.privacy.bullets.account': 'Ulwazi lweprofayili: iinjongo zokufaneleka, inqanaba lamava, izinto ezikhethwayo, kunye neshedyuli yomsebenzi ozikhethelayo',
-  'legal.privacy.bullets.usage': 'Iipateni zokusetyenziswa kwe-app kunye nonxibelelwano olubonakalayo (amagama angaziwa, asetyenziselwa ukuphucula i-app)',
-  'legal.privacy.bullets.device': 'Uhlobo lwesixhobo, uguqulelo lwe-OS, kunye nenguqulelo ye-app yokuhambelana kunye nengxelo yokuwa',
+  'legal.privacy.sections.dataCollectBody':
+    'I-FitQuest isebenza ezi ndidi zilandelayo zedatha ukuhambisa ukomelela komntu kunye neempawu zempilo:',
+  'legal.privacy.bullets.health':
+    'Impilo kunye neemetriki zomsebenzi: izinga lokubetha kwentliziyo, amanyathelo, idatha yokulala, imbali yokuzilolonga, imilinganiselo yomzimba, kunye namanqaku okubuyisela',
+  'legal.privacy.bullets.biometric':
+    'Idatha yebhayometriki: umnwe okanye ukuqondwa kobuso kusetyenziselwa uqinisekiso lwe-app (esetyenzwa kwisixhobo kuphela, ayizange igcinwe okanye ihanjiswe)',
+  'legal.privacy.bullets.location':
+    'Idatha yendawo: Ulungelelwaniso lweGPS ngexesha lokulandela umkhondo (kuphela xa usebenzisa inqaku lokubaleka)',
+  'legal.privacy.bullets.account':
+    'Ulwazi lweprofayili: iinjongo zokufaneleka, inqanaba lamava, izinto ezikhethwayo, kunye neshedyuli yomsebenzi ozikhethelayo',
+  'legal.privacy.bullets.usage':
+    'Iipateni zokusetyenziswa kwe-app kunye nonxibelelwano olubonakalayo (amagama angaziwa, asetyenziselwa ukuphucula i-app)',
+  'legal.privacy.bullets.device':
+    'Uhlobo lwesixhobo, uguqulelo lwe-OS, kunye nenguqulelo ye-app yokuhambelana kunye nengxelo yokuwa',
   'legal.privacy.bullets.photos': 'Iifoto zeprofayile: zigcinwe ekuhlaleni kwisixhobo sakho ukuba ukhetha ukuseta enye',
-  'legal.privacy.bullets.healthConnect': 'Idata yeHealth Connect / HealthKit: amanyathelo, izinga lentliziyo, ukulala, kunye nedatha yokuzilolonga (kuphela ukuba unika imvume ecacileyo)',
+  'legal.privacy.bullets.healthConnect':
+    'Idata yeHealth Connect / HealthKit: amanyathelo, izinga lentliziyo, ukulala, kunye nedatha yokuzilolonga (kuphela ukuba unika imvume ecacileyo)',
   'legal.privacy.sections.storageTitle': '2) Ukugcinwa kwedatha',
-  'legal.privacy.sections.storageBody': 'IFitQuest iyilwe njengesicelo sokuqala ngaphandle kweintanethi. Yonke idatha yakho yokomelela igcinwe ekuhlaleni kwisixhobo sakho usebenzisa iSQLite. Akukho datha yobuqu egcinwe kwiiseva zangaphandle. Iirekhodi zempilo ezibuthathaka zifihliweyo ngaphambi kokugcinwa kusetyenziswa i-AES-256-GCM ye-encryption esemgangathweni.',
+  'legal.privacy.sections.storageBody':
+    'IFitQuest iyilwe njengesicelo sokuqala ngaphandle kweintanethi. Yonke idatha yakho yokomelela igcinwe ekuhlaleni kwisixhobo sakho usebenzisa iSQLite. Akukho datha yobuqu egcinwe kwiiseva zangaphandle. Iirekhodi zempilo ezibuthathaka zifihliweyo ngaphambi kokugcinwa kusetyenziswa i-AES-256-GCM ye-encryption esemgangathweni.',
   'legal.privacy.sections.securityTitle': '3) Ukhuseleko lwedatha',
-  'legal.privacy.sections.securityBody': 'Yonke idatha ebuthathaka yezempilo ifihliwe kusetyenziswa i-AES-256-GCM encryption ngaphambi kokuba igcinwe kwisixhobo sakho. Izitshixo zoguqulelo oluntsonkothileyo zikhuselwe sisixhobo sakho sentsimbi esikhuselekileyo (Isitshixo kwi-iOS, i-Keystore kwi-Android). Ukuqinisekiswa kwebhayometriki kunika umaleko owongezelelweyo wokukhusela. Sisebenzisa i-key derivation ekhuselekileyo (PBKDF2) kunye nokuthelekisa rhoqo-ixesha lokuthintela ukuhlaselwa kwexesha.',
+  'legal.privacy.sections.securityBody':
+    'Yonke idatha ebuthathaka yezempilo ifihliwe kusetyenziswa i-AES-256-GCM encryption ngaphambi kokuba igcinwe kwisixhobo sakho. Izitshixo zoguqulelo oluntsonkothileyo zikhuselwe sisixhobo sakho sentsimbi esikhuselekileyo (Isitshixo kwi-iOS, i-Keystore kwi-Android). Ukuqinisekiswa kwebhayometriki kunika umaleko owongezelelweyo wokukhusela. Sisebenzisa i-key derivation ekhuselekileyo (PBKDF2) kunye nokuthelekisa rhoqo-ixesha lokuthintela ukuhlaselwa kwexesha.',
   'legal.privacy.sections.thirdPartyTitle': '4) Iinkonzo zeQela lesithathu',
-  'legal.privacy.sections.thirdPartyBody': 'IFitQuest ayithengisi, ayirenti, okanye ithengise ngedatha yakho yobuqu. Olu hlanganiso lulandelayo lweqela lesithathu lusenokwenza idatha elinganiselweyo:',
-  'legal.privacy.bullets.thirdPartyAI': 'Iimpawu ze-AI: Xa usebenzisa uMqeqeshi we-AI okanye uNjingalwazi, izibhengezo zakho zithunyelwa kwi-OpenRouter (ngeemodeli zolwimi lweLlama) ukuvelisa iimpendulo. Akukho datha yezempilo yobuqu ibandakanyiweyo kwezi zicelo - kuphela umbhalo owubhalayo.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'I-Health Connect / HealthKit: Ukuba unika imvume, i-FitQuest ifunda iimetriki zempilo kwezi nkonzo zeqonga. Idatha ihamba ngendlela enye (funda kuphela) kwaye igcinwe ngokuntsonkotha kwisixhobo sakho.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'I-RevenueCat: Ilawula ukuqinisekiswa komrhumo. Ifumana kuphela iithokheni zokuthenga kunye nezazisi ezingachazwanga zabasebenzisi - akukho datha yezempilo okanye yokomelela.',
-  'legal.privacy.bullets.thirdPartySentry': 'Umthumeli: Inkonzo yengxelo yokungqubana efumana iilogi zempazamo ezingachazwanga. Akukho datha yobuqu okanye iimethrikhi zempilo zibandakanyiweyo.',
+  'legal.privacy.sections.thirdPartyBody':
+    'IFitQuest ayithengisi, ayirenti, okanye ithengise ngedatha yakho yobuqu. Olu hlanganiso lulandelayo lweqela lesithathu lusenokwenza idatha elinganiselweyo:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'Iimpawu ze-AI: Xa usebenzisa uMqeqeshi we-AI okanye uNjingalwazi, izibhengezo zakho zithunyelwa kwi-OpenRouter (ngeemodeli zolwimi lweLlama) ukuvelisa iimpendulo. Akukho datha yezempilo yobuqu ibandakanyiweyo kwezi zicelo - kuphela umbhalo owubhalayo.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'I-Health Connect / HealthKit: Ukuba unika imvume, i-FitQuest ifunda iimetriki zempilo kwezi nkonzo zeqonga. Idatha ihamba ngendlela enye (funda kuphela) kwaye igcinwe ngokuntsonkotha kwisixhobo sakho.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'I-RevenueCat: Ilawula ukuqinisekiswa komrhumo. Ifumana kuphela iithokheni zokuthenga kunye nezazisi ezingachazwanga zabasebenzisi - akukho datha yezempilo okanye yokomelela.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Umthumeli: Inkonzo yengxelo yokungqubana efumana iilogi zempazamo ezingachazwanga. Akukho datha yobuqu okanye iimethrikhi zempilo zibandakanyiweyo.',
   'legal.privacy.sections.childrenTitle': '5) Ubumfihlo babantwana',
-  'legal.privacy.sections.childrenBody': 'IFitQuest yenzelwe abasebenzisi abaneminyaka eyi-13 nangaphezulu. Asiqokeleli iinkcukacha zobuqu kubantwana abangaphantsi kweminyaka eli-13 sisazi.',
+  'legal.privacy.sections.childrenBody':
+    'IFitQuest yenzelwe abasebenzisi abaneminyaka eyi-13 nangaphezulu. Asiqokeleli iinkcukacha zobuqu kubantwana abangaphantsi kweminyaka eli-13 sisazi.',
   'legal.privacy.sections.retentionTitle': '6) Ukugcinwa kwedatha',
-  'legal.privacy.sections.retentionBody': 'Idatha yakho igcinwa kwisixhobo sakho kwaye igcinwe ixesha elide njengoko i-app ifakiwe. Ungayicima yonke idatha nangaliphi na ixesha ngeProfayili → Useto → Cima yonke iDatha. Ukukhupha i-app kususa yonke idatha yendawo ngokusisigxina. Unokucela ukucinywa kwedatha usebenzisa iwebhusayithi yethu ku- https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Idatha yakho igcinwa kwisixhobo sakho kwaye igcinwe ixesha elide njengoko i-app ifakiwe. Ungayicima yonke idatha nangaliphi na ixesha ngeProfayili → Useto → Cima yonke iDatha. Ukukhupha i-app kususa yonke idatha yendawo ngokusisigxina. Unokucela ukucinywa kwedatha usebenzisa iwebhusayithi yethu ku- https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Amalungelo akho',
-  'legal.privacy.sections.rightsBody': 'Phantsi kwemithetho esebenzayo yokhuseleko lwengcombolo (kuquka uMthetho woKhuselo lweDatha ka-2011 waseLesotho, i-GDPR e-EU, kunye ne-CCPA yaseCalifornia), unala malungelo alandelayo:',
-  'legal.privacy.bullets.accessRight': 'Ufikelelo: Jonga yonke idatha egcina usetyenziso malunga nawe ngeProfayile → Thumela ngaphandle kweDatha',
-  'legal.privacy.bullets.deleteRight': 'Ucimo: Cima ngokusisigxina yonke idatha yakho usebenzisa useto lwe-app okanye iwebhusayithi yethu',
-  'legal.privacy.bullets.exportRight': 'Ukuphatheka: Thumela idatha yakho kwifomathi ye-JSON yokudluliselwa kwenye inkonzo',
-  'legal.privacy.bullets.correctRight': 'Ulungiso: Hlaziya okanye uguqule iinkcukacha zeprofayile yakho nangaliphi na ixesha',
-  'legal.privacy.bullets.objectionRight': 'Isichaso: Ukurhoxisa imvume yokusetyenzwa kwedatha nangaliphi na ixesha ngeZiko lezoMthetho',
+  'legal.privacy.sections.rightsBody':
+    'Phantsi kwemithetho esebenzayo yokhuseleko lwengcombolo (kuquka uMthetho woKhuselo lweDatha ka-2011 waseLesotho, i-GDPR e-EU, kunye ne-CCPA yaseCalifornia), unala malungelo alandelayo:',
+  'legal.privacy.bullets.accessRight':
+    'Ufikelelo: Jonga yonke idatha egcina usetyenziso malunga nawe ngeProfayile → Thumela ngaphandle kweDatha',
+  'legal.privacy.bullets.deleteRight':
+    'Ucimo: Cima ngokusisigxina yonke idatha yakho usebenzisa useto lwe-app okanye iwebhusayithi yethu',
+  'legal.privacy.bullets.exportRight':
+    'Ukuphatheka: Thumela idatha yakho kwifomathi ye-JSON yokudluliselwa kwenye inkonzo',
+  'legal.privacy.bullets.correctRight':
+    'Ulungiso: Hlaziya okanye uguqule iinkcukacha zeprofayile yakho nangaliphi na ixesha',
+  'legal.privacy.bullets.objectionRight':
+    'Isichaso: Ukurhoxisa imvume yokusetyenzwa kwedatha nangaliphi na ixesha ngeZiko lezoMthetho',
   'legal.privacy.sections.popiaTitle': '8) Ukuthotyelwa koKhuseleko lweDatha (eLesotho)',
-  'legal.privacy.sections.popiaBody': 'Ngokuhambelana noMthetho woKhuseleko lweDatha ka-2011 woBukumkani baseLesotho, i-fitquest.dev isebenza njengeqela elinoxanduva lolwazi lwakho lomntu. Siyicubungula idatha yakho ngokusemthethweni, sinciphisa ukuqokelelwa koko kuyimfuneko, siqinisekisa ukuchaneka, kwaye sigcina izikhuselo ezifanelekileyo zokhuseleko. Kubasebenzisi abanqumla imida, sikwathobela iPOPIA (South Africa), GDPR (EU), kunye neCCPA (California) apho kufanelekileyo.',
+  'legal.privacy.sections.popiaBody':
+    'Ngokuhambelana noMthetho woKhuseleko lweDatha ka-2011 woBukumkani baseLesotho, i-fitquest.dev isebenza njengeqela elinoxanduva lolwazi lwakho lomntu. Siyicubungula idatha yakho ngokusemthethweni, sinciphisa ukuqokelelwa koko kuyimfuneko, siqinisekisa ukuchaneka, kwaye sigcina izikhuselo ezifanelekileyo zokhuseleko. Kubasebenzisi abanqumla imida, sikwathobela iPOPIA (South Africa), GDPR (EU), kunye neCCPA (California) apho kufanelekileyo.',
   'legal.privacy.sections.updatesTitle': '9) Uhlaziyo lwePolisi',
-  'legal.privacy.sections.updatesBody': 'Singawuhlaziya lo mgaqo-nkqubo wabucala amaxesha ngamaxesha. Naluphi na utshintsho luya kubonakala kwi-app kunye nomhla ohlaziyiweyo "wokugqibela uHlaziywa" kwaye uya kucelwa ukuba uhlolisise kwaye wamkele umgaqo-nkqubo ohlaziyiweyo. Ukusetyenziswa okuqhubekayo kwe-app emva kotshintsho lubandakanya ukwamkelwa komgaqo-nkqubo omtsha.',
+  'legal.privacy.sections.updatesBody':
+    'Singawuhlaziya lo mgaqo-nkqubo wabucala amaxesha ngamaxesha. Naluphi na utshintsho luya kubonakala kwi-app kunye nomhla ohlaziyiweyo "wokugqibela uHlaziywa" kwaye uya kucelwa ukuba uhlolisise kwaye wamkele umgaqo-nkqubo ohlaziyiweyo. Ukusetyenziswa okuqhubekayo kwe-app emva kotshintsho lubandakanya ukwamkelwa komgaqo-nkqubo omtsha.',
   'legal.privacy.sections.contactTitle': '10) Uqhagamshelwano',
-  'legal.privacy.sections.contactBody': 'Ngezicelo zabucala, thumela i-imeyile fitquestsup0rt@gmail.com. Ungandwendwela kwakhona https://fitquest.dev/support. Bandakanya isichongi seakhawunti yakho xa sikhona. Siphendula phakathi kweentsuku zokusebenza ezingama-30.',
+  'legal.privacy.sections.contactBody':
+    'Ngezicelo zabucala, thumela i-imeyile fitquestsup0rt@gmail.com. Ungandwendwela kwakhona https://fitquest.dev/support. Bandakanya isichongi seakhawunti yakho xa sikhona. Siphendula phakathi kweentsuku zokusebenza ezingama-30.',
   'legal.terms.sections.useTitle': '1) Ukusetyenziswa okwamkelekileyo',
-  'legal.terms.sections.useBody': 'Uyavuma ukusebenzisa iFitQuest ngokusemthethweni kwaye ungazami ukubuyisela umva-injineli, ukudibanisa, ukudlula ulawulo lokhuseleko, iindlela zokubhalisa, okanye iimpawu zokukhusela idatha. Awunakusebenzisa i-app ngayo nayiphi na injongo engekho mthethweni okanye ngokuchasene nayo nayiphi na imimiselo esebenzayo.',
+  'legal.terms.sections.useBody':
+    'Uyavuma ukusebenzisa iFitQuest ngokusemthethweni kwaye ungazami ukubuyisela umva-injineli, ukudibanisa, ukudlula ulawulo lokhuseleko, iindlela zokubhalisa, okanye iimpawu zokukhusela idatha. Awunakusebenzisa i-app ngayo nayiphi na injongo engekho mthethweni okanye ngokuchasene nayo nayiphi na imimiselo esebenzayo.',
   'legal.terms.sections.medicalTitle': '2) I-Medical Disclaimer',
-  'legal.terms.sections.medicalBody': 'I-FitQuest sisicelo sokufaneleka kunye nokuba sempilweni kwaye AYISOsixhobo sonyango okanye inkonzo. I-app ayiboneleli ngengcebiso yezonyango, ukuxilongwa, okanye unyango. Iingcebiso zokuzilolonga, amanqaku ezempilo, iingcebiso zokubuyisela, kunye nesikhokelo esiveliswe yi-AI zezolwazi kunye neenjongo zemfundo kuphela. Soloko udibane nochwepheshe bezempilo abaqeqeshiweyo ngaphambi kokuba uqale, uguqule, okanye uyeke nayiphi na inkqubo yokuzilolonga, ngakumbi ukuba uneemeko zempilo esele zikhona, ukonzakala, okanye iinkxalabo. Yeka ukuzilolonga ngoko nangoko ukuba ufumana iintlungu, isiyezi, okanye ukungakhululeki.',
+  'legal.terms.sections.medicalBody':
+    'I-FitQuest sisicelo sokufaneleka kunye nokuba sempilweni kwaye AYISOsixhobo sonyango okanye inkonzo. I-app ayiboneleli ngengcebiso yezonyango, ukuxilongwa, okanye unyango. Iingcebiso zokuzilolonga, amanqaku ezempilo, iingcebiso zokubuyisela, kunye nesikhokelo esiveliswe yi-AI zezolwazi kunye neenjongo zemfundo kuphela. Soloko udibane nochwepheshe bezempilo abaqeqeshiweyo ngaphambi kokuba uqale, uguqule, okanye uyeke nayiphi na inkqubo yokuzilolonga, ngakumbi ukuba uneemeko zempilo esele zikhona, ukonzakala, okanye iinkxalabo. Yeka ukuzilolonga ngoko nangoko ukuba ufumana iintlungu, isiyezi, okanye ukungakhululeki.',
   'legal.terms.sections.subscriptionTitle': '3) Umrhumo kunye nokuBhala',
-  'legal.terms.sections.subscriptionBody': 'IFitQuest ibonelela ngesilingo sasimahla seentsuku ezili-14 kuzo zonke iimpawu zeprimiyamu. Emva kokuba ixesha lovavanyo liphelile, unokubhalisela ukuqhubeka usebenzisa iprimiyamu okanye uqhubeke nenqanaba lasimahla. Imirhumo yePrimiyamu ihlawulwa ngeGoogle Play Store okanye iApple App Store. Imirhumo ihlaziywa ngokuzenzekelayo ekupheleni kwethuba ngalinye lokuhlawula ngaphandle kokuba icinyiwe ubuncinane kwiiyure ezingama-24 phambi komhla wohlaziyo. Ungalawula okanye urhoxise umrhumo wakho usebenzisa iisetingi zevenkile yeapp yesixhobo sakho. Iimbuyekezo zixhomekeke kumgaqo-nkqubo wembuyekezo weqonga. Amaxabiso anokwahluka ngokwengingqi kwaye aboniswe ngemali yakho yasekhaya phambi kokuthenga.',
+  'legal.terms.sections.subscriptionBody':
+    'IFitQuest ibonelela ngesilingo sasimahla seentsuku ezili-14 kuzo zonke iimpawu zeprimiyamu. Emva kokuba ixesha lovavanyo liphelile, unokubhalisela ukuqhubeka usebenzisa iprimiyamu okanye uqhubeke nenqanaba lasimahla. Imirhumo yePrimiyamu ihlawulwa ngeGoogle Play Store okanye iApple App Store. Imirhumo ihlaziywa ngokuzenzekelayo ekupheleni kwethuba ngalinye lokuhlawula ngaphandle kokuba icinyiwe ubuncinane kwiiyure ezingama-24 phambi komhla wohlaziyo. Ungalawula okanye urhoxise umrhumo wakho usebenzisa iisetingi zevenkile yeapp yesixhobo sakho. Iimbuyekezo zixhomekeke kumgaqo-nkqubo wembuyekezo weqonga. Amaxabiso anokwahluka ngokwengingqi kwaye aboniswe ngemali yakho yasekhaya phambi kokuthenga.',
   'legal.terms.sections.ipTitle': '4) IPropati yoBukrelekrele',
-  'legal.terms.sections.ipBody': 'Wonke umxholo, uyilo, ikhowudi, i-algorithms, uphawu, kunye nezixhobo kwi-FitQuest ziyipropathi yengqondo ye-fitquest.dev kwaye ikhuselwe yimithetho esebenzayo ye-copyright kunye ne-trademark. Awunakuphinda uvelise, usasaze, okanye wenze imisebenzi ephuma kuyo nayiphi na indawo yosetyenziso ngaphandle kwemvume ebhaliweyo yangaphambili.',
+  'legal.terms.sections.ipBody':
+    'Wonke umxholo, uyilo, ikhowudi, i-algorithms, uphawu, kunye nezixhobo kwi-FitQuest ziyipropathi yengqondo ye-fitquest.dev kwaye ikhuselwe yimithetho esebenzayo ye-copyright kunye ne-trademark. Awunakuphinda uvelise, usasaze, okanye wenze imisebenzi ephuma kuyo nayiphi na indawo yosetyenziso ngaphandle kwemvume ebhaliweyo yangaphambili.',
   'legal.terms.sections.liabilityTitle': '5) Ukulinganiselwa koButyala',
-  'legal.terms.sections.liabilityBody': 'Ukuya kuthi ga kwinqanaba eliphakamileyo elivunyelwe ngumthetho, i-fitquest.dev ayisayi kuba noxanduva lwawo nawuphi na umonakalo ongathanga ngqo, ongalindelekanga, owodwa, olandelelweyo, okanye ukohlwaywa okubangelwa kukusebenzisa kwakho i-app, kubandakanywa kodwa kungaphelelanga kukwenzakala emzimbeni, ilahleko yedatha, okanye ukuphazamiseka kwenkonzo. Ityala lethu lilonke aliyi kudlula imali oyihlawulele kwiifitsha zeprimiyamu kwiinyanga ezili-12 ezandulela ibango.',
+  'legal.terms.sections.liabilityBody':
+    'Ukuya kuthi ga kwinqanaba eliphakamileyo elivunyelwe ngumthetho, i-fitquest.dev ayisayi kuba noxanduva lwawo nawuphi na umonakalo ongathanga ngqo, ongalindelekanga, owodwa, olandelelweyo, okanye ukohlwaywa okubangelwa kukusebenzisa kwakho i-app, kubandakanywa kodwa kungaphelelanga kukwenzakala emzimbeni, ilahleko yedatha, okanye ukuphazamiseka kwenkonzo. Ityala lethu lilonke aliyi kudlula imali oyihlawulele kwiifitsha zeprimiyamu kwiinyanga ezili-12 ezandulela ibango.',
   'legal.terms.sections.terminationTitle': '6) Ukupheliswa',
-  'legal.terms.sections.terminationBody': 'Sinelungelo lokunqumamisa okanye ukuphelisa ukufikelela kwakho kwiFitQuest ukuba uyayophula le migaqo. Ungayeka ukusebenzisa usetyenziso nangaliphi na ixesha. Emva kokupheliswa, idatha yakho egcinwe kwindawo ihlala kwisixhobo sakho de uyicime okanye uyikhuphe usetyenziso.',
+  'legal.terms.sections.terminationBody':
+    'Sinelungelo lokunqumamisa okanye ukuphelisa ukufikelela kwakho kwiFitQuest ukuba uyayophula le migaqo. Ungayeka ukusebenzisa usetyenziso nangaliphi na ixesha. Emva kokupheliswa, idatha yakho egcinwe kwindawo ihlala kwisixhobo sakho de uyicime okanye uyikhuphe usetyenziso.',
   'legal.terms.sections.governingLawTitle': '7) Umthetho olawulayo',
-  'legal.terms.sections.governingLawBody': 'Le migaqo ilawulwa kwaye icaciswa ngokuhambelana nemithetho yobuKumkani baseLesotho. Naziphi na iimbambano ezivela kule migaqo okanye ukusebenzisa kwakho iFitQuest kuya kuxhomekeka kulawulo olulodwa lweenkundla zaseLesotho. Ukuba naluphi na ulungiselelo lwale migaqo lufunyaniswa lungenakunyanzeliswa, izibonelelo eziseleyo ziya kuqhubeka ngokusebenza ngokupheleleyo kunye nokusebenza.',
-  'legal.terms.bullets.compliance': 'Kuya kufuneka uthobele yonke imigaqo-nkqubo yeGoogle Play kunye neApple App Store xa usebenzisa le app',
-  'legal.terms.bullets.accountDelete': 'Ungayicima iakhawunti yakho kunye nayo yonke idatha ehambelana nayo nangaliphi na ixesha ngeProfayile → Useto okanye ku https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Le migaqo ilawulwa kwaye icaciswa ngokuhambelana nemithetho yobuKumkani baseLesotho. Naziphi na iimbambano ezivela kule migaqo okanye ukusebenzisa kwakho iFitQuest kuya kuxhomekeka kulawulo olulodwa lweenkundla zaseLesotho. Ukuba naluphi na ulungiselelo lwale migaqo lufunyaniswa lungenakunyanzeliswa, izibonelelo eziseleyo ziya kuqhubeka ngokusebenza ngokupheleleyo kunye nokusebenza.',
+  'legal.terms.bullets.compliance':
+    'Kuya kufuneka uthobele yonke imigaqo-nkqubo yeGoogle Play kunye neApple App Store xa usebenzisa le app',
+  'legal.terms.bullets.accountDelete':
+    'Ungayicima iakhawunti yakho kunye nayo yonke idatha ehambelana nayo nangaliphi na ixesha ngeProfayile → Useto okanye ku https://fitquest.dev/delete-account',
 
   'common.save': 'Gcina',
   'common.cancel': 'Rhoxisa',
@@ -4072,7 +4770,8 @@ const xh: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Qala nanini na',
   'savedWorkouts.deleteFailed': 'Ayiphumelelanga ukucima ukuzilolonga. Nceda zama kwakhona.',
   'savedWorkouts.emptyTitle': 'Akukho Msebenzi ogciniweyo okwangoku',
-  'savedWorkouts.emptySubtitle': 'Yakha umthambo wakho wokuqala wesiko ngokukhetha umthambo olungiselelwe iinjongo zakho. Kuthatha nje umzuzu!',
+  'savedWorkouts.emptySubtitle':
+    'Yakha umthambo wakho wokuqala wesiko ngokukhetha umthambo olungiselelwe iinjongo zakho. Kuthatha nje umzuzu!',
   'savedWorkouts.featurePick': 'Khetha imithambo yakho',
   'savedWorkouts.featureSet': 'Seta ii-reps kunye nokuphumla',
   'savedWorkouts.featureStart': 'Qala nanini na',
@@ -4124,7 +4823,8 @@ const xh: Record<string, string> = {
   'help.featureDesc': 'Unombono wokwenza iFitQuest ibengcono? Singathanda ukuyiva',
   'help.responseTime': 'Ngokuqhelekileyo siphendula kwiiyure ezingama-24-48',
 
-  'about.description': 'IFitQuest liqonga lokuzilolonga elibanzi eliyilelwe ukukunceda ufezekise iinjongo zakho zoqeqesho. Yonke idatha yakho ihlala kwisixhobo sakho, ikhuselwe yi-AES-256 encryption.',
+  'about.description':
+    'IFitQuest liqonga lokuzilolonga elibanzi eliyilelwe ukukunceda ufezekise iinjongo zakho zoqeqesho. Yonke idatha yakho ihlala kwisixhobo sakho, ikhuselwe yi-AES-256 encryption.',
   'about.platform': 'Iqonga',
   'about.dataStorage': 'Ukugcinwa kwedatha',
   'about.onDevice': 'Kwisixhobo kuphela',
@@ -4354,9 +5054,17 @@ const xh: Record<string, string> = {
   'onboarding.heightPlaceholder': 'Ubude (cm)',
   'onboarding.saveError': 'Ayiphumelelanga ukugcina iprofayile yakho. Nceda zama kwakhona.',
   'onboarding.permTitle': 'Vumela iimvume',
-  'onboarding.permSub': 'Ezi zinceda i-FitQuest isebenze kakuhle kuwe. Ungazazitshintsha nangaliphi na ixesha kwiSethingi.',
+  'onboarding.permSub':
+    'Ezi zinceda i-FitQuest isebenze kakuhle kuwe. Ungazazitshintsha nangaliphi na ixesha kwiSethingi.',
   'onboarding.perm.notifications': 'Izikhumbuzo zokuqeqesha',
   'onboarding.perm.notificationsSub': 'Khumbuleka ukuhlala emgudwini neshedyuli yakho yokuqeqesha',
+  'onboarding.perm.motion': 'Intshukumo Nomsebenzi',
+  'onboarding.perm.motionSub': 'Landela amanyathelo, fumana ukuzilolonga kwaye bala amaxesha ngezixhobo zentshukumo',
+  'onboarding.perm.location': 'Indawo (Ukubaleka)',
+  'onboarding.perm.locationSub': 'Yenza imephu yemizila yakho yokubaleka kwaye ubale umgama ngokuchanekileyo',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    'Ngqamanisa isantya sentliziyo, ubuthongo kunye nedatha yokuzilolonga ne-Android Health Connect',
   'onboarding.perm.allow': 'Vumela',
   'onboarding.perm.skipNote': 'Ungakutsiba oku — iimvume zinokuvunyelwa kamva kwiprofayile yakho.',
 
@@ -4530,7 +5238,8 @@ const xh: Record<string, string> = {
   'backup.createBackup': 'Yenza iBackup',
   'backup.availableBackups': 'Ii-Backups ezifumanekayo',
   'backup.noBackups': 'Akukho zigcisa okwangoku.',
-  'backup.helperText': 'Yenza ifayile yogcino oluntsonkothileyo yedatabase yakho yasekhaya. Ukuba ucwangcisa ibinzana lokugqithisa, kufuneka usebenzise igama lokugqithisa elifanayo ukubuyisela.',
+  'backup.helperText':
+    'Yenza ifayile yogcino oluntsonkothileyo yedatabase yakho yasekhaya. Ukuba ucwangcisa ibinzana lokugqithisa, kufuneka usebenzise igama lokugqithisa elifanayo ukubuyisela.',
   'backup.optionalPassphrase': 'Ibinzana lokugqithisa elikhethiweyo',
   'backup.working': 'Iyasebenza...',
   'backup.created': 'Ugcino lwenziwe',
@@ -4547,12 +5256,15 @@ const xh: Record<string, string> = {
   'backup.uploaded': 'Ilayishiwe',
   'backup.uploadFailed': 'Ukulayisha akuphumelelanga',
   'backup.noCloudBackups': 'Akukho kugcinwa kwelifu okwangoku.',
-  'backup.cloudHelper': 'Igcina iblob yogcino oluntsonkothileyo kwisiGaba sesi-2 sakho esingasemva. Umncedisi akakwazi kucima idata yakho.',
+  'backup.cloudHelper':
+    'Igcina iblob yogcino oluntsonkothileyo kwisiGaba sesi-2 sakho esingasemva. Umncedisi akakwazi kucima idata yakho.',
 
-  'audio.warmup.start': 'Masiqale ngokufudumala. Iintshukumo zokukhanya ukuvusa imisipha yakho kwaye ulungiselele umzimba wakho.',
+  'audio.warmup.start':
+    'Masiqale ngokufudumala. Iintshukumo zokukhanya ukuvusa imisipha yakho kwaye ulungiselele umzimba wakho.',
   'audio.main.start': 'Masingene kuyo. Ukuzilolonga okuphambili kuqala ngoku.',
   'audio.cooldown.start': 'Ixesha lokuphola. Iintshukumo ezithambileyo ukunceda umzimba wakho ukuba uphile.',
-  'audio.warmup.toMain': 'Ukufudumala okukhulu! Umzimba wakho ukhululekile. Ixesha lokuzilolonga okuphambili. Masihambe!',
+  'audio.warmup.toMain':
+    'Ukufudumala okukhulu! Umzimba wakho ukhululekile. Ixesha lokuzilolonga okuphambili. Masihambe!',
   'audio.warmup.toCooldown': 'Ukufudumala kugqityiwe. Masiphole ngoku.',
   'audio.main.toCooldown': 'Ukuzilolonga okungundoqo kwenziwe! Umgudu omangalisayo. Makhe siphole kwaye silulame.',
   'audio.main.toWarmup': 'Ukutshintshela kwimithambo yokufudumala.',
@@ -4594,6 +5306,143 @@ const xh: Record<string, string> = {
   'audio.minutes': '{{minutes}} imizuzu yomzamo omsulwa.',
   'audio.progressions': '{{count}} umthambo ulungele ukunyuka!|{{count}} umthambo ulungele ukunyuka!',
   'audio.xpEarned': 'Plus {{xp}} XP ezuziweyo.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Inkqubo yokuqhubela phambili ivuliwe ngokusekelwe kumsebenzi wakutshanje.',
+  'signal.transition.regressing.subtext': 'Umthwalo weseshini wehlisiwe ukuze uhambelane nesantya sangoku.',
+  'signal.firstSession.headline': 'Inkqubo ilungile. Qala iseshini yakho yokuqala.',
+  'signal.firstSession.subtext': 'Iseshini nganye ikalibhretha inkqubo kumandla akho.',
+  'signal.streakAtRisk.headline': '{{streak}} iintsuku zilandelelana. Qhubeka namhlanje ukuze uyomeleze.',
+  'signal.streakAtRisk.subtext.disciplined': 'Ukuqina kuqhuba ukunemba kokuqhubela phambili.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Iseshini emfutshane yanele ukugcina umjikelo.',
+  'signal.restAdvised.headline': 'Ukuphumla kunconywa ngokusekelwe kukudinwa.',
+  'signal.restAdvised.subtext.fatigue': 'Ukudinwa ku-{{fatigue}}%. Ukuphumla kukhawulezisa ukuzilungelelanisa.',
+  'signal.restAdvised.subtext.readiness': 'Ukulungela ku-{{readiness}}%. Ukuphila kuyaqhubeka.',
+  'signal.momentum.headline': 'Iseshini igqityiwe. Idatha ibhaliwe.',
+  'signal.momentum.subtext.streak': 'Ipateni yeentsuku eziyi-{{streak}}. Inkqubo icwengisa inkqubo yakho.',
+  'signal.momentum.subtext.default': 'Ukuphila kuqala. Iseshini elandelayo izolungiswa ngokufanelekileyo.',
+  'signal.comeback.headline.inconsistent': '{{days}} iintsuku uphume. Iseshini enomthwalo ophantsi iyafumaneka.',
+  'signal.comeback.headline.disciplined': '{{days}} iintsuku ukusuka kwiseshini yokugqibela. Ukushisa kukalibhrethiwe ngokutsha.',
+  'signal.comeback.subtext.inconsistent': 'Inkqubo ilungisiwe ukuze kubelula ukubuya.',
+  'signal.comeback.subtext.disciplined': 'Umthwalo ulungisiwe ukuze uhambelane nesimo sokuphila sangoku.',
+  'signal.recoveryReady.headline.disciplined': 'Ukulungela kusezingeni eliphezulu. Iimfuno zokuqhubela phambili zifinyelelwe.',
+  'signal.recoveryReady.headline.inconsistent': 'Ukuphila kugqityiwe. Iimeko ezilungileyo zeseshini.',
+  'signal.recoveryReady.subtext': 'Ukulungela ku-{{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} iintsuku zilandelelana. Inkqubo izilungisa kumjikelo wakho.',
+  'signal.streakBuilding.subtext.disciplined': 'Umthwalo nokuqina kuyanda ngokusekelwe ekusebenzeni.',
+  'signal.streakBuilding.subtext.inconsistent': 'Ukuqina kwakhiwa. Inselelo iyanda kancinci.',
+  'signal.expectToday.headline.disciplined': 'Iwindi lokuzilolonga livulekile. Inkqubo ilungile.',
+  'signal.expectToday.headline.inconsistent': 'Iseshini iyafumaneka xa ulungile.',
+  'signal.expectToday.subtext.good': 'Ukulungela {{readiness}}%. Iimeko ezilungileyo.',
+  'signal.expectToday.subtext.moderate': 'Ukulungela okumaphakathi. Iseshini elula inconywa.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Iseshini yokuqala iyeza. Inkqubo ifunda kwi-rep nganye.',
+  'memory.noHistory.trendStatement': 'Akukho datha okwangoku. Iseshini yakho yokuqala ibeka isiseko.',
+  'memory.lastSession.headline.crushed': 'Iseshini yokugqibela: {{completed}} izivivinyo zigqityiwe ngemizuzu eyi-{{duration}}.',
+  'memory.lastSession.headline.adjusted': 'Iseshini yokugqibela: {{completed}}/{{total}} igqityiwe. Inkqubo ilungisiwe.',
+  'memory.lastSession.headline.tough': 'Iseshini yokugqibela ibinzima. {{completed}}/{{total}} igqityiwe. Ukuphila kunikezwe isiqalo.',
+  'memory.trend.improving': 'Ukusebenza kunyuka. Inkqubo iyandisa inselelo.',
+  'memory.trend.declining': 'Izeshini zakutshanje zinzima. Inkqubo ilungisiwe ukwakha kwakhona umfutho.',
+  'memory.trend.steady.data': 'Imiphumela eqhubekayo. Kufutshane nesango lokuqhubela phambili.',
+  'memory.trend.steady.building': 'Ukwakha isiseko. Qhubeka uvela.',
+  'memory.delta.firstWorkout': 'Iseshini yokuqala. Inkqubo ikalibhretha emzimbeni wakho.',
+  'memory.delta.same': 'Isakhiwo seseshini esifanayo. Inkqubo ibona ukuqina kwakhiwa.',
+  'memory.delta.mixed': '{{total}} utshintsho: {{removed}} ziphume, {{added}} ezintsha.',
+  'memory.delta.added': '{{count}} isivivinyo esitsha{{plural}} songezwe ngomahluko.',
+  'memory.delta.removed': '{{count}} isivivinyo{{plural}} sitshintshwe ukuphila.',
+  'memory.progression.firstTime': 'Okokuqala. Inkqubo iza kukalibhretha kule seshini.',
+  'memory.progression.improving': '{{wins}} uloyiso ngokulandelelana. Uyaqhubela phambili.',
+  'memory.progression.declining': 'Ukwehla kwakutshanje kubonwe. Umthwalo ulungisiwe.',
+  'memory.progression.nearGate': '{{successes}} iseshini{{plural}} ezomeleleyo. Enye engaphezulu ukuvula ukuqhubela phambili.',
+  'memory.progression.steady': 'Umi endaweni. Ukuqina lisu.',
+  'memory.reason.retained': 'Kuhambelana nendlela yakho yokuqhubela phambili.',
+  'memory.reason.addedBalance': 'Ingenisiwe ukulinganisa ukuphila kwemisipha.',
+  'memory.reason.removedFatigue': 'Ikhutshiwe ngenxa yokudinwa okuqokeleneyo.',
+  'memory.reason.removedVariety': 'Itshintshwe ukulinganisa imisipha nomahluko.',
+  'memory.timeSince.minutes': '{{minutes}}m edlulileyo',
+  'memory.timeSince.hours': '{{hours}}h edlulileyo',
+  'memory.timeSince.yesterday': 'Izolo',
+  'memory.timeSince.days': '{{days}} iintsuku ezidlulileyo',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Ukufikelela okugcweleyo kwinkqubo kuvuliwe.',
+  'trial.welcome.subtext': '14 iintsuku zokuhlola yonke into. Akukho zithintelo.',
+  'trial.firstWin.headline': '{{workouts}} iseshini{{plural}} igqityiwe. Inkqubo ifunda iindlela zakho.',
+  'trial.firstWin.subtext': 'Iseshini nganye iphucula ukunemba kweseshini.',
+  'trial.readyForFirst.headline': 'Usuku {{day}}. Inkqubo ilungele iseshini yakho yokuqala.',
+  'trial.readyForFirst.subtext': 'Qala iseshini ukuze uqale ukukalibhretha.',
+  'trial.improvementShown.headline': 'Ukuthelekiswa kweseshini sekufumaneka.',
+  'trial.improvementShown.subtext': 'Inkqubo sele ikwazi ukukhombisa okutshintshileyo nokuba kutheni.',
+  'trial.memoryIntro.headline': 'Ubulumko beseshini buyandiswa.',
+  'trial.memoryIntro.subtext': 'Usuku {{day}}. Izeshini ezininzi = ukuhlalutya okubukhali.',
+  'trial.fullIntelligence.headline': 'Ubulumko obupheleleyo busebenza.',
+  'trial.fullIntelligence.subtext': 'Usuku {{day}}. Inkqubo izilungisa kwiindlela zakho namandla.',
+  'trial.transitionClear.headline': '{{days}} usuku{{plural}} oluseleyo ekufikeleleni okugcweleyo.',
+  'trial.transitionClear.subtext': 'Emva kwesithuba sokuzama, iimpawu eziyintloko zihlala zikho. Amanqanaba obulumko adinga ukubhalisela.',
+  'trial.transitionSoft.headline': '{{days}} iintsuku zisele.',
+  'trial.transitionSoft.subtext': 'Idatha yakho yeseshini nokuqhubela phambili yeyakho ngalo naliphi ixesha. Ukubhalisela kuqhubeka neempawu zobulumko.',
+  'trial.viewPlans': 'Jonga izicwangciso',
+  'trial.expired.headline': 'Ixesha lokuzama liphelile.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} izeshini zibhaliwe. Iimpawu eziyintloko zihlala zikho. Bhalisela ukubuyisela amanqanaba obulumko.',
+  'trial.expired.subtext.noWorkouts': 'Iimpawu eziyintloko zihlala zikho. Bhalisela ukuvula amanqanaba obulumko.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Ukuwa kwenzeke kwisivivinyo {{index}} ({{name}}) — umthwalo uyancitshiswa iseshini elandelayo.',
+  'failure.skipHeavy': 'Izinga eliphezulu lokutsiba libhaqiwe. Izivivinyo zisenokungahambelani namandla angoku.',
+  'failure.lowVolume': 'Umthwalo ophantsi wokugqiba. Iseshini isenokuba yodlula emandleni.',
+  'failure.earlyDropout': 'Ipateni yokuwa ekuqaleni. Ubude beseshini buyancitshiswa.',
+  'failure.lateDropout': 'Ukuwa kwamandla okunyamezela. Izivivinyo ezilula zibekwe ngasekupheleni.',
+  'failure.noFailure': 'Iseshini iphumelele.',
+  'failure.insight.none': 'Iseshini igqityiwe nge-{{percent}}%. Akukho zilungiso zidingekayo.',
+  'failure.insight.earlyDropout': 'Ukuwa kwenzeke kwisivivinyo {{index}} ({{name}}) — umthwalo uyancitshiswa iseshini elandelayo.',
+  'failure.insight.midDropout': 'Ukuwa kwisethi {{index}} ({{name}}) — inani lezivivinyo liyalungiswa.',
+  'failure.insight.lateDropout': 'Phantse igqityiwe ({{percent}}%). Ukulungiswa okuncinci kusetyenzisiwe.',
+  'failure.insight.skipHeavy': 'Iseshini igqityiwe kodwa {{percent}}% yezivivinyo itsityiwe. Ukukhetha izivivinyo kuyahlolwa.',
+  'failure.insight.lowVolume': 'Umthwalo ophantsi wokugqiba ({{percent}}%). Imiyalelo yesethi iyancitshiswa.',
+  'failure.insight.empty': 'Akukho zivivinyo zigqityiweyo. Inkqubo iyanciphisa ubunzima beseshini elandelayo.',
+  'failure.adjustment.none': 'Akukho kulungiswa kudingekayo.',
+  'failure.adjustment.earlyDropout': 'Ukuwa ekuqaleni kubonwe. Umthwalo nobude beseshini kuyancitshiswa.',
+  'failure.adjustment.midDropout': 'Ukuwa kwisivivinyo {{index}}. Inani lezivivinyo liyancitshiswa.',
+  'failure.adjustment.lateDropout': 'Iseshini ephantse yagqitywa. Ukuncitshiswa komthwalo okuncinci.',
+  'failure.adjustment.skipHeavy': 'Izinga eliphezulu lokutsiba. Ukukhetha izivivinyo kufuna ukuhlolwa.',
+  'failure.adjustment.lowVolume': 'Umthwalo ophantsi ogqityiweyo. Inani lesethi liyancitshiswa.',
+  'failure.adjustment.empty': 'Iseshini engenanto. Ukuncitshiswa okukhulu kusetyenzisiwe.',
+  'failure.pattern.noData': 'Akukho datha yeseshini okwangoku.',
+  'failure.pattern.noFailures': 'Zonke izeshini zakutshanje ziphumelele. Iimeko zixhasa ukuqhubela phambili.',
+  'failure.pattern.occasional': 'Ngamaxesha athile izeshini ezingagqitywanga. Umthwalo wangoku ubonakala uyabambelela.',
+  'failure.pattern.earlyDropoffs': 'Ukuwa ekuqaleni okuvamileyo. Ukuncitshiswa kobude beseshini okanye inani lezivivinyo kunconywa.',
+  'failure.pattern.highSkips': 'Izinga eliphezulu lokutsiba. Ukukhetha izivivinyo kungadinga ukulungiswa.',
+  'failure.pattern.worsening': 'Izinga lokusilela liyanda. Cinga ngokunciphisa umthwalo okanye ukugxila ekuphileni.',
+  'failure.pattern.general': '{{rate}}% izinga lokusilela. Ubunzima beseshini buyalungiswa.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'Uchungechunge luza kusethwa ngokutsha.',
+  'simulation.skip.modeShift': 'Ingashukela kumgangatho ongaqinanga.',
+  'simulation.skip.fatigueDrop': 'Ukudinwa kuyehla nge-{{delta}}.',
+  'simulation.skip.minimal': 'Ifuthe elincinci — unethuba.',
+  'simulation.train.fatigueUp': 'Ukudinwa kuyenyuka nge-{{delta}}.',
+  'simulation.train.modeAdvance': 'Usondela kumgangatho oqinileyo.',
+  'simulation.train.reduceTomorrow': 'Ngomso kufanele kube lula.',
+  'simulation.train.pushTomorrow': 'Ithuba lokutyhala kanzima ngomso.',
+  'simulation.rest.recovery': 'Ukuphila: ukudinwa kuyehla nge-{{delta}}.',
+  'simulation.rest.streakReset': 'Uchungechunge luza kusethwa ngokutsha, kodwa ukuphila kunikezwe isiqalo.',
+  'simulation.rest.ready': 'Ulungele iseshini epheleleyo ngomso.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'Ubulumko obuthuthukileyo budinga ukubhalisela.',
 };
 
 const st: Record<string, string> = {
@@ -4620,7 +5469,8 @@ const st: Record<string, string> = {
   'dashboard.levelShort': 'Lv',
   'dashboard.restRecommended': 'Phomolo e khothalelitsoe',
   'dashboard.recoveryModerate': 'E itekanetseng',
-  'dashboard.recoveryWarning': '⚠️ Ho lemohuoe mokhathala o phahameng. Nahana ka boikoetliso bo bobebe kapa letsatsi la phomolo.',
+  'dashboard.recoveryWarning':
+    '⚠️ Ho lemohuoe mokhathala o phahameng. Nahana ka boikoetliso bo bobebe kapa letsatsi la phomolo.',
   'dashboard.noWorkoutsYet': 'Ha ho na boikoetliso. Qala ea hau ea pele!',
   'dashboard.createCustom': 'Etsa Tloaelo',
   'dashboard.recoveryTrackingActive': 'Ho latela mokhoa oa ho hlaphoheloa',
@@ -4640,6 +5490,7 @@ const st: Record<string, string> = {
   'dashboard.of': 'ea',
   'dashboard.incompleteSession': 'Kopano e sa Phethahalang',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'QALA JOALE',
   'dashboard.stepsToday': 'Mehato',
   'dashboard.activeMin': 'Mets e sebetsang',
   'dashboard.completionRate': 'Qetello',
@@ -4654,7 +5505,7 @@ const st: Record<string, string> = {
   'fitquest.reset.confirm': 'Seta bocha',
   'fitquest.initializing': 'E qala FitQuest...',
   'fitquest.errorTitle': 'Ho bile le phoso',
-  'fitquest.resetAndRetry': 'Seta hape \\\\\\\'me u leke hape',
+  'fitquest.resetAndRetry': "Seta hape \\\\\\'me u leke hape",
   'fitquest.workoutComplete': 'Boikoetliso bo Felletse! 🎉',
   'fitquest.rateWorkout': 'Kala boikoetliso bona',
   'fitquest.rateWorkoutSub': 'Seboka ka kakaretso se ile sa ikutloa joang?',
@@ -4697,7 +5548,8 @@ const st: Record<string, string> = {
   'fitquest.keepGoing': 'Tsoela Pele',
   'fitquest.cancelWorkout': 'Hlakola Boikoetliso',
   'fitquest.recordingProgress': 'Tsoelopele ea ho rekota...',
-  'fitquest.idleSub': 'Tlhahiso e bohlale ea ho ikoetlisa e tsamaisoang ke\\\\\\\\enjine tse tharo tse sebetsang ka kutloano',
+  'fitquest.idleSub':
+    'Tlhahiso e bohlale ea ho ikoetlisa e tsamaisoang ke\\\\\\\\enjine tse tharo tse sebetsang ka kutloano',
   'fitquest.currentProfile': 'Boemo ba Hona Joale',
   'fitquest.sessions': 'mananeo',
   'fitquest.generateWorkout': 'Hlahisa Boikoetliso',
@@ -4707,7 +5559,7 @@ const st: Record<string, string> = {
   'fitquest.breatheIn': 'Phefumoloha',
   'fitquest.breatheOut': 'Phefumoloha',
   'fitquest.hold': 'Tšoara',
-  'fitquest.getReady': 'TS\\\\\\\'OALANG',
+  'fitquest.getReady': "TS\\\\\\'OALANG",
   'fitquest.go': 'TSAMAYA!',
   'fitquest.nextUp': 'Up Next',
   'fitquest.equipmentChange': 'Phetoho ea lisebelisoa - itokisetse!',
@@ -4757,18 +5609,22 @@ const st: Record<string, string> = {
   'profile.trainingGoalSub': 'E beha maikutlo a hau a ho ikoetlisa le khetho ea boikoetliso',
   'profile.daysPerWeek': 'matsatsi ka beke',
   'profile.trainingDaysSub': 'U koetlisa hangata hakae',
-  'profile.sessionLengthSub': 'Nako ea ho ikoetlisa ka \\\\\\\'ngoe',
+  'profile.sessionLengthSub': "Nako ea ho ikoetlisa ka \\\\\\'ngoe",
   'profile.experienceSub': 'Fetola bothata ba ho ikoetlisa',
-  'profile.craftMyBody': 'Craft \\\\\\\'Mele Waka',
-  'profile.craftMyBodySub': 'Moralo oa ho fetola \\\\\\\'mele oa motho ka phepo le koetliso',
+  'profile.craftMyBody': "Craft \\\\\\'Mele Waka",
+  'profile.craftMyBodySub': "Moralo oa ho fetola \\\\\\'mele oa motho ka phepo le koetliso",
   'profile.adaptiveTraining': 'Koetliso e Ikamahanyang le maemo',
-  'profile.adaptiveExplanation': 'Lintlha tsena li ikamahanya le maemo ha u ntse u ikoetlisa. Tlanya metric ka \\\\\\\'ngoe ho ithuta haholoanyane.',
+  'profile.adaptiveExplanation':
+    "Lintlha tsena li ikamahanya le maemo ha u ntse u ikoetlisa. Tlanya metric ka \\\\\\'ngoe ho ithuta haholoanyane.",
   'profile.fatigueSensitivity': 'Boikutlo ba mokhathala',
-  'profile.fatigueSensitivityDesc': 'Mokhathala o eketseha ka potlako hakae nakong ea boikoetliso. Litekanyetso tse phahameng li bolela hore algorithm e u fa phomolo e eketsehileng lipakeng tsa linako tse matla. Litokiso li ipapisitse le litekanyetso tsa ho qeta boikoetliso ba hau le mekhoa ea ho hlaphoheloa.',
+  'profile.fatigueSensitivityDesc':
+    'Mokhathala o eketseha ka potlako hakae nakong ea boikoetliso. Litekanyetso tse phahameng li bolela hore algorithm e u fa phomolo e eketsehileng lipakeng tsa linako tse matla. Litokiso li ipapisitse le litekanyetso tsa ho qeta boikoetliso ba hau le mekhoa ea ho hlaphoheloa.',
   'profile.progressionPace': 'Lebelo la tsoelopele',
-  'profile.progressionPaceDesc': 'Kamoo bothata ba ho ikoetlisa ka matla bo eketsehang ha nako e ntse e feta. Litekanyetso tse phahameng li bolela tsoelo-pele e potlakileng ea boikoetliso bo boima. Litokiso li ipapisitse le hore na u tlatsa li-sets/reps tse behiloeng khafetsa.',
+  'profile.progressionPaceDesc':
+    'Kamoo bothata ba ho ikoetlisa ka matla bo eketsehang ha nako e ntse e feta. Litekanyetso tse phahameng li bolela tsoelo-pele e potlakileng ea boikoetliso bo boima. Litokiso li ipapisitse le hore na u tlatsa li-sets/reps tse behiloeng khafetsa.',
   'profile.volumeTolerance': 'Ho mamella molumo',
-  'profile.volumeToleranceDesc': 'Ke bokae palo ea kakaretso ea koetliso (e beha x reps) \\\\\\\'mele oa hau o ka sebetsana le eona. Litekanyetso tse phahameng li bolela nako e telele ea ho ikoetlisa ka boikoetliso bo bongata. Litokiso li ipapisitse le ho phethela ha seshene le boikoetliso boo u bo tlohileng.',
+  'profile.volumeToleranceDesc':
+    "Ke bokae palo ea kakaretso ea koetliso (e beha x reps) \\\\\\'mele oa hau o ka sebetsana le eona. Litekanyetso tse phahameng li bolela nako e telele ea ho ikoetlisa ka boikoetliso bo bongata. Litokiso li ipapisitse le ho phethela ha seshene le boikoetliso boo u bo tlohileng.",
   'profile.confidence': 'Tshepo',
   'profile.samples': 'Mehlala',
   'profile.rank': 'Boemo le Tsoelopele',
@@ -4785,7 +5641,8 @@ const st: Record<string, string> = {
   'profile.socialLayerOff': 'E holofetse (mokhoa o le mong o bolokiloe)',
   'profile.darkModeOn': 'Theme e lefifi e sebetsa',
   'profile.darkModeOff': 'Theme e bobebe e sebetsa',
-  'profile.notificationsSub': 'Beha likhopotso tsa ho ikoetlisa le litlhokomeliso tsa letsatsi le letsatsi tse susumetsang',
+  'profile.notificationsSub':
+    'Beha likhopotso tsa ho ikoetlisa le litlhokomeliso tsa letsatsi le letsatsi tse susumetsang',
   'profile.notificationsStatus.enabled': 'nolofalitsoe',
   'profile.notificationsStatus.disabled': 'bokooa',
   'profile.notificationsStatus.permission': 'tumello',
@@ -4833,7 +5690,8 @@ const st: Record<string, string> = {
   'profile.exportData': 'Export My Data',
   'profile.exportDataSub': 'Theha thepa ea lehae ea JSON ea metadata ea leru + li-backups',
   'profile.menu.deleteCloudData': 'Hlakola Cloud Data',
-  'profile.menu.deleteCloudDataConfirm': 'Sena se hlakola ka ho sa feleng li-backups tsa akhaonto ea hau le metadata ea cloud.',
+  'profile.menu.deleteCloudDataConfirm':
+    'Sena se hlakola ka ho sa feleng li-backups tsa akhaonto ea hau le metadata ea cloud.',
   'profile.menu.deletePermanently': 'Hlakola ka ho sa Feleng',
   'profile.deleteCloudDataSub': 'Tlosa ka ho sa feleng data ea akhaonto ea lehlakoreng la seva',
   'profile.helpSupport': 'Thuso & Tšehetso',
@@ -4841,6 +5699,10 @@ const st: Record<string, string> = {
   'profile.appSection': 'App',
   'profile.backupRestore': 'bekapo & Khutlisa',
   'profile.backupRestoreSub': 'Lifaele tsa bekapo tse kentsoeng sebakeng sa heno',
+  'profile.subscription': 'Ngodiso',
+  'profile.expired': 'E feletse',
+  'profile.subscribeToUnlock': 'Ngodisa ho bula li-features tsohle',
+  'profile.searchLanguages': 'Batla lipuo…',
   'profile.about': 'Mabapi le FitQuest',
   'profile.version': 'Phetolelo',
   'profile.saved': 'E bolokiloe',
@@ -4868,7 +5730,7 @@ const st: Record<string, string> = {
   'profile.level.beginner': 'Motho ea qalang',
   'profile.level.intermediate': 'Mahareng',
   'profile.level.advanced': 'E tsoetseng pele',
-  'profile.goal.body_control': '💪 Taolo ea \\\\\\\'Mele',
+  'profile.goal.body_control': "💪 Taolo ea \\\\\\'Mele",
   'profile.goal.posture': '📏 Boemo',
   'profile.goal.speed': '⚡ Lebelo',
   'profile.goal.mobility': '🧘 Mobility',
@@ -4905,7 +5767,7 @@ const st: Record<string, string> = {
   'login.signIn': 'Kena',
   'login.continueGoogle': 'Tsoela pele ka Google',
   'login.continueApple': 'Tsoela pele ka Apple',
-  'login.noAccount': 'Ha u na ak\\\\\\\'haonte?',
+  'login.noAccount': "Ha u na ak\\\\\\'haonte?",
   'login.register': 'Ngodisa',
   'login.passcode': 'Passcode',
   'login.unlockPrompt': 'Notlolla FitQuest',
@@ -4915,7 +5777,7 @@ const st: Record<string, string> = {
   'login.error.tooManyAttempts': 'Maiteko a mangata haholo a hlolehileng',
   'login.error.authFailed': 'Netefatso e hlolehile',
   'login.error.incorrectPasscode': 'Passcode e fosahetseng',
-  'login.error.accountLocked': 'Ak\\\\\\\'haonte e notletsoe. Kena ka lengolo-tsoibila.',
+  'login.error.accountLocked': "Ak\\\\\\'haonte e notletsoe. Kena ka lengolo-tsoibila.",
   'login.error.fillAllFields': 'Ka kopo, tlatsa likarolo tsohle',
   'login.error.signInFailed': 'Ho hloleha ho kena',
   'login.error.googleNotConfigured': 'Ho kena ha Google ha hoa hlophisoa',
@@ -4950,12 +5812,12 @@ const st: Record<string, string> = {
   'craftBody.back': 'Morao',
   'craftBody.sex': 'Thobalano',
   'craftBody.measurements': 'Litekanyo',
-  'craftBody.bodyType': 'Mofuta oa \\\\\\\'Mele',
+  'craftBody.bodyType': "Mofuta oa \\\\\\'Mele",
   'craftBody.fitnessLevel': 'Boemo ba Boiketlo',
   'craftBody.activityLevel': 'Boemo ba Ketsahalo',
   'craftBody.trainingSplit': 'Karohano ea Koetliso',
   'craftBody.dailyNutrition': 'Phepo ea Letsatsi le Letsatsi',
-  'craftBody.bodyAssessment': 'Tlhahlobo ea \\\\\\\'mele',
+  'craftBody.bodyAssessment': "Tlhahlobo ea \\\\\\'mele",
   'craftBody.chooseGoal': 'Khetha Pakane ea Hao',
   'craftBody.yourTimeline': 'Nako ea Hao',
   'craftBody.yourPlan': 'Leano la Hao',
@@ -4995,7 +5857,8 @@ const st: Record<string, string> = {
   'move.noStepHistory': 'Ha ho na nalane ea mehato',
   'move.jogHistory': 'Nalane ea Jog',
   'move.noJogHistory': 'Ha ho na linako tsa ho matha',
-  'move.infoXpAndFatigue': 'Mehato e 1,000 = 4 XP • Ho matha ho fumana 10 XP ka 100m\\\\\\\\nHo sisinyeha ha ho ame mokhathala oa ho ikoetlisa',
+  'move.infoXpAndFatigue':
+    'Mehato e 1,000 = 4 XP • Ho matha ho fumana 10 XP ka 100m\\\\\\\\nHo sisinyeha ha ho ame mokhathala oa ho ikoetlisa',
   'move.jogComplete': 'Jog e Felletse! 🏃',
   'move.awesome': 'E ntle haholo!',
   'move.km': 'km',
@@ -5012,24 +5875,24 @@ const st: Record<string, string> = {
   'meal.tab.breakfast': 'Lijo tsa hoseng',
   'meal.tab.preWorkout': 'Pele ho Boikoetliso',
   'meal.tab.lunch': 'Lijo tsa motšeare',
-  'meal.tab.postWorkout': 'Ka mor\\\\\\\'a Koetliso',
+  'meal.tab.postWorkout': "Ka mor\\\\\\'a Koetliso",
   'meal.tab.dinner': 'Lijo tsa mantsiboea',
   'meal.tab.snack': 'Seneke',
   'meal.header.breakfast': '🍳 Sejo sa hoseng',
   'meal.header.preWorkout': '⚡ Pele ho Boikoetliso',
   'meal.header.lunch': '🥗 Lijo tsa Motšehare',
-  'meal.header.postWorkout': '💪 Ka mor\\\\\\\'a Koetliso',
+  'meal.header.postWorkout': "💪 Ka mor\\\\\\'a Koetliso",
   'meal.header.dinner': '🍗 Lijo tsa mantsiboea',
   'meal.header.snack': '🥜 Seneke',
-  'meal.tip.breakfast': 'Ja nakong ea hora e le \\\\\\\'ngoe u tsohile ka matla a matle',
+  'meal.tip.breakfast': "Ja nakong ea hora e le \\\\\\'ngoe u tsohile ka matla a matle",
   'meal.tip.preWorkout': 'Li-carbs tse bobebe 30-60 min pele ho koetliso',
   'meal.tip.lunch': 'Leka-lekanya protheine le li-carbs tse rarahaneng bakeng sa matla a tsitsitseng',
-  'meal.tip.postWorkout': 'Sebelisa protheine nakong ea metsotso e 30 ka mor\\\\\\\'a boikoetliso',
+  'meal.tip.postWorkout': "Sebelisa protheine nakong ea metsotso e 30 ka mor\\\\\\'a boikoetliso",
   'meal.tip.dinner': 'Tsepamisa maikutlo ho protheine le meroho bakeng sa ho hlaphoheloa',
-  'meal.tip.snack': 'Boloka likarolo tse nyane - sepheo sa lik\\\\\\\'hilojule tse 150-200',
+  'meal.tip.snack': "Boloka likarolo tse nyane - sepheo sa lik\\\\\\'hilojule tse 150-200",
   'meal.empty.noFoods': 'Ha ho lijo tse teng bakeng sa mofuta ona oa lijo hajoale.',
   'meal.showMore': 'Hlahisa Tse ling',
-  'meal.empty.tryAnother': 'Leka tepo e \\\\\\\'ngoe ea lijo kapa sebaka sa ho hlasimolla.',
+  'meal.empty.tryAnother': "Leka tepo e \\\\\\'ngoe ea lijo kapa sebaka sa ho hlasimolla.",
   'meal.localPrefix': 'Ea lehae',
   'meal.unit.cal': 'cal',
   'meal.unit.protein': 'protheine',
@@ -5038,8 +5901,9 @@ const st: Record<string, string> = {
   'meal.location.manual': 'Bukana',
   'meal.location.tapEnable': 'Tlanya ho bulela sebaka',
   'meal.location.infoPrefix': 'E bontša lijo tse fumanehang ho',
-  'meal.location.infoSuffix': ', ho kenyelletsa likhetho tsa libaka le tsa lefats\\\\\\\'e.',
-  'meal.location.infoNoLocation': 'Lumella sebaka ho bona litlhahiso tsa lijo tse ikhethileng sebakeng. Tlanya beche ea sebaka ka holimo ho leka hape.',
+  'meal.location.infoSuffix': ", ho kenyelletsa likhetho tsa libaka le tsa lefats\\\\\\'e.",
+  'meal.location.infoNoLocation':
+    'Lumella sebaka ho bona litlhahiso tsa lijo tse ikhethileng sebakeng. Tlanya beche ea sebaka ka holimo ho leka hape.',
 
   'legal.title': 'Setsi sa Molao',
   'legal.documents': 'Litokomane',
@@ -5060,69 +5924,107 @@ const st: Record<string, string> = {
   'legal.source.remote': 'netefalitsoeng ea seva',
   'legal.source.local': 'bolokoa sebakeng sa heno',
   'legal.privacyPolicy': 'Leano la Lekunutu',
-  'legal.termsOfService': 'Melao ea Ts\\\\\\\'ebeletso',
+  'legal.termsOfService': "Melao ea Ts\\\\\\'ebeletso",
   'legal.privacyPolicyExternal': 'Leano la Lekunutu (Websaete)',
-  'legal.termsOfServiceExternal': 'Melao ea Ts\\\\\\\'ebeletso (Websaete)',
-  'legal.readInApp': 'Bala ka har\\\\\\\'a app',
+  'legal.termsOfServiceExternal': "Melao ea Ts\\\\\\'ebeletso (Websaete)",
+  'legal.readInApp': "Bala ka har\\\\\\'a app",
   'legal.cannotOpenLink': 'Ha re khone ho bula sehokelo sesebelisoa sena',
   'legal.noteMedical': 'Tataiso ea boikoetliso ho app ena ea ruta ebile ha e nke sebaka sa likeletso tsa bongaka.',
-  'legal.noteCounsel': 'Sengoloa sa ho qetela sa molao le \\\\\\\'mapa oa libaka li lokela ho hlahlojoa ke boeletsi pele ho lokolloa.',
+  'legal.noteCounsel':
+    "Sengoloa sa ho qetela sa molao le \\\\\\'mapa oa libaka li lokela ho hlahlojoa ke boeletsi pele ho lokolloa.",
   'legal.lastUpdated': 'E qetetse ho ntlafatsoa:',
   'legal.privacy.sections.developerTitle': 'Moqapi',
-  'legal.privacy.sections.developerBody': 'FitQuest e ntlafalitsoe le ho hatisoa ke fitquest.dev. Leano lena la lekunutu le laola FitQuest mobile app e fumanehang ho Google Play le Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest e ntlafalitsoe le ho hatisoa ke fitquest.dev. Leano lena la lekunutu le laola FitQuest mobile app e fumanehang ho Google Play le Apple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Lintlha tseo re li Bokellang',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest e sebetsana le likarolo tse latelang tsa data ho fana ka likarolo tsa bophelo bo botle le tsa bophelo bo botle:',
-  'legal.privacy.bullets.health': 'Melemo ea bophelo bo botle le ts\\\\\\\'ebetso: lebelo la pelo, mehato, data ea boroko, nalane ea boikoetliso, litekanyo tsa \\\\\\\'mele, le lintlha tsa ho hlaphoheloa',
-  'legal.privacy.bullets.biometric': 'Lintlha tsa biometric: mongolo oa menoana kapa temoso ea sefahleho e sebelisetsoang netefatso ea sesebelisoa (e sebetsoa ka sesebelisoa feela, ha e bolokoe kapa ha e fetisoe)',
-  'legal.privacy.bullets.location': 'Lintlha tsa sebaka: Lihokahanyo tsa GPS nakong ea ho latela lebelo la ho matha (feela ha u sebelisa ts\\\\\\\'ebetso ea jog ka mafolofolo)',
-  'legal.privacy.bullets.account': 'Lintlha tsa profil: lipakane tsa boikoetliso, boemo ba boiphihlelo, likhetho tsa lisebelisoa, le kemiso ea boikhethelo ea mosebetsi',
-  'legal.privacy.bullets.usage': 'Mekhoa ea ts\\\\\\\'ebeliso ea lisebelisoa le litšebelisano tsa likarolo (tse sa tsejoeng, tse sebelisetsoang ho ntlafatsa sesebelisoa)',
-  'legal.privacy.bullets.device': 'Mofuta oa sesebelisoa, mofuta oa OS, le mofuta oa app bakeng sa tšebelisano le tlaleho ea ho soahlamana',
-  'legal.privacy.bullets.photos': 'Lifoto tsa profil: li bolokiloe sebakeng sa hau sesebelisoa sa hau haeba u khetha ho se beha',
-  'legal.privacy.bullets.healthConnect': 'Lintlha tsa Health Connect / HealthKit: mehato, lebelo la pelo, boroko, le data ea ho ikoetlisa (ha feela u fana ka tumello e hlakileng)',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest e sebetsana le likarolo tse latelang tsa data ho fana ka likarolo tsa bophelo bo botle le tsa bophelo bo botle:',
+  'legal.privacy.bullets.health':
+    "Melemo ea bophelo bo botle le ts\\\\\\'ebetso: lebelo la pelo, mehato, data ea boroko, nalane ea boikoetliso, litekanyo tsa \\\\\\'mele, le lintlha tsa ho hlaphoheloa",
+  'legal.privacy.bullets.biometric':
+    'Lintlha tsa biometric: mongolo oa menoana kapa temoso ea sefahleho e sebelisetsoang netefatso ea sesebelisoa (e sebetsoa ka sesebelisoa feela, ha e bolokoe kapa ha e fetisoe)',
+  'legal.privacy.bullets.location':
+    "Lintlha tsa sebaka: Lihokahanyo tsa GPS nakong ea ho latela lebelo la ho matha (feela ha u sebelisa ts\\\\\\'ebetso ea jog ka mafolofolo)",
+  'legal.privacy.bullets.account':
+    'Lintlha tsa profil: lipakane tsa boikoetliso, boemo ba boiphihlelo, likhetho tsa lisebelisoa, le kemiso ea boikhethelo ea mosebetsi',
+  'legal.privacy.bullets.usage':
+    "Mekhoa ea ts\\\\\\'ebeliso ea lisebelisoa le litšebelisano tsa likarolo (tse sa tsejoeng, tse sebelisetsoang ho ntlafatsa sesebelisoa)",
+  'legal.privacy.bullets.device':
+    'Mofuta oa sesebelisoa, mofuta oa OS, le mofuta oa app bakeng sa tšebelisano le tlaleho ea ho soahlamana',
+  'legal.privacy.bullets.photos':
+    'Lifoto tsa profil: li bolokiloe sebakeng sa hau sesebelisoa sa hau haeba u khetha ho se beha',
+  'legal.privacy.bullets.healthConnect':
+    'Lintlha tsa Health Connect / HealthKit: mehato, lebelo la pelo, boroko, le data ea ho ikoetlisa (ha feela u fana ka tumello e hlakileng)',
   'legal.privacy.sections.storageTitle': '2) Data Storage',
-  'legal.privacy.sections.storageBody': 'FitQuest e entsoe e le sesebelisoa sa pele se kantle ho naha. Lintlha tsohle tsa hau tsa boikoetliso li bolokiloe sebakeng sa hau sesebelisoa sa hau u sebelisa SQLite. Ha ho na data ea hau e bolokiloeng ho li-server tsa kantle. Lirekoto tsa bophelo bo botle li patiloe pele li bolokoa li sebelisa encryption e tloaelehileng ea AES-256-GCM ea indasteri.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest e entsoe e le sesebelisoa sa pele se kantle ho naha. Lintlha tsohle tsa hau tsa boikoetliso li bolokiloe sebakeng sa hau sesebelisoa sa hau u sebelisa SQLite. Ha ho na data ea hau e bolokiloeng ho li-server tsa kantle. Lirekoto tsa bophelo bo botle li patiloe pele li bolokoa li sebelisa encryption e tloaelehileng ea AES-256-GCM ea indasteri.',
   'legal.privacy.sections.securityTitle': '3) Tšireletso ea data',
-  'legal.privacy.sections.securityBody': 'Lintlha tsohle tsa bohlokoa tsa bophelo bo botle li patiloe ka mokhoa o sireletsehileng oa AES-256-GCM pele li bolokoa sesebelisoa sa hau. Likonopo tse sirelelitsoeng ke lisebelisoa tse sireletsehileng tsa sesebelisoa sa hau (Keychain ho iOS, Keystore ho Android). Netefatso ea biometric e fana ka tšireletso e eketsehileng. Re sebelisa ts\\\\\\\'ebeliso ea senotlolo se sireletsehileng (PBKDF2) le papiso ea nako e sa khaotseng ho thibela litlhaselo tsa nako.',
+  'legal.privacy.sections.securityBody':
+    "Lintlha tsohle tsa bohlokoa tsa bophelo bo botle li patiloe ka mokhoa o sireletsehileng oa AES-256-GCM pele li bolokoa sesebelisoa sa hau. Likonopo tse sirelelitsoeng ke lisebelisoa tse sireletsehileng tsa sesebelisoa sa hau (Keychain ho iOS, Keystore ho Android). Netefatso ea biometric e fana ka tšireletso e eketsehileng. Re sebelisa ts\\\\\\'ebeliso ea senotlolo se sireletsehileng (PBKDF2) le papiso ea nako e sa khaotseng ho thibela litlhaselo tsa nako.",
   'legal.privacy.sections.thirdPartyTitle': '4) Litšebeletso tsa Mokha oa Boraro',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest ha e rekise, ha e hire, kapa ha e rekise lintlha tsa hau. Likopano tse latelang tsa mokha oa boraro li ka sebetsana le data e lekantsoeng:',
-  'legal.privacy.bullets.thirdPartyAI': 'Likarolo tsa AI: Ha u sebelisa Mokoetlisi oa AI kapa Moprofesa, litlhahiso tsa hau li romelloa ho OpenRouter (ka mefuta ea lipuo tsa Llama) ho hlahisa likarabo. Ha ho lintlha tsa bophelo bo botle tse kenyellelitsoeng likopong tsena - ke mongolo oo u o ngolang feela.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: Haeba u fana ka tumello, FitQuest e bala metrics ea bophelo bo botle ho tsoa lits\\\\\\\'ebeletso tsena tsa sethala. Lintlha li tsoa ka mokhoa o le mong (bala feela) \\\\\\\'me li bolokoa li patiloe sesebelisoa sa hau.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: E laola netefatso ea peeletso. E fumana feela li-tokens le li-identifiers tse sa tsejoeng - ha ho lintlha tsa bophelo bo botle kapa tsa boikoetliso.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: Tšebeletso ea tlaleho ea ho soahlamana e amohelang litlaleho tsa liphoso tse sa tsejoeng. Ha ho lintlha tsa hau kapa litekanyetso tsa bophelo bo botle tse kenyellelitsoeng.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest ha e rekise, ha e hire, kapa ha e rekise lintlha tsa hau. Likopano tse latelang tsa mokha oa boraro li ka sebetsana le data e lekantsoeng:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'Likarolo tsa AI: Ha u sebelisa Mokoetlisi oa AI kapa Moprofesa, litlhahiso tsa hau li romelloa ho OpenRouter (ka mefuta ea lipuo tsa Llama) ho hlahisa likarabo. Ha ho lintlha tsa bophelo bo botle tse kenyellelitsoeng likopong tsena - ke mongolo oo u o ngolang feela.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    "Health Connect / HealthKit: Haeba u fana ka tumello, FitQuest e bala metrics ea bophelo bo botle ho tsoa lits\\\\\\'ebeletso tsena tsa sethala. Lintlha li tsoa ka mokhoa o le mong (bala feela) \\\\\\'me li bolokoa li patiloe sesebelisoa sa hau.",
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: E laola netefatso ea peeletso. E fumana feela li-tokens le li-identifiers tse sa tsejoeng - ha ho lintlha tsa bophelo bo botle kapa tsa boikoetliso.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: Tšebeletso ea tlaleho ea ho soahlamana e amohelang litlaleho tsa liphoso tse sa tsejoeng. Ha ho lintlha tsa hau kapa litekanyetso tsa bophelo bo botle tse kenyellelitsoeng.',
   'legal.privacy.sections.childrenTitle': '5) Lekunutu la Bana',
-  'legal.privacy.sections.childrenBody': 'FitQuest e etselitsoe basebelisi ba lilemo tse 13 ho ea holimo. Ha re bokelle lintlha tsa botho ho tsoa ho bana ba ka tlase ho lilemo tse 13 ka boomo. Haeba u lumela hore ngoana o re file lintlha, ka kopo ikopanye le rona ho fitquestsupp0rt@gmail.com hore e hlakole hanghang.',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest e etselitsoe basebelisi ba lilemo tse 13 ho ea holimo. Ha re bokelle lintlha tsa botho ho tsoa ho bana ba ka tlase ho lilemo tse 13 ka boomo. Haeba u lumela hore ngoana o re file lintlha, ka kopo ikopanye le rona ho fitquestsupp0rt@gmail.com hore e hlakole hanghang.',
   'legal.privacy.sections.retentionTitle': '6) Ho boloka Boitsebiso',
-  'legal.privacy.sections.retentionBody': 'Lintlha tsa hau li bolokoa sebakeng sa hau sesebelisoa sa hau \\\\\\\'me li bolokoa ha feela sesebelisoa se kentsoe. U ka hlakola lintlha tsohle ka nako efe kapa efe ka Profaele → Litlhophiso → Hlakola Lintlha Tsohle. Ho tlosa sesebelisoa ho tlosa lintlha tsohle tsa lehae ka ho sa feleng. U ka boela ua kopa ho hlakoloa ha data ka webosaete ea rona ho https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    "Lintlha tsa hau li bolokoa sebakeng sa hau sesebelisoa sa hau \\\\\\'me li bolokoa ha feela sesebelisoa se kentsoe. U ka hlakola lintlha tsohle ka nako efe kapa efe ka Profaele → Litlhophiso → Hlakola Lintlha Tsohle. Ho tlosa sesebelisoa ho tlosa lintlha tsohle tsa lehae ka ho sa feleng. U ka boela ua kopa ho hlakoloa ha data ka webosaete ea rona ho https://fitquest.dev/delete-account.",
   'legal.privacy.sections.rightsTitle': '7) Litokelo tsa hau',
-  'legal.privacy.sections.rightsBody': 'Tlas\\\\\\\'a melao e sebetsang ea ts\\\\\\\'ireletso ea data (ho kenyeletsoa le Data Protection Act 2011 of Lesotho, GDPR in the EU, and CCPA in California), u na le litokelo tse latelang:',
-  'legal.privacy.bullets.accessRight': 'Fumana: Sheba lintlha tsohle tseo app e li bolokang ka uena ka Profaele → Export Data',
-  'legal.privacy.bullets.deleteRight': 'Hlakola: Hlakola data ea hau ka ho sa feleng ka litlhophiso tsa app kapa webosaete ea rona',
-  'legal.privacy.bullets.exportRight': 'Portability: Romella data ea hau ka sebopeho sa JSON bakeng sa ho fetisetsoa ts\\\\\\\'ebeletso e \\\\\\\'ngoe',
-  'legal.privacy.bullets.correctRight': 'Khalemelo: Ntlafatsa kapa u fetole lintlha tsa profil ea hau ka nako efe kapa efe',
-  'legal.privacy.bullets.objectionRight': 'Khanyetsano: Tlosa tumello ea ho sebetsa data ka nako efe kapa efe ka Setsi sa Molao',
+  'legal.privacy.sections.rightsBody':
+    "Tlas\\\\\\'a melao e sebetsang ea ts\\\\\\'ireletso ea data (ho kenyeletsoa le Data Protection Act 2011 of Lesotho, GDPR in the EU, and CCPA in California), u na le litokelo tse latelang:",
+  'legal.privacy.bullets.accessRight':
+    'Fumana: Sheba lintlha tsohle tseo app e li bolokang ka uena ka Profaele → Export Data',
+  'legal.privacy.bullets.deleteRight':
+    'Hlakola: Hlakola data ea hau ka ho sa feleng ka litlhophiso tsa app kapa webosaete ea rona',
+  'legal.privacy.bullets.exportRight':
+    "Portability: Romella data ea hau ka sebopeho sa JSON bakeng sa ho fetisetsoa ts\\\\\\'ebeletso e \\\\\\'ngoe",
+  'legal.privacy.bullets.correctRight':
+    'Khalemelo: Ntlafatsa kapa u fetole lintlha tsa profil ea hau ka nako efe kapa efe',
+  'legal.privacy.bullets.objectionRight':
+    'Khanyetsano: Tlosa tumello ea ho sebetsa data ka nako efe kapa efe ka Setsi sa Molao',
   'legal.privacy.sections.popiaTitle': '8) Data Protection Compliance (Lesotho)',
-  'legal.privacy.sections.popiaBody': 'Ho latela Molao oa Ts\\\\\\\'ireletso ea Lintlha oa 2011 oa \\\\\\\'Muso oa Lesotho, Fitquest.dev e sebetsa e le motho ea ikarabellang bakeng sa tlhahisoleseling ea hau. Re sebetsana le lintlha tsa hau ka molao, re fokotsa pokello ho ea kamoo ho hlokahalang, re netefatsa ho nepahala, le ho boloka ts\\\\\\\'ireletso e nepahetseng. Bakeng sa basebelisi ba tšelang meeli, re boetse re latela melao ea POPIA (Afrika Boroa), GDPR (EU), le CCPA (California) moo ho hlokahalang.',
+  'legal.privacy.sections.popiaBody':
+    "Ho latela Molao oa Ts\\\\\\'ireletso ea Lintlha oa 2011 oa \\\\\\'Muso oa Lesotho, Fitquest.dev e sebetsa e le motho ea ikarabellang bakeng sa tlhahisoleseling ea hau. Re sebetsana le lintlha tsa hau ka molao, re fokotsa pokello ho ea kamoo ho hlokahalang, re netefatsa ho nepahala, le ho boloka ts\\\\\\'ireletso e nepahetseng. Bakeng sa basebelisi ba tšelang meeli, re boetse re latela melao ea POPIA (Afrika Boroa), GDPR (EU), le CCPA (California) moo ho hlokahalang.",
   'legal.privacy.sections.updatesTitle': '9) Lintlafatso tsa Leano',
-  'legal.privacy.sections.updatesBody': 'Re ka ntlafatsa leano lena la lekunutu nako le nako. Liphetoho leha e le life li tla hlaha ho app ka letsatsi le ntlafalitsoeng la "Nchafatso ea ho Qetela" \\\\\\\'me u tla susumelletseha ho hlahloba le ho amohela pholisi e ntlafalitsoeng. Tšebeliso e tsoelang pele ea sesebelisoa ka mor\\\\\\\'a liphetoho ke ho amoheloa ha leano le lecha.',
+  'legal.privacy.sections.updatesBody':
+    'Re ka ntlafatsa leano lena la lekunutu nako le nako. Liphetoho leha e le life li tla hlaha ho app ka letsatsi le ntlafalitsoeng la "Nchafatso ea ho Qetela" \\\\\\\'me u tla susumelletseha ho hlahloba le ho amohela pholisi e ntlafalitsoeng. Tšebeliso e tsoelang pele ea sesebelisoa ka mor\\\\\\\'a liphetoho ke ho amoheloa ha leano le lecha.',
   'legal.privacy.sections.contactTitle': '10) Ikopanye',
-  'legal.privacy.sections.contactBody': 'Bakeng sa likopo tsa lekunutu, romella lengolo-tsoibila fitquestsup0rt@gmail.com. U ka boela ua etela https://fitquest.dev/support. Kenyelletsa le ID ea akhaonto ea hau ha e le teng. Re araba matsatsing a 30 a khoebo.',
+  'legal.privacy.sections.contactBody':
+    'Bakeng sa likopo tsa lekunutu, romella lengolo-tsoibila fitquestsup0rt@gmail.com. U ka boela ua etela https://fitquest.dev/support. Kenyelletsa le ID ea akhaonto ea hau ha e le teng. Re araba matsatsing a 30 a khoebo.',
   'legal.terms.sections.useTitle': '1) Tšebeliso e Amohelehang',
-  'legal.terms.sections.useBody': 'U lumela ho sebelisa FitQuest ka molao, \\\\\\\'me u se ke ua leka ho khutlisetsa morao boenjiniere, ho senya, ho qoba taolo ea tšireletso, mekhoa ea ho ngolisa, kapa likarolo tsa ts\\\\\\\'ireletso ea data. U kanna oa se sebelise sesebelisoa molemong ofe kapa ofe o seng molaong kapa ho tlola melaoana efe kapa efe e sebetsang.',
+  'legal.terms.sections.useBody':
+    "U lumela ho sebelisa FitQuest ka molao, \\\\\\'me u se ke ua leka ho khutlisetsa morao boenjiniere, ho senya, ho qoba taolo ea tšireletso, mekhoa ea ho ngolisa, kapa likarolo tsa ts\\\\\\'ireletso ea data. U kanna oa se sebelise sesebelisoa molemong ofe kapa ofe o seng molaong kapa ho tlola melaoana efe kapa efe e sebetsang.",
   'legal.terms.sections.medicalTitle': '2) Boitlhotlhollo ba Bongaka',
-  'legal.terms.sections.medicalBody': 'FitQuest ke sesebelisoa sa boikoetliso le bophelo bo botle \\\\\\\'me HASE sesebelisoa sa bongaka kapa tšebeletso. Sesebelisoa ha se fane ka likeletso tsa bongaka, tlhahlobo, kapa kalafo. Litlhahiso tsa ho ikoetlisa, lintlha tsa bophelo bo botle, likhothaletso tsa ho hlaphoheloa, le tataiso e hlahisoang ke AI ke tsa merero ea tlhahisoleseling le thuto feela. Kamehla buisana le setsebi se tšoanelehang sa tlhokomelo ea bophelo pele u qala, ho fetola, kapa ho khaotsa lenaneo leha e le lefe la boikoetliso, haholo-holo haeba u e-na le maemo a bophelo a teng pele, likotsi, kapa matšoenyeho. Khaotsa ho ikoetlisa hang-hang haeba u utloa bohloko, ho tsekela kapa u sa phutholoha.',
+  'legal.terms.sections.medicalBody':
+    "FitQuest ke sesebelisoa sa boikoetliso le bophelo bo botle \\\\\\'me HASE sesebelisoa sa bongaka kapa tšebeletso. Sesebelisoa ha se fane ka likeletso tsa bongaka, tlhahlobo, kapa kalafo. Litlhahiso tsa ho ikoetlisa, lintlha tsa bophelo bo botle, likhothaletso tsa ho hlaphoheloa, le tataiso e hlahisoang ke AI ke tsa merero ea tlhahisoleseling le thuto feela. Kamehla buisana le setsebi se tšoanelehang sa tlhokomelo ea bophelo pele u qala, ho fetola, kapa ho khaotsa lenaneo leha e le lefe la boikoetliso, haholo-holo haeba u e-na le maemo a bophelo a teng pele, likotsi, kapa matšoenyeho. Khaotsa ho ikoetlisa hang-hang haeba u utloa bohloko, ho tsekela kapa u sa phutholoha.",
   'legal.terms.sections.subscriptionTitle': '3) Ngoliso & Tefiso',
-  'legal.terms.sections.subscriptionBody': 'FitQuest e fana ka teko ea mahala ea matsatsi a 14 ea likarolo tsohle tsa premium. Kamora hore nako ea teko e fele, o ka ingolisa ho tsoela pele ho sebelisa likarolo tsa premium kapa ho tsoela pele ka tier ea mahala. Lipeeletso tsa Premium li lefisoa ho Google Play Store kapa Apple App Store. Lipeeletso li inchafatsa qetellong ea nako e \\\\\\\'ngoe le e \\\\\\\'ngoe ea tefo ntle le haeba e hlakotsoe bonyane lihora tse 24 pele ho letsatsi la nchafatso. U ka khona ho laola kapa ho hlakola boingoliso ba hau ka litlhophiso tsa lebenkele la lisebelisoa tsa sesebelisoa sa hau. Lichelete li ipapisitse le leano la litefello tsa sethala. Litheko li ka fapana ho ea ka libaka \\\\\\\'me li hlahisoa ka chelete ea sebaka sa heno pele u reka.',
+  'legal.terms.sections.subscriptionBody':
+    "FitQuest e fana ka teko ea mahala ea matsatsi a 14 ea likarolo tsohle tsa premium. Kamora hore nako ea teko e fele, o ka ingolisa ho tsoela pele ho sebelisa likarolo tsa premium kapa ho tsoela pele ka tier ea mahala. Lipeeletso tsa Premium li lefisoa ho Google Play Store kapa Apple App Store. Lipeeletso li inchafatsa qetellong ea nako e \\\\\\'ngoe le e \\\\\\'ngoe ea tefo ntle le haeba e hlakotsoe bonyane lihora tse 24 pele ho letsatsi la nchafatso. U ka khona ho laola kapa ho hlakola boingoliso ba hau ka litlhophiso tsa lebenkele la lisebelisoa tsa sesebelisoa sa hau. Lichelete li ipapisitse le leano la litefello tsa sethala. Litheko li ka fapana ho ea ka libaka \\\\\\'me li hlahisoa ka chelete ea sebaka sa heno pele u reka.",
   'legal.terms.sections.ipTitle': '4) Thepa ea Bohlale',
-  'legal.terms.sections.ipBody': 'Likahare tsohle, moralo, khoutu, li-algorithms, lets\\\\\\\'oao le lisebelisoa ho FitQuest ke thepa ea mahlale ea fitquest.dev \\\\\\\'me li sirelelitsoe ke melao e sebetsang ea litokelo tsa molao le matšoao a khoebo. U kanna oa se khone ho hlahisa, ho aba, kapa ho etsa mesebetsi e tsoang karolong efe kapa efe ea sesebelisoa ntle le tumello e ngotsoeng pele.',
+  'legal.terms.sections.ipBody':
+    "Likahare tsohle, moralo, khoutu, li-algorithms, lets\\\\\\'oao le lisebelisoa ho FitQuest ke thepa ea mahlale ea fitquest.dev \\\\\\'me li sirelelitsoe ke melao e sebetsang ea litokelo tsa molao le matšoao a khoebo. U kanna oa se khone ho hlahisa, ho aba, kapa ho etsa mesebetsi e tsoang karolong efe kapa efe ea sesebelisoa ntle le tumello e ngotsoeng pele.",
   'legal.terms.sections.liabilityTitle': '5) Moeli oa Boikarabello',
-  'legal.terms.sections.liabilityBody': 'Ho isa boholeng bo dumeletsweng ke molao, fitquest.dev e ke ke ya jara boikarabelo bakeng sa ditshenyehelo dife kapa dife tse sa tobang, tsa tsietsi, tse kgethehileng, tse tlamang kapa tsa kotlo tse bakilweng ke tshebediso ya hao ya app, ho kenyeletswa empa ho sa felle feela ho lemala mmeleng, tahlehelo ya data, kapa tshitiso ya tshebeletso. Kakaretso ea melato ea rona e ke ke ea feta chelete eo u e lefileng bakeng sa likarolo tsa premium likhoeling tse 12 pele ho tleleime.',
+  'legal.terms.sections.liabilityBody':
+    'Ho isa boholeng bo dumeletsweng ke molao, fitquest.dev e ke ke ya jara boikarabelo bakeng sa ditshenyehelo dife kapa dife tse sa tobang, tsa tsietsi, tse kgethehileng, tse tlamang kapa tsa kotlo tse bakilweng ke tshebediso ya hao ya app, ho kenyeletswa empa ho sa felle feela ho lemala mmeleng, tahlehelo ya data, kapa tshitiso ya tshebeletso. Kakaretso ea melato ea rona e ke ke ea feta chelete eo u e lefileng bakeng sa likarolo tsa premium likhoeling tse 12 pele ho tleleime.',
   'legal.terms.sections.terminationTitle': '6) Pheliso',
-  'legal.terms.sections.terminationBody': 'Re na le tokelo ea ho emisa kapa ho emisa phihlello ea hau ho FitQuest haeba u tlola melaoana ena. U ka emisa ho sebelisa sesebelisoa ka nako efe kapa efe. Ha e emisoa, data ea hau e bolokiloeng sebakeng sa hau e lula e le sesebelisoa ho fihlela u e hlakola kapa u e ntša.',
+  'legal.terms.sections.terminationBody':
+    'Re na le tokelo ea ho emisa kapa ho emisa phihlello ea hau ho FitQuest haeba u tlola melaoana ena. U ka emisa ho sebelisa sesebelisoa ka nako efe kapa efe. Ha e emisoa, data ea hau e bolokiloeng sebakeng sa hau e lula e le sesebelisoa ho fihlela u e hlakola kapa u e ntša.',
   'legal.terms.sections.governingLawTitle': '7) Molao o Laolang',
-  'legal.terms.sections.governingLawBody': 'Mantsoe ana a laoloa le ho hlalosoa ho latela melao ea Borena ba Lesotho. Likhohlano life kapa life tse hlahang lipehelong tsena kapa ts\\\\\\\'ebeliso ea hau ea FitQuest li tla laoloa ke makhotla a Lesotho feela. Haeba tokisetso leha e le efe ea lipehelo tsena e fumanoa e sa sebetse, litokisetso tse setseng li tla tsoelapele ka matla le ho sebetsa ka botlalo.',
-  'legal.terms.bullets.compliance': 'U tlameha ho latela melaoana eohle e sebetsang ea Google Play le Apple App Store ha u sebelisa sesebelisoa sena',
-  'legal.terms.bullets.accountDelete': 'U ka hlakola ak\\\\\\\'haonte ea hau le data eohle e amanang le eona ka nako efe kapa efe ka Profil → Litlhophiso kapa ho https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    "Mantsoe ana a laoloa le ho hlalosoa ho latela melao ea Borena ba Lesotho. Likhohlano life kapa life tse hlahang lipehelong tsena kapa ts\\\\\\'ebeliso ea hau ea FitQuest li tla laoloa ke makhotla a Lesotho feela. Haeba tokisetso leha e le efe ea lipehelo tsena e fumanoa e sa sebetse, litokisetso tse setseng li tla tsoelapele ka matla le ho sebetsa ka botlalo.",
+  'legal.terms.bullets.compliance':
+    'U tlameha ho latela melaoana eohle e sebetsang ea Google Play le Apple App Store ha u sebelisa sesebelisoa sena',
+  'legal.terms.bullets.accountDelete':
+    "U ka hlakola ak\\\\\\'haonte ea hau le data eohle e amanang le eona ka nako efe kapa efe ka Profil → Litlhophiso kapa ho https://fitquest.dev/delete-account",
 
   'common.save': 'Boloka',
   'common.cancel': 'Hlakola',
@@ -5198,7 +6100,8 @@ const st: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Qala neng kapa neng',
   'savedWorkouts.deleteFailed': 'E hlolehile ho hlakola boikoetliso. Ka kopo, leka hape.',
   'savedWorkouts.emptyTitle': 'Ha ho na Boikoetliso bo Bolokiloeng',
-  'savedWorkouts.emptySubtitle': 'Iketsetse boikoetliso ba hau ba pele ka ho khetha boikoetliso bo lumellanang le lipheo tsa hau. Ho nka motsotso feela!',
+  'savedWorkouts.emptySubtitle':
+    'Iketsetse boikoetliso ba hau ba pele ka ho khetha boikoetliso bo lumellanang le lipheo tsa hau. Ho nka motsotso feela!',
   'savedWorkouts.featurePick': 'Khetha boitlhakiso ba hau',
   'savedWorkouts.featureSet': 'Beha li-reps & phomolo',
   'savedWorkouts.featureStart': 'Qala neng kapa neng',
@@ -5245,12 +6148,13 @@ const st: Record<string, string> = {
   'help.faqDesc': 'Batla lipotso tse tloaelehileng mabapi le boikoetliso, phepo e nepahetseng, le likarolo tsa app',
   'help.contactTitle': 'Email Support',
   'help.bugTitle': 'Tlaleha Phoso',
-  'help.bugDesc': 'U fumane ntho e robehileng? Re tsebise \\\\\\\'me re tla e lokisa kapele',
+  'help.bugDesc': "U fumane ntho e robehileng? Re tsebise \\\\\\'me re tla e lokisa kapele",
   'help.featureTitle': 'Hlahisa Sebopeho',
   'help.featureDesc': 'Na u na le mohopolo oa ho ntlafatsa FitQuest? Re ka thabela ho e utloa',
   'help.responseTime': 'Ka tloaelo re araba ka hare ho lihora tse 24-48',
 
-  'about.description': 'FitQuest ke sethala sa boikoetliso se felletseng se etselitsoeng ho u thusa ho fihlela lipheo tsa hau tsa boikoetliso. Lintlha tsohle tsa hau li lula sesebelisoa sa hau, li sirelelitsoe ke encryption ea AES-256.',
+  'about.description':
+    'FitQuest ke sethala sa boikoetliso se felletseng se etselitsoeng ho u thusa ho fihlela lipheo tsa hau tsa boikoetliso. Lintlha tsohle tsa hau li lula sesebelisoa sa hau, li sirelelitsoe ke encryption ea AES-256.',
   'about.platform': 'Sethala',
   'about.dataStorage': 'Polokelo ea Boitsebiso',
   'about.onDevice': 'Ka sesebelisoa feela',
@@ -5265,17 +6169,17 @@ const st: Record<string, string> = {
   'nav.myWorkouts': 'Boikoetliso ba ka',
   'nav.premium': 'Premium',
   'nav.health': 'Bophelo bo botle',
-  'nav.reader': '\\\\\\\'Mali',
+  'nav.reader': "\\\\\\'Mali",
   'nav.nutritionCalculator': 'Phepo Calculator',
   'nav.platformStudio': 'Sethala sa Studio',
   'nav.aiCoach': 'Mokoetlisi oa AI',
   'nav.mealPrep': 'Tokisetso ea Lijo',
-  'nav.craftMyBody': 'Etsa \\\\\\\'Mele oa Ka',
+  'nav.craftMyBody': "Etsa \\\\\\'Mele oa Ka",
   'nav.backupRestore': 'bekapo & Khutlisa',
   'nav.exercises': 'Boikoetliso',
   'nav.legalCenter': 'Setsi sa Molao',
   'nav.privacyPolicy': 'leano la lekunutu',
-  'nav.termsOfService': 'Melao ea Ts\\\\\\\'ebeletso',
+  'nav.termsOfService': "Melao ea Ts\\\\\\'ebeletso",
   'nav.autonomousCenter': 'Setsi sa Boipuso',
   'nav.federationHub': 'Federation Hub',
   'nav.enterpriseHardening': 'Ho thatafatsa khoebo',
@@ -5334,7 +6238,7 @@ const st: Record<string, string> = {
   'nutrition.noFoods': 'Ha ho lijo tse fumanoeng. Leka ho batla ho fapaneng.',
   'nutrition.myMeal': 'Sejo sa Ka',
   'nutrition.noItems': 'Ha ho na lintho hajoale',
-  'nutrition.addPrompt': 'Batla \\\\\\\'me u kenye lijo ho qala ho latela...',
+  'nutrition.addPrompt': "Batla \\\\\\'me u kenye lijo ho qala ho latela...",
   'nutrition.searchFoods': 'Batla Lijo',
   'nutrition.servings': 'Litšebeletso:',
   'nutrition.breakdown': 'Karohano ea Phepo',
@@ -5357,7 +6261,7 @@ const st: Record<string, string> = {
   'nutrition.filter.veggies': 'Meroho',
 
   'createWorkout.title': 'Etsa Boikoetliso',
-  'createWorkout.next': 'E \\\\\\\'ngoe',
+  'createWorkout.next': "E \\\\\\'ngoe",
   'createWorkout.searchPlaceholder': 'Batla boitlhakiso...',
   'createWorkout.filters': 'Lisefe',
   'createWorkout.clearAll': 'Hlakola Tsohle',
@@ -5376,7 +6280,7 @@ const st: Record<string, string> = {
   'createWorkout.saveWorkout': 'Boloka Boikoetliso',
   'createWorkout.noExercises': 'Kenya bonyane boikoetliso bo le bong boikwetlisong ba hao.',
   'createWorkout.saved': 'Boikoetliso bo bolokiloe! 💪',
-  'createWorkout.savedDetail': 'Boikoetliso ba hau bo bolokiloe \\\\\\\'me bo se bo loketse ho sebelisoa.',
+  'createWorkout.savedDetail': "Boikoetliso ba hau bo bolokiloe \\\\\\'me bo se bo loketse ho sebelisoa.",
   'createWorkout.saveFailed': 'E hlolehile ho boloka boikoetliso. Ka kopo, leka hape.',
   'createWorkout.selectFirst': 'Khetha boikoetliso pele',
   'createWorkout.allLevels': 'Maemo kaofela',
@@ -5388,7 +6292,7 @@ const st: Record<string, string> = {
   'createWorkout.minimal': 'Nyenyane',
   'createWorkout.playground': 'Lebala la lipapali',
   'createWorkout.category.all': 'Tsohle',
-  'createWorkout.category.body_control': 'Taolo ea \\\\\\\'Mele',
+  'createWorkout.category.body_control': "Taolo ea \\\\\\'Mele",
   'createWorkout.category.posture': 'Boemo',
   'createWorkout.category.strength': 'Matla',
   'createWorkout.category.mobility': 'Motsamao',
@@ -5425,12 +6329,13 @@ const st: Record<string, string> = {
   'paywall.features.cloudBackupSub': 'Le ka mohla u se ke ua lahleheloa ke tsoelo-pele ea hau',
 
   'onboarding.welcome': 'Rea u amohela ho FitQuest',
-  'onboarding.tagline': 'Motsoalle oa hau oa boikoetliso o tsamaeang le AI.\\\\\\\\nE re re hlophise boiphihlelo ba hau.',
+  'onboarding.tagline':
+    'Motsoalle oa hau oa boikoetliso o tsamaeang le AI.\\\\\\\\nE re re hlophise boiphihlelo ba hau.',
   'onboarding.heroBody': 'Terene e bohlale',
   'onboarding.heroMind': 'Nahana ka Sharp',
   'onboarding.heroMove': 'Tsamaisa Tse ling',
   'onboarding.heroBodySub': 'Likoetliso tsa AI tse etselitsoeng uena',
-  'onboarding.heroMindSub': 'Bala, ithute, \\\\\\\'me u hōle',
+  'onboarding.heroMindSub': "Bala, ithute, \\\\\\'me u hōle",
   'onboarding.heroMoveSub': 'Latela mehato le ho matha letsatsi le letsatsi',
   'onboarding.goalTitle': 'Sepheo sa hau ke sefe?',
   'onboarding.goalSub': 'Khetha sepheo sa hau sa mantlha',
@@ -5448,10 +6353,10 @@ const st: Record<string, string> = {
   'onboarding.skip': 'Tlola hajoale',
   'onboarding.goal.buildMuscle': 'Haha Matla',
   'onboarding.goal.buildMuscleSub': 'Fumana mesifa le matla a tala',
-  'onboarding.goal.loseFat': 'Taolo ea \\\\\\\'Mele',
-  'onboarding.goal.loseFatSub': 'Motsamao o hloahloa le sebopeho sa \\\\\\\'mele',
+  'onboarding.goal.loseFat': "Taolo ea \\\\\\'Mele",
+  'onboarding.goal.loseFatSub': "Motsamao o hloahloa le sebopeho sa \\\\\\'mele",
   'onboarding.goal.endurance': 'Lebelo le Matla',
-  'onboarding.goal.enduranceSub': 'Ts\\\\\\\'ebetso e phatlohang le matla',
+  'onboarding.goal.enduranceSub': "Ts\\\\\\'ebetso e phatlohang le matla",
   'onboarding.goal.flexibility': 'Motsamao',
   'onboarding.goal.flexibilitySub': 'Notlolla mefuta e mengata ea ho sisinyeha le ho hlaphoheloa',
   'onboarding.goal.posture': 'Boemo',
@@ -5480,13 +6385,22 @@ const st: Record<string, string> = {
   'onboarding.heightPlaceholder': 'Bophahamo (cm)',
   'onboarding.saveError': 'E hlolehile ho boloka boemo ba hau. Ka kopo, leka hape.',
   'onboarding.permTitle': 'Lumella tumello',
-  'onboarding.permSub': 'Tsena li thusa FitQuest ho sebetsa hantle ho feta bakeng sa hau. U ka li fetola nako efe kapa efe ho Settings.',
+  'onboarding.permSub':
+    'Tsena li thusa FitQuest ho sebetsa hantle ho feta bakeng sa hau. U ka li fetola nako efe kapa efe ho Settings.',
   'onboarding.perm.notifications': 'Likhumbuzo tsa boikoetliso',
   'onboarding.perm.notificationsSub': 'Hopotsoa ho lula tseleng le lenaneo la hau la boikoetliso',
+  'onboarding.perm.motion': 'Tshebetso le Ketso',
+  'onboarding.perm.motionSub':
+    'Latela mehato, fumana lipapali tsa boikoetliso le ho bala linako ka li-sensor tsa motsamao',
+  'onboarding.perm.location': 'Sebaka (Ho Matha)',
+  'onboarding.perm.locationSub': 'Etsa mmapa oa litsela tsa hao tsa ho matha le ho bala sebaka ka nepo',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    'Hokahanya lebelo la pelo, boroko le data ea boikoetliso le Android Health Connect',
   'onboarding.perm.allow': 'Lumella',
   'onboarding.perm.skipNote': 'U ka tlola mona — litumello li ka lumellesoa hamorao profaleng ea hau.',
 
-  'register.title': 'Theha ak\\\\\\\'haonte',
+  'register.title': "Theha ak\\\\\\'haonte",
   'register.subtitle': 'Qala leeto la hau la boikoetliso kajeno',
   'register.fullName': 'Mabitso a felletseng',
   'register.namePlaceholder': 'Lebitso la hau',
@@ -5498,7 +6412,7 @@ const st: Record<string, string> = {
   'register.confirmPlaceholder': 'Pheta senotlolo',
   'register.creating': 'E etsa Account...',
   'register.signUp': 'Ngolisa',
-  'register.alreadyHaveAccount': 'Na u se u na le ak\\\\\\\'haonte?',
+  'register.alreadyHaveAccount': "Na u se u na le ak\\\\\\'haonte?",
   'register.signIn': 'Kena',
   'register.passwordsMismatch': 'Li-password ha li lumellane',
   'register.failed': 'Ngoliso e hlolehile. Ka kopo, leka hape.',
@@ -5550,7 +6464,7 @@ const st: Record<string, string> = {
   'fitmind.reader.thinking': 'Ho nahana...',
   'fitmind.reader.noContent': 'Ha ho litaba tse fumanehang tsa leqephe lena.',
   'fitmind.reader.prev': 'E fetileng',
-  'fitmind.reader.next': 'E \\\\\\\'ngoe',
+  'fitmind.reader.next': "E \\\\\\'ngoe",
   'fitmind.reader.errorResponse': 'Tšoarelo, ke fumane phoso. Ka kopo, leka hape.',
   'fitmind.reader.rateLimited': 'Reite e fihletsoe. Ke kopa u eme...',
   'fitmind.reader.loadError': 'Ha e khone ho kenya litaba tsa leqephe.',
@@ -5567,7 +6481,7 @@ const st: Record<string, string> = {
   'exercises.beginner': 'Motho ea qalang',
   'exercises.intermediate': 'Mahareng',
   'exercises.advanced': 'E tsoetseng pele',
-  'exercises.bodyweight': 'Boima ba \\\\\\\'mele',
+  'exercises.bodyweight': "Boima ba \\\\\\'mele",
   'exercises.minimal': 'Thepa e Nyenyane',
   'exercises.playground': 'Thepa e Feletseng',
   'exercises.of': 'ea',
@@ -5577,7 +6491,7 @@ const st: Record<string, string> = {
   'exercises.loading': 'E kenya boikoetliso...',
   'exercises.loadFailed': 'E hlolehile ho kenya boikoetliso',
   'exercises.category.all': 'Tsohle',
-  'exercises.category.body_control': 'Taolo ea \\\\\\\'Mele',
+  'exercises.category.body_control': "Taolo ea \\\\\\'Mele",
   'exercises.category.strength': 'Matla',
   'exercises.category.mobility': 'Motsamao',
   'exercises.category.speed': 'Lebelo le Matla',
@@ -5585,7 +6499,7 @@ const st: Record<string, string> = {
   'exercises.category.focus': 'Tsepamiso & Kelello',
 
   'analytics.title': 'Litlhahlobo',
-  'analytics.subtitle': 'Ts\\\\\\\'ebetso ea hau ha u habanya feela',
+  'analytics.subtitle': "Ts\\\\\\'ebetso ea hau ha u habanya feela",
   'analytics.weekly': 'Beke le beke',
   'analytics.monthly': 'Khoeli le khoeli',
   'analytics.workoutFrequency': 'Khafetsa ea Boikoetliso',
@@ -5643,7 +6557,7 @@ const st: Record<string, string> = {
   'month.february': 'Hlakola',
   'month.march': 'Tlhakubele',
   'month.april': 'Mmesa',
-  'month.may': 'Mots\\\\\\\'eanong',
+  'month.may': "Mots\\\\\\'eanong",
   'month.june': 'Phuptjane',
   'month.july': 'Phupu',
   'month.august': 'Phato',
@@ -5656,7 +6570,8 @@ const st: Record<string, string> = {
   'backup.createBackup': 'Etsa bekapo',
   'backup.availableBackups': 'Li-backups tse fumanehang',
   'backup.noBackups': 'Ha ho li-backups hajoale.',
-  'backup.helperText': 'E theha faele ea "backup" ea "database" ea hau ea lehae. Haeba u seta poleloana, u tlameha ho sebelisa poleloana e tšoanang ho khutlisa.',
+  'backup.helperText':
+    'E theha faele ea "backup" ea "database" ea hau ea lehae. Haeba u seta poleloana, u tlameha ho sebelisa poleloana e tšoanang ho khutlisa.',
   'backup.optionalPassphrase': 'Phasewete ya boikgethelo',
   'backup.working': 'E sebetsa...',
   'backup.created': 'Backup e entsoe',
@@ -5673,14 +6588,16 @@ const st: Record<string, string> = {
   'backup.uploaded': 'E kentsoe',
   'backup.uploadFailed': 'Ho hloleha ho kenya',
   'backup.noCloudBackups': 'Ha ho na li-backups tsa leru hajoale.',
-  'backup.cloudHelper': 'E boloka blob ea "backup" e patiloeng mokokotlong oa hau oa Phase 2. Seva ha e khone ho hlakola data ea hau.',
+  'backup.cloudHelper':
+    'E boloka blob ea "backup" e patiloeng mokokotlong oa hau oa Phase 2. Seva ha e khone ho hlakola data ea hau.',
 
-  'audio.warmup.start': 'Ha re qale ka ho futhumatsa. Metsamao e bobebe ho tsosa mesifa ea hau le ho lokisa \\\'mele oa hau.',
+  'audio.warmup.start':
+    "Ha re qale ka ho futhumatsa. Metsamao e bobebe ho tsosa mesifa ea hau le ho lokisa \\'mele oa hau.",
   'audio.main.start': 'Ha re kene ho eona. Boikoetliso ba mantlha bo qala hona joale.',
-  'audio.cooldown.start': 'Nako ea ho kokobela. Ho sisinyeha ha bonolo ho thusa \\\'mele oa hau hore o hlaphoheloe.',
-  'audio.warmup.toMain': 'Mofuthu o moholo! \\\'Mele oa hau o matla. Nako ea ho ikoetlisa ka sehloohong. Ha re ee!',
+  'audio.cooldown.start': "Nako ea ho kokobela. Ho sisinyeha ha bonolo ho thusa \\'mele oa hau hore o hlaphoheloe.",
+  'audio.warmup.toMain': "Mofuthu o moholo! \\'Mele oa hau o matla. Nako ea ho ikoetlisa ka sehloohong. Ha re ee!",
   'audio.warmup.toCooldown': 'Ho futhumala ho felletse. Ha re khobe matšoafo joale.',
-  'audio.main.toCooldown': 'Boikoetliso ba mantlha bo entsoe! Boiteko bo hlollang. Ha re phomole \\\'me re hlaphoheloe.',
+  'audio.main.toCooldown': "Boikoetliso ba mantlha bo entsoe! Boiteko bo hlollang. Ha re phomole \\'me re hlaphoheloe.",
   'audio.main.toWarmup': 'Ho fetohela ho boikoetliso ba ho futhumatsa.',
   'audio.cooldown.toMain': 'Boikoetliso ba ho phomola bo phethiloe. Khutlela ho boikoetliso bo ka sehloohong.',
   'audio.phase.fallback': 'E fetela mohatong oa {{phase}}.',
@@ -5689,7 +6606,7 @@ const st: Record<string, string> = {
   'audio.doneNext': 'E felile! E latelang: {{name}}',
   'audio.exerciseDone': 'Boikoetliso bo felile!',
   'audio.workoutComplete': 'Boikoetliso bo felile! Mosebetsi o motle!',
-  'audio.countdown.one': 'E \\\'ngoe',
+  'audio.countdown.one': "E \\'ngoe",
   'audio.nextExercise': 'Boikoetliso bo latelang: {{name}}.',
   'audio.targets': 'Sena se shebane le {{muscles}} ea hau.',
   'audio.categoryLabel': 'Boikoetliso ba {{category}}.',
@@ -5699,12 +6616,12 @@ const st: Record<string, string> = {
   'audio.wellDone': 'Mosebetsi o motle!',
   'audio.restFor': 'Phomola metsotsoana e {{seconds}}.',
   'audio.upNext': 'E latelang: {{name}}.',
-  'audio.shakeItOut': 'E hlohlore \\\'me u itokise.',
+  'audio.shakeItOut': "E hlohlore \\'me u itokise.",
   'audio.getIntoPosition': 'Kena boemong',
   'audio.beginMovement': 'Qala mokhatlo',
-  'audio.compliment.1': 'Boikoetliso bo felile! U ile ua hlaha \\\'me ua fana ka sohle seo u ka se khonang.',
-  'audio.compliment.2': 'Seo e ne e le ntho e hlollang! \\\'Mele oa hau o ntse o matlafala nako le nako.',
-  'audio.compliment.3': 'E \\\'ngoe libukeng! Consistency ke matla a hau a maholo.',
+  'audio.compliment.1': "Boikoetliso bo felile! U ile ua hlaha \\'me ua fana ka sohle seo u ka se khonang.",
+  'audio.compliment.2': "Seo e ne e le ntho e hlollang! \\'Mele oa hau o ntse o matlafala nako le nako.",
+  'audio.compliment.3': "E \\'ngoe libukeng! Consistency ke matla a hau a maholo.",
   'audio.compliment.4': 'U sa tsoa paka hore ho sebetsa ka thata hoa putsoa. Mosebetsi o motle!',
   'audio.compliment.5': 'Boiteko bo hlollang! Batho ba bangata baa tlola kajeno. Ha ua ka ua etsa joalo.',
   'audio.perfect.1': 'Seboka se phethahetseng! Boikoetliso bo bong le bo bong bo phethiloe. Ke boinehelo bo phahameng.',
@@ -5718,8 +6635,146 @@ const st: Record<string, string> = {
   'audio.streak.60': 'Matsatsi a mashome a tšeletseng! Batho ba bangata ba lora ka boinehelo ba mofuta ona.',
   'audio.streak.90': 'Lebelo la matsatsi a mashome a robong! U tšōmo ka ho feletseng.',
   'audio.minutes': 'Metsotso e {{minutes}} ea boikitlaetso bo tiileng.',
-  'audio.progressions': '{{count}} boikoetliso bo se bo loketse ho nyoloha!|{{count}} boikoetliso bo se bo loketse ho nyoloha!',
+  'audio.progressions':
+    '{{count}} boikoetliso bo se bo loketse ho nyoloha!|{{count}} boikoetliso bo se bo loketse ho nyoloha!',
   'audio.xpEarned': 'Hape {{xp}} XP e fumanoeng.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Mokhoa oa tsoelo-pele o kentsoe ho latela mesebetsi ea morao tjena.',
+  'signal.transition.regressing.subtext': 'Moroalo oa seshene o fokotsitsoe ho tsamaisana le lebelo la hajoale.',
+  'signal.firstSession.headline': 'Tsamaiso e lokile. Qala seshene ea hau ea pele.',
+  'signal.firstSession.subtext': 'Seshene e ngoe le e ngoe e lokisa tsamaiso ho latela bokhoni ba hau.',
+  'signal.streakAtRisk.headline': '{{streak}} matsatsi a hlahlamang. Tswela pele kajeno ho e tiisa.',
+  'signal.streakAtRisk.subtext.disciplined': 'Ho tiisetsa ho tsamaisa ho nepahala ha tsoelo-pele.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Seshene e khutshoane e lekane ho boloka mokhoa.',
+  'signal.restAdvised.headline': 'Ho phomola ho khothaletsoa ho ipapisitsoe le khatello.',
+  'signal.restAdvised.subtext.fatigue': 'Khatello e {{fatigue}}%. Ho phomola ho potlakisa ho ikamahanya.',
+  'signal.restAdvised.subtext.readiness': 'Ho itokisetsa ho {{readiness}}%. Ho phela ho ntse ho tsoela pele.',
+  'signal.momentum.headline': 'Seshene e phethiloe. Lintlha li ngotsoe.',
+  'signal.momentum.subtext.streak': 'Mokhoa oa matsatsi a {{streak}}. Tsamaiso e ntlafatsa lenaneo la hau.',
+  'signal.momentum.subtext.default': 'Ho phela ho qala. Seshene e latelang e tla lokisoa ka mokhoa o nepahetseng.',
+  'signal.comeback.headline.inconsistent': '{{days}} matsatsi a sieo. Seshene e bobebe e fumaneha.',
+  'signal.comeback.headline.disciplined': '{{days}} matsatsi ho tloha sesheneng ea ho qetela. Matla a lokisitsoe bocha.',
+  'signal.comeback.subtext.inconsistent': 'Tsamaiso e lokisitsoe bakeng sa ho khutla ha bonolo.',
+  'signal.comeback.subtext.disciplined': 'Moroalo o lokisitsoe ho tsamaisana le boemo ba ho phela ba hajoale.',
+  'signal.recoveryReady.headline.disciplined': 'Ho itokisetsa ho phakeme. Maemo a tsoelo-pele a fihletsoe.',
+  'signal.recoveryReady.headline.inconsistent': 'Ho phela ho phethiloe. Maemo a matle a seshene.',
+  'signal.recoveryReady.subtext': 'Ho itokisetsa ho {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} matsatsi a hlahlamang. Tsamaiso e ikamahanya le mokhoa oa hau.',
+  'signal.streakBuilding.subtext.disciplined': 'Moroalo le matla li eketseha ho ipapisitsoe le tshebetso.',
+  'signal.streakBuilding.subtext.inconsistent': 'Ho tiisetsa ho ntse ho hahoa. Phephetso e eketseha butle.',
+  'signal.expectToday.headline.disciplined': 'Fensetere ea boitlhahlobo e butsoe. Tsamaiso e lokile.',
+  'signal.expectToday.headline.inconsistent': 'Seshene e fumaneha ha o lokile.',
+  'signal.expectToday.subtext.good': 'Ho itokisetsa {{readiness}}%. Maemo a matle.',
+  'signal.expectToday.subtext.moderate': 'Ho itokisetsa ho mahareng. Seshene e bobebe e khothaletsoa.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Seshene ea pele e tla. Tsamaiso e ithuta ho rep e ngoe le e ngoe.',
+  'memory.noHistory.trendStatement': 'Ha ho lintlha hajoale. Seshene ea hau ea pele e beha motheo.',
+  'memory.lastSession.headline.crushed': 'Seshene ea ho qetela: lipapali tse {{completed}} li phethiloe ka metsotso e {{duration}}.',
+  'memory.lastSession.headline.adjusted': 'Seshene ea ho qetela: {{completed}}/{{total}} e phethiloe. Tsamaiso e lokisitsoe.',
+  'memory.lastSession.headline.tough': 'Seshene ea ho qetela e ne e le thata. {{completed}}/{{total}} e phethiloe. Ho phela ho fuoe pele.',
+  'memory.trend.improving': 'Tshebetso e ntse e nyoloha. Tsamaiso e eketsa phephetso.',
+  'memory.trend.declining': 'Liseshene tsa morao tjena li thata. Tsamaiso e lokisitsoe ho haha mafutho bocha.',
+  'memory.trend.steady.data': 'Liphetho tse tsitsitseng. Haufi le khoro e latelang ea tsoelo-pele.',
+  'memory.trend.steady.building': 'Ho haha motheo. Tswela pele o fihla.',
+  'memory.delta.firstWorkout': 'Seshene ea pele. Tsamaiso e lokisa ho latela mmele oa hau.',
+  'memory.delta.same': 'Sebopeho sa seshene se tshoanang. Tsamaiso e bona ho tiisetsa ho hahoa.',
+  'memory.delta.mixed': '{{total}} liphetoho: {{removed}} li tlositsoe, {{added}} tse ncha.',
+  'memory.delta.added': '{{count}} papali e ncha{{plural}} e kentsoe bakeng sa ho fapana.',
+  'memory.delta.removed': '{{count}} papali{{plural}} e fetotsoeng bakeng sa ho phela.',
+  'memory.progression.firstTime': 'Lekhetlo la pele. Tsamaiso e tla lokisa ho tloha sesheneng ena.',
+  'memory.progression.improving': '{{wins}} tlholo ka tatellano. Ho tsoela pele.',
+  'memory.progression.declining': 'Ho theoha ha morao tjena ho bonoe. Moroalo o lokisitsoe.',
+  'memory.progression.nearGate': '{{successes}} liseshene{{plural}} tse tiileng. E ngoe hape ho bula tsoelo-pele.',
+  'memory.progression.steady': 'O lutse hantle. Ho tiisetsa ke leano.',
+  'memory.reason.retained': 'Ho tsamaisana le tsela ea hau ea tsoelo-pele.',
+  'memory.reason.addedBalance': 'E kentsoe ho lekanya ho phela ha mesifa.',
+  'memory.reason.removedFatigue': 'E tlositsoe ka lebaka la khatello e bokeletsoeng.',
+  'memory.reason.removedVariety': 'E fetotsoeng bakeng sa tekano ea mesifa le ho fapana.',
+  'memory.timeSince.minutes': '{{minutes}}m e fetileng',
+  'memory.timeSince.hours': '{{hours}}h e fetileng',
+  'memory.timeSince.yesterday': 'Maobane',
+  'memory.timeSince.days': '{{days}} matsatsi a fetileng',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Phihlello e feletseng ea tsamaiso e kentsoe.',
+  'trial.welcome.subtext': 'Matsatsi a 14 ho leka ntho e ngoe le e ngoe. Ha ho lithibelo.',
+  'trial.firstWin.headline': '{{workouts}} seshene{{plural}} e phethiloe. Tsamaiso e ithuta mekhoa ea hau.',
+  'trial.firstWin.subtext': 'Seshene e ngoe le e ngoe e ntlafatsa ho nepahala ha seshene.',
+  'trial.readyForFirst.headline': 'Letsatsi {{day}}. Tsamaiso e lokile bakeng sa seshene ea hau ea pele.',
+  'trial.readyForFirst.subtext': 'Qala seshene ho qala ho lokisa.',
+  'trial.improvementShown.headline': 'Papiso ea liseshene e se e fumaneha.',
+  'trial.improvementShown.subtext': 'Tsamaiso e se e khona ho bonts\'a se fetohileng le hore na hobaneng.',
+  'trial.memoryIntro.headline': 'Bohlale ba seshene bo atolosoa.',
+  'trial.memoryIntro.subtext': 'Letsatsi {{day}}. Liseshene tse ngata = tlhahlobo e bohale.',
+  'trial.fullIntelligence.headline': 'Bohlale bo feletseng bo sebetsa.',
+  'trial.fullIntelligence.subtext': 'Letsatsi {{day}}. Tsamaiso e ikamahanya le mekhoa ea hau le bokhoni.',
+  'trial.transitionClear.headline': '{{days}} letsatsi{{plural}} le setseng phihlellong e feletseng.',
+  'trial.transitionClear.subtext': 'Ka mor\'a nako ea teko, likarolo tsa mantlha li lula li le teng. Maemo a bohlale a hloka tekanyo.',
+  'trial.transitionSoft.headline': '{{days}} matsatsi a setseng.',
+  'trial.transitionSoft.subtext': 'Lintlha tsa hau tsa seshene le tsoelo-pele ke tsa hau ka ho sa feleng. Tekanyo e tswela pele le likarolo tsa bohlale.',
+  'trial.viewPlans': 'Sheba meralo',
+  'trial.expired.headline': 'Nako ea teko e phethiloe.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} liseshene li ngotsoe. Likarolo tsa mantlha li lula li le teng. Ngolisa ho khutlisa maemo a bohlale.',
+  'trial.expired.subtext.noWorkouts': 'Likarolo tsa mantlha li lula li le teng. Ngolisa ho bula maemo a bohlale.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Ho oa ho etsahetse papalong {{index}} ({{name}}) — moroalo o fokotseha sesheneng e latelang.',
+  'failure.skipHeavy': 'Sekhahla se phahameng sa ho tlola se bonoe. Lipapali li ka e-ba ha li tsamaisane le bokhoni ba hajoale.',
+  'failure.lowVolume': 'Moroalo o tlase oa ho phetha. Seshene e ka ba e le thata haholo.',
+  'failure.earlyDropout': 'Mokhoa oa ho oa kapele. Bolelele ba seshene bo fokotseha.',
+  'failure.lateDropout': 'Ho oa ha mamello. Lipapali tse bobebe li behiloe qetellong.',
+  'failure.noFailure': 'Seshene e atlehile.',
+  'failure.insight.none': 'Seshene e phethiloe ka {{percent}}%. Ha ho litokiso tse hlokahalang.',
+  'failure.insight.earlyDropout': 'Ho oa ho etsahetse papalong {{index}} ({{name}}) — moroalo o fokotseha sesheneng e latelang.',
+  'failure.insight.midDropout': 'Ho oa setelong {{index}} ({{name}}) — palo ea lipapali e lokisoa.',
+  'failure.insight.lateDropout': 'E batla e phethile ({{percent}}%). Tokiso e nyenyane e entsoe.',
+  'failure.insight.skipHeavy': 'Seshene e phethiloe empa {{percent}}% ea lipapali e tlotsoeng. Khetho ea lipapali e hlahlojoa.',
+  'failure.insight.lowVolume': 'Moroalo o tlase oa ho phetha ({{percent}}%). Litaelo tsa sete li fokotseha.',
+  'failure.insight.empty': 'Ha ho lipapali tse phethiloeng. Tsamaiso e fokotsa bothata ba seshene e latelang.',
+  'failure.adjustment.none': 'Ha ho tokiso e hlokahalang.',
+  'failure.adjustment.earlyDropout': 'Ho oa kapele ho bonoe. Moroalo le bolelele ba seshene li fokotseha.',
+  'failure.adjustment.midDropout': 'Ho oa papalong {{index}}. Palo ea lipapali e fokotseha.',
+  'failure.adjustment.lateDropout': 'Seshene e batla e phethiloe. Phokotso e nyenyane ea moroalo.',
+  'failure.adjustment.skipHeavy': 'Sekhahla se phahameng sa ho tlola. Khetho ea lipapali e hloka ho hlahlojoa.',
+  'failure.adjustment.lowVolume': 'Moroalo o tlase o phethiloeng. Palo ea sete e fokotseha.',
+  'failure.adjustment.empty': 'Seshene e se nang letho. Phokotso e kholo e entsoe.',
+  'failure.pattern.noData': 'Ha ho lintlha tsa seshene hajoale.',
+  'failure.pattern.noFailures': 'Liseshene tsohle tsa morao tjena li atlehile. Maemo a tšehetsa tsoelo-pele.',
+  'failure.pattern.occasional': 'Ka linako tse ling liseshene tse sa phethisoang. Moroalo oa hajoale o bonahala o ka tiiselleha.',
+  'failure.pattern.earlyDropoffs': 'Ho oa kapele ho atileng. Phokotso ea bolelele ba seshene kapa palo ea lipapali e khothaletsoa.',
+  'failure.pattern.highSkips': 'Sekhahla se phahameng sa ho tlola. Khetho ea lipapali e ka hloka ho lokisoa.',
+  'failure.pattern.worsening': 'Sekhahla sa ho hloleha se eketseha. Nahana ka ho fokotsa moroalo kapa ho tsepamisa maikutlo ho ho phela.',
+  'failure.pattern.general': '{{rate}}% sekhahla sa ho hloleha. Bothata ba seshene bo lokisoa.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'Tatellano e tla sethoa bocha.',
+  'simulation.skip.modeShift': 'E ka fetoha ho mokhoa o sa tsitsang.',
+  'simulation.skip.fatigueDrop': 'Khatello e theoha ka {{delta}}.',
+  'simulation.skip.minimal': 'Tšusumetso e nyenyane — o na le sebaka.',
+  'simulation.train.fatigueUp': 'Khatello e eketseha ka {{delta}}.',
+  'simulation.train.modeAdvance': 'E atamela mokhoa o tsamaisitsoeng.',
+  'simulation.train.reduceTomorrow': 'Hosane ho lokela ho ba bobebe.',
+  'simulation.train.pushTomorrow': 'Sebaka sa ho hatella haholo hosane.',
+  'simulation.rest.recovery': 'Ho phela: khatello e theoha ka {{delta}}.',
+  'simulation.rest.streakReset': 'Tatellano e tla sethoa bocha, empa ho phela ho fuoa pele.',
+  'simulation.rest.ready': 'O lokile bakeng sa seshene e feletseng hosane.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'Bohlale bo tsoetseng pele bo hloka tekanyo.',
 };
 
 const es: Record<string, string> = {
@@ -5746,7 +6801,8 @@ const es: Record<string, string> = {
   'dashboard.levelShort': 'Nivel',
   'dashboard.restRecommended': 'Descanso recomendado',
   'dashboard.recoveryModerate': 'Moderado',
-  'dashboard.recoveryWarning': '⚠️ Se detecta fatiga elevada. Considere un entrenamiento más ligero o un día de descanso.',
+  'dashboard.recoveryWarning':
+    '⚠️ Se detecta fatiga elevada. Considere un entrenamiento más ligero o un día de descanso.',
   'dashboard.noWorkoutsYet': 'Aún no hay entrenamientos. ¡Empieza el primero!',
   'dashboard.createCustom': 'Crear personalizado',
   'dashboard.recoveryTrackingActive': 'Seguimiento de recuperación activo',
@@ -5766,6 +6822,7 @@ const es: Record<string, string> = {
   'dashboard.of': 'de',
   'dashboard.incompleteSession': 'Sesión incompleta',
   'dashboard.kcal': 'calorías',
+  'dashboard.startNow': 'COMENZAR AHORA',
   'dashboard.stepsToday': 'Pasos',
   'dashboard.activeMin': 'Min activos',
   'dashboard.completionRate': 'Completado',
@@ -5823,7 +6880,8 @@ const es: Record<string, string> = {
   'fitquest.keepGoing': 'Sigue adelante',
   'fitquest.cancelWorkout': 'Cancelar entrenamiento',
   'fitquest.recordingProgress': 'Progreso de grabación...',
-  'fitquest.idleSub': 'Generación de entrenamiento inteligente impulsada por\\\\\\\\ntres motores que funcionan en armonía',
+  'fitquest.idleSub':
+    'Generación de entrenamiento inteligente impulsada por\\\\\\\\ntres motores que funcionan en armonía',
   'fitquest.currentProfile': 'Perfil actual',
   'fitquest.sessions': 'sesiones',
   'fitquest.generateWorkout': 'Generar entrenamiento',
@@ -5888,13 +6946,17 @@ const es: Record<string, string> = {
   'profile.craftMyBody': 'Crea mi cuerpo',
   'profile.craftMyBodySub': 'Plan personalizado de transformación corporal con nutrición y entrenamiento',
   'profile.adaptiveTraining': 'Entrenamiento adaptativo',
-  'profile.adaptiveExplanation': 'Estos valores se ajustan automáticamente a medida que entrenas. Toca cada métrica para obtener más información.',
+  'profile.adaptiveExplanation':
+    'Estos valores se ajustan automáticamente a medida que entrenas. Toca cada métrica para obtener más información.',
   'profile.fatigueSensitivity': 'Sensibilidad a la fatiga',
-  'profile.fatigueSensitivityDesc': 'Qué tan rápido se acumula la fatiga durante los entrenamientos. Los valores más altos significan que el algoritmo le brinda más descanso entre sesiones intensas. Se ajusta según las tasas de finalización de su entrenamiento y sus patrones de recuperación.',
+  'profile.fatigueSensitivityDesc':
+    'Qué tan rápido se acumula la fatiga durante los entrenamientos. Los valores más altos significan que el algoritmo le brinda más descanso entre sesiones intensas. Se ajusta según las tasas de finalización de su entrenamiento y sus patrones de recuperación.',
   'profile.progressionPace': 'Ritmo de progresión',
-  'profile.progressionPaceDesc': 'La agresividad con la que aumenta la dificultad del ejercicio con el tiempo. Los valores más altos significan un avance más rápido hacia ejercicios más difíciles. Se ajusta en función de si completa las series/repeticiones prescritas de manera consistente.',
+  'profile.progressionPaceDesc':
+    'La agresividad con la que aumenta la dificultad del ejercicio con el tiempo. Los valores más altos significan un avance más rápido hacia ejercicios más difíciles. Se ajusta en función de si completa las series/repeticiones prescritas de manera consistente.',
   'profile.volumeTolerance': 'Tolerancia de volumen',
-  'profile.volumeToleranceDesc': 'Cuánto volumen total de entrenamiento (series x repeticiones) puede soportar tu cuerpo. Los valores más altos significan sesiones de entrenamiento más largas con más ejercicios. Se ajusta según la finalización de la sesión y los ejercicios omitidos.',
+  'profile.volumeToleranceDesc':
+    'Cuánto volumen total de entrenamiento (series x repeticiones) puede soportar tu cuerpo. Los valores más altos significan sesiones de entrenamiento más largas con más ejercicios. Se ajusta según la finalización de la sesión y los ejercicios omitidos.',
   'profile.confidence': 'Confianza',
   'profile.samples': 'Muestras',
   'profile.rank': 'Rango y progreso',
@@ -5950,7 +7012,8 @@ const es: Record<string, string> = {
   'profile.healthProvider.healthkit': 'Kit de salud',
   'profile.healthProvider.google_fit': 'Ajuste de Google',
   'profile.privacySecurity': 'Privacidad y seguridad',
-  'profile.privacySecuritySub': 'Administrar el consentimiento de los datos, el cifrado y la configuración de seguridad',
+  'profile.privacySecuritySub':
+    'Administrar el consentimiento de los datos, el cifrado y la configuración de seguridad',
   'profile.privacyLegal': 'Privacidad y aspectos legales',
   'profile.legalCenter': 'Centro Legal',
   'profile.legalCenterSub': 'Política de privacidad, términos y registros de consentimiento',
@@ -5959,7 +7022,8 @@ const es: Record<string, string> = {
   'profile.exportData': 'Exportar mis datos',
   'profile.exportDataSub': 'Crear exportación JSON local de metadatos en la nube + copias de seguridad',
   'profile.menu.deleteCloudData': 'Eliminar datos de la nube',
-  'profile.menu.deleteCloudDataConfirm': 'Esto elimina permanentemente las copias de seguridad de su cuenta y los metadatos de la nube.',
+  'profile.menu.deleteCloudDataConfirm':
+    'Esto elimina permanentemente las copias de seguridad de su cuenta y los metadatos de la nube.',
   'profile.menu.deletePermanently': 'Eliminar permanentemente',
   'profile.deleteCloudDataSub': 'Eliminar permanentemente los datos de la cuenta del lado del servidor',
   'profile.helpSupport': 'Ayuda y soporte',
@@ -5967,6 +7031,10 @@ const es: Record<string, string> = {
   'profile.appSection': 'Aplicación',
   'profile.backupRestore': 'Copia de seguridad y restauración',
   'profile.backupRestoreSub': 'Archivos de copia de seguridad locales cifrados',
+  'profile.subscription': 'Suscripción',
+  'profile.expired': 'Expirado',
+  'profile.subscribeToUnlock': 'Suscríbete para desbloquear todas las funciones',
+  'profile.searchLanguages': 'Buscar idiomas…',
   'profile.about': 'Acerca de FitQuest',
   'profile.version': 'Versión',
   'profile.saved': 'Guardado',
@@ -6121,7 +7189,8 @@ const es: Record<string, string> = {
   'move.noStepHistory': 'Aún no hay historial de pasos',
   'move.jogHistory': 'Historial de avance',
   'move.noJogHistory': 'Aún no hay sesiones de jogging',
-  'move.infoXpAndFatigue': '1000 pasos = 4 XP • Trotar gana 10 XP cada 100 m\\\\\\\\nEl movimiento no afecta la fatiga del entrenamiento',
+  'move.infoXpAndFatigue':
+    '1000 pasos = 4 XP • Trotar gana 10 XP cada 100 m\\\\\\\\nEl movimiento no afecta la fatiga del entrenamiento',
   'move.jogComplete': '¡Jogging completo! 🏃',
   'move.awesome': '¡Impresionante!',
   'move.km': 'kilómetros',
@@ -6165,7 +7234,8 @@ const es: Record<string, string> = {
   'meal.location.tapEnable': 'Toque para habilitar la ubicación',
   'meal.location.infoPrefix': 'Mostrando alimentos disponibles en',
   'meal.location.infoSuffix': ', incluidas opciones regionales y globales.',
-  'meal.location.infoNoLocation': 'Habilite la ubicación para ver sugerencias de alimentos específicos de la región. Toca la insignia de ubicación arriba para volver a intentarlo.',
+  'meal.location.infoNoLocation':
+    'Habilite la ubicación para ver sugerencias de alimentos específicos de la región. Toca la insignia de ubicación arriba para volver a intentarlo.',
 
   'legal.title': 'Centro Legal',
   'legal.documents': 'Documentos',
@@ -6192,63 +7262,100 @@ const es: Record<string, string> = {
   'legal.readInApp': 'Leer en la aplicación',
   'legal.cannotOpenLink': 'No se puede abrir el enlace en este dispositivo',
   'legal.noteMedical': 'La orientación física en esta aplicación es educativa y no sustituye el consejo médico.',
-  'legal.noteCounsel': 'El texto legal final y el mapeo de jurisdicción deben ser revisados ​​por el abogado antes de su liberación.',
+  'legal.noteCounsel':
+    'El texto legal final y el mapeo de jurisdicción deben ser revisados ​​por el abogado antes de su liberación.',
   'legal.lastUpdated': 'Última actualización:',
   'legal.privacy.sections.developerTitle': 'Desarrollador',
-  'legal.privacy.sections.developerBody': 'FitQuest es desarrollado y publicado por fitquest.dev. Esta política de privacidad rige la aplicación móvil FitQuest disponible en Google Play y Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest es desarrollado y publicado por fitquest.dev. Esta política de privacidad rige la aplicación móvil FitQuest disponible en Google Play y Apple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Datos que recopilamos',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest procesa las siguientes categorías de datos para ofrecer funciones personalizadas de fitness y bienestar:',
-  'legal.privacy.bullets.health': 'Métricas de salud y actividad: frecuencia cardíaca, pasos, datos de sueño, historial de entrenamiento, medidas corporales y puntuaciones de recuperación',
-  'legal.privacy.bullets.biometric': 'Datos biométricos: huellas dactilares o reconocimiento facial utilizados para la autenticación de aplicaciones (procesados ​​únicamente en el dispositivo, nunca almacenados ni transmitidos)',
-  'legal.privacy.bullets.location': 'Datos de ubicación: coordenadas GPS durante el seguimiento de jog (solo cuando utiliza activamente la función de jog)',
-  'legal.privacy.bullets.account': 'Información del perfil: objetivos de condición física, nivel de experiencia, preferencias de equipo y horario de trabajo opcional',
-  'legal.privacy.bullets.usage': 'Patrones de uso de la aplicación e interacciones de funciones (anonimizadas, utilizadas para mejorar la aplicación)',
-  'legal.privacy.bullets.device': 'Tipo de dispositivo, versión del sistema operativo y versión de la aplicación para compatibilidad e informes de fallas',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest procesa las siguientes categorías de datos para ofrecer funciones personalizadas de fitness y bienestar:',
+  'legal.privacy.bullets.health':
+    'Métricas de salud y actividad: frecuencia cardíaca, pasos, datos de sueño, historial de entrenamiento, medidas corporales y puntuaciones de recuperación',
+  'legal.privacy.bullets.biometric':
+    'Datos biométricos: huellas dactilares o reconocimiento facial utilizados para la autenticación de aplicaciones (procesados ​​únicamente en el dispositivo, nunca almacenados ni transmitidos)',
+  'legal.privacy.bullets.location':
+    'Datos de ubicación: coordenadas GPS durante el seguimiento de jog (solo cuando utiliza activamente la función de jog)',
+  'legal.privacy.bullets.account':
+    'Información del perfil: objetivos de condición física, nivel de experiencia, preferencias de equipo y horario de trabajo opcional',
+  'legal.privacy.bullets.usage':
+    'Patrones de uso de la aplicación e interacciones de funciones (anonimizadas, utilizadas para mejorar la aplicación)',
+  'legal.privacy.bullets.device':
+    'Tipo de dispositivo, versión del sistema operativo y versión de la aplicación para compatibilidad e informes de fallas',
   'legal.privacy.bullets.photos': 'Fotos de perfil: almacenadas localmente en su dispositivo si elige configurar una',
-  'legal.privacy.bullets.healthConnect': 'Datos de Health Connect/HealthKit: pasos, frecuencia cardíaca, sueño y datos de entrenamiento (solo si otorgas permiso explícito)',
+  'legal.privacy.bullets.healthConnect':
+    'Datos de Health Connect/HealthKit: pasos, frecuencia cardíaca, sueño y datos de entrenamiento (solo si otorgas permiso explícito)',
   'legal.privacy.sections.storageTitle': '2) Almacenamiento de datos',
-  'legal.privacy.sections.storageBody': 'FitQuest está diseñado como una aplicación sin conexión. Todos sus datos de fitness se almacenan localmente en su dispositivo mediante SQLite. No se almacenan datos personales en servidores externos. Los registros médicos confidenciales se cifran antes del almacenamiento mediante el cifrado AES-256-GCM estándar de la industria.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest está diseñado como una aplicación sin conexión. Todos sus datos de fitness se almacenan localmente en su dispositivo mediante SQLite. No se almacenan datos personales en servidores externos. Los registros médicos confidenciales se cifran antes del almacenamiento mediante el cifrado AES-256-GCM estándar de la industria.',
   'legal.privacy.sections.securityTitle': '3) Seguridad de los datos',
-  'legal.privacy.sections.securityBody': 'Todos los datos de salud confidenciales se cifran mediante cifrado AES-256-GCM antes de almacenarse en su dispositivo. Las claves de cifrado están protegidas por el hardware seguro de su dispositivo (Keychain en iOS, Keystore en Android). La autenticación biométrica proporciona una capa adicional de protección. Empleamos derivación de claves segura (PBKDF2) y comparación de tiempo constante para evitar ataques de tiempo.',
+  'legal.privacy.sections.securityBody':
+    'Todos los datos de salud confidenciales se cifran mediante cifrado AES-256-GCM antes de almacenarse en su dispositivo. Las claves de cifrado están protegidas por el hardware seguro de su dispositivo (Keychain en iOS, Keystore en Android). La autenticación biométrica proporciona una capa adicional de protección. Empleamos derivación de claves segura (PBKDF2) y comparación de tiempo constante para evitar ataques de tiempo.',
   'legal.privacy.sections.thirdPartyTitle': '4) Servicios de terceros',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest no vende, alquila ni comercializa sus datos personales. Las siguientes integraciones de terceros pueden procesar datos limitados:',
-  'legal.privacy.bullets.thirdPartyAI': 'Funciones de IA: cuando utiliza el entrenador o profesor de IA, sus indicaciones se envían a OpenRouter (a través de modelos de lenguaje Llama) para generar respuestas. En estas solicitudes no se incluyen datos personales de salud, solo el texto que usted escribe.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: si otorga permiso, FitQuest lee las métricas de salud de estos servicios de plataforma. Los datos fluyen unidireccionalmente (solo lectura) y se almacenan cifrados en su dispositivo.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: gestiona la verificación de la suscripción. Recibe únicamente tokens de compra e identificadores de usuario anónimos, sin datos de salud o estado físico.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: servicio de informes de fallos que recibe registros de errores anónimos. No se incluyen datos personales ni métricas de salud.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest no vende, alquila ni comercializa sus datos personales. Las siguientes integraciones de terceros pueden procesar datos limitados:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'Funciones de IA: cuando utiliza el entrenador o profesor de IA, sus indicaciones se envían a OpenRouter (a través de modelos de lenguaje Llama) para generar respuestas. En estas solicitudes no se incluyen datos personales de salud, solo el texto que usted escribe.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: si otorga permiso, FitQuest lee las métricas de salud de estos servicios de plataforma. Los datos fluyen unidireccionalmente (solo lectura) y se almacenan cifrados en su dispositivo.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: gestiona la verificación de la suscripción. Recibe únicamente tokens de compra e identificadores de usuario anónimos, sin datos de salud o estado físico.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: servicio de informes de fallos que recibe registros de errores anónimos. No se incluyen datos personales ni métricas de salud.',
   'legal.privacy.sections.childrenTitle': '5) Privacidad de los niños',
-  'legal.privacy.sections.childrenBody': 'FitQuest está diseñado para usuarios mayores de 13 años. No recopilamos intencionalmente información personal de niños menores de 13 años. Si cree que un niño nos ha proporcionado datos, comuníquese con nosotros a fitquestsupp0rt@gmail.com para eliminarlos inmediatamente.',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest está diseñado para usuarios mayores de 13 años. No recopilamos intencionalmente información personal de niños menores de 13 años. Si cree que un niño nos ha proporcionado datos, comuníquese con nosotros a fitquestsupp0rt@gmail.com para eliminarlos inmediatamente.',
   'legal.privacy.sections.retentionTitle': '6) Retención de datos',
-  'legal.privacy.sections.retentionBody': 'Sus datos se almacenan localmente en su dispositivo y se conservan mientras la aplicación esté instalada. Puede eliminar todos los datos en cualquier momento a través de Perfil → Configuración → Eliminar todos los datos. La desinstalación de la aplicación elimina todos los datos locales de forma permanente. También puede solicitar la eliminación de datos a través de nuestro sitio web en https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Sus datos se almacenan localmente en su dispositivo y se conservan mientras la aplicación esté instalada. Puede eliminar todos los datos en cualquier momento a través de Perfil → Configuración → Eliminar todos los datos. La desinstalación de la aplicación elimina todos los datos locales de forma permanente. También puede solicitar la eliminación de datos a través de nuestro sitio web en https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Tus derechos',
-  'legal.privacy.sections.rightsBody': 'Según las leyes de protección de datos aplicables (incluida la Ley de Protección de Datos de 2011 de Lesoto, el RGPD en la UE y la CCPA en California), usted tiene los siguientes derechos:',
-  'legal.privacy.bullets.accessRight': 'Acceso: vea todos los datos que la aplicación almacena sobre usted a través de Perfil → Exportar datos',
-  'legal.privacy.bullets.deleteRight': 'Eliminación: borre permanentemente todos sus datos a través de la configuración de la aplicación o nuestro sitio web',
-  'legal.privacy.bullets.exportRight': 'Portabilidad: Exporte sus datos en formato JSON para transferirlos a otro servicio',
-  'legal.privacy.bullets.correctRight': 'Corrección: Actualiza o modifica la información de tu perfil en cualquier momento',
-  'legal.privacy.bullets.objectionRight': 'Objeción: Retirar el consentimiento para el tratamiento de datos en cualquier momento a través del Centro Legal',
+  'legal.privacy.sections.rightsBody':
+    'Según las leyes de protección de datos aplicables (incluida la Ley de Protección de Datos de 2011 de Lesoto, el RGPD en la UE y la CCPA en California), usted tiene los siguientes derechos:',
+  'legal.privacy.bullets.accessRight':
+    'Acceso: vea todos los datos que la aplicación almacena sobre usted a través de Perfil → Exportar datos',
+  'legal.privacy.bullets.deleteRight':
+    'Eliminación: borre permanentemente todos sus datos a través de la configuración de la aplicación o nuestro sitio web',
+  'legal.privacy.bullets.exportRight':
+    'Portabilidad: Exporte sus datos en formato JSON para transferirlos a otro servicio',
+  'legal.privacy.bullets.correctRight':
+    'Corrección: Actualiza o modifica la información de tu perfil en cualquier momento',
+  'legal.privacy.bullets.objectionRight':
+    'Objeción: Retirar el consentimiento para el tratamiento de datos en cualquier momento a través del Centro Legal',
   'legal.privacy.sections.popiaTitle': '8) Cumplimiento de la protección de datos (Lesoto)',
-  'legal.privacy.sections.popiaBody': 'De acuerdo con la Ley de Protección de Datos de 2011 del Reino de Lesoto, fitquest.dev actúa como responsable de su información personal. Procesamos sus datos de manera legal, minimizamos la recopilación a lo necesario, garantizamos la precisión y mantenemos las medidas de seguridad adecuadas. Para los usuarios transfronterizos, también cumplimos con POPIA (Sudáfrica), GDPR (UE) y CCPA (California) cuando corresponda.',
+  'legal.privacy.sections.popiaBody':
+    'De acuerdo con la Ley de Protección de Datos de 2011 del Reino de Lesoto, fitquest.dev actúa como responsable de su información personal. Procesamos sus datos de manera legal, minimizamos la recopilación a lo necesario, garantizamos la precisión y mantenemos las medidas de seguridad adecuadas. Para los usuarios transfronterizos, también cumplimos con POPIA (Sudáfrica), GDPR (UE) y CCPA (California) cuando corresponda.',
   'legal.privacy.sections.updatesTitle': '9) Actualizaciones de políticas',
-  'legal.privacy.sections.updatesBody': 'Podemos actualizar esta política de privacidad de vez en cuando. Cualquier cambio se reflejará en la aplicación con una fecha de "Última actualización" actualizada y se le pedirá que revise y acepte la política actualizada. El uso continuo de la aplicación después de los cambios constituye la aceptación de la nueva política.',
+  'legal.privacy.sections.updatesBody':
+    'Podemos actualizar esta política de privacidad de vez en cuando. Cualquier cambio se reflejará en la aplicación con una fecha de "Última actualización" actualizada y se le pedirá que revise y acepte la política actualizada. El uso continuo de la aplicación después de los cambios constituye la aceptación de la nueva política.',
   'legal.privacy.sections.contactTitle': '10) Contacto',
-  'legal.privacy.sections.contactBody': 'Para solicitudes de privacidad, envíe un correo electrónico a fitquestsupp0rt@gmail.com. También puede visitar https://fitquest.dev/support. Incluya su identificador de cuenta cuando esté disponible. Respondemos dentro de los 30 días hábiles.',
+  'legal.privacy.sections.contactBody':
+    'Para solicitudes de privacidad, envíe un correo electrónico a fitquestsupp0rt@gmail.com. También puede visitar https://fitquest.dev/support. Incluya su identificador de cuenta cuando esté disponible. Respondemos dentro de los 30 días hábiles.',
   'legal.terms.sections.useTitle': '1) Uso Aceptable',
-  'legal.terms.sections.useBody': 'Usted acepta utilizar FitQuest legalmente y no intentar realizar ingeniería inversa, descompilar, eludir controles de seguridad, mecanismos de suscripción o funciones de protección de datos. No puede utilizar la aplicación para ningún propósito ilegal o en violación de las regulaciones aplicables.',
+  'legal.terms.sections.useBody':
+    'Usted acepta utilizar FitQuest legalmente y no intentar realizar ingeniería inversa, descompilar, eludir controles de seguridad, mecanismos de suscripción o funciones de protección de datos. No puede utilizar la aplicación para ningún propósito ilegal o en violación de las regulaciones aplicables.',
   'legal.terms.sections.medicalTitle': '2) Descargo de responsabilidad médica',
-  'legal.terms.sections.medicalBody': 'FitQuest es una aplicación de fitness y bienestar y NO es un dispositivo o servicio médico. La aplicación no proporciona asesoramiento, diagnóstico ni tratamiento médico. Las sugerencias de entrenamiento, las puntuaciones de salud, las recomendaciones de recuperación y la orientación generada por IA tienen únicamente fines informativos y educativos. Consulte siempre a un profesional de la salud calificado antes de comenzar, modificar o suspender cualquier programa de ejercicios, especialmente si tiene problemas de salud, lesiones o inquietudes preexistentes. Deje de hacer ejercicio inmediatamente si siente dolor, mareos o malestar.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest es una aplicación de fitness y bienestar y NO es un dispositivo o servicio médico. La aplicación no proporciona asesoramiento, diagnóstico ni tratamiento médico. Las sugerencias de entrenamiento, las puntuaciones de salud, las recomendaciones de recuperación y la orientación generada por IA tienen únicamente fines informativos y educativos. Consulte siempre a un profesional de la salud calificado antes de comenzar, modificar o suspender cualquier programa de ejercicios, especialmente si tiene problemas de salud, lesiones o inquietudes preexistentes. Deje de hacer ejercicio inmediatamente si siente dolor, mareos o malestar.',
   'legal.terms.sections.subscriptionTitle': '3) Suscripción y facturación',
-  'legal.terms.sections.subscriptionBody': 'FitQuest ofrece una prueba gratuita de 14 días de todas las funciones premium. Una vez finalizado el período de prueba, puede suscribirse para continuar usando las funciones premium o continuar con el nivel gratuito. Las suscripciones premium se facturan a través de Google Play Store o Apple App Store. Las suscripciones se renuevan automáticamente al final de cada período de facturación a menos que se cancelen al menos 24 horas antes de la fecha de renovación. Puede administrar o cancelar su suscripción a través de la configuración de la tienda de aplicaciones de su dispositivo. Los reembolsos están sujetos a la política de reembolso de la plataforma respectiva. Los precios pueden variar según la región y se muestran en su moneda local antes de la compra.',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest ofrece una prueba gratuita de 14 días de todas las funciones premium. Una vez finalizado el período de prueba, puede suscribirse para continuar usando las funciones premium o continuar con el nivel gratuito. Las suscripciones premium se facturan a través de Google Play Store o Apple App Store. Las suscripciones se renuevan automáticamente al final de cada período de facturación a menos que se cancelen al menos 24 horas antes de la fecha de renovación. Puede administrar o cancelar su suscripción a través de la configuración de la tienda de aplicaciones de su dispositivo. Los reembolsos están sujetos a la política de reembolso de la plataforma respectiva. Los precios pueden variar según la región y se muestran en su moneda local antes de la compra.',
   'legal.terms.sections.ipTitle': '4) Propiedad intelectual',
-  'legal.terms.sections.ipBody': 'Todo el contenido, diseño, código, algoritmos, marcas y materiales de FitQuest son propiedad intelectual de fitquest.dev y están protegidos por las leyes de derechos de autor y marcas comerciales aplicables. No puede reproducir, distribuir ni crear trabajos derivados de ninguna parte de la aplicación sin permiso previo por escrito.',
+  'legal.terms.sections.ipBody':
+    'Todo el contenido, diseño, código, algoritmos, marcas y materiales de FitQuest son propiedad intelectual de fitquest.dev y están protegidos por las leyes de derechos de autor y marcas comerciales aplicables. No puede reproducir, distribuir ni crear trabajos derivados de ninguna parte de la aplicación sin permiso previo por escrito.',
   'legal.terms.sections.liabilityTitle': '5) Limitación de responsabilidad',
-  'legal.terms.sections.liabilityBody': 'En la medida máxima permitida por la ley, fitquest.dev no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo que surja del uso de la aplicación, incluidos, entre otros, lesiones físicas, pérdida de datos o interrupción del servicio. Nuestra responsabilidad total no excederá el monto que pagó por las funciones premium en los 12 meses anteriores al reclamo.',
+  'legal.terms.sections.liabilityBody':
+    'En la medida máxima permitida por la ley, fitquest.dev no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo que surja del uso de la aplicación, incluidos, entre otros, lesiones físicas, pérdida de datos o interrupción del servicio. Nuestra responsabilidad total no excederá el monto que pagó por las funciones premium en los 12 meses anteriores al reclamo.',
   'legal.terms.sections.terminationTitle': '6) Terminación',
-  'legal.terms.sections.terminationBody': 'Nos reservamos el derecho de suspender o cancelar su acceso a FitQuest si viola estos términos. Puedes dejar de usar la aplicación en cualquier momento. Al finalizar, sus datos almacenados localmente permanecen en su dispositivo hasta que los elimine o desinstale la aplicación.',
+  'legal.terms.sections.terminationBody':
+    'Nos reservamos el derecho de suspender o cancelar su acceso a FitQuest si viola estos términos. Puedes dejar de usar la aplicación en cualquier momento. Al finalizar, sus datos almacenados localmente permanecen en su dispositivo hasta que los elimine o desinstale la aplicación.',
   'legal.terms.sections.governingLawTitle': '7) Ley aplicable',
-  'legal.terms.sections.governingLawBody': 'Estos términos se rigen e interpretan de conformidad con las leyes del Reino de Lesotho. Cualquier disputa que surja de estos términos o de su uso de FitQuest estará sujeta a la jurisdicción exclusiva de los tribunales de Lesotho. Si alguna disposición de estos términos se considera inaplicable, las disposiciones restantes continuarán en pleno vigor y efecto.',
-  'legal.terms.bullets.compliance': 'Debes cumplir con todas las políticas aplicables de Google Play y Apple App Store al utilizar esta aplicación',
-  'legal.terms.bullets.accountDelete': 'Puede eliminar su cuenta y todos los datos asociados en cualquier momento a través de Perfil → Configuración o en https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Estos términos se rigen e interpretan de conformidad con las leyes del Reino de Lesotho. Cualquier disputa que surja de estos términos o de su uso de FitQuest estará sujeta a la jurisdicción exclusiva de los tribunales de Lesotho. Si alguna disposición de estos términos se considera inaplicable, las disposiciones restantes continuarán en pleno vigor y efecto.',
+  'legal.terms.bullets.compliance':
+    'Debes cumplir con todas las políticas aplicables de Google Play y Apple App Store al utilizar esta aplicación',
+  'legal.terms.bullets.accountDelete':
+    'Puede eliminar su cuenta y todos los datos asociados en cualquier momento a través de Perfil → Configuración o en https://fitquest.dev/delete-account',
 
   'common.save': 'Guardar',
   'common.cancel': 'Cancelar',
@@ -6324,7 +7431,8 @@ const es: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Empezar en cualquier momento',
   'savedWorkouts.deleteFailed': 'No se pudo eliminar el entrenamiento. Por favor inténtalo de nuevo.',
   'savedWorkouts.emptyTitle': 'Aún no hay entrenamientos guardados',
-  'savedWorkouts.emptySubtitle': 'Cree su primer entrenamiento personalizado seleccionando ejercicios adaptados a sus objetivos. ¡Solo lleva un minuto!',
+  'savedWorkouts.emptySubtitle':
+    'Cree su primer entrenamiento personalizado seleccionando ejercicios adaptados a sus objetivos. ¡Solo lleva un minuto!',
   'savedWorkouts.featurePick': 'Elige tus ejercicios',
   'savedWorkouts.featureSet': 'Establecer repeticiones y descansar',
   'savedWorkouts.featureStart': 'Comience en cualquier momento',
@@ -6376,7 +7484,8 @@ const es: Record<string, string> = {
   'help.featureDesc': '¿Tiene una idea para mejorar FitQuest? Nos encantaría escucharlo',
   'help.responseTime': 'Normalmente respondemos dentro de 24 a 48 horas',
 
-  'about.description': 'FitQuest es una plataforma integral de fitness diseñada para ayudarte a alcanzar tus objetivos de entrenamiento. Todos sus datos permanecen en su dispositivo, protegidos por cifrado AES-256.',
+  'about.description':
+    'FitQuest es una plataforma integral de fitness diseñada para ayudarte a alcanzar tus objetivos de entrenamiento. Todos sus datos permanecen en su dispositivo, protegidos por cifrado AES-256.',
   'about.platform': 'Plataforma',
   'about.dataStorage': 'Almacenamiento de datos',
   'about.onDevice': 'Solo en el dispositivo',
@@ -6542,7 +7651,8 @@ const es: Record<string, string> = {
   'paywall.features.fitmindLibrary': 'Biblioteca FitMind',
   'paywall.features.fitmindLibrarySub': 'Importe documentos y tarjetas didácticas ilimitadas',
   'paywall.features.healthMonitoring': 'Monitoreo de salud',
-  'paywall.features.healthMonitoringSub': 'Detección de anomalías y análisis del sueño 24 horas al día, 7 días a la semana',
+  'paywall.features.healthMonitoringSub':
+    'Detección de anomalías y análisis del sueño 24 horas al día, 7 días a la semana',
   'paywall.features.analytics': 'Análisis avanzado',
   'paywall.features.analyticsSub': 'Información detallada sobre el progreso y tendencias',
   'paywall.features.encrypted': 'Cifrado y privado',
@@ -6606,9 +7716,17 @@ const es: Record<string, string> = {
   'onboarding.heightPlaceholder': 'Altura (cm)',
   'onboarding.saveError': 'No se pudo guardar su perfil. Por favor inténtalo de nuevo.',
   'onboarding.permTitle': 'Habilitar permisos',
-  'onboarding.permSub': 'Estos ayudan a que FitQuest funcione mejor para ti. Puedes cambiarlos en cualquier momento en Ajustes.',
+  'onboarding.permSub':
+    'Estos ayudan a que FitQuest funcione mejor para ti. Puedes cambiarlos en cualquier momento en Ajustes.',
   'onboarding.perm.notifications': 'Recordatorios de entrenamiento',
   'onboarding.perm.notificationsSub': 'Recibe recordatorios para mantener tu programa de entrenamiento',
+  'onboarding.perm.motion': 'Movimiento y Actividad',
+  'onboarding.perm.motionSub': 'Rastrea pasos, detecta ejercicios y cuenta repeticiones usando sensores de movimiento',
+  'onboarding.perm.location': 'Ubicación (Rastreo de Trote)',
+  'onboarding.perm.locationSub': 'Mapea tus rutas de trote y calcula la distancia con precisión',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    'Sincroniza frecuencia cardíaca, sueño y datos de entrenamiento con Android Health Connect',
   'onboarding.perm.allow': 'Permitir',
   'onboarding.perm.skipNote': 'Puedes omitir esto — los permisos se pueden habilitar más tarde en tu perfil.',
 
@@ -6782,7 +7900,8 @@ const es: Record<string, string> = {
   'backup.createBackup': 'Crear Respaldo',
   'backup.availableBackups': 'Copias de seguridad disponibles',
   'backup.noBackups': 'Aún no hay respaldos.',
-  'backup.helperText': 'Crea un archivo de copia de seguridad cifrado de su base de datos local. Si establece una frase de contraseña, debe usar la misma frase de contraseña para restaurar.',
+  'backup.helperText':
+    'Crea un archivo de copia de seguridad cifrado de su base de datos local. Si establece una frase de contraseña, debe usar la misma frase de contraseña para restaurar.',
   'backup.optionalPassphrase': 'Frase de contraseña opcional',
   'backup.working': 'Trabajando…',
   'backup.created': 'Copia de seguridad creada',
@@ -6799,9 +7918,11 @@ const es: Record<string, string> = {
   'backup.uploaded': 'Subido',
   'backup.uploadFailed': 'La carga falló',
   'backup.noCloudBackups': 'Aún no hay copias de seguridad en la nube.',
-  'backup.cloudHelper': 'Almacena el blob de copia de seguridad cifrado en el backend de la Fase 2. El servidor no puede descifrar sus datos.',
+  'backup.cloudHelper':
+    'Almacena el blob de copia de seguridad cifrado en el backend de la Fase 2. El servidor no puede descifrar sus datos.',
 
-  'audio.warmup.start': 'Empecemos con un calentamiento. Movimientos ligeros para despertar tus músculos y preparar tu cuerpo.',
+  'audio.warmup.start':
+    'Empecemos con un calentamiento. Movimientos ligeros para despertar tus músculos y preparar tu cuerpo.',
   'audio.main.start': 'Entremos en ello. Entrenamiento principal que comienza ahora.',
   'audio.cooldown.start': 'Es hora de refrescarse. Movimientos suaves para ayudar a tu cuerpo a recuperarse.',
   'audio.warmup.toMain': '¡Gran calentamiento! Tu cuerpo está preparado. Es hora del entrenamiento principal. ¡Vamos!',
@@ -6844,8 +7965,146 @@ const es: Record<string, string> = {
   'audio.streak.60': '¡Sesenta días! La mayoría de la gente sueña con este tipo de dedicación.',
   'audio.streak.90': '¡Racha de noventa días! Eres absolutamente legendaria.',
   'audio.minutes': '{{minutes}} minutos de puro esfuerzo.',
-  'audio.progressions': '{{count}} ejercicio listo para subir de nivel!|{{count}} ejercicios listos para subir de nivel!',
+  'audio.progressions':
+    '{{count}} ejercicio listo para subir de nivel!|{{count}} ejercicios listos para subir de nivel!',
   'audio.xpEarned': 'Más {{xp}} XP ganado.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Lógica de progresión activada según actividad reciente.',
+  'signal.transition.regressing.subtext': 'Carga de sesión reducida para ajustarse al ritmo actual.',
+  'signal.firstSession.headline': 'Sistema listo. Comienza tu primera sesión.',
+  'signal.firstSession.subtext': 'Cada sesión calibra el sistema a tu capacidad.',
+  'signal.streakAtRisk.headline': '{{streak}} días consecutivos. Continúa hoy para reforzarlo.',
+  'signal.streakAtRisk.subtext.disciplined': 'La consistencia impulsa la precisión de la progresión.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Una sesión corta es suficiente para mantener el ritmo.',
+  'signal.restAdvised.headline': 'Recuperación recomendada según fatiga.',
+  'signal.restAdvised.subtext.fatigue': 'Fatiga al {{fatigue}}%. El descanso acelera la adaptación.',
+  'signal.restAdvised.subtext.readiness': 'Preparación al {{readiness}}%. Recuperación en progreso.',
+  'signal.momentum.headline': 'Sesión completada. Datos registrados.',
+  'signal.momentum.subtext.streak': 'Patrón de {{streak}} días. El sistema perfecciona tu programa.',
+  'signal.momentum.subtext.default': 'La recuperación comienza. La próxima sesión se ajustará en consecuencia.',
+  'signal.comeback.headline.inconsistent': '{{days}} días sin entrenar. Sesión de baja resistencia disponible.',
+  'signal.comeback.headline.disciplined': '{{days}} días desde la última sesión. Intensidad recalibrada.',
+  'signal.comeback.subtext.inconsistent': 'Sistema ajustado para un reingreso más fácil.',
+  'signal.comeback.subtext.disciplined': 'Volumen ajustado para coincidir con el estado de recuperación actual.',
+  'signal.recoveryReady.headline.disciplined': 'Preparación óptima. Condiciones de progresión alcanzadas.',
+  'signal.recoveryReady.headline.inconsistent': 'Recuperación completa. Buenas condiciones para una sesión.',
+  'signal.recoveryReady.subtext': 'Preparación al {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} días consecutivos. El sistema se adapta a tu ritmo.',
+  'signal.streakBuilding.subtext.disciplined': 'Volumen e intensidad aumentando según rendimiento.',
+  'signal.streakBuilding.subtext.inconsistent': 'Consistencia en construcción. El desafío aumenta gradualmente.',
+  'signal.expectToday.headline.disciplined': 'Ventana de entrenamiento abierta. Sistema listo.',
+  'signal.expectToday.headline.inconsistent': 'Sesión disponible cuando estés listo.',
+  'signal.expectToday.subtext.good': 'Preparación {{readiness}}%. Buenas condiciones.',
+  'signal.expectToday.subtext.moderate': 'Preparación moderada. Se recomienda sesión ligera.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Primera sesión por delante. El sistema aprende de cada repetición.',
+  'memory.noHistory.trendStatement': 'Sin datos aún. Tu primera sesión establece la línea base.',
+  'memory.lastSession.headline.crushed': 'Última sesión: {{completed}} ejercicios completados en {{duration}}min.',
+  'memory.lastSession.headline.adjusted': 'Última sesión: {{completed}}/{{total}} completado. Sistema ajustado.',
+  'memory.lastSession.headline.tough': 'La última sesión fue dura. {{completed}}/{{total}} completado. Recuperación priorizada.',
+  'memory.trend.improving': 'Rendimiento al alza. El sistema aumenta el desafío.',
+  'memory.trend.declining': 'Sesiones recientes más difíciles. Sistema ajustado para reconstruir impulso.',
+  'memory.trend.steady.data': 'Resultados consistentes. Cerca de la siguiente puerta de progresión.',
+  'memory.trend.steady.building': 'Construyendo línea base. Sigue apareciendo.',
+  'memory.delta.firstWorkout': 'Primera sesión. El sistema se calibra a tu cuerpo.',
+  'memory.delta.same': 'Misma estructura de sesión. El sistema ve consistencia en construcción.',
+  'memory.delta.mixed': '{{total}} cambios: {{removed}} rotados, {{added}} nuevos.',
+  'memory.delta.added': '{{count}} ejercicio{{plural}} nuevo agregado para variedad.',
+  'memory.delta.removed': '{{count}} ejercicio{{plural}} intercambiado para recuperación.',
+  'memory.progression.firstTime': 'Primera vez. El sistema calibrará a partir de esta sesión.',
+  'memory.progression.improving': '{{wins}} victorias consecutivas. Progresando.',
+  'memory.progression.declining': 'Descenso reciente detectado. Volumen ajustado.',
+  'memory.progression.nearGate': '{{successes}} sesión{{plural}} sólida. Una más para desbloquear progresión.',
+  'memory.progression.steady': 'Manteniéndose estable. La consistencia es la clave.',
+  'memory.reason.retained': 'Consistente con tu camino de progresión.',
+  'memory.reason.addedBalance': 'Rotado para equilibrio de recuperación muscular.',
+  'memory.reason.removedFatigue': 'Rotado por fatiga acumulada.',
+  'memory.reason.removedVariety': 'Intercambiado para equilibrio muscular y variedad.',
+  'memory.timeSince.minutes': 'Hace {{minutes}}m',
+  'memory.timeSince.hours': 'Hace {{hours}}h',
+  'memory.timeSince.yesterday': 'Ayer',
+  'memory.timeSince.days': 'Hace {{days}} días',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Acceso completo al sistema activado.',
+  'trial.welcome.subtext': '14 días para explorar cada función. Sin restricciones.',
+  'trial.firstWin.headline': '{{workouts}} sesión{{plural}} completada. El sistema aprende tus patrones.',
+  'trial.firstWin.subtext': 'Cada sesión mejora la precisión del entrenamiento.',
+  'trial.readyForFirst.headline': 'Día {{day}}. Sistema listo para tu primera sesión.',
+  'trial.readyForFirst.subtext': 'Comienza un entrenamiento para iniciar la calibración.',
+  'trial.improvementShown.headline': 'Comparación de sesiones ahora disponible.',
+  'trial.improvementShown.subtext': 'El sistema ahora puede mostrar qué cambió y por qué.',
+  'trial.memoryIntro.headline': 'Inteligencia de entrenamiento expandiéndose.',
+  'trial.memoryIntro.subtext': 'Día {{day}}. Más sesiones = análisis más agudo.',
+  'trial.fullIntelligence.headline': 'Inteligencia completa activa.',
+  'trial.fullIntelligence.subtext': 'Día {{day}}. El sistema se adapta a tus patrones y capacidad.',
+  'trial.transitionClear.headline': '{{days}} día{{plural}} restante en acceso completo.',
+  'trial.transitionClear.subtext': 'Después del periodo de prueba, las funciones básicas permanecen. Las capas de inteligencia requieren suscripción.',
+  'trial.transitionSoft.headline': '{{days}} días restantes.',
+  'trial.transitionSoft.subtext': 'Tus datos y progreso siempre son tuyos. La suscripción continúa las funciones de inteligencia.',
+  'trial.viewPlans': 'Ver planes',
+  'trial.expired.headline': 'Prueba completada.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} sesiones registradas. Las funciones básicas permanecen. Suscríbete para restaurar capas de inteligencia.',
+  'trial.expired.subtext.noWorkouts': 'Las funciones básicas permanecen. Suscríbete para desbloquear capas de inteligencia.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Abandono en el ejercicio {{index}} ({{name}}) — volumen reducido en la próxima sesión.',
+  'failure.skipHeavy': 'Alta tasa de omisión detectada. Los ejercicios pueden no coincidir con la capacidad actual.',
+  'failure.lowVolume': 'Bajo volumen completado. La sesión puede ser demasiado exigente.',
+  'failure.earlyDropout': 'Patrón de abandono temprano. La duración de la sesión se reduce.',
+  'failure.lateDropout': 'Abandono por resistencia. Ejercicios más ligeros al final.',
+  'failure.noFailure': 'Sesión completada exitosamente.',
+  'failure.insight.none': 'Sesión completada al {{percent}}%. Sin ajustes necesarios.',
+  'failure.insight.earlyDropout': 'Abandono en el ejercicio {{index}} ({{name}}) — volumen reducido en la próxima sesión.',
+  'failure.insight.midDropout': 'Abandono en la serie {{index}} ({{name}}) — ajustando conteo de ejercicios.',
+  'failure.insight.lateDropout': 'Casi completada ({{percent}}%). Ajuste menor aplicado.',
+  'failure.insight.skipHeavy': 'Sesión completada pero {{percent}}% de ejercicios omitidos. Revisando selección.',
+  'failure.insight.lowVolume': 'Bajo volumen completado ({{percent}}%). Reduciendo prescripciones de series.',
+  'failure.insight.empty': 'Sin ejercicios completados. El sistema reduce la dificultad de la próxima sesión.',
+  'failure.adjustment.none': 'Sin ajuste necesario.',
+  'failure.adjustment.earlyDropout': 'Abandono temprano detectado. Reduciendo volumen y duración.',
+  'failure.adjustment.midDropout': 'Abandono en el ejercicio {{index}}. Reduciendo conteo de ejercicios.',
+  'failure.adjustment.lateDropout': 'Sesión casi completada. Reducción menor de volumen.',
+  'failure.adjustment.skipHeavy': 'Alta tasa de omisión. La selección de ejercicios necesita revisión.',
+  'failure.adjustment.lowVolume': 'Bajo volumen completado. Reduciendo conteo de series.',
+  'failure.adjustment.empty': 'Sesión vacía. Reducción significativa aplicada.',
+  'failure.pattern.noData': 'Sin datos de sesión aún.',
+  'failure.pattern.noFailures': 'Todas las sesiones recientes completadas exitosamente. Las condiciones apoyan la progresión.',
+  'failure.pattern.occasional': 'Sesiones incompletas ocasionales. El volumen actual parece sostenible.',
+  'failure.pattern.earlyDropoffs': 'Abandonos tempranos frecuentes. Se recomienda reducir duración o conteo de ejercicios.',
+  'failure.pattern.highSkips': 'Alta tasa de omisión. La selección de ejercicios puede necesitar ajuste.',
+  'failure.pattern.worsening': 'Tasa de fallo aumentando. Considera reducir volumen o enfocarte en recuperación.',
+  'failure.pattern.general': '{{rate}}% tasa de fallo. Ajustando dificultad de la sesión.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'La racha se reiniciará.',
+  'simulation.skip.modeShift': 'Puede cambiar a modo inconsistente.',
+  'simulation.skip.fatigueDrop': 'La fatiga baja en {{delta}}.',
+  'simulation.skip.minimal': 'Impacto mínimo — tienes margen.',
+  'simulation.train.fatigueUp': 'La fatiga aumenta en {{delta}}.',
+  'simulation.train.modeAdvance': 'Avanza hacia modo disciplinado.',
+  'simulation.train.reduceTomorrow': 'Mañana debería ser más ligero.',
+  'simulation.train.pushTomorrow': 'Espacio para exigir más mañana.',
+  'simulation.rest.recovery': 'Recuperación: fatiga baja en {{delta}}.',
+  'simulation.rest.streakReset': 'La racha se reiniciará, pero la recuperación tiene prioridad.',
+  'simulation.rest.ready': 'Listo para sesión completa mañana.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'La inteligencia avanzada requiere suscripción.',
 };
 
 const fr: Record<string, string> = {
@@ -6857,10 +8116,10 @@ const fr: Record<string, string> = {
 
   'dashboard.welcomeBack': 'Bon retour',
   'dashboard.todaysGoal': 'Objectif du Jour',
-  'dashboard.startWorkout': 'Commencer l\\\\\\\'Entraînement',
+  'dashboard.startWorkout': "Commencer l\\\\\\'Entraînement",
   'dashboard.recovery': 'Récupération',
   'dashboard.lastWorkout': 'Dernier Entraînement',
-  'dashboard.readyToTrain': 'Prêt à S\\\\\\\'entraîner',
+  'dashboard.readyToTrain': "Prêt à S\\\\\\'entraîner",
   'dashboard.highFatigue': 'Fatigue Élevée',
   'dashboard.streak': 'Série',
   'dashboard.workouts': 'Entraînements',
@@ -6872,8 +8131,9 @@ const fr: Record<string, string> = {
   'dashboard.levelShort': 'Niv',
   'dashboard.restRecommended': 'Repos recommandé',
   'dashboard.recoveryModerate': 'Modéré',
-  'dashboard.recoveryWarning': '⚠️ Forte fatigue détectée. Envisagez un entraînement plus léger ou une journée de repos.',
-  'dashboard.noWorkoutsYet': 'Pas encore d\\\\\\\'entraînement. Commencez votre premier !',
+  'dashboard.recoveryWarning':
+    '⚠️ Forte fatigue détectée. Envisagez un entraînement plus léger ou une journée de repos.',
+  'dashboard.noWorkoutsYet': "Pas encore d\\\\\\'entraînement. Commencez votre premier !",
   'dashboard.createCustom': 'Créer personnalisé',
   'dashboard.recoveryTrackingActive': 'Suivi de récupération actif',
   'dashboard.explore': 'Explorer',
@@ -6882,16 +8142,17 @@ const fr: Record<string, string> = {
   'dashboard.analytics': 'Analyse',
   'dashboard.analyticsDesc': 'Aperçu des progrès',
   'dashboard.coach': 'Entraîneur',
-  'dashboard.coachDesc': 'Conseils de remise en forme par l\\\\\\\'IA',
+  'dashboard.coachDesc': "Conseils de remise en forme par l\\\\\\'IA",
   'dashboard.mealPrep': 'Préparation des repas',
   'dashboard.mealPrepDesc': 'Planification nutritionnelle',
   'dashboard.exercises': 'Exercices',
-  'dashboard.exercisesDesc': 'Bibliothèque d\\\\\\\'exercices',
+  'dashboard.exercisesDesc': "Bibliothèque d\\\\\\'exercices",
   'dashboard.myWorkouts': 'Mes entraînements',
   'dashboard.myWorkoutsDesc': 'Routines enregistrées',
   'dashboard.of': 'de',
   'dashboard.incompleteSession': 'Session incomplète',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'COMMENCER',
   'dashboard.stepsToday': 'Étapes',
   'dashboard.activeMin': 'Min actif',
   'dashboard.completionRate': 'Achèvement',
@@ -6905,7 +8166,7 @@ const fr: Record<string, string> = {
   'fitquest.reset.body': 'Cela effacera toutes les données et recommencera à zéro. Es-tu sûr?',
   'fitquest.reset.confirm': 'Réinitialiser',
   'fitquest.initializing': 'Initialisation de FitQuest...',
-  'fitquest.errorTitle': 'Quelque chose s\\\\\\\'est mal passé',
+  'fitquest.errorTitle': "Quelque chose s\\\\\\'est mal passé",
   'fitquest.resetAndRetry': 'Réinitialiser et réessayer',
   'fitquest.workoutComplete': 'Entraînement terminé ! 🎉',
   'fitquest.rateWorkout': 'Notez cet entraînement',
@@ -6914,7 +8175,7 @@ const fr: Record<string, string> = {
   'fitquest.feedback.mid': 'Bon entraînement !',
   'fitquest.feedback.high': 'Super séance !',
   'fitquest.feedback.top': 'Excellent! 💪',
-  'fitquest.dayStreak': 'Série d\\\\\\\'une journée',
+  'fitquest.dayStreak': "Série d\\\\\\'une journée",
   'fitquest.best': 'Meilleur',
   'fitquest.generateNewWorkout': 'Générer un nouvel entraînement',
   'fitquest.musclesWorked': 'Muscles travaillés',
@@ -6924,7 +8185,7 @@ const fr: Record<string, string> = {
   'fitquest.levelUp': 'NIVEAU SUPÉRIEUR !',
   'fitquest.ratingTooEasy': 'Trop facile',
   'fitquest.ratingEasy': 'Facile',
-  'fitquest.ratingJustRight': 'Juste ce qu\\\\\\\'il faut',
+  'fitquest.ratingJustRight': "Juste ce qu\\\\\\'il faut",
   'fitquest.ratingHard': 'Difficile',
   'fitquest.ratingBrutal': 'Brutale',
   'fitquest.recover': 'RÉCUPÉRER',
@@ -6942,14 +8203,15 @@ const fr: Record<string, string> = {
   'fitquest.rateAndFinish': 'Noter et terminer',
   'fitquest.rateThisSet': 'Évaluez cet ensemble',
   'fitquest.rpePrompt': 'À quel point cela a-t-il été dur ? (1 = facile, 9 = effort maximum)',
-  'fitquest.finishWorkout': 'Terminer l\\\\\\\'entraînement',
+  'fitquest.finishWorkout': "Terminer l\\\\\\'entraînement",
   'fitquest.completeSet': 'Ensemble complet',
-  'fitquest.cancelTitle': 'Annuler l\\\\\\\'entraînement',
+  'fitquest.cancelTitle': "Annuler l\\\\\\'entraînement",
   'fitquest.cancelBody': 'Es-tu sûr? Les progrès seront perdus.',
   'fitquest.keepGoing': 'Continuez',
-  'fitquest.cancelWorkout': 'Annuler l\\\\\\\'entraînement',
-  'fitquest.recordingProgress': 'Progression de l\\\\\\\'enregistrement...',
-  'fitquest.idleSub': 'Génération d\\\\\\\'entraînement intelligente alimentée par\\\\\\\\ntrois moteurs fonctionnant en harmonie',
+  'fitquest.cancelWorkout': "Annuler l\\\\\\'entraînement",
+  'fitquest.recordingProgress': "Progression de l\\\\\\'enregistrement...",
+  'fitquest.idleSub':
+    "Génération d\\\\\\'entraînement intelligente alimentée par\\\\\\\\ntrois moteurs fonctionnant en harmonie",
   'fitquest.currentProfile': 'Profil actuel',
   'fitquest.sessions': 'séances',
   'fitquest.generateWorkout': 'Générer un entraînement',
@@ -6962,27 +8224,27 @@ const fr: Record<string, string> = {
   'fitquest.getReady': 'PRÉPAREZ-VOUS',
   'fitquest.go': 'ALLER!',
   'fitquest.nextUp': 'Suivant',
-  'fitquest.equipmentChange': 'Changement d\\\\\\\'équipement : installez-vous !',
+  'fitquest.equipmentChange': "Changement d\\\\\\'équipement : installez-vous !",
   'fitquest.formTips': 'Conseils pour le formulaire',
   'fitquest.warmUp': 'Échauffement',
   'fitquest.coolDown': 'Refroidissement',
   'fitquest.mainWorkout': 'Entraînement principal',
 
-  'train.generating': 'Génération de l\\\\\\\'entraînement…',
+  'train.generating': "Génération de l\\\\\\'entraînement…",
   'train.warmUp': 'Échauffement',
   'train.exercise': 'Exercice',
   'train.rest': 'Repos',
   'train.complete': 'Terminé',
   'train.skip': 'Passer',
   'train.finish': 'Terminer',
-  'train.rateWorkout': 'Noter l\\\\\\\'Entraînement',
+  'train.rateWorkout': "Noter l\\\\\\'Entraînement",
   'train.set': 'Série',
   'train.rep': 'Répétition',
-  'train.startWorkout': 'Commencer l\\\\\\\'Entraînement',
+  'train.startWorkout': "Commencer l\\\\\\'Entraînement",
   'train.nextExercise': 'Exercice Suivant',
   'train.difficulty': 'Difficulté',
 
-  'library.title': 'Bibliothèque d\\\\\\\'Exercices',
+  'library.title': "Bibliothèque d\\\\\\'Exercices",
   'library.search': 'Rechercher des exercices…',
   'library.all': 'Tous',
   'library.beginner': 'Débutant',
@@ -6993,7 +8255,7 @@ const fr: Record<string, string> = {
   'library.createWorkout': 'Créer un Entraînement',
 
   'profile.title': 'Profil',
-  'profile.trainingDays': 'Jours d\\\\\\\'Entraînement',
+  'profile.trainingDays': "Jours d\\\\\\'Entraînement",
   'profile.sessionLength': 'Durée de Session',
   'profile.experience': 'Expérience',
   'profile.darkMode': 'Mode Sombre',
@@ -7001,12 +8263,12 @@ const fr: Record<string, string> = {
   'profile.notifications': 'Notifications',
   'profile.logout': 'Déconnexion',
   'profile.preferences': 'Préférences',
-  'profile.trainingProfile': 'Profil d\\\\\\\'Entraînement',
+  'profile.trainingProfile': "Profil d\\\\\\'Entraînement",
   'profile.achievements': 'Réalisations',
   'profile.logoutConfirm': 'Êtes-vous sûr de vouloir vous déconnecter ?',
   'profile.bestStreak': 'Meilleure séquence',
-  'profile.trainingGoal': 'Objectif d\\\\\\\'entraînement',
-  'profile.trainingGoalSub': 'Définit votre objectif d\\\\\\\'entraînement et votre sélection d\\\\\\\'exercices',
+  'profile.trainingGoal': "Objectif d\\\\\\'entraînement",
+  'profile.trainingGoalSub': "Définit votre objectif d\\\\\\'entraînement et votre sélection d\\\\\\'exercices",
   'profile.daysPerWeek': 'jours par semaine',
   'profile.trainingDaysSub': 'À quelle fréquence vous entraînez-vous',
   'profile.sessionLengthSub': 'Durée de chaque entraînement',
@@ -7014,20 +8276,24 @@ const fr: Record<string, string> = {
   'profile.craftMyBody': 'Fabriquer mon corps',
   'profile.craftMyBodySub': 'Plan de transformation corporelle personnalisé avec nutrition et entraînement',
   'profile.adaptiveTraining': 'Formation adaptative',
-  'profile.adaptiveExplanation': 'Ces valeurs s\\\\\\\'ajustent automatiquement au fur et à mesure de votre entraînement. Appuyez sur chaque métrique pour en savoir plus.',
+  'profile.adaptiveExplanation':
+    "Ces valeurs s\\\\\\'ajustent automatiquement au fur et à mesure de votre entraînement. Appuyez sur chaque métrique pour en savoir plus.",
   'profile.fatigueSensitivity': 'Sensibilité à la fatigue',
-  'profile.fatigueSensitivityDesc': 'La rapidité avec laquelle la fatigue s\\\\\\\'accumule pendant les entraînements. Des valeurs plus élevées signifient que l\\\\\\\'algorithme vous donne plus de repos entre les sessions intenses. S\\\\\\\'ajuste en fonction de vos taux d\\\\\\\'achèvement d\\\\\\\'entraînement et de vos schémas de récupération.',
+  'profile.fatigueSensitivityDesc':
+    "La rapidité avec laquelle la fatigue s\\\\\\'accumule pendant les entraînements. Des valeurs plus élevées signifient que l\\\\\\'algorithme vous donne plus de repos entre les sessions intenses. S\\\\\\'ajuste en fonction de vos taux d\\\\\\'achèvement d\\\\\\'entraînement et de vos schémas de récupération.",
   'profile.progressionPace': 'Rythme de progression',
-  'profile.progressionPaceDesc': 'La difficulté de l’exercice agressif augmente avec le temps. Des valeurs plus élevées signifient une progression plus rapide vers des exercices plus difficiles. S\\\\\\\'ajuste selon que vous effectuez les séries/répétitions prescrites de manière cohérente.',
+  'profile.progressionPaceDesc':
+    "La difficulté de l’exercice agressif augmente avec le temps. Des valeurs plus élevées signifient une progression plus rapide vers des exercices plus difficiles. S\\\\\\'ajuste selon que vous effectuez les séries/répétitions prescrites de manière cohérente.",
   'profile.volumeTolerance': 'Tolérance de volume',
-  'profile.volumeToleranceDesc': 'Quel volume d’entraînement total (séries x répétitions) votre corps peut gérer. Des valeurs plus élevées signifient des séances d\\\\\\\'entraînement plus longues avec plus d\\\\\\\'exercices. Ajuste en fonction de l\\\\\\\'achèvement de votre séance et des exercices sautés.',
+  'profile.volumeToleranceDesc':
+    "Quel volume d’entraînement total (séries x répétitions) votre corps peut gérer. Des valeurs plus élevées signifient des séances d\\\\\\'entraînement plus longues avec plus d\\\\\\'exercices. Ajuste en fonction de l\\\\\\'achèvement de votre séance et des exercices sautés.",
   'profile.confidence': 'Confiance',
   'profile.samples': 'Échantillons',
   'profile.rank': 'Rang et progression',
   'profile.totalSteps': 'Étapes',
   'profile.totalDistance': 'Distance',
   'profile.lastJog': 'Dernier jogging',
-  'profile.equipmentLevel': 'Niveau d\\\\\\\'équipement',
+  'profile.equipmentLevel': "Niveau d\\\\\\'équipement",
   'profile.equipmentLevelSub': 'Filtre les exercices par équipement disponible',
   'profile.equipment.none': 'Aucun équipement (poids corporel)',
   'profile.equipment.minimal': 'Minimal (bandes, chaise, serviette)',
@@ -7037,7 +8303,7 @@ const fr: Record<string, string> = {
   'profile.socialLayerOff': 'Désactivé (mode solo conservé)',
   'profile.darkModeOn': 'Thème sombre actif',
   'profile.darkModeOff': 'Thème lumineux actif',
-  'profile.notificationsSub': 'Définissez des rappels d\\\\\\\'entraînement et des alertes de motivation quotidiennes',
+  'profile.notificationsSub': "Définissez des rappels d\\\\\\'entraînement et des alertes de motivation quotidiennes",
   'profile.notificationsStatus.enabled': 'activé',
   'profile.notificationsStatus.disabled': 'handicapé',
   'profile.notificationsStatus.permission': 'autorisation',
@@ -7046,25 +8312,25 @@ const fr: Record<string, string> = {
   'profile.notificationsPermission.denied': 'refusé',
   'profile.notificationsAction.enable': 'Activer les rappels',
   'profile.notificationsAction.disable': 'Désactiver les rappels',
-  'profile.notificationsAction.permissionGranted': 'Marquer l\\\\\\\'autorisation accordée',
-  'profile.notificationsAction.permissionDenied': 'Marquer l\\\\\\\'autorisation refusée',
-  'profile.notificationsAction.setReminderTime': 'Définir l\\\\\\\'heure de rappel',
-  'profile.notificationsAction.pickHour': 'Choisissez l\\\\\\\'heure de rappel quotidienne',
+  'profile.notificationsAction.permissionGranted': "Marquer l\\\\\\'autorisation accordée",
+  'profile.notificationsAction.permissionDenied': "Marquer l\\\\\\'autorisation refusée",
+  'profile.notificationsAction.setReminderTime': "Définir l\\\\\\'heure de rappel",
+  'profile.notificationsAction.pickHour': "Choisissez l\\\\\\'heure de rappel quotidienne",
   'profile.notificationsAction.pickTime': 'Choisissez votre heure de rappel préférée',
   'profile.healthConnect': 'Intégration de la santé',
   'profile.healthConnectFailed': 'Impossible de connecter le prestataire de santé sur cet appareil.',
-  'profile.healthConnectSuccess': 'Le prestataire de santé s\\\\\\\'est connecté avec succès.',
+  'profile.healthConnectSuccess': "Le prestataire de santé s\\\\\\'est connecté avec succès.",
   'profile.healthSync': 'Synchronisation de la santé',
   'profile.healthSyncSub': 'Synchroniser les derniers dossiers de santé du fournisseur',
   'profile.healthSyncSummary': 'Enregistrements synchronisés',
   'profile.healthSyncErrors': 'Erreurs',
   'profile.healthSyncIssues': 'Problèmes de synchronisation récents',
-  'profile.healthSyncFailed': 'La synchronisation de l\\\\\\\'état a échoué. Veuillez réessayer.',
+  'profile.healthSyncFailed': "La synchronisation de l\\\\\\'état a échoué. Veuillez réessayer.",
   'profile.syncInProgress': 'Synchronisation en cours...',
   'profile.statusConnected': 'Connecté',
   'profile.statusNotConnected': 'Non connecté',
   'profile.statusDisabled': 'Désactivé',
-  'profile.healthConnectManage': 'Gérer l\\\\\\\'intégration de Health Connect',
+  'profile.healthConnectManage': "Gérer l\\\\\\'intégration de Health Connect",
   'profile.healthSyncNow': 'Synchroniser maintenant',
   'profile.healthReconnect': 'Reconnecter',
   'profile.healthDisconnect': 'Déconnecter',
@@ -7081,28 +8347,33 @@ const fr: Record<string, string> = {
   'profile.legalCenter': 'Centre juridique',
   'profile.legalCenterSub': 'Politique de confidentialité, conditions et enregistrements de consentement',
   'profile.recordConsent': 'Record Consent',
-  'profile.recordConsentSub': 'Appuyez pour enregistrer l\\\\\\\'horodatage du consentement à la confidentialité',
+  'profile.recordConsentSub': "Appuyez pour enregistrer l\\\\\\'horodatage du consentement à la confidentialité",
   'profile.exportData': 'Exporter mes données',
   'profile.exportDataSub': 'Créer une exportation JSON locale des métadonnées cloud + sauvegardes',
   'profile.menu.deleteCloudData': 'Supprimer les données cloud',
-  'profile.menu.deleteCloudDataConfirm': 'Cela supprime définitivement les sauvegardes de votre compte et les métadonnées cloud.',
+  'profile.menu.deleteCloudDataConfirm':
+    'Cela supprime définitivement les sauvegardes de votre compte et les métadonnées cloud.',
   'profile.menu.deletePermanently': 'Supprimer définitivement',
   'profile.deleteCloudDataSub': 'Supprimer définitivement les données du compte côté serveur',
   'profile.helpSupport': 'Help & Support',
-  'profile.helpSupportSub': 'FAQ, guides et contact d\\\\\\\'assistance',
+  'profile.helpSupportSub': "FAQ, guides et contact d\\\\\\'assistance",
   'profile.appSection': 'Application',
   'profile.backupRestore': 'Sauvegarde et restauration',
   'profile.backupRestoreSub': 'Fichiers de sauvegarde locaux cryptés',
+  'profile.subscription': 'Abonnement',
+  'profile.expired': 'Expiré',
+  'profile.subscribeToUnlock': 'Abonnez-vous pour débloquer toutes les fonctionnalités',
+  'profile.searchLanguages': 'Rechercher des langues…',
   'profile.about': 'À propos de FitQuest',
   'profile.version': 'Version',
   'profile.saved': 'Enregistré',
   'profile.alert.consentRecordedTitle': 'Consentement enregistré',
   'profile.alert.consentRecordedBody': 'L’horodatage de votre consentement à la confidentialité a été enregistré.',
-  'profile.alert.consentFailed': 'Impossible d\\\\\\\'enregistrer le consentement',
+  'profile.alert.consentFailed': "Impossible d\\\\\\'enregistrer le consentement",
   'profile.alert.exportCompleteTitle': 'Exportation terminée',
   'profile.alert.savedTo': 'Enregistré dans :',
-  'profile.alert.exportFailedTitle': 'Échec de l\\\\\\\'exportation',
-  'profile.alert.exportFailedBody': 'Impossible d\\\\\\\'exporter les données utilisateur',
+  'profile.alert.exportFailedTitle': "Échec de l\\\\\\'exportation",
+  'profile.alert.exportFailedBody': "Impossible d\\\\\\'exporter les données utilisateur",
   'profile.alert.deleteFailedTitle': 'Échec de la suppression',
   'profile.alert.deleteFailedBody': 'Impossible de supprimer les données cloud',
   'profile.alert.updateFailedTitle': 'Échec de la mise à jour',
@@ -7113,9 +8384,9 @@ const fr: Record<string, string> = {
   'profile.trainingDaysModalSub': 'Combien de jours vous entraînez-vous ?',
   'profile.sessionLengthModalTitle': 'Durée de la session',
   'profile.sessionLengthModalSub': 'Quelle est la durée de vos séances ?',
-  'profile.experienceModalTitle': 'Niveau d\\\\\\\'expérience',
+  'profile.experienceModalTitle': "Niveau d\\\\\\'expérience",
   'profile.experienceModalSub': 'Sélectionnez votre expérience de remise en forme',
-  'profile.goalModalTitle': 'Objectif d\\\\\\\'entraînement',
+  'profile.goalModalTitle': "Objectif d\\\\\\'entraînement",
   'profile.goalModalSub': 'Sur quoi voulez-vous vous concentrer ?',
   'profile.level.beginner': 'Débutant',
   'profile.level.intermediate': 'Intermédiaire',
@@ -7145,11 +8416,11 @@ const fr: Record<string, string> = {
 
   'login.tagline': 'Votre IA de fitness personnelle',
   'login.tapToUnlockFaceId': 'Appuyez pour déverrouiller avec Face ID',
-  'login.tapToUnlockFingerprint': 'Appuyez pour déverrouiller avec l\\\\\\\'empreinte digitale',
+  'login.tapToUnlockFingerprint': "Appuyez pour déverrouiller avec l\\\\\\'empreinte digitale",
   'login.attemptsRemaining': 'tentatives restantes',
-  'login.usePasscode': 'Utiliser le code d\\\\\\\'accès',
+  'login.usePasscode': "Utiliser le code d\\\\\\'accès",
   'login.useEmail': 'Utiliser le courrier électronique',
-  'login.enterPasscode': 'Entrez le code d\\\\\\\'accès',
+  'login.enterPasscode': "Entrez le code d\\\\\\'accès",
   'login.biometric': 'Biométrique',
   'login.email': 'Courriel',
   'login.welcomeBack': 'Bienvenue à nouveau',
@@ -7157,22 +8428,22 @@ const fr: Record<string, string> = {
   'login.signIn': 'Connectez-vous',
   'login.continueGoogle': 'Continuer avec Google',
   'login.continueApple': 'Continuer avec Apple',
-  'login.noAccount': 'Vous n\\\\\\\'avez pas de compte ?',
+  'login.noAccount': "Vous n\\\\\\'avez pas de compte ?",
   'login.register': 'Registre',
-  'login.passcode': 'Code d\\\\\\\'accès',
+  'login.passcode': "Code d\\\\\\'accès",
   'login.unlockPrompt': 'Débloquez FitQuest',
-  'login.error.googleNoToken': 'La connexion à Google n\\\\\\\'a pas renvoyé de jeton d\\\\\\\'identification',
+  'login.error.googleNoToken': "La connexion à Google n\\\\\\'a pas renvoyé de jeton d\\\\\\'identification",
   'login.error.googleFailed': 'Échec de la connexion à Google',
   'login.error.sessionExpired': 'Session expirée. Veuillez vous reconnecter.',
   'login.error.tooManyAttempts': 'Trop de tentatives infructueuses',
-  'login.error.authFailed': 'L\\\\\\\'authentification a échoué',
+  'login.error.authFailed': "L\\\\\\'authentification a échoué",
   'login.error.incorrectPasscode': 'Mot de passe incorrect',
   'login.error.accountLocked': 'Compte verrouillé. Connectez-vous avec e-mail.',
   'login.error.fillAllFields': 'Veuillez remplir tous les champs',
   'login.error.signInFailed': 'Échec de la connexion',
-  'login.error.googleNotConfigured': 'La connexion Google n\\\\\\\'est pas configurée',
-  'login.error.appleUnavailable': 'La connexion Apple n\\\\\\\'est pas disponible sur cet appareil',
-  'login.error.appleNoToken': 'La connexion Apple n\\\\\\\'a pas renvoyé de jeton d\\\\\\\'identification',
+  'login.error.googleNotConfigured': "La connexion Google n\\\\\\'est pas configurée",
+  'login.error.appleUnavailable': "La connexion Apple n\\\\\\'est pas disponible sur cet appareil",
+  'login.error.appleNoToken': "La connexion Apple n\\\\\\'a pas renvoyé de jeton d\\\\\\'identification",
   'login.error.appleFailed': 'La connexion Apple a échoué',
   'login.oauth.readiness': 'Préparation à OAuth',
   'login.oauth.googleAndroidClientId': 'Identifiant client Google Android',
@@ -7183,7 +8454,7 @@ const fr: Record<string, string> = {
   'login.oauth.backendServer': 'Serveur principal',
 
   'coach.title': 'Coach IA',
-  'coach.greeting': 'Comment puis-je vous aider aujourd\\\\\\\'hui ?',
+  'coach.greeting': "Comment puis-je vous aider aujourd\\\\\\'hui ?",
   'coach.placeholder': 'Demandez à votre coach…',
   'coach.send': 'Envoyer',
   'coach.online': 'En ligne',
@@ -7204,7 +8475,7 @@ const fr: Record<string, string> = {
   'craftBody.measurements': 'Mesures',
   'craftBody.bodyType': 'Type de corps',
   'craftBody.fitnessLevel': 'Niveau de forme physique',
-  'craftBody.activityLevel': 'Niveau d\\\\\\\'activité',
+  'craftBody.activityLevel': "Niveau d\\\\\\'activité",
   'craftBody.trainingSplit': 'Répartition de la formation',
   'craftBody.dailyNutrition': 'Alimentation quotidienne',
   'craftBody.bodyAssessment': 'Évaluation corporelle',
@@ -7216,7 +8487,7 @@ const fr: Record<string, string> = {
   'craftBody.appliedAlert': 'Appliqué!',
   'craftBody.appliedDetail': 'Votre plan de formation a été mis à jour.',
   'craftBody.errorAlert': 'Erreur',
-  'craftBody.errorDetail': 'Impossible d\\\\\\\'enregistrer votre plan. Veuillez réessayer.',
+  'craftBody.errorDetail': "Impossible d\\\\\\'enregistrer votre plan. Veuillez réessayer.",
   'craftBody.heightLabel': 'Hauteur (cm)',
   'craftBody.weightLabel': 'Poids (kg)',
   'craftBody.ageLabel': 'Âge',
@@ -7237,26 +8508,27 @@ const fr: Record<string, string> = {
   'move.intensity': 'Intensité',
   'move.cadence': 'Cadence',
   'move.reps': 'Représentants',
-  'move.startMovingForMetrics': 'Commencez à bouger pour voir les statistiques d\\\\\\\'activité',
+  'move.startMovingForMetrics': "Commencez à bouger pour voir les statistiques d\\\\\\'activité",
   'move.jogWalk': 'Faire du jogging/marcher',
   'move.sessionActive': 'Session active',
   'move.tapToStart': 'Appuyez pour démarrer',
   'move.stopSession': 'Arrêter la session',
   'move.startJog': 'Démarrer le jogging',
   'move.stepHistory': 'Historique des étapes',
-  'move.noStepHistory': 'Pas d\\\\\\\'historique des étapes pour l\\\\\\\'instant',
+  'move.noStepHistory': "Pas d\\\\\\'historique des étapes pour l\\\\\\'instant",
   'move.jogHistory': 'Historique du jogging',
   'move.noJogHistory': 'Pas encore de séance de jogging',
-  'move.infoXpAndFatigue': '1 000 pas = 4 XP • Les joggings rapportent 10 XP tous les 100 m\\\\\\\\nLe mouvement n\\\\\\\'affecte pas la fatigue lors de l\\\\\\\'entraînement',
+  'move.infoXpAndFatigue':
+    "1 000 pas = 4 XP • Les joggings rapportent 10 XP tous les 100 m\\\\\\\\nLe mouvement n\\\\\\'affecte pas la fatigue lors de l\\\\\\'entraînement",
   'move.jogComplete': 'Jogging terminé ! 🏃',
   'move.awesome': 'Génial!',
   'move.km': 'kilomètres',
   'move.time': 'temps',
   'move.activity.stationary': 'Stationnaire',
   'move.activity.walking': 'Marcher',
-  'move.activity.running': 'En cours d\\\\\\\'exécution',
+  'move.activity.running': "En cours d\\\\\\'exécution",
   'move.activity.cycling': 'Cyclisme',
-  'move.activity.exercising': 'Faire de l\\\\\\\'exercice',
+  'move.activity.exercising': "Faire de l\\\\\\'exercice",
   'move.activity.detecting': 'Détection...',
   'move.activity.unknown': 'Inconnu',
 
@@ -7273,15 +8545,15 @@ const fr: Record<string, string> = {
   'meal.header.postWorkout': '💪 Post-entraînement',
   'meal.header.dinner': '🍗 Dîner',
   'meal.header.snack': '🥜 Collation',
-  'meal.tip.breakfast': 'Mangez dans l\\\\\\\'heure suivant le réveil pour une meilleure énergie',
-  'meal.tip.preWorkout': 'Allumer les glucides 30 à 60 minutes avant l\\\\\\\'entraînement',
+  'meal.tip.breakfast': "Mangez dans l\\\\\\'heure suivant le réveil pour une meilleure énergie",
+  'meal.tip.preWorkout': "Allumer les glucides 30 à 60 minutes avant l\\\\\\'entraînement",
   'meal.tip.lunch': 'Équilibrez les protéines avec des glucides complexes pour une énergie soutenue',
-  'meal.tip.postWorkout': 'Consommez des protéines dans les 30 minutes suivant l\\\\\\\'exercice',
+  'meal.tip.postWorkout': "Consommez des protéines dans les 30 minutes suivant l\\\\\\'exercice",
   'meal.tip.dinner': 'Concentrez-vous sur les protéines maigres et les légumes pour la récupération',
   'meal.tip.snack': 'Gardez les portions petites – visez 150 à 200 calories',
   'meal.empty.noFoods': 'Aucun aliment disponible pour ce type de repas pour le moment.',
   'meal.showMore': 'Afficher plus',
-  'meal.empty.tryAnother': 'Essayez un autre onglet de repas ou actualisez l\\\\\\\'emplacement.',
+  'meal.empty.tryAnother': "Essayez un autre onglet de repas ou actualisez l\\\\\\'emplacement.",
   'meal.localPrefix': 'Locale',
   'meal.unit.cal': 'cal',
   'meal.unit.protein': 'protéine',
@@ -7291,7 +8563,8 @@ const fr: Record<string, string> = {
   'meal.location.tapEnable': 'Appuyez pour activer la localisation',
   'meal.location.infoPrefix': 'Afficher les aliments disponibles dans',
   'meal.location.infoSuffix': ', y compris les options régionales et mondiales.',
-  'meal.location.infoNoLocation': 'Activez l\\\\\\\'emplacement pour voir les suggestions alimentaires spécifiques à la région. Appuyez sur le badge de localisation ci-dessus pour réessayer.',
+  'meal.location.infoNoLocation':
+    "Activez l\\\\\\'emplacement pour voir les suggestions alimentaires spécifiques à la région. Appuyez sur le badge de localisation ci-dessus pour réessayer.",
 
   'legal.title': 'Centre juridique',
   'legal.documents': 'Documents',
@@ -7299,11 +8572,11 @@ const fr: Record<string, string> = {
   'legal.consentStatus': 'Statut du consentement',
   'legal.currentPolicyVersion': 'Version actuelle de la politique :',
   'legal.acceptedOn': 'Accepté le',
-  'legal.notAcceptedYet': 'Aucun enregistrement de consentement trouvé pour l\\\\\\\'instant.',
+  'legal.notAcceptedYet': "Aucun enregistrement de consentement trouvé pour l\\\\\\'instant.",
   'legal.acceptPolicies': 'Accepter les politiques actuelles',
   'legal.acceptSuccessTitle': 'Consentement enregistré',
   'legal.acceptSuccessBody': 'Votre acceptation de la politique a été enregistrée.',
-  'legal.acceptFailed': 'Impossible d\\\\\\\'enregistrer le consentement pour le moment',
+  'legal.acceptFailed': "Impossible d\\\\\\'enregistrer le consentement pour le moment",
   'legal.withdrawConsent': 'Retirer le consentement local',
   'legal.withdrawSuccessTitle': 'Consentement retiré',
   'legal.withdrawSuccessBody': 'Votre enregistrement de consentement stocké localement a été supprimé.',
@@ -7312,69 +8585,108 @@ const fr: Record<string, string> = {
   'legal.source.remote': 'vérifié par le serveur',
   'legal.source.local': 'stocké localement',
   'legal.privacyPolicy': 'Politique de confidentialité',
-  'legal.termsOfService': 'Conditions d\\\\\\\'utilisation',
+  'legal.termsOfService': "Conditions d\\\\\\'utilisation",
   'legal.privacyPolicyExternal': 'Politique de confidentialité (site Web)',
-  'legal.termsOfServiceExternal': 'Conditions d\\\\\\\'utilisation (site Web)',
-  'legal.readInApp': 'Lire dans l\\\\\\\'application',
-  'legal.cannotOpenLink': 'Impossible d\\\\\\\'ouvrir le lien sur cet appareil',
-  'legal.noteMedical': 'Les conseils de remise en forme dans cette application sont éducatifs et ne remplacent pas un avis médical.',
-  'legal.noteCounsel': 'Le texte juridique final et la cartographie des juridictions doivent être examinés par l’avocat avant la publication.',
+  'legal.termsOfServiceExternal': "Conditions d\\\\\\'utilisation (site Web)",
+  'legal.readInApp': "Lire dans l\\\\\\'application",
+  'legal.cannotOpenLink': "Impossible d\\\\\\'ouvrir le lien sur cet appareil",
+  'legal.noteMedical':
+    'Les conseils de remise en forme dans cette application sont éducatifs et ne remplacent pas un avis médical.',
+  'legal.noteCounsel':
+    'Le texte juridique final et la cartographie des juridictions doivent être examinés par l’avocat avant la publication.',
   'legal.lastUpdated': 'Dernière mise à jour :',
   'legal.privacy.sections.developerTitle': 'Développeur',
-  'legal.privacy.sections.developerBody': 'FitQuest est développé et publié par fitquest.dev. Cette politique de confidentialité régit l\\\\\\\'application mobile FitQuest disponible sur Google Play et l\\\\\\\'Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    "FitQuest est développé et publié par fitquest.dev. Cette politique de confidentialité régit l\\\\\\'application mobile FitQuest disponible sur Google Play et l\\\\\\'Apple App Store.",
   'legal.privacy.sections.dataCollectTitle': '1) Données que nous collectons',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest traite les catégories de données suivantes pour offrir des fonctionnalités personnalisées de remise en forme et de bien-être :',
-  'legal.privacy.bullets.health': 'Mesures de santé et d\\\\\\\'activité : fréquence cardiaque, pas, données de sommeil, historique d\\\\\\\'entraînement, mensurations corporelles et scores de récupération',
-  'legal.privacy.bullets.biometric': 'Données biométriques : reconnaissance d\\\\\\\'empreintes digitales ou de visage utilisée pour l\\\\\\\'authentification de l\\\\\\\'application (traitées uniquement sur l\\\\\\\'appareil, jamais stockées ni transmises)',
-  'legal.privacy.bullets.location': 'Données de localisation : coordonnées GPS pendant le suivi du jogging (uniquement lorsque vous utilisez activement la fonction de jogging)',
-  'legal.privacy.bullets.account': 'Informations de profil : objectifs de remise en forme, niveau d\\\\\\\'expérience, préférences en matière d\\\\\\\'équipement et horaire de travail facultatif',
-  'legal.privacy.bullets.usage': 'Modèles d\\\\\\\'utilisation de l\\\\\\\'application et interactions avec les fonctionnalités (anonymisés, utilisés pour améliorer l\\\\\\\'application)',
-  'legal.privacy.bullets.device': 'Type d\\\\\\\'appareil, version du système d\\\\\\\'exploitation et version de l\\\\\\\'application pour la compatibilité et les rapports d\\\\\\\'erreur',
-  'legal.privacy.bullets.photos': 'Photos de profil : stockées localement sur votre appareil si vous choisissez d\\\\\\\'en définir une',
-  'legal.privacy.bullets.healthConnect': 'Données Health Connect / HealthKit : données de pas, de fréquence cardiaque, de sommeil et d\\\\\\\'entraînement (uniquement si vous accordez une autorisation explicite)',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest traite les catégories de données suivantes pour offrir des fonctionnalités personnalisées de remise en forme et de bien-être :',
+  'legal.privacy.bullets.health':
+    "Mesures de santé et d\\\\\\'activité : fréquence cardiaque, pas, données de sommeil, historique d\\\\\\'entraînement, mensurations corporelles et scores de récupération",
+  'legal.privacy.bullets.biometric':
+    "Données biométriques : reconnaissance d\\\\\\'empreintes digitales ou de visage utilisée pour l\\\\\\'authentification de l\\\\\\'application (traitées uniquement sur l\\\\\\'appareil, jamais stockées ni transmises)",
+  'legal.privacy.bullets.location':
+    'Données de localisation : coordonnées GPS pendant le suivi du jogging (uniquement lorsque vous utilisez activement la fonction de jogging)',
+  'legal.privacy.bullets.account':
+    "Informations de profil : objectifs de remise en forme, niveau d\\\\\\'expérience, préférences en matière d\\\\\\'équipement et horaire de travail facultatif",
+  'legal.privacy.bullets.usage':
+    "Modèles d\\\\\\'utilisation de l\\\\\\'application et interactions avec les fonctionnalités (anonymisés, utilisés pour améliorer l\\\\\\'application)",
+  'legal.privacy.bullets.device':
+    "Type d\\\\\\'appareil, version du système d\\\\\\'exploitation et version de l\\\\\\'application pour la compatibilité et les rapports d\\\\\\'erreur",
+  'legal.privacy.bullets.photos':
+    "Photos de profil : stockées localement sur votre appareil si vous choisissez d\\\\\\'en définir une",
+  'legal.privacy.bullets.healthConnect':
+    "Données Health Connect / HealthKit : données de pas, de fréquence cardiaque, de sommeil et d\\\\\\'entraînement (uniquement si vous accordez une autorisation explicite)",
   'legal.privacy.sections.storageTitle': '2) Stockage des données',
-  'legal.privacy.sections.storageBody': 'FitQuest est conçu comme une application hors ligne. Toutes vos données de condition physique sont stockées localement sur votre appareil à l\\\\\\\'aide de SQLite. Aucune donnée personnelle n\\\\\\\'est stockée sur des serveurs externes. Les dossiers de santé sensibles sont cryptés avant leur stockage à l’aide du cryptage AES-256-GCM standard de l’industrie.',
+  'legal.privacy.sections.storageBody':
+    "FitQuest est conçu comme une application hors ligne. Toutes vos données de condition physique sont stockées localement sur votre appareil à l\\\\\\'aide de SQLite. Aucune donnée personnelle n\\\\\\'est stockée sur des serveurs externes. Les dossiers de santé sensibles sont cryptés avant leur stockage à l’aide du cryptage AES-256-GCM standard de l’industrie.",
   'legal.privacy.sections.securityTitle': '3) Sécurité des données',
-  'legal.privacy.sections.securityBody': 'Toutes les données de santé sensibles sont cryptées à l\\\\\\\'aide du cryptage AES-256-GCM avant d\\\\\\\'être stockées sur votre appareil. Les clés de chiffrement sont protégées par le matériel sécurisé de votre appareil (Keychain sur iOS, Keystore sur Android). L\\\\\\\'authentification biométrique offre une couche de protection supplémentaire. Nous utilisons la dérivation de clé sécurisée (PBKDF2) et la comparaison à temps constant pour empêcher les attaques temporelles.',
+  'legal.privacy.sections.securityBody':
+    "Toutes les données de santé sensibles sont cryptées à l\\\\\\'aide du cryptage AES-256-GCM avant d\\\\\\'être stockées sur votre appareil. Les clés de chiffrement sont protégées par le matériel sécurisé de votre appareil (Keychain sur iOS, Keystore sur Android). L\\\\\\'authentification biométrique offre une couche de protection supplémentaire. Nous utilisons la dérivation de clé sécurisée (PBKDF2) et la comparaison à temps constant pour empêcher les attaques temporelles.",
   'legal.privacy.sections.thirdPartyTitle': '4) Services tiers',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest ne vend, ne loue ni n\\\\\\\'échange vos données personnelles. Les intégrations tierces suivantes peuvent traiter des données limitées :',
-  'legal.privacy.bullets.thirdPartyAI': 'Fonctionnalités IA : lorsque vous utilisez AI Coach ou Professor, vos invites sont envoyées à OpenRouter (via les modèles de langage Llama) pour générer des réponses. Aucune donnée personnelle sur la santé n’est incluse dans ces demandes – uniquement le texte que vous saisissez.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit : si vous accordez l\\\\\\\'autorisation, FitQuest lit les mesures de santé de ces services de plateforme. Les données circulent dans un sens (lecture seule) et sont stockées cryptées sur votre appareil.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat : gère la vérification des abonnements. Reçoit uniquement des jetons d’achat et des identifiants d’utilisateur anonymes – aucune donnée sur la santé ou la forme physique.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry : service de rapport d\\\\\\\'incidents qui reçoit des journaux d\\\\\\\'erreurs anonymisés. Aucune donnée personnelle ou mesure de santé n’est incluse.',
+  'legal.privacy.sections.thirdPartyBody':
+    "FitQuest ne vend, ne loue ni n\\\\\\'échange vos données personnelles. Les intégrations tierces suivantes peuvent traiter des données limitées :",
+  'legal.privacy.bullets.thirdPartyAI':
+    'Fonctionnalités IA : lorsque vous utilisez AI Coach ou Professor, vos invites sont envoyées à OpenRouter (via les modèles de langage Llama) pour générer des réponses. Aucune donnée personnelle sur la santé n’est incluse dans ces demandes – uniquement le texte que vous saisissez.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    "Health Connect / HealthKit : si vous accordez l\\\\\\'autorisation, FitQuest lit les mesures de santé de ces services de plateforme. Les données circulent dans un sens (lecture seule) et sont stockées cryptées sur votre appareil.",
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat : gère la vérification des abonnements. Reçoit uniquement des jetons d’achat et des identifiants d’utilisateur anonymes – aucune donnée sur la santé ou la forme physique.',
+  'legal.privacy.bullets.thirdPartySentry':
+    "Sentry : service de rapport d\\\\\\'incidents qui reçoit des journaux d\\\\\\'erreurs anonymisés. Aucune donnée personnelle ou mesure de santé n’est incluse.",
   'legal.privacy.sections.childrenTitle': '5) Confidentialité des enfants',
-  'legal.privacy.sections.childrenBody': 'FitQuest est conçu pour les utilisateurs âgés de 13 ans et plus. Nous ne collectons pas sciemment d\\\\\\\'informations personnelles sur des enfants de moins de 13 ans. Si vous pensez qu\\\\\\\'un enfant nous a fourni des données, veuillez nous contacter à fitquestsupp0rt@gmail.com pour une suppression immédiate.',
+  'legal.privacy.sections.childrenBody':
+    "FitQuest est conçu pour les utilisateurs âgés de 13 ans et plus. Nous ne collectons pas sciemment d\\\\\\'informations personnelles sur des enfants de moins de 13 ans. Si vous pensez qu\\\\\\'un enfant nous a fourni des données, veuillez nous contacter à fitquestsupp0rt@gmail.com pour une suppression immédiate.",
   'legal.privacy.sections.retentionTitle': '6) Conservation des données',
-  'legal.privacy.sections.retentionBody': 'Vos données sont stockées localement sur votre appareil et conservées aussi longtemps que l\\\\\\\'application est installée. Vous pouvez supprimer toutes les données à tout moment via Profil → Paramètres → Supprimer toutes les données. La désinstallation de l\\\\\\\'application supprime définitivement toutes les données locales. Vous pouvez également demander la suppression des données via notre site Web à l\\\\\\\'adresse https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    "Vos données sont stockées localement sur votre appareil et conservées aussi longtemps que l\\\\\\'application est installée. Vous pouvez supprimer toutes les données à tout moment via Profil → Paramètres → Supprimer toutes les données. La désinstallation de l\\\\\\'application supprime définitivement toutes les données locales. Vous pouvez également demander la suppression des données via notre site Web à l\\\\\\'adresse https://fitquest.dev/delete-account.",
   'legal.privacy.sections.rightsTitle': '7) Vos droits',
-  'legal.privacy.sections.rightsBody': 'En vertu des lois applicables en matière de protection des données (y compris la loi sur la protection des données de 2011 du Lesotho, le RGPD dans l\\\\\\\'UE et le CCPA en Californie), vous disposez des droits suivants :',
-  'legal.privacy.bullets.accessRight': 'Accès : affichez toutes les données que l\\\\\\\'application stocke à votre sujet via Profil → Exporter les données',
-  'legal.privacy.bullets.deleteRight': 'Suppression : effacez définitivement toutes vos données via les paramètres de l\\\\\\\'application ou notre site Web',
-  'legal.privacy.bullets.exportRight': 'Portabilité : Exportez vos données au format JSON pour les transférer vers un autre service',
-  'legal.privacy.bullets.correctRight': 'Correction : Mettez à jour ou modifiez les informations de votre profil à tout moment',
-  'legal.privacy.bullets.objectionRight': 'Objection : retirer à tout moment votre consentement au traitement des données via le centre juridique',
+  'legal.privacy.sections.rightsBody':
+    "En vertu des lois applicables en matière de protection des données (y compris la loi sur la protection des données de 2011 du Lesotho, le RGPD dans l\\\\\\'UE et le CCPA en Californie), vous disposez des droits suivants :",
+  'legal.privacy.bullets.accessRight':
+    "Accès : affichez toutes les données que l\\\\\\'application stocke à votre sujet via Profil → Exporter les données",
+  'legal.privacy.bullets.deleteRight':
+    "Suppression : effacez définitivement toutes vos données via les paramètres de l\\\\\\'application ou notre site Web",
+  'legal.privacy.bullets.exportRight':
+    'Portabilité : Exportez vos données au format JSON pour les transférer vers un autre service',
+  'legal.privacy.bullets.correctRight':
+    'Correction : Mettez à jour ou modifiez les informations de votre profil à tout moment',
+  'legal.privacy.bullets.objectionRight':
+    'Objection : retirer à tout moment votre consentement au traitement des données via le centre juridique',
   'legal.privacy.sections.popiaTitle': '8) Conformité à la protection des données (Lesotho)',
-  'legal.privacy.sections.popiaBody': 'Conformément à la loi sur la protection des données de 2011 du Royaume du Lesotho, fitquest.dev agit en tant que partie responsable de vos informations personnelles. Nous traitons vos données de manière licite, réduisons la collecte à ce qui est nécessaire, garantissons l\\\\\\\'exactitude et maintenons des mesures de sécurité appropriées. Pour les utilisateurs transfrontaliers, nous nous conformons également au POPIA (Afrique du Sud), au RGPD (UE) et au CCPA (Californie), le cas échéant.',
+  'legal.privacy.sections.popiaBody':
+    "Conformément à la loi sur la protection des données de 2011 du Royaume du Lesotho, fitquest.dev agit en tant que partie responsable de vos informations personnelles. Nous traitons vos données de manière licite, réduisons la collecte à ce qui est nécessaire, garantissons l\\\\\\'exactitude et maintenons des mesures de sécurité appropriées. Pour les utilisateurs transfrontaliers, nous nous conformons également au POPIA (Afrique du Sud), au RGPD (UE) et au CCPA (Californie), le cas échéant.",
   'legal.privacy.sections.updatesTitle': '9) Mises à jour de la politique',
-  'legal.privacy.sections.updatesBody': 'Nous pouvons mettre à jour cette politique de confidentialité de temps à autre. Toute modification sera reflétée dans l\\\\\\\'application avec une date de « Dernière mise à jour » mise à jour et vous serez invité à consulter et à accepter la politique mise à jour. L\\\\\\\'utilisation continue de l\\\\\\\'application après les modifications constitue l\\\\\\\'acceptation de la nouvelle politique.',
+  'legal.privacy.sections.updatesBody':
+    "Nous pouvons mettre à jour cette politique de confidentialité de temps à autre. Toute modification sera reflétée dans l\\\\\\'application avec une date de « Dernière mise à jour » mise à jour et vous serez invité à consulter et à accepter la politique mise à jour. L\\\\\\'utilisation continue de l\\\\\\'application après les modifications constitue l\\\\\\'acceptation de la nouvelle politique.",
   'legal.privacy.sections.contactTitle': '10) Contacter',
-  'legal.privacy.sections.contactBody': 'Pour les demandes de confidentialité, envoyez un e-mail à fitquestsupp0rt@gmail.com. Vous pouvez également visiter https://fitquest.dev/support. Incluez votre identifiant de compte lorsqu’il est disponible. Nous répondons dans les 30 jours ouvrables.',
+  'legal.privacy.sections.contactBody':
+    'Pour les demandes de confidentialité, envoyez un e-mail à fitquestsupp0rt@gmail.com. Vous pouvez également visiter https://fitquest.dev/support. Incluez votre identifiant de compte lorsqu’il est disponible. Nous répondons dans les 30 jours ouvrables.',
   'legal.terms.sections.useTitle': '1) Utilisation acceptable',
-  'legal.terms.sections.useBody': 'Vous acceptez d\\\\\\\'utiliser FitQuest légalement et de ne pas tenter de faire de l\\\\\\\'ingénierie inverse, de décompiler, de contourner les contrôles de sécurité, les mécanismes d\\\\\\\'abonnement ou les fonctionnalités de protection des données. Vous ne pouvez pas utiliser l\\\\\\\'application à des fins illégales ou en violation de toute réglementation applicable.',
+  'legal.terms.sections.useBody':
+    "Vous acceptez d\\\\\\'utiliser FitQuest légalement et de ne pas tenter de faire de l\\\\\\'ingénierie inverse, de décompiler, de contourner les contrôles de sécurité, les mécanismes d\\\\\\'abonnement ou les fonctionnalités de protection des données. Vous ne pouvez pas utiliser l\\\\\\'application à des fins illégales ou en violation de toute réglementation applicable.",
   'legal.terms.sections.medicalTitle': '2) Avis de non-responsabilité médicale',
-  'legal.terms.sections.medicalBody': 'FitQuest est une application de remise en forme et de bien-être et n\\\\\\\'est PAS un dispositif ou un service médical. L\\\\\\\'application ne fournit pas de conseils médicaux, de diagnostic ou de traitement. Les suggestions d\\\\\\\'entraînement, les scores de santé, les recommandations de récupération et les conseils générés par l\\\\\\\'IA sont uniquement à des fins informatives et éducatives. Consultez toujours un professionnel de la santé qualifié avant de commencer, de modifier ou d\\\\\\\'interrompre tout programme d\\\\\\\'exercice, surtout si vous avez des problèmes de santé, des blessures ou des problèmes préexistants. Arrêtez immédiatement de faire de l\\\\\\\'exercice si vous ressentez une douleur, des étourdissements ou un inconfort.',
+  'legal.terms.sections.medicalBody':
+    "FitQuest est une application de remise en forme et de bien-être et n\\\\\\'est PAS un dispositif ou un service médical. L\\\\\\'application ne fournit pas de conseils médicaux, de diagnostic ou de traitement. Les suggestions d\\\\\\'entraînement, les scores de santé, les recommandations de récupération et les conseils générés par l\\\\\\'IA sont uniquement à des fins informatives et éducatives. Consultez toujours un professionnel de la santé qualifié avant de commencer, de modifier ou d\\\\\\'interrompre tout programme d\\\\\\'exercice, surtout si vous avez des problèmes de santé, des blessures ou des problèmes préexistants. Arrêtez immédiatement de faire de l\\\\\\'exercice si vous ressentez une douleur, des étourdissements ou un inconfort.",
   'legal.terms.sections.subscriptionTitle': '3) Abonnement et facturation',
-  'legal.terms.sections.subscriptionBody': 'FitQuest propose un essai gratuit de 14 jours de toutes les fonctionnalités premium. Une fois la période d\\\\\\\'essai terminée, vous pouvez vous abonner pour continuer à utiliser les fonctionnalités premium ou continuer avec l\\\\\\\'offre gratuite. Les abonnements Premium sont facturés via le Google Play Store ou l\\\\\\\'Apple App Store. Les abonnements se renouvellent automatiquement à la fin de chaque période de facturation, sauf annulation au moins 24 heures avant la date de renouvellement. Vous pouvez gérer ou annuler votre abonnement via les paramètres de la boutique d\\\\\\\'applications de votre appareil. Les remboursements sont soumis à la politique de remboursement de la plateforme respective. Les prix peuvent varier selon la région et sont affichés dans votre devise locale avant l\\\\\\\'achat.',
+  'legal.terms.sections.subscriptionBody':
+    "FitQuest propose un essai gratuit de 14 jours de toutes les fonctionnalités premium. Une fois la période d\\\\\\'essai terminée, vous pouvez vous abonner pour continuer à utiliser les fonctionnalités premium ou continuer avec l\\\\\\'offre gratuite. Les abonnements Premium sont facturés via le Google Play Store ou l\\\\\\'Apple App Store. Les abonnements se renouvellent automatiquement à la fin de chaque période de facturation, sauf annulation au moins 24 heures avant la date de renouvellement. Vous pouvez gérer ou annuler votre abonnement via les paramètres de la boutique d\\\\\\'applications de votre appareil. Les remboursements sont soumis à la politique de remboursement de la plateforme respective. Les prix peuvent varier selon la région et sont affichés dans votre devise locale avant l\\\\\\'achat.",
   'legal.terms.sections.ipTitle': '4) Propriété intellectuelle',
-  'legal.terms.sections.ipBody': 'Tout le contenu, la conception, le code, les algorithmes, la marque et les éléments de FitQuest sont la propriété intellectuelle de fitquest.dev et sont protégés par les lois applicables sur les droits d\\\\\\\'auteur et les marques. Vous ne pouvez pas reproduire, distribuer ou créer des œuvres dérivées à partir de n\\\\\\\'importe quelle partie de l\\\\\\\'application sans autorisation écrite préalable.',
+  'legal.terms.sections.ipBody':
+    "Tout le contenu, la conception, le code, les algorithmes, la marque et les éléments de FitQuest sont la propriété intellectuelle de fitquest.dev et sont protégés par les lois applicables sur les droits d\\\\\\'auteur et les marques. Vous ne pouvez pas reproduire, distribuer ou créer des œuvres dérivées à partir de n\\\\\\'importe quelle partie de l\\\\\\'application sans autorisation écrite préalable.",
   'legal.terms.sections.liabilityTitle': '5) Limitation de responsabilité',
-  'legal.terms.sections.liabilityBody': 'Dans la mesure permise par la loi, fitquest.dev ne sera pas responsable de tout dommage indirect, accessoire, spécial, consécutif ou punitif découlant de votre utilisation de l\\\\\\\'application, y compris, mais sans s\\\\\\\'y limiter, les blessures physiques, la perte de données ou l\\\\\\\'interruption de service. Notre responsabilité totale ne dépassera pas le montant que vous avez payé pour les fonctionnalités premium au cours des 12 mois précédant la réclamation.',
+  'legal.terms.sections.liabilityBody':
+    "Dans la mesure permise par la loi, fitquest.dev ne sera pas responsable de tout dommage indirect, accessoire, spécial, consécutif ou punitif découlant de votre utilisation de l\\\\\\'application, y compris, mais sans s\\\\\\'y limiter, les blessures physiques, la perte de données ou l\\\\\\'interruption de service. Notre responsabilité totale ne dépassera pas le montant que vous avez payé pour les fonctionnalités premium au cours des 12 mois précédant la réclamation.",
   'legal.terms.sections.terminationTitle': '6) Résiliation',
-  'legal.terms.sections.terminationBody': 'Nous nous réservons le droit de suspendre ou de résilier votre accès à FitQuest si vous violez ces conditions. Vous pouvez arrêter d\\\\\\\'utiliser l\\\\\\\'application à tout moment. Après la résiliation, vos données stockées localement restent sur votre appareil jusqu\\\\\\\'à ce que vous les supprimiez ou désinstalliez l\\\\\\\'application.',
+  'legal.terms.sections.terminationBody':
+    "Nous nous réservons le droit de suspendre ou de résilier votre accès à FitQuest si vous violez ces conditions. Vous pouvez arrêter d\\\\\\'utiliser l\\\\\\'application à tout moment. Après la résiliation, vos données stockées localement restent sur votre appareil jusqu\\\\\\'à ce que vous les supprimiez ou désinstalliez l\\\\\\'application.",
   'legal.terms.sections.governingLawTitle': '7) Loi applicable',
-  'legal.terms.sections.governingLawBody': 'Ces conditions sont régies et interprétées conformément aux lois du Royaume du Lesotho. Tout litige découlant de ces conditions ou de votre utilisation de FitQuest sera soumis à la juridiction exclusive des tribunaux du Lesotho. Si une disposition de ces conditions s’avère inapplicable, les dispositions restantes resteront pleinement en vigueur.',
-  'legal.terms.bullets.compliance': 'Vous devez vous conformer à toutes les politiques applicables de Google Play et Apple App Store lorsque vous utilisez cette application',
-  'legal.terms.bullets.accountDelete': 'Vous pouvez supprimer votre compte et toutes les données associées à tout moment via Profil → Paramètres ou sur https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Ces conditions sont régies et interprétées conformément aux lois du Royaume du Lesotho. Tout litige découlant de ces conditions ou de votre utilisation de FitQuest sera soumis à la juridiction exclusive des tribunaux du Lesotho. Si une disposition de ces conditions s’avère inapplicable, les dispositions restantes resteront pleinement en vigueur.',
+  'legal.terms.bullets.compliance':
+    'Vous devez vous conformer à toutes les politiques applicables de Google Play et Apple App Store lorsque vous utilisez cette application',
+  'legal.terms.bullets.accountDelete':
+    'Vous pouvez supprimer votre compte et toutes les données associées à tout moment via Profil → Paramètres ou sur https://fitquest.dev/delete-account',
 
   'common.save': 'Enregistrer',
   'common.cancel': 'Annuler',
@@ -7385,7 +8697,7 @@ const fr: Record<string, string> = {
   'common.success': 'Succès',
   'common.retry': 'Réessayer',
   'common.done': 'Terminé',
-  'common.today': 'Aujourd\\\\\\\'hui',
+  'common.today': "Aujourd\\\\\\'hui",
   'common.yesterday': 'Hier',
   'common.day': 'jour',
   'common.minutes': 'minutes',
@@ -7411,7 +8723,7 @@ const fr: Record<string, string> = {
   'common.tryAgain': 'Réessayez',
   'common.goBack': 'Revenir en arrière',
   'common.keepGoing': 'Continuez',
-  'common.gotIt': 'J\\\\\\\'ai compris!',
+  'common.gotIt': "J\\\\\\'ai compris!",
   'common.gpsActive': 'GPS actif',
   'common.required': 'Obligatoire',
   'common.optional': 'Facultatif',
@@ -7429,10 +8741,10 @@ const fr: Record<string, string> = {
   'common.complete': 'Terminé',
   'common.restore': 'Restaurer',
 
-  'workout.noActive': 'Pas d\\\\\\\'entraînement actif',
-  'workout.generateFromTrain': 'Générez un entraînement à partir de l\\\\\\\'onglet Entraînement',
+  'workout.noActive': "Pas d\\\\\\'entraînement actif",
+  'workout.generateFromTrain': "Générez un entraînement à partir de l\\\\\\'onglet Entraînement",
   'workout.goToTrain': 'Aller à Train',
-  'workout.cancelTitle': 'Annuler l\\\\\\\'entraînement ?',
+  'workout.cancelTitle': "Annuler l\\\\\\'entraînement ?",
   'workout.cancelBody': 'La progression sera perdue si vous annulez.',
   'workout.exercises': 'Exercices',
   'workout.completeSet': 'Terminer ✓',
@@ -7444,31 +8756,34 @@ const fr: Record<string, string> = {
   'savedWorkouts.title': 'Mes entraînements',
   'savedWorkouts.myWorkouts': 'Mes entraînements',
   'savedWorkouts.createFirst': 'Créez votre premier entraînement',
-  'savedWorkouts.startWorkout': 'Commencer l\\\\\\\'entraînement',
+  'savedWorkouts.startWorkout': "Commencer l\\\\\\'entraînement",
   'savedWorkouts.pickExercises': 'Choisissez vos exercices',
   'savedWorkouts.setReps': 'Définir des répétitions et du repos',
   'savedWorkouts.startAnytime': 'Commencez à tout moment',
-  'savedWorkouts.deleteFailed': 'Échec de la suppression de l\\\\\\\'entraînement. Veuillez réessayer.',
-  'savedWorkouts.emptyTitle': 'Aucun entraînement enregistré pour l\\\\\\\'instant',
-  'savedWorkouts.emptySubtitle': 'Créez votre premier entraînement personnalisé en sélectionnant des exercices adaptés à vos objectifs. Cela ne prend qu\\\\\\\'une minute !',
+  'savedWorkouts.deleteFailed': "Échec de la suppression de l\\\\\\'entraînement. Veuillez réessayer.",
+  'savedWorkouts.emptyTitle': "Aucun entraînement enregistré pour l\\\\\\'instant",
+  'savedWorkouts.emptySubtitle':
+    "Créez votre premier entraînement personnalisé en sélectionnant des exercices adaptés à vos objectifs. Cela ne prend qu\\\\\\'une minute !",
   'savedWorkouts.featurePick': 'Choisissez vos exercices',
   'savedWorkouts.featureSet': 'Définir des répétitions et du repos',
   'savedWorkouts.featureStart': 'Commencez à tout moment',
-  'savedWorkouts.deleteTitle': 'Supprimer l\\\\\\\'entraînement',
-  'savedWorkouts.deleteConfirm': 'Êtes-vous sûr de vouloir supprimer « {name} » ? Cette action ne peut pas être annulée.',
-  'savedWorkouts.deleteError': 'Échec de la suppression de l\\\\\\\'entraînement. Veuillez réessayer.',
-  'savedWorkouts.today': 'Aujourd\\\\\\\'hui',
+  'savedWorkouts.deleteTitle': "Supprimer l\\\\\\'entraînement",
+  'savedWorkouts.deleteConfirm':
+    'Êtes-vous sûr de vouloir supprimer « {name} » ? Cette action ne peut pas être annulée.',
+  'savedWorkouts.deleteError': "Échec de la suppression de l\\\\\\'entraînement. Veuillez réessayer.",
+  'savedWorkouts.today': "Aujourd\\\\\\'hui",
   'savedWorkouts.yesterday': 'Hier',
 
   'progress.labelPhoto': 'Étiquette Photo',
-  'progress.whichView': 'De quelle vue s\\\\\\\'agit-il ?',
+  'progress.whichView': "De quelle vue s\\\\\\'agit-il ?",
   'progress.photoSaved': 'Photo enregistrée ! 📸',
   'progress.deletePhoto': 'Supprimer la photo',
   'progress.takePhoto': 'Prendre une photo',
   'progress.gallery': 'Galerie',
   'progress.permissionNeeded': 'Autorisation requise',
-  'progress.cameraRequired': 'L\\\\\\\'accès à l\\\\\\\'appareil photo est requis pour prendre des photos de progression.',
-  'progress.galleryRequired': 'L\\\\\\\'accès à la galerie est requis pour sélectionner des photos.',
+  'progress.cameraRequired':
+    "L\\\\\\'accès à l\\\\\\'appareil photo est requis pour prendre des photos de progression.",
+  'progress.galleryRequired': "L\\\\\\'accès à la galerie est requis pour sélectionner des photos.",
   'progress.deleteConfirm': 'Etes-vous sûr de vouloir supprimer cette photo de progression ?',
 
   'exerciseDetail.targetMuscles': 'Muscles cibles',
@@ -7476,8 +8791,8 @@ const fr: Record<string, string> = {
   'exerciseDetail.howToPerform': 'Comment effectuer',
   'exerciseDetail.trainingFocus': 'Objectif de la formation',
 
-  'error.crashed': 's\\\\\\\'est écrasé',
-  'error.somethingWrong': 'Quelque chose s\\\\\\\'est mal passé',
+  'error.crashed': "s\\\\\\'est écrasé",
+  'error.somethingWrong': "Quelque chose s\\\\\\'est mal passé",
   'error.title': 'Erreur',
 
   'platformStudio.title': 'Plateforme Studio',
@@ -7494,18 +8809,20 @@ const fr: Record<string, string> = {
   'autonomousCenter.cycleSafetyMode': 'Mode de sécurité du cycle',
 
   'help.faqTitle': 'Foire aux questions',
-  'help.faqDesc': 'Parcourez les questions courantes sur les entraînements, la nutrition et les fonctionnalités des applications',
+  'help.faqDesc':
+    'Parcourez les questions courantes sur les entraînements, la nutrition et les fonctionnalités des applications',
   'help.contactTitle': 'Assistance par e-mail',
   'help.bugTitle': 'Signaler un bug',
   'help.bugDesc': 'Vous avez trouvé quelque chose de cassé ? Faites-le nous savoir et nous y remédierons rapidement',
   'help.featureTitle': 'Suggérer une fonctionnalité',
-  'help.featureDesc': 'Vous avez une idée pour améliorer FitQuest ? Nous serions ravis de l\\\\\\\'entendre',
+  'help.featureDesc': "Vous avez une idée pour améliorer FitQuest ? Nous serions ravis de l\\\\\\'entendre",
   'help.responseTime': 'Nous répondons généralement dans les 24 à 48 heures',
 
-  'about.description': 'FitQuest est une plateforme de fitness complète conçue pour vous aider à atteindre vos objectifs d\\\\\\\'entraînement. Toutes vos données restent sur votre appareil, protégées par le cryptage AES-256.',
+  'about.description':
+    "FitQuest est une plateforme de fitness complète conçue pour vous aider à atteindre vos objectifs d\\\\\\'entraînement. Toutes vos données restent sur votre appareil, protégées par le cryptage AES-256.",
   'about.platform': 'Plateforme',
   'about.dataStorage': 'Stockage des données',
-  'about.onDevice': 'Sur l\\\\\\\'appareil uniquement',
+  'about.onDevice': "Sur l\\\\\\'appareil uniquement",
   'about.encryption': 'Cryptage',
   'about.security': 'Sécurité',
   'about.biometric': 'Authentification biométrique',
@@ -7527,15 +8844,15 @@ const fr: Record<string, string> = {
   'nav.exercises': 'Exercices',
   'nav.legalCenter': 'Centre juridique',
   'nav.privacyPolicy': 'politique de confidentialité',
-  'nav.termsOfService': 'Conditions d\\\\\\\'utilisation',
+  'nav.termsOfService': "Conditions d\\\\\\'utilisation",
   'nav.autonomousCenter': 'Centre Autonome',
   'nav.federationHub': 'Centre de la Fédération',
-  'nav.enterpriseHardening': 'Renforcement de l\\\\\\\'entreprise',
+  'nav.enterpriseHardening': "Renforcement de l\\\\\\'entreprise",
   'nav.professor': 'Professeur AI',
 
   'health.loading': 'Chargement des données de santé...',
   'health.title': 'Tableau de bord de santé',
-  'health.subtitle': 'Votre bien-être en un coup d\\\\\\\'oeil',
+  'health.subtitle': "Votre bien-être en un coup d\\\\\\'oeil",
   'health.alerts': 'alertes',
   'health.alert': 'alerte',
   'health.healthScore': 'Score de santé',
@@ -7544,7 +8861,7 @@ const fr: Record<string, string> = {
   'health.workoutsCount': 'Entraînements',
   'health.heartRate': 'FC',
   'health.bpm': 'bpm',
-  'health.todaysProgress': 'Les progrès d\\\\\\\'aujourd\\\\\\\'hui',
+  'health.todaysProgress': "Les progrès d\\\\\\'aujourd\\\\\\'hui",
   'health.steps': 'Étapes',
   'health.active': 'Actif',
   'health.calories': 'Calories',
@@ -7558,7 +8875,7 @@ const fr: Record<string, string> = {
   'health.recoveryRest': 'Envisagez du repos ou des travaux légers',
   'health.sleepQuality': 'Qualité du sommeil',
   'health.avgThisWeek': 'h moy cette semaine',
-  'health.noSleepData': 'Aucune donnée sur le sommeil pour l\\\\\\\'instant',
+  'health.noSleepData': "Aucune donnée sur le sommeil pour l\\\\\\'instant",
   'health.quickActions': 'Actions rapides',
   'health.connectProvider': 'Connecter le fournisseur de santé',
   'health.providerConnectFailed': 'Impossible de connecter le fournisseur sur cet appareil.',
@@ -7577,7 +8894,8 @@ const fr: Record<string, string> = {
   'health.provider.google_fit': 'Google Fit',
   'health.logHeartRate': 'Enregistrer la fréquence cardiaque',
   'health.logSleep': 'Journal de sommeil',
-  'health.comingSoonDetail': 'L\\\\\\\'enregistrement de la fréquence cardiaque sera disponible dans une prochaine mise à jour.',
+  'health.comingSoonDetail':
+    "L\\\\\\'enregistrement de la fréquence cardiaque sera disponible dans une prochaine mise à jour.",
   'health.sleepComingSoon': 'La journalisation du sommeil sera disponible dans une prochaine mise à jour.',
 
   'nutrition.title': 'Calculateur nutritionnel',
@@ -7585,7 +8903,7 @@ const fr: Record<string, string> = {
   'nutrition.foodsFound': 'aliments trouvés',
   'nutrition.noFoods': 'Aucun aliment trouvé. Essayez une autre recherche.',
   'nutrition.myMeal': 'Mon repas',
-  'nutrition.noItems': 'Aucun article pour l\\\\\\\'instant',
+  'nutrition.noItems': "Aucun article pour l\\\\\\'instant",
   'nutrition.addPrompt': 'Recherchez et ajoutez des aliments pour commencer le suivi...',
   'nutrition.searchFoods': 'Rechercher des aliments',
   'nutrition.servings': 'Portions :',
@@ -7596,7 +8914,7 @@ const fr: Record<string, string> = {
   'nutrition.fats': 'Graisses',
   'nutrition.clearAll': 'Tout effacer',
   'nutrition.clearAllConfirm': 'Supprimer tous les éléments de votre repas ?',
-  'nutrition.addMore': 'Ajouter plus d\\\\\\\'aliments',
+  'nutrition.addMore': "Ajouter plus d\\\\\\'aliments",
   'nutrition.kcalEst': 'kcal (est.)',
   'nutrition.category.protein': 'Protéine',
   'nutrition.category.carbs': 'Glucides',
@@ -7618,19 +8936,19 @@ const fr: Record<string, string> = {
   'createWorkout.exercisesAvailable': 'exercices disponibles',
   'createWorkout.configure': 'Configurer',
   'createWorkout.preview': 'Aperçu',
-  'createWorkout.workoutNamePlaceholder': 'Nom de l\\\\\\\'entraînement (facultatif)',
+  'createWorkout.workoutNamePlaceholder': "Nom de l\\\\\\'entraînement (facultatif)",
   'createWorkout.sets': 'Ensembles',
   'createWorkout.reps': 'Représentants',
   'createWorkout.restSeconds': 'Repos(s)',
   'createWorkout.customWorkout': 'Entraînement personnalisé',
   'createWorkout.exercises': 'exercices',
   'createWorkout.min': 'minutes',
-  'createWorkout.saveWorkout': 'Enregistrer l\\\\\\\'entraînement',
+  'createWorkout.saveWorkout': "Enregistrer l\\\\\\'entraînement",
   'createWorkout.noExercises': 'Ajoutez au moins un exercice à votre entraînement.',
   'createWorkout.saved': 'Entraînement enregistré ! 💪',
   'createWorkout.savedDetail': 'Votre entraînement a été enregistré et est prêt à être utilisé.',
-  'createWorkout.saveFailed': 'Échec de l\\\\\\\'enregistrement de l\\\\\\\'entraînement. Veuillez réessayer.',
-  'createWorkout.selectFirst': 'Sélectionnez d\\\\\\\'abord les exercices',
+  'createWorkout.saveFailed': "Échec de l\\\\\\'enregistrement de l\\\\\\'entraînement. Veuillez réessayer.",
+  'createWorkout.selectFirst': "Sélectionnez d\\\\\\'abord les exercices",
   'createWorkout.allLevels': 'Tous niveaux',
   'createWorkout.beginner': 'Débutant',
   'createWorkout.intermediate': 'Intermédiaire',
@@ -7659,16 +8977,16 @@ const fr: Record<string, string> = {
   'paywall.perMonth': '/mois',
   'paywall.save33': 'Économisez 33 %',
   'paywall.flexibleBilling': 'Facturation flexible',
-  'paywall.startSubscription': 'Commencer l\\\\\\\'abonnement',
-  'paywall.continueAccess': 'Continuer avec l\\\\\\\'accès complet',
+  'paywall.startSubscription': "Commencer l\\\\\\'abonnement",
+  'paywall.continueAccess': "Continuer avec l\\\\\\'accès complet",
   'paywall.cancelAnytime': 'Annulez à tout moment. Aucun remboursement pour les périodes partielles.',
   'paywall.restorePurchases': 'Restaurer les achats',
-  'paywall.features.aiWorkouts': 'Génération d\\\\\\\'entraînement IA',
+  'paywall.features.aiWorkouts': "Génération d\\\\\\'entraînement IA",
   'paywall.features.aiWorkoutsSub': 'Entraînements intelligents illimités adaptés à vous',
   'paywall.features.fitmindLibrary': 'Bibliothèque FitMind',
   'paywall.features.fitmindLibrarySub': 'Importez un nombre illimité de documents et de flashcards',
   'paywall.features.healthMonitoring': 'Surveillance de la santé',
-  'paywall.features.healthMonitoringSub': 'Détection d\\\\\\\'anomalies et analyse du sommeil 24h/24 et 7j/7',
+  'paywall.features.healthMonitoringSub': "Détection d\\\\\\'anomalies et analyse du sommeil 24h/24 et 7j/7",
   'paywall.features.analytics': 'Analyse avancée',
   'paywall.features.analyticsSub': 'Aperçu détaillé des progrès et tendances',
   'paywall.features.encrypted': 'Crypté et privé',
@@ -7677,7 +8995,7 @@ const fr: Record<string, string> = {
   'paywall.features.cloudBackupSub': 'Ne perdez jamais votre progression',
 
   'onboarding.welcome': 'Bienvenue sur FitQuest',
-  'onboarding.tagline': 'Votre compagnon de fitness alimenté par l\\\\\\\'IA.\\\\\\\\nPersonnalisons votre expérience.',
+  'onboarding.tagline': "Votre compagnon de fitness alimenté par l\\\\\\'IA.\\\\\\\\nPersonnalisons votre expérience.",
   'onboarding.heroBody': 'Entraînez-vous intelligemment',
   'onboarding.heroMind': 'Pensez clairement',
   'onboarding.heroMove': 'Déplacez-vous davantage',
@@ -7697,7 +9015,7 @@ const fr: Record<string, string> = {
   'onboarding.saving': 'Sauvegarde...',
   'onboarding.getStarted': 'Allons-y',
   'onboarding.continue': 'Continuer',
-  'onboarding.skip': 'Passer pour l\\\\\\\'instant',
+  'onboarding.skip': "Passer pour l\\\\\\'instant",
   'onboarding.goal.buildMuscle': 'Développer la force',
   'onboarding.goal.buildMuscleSub': 'Gagnez du muscle et de la puissance brute',
   'onboarding.goal.loseFat': 'Contrôle du corps',
@@ -7709,7 +9027,7 @@ const fr: Record<string, string> = {
   'onboarding.goal.posture': 'Postures',
   'onboarding.goal.postureSub': 'Tenez-vous droit et bougez en toute confiance',
   'onboarding.goal.mind': 'Esprit et concentration',
-  'onboarding.goal.mindSub': 'Aiguiser la cognition grâce à la lecture et à l\\\\\\\'apprentissage',
+  'onboarding.goal.mindSub': "Aiguiser la cognition grâce à la lecture et à l\\\\\\'apprentissage",
   'onboarding.bodyProfileTitle': 'Votre corps',
   'onboarding.bodyProfileSub': 'Facultatif — nous aide à personnaliser votre plan',
   'onboarding.experience.beginner': 'Débutant',
@@ -7730,16 +9048,26 @@ const fr: Record<string, string> = {
   'onboarding.equipment.jumpRope': 'Corde à sauter',
   'onboarding.weightPlaceholder': 'Poids (kg)',
   'onboarding.heightPlaceholder': 'Hauteur (cm)',
-  'onboarding.saveError': 'Échec de l\'enregistrement de votre profil. Veuillez réessayer.',
+  'onboarding.saveError': "Échec de l'enregistrement de votre profil. Veuillez réessayer.",
   'onboarding.permTitle': 'Activer les autorisations',
-  'onboarding.permSub': 'Elles aident FitQuest à mieux fonctionner pour vous. Vous pouvez les modifier à tout moment dans les Paramètres.',
-  'onboarding.perm.notifications': 'Rappels d\'entraînement',
+  'onboarding.permSub':
+    'Elles aident FitQuest à mieux fonctionner pour vous. Vous pouvez les modifier à tout moment dans les Paramètres.',
+  'onboarding.perm.notifications': "Rappels d'entraînement",
   'onboarding.perm.notificationsSub': 'Recevez des rappels pour rester sur la bonne voie avec votre programme',
+  'onboarding.perm.motion': 'Mouvement et Activité',
+  'onboarding.perm.motionSub':
+    'Suivez les pas, détectez les exercices et comptez les répétitions avec les capteurs de mouvement',
+  'onboarding.perm.location': 'Localisation (Suivi de Course)',
+  'onboarding.perm.locationSub': 'Cartographiez vos parcours de course et calculez la distance avec précision',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    "Synchronisez la fréquence cardiaque, le sommeil et les données d'entraînement avec Android Health Connect",
   'onboarding.perm.allow': 'Autoriser',
-  'onboarding.perm.skipNote': 'Vous pouvez ignorer ceci — les autorisations peuvent être activées plus tard dans votre profil.',
+  'onboarding.perm.skipNote':
+    'Vous pouvez ignorer ceci — les autorisations peuvent être activées plus tard dans votre profil.',
 
   'register.title': 'Créer un compte',
-  'register.subtitle': 'Commencez votre parcours de remise en forme dès aujourd\\\\\\\'hui',
+  'register.subtitle': "Commencez votre parcours de remise en forme dès aujourd\\\\\\'hui",
   'register.fullName': 'Nom complet',
   'register.namePlaceholder': 'Votre nom',
   'register.email': 'Courriel',
@@ -7748,12 +9076,12 @@ const fr: Record<string, string> = {
   'register.passwordPlaceholder': 'Minimum 8 caractères',
   'register.confirmPassword': 'Confirmer le mot de passe',
   'register.confirmPlaceholder': 'Répéter le mot de passe',
-  'register.creating': 'Création d\\\\\\\'un compte...',
-  'register.signUp': 'S\\\\\\\'inscrire',
+  'register.creating': "Création d\\\\\\'un compte...",
+  'register.signUp': "S\\\\\\'inscrire",
   'register.alreadyHaveAccount': 'Vous avez déjà un compte ?',
   'register.signIn': 'Connectez-vous',
   'register.passwordsMismatch': 'Les mots de passe ne correspondent pas',
-  'register.failed': 'L\\\\\\\'enregistrement a échoué. Veuillez réessayer.',
+  'register.failed': "L\\\\\\'enregistrement a échoué. Veuillez réessayer.",
   'register.strength.weak': 'Faible',
   'register.strength.fair': 'Foire',
   'register.strength.good': 'Bon',
@@ -7764,7 +9092,7 @@ const fr: Record<string, string> = {
 
   'fitmind.title': 'FitMind',
   'fitmind.addDocument': 'Ajouter un document',
-  'fitmind.importFromDevice': 'Importer depuis l\\\\\\\'appareil',
+  'fitmind.importFromDevice': "Importer depuis l\\\\\\'appareil",
   'fitmind.importing': 'Importation...',
   'fitmind.supportedFormats': 'PDF, EPUB, TXT, Markdown, HTML',
   'fitmind.orAddManually': 'ou ajoutez manuellement',
@@ -7773,20 +9101,21 @@ const fr: Record<string, string> = {
   'fitmind.contentLabel': 'Contenu / Notes',
   'fitmind.titlePlaceholder': 'Titre du document',
   'fitmind.categoryPlaceholder': 'Général',
-  'fitmind.contentPlaceholder': 'Collez du texte, des notes ou le contenu d\\\\\\\'un article...',
+  'fitmind.contentPlaceholder': "Collez du texte, des notes ou le contenu d\\\\\\'un article...",
   'fitmind.adding': 'Ajout...',
   'fitmind.addToLibrary': 'Ajouter à la bibliothèque',
   'fitmind.titleRequired': 'Titre requis',
   'fitmind.titleRequiredDetail': 'Veuillez saisir un titre pour le document.',
-  'fitmind.addFailed': 'Échec de l\\\\\\\'ajout du document. Veuillez réessayer.',
+  'fitmind.addFailed': "Échec de l\\\\\\'ajout du document. Veuillez réessayer.",
   'fitmind.deleteTitle': 'Supprimer le document',
   'fitmind.deleteConfirm': 'Supprimer de votre bibliothèque ? Cela ne peut pas être annulé.',
   'fitmind.imported': 'Importé',
   'fitmind.importedDetail': 'a été ajouté à votre bibliothèque.',
-  'fitmind.importFailed': 'Échec de l\\\\\\\'importation',
-  'fitmind.importFailedDetail': 'Impossible d\\\\\\\'importer ce fichier.',
-  'fitmind.noDocuments': 'Aucun document pour l\\\\\\\'instant. Appuyez sur + pour ajouter votre premier livre ou article.',
-  'fitmind.dayStreak': 'Série d\\\\\\\'une journée',
+  'fitmind.importFailed': "Échec de l\\\\\\'importation",
+  'fitmind.importFailedDetail': "Impossible d\\\\\\'importer ce fichier.",
+  'fitmind.noDocuments':
+    "Aucun document pour l\\\\\\'instant. Appuyez sur + pour ajouter votre premier livre ou article.",
+  'fitmind.dayStreak': "Série d\\\\\\'une journée",
   'fitmind.completed': 'Terminé',
   'fitmind.pagesRead': 'Pages lues',
   'fitmind.cardsDue': 'Cartes dues',
@@ -7803,14 +9132,15 @@ const fr: Record<string, string> = {
   'fitmind.reader.noContent': 'Aucun contenu disponible pour cette page.',
   'fitmind.reader.prev': 'Précédent',
   'fitmind.reader.next': 'Suivant',
-  'fitmind.reader.errorResponse': 'Désolé, j\\\\\\\'ai rencontré une erreur. Veuillez réessayer.',
+  'fitmind.reader.errorResponse': "Désolé, j\\\\\\'ai rencontré une erreur. Veuillez réessayer.",
   'fitmind.reader.rateLimited': 'Limite de débit atteinte. Veuillez patienter...',
   'fitmind.reader.loadError': 'Impossible de charger le contenu de la page.',
   'fitmind.reader.openReader': 'Ouvrir le lecteur',
   'fitmind.reader.binaryModeTitle': 'Contenu binaire',
-  'fitmind.reader.binaryModeBody': 'Ce fichier contient du contenu binaire qui ne peut pas être affiché sous forme de texte.',
+  'fitmind.reader.binaryModeBody':
+    'Ce fichier contient du contenu binaire qui ne peut pas être affiché sous forme de texte.',
 
-  'exercises.library': 'Bibliothèque d\\\\\\\'exercices',
+  'exercises.library': "Bibliothèque d\\\\\\'exercices",
   'exercises.searchPlaceholder': 'Exercices de recherche...',
   'exercises.filters': 'Filtres',
   'exercises.difficulty': 'Difficulté',
@@ -7825,7 +9155,7 @@ const fr: Record<string, string> = {
   'exercises.of': 'de',
   'exercises.results': 'exercices',
   'exercises.noResults': 'Aucun exercice ne correspond à vos filtres',
-  'exercises.adjustFilters': 'Essayez d\\\\\\\'ajuster votre recherche ou vos filtres',
+  'exercises.adjustFilters': "Essayez d\\\\\\'ajuster votre recherche ou vos filtres",
   'exercises.loading': 'Chargement des exercices...',
   'exercises.loadFailed': 'Échec du chargement des exercices',
   'exercises.category.all': 'Tous',
@@ -7837,10 +9167,10 @@ const fr: Record<string, string> = {
   'exercises.category.focus': 'Concentration et esprit',
 
   'analytics.title': 'Analyse',
-  'analytics.subtitle': 'Vos performances en un coup d\\\\\\\'œil',
+  'analytics.subtitle': "Vos performances en un coup d\\\\\\'œil",
   'analytics.weekly': 'Hebdomadaire',
   'analytics.monthly': 'Mensuel',
-  'analytics.workoutFrequency': 'Fréquence d\\\\\\\'entraînement',
+  'analytics.workoutFrequency': "Fréquence d\\\\\\'entraînement",
   'analytics.xpProgress': 'Progression XP',
   'analytics.muscleHeatmap': 'Carte thermique des groupes musculaires',
   'analytics.stepsJogging': 'Pas et jogging',
@@ -7866,12 +9196,12 @@ const fr: Record<string, string> = {
   'analytics.totalWorkouts': 'Total des entraînements',
   'analytics.consistency': 'Cohérence',
   'analytics.thisMonth': 'Ce mois-ci',
-  'analytics.totalSteps': 'Nombre total d\\\\\\\'étapes',
+  'analytics.totalSteps': "Nombre total d\\\\\\'étapes",
   'analytics.distance': 'Distance',
   'analytics.avg': 'Moy.',
   'analytics.runs': 'Fonctionne',
   'analytics.longestRun': 'Le plus long',
-  'analytics.dayStreak': 'Série d\\\\\\\'une journée',
+  'analytics.dayStreak': "Série d\\\\\\'une journée",
   'analytics.rest': 'Repos',
   'analytics.active': 'Actif',
   'analytics.completeWorkoutsForRecords': 'Entraînements complets pour établir des records',
@@ -7907,8 +9237,9 @@ const fr: Record<string, string> = {
   'backup.title': 'Sauvegarde et restauration',
   'backup.createBackup': 'Créer une sauvegarde',
   'backup.availableBackups': 'Sauvegardes disponibles',
-  'backup.noBackups': 'Aucune sauvegarde pour l\\\\\\\'instant.',
-  'backup.helperText': 'Crée un fichier de sauvegarde crypté de votre base de données locale. Si vous définissez une phrase secrète, vous devez utiliser la même phrase secrète pour restaurer.',
+  'backup.noBackups': "Aucune sauvegarde pour l\\\\\\'instant.",
+  'backup.helperText':
+    'Crée un fichier de sauvegarde crypté de votre base de données locale. Si vous définissez une phrase secrète, vous devez utiliser la même phrase secrète pour restaurer.',
   'backup.optionalPassphrase': 'Phrase secrète facultative',
   'backup.working': 'Travailler…',
   'backup.created': 'Sauvegarde créée',
@@ -7924,17 +9255,20 @@ const fr: Record<string, string> = {
   'backup.uploadBackup': 'Télécharger la sauvegarde',
   'backup.uploaded': 'Téléchargé',
   'backup.uploadFailed': 'Échec du téléchargement',
-  'backup.noCloudBackups': 'Aucune sauvegarde cloud pour l\\\\\\\'instant.',
-  'backup.cloudHelper': 'Stocke le blob de sauvegarde chiffré sur votre backend Phase 2. Le serveur ne peut pas décrypter vos données.',
+  'backup.noCloudBackups': "Aucune sauvegarde cloud pour l\\\\\\'instant.",
+  'backup.cloudHelper':
+    'Stocke le blob de sauvegarde chiffré sur votre backend Phase 2. Le serveur ne peut pas décrypter vos données.',
 
-  'audio.warmup.start': 'Commençons par un échauffement. Des mouvements légers pour réveiller vos muscles et préparer votre corps.',
-  'audio.main.start': 'Allons-y. L\\\'entraînement principal commence maintenant.',
+  'audio.warmup.start':
+    'Commençons par un échauffement. Des mouvements légers pour réveiller vos muscles et préparer votre corps.',
+  'audio.main.start': "Allons-y. L\\'entraînement principal commence maintenant.",
   'audio.cooldown.start': 'Il est temps de se calmer. Des mouvements doux pour aider votre corps à récupérer.',
-  'audio.warmup.toMain': 'Super échauffement ! Votre corps est préparé. C\\\'est l\\\'heure de l\\\'entraînement principal. Allons-y!',
+  'audio.warmup.toMain':
+    "Super échauffement ! Votre corps est préparé. C\\'est l\\'heure de l\\'entraînement principal. Allons-y!",
   'audio.warmup.toCooldown': 'Échauffement terminé. Calmons-nous maintenant.',
   'audio.main.toCooldown': 'Entraînement principal terminé ! Un effort incroyable. Refroidissons-nous et récupérons.',
   'audio.main.toWarmup': 'Passer aux exercices d’échauffement.',
-  'audio.cooldown.toMain': 'Exercices de récupération terminés. Retour à l\\\'entraînement principal.',
+  'audio.cooldown.toMain': "Exercices de récupération terminés. Retour à l\\'entraînement principal.",
   'audio.phase.fallback': 'Passage à la phase {{phase}}.',
   'audio.exerciseComplete': 'Exercice terminé',
   'audio.bell': 'Ding!',
@@ -7955,12 +9289,12 @@ const fr: Record<string, string> = {
   'audio.getIntoPosition': 'Mettez-vous en position',
   'audio.beginMovement': 'Commencez le mouvement',
   'audio.compliment.1': 'Entraînement terminé ! Vous vous êtes présenté et avez tout donné.',
-  'audio.compliment.2': 'C\\\'était incroyable ! Votre corps devient plus fort à chaque séance.',
+  'audio.compliment.2': "C\\'était incroyable ! Votre corps devient plus fort à chaque séance.",
   'audio.compliment.3': 'Un autre dans les livres ! La cohérence est votre super pouvoir.',
   'audio.compliment.4': 'Vous venez de prouver que le travail acharné porte ses fruits. Bien joué!',
-  'audio.compliment.5': 'Effort incroyable ! La plupart des gens sautent aujourd’hui. Vous ne l\\\'avez pas fait.',
-  'audio.perfect.1': 'Séance parfaite ! Chaque exercice terminé. C\\\'est le dévouement de l\\\'élite.',
-  'audio.perfect.2': 'Entraînement impeccable ! Vous n\\\'avez sauté aucun exercice. Inarrêtable !',
+  'audio.compliment.5': "Effort incroyable ! La plupart des gens sautent aujourd’hui. Vous ne l\\'avez pas fait.",
+  'audio.perfect.1': "Séance parfaite ! Chaque exercice terminé. C\\'est le dévouement de l\\'élite.",
+  'audio.perfect.2': "Entraînement impeccable ! Vous n\\'avez sauté aucun exercice. Inarrêtable !",
   'audio.perfect.3': 'Achèvement à cent pour cent. Vous êtes à un autre niveau !',
   'audio.levelUp.1': 'Et tu as progressé ! Bienvenue au niveau {{level}} !',
   'audio.levelUp.2': 'Niveau {{level}} débloqué ! Votre travail acharné porte ses fruits !',
@@ -7970,8 +9304,146 @@ const fr: Record<string, string> = {
   'audio.streak.60': 'Soixante jours ! La plupart des gens rêvent de ce genre de dévouement.',
   'audio.streak.90': 'Quatre-vingt-dix jours de suite ! Vous êtes absolument légendaire.',
   'audio.minutes': '{{minutes}} minutes de pur effort.',
-  'audio.progressions': '{{count}} exercices prêts à passer au niveau supérieur !|{{count}} exercices prêts à passer au niveau supérieur !',
+  'audio.progressions':
+    '{{count}} exercices prêts à passer au niveau supérieur !|{{count}} exercices prêts à passer au niveau supérieur !',
   'audio.xpEarned': 'Plus {{xp}} XP gagnés.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Logique de progression activée selon l\'activité récente.',
+  'signal.transition.regressing.subtext': 'Charge de séance réduite pour correspondre au rythme actuel.',
+  'signal.firstSession.headline': 'Système prêt. Commencez votre première séance.',
+  'signal.firstSession.subtext': 'Chaque séance calibre le système à votre capacité.',
+  'signal.streakAtRisk.headline': '{{streak}} jours consécutifs. Continuez aujourd\'hui pour renforcer.',
+  'signal.streakAtRisk.subtext.disciplined': 'La régularité guide la précision de la progression.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Une courte séance suffit pour maintenir le rythme.',
+  'signal.restAdvised.headline': 'Récupération recommandée selon la fatigue.',
+  'signal.restAdvised.subtext.fatigue': 'Fatigue à {{fatigue}}%. Le repos accélère l\'adaptation.',
+  'signal.restAdvised.subtext.readiness': 'Préparation à {{readiness}}%. Récupération en cours.',
+  'signal.momentum.headline': 'Séance terminée. Données enregistrées.',
+  'signal.momentum.subtext.streak': 'Schéma de {{streak}} jours. Le système affine votre programme.',
+  'signal.momentum.subtext.default': 'La récupération commence. La prochaine séance sera ajustée en conséquence.',
+  'signal.comeback.headline.inconsistent': '{{days}} jours d\'absence. Séance à faible résistance disponible.',
+  'signal.comeback.headline.disciplined': '{{days}} jours depuis la dernière séance. Intensité recalibrée.',
+  'signal.comeback.subtext.inconsistent': 'Système ajusté pour un retour plus facile.',
+  'signal.comeback.subtext.disciplined': 'Volume ajusté pour correspondre à l\'état de récupération actuel.',
+  'signal.recoveryReady.headline.disciplined': 'Préparation optimale. Conditions de progression atteintes.',
+  'signal.recoveryReady.headline.inconsistent': 'Récupération terminée. Bonnes conditions pour une séance.',
+  'signal.recoveryReady.subtext': 'Préparation à {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} jours consécutifs. Le système s\'adapte à votre rythme.',
+  'signal.streakBuilding.subtext.disciplined': 'Volume et intensité en hausse selon la performance.',
+  'signal.streakBuilding.subtext.inconsistent': 'Régularité en construction. Le défi augmente progressivement.',
+  'signal.expectToday.headline.disciplined': 'Créneau d\'entraînement ouvert. Système prêt.',
+  'signal.expectToday.headline.inconsistent': 'Séance disponible quand vous êtes prêt.',
+  'signal.expectToday.subtext.good': 'Préparation {{readiness}}%. Bonnes conditions.',
+  'signal.expectToday.subtext.moderate': 'Préparation modérée. Séance légère recommandée.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Première séance à venir. Le système apprend de chaque répétition.',
+  'memory.noHistory.trendStatement': 'Pas encore de données. Votre première séance établit la référence.',
+  'memory.lastSession.headline.crushed': 'Dernière séance: {{completed}} exercices complétés en {{duration}}min.',
+  'memory.lastSession.headline.adjusted': 'Dernière séance: {{completed}}/{{total}} terminé. Système ajusté.',
+  'memory.lastSession.headline.tough': 'La dernière séance était difficile. {{completed}}/{{total}} terminé. Récupération priorisée.',
+  'memory.trend.improving': 'Performance en hausse. Le système augmente le défi.',
+  'memory.trend.declining': 'Séances récentes plus difficiles. Système ajusté pour reconstruire l\'élan.',
+  'memory.trend.steady.data': 'Résultats réguliers. Proche du prochain seuil de progression.',
+  'memory.trend.steady.building': 'Construction de la base. Continuez à venir.',
+  'memory.delta.firstWorkout': 'Première séance. Le système se calibre à votre corps.',
+  'memory.delta.same': 'Même structure de séance. Le système voit la régularité se construire.',
+  'memory.delta.mixed': '{{total}} changements: {{removed}} retirés, {{added}} nouveaux.',
+  'memory.delta.added': '{{count}} nouvel exercice{{plural}} ajouté pour la variété.',
+  'memory.delta.removed': '{{count}} exercice{{plural}} échangé pour la récupération.',
+  'memory.progression.firstTime': 'Première fois. Le système calibrera depuis cette séance.',
+  'memory.progression.improving': '{{wins}} victoires consécutives. En progression.',
+  'memory.progression.declining': 'Baisse récente détectée. Volume ajusté.',
+  'memory.progression.nearGate': '{{successes}} séance{{plural}} solide. Encore une pour débloquer la progression.',
+  'memory.progression.steady': 'Reste stable. La régularité est la stratégie.',
+  'memory.reason.retained': 'Cohérent avec votre parcours de progression.',
+  'memory.reason.addedBalance': 'Intégré pour l\'équilibre de la récupération musculaire.',
+  'memory.reason.removedFatigue': 'Retiré en raison de la fatigue accumulée.',
+  'memory.reason.removedVariety': 'Échangé pour l\'équilibre musculaire et la variété.',
+  'memory.timeSince.minutes': 'Il y a {{minutes}}m',
+  'memory.timeSince.hours': 'Il y a {{hours}}h',
+  'memory.timeSince.yesterday': 'Hier',
+  'memory.timeSince.days': 'Il y a {{days}} jours',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Accès complet au système activé.',
+  'trial.welcome.subtext': '14 jours pour explorer chaque fonctionnalité. Sans restrictions.',
+  'trial.firstWin.headline': '{{workouts}} séance{{plural}} terminée. Le système apprend vos habitudes.',
+  'trial.firstWin.subtext': 'Chaque séance améliore la précision de l\'entraînement.',
+  'trial.readyForFirst.headline': 'Jour {{day}}. Système prêt pour votre première séance.',
+  'trial.readyForFirst.subtext': 'Commencez un entraînement pour lancer la calibration.',
+  'trial.improvementShown.headline': 'Comparaison de séances maintenant disponible.',
+  'trial.improvementShown.subtext': 'Le système peut maintenant montrer ce qui a changé et pourquoi.',
+  'trial.memoryIntro.headline': 'Intelligence d\'entraînement en expansion.',
+  'trial.memoryIntro.subtext': 'Jour {{day}}. Plus de séances = analyse plus fine.',
+  'trial.fullIntelligence.headline': 'Intelligence complète active.',
+  'trial.fullIntelligence.subtext': 'Jour {{day}}. Le système s\'adapte à vos habitudes et capacités.',
+  'trial.transitionClear.headline': '{{days}} jour{{plural}} restant en accès complet.',
+  'trial.transitionClear.subtext': 'Après l\'essai les fonctions de base restent disponibles. Les couches d\'intelligence nécessitent un abonnement.',
+  'trial.transitionSoft.headline': '{{days}} jours restants.',
+  'trial.transitionSoft.subtext': 'Vos données et progrès vous appartiennent toujours. L\'abonnement continue les fonctions d\'intelligence.',
+  'trial.viewPlans': 'Voir les plans',
+  'trial.expired.headline': 'Essai terminé.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} séances enregistrées. Les fonctions de base restent disponibles. Abonnez-vous pour restaurer les couches d\'intelligence.',
+  'trial.expired.subtext.noWorkouts': 'Les fonctions de base restent disponibles. Abonnez-vous pour débloquer les couches d\'intelligence.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Abandon à l\'exercice {{index}} ({{name}}) — volume réduit à la prochaine séance.',
+  'failure.skipHeavy': 'Taux d\'omission élevé détecté. Les exercices peuvent ne pas correspondre à la capacité actuelle.',
+  'failure.lowVolume': 'Faible volume complété. La séance est peut-être trop exigeante.',
+  'failure.earlyDropout': 'Schéma d\'abandon précoce. La durée de séance est réduite.',
+  'failure.lateDropout': 'Abandon d\'endurance. Exercices plus légers placés en fin.',
+  'failure.noFailure': 'Séance complétée avec succès.',
+  'failure.insight.none': 'Séance complétée à {{percent}}%. Aucun ajustement nécessaire.',
+  'failure.insight.earlyDropout': 'Abandon à l\'exercice {{index}} ({{name}}) — volume réduit à la prochaine séance.',
+  'failure.insight.midDropout': 'Abandon à la série {{index}} ({{name}}) — ajustement du nombre d\'exercices.',
+  'failure.insight.lateDropout': 'Presque terminée ({{percent}}%). Ajustement mineur appliqué.',
+  'failure.insight.skipHeavy': 'Séance complétée mais {{percent}}% des exercices omis. Révision de la sélection.',
+  'failure.insight.lowVolume': 'Faible volume complété ({{percent}}%). Réduction des prescriptions de séries.',
+  'failure.insight.empty': 'Aucun exercice complété. Le système réduit la difficulté de la prochaine séance.',
+  'failure.adjustment.none': 'Aucun ajustement nécessaire.',
+  'failure.adjustment.earlyDropout': 'Abandon précoce détecté. Réduction du volume et de la durée.',
+  'failure.adjustment.midDropout': 'Abandon à l\'exercice {{index}}. Réduction du nombre d\'exercices.',
+  'failure.adjustment.lateDropout': 'Séance presque terminée. Légère réduction du volume.',
+  'failure.adjustment.skipHeavy': 'Taux d\'omission élevé. La sélection d\'exercices doit être révisée.',
+  'failure.adjustment.lowVolume': 'Faible volume complété. Réduction du nombre de séries.',
+  'failure.adjustment.empty': 'Séance vide. Réduction significative appliquée.',
+  'failure.pattern.noData': 'Pas encore de données de séance.',
+  'failure.pattern.noFailures': 'Toutes les séances récentes complétées avec succès. Les conditions supportent la progression.',
+  'failure.pattern.occasional': 'Séances incomplètes occasionnelles. Le volume actuel semble soutenable.',
+  'failure.pattern.earlyDropoffs': 'Abandons précoces fréquents. Réduction de la durée ou du nombre d\'exercices recommandée.',
+  'failure.pattern.highSkips': 'Taux d\'omission élevé. La sélection d\'exercices peut nécessiter un ajustement.',
+  'failure.pattern.worsening': 'Taux d\'échec en hausse. Envisagez une réduction du volume ou un focus sur la récupération.',
+  'failure.pattern.general': '{{rate}}% taux d\'échec. Ajustement de la difficulté de la séance.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'La série sera réinitialisée.',
+  'simulation.skip.modeShift': 'Peut passer en mode irrégulier.',
+  'simulation.skip.fatigueDrop': 'La fatigue baisse de {{delta}}.',
+  'simulation.skip.minimal': 'Impact minimal — vous avez de la marge.',
+  'simulation.train.fatigueUp': 'La fatigue augmente de {{delta}}.',
+  'simulation.train.modeAdvance': 'Progresse vers le mode discipliné.',
+  'simulation.train.reduceTomorrow': 'Demain devrait être plus léger.',
+  'simulation.train.pushTomorrow': 'De la marge pour pousser plus demain.',
+  'simulation.rest.recovery': 'Récupération: fatigue baisse de {{delta}}.',
+  'simulation.rest.streakReset': 'La série sera réinitialisée mais la récupération est prioritaire.',
+  'simulation.rest.ready': 'Prêt pour une séance complète demain.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'L\'intelligence avancée nécessite un abonnement.',
 };
 
 const de: Record<string, string> = {
@@ -7998,7 +9470,8 @@ const de: Record<string, string> = {
   'dashboard.levelShort': 'Lv',
   'dashboard.restRecommended': 'Ruhe empfohlen',
   'dashboard.recoveryModerate': 'Mäßig',
-  'dashboard.recoveryWarning': '⚠️ Hohe Müdigkeit festgestellt. Erwägen Sie ein leichteres Training oder einen Ruhetag.',
+  'dashboard.recoveryWarning':
+    '⚠️ Hohe Müdigkeit festgestellt. Erwägen Sie ein leichteres Training oder einen Ruhetag.',
   'dashboard.noWorkoutsYet': 'Noch kein Training. Starten Sie Ihr erstes!',
   'dashboard.createCustom': 'Erstellen Sie ein benutzerdefiniertes',
   'dashboard.recoveryTrackingActive': 'Wiederherstellungsverfolgung aktiv',
@@ -8018,6 +9491,7 @@ const de: Record<string, string> = {
   'dashboard.of': 'von',
   'dashboard.incompleteSession': 'Unvollständige Sitzung',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'JETZT STARTEN',
   'dashboard.stepsToday': 'Schritte',
   'dashboard.activeMin': 'Aktive Minute',
   'dashboard.completionRate': 'Fertigstellung',
@@ -8140,13 +9614,17 @@ const de: Record<string, string> = {
   'profile.craftMyBody': 'Gestalte meinen Körper',
   'profile.craftMyBodySub': 'Personalisierter Körpertransformationsplan mit Ernährung und Training',
   'profile.adaptiveTraining': 'Adaptives Training',
-  'profile.adaptiveExplanation': 'Diese Werte passen sich beim Training automatisch an. Tippen Sie auf jede Metrik, um mehr zu erfahren.',
+  'profile.adaptiveExplanation':
+    'Diese Werte passen sich beim Training automatisch an. Tippen Sie auf jede Metrik, um mehr zu erfahren.',
   'profile.fatigueSensitivity': 'Ermüdungsempfindlichkeit',
-  'profile.fatigueSensitivityDesc': 'Wie schnell sich beim Training Müdigkeit aufbaut. Höhere Werte bedeuten, dass der Algorithmus Ihnen zwischen intensiven Sitzungen mehr Ruhe gönnt. Passt sich basierend auf Ihren Trainingsabschlussquoten und Erholungsmustern an.',
+  'profile.fatigueSensitivityDesc':
+    'Wie schnell sich beim Training Müdigkeit aufbaut. Höhere Werte bedeuten, dass der Algorithmus Ihnen zwischen intensiven Sitzungen mehr Ruhe gönnt. Passt sich basierend auf Ihren Trainingsabschlussquoten und Erholungsmustern an.',
   'profile.progressionPace': 'Fortschrittstempo',
-  'profile.progressionPaceDesc': 'Wie aggressiv die Übungsschwierigkeit mit der Zeit zunimmt. Höhere Werte bedeuten einen schnelleren Fortschritt zu schwierigeren Übungen. Passt sich an, je nachdem, ob Sie vorgeschriebene Sätze/Wiederholungen konsequent absolvieren.',
+  'profile.progressionPaceDesc':
+    'Wie aggressiv die Übungsschwierigkeit mit der Zeit zunimmt. Höhere Werte bedeuten einen schnelleren Fortschritt zu schwierigeren Übungen. Passt sich an, je nachdem, ob Sie vorgeschriebene Sätze/Wiederholungen konsequent absolvieren.',
   'profile.volumeTolerance': 'Volumentoleranz',
-  'profile.volumeToleranceDesc': 'Wie viel Gesamttrainingsvolumen (Sätze x Wiederholungen) Ihr Körper verkraften kann. Höhere Werte bedeuten längere Trainingseinheiten mit mehr Übungen. Passt sich basierend auf dem Abschluss Ihrer Sitzung und den übersprungenen Übungen an.',
+  'profile.volumeToleranceDesc':
+    'Wie viel Gesamttrainingsvolumen (Sätze x Wiederholungen) Ihr Körper verkraften kann. Höhere Werte bedeuten längere Trainingseinheiten mit mehr Übungen. Passt sich basierend auf dem Abschluss Ihrer Sitzung und den übersprungenen Übungen an.',
   'profile.confidence': 'Vertrauen',
   'profile.samples': 'Proben',
   'profile.rank': 'Rang und Fortschritt',
@@ -8178,7 +9656,8 @@ const de: Record<string, string> = {
   'profile.notificationsAction.pickHour': 'Wählen Sie die tägliche Erinnerungsstunde',
   'profile.notificationsAction.pickTime': 'Wählen Sie Ihre bevorzugte Erinnerungszeit',
   'profile.healthConnect': 'Gesundheitsintegration',
-  'profile.healthConnectFailed': 'Auf diesem Gerät kann keine Verbindung zum Gesundheitsdienstleister hergestellt werden.',
+  'profile.healthConnectFailed':
+    'Auf diesem Gerät kann keine Verbindung zum Gesundheitsdienstleister hergestellt werden.',
   'profile.healthConnectSuccess': 'Gesundheitsdienstleister erfolgreich verbunden.',
   'profile.healthSync': 'Gesundheitssynchronisierung',
   'profile.healthSyncSub': 'Aktuelle Gesundheitsakten vom Anbieter synchronisieren',
@@ -8219,6 +9698,10 @@ const de: Record<string, string> = {
   'profile.appSection': 'App',
   'profile.backupRestore': 'Sichern und Wiederherstellen',
   'profile.backupRestoreSub': 'Verschlüsselte lokale Sicherungsdateien',
+  'profile.subscription': 'Abonnement',
+  'profile.expired': 'Abgelaufen',
+  'profile.subscribeToUnlock': 'Abonnieren Sie, um alle Funktionen freizuschalten',
+  'profile.searchLanguages': 'Sprachen suchen…',
   'profile.about': 'Über FitQuest',
   'profile.version': 'Version',
   'profile.saved': 'Gespeichert',
@@ -8373,7 +9856,8 @@ const de: Record<string, string> = {
   'move.noStepHistory': 'Noch kein Schrittverlauf',
   'move.jogHistory': 'Laufverlauf',
   'move.noJogHistory': 'Noch keine Joggingeinheiten',
-  'move.infoXpAndFatigue': '1.000 Schritte = 4 XP • Joggen bringt 10 XP pro 100 m.\\\\\\\\nBewegung hat keinen Einfluss auf die Trainingsermüdung',
+  'move.infoXpAndFatigue':
+    '1.000 Schritte = 4 XP • Joggen bringt 10 XP pro 100 m.\\\\\\\\nBewegung hat keinen Einfluss auf die Trainingsermüdung',
   'move.jogComplete': 'Joggen abgeschlossen! 🏃',
   'move.awesome': 'Eindrucksvoll!',
   'move.km': 'km',
@@ -8417,7 +9901,8 @@ const de: Record<string, string> = {
   'meal.location.tapEnable': 'Tippen Sie hier, um den Standort zu aktivieren',
   'meal.location.infoPrefix': 'Es werden die verfügbaren Lebensmittel angezeigt',
   'meal.location.infoSuffix': ', einschließlich regionaler und globaler Optionen.',
-  'meal.location.infoNoLocation': 'Aktivieren Sie den Standort, um regionalspezifische Essensvorschläge anzuzeigen. Tippen Sie oben auf das Standort-Badge, um es noch einmal zu versuchen.',
+  'meal.location.infoNoLocation':
+    'Aktivieren Sie den Standort, um regionalspezifische Essensvorschläge anzuzeigen. Tippen Sie oben auf das Standort-Badge, um es noch einmal zu versuchen.',
 
   'legal.title': 'Rechtszentrum',
   'legal.documents': 'Dokumente',
@@ -8444,63 +9929,99 @@ const de: Record<string, string> = {
   'legal.readInApp': 'In-App lesen',
   'legal.cannotOpenLink': 'Link kann auf diesem Gerät nicht geöffnet werden',
   'legal.noteMedical': 'Die Fitnessberatung in dieser App ist lehrreich und ersetzt keinen medizinischen Rat.',
-  'legal.noteCounsel': 'Der endgültige Rechtstext und die Zuständigkeitszuordnung sollten vor der Veröffentlichung von einem Anwalt überprüft werden.',
+  'legal.noteCounsel':
+    'Der endgültige Rechtstext und die Zuständigkeitszuordnung sollten vor der Veröffentlichung von einem Anwalt überprüft werden.',
   'legal.lastUpdated': 'Letzte Aktualisierung:',
   'legal.privacy.sections.developerTitle': 'Entwickler',
-  'legal.privacy.sections.developerBody': 'FitQuest wird von fitquest.dev entwickelt und veröffentlicht. Diese Datenschutzrichtlinie gilt für die mobile App FitQuest, die bei Google Play und im Apple App Store verfügbar ist.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest wird von fitquest.dev entwickelt und veröffentlicht. Diese Datenschutzrichtlinie gilt für die mobile App FitQuest, die bei Google Play und im Apple App Store verfügbar ist.',
   'legal.privacy.sections.dataCollectTitle': '1) Von uns erfasste Daten',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest verarbeitet die folgenden Datenkategorien, um personalisierte Fitness- und Wellnessfunktionen bereitzustellen:',
-  'legal.privacy.bullets.health': 'Gesundheits- und Aktivitätsmetriken: Herzfrequenz, Schritte, Schlafdaten, Trainingsverlauf, Körpermaße und Erholungswerte',
-  'legal.privacy.bullets.biometric': 'Biometrische Daten: Fingerabdruck oder Gesichtserkennung zur App-Authentifizierung (wird nur auf dem Gerät verarbeitet, niemals gespeichert oder übertragen)',
-  'legal.privacy.bullets.location': 'Standortdaten: GPS-Koordinaten beim Jog-Tracking (nur bei aktiver Nutzung der Jog-Funktion)',
-  'legal.privacy.bullets.account': 'Profilinformationen: Fitnessziele, Erfahrungsniveau, Ausrüstungspräferenzen und optionaler Arbeitsplan',
-  'legal.privacy.bullets.usage': 'App-Nutzungsmuster und Funktionsinteraktionen (anonymisiert, zur Verbesserung der App verwendet)',
-  'legal.privacy.bullets.device': 'Gerätetyp, Betriebssystemversion und App-Version für Kompatibilität und Absturzberichte',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest verarbeitet die folgenden Datenkategorien, um personalisierte Fitness- und Wellnessfunktionen bereitzustellen:',
+  'legal.privacy.bullets.health':
+    'Gesundheits- und Aktivitätsmetriken: Herzfrequenz, Schritte, Schlafdaten, Trainingsverlauf, Körpermaße und Erholungswerte',
+  'legal.privacy.bullets.biometric':
+    'Biometrische Daten: Fingerabdruck oder Gesichtserkennung zur App-Authentifizierung (wird nur auf dem Gerät verarbeitet, niemals gespeichert oder übertragen)',
+  'legal.privacy.bullets.location':
+    'Standortdaten: GPS-Koordinaten beim Jog-Tracking (nur bei aktiver Nutzung der Jog-Funktion)',
+  'legal.privacy.bullets.account':
+    'Profilinformationen: Fitnessziele, Erfahrungsniveau, Ausrüstungspräferenzen und optionaler Arbeitsplan',
+  'legal.privacy.bullets.usage':
+    'App-Nutzungsmuster und Funktionsinteraktionen (anonymisiert, zur Verbesserung der App verwendet)',
+  'legal.privacy.bullets.device':
+    'Gerätetyp, Betriebssystemversion und App-Version für Kompatibilität und Absturzberichte',
   'legal.privacy.bullets.photos': 'Profilfotos: werden lokal auf Ihrem Gerät gespeichert, wenn Sie eines festlegen',
-  'legal.privacy.bullets.healthConnect': 'Health Connect/HealthKit-Daten: Schritte, Herzfrequenz, Schlaf und Trainingsdaten (nur mit ausdrücklicher Genehmigung)',
+  'legal.privacy.bullets.healthConnect':
+    'Health Connect/HealthKit-Daten: Schritte, Herzfrequenz, Schlaf und Trainingsdaten (nur mit ausdrücklicher Genehmigung)',
   'legal.privacy.sections.storageTitle': '2) Datenspeicherung',
-  'legal.privacy.sections.storageBody': 'FitQuest ist als Offline-First-Anwendung konzipiert. Alle Ihre Fitnessdaten werden mithilfe von SQLite lokal auf Ihrem Gerät gespeichert. Es werden keine personenbezogenen Daten auf externen Servern gespeichert. Sensible Gesundheitsdaten werden vor der Speicherung mit der branchenüblichen AES-256-GCM-Verschlüsselung verschlüsselt.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest ist als Offline-First-Anwendung konzipiert. Alle Ihre Fitnessdaten werden mithilfe von SQLite lokal auf Ihrem Gerät gespeichert. Es werden keine personenbezogenen Daten auf externen Servern gespeichert. Sensible Gesundheitsdaten werden vor der Speicherung mit der branchenüblichen AES-256-GCM-Verschlüsselung verschlüsselt.',
   'legal.privacy.sections.securityTitle': '3) Datensicherheit',
-  'legal.privacy.sections.securityBody': 'Alle sensiblen Gesundheitsdaten werden mit der AES-256-GCM-Verschlüsselung verschlüsselt, bevor sie auf Ihrem Gerät gespeichert werden. Verschlüsselungsschlüssel werden durch die sichere Hardware Ihres Geräts geschützt (Schlüsselbund bei iOS, Keystore bei Android). Die biometrische Authentifizierung bietet eine zusätzliche Schutzebene. Wir verwenden sichere Schlüsselableitung (PBKDF2) und zeitkonstante Vergleiche, um Timing-Angriffe zu verhindern.',
+  'legal.privacy.sections.securityBody':
+    'Alle sensiblen Gesundheitsdaten werden mit der AES-256-GCM-Verschlüsselung verschlüsselt, bevor sie auf Ihrem Gerät gespeichert werden. Verschlüsselungsschlüssel werden durch die sichere Hardware Ihres Geräts geschützt (Schlüsselbund bei iOS, Keystore bei Android). Die biometrische Authentifizierung bietet eine zusätzliche Schutzebene. Wir verwenden sichere Schlüsselableitung (PBKDF2) und zeitkonstante Vergleiche, um Timing-Angriffe zu verhindern.',
   'legal.privacy.sections.thirdPartyTitle': '4) Dienste Dritter',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest verkauft, vermietet oder handelt Ihre persönlichen Daten nicht. Die folgenden Integrationen von Drittanbietern verarbeiten möglicherweise begrenzte Daten:',
-  'legal.privacy.bullets.thirdPartyAI': 'KI-Funktionen: Wenn Sie den KI-Coach oder -Professor verwenden, werden Ihre Eingabeaufforderungen (über Llama-Sprachmodelle) an OpenRouter gesendet, um Antworten zu generieren. Diese Anfragen enthalten keine personenbezogenen Gesundheitsdaten, sondern nur den von Ihnen eingegebenen Text.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: Wenn Sie die Erlaubnis erteilen, liest FitQuest Gesundheitsmetriken von diesen Plattformdiensten. Die Daten fließen in eine Richtung (schreibgeschützt) und werden verschlüsselt auf Ihrem Gerät gespeichert.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: Verwaltet die Abonnementüberprüfung. Erhält nur Kauftokens und anonyme Benutzerkennungen – keine Gesundheits- oder Fitnessdaten.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: Absturzmeldedienst, der anonymisierte Fehlerprotokolle empfängt. Es sind keine personenbezogenen Daten oder Gesundheitskennzahlen enthalten.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest verkauft, vermietet oder handelt Ihre persönlichen Daten nicht. Die folgenden Integrationen von Drittanbietern verarbeiten möglicherweise begrenzte Daten:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'KI-Funktionen: Wenn Sie den KI-Coach oder -Professor verwenden, werden Ihre Eingabeaufforderungen (über Llama-Sprachmodelle) an OpenRouter gesendet, um Antworten zu generieren. Diese Anfragen enthalten keine personenbezogenen Gesundheitsdaten, sondern nur den von Ihnen eingegebenen Text.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: Wenn Sie die Erlaubnis erteilen, liest FitQuest Gesundheitsmetriken von diesen Plattformdiensten. Die Daten fließen in eine Richtung (schreibgeschützt) und werden verschlüsselt auf Ihrem Gerät gespeichert.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: Verwaltet die Abonnementüberprüfung. Erhält nur Kauftokens und anonyme Benutzerkennungen – keine Gesundheits- oder Fitnessdaten.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: Absturzmeldedienst, der anonymisierte Fehlerprotokolle empfängt. Es sind keine personenbezogenen Daten oder Gesundheitskennzahlen enthalten.',
   'legal.privacy.sections.childrenTitle': '5) Privatsphäre von Kindern',
-  'legal.privacy.sections.childrenBody': 'FitQuest ist für Benutzer ab 13 Jahren konzipiert. Wir erfassen wissentlich keine personenbezogenen Daten von Kindern unter 13 Jahren. Wenn Sie glauben, dass ein Kind uns Daten zur Verfügung gestellt hat, kontaktieren Sie uns bitte unter fitquestsupp0rt@gmail.com für eine sofortige Löschung.',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest ist für Benutzer ab 13 Jahren konzipiert. Wir erfassen wissentlich keine personenbezogenen Daten von Kindern unter 13 Jahren. Wenn Sie glauben, dass ein Kind uns Daten zur Verfügung gestellt hat, kontaktieren Sie uns bitte unter fitquestsupp0rt@gmail.com für eine sofortige Löschung.',
   'legal.privacy.sections.retentionTitle': '6) Datenaufbewahrung',
-  'legal.privacy.sections.retentionBody': 'Ihre Daten werden lokal auf Ihrem Gerät gespeichert und so lange gespeichert, wie die App installiert ist. Sie können alle Daten jederzeit über Profil → Einstellungen → Alle Daten löschen löschen. Durch die Deinstallation der App werden alle lokalen Daten dauerhaft entfernt. Sie können die Datenlöschung auch über unsere Website unter https://fitquest.dev/delete-account beantragen.',
+  'legal.privacy.sections.retentionBody':
+    'Ihre Daten werden lokal auf Ihrem Gerät gespeichert und so lange gespeichert, wie die App installiert ist. Sie können alle Daten jederzeit über Profil → Einstellungen → Alle Daten löschen löschen. Durch die Deinstallation der App werden alle lokalen Daten dauerhaft entfernt. Sie können die Datenlöschung auch über unsere Website unter https://fitquest.dev/delete-account beantragen.',
   'legal.privacy.sections.rightsTitle': '7) Ihre Rechte',
-  'legal.privacy.sections.rightsBody': 'Gemäß den geltenden Datenschutzgesetzen (einschließlich des Data Protection Act 2011 von Lesotho, der DSGVO in der EU und des CCPA in Kalifornien) haben Sie die folgenden Rechte:',
-  'legal.privacy.bullets.accessRight': 'Zugriff: Sehen Sie sich alle Daten an, die die App über Sie speichert, über Profil → Daten exportieren',
-  'legal.privacy.bullets.deleteRight': 'Löschung: Löschen Sie alle Ihre Daten dauerhaft über die App-Einstellungen oder unsere Website',
-  'legal.privacy.bullets.exportRight': 'Portabilität: Exportieren Sie Ihre Daten im JSON-Format zur Übertragung an einen anderen Dienst',
+  'legal.privacy.sections.rightsBody':
+    'Gemäß den geltenden Datenschutzgesetzen (einschließlich des Data Protection Act 2011 von Lesotho, der DSGVO in der EU und des CCPA in Kalifornien) haben Sie die folgenden Rechte:',
+  'legal.privacy.bullets.accessRight':
+    'Zugriff: Sehen Sie sich alle Daten an, die die App über Sie speichert, über Profil → Daten exportieren',
+  'legal.privacy.bullets.deleteRight':
+    'Löschung: Löschen Sie alle Ihre Daten dauerhaft über die App-Einstellungen oder unsere Website',
+  'legal.privacy.bullets.exportRight':
+    'Portabilität: Exportieren Sie Ihre Daten im JSON-Format zur Übertragung an einen anderen Dienst',
   'legal.privacy.bullets.correctRight': 'Korrektur: Aktualisieren oder ändern Sie Ihre Profilinformationen jederzeit',
-  'legal.privacy.bullets.objectionRight': 'Widerspruch: Einwilligung zur Datenverarbeitung jederzeit über das Legal Center',
+  'legal.privacy.bullets.objectionRight':
+    'Widerspruch: Einwilligung zur Datenverarbeitung jederzeit über das Legal Center',
   'legal.privacy.sections.popiaTitle': 'widerrufen 8) Datenschutz-Compliance (Lesotho)',
-  'legal.privacy.sections.popiaBody': 'Gemäß dem Datenschutzgesetz 2011 des Königreichs Lesotho fungiert fitquest.dev als Verantwortlicher für Ihre personenbezogenen Daten. Wir verarbeiten Ihre Daten rechtmäßig, beschränken die Erhebung auf das erforderliche Maß, sorgen für Richtigkeit und sorgen für angemessene Sicherheitsvorkehrungen. Für grenzüberschreitende Benutzer halten wir uns gegebenenfalls auch an POPIA (Südafrika), DSGVO (EU) und CCPA (Kalifornien).',
+  'legal.privacy.sections.popiaBody':
+    'Gemäß dem Datenschutzgesetz 2011 des Königreichs Lesotho fungiert fitquest.dev als Verantwortlicher für Ihre personenbezogenen Daten. Wir verarbeiten Ihre Daten rechtmäßig, beschränken die Erhebung auf das erforderliche Maß, sorgen für Richtigkeit und sorgen für angemessene Sicherheitsvorkehrungen. Für grenzüberschreitende Benutzer halten wir uns gegebenenfalls auch an POPIA (Südafrika), DSGVO (EU) und CCPA (Kalifornien).',
   'legal.privacy.sections.updatesTitle': '9) Richtlinienaktualisierungen',
-  'legal.privacy.sections.updatesBody': 'Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden in der App mit einem aktualisierten Datum „Letzte Aktualisierung“ angezeigt und Sie werden aufgefordert, die aktualisierte Richtlinie zu überprüfen und zu akzeptieren. Die weitere Nutzung der App nach Änderungen stellt die Annahme der neuen Richtlinien dar.',
+  'legal.privacy.sections.updatesBody':
+    'Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden in der App mit einem aktualisierten Datum „Letzte Aktualisierung“ angezeigt und Sie werden aufgefordert, die aktualisierte Richtlinie zu überprüfen und zu akzeptieren. Die weitere Nutzung der App nach Änderungen stellt die Annahme der neuen Richtlinien dar.',
   'legal.privacy.sections.contactTitle': '10) Kontakt',
-  'legal.privacy.sections.contactBody': 'Für Datenschutzanfragen senden Sie eine E-Mail an fitquestsupp0rt@gmail.com. Sie können auch https://fitquest.dev/support besuchen. Geben Sie Ihre Konto-ID an, sofern verfügbar. Wir antworten innerhalb von 30 Werktagen.',
+  'legal.privacy.sections.contactBody':
+    'Für Datenschutzanfragen senden Sie eine E-Mail an fitquestsupp0rt@gmail.com. Sie können auch https://fitquest.dev/support besuchen. Geben Sie Ihre Konto-ID an, sofern verfügbar. Wir antworten innerhalb von 30 Werktagen.',
   'legal.terms.sections.useTitle': '1) Akzeptable Verwendung',
-  'legal.terms.sections.useBody': 'Sie erklären sich damit einverstanden, FitQuest rechtmäßig zu nutzen und nicht zu versuchen, Sicherheitskontrollen, Abonnementmechanismen oder Datenschutzfunktionen zurückzuentwickeln, zu dekompilieren oder zu umgehen. Sie dürfen die App nicht für rechtswidrige Zwecke oder unter Verstoß gegen geltende Vorschriften nutzen.',
+  'legal.terms.sections.useBody':
+    'Sie erklären sich damit einverstanden, FitQuest rechtmäßig zu nutzen und nicht zu versuchen, Sicherheitskontrollen, Abonnementmechanismen oder Datenschutzfunktionen zurückzuentwickeln, zu dekompilieren oder zu umgehen. Sie dürfen die App nicht für rechtswidrige Zwecke oder unter Verstoß gegen geltende Vorschriften nutzen.',
   'legal.terms.sections.medicalTitle': '2) Medizinischer Haftungsausschluss',
-  'legal.terms.sections.medicalBody': 'FitQuest ist eine Fitness- und Wellnessanwendung und KEIN medizinisches Gerät oder eine medizinische Dienstleistung. Die App bietet keine medizinische Beratung, Diagnose oder Behandlung. Trainingsvorschläge, Gesundheitswerte, Erholungsempfehlungen und KI-generierte Anleitungen dienen nur zu Informations- und Bildungszwecken. Konsultieren Sie immer einen qualifizierten Arzt, bevor Sie ein Trainingsprogramm beginnen, ändern oder abbrechen, insbesondere wenn Sie bereits gesundheitliche Probleme, Verletzungen oder Bedenken haben. Beenden Sie das Training sofort, wenn Sie Schmerzen, Schwindel oder Unwohlsein verspüren.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest ist eine Fitness- und Wellnessanwendung und KEIN medizinisches Gerät oder eine medizinische Dienstleistung. Die App bietet keine medizinische Beratung, Diagnose oder Behandlung. Trainingsvorschläge, Gesundheitswerte, Erholungsempfehlungen und KI-generierte Anleitungen dienen nur zu Informations- und Bildungszwecken. Konsultieren Sie immer einen qualifizierten Arzt, bevor Sie ein Trainingsprogramm beginnen, ändern oder abbrechen, insbesondere wenn Sie bereits gesundheitliche Probleme, Verletzungen oder Bedenken haben. Beenden Sie das Training sofort, wenn Sie Schmerzen, Schwindel oder Unwohlsein verspüren.',
   'legal.terms.sections.subscriptionTitle': '3) Abonnement und Abrechnung',
-  'legal.terms.sections.subscriptionBody': 'FitQuest bietet eine 14-tägige kostenlose Testversion aller Premium-Funktionen. Nach Ablauf des Testzeitraums können Sie ein Abonnement abschließen, um weiterhin Premium-Funktionen zu nutzen, oder mit der kostenlosen Stufe fortfahren. Premium-Abonnements werden über den Google Play Store oder Apple App Store abgerechnet. Abonnements verlängern sich automatisch am Ende jedes Abrechnungszeitraums, sofern sie nicht mindestens 24 Stunden vor dem Verlängerungsdatum gekündigt werden. Sie können Ihr Abonnement über die App-Store-Einstellungen Ihres Geräts verwalten oder kündigen. Rückerstattungen unterliegen den Rückerstattungsrichtlinien der jeweiligen Plattform. Die Preise können je nach Region variieren und werden vor dem Kauf in Ihrer Landeswährung angezeigt.',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest bietet eine 14-tägige kostenlose Testversion aller Premium-Funktionen. Nach Ablauf des Testzeitraums können Sie ein Abonnement abschließen, um weiterhin Premium-Funktionen zu nutzen, oder mit der kostenlosen Stufe fortfahren. Premium-Abonnements werden über den Google Play Store oder Apple App Store abgerechnet. Abonnements verlängern sich automatisch am Ende jedes Abrechnungszeitraums, sofern sie nicht mindestens 24 Stunden vor dem Verlängerungsdatum gekündigt werden. Sie können Ihr Abonnement über die App-Store-Einstellungen Ihres Geräts verwalten oder kündigen. Rückerstattungen unterliegen den Rückerstattungsrichtlinien der jeweiligen Plattform. Die Preise können je nach Region variieren und werden vor dem Kauf in Ihrer Landeswährung angezeigt.',
   'legal.terms.sections.ipTitle': '4) Geistiges Eigentum',
-  'legal.terms.sections.ipBody': 'Alle Inhalte, Designs, Codes, Algorithmen, Marken und Materialien in FitQuest sind geistiges Eigentum von fitquest.dev und durch geltende Urheber- und Markengesetze geschützt. Ohne vorherige schriftliche Genehmigung dürfen Sie keinen Teil der App vervielfältigen, verbreiten oder davon abgeleitete Werke erstellen.',
+  'legal.terms.sections.ipBody':
+    'Alle Inhalte, Designs, Codes, Algorithmen, Marken und Materialien in FitQuest sind geistiges Eigentum von fitquest.dev und durch geltende Urheber- und Markengesetze geschützt. Ohne vorherige schriftliche Genehmigung dürfen Sie keinen Teil der App vervielfältigen, verbreiten oder davon abgeleitete Werke erstellen.',
   'legal.terms.sections.liabilityTitle': '5) Haftungsbeschränkung',
-  'legal.terms.sections.liabilityBody': 'Soweit gesetzlich zulässig, haftet fitquest.dev nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die sich aus Ihrer Nutzung der App ergeben, einschließlich, aber nicht beschränkt auf, Körperverletzung, Datenverlust oder Dienstunterbrechung. Unsere Gesamthaftung übersteigt nicht den Betrag, den Sie in den 12 Monaten vor dem Anspruch für Premium-Funktionen bezahlt haben.',
+  'legal.terms.sections.liabilityBody':
+    'Soweit gesetzlich zulässig, haftet fitquest.dev nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die sich aus Ihrer Nutzung der App ergeben, einschließlich, aber nicht beschränkt auf, Körperverletzung, Datenverlust oder Dienstunterbrechung. Unsere Gesamthaftung übersteigt nicht den Betrag, den Sie in den 12 Monaten vor dem Anspruch für Premium-Funktionen bezahlt haben.',
   'legal.terms.sections.terminationTitle': '6) Kündigung',
-  'legal.terms.sections.terminationBody': 'Wir behalten uns das Recht vor, Ihren Zugang zu FitQuest auszusetzen oder zu beenden, wenn Sie gegen diese Bedingungen verstoßen. Sie können die Nutzung der App jederzeit beenden. Nach der Kündigung verbleiben Ihre lokal gespeicherten Daten auf Ihrem Gerät, bis Sie diese löschen oder die App deinstallieren.',
+  'legal.terms.sections.terminationBody':
+    'Wir behalten uns das Recht vor, Ihren Zugang zu FitQuest auszusetzen oder zu beenden, wenn Sie gegen diese Bedingungen verstoßen. Sie können die Nutzung der App jederzeit beenden. Nach der Kündigung verbleiben Ihre lokal gespeicherten Daten auf Ihrem Gerät, bis Sie diese löschen oder die App deinstallieren.',
   'legal.terms.sections.governingLawTitle': '7) Geltendes Recht',
-  'legal.terms.sections.governingLawBody': 'Diese Bedingungen unterliegen den Gesetzen des Königreichs Lesotho und werden in Übereinstimmung mit diesen ausgelegt. Alle Streitigkeiten, die sich aus diesen Bedingungen oder Ihrer Nutzung von FitQuest ergeben, unterliegen der ausschließlichen Zuständigkeit der Gerichte von Lesotho. Sollte sich herausstellen, dass eine Bestimmung dieser Bedingungen nicht durchsetzbar ist, bleiben die übrigen Bestimmungen in vollem Umfang in Kraft und wirksam.',
-  'legal.terms.bullets.compliance': 'Sie müssen alle geltenden Google Play- und Apple App Store-Richtlinien einhalten, wenn Sie diese App verwenden',
-  'legal.terms.bullets.accountDelete': 'Sie können Ihr Konto und alle damit verbundenen Daten jederzeit über Profil → Einstellungen oder unter https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Diese Bedingungen unterliegen den Gesetzen des Königreichs Lesotho und werden in Übereinstimmung mit diesen ausgelegt. Alle Streitigkeiten, die sich aus diesen Bedingungen oder Ihrer Nutzung von FitQuest ergeben, unterliegen der ausschließlichen Zuständigkeit der Gerichte von Lesotho. Sollte sich herausstellen, dass eine Bestimmung dieser Bedingungen nicht durchsetzbar ist, bleiben die übrigen Bestimmungen in vollem Umfang in Kraft und wirksam.',
+  'legal.terms.bullets.compliance':
+    'Sie müssen alle geltenden Google Play- und Apple App Store-Richtlinien einhalten, wenn Sie diese App verwenden',
+  'legal.terms.bullets.accountDelete':
+    'Sie können Ihr Konto und alle damit verbundenen Daten jederzeit über Profil → Einstellungen oder unter https://fitquest.dev/delete-account',
 
   'common.save': 'Speichern',
   'common.cancel': 'Abbrechen',
@@ -8576,12 +10097,14 @@ const de: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Beginnen Sie jederzeit',
   'savedWorkouts.deleteFailed': 'Das Training konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
   'savedWorkouts.emptyTitle': 'Noch keine gespeicherten Trainingseinheiten',
-  'savedWorkouts.emptySubtitle': 'Erstellen Sie Ihr erstes individuelles Training, indem Sie Übungen auswählen, die auf Ihre Ziele zugeschnitten sind. Es dauert nur eine Minute!',
+  'savedWorkouts.emptySubtitle':
+    'Erstellen Sie Ihr erstes individuelles Training, indem Sie Übungen auswählen, die auf Ihre Ziele zugeschnitten sind. Es dauert nur eine Minute!',
   'savedWorkouts.featurePick': 'Wählen Sie Ihre Übungen',
   'savedWorkouts.featureSet': 'Wiederholungen und Ruhezeiten festlegen',
   'savedWorkouts.featureStart': 'Beginnen Sie jederzeit',
   'savedWorkouts.deleteTitle': 'Training löschen',
-  'savedWorkouts.deleteConfirm': 'Sind Sie sicher, dass Sie „{name}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+  'savedWorkouts.deleteConfirm':
+    'Sind Sie sicher, dass Sie „{name}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
   'savedWorkouts.deleteError': 'Das Training konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
   'savedWorkouts.today': 'Heute',
   'savedWorkouts.yesterday': 'Gestern',
@@ -8628,7 +10151,8 @@ const de: Record<string, string> = {
   'help.featureDesc': 'Haben Sie eine Idee, FitQuest besser zu machen? Wir würden es gerne hören',
   'help.responseTime': 'Wir antworten in der Regel innerhalb von 24–48 Stunden',
 
-  'about.description': 'FitQuest ist eine umfassende Fitnessplattform, die Ihnen beim Erreichen Ihrer Trainingsziele helfen soll. Alle Ihre Daten bleiben auf Ihrem Gerät und werden durch die AES-256-Verschlüsselung geschützt.',
+  'about.description':
+    'FitQuest ist eine umfassende Fitnessplattform, die Ihnen beim Erreichen Ihrer Trainingsziele helfen soll. Alle Ihre Daten bleiben auf Ihrem Gerät und werden durch die AES-256-Verschlüsselung geschützt.',
   'about.platform': 'Plattform',
   'about.dataStorage': 'Datenspeicherung',
   'about.onDevice': 'Nur auf dem Gerät',
@@ -8858,11 +10382,20 @@ const de: Record<string, string> = {
   'onboarding.heightPlaceholder': 'Höhe (cm)',
   'onboarding.saveError': 'Ihr Profil konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.',
   'onboarding.permTitle': 'Berechtigungen aktivieren',
-  'onboarding.permSub': 'Diese helfen FitQuest, optimal für dich zu funktionieren. Du kannst sie jederzeit in den Einstellungen ändern.',
+  'onboarding.permSub':
+    'Diese helfen FitQuest, optimal für dich zu funktionieren. Du kannst sie jederzeit in den Einstellungen ändern.',
   'onboarding.perm.notifications': 'Trainings-Erinnerungen',
   'onboarding.perm.notificationsSub': 'Werde erinnert, deinen Trainingsplan einzuhalten',
+  'onboarding.perm.motion': 'Bewegung und Aktivität',
+  'onboarding.perm.motionSub': 'Schritte verfolgen, Übungen erkennen und Wiederholungen mit Bewegungssensoren zählen',
+  'onboarding.perm.location': 'Standort (Joggen-Tracking)',
+  'onboarding.perm.locationSub': 'Kartiere deine Jogging-Routen und berechne die Entfernung genau',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    'Synchronisiere Herzfrequenz, Schlaf und Trainingsdaten mit Android Health Connect',
   'onboarding.perm.allow': 'Erlauben',
-  'onboarding.perm.skipNote': 'Du kannst dies überspringen — Berechtigungen können später in deinem Profil aktiviert werden.',
+  'onboarding.perm.skipNote':
+    'Du kannst dies überspringen — Berechtigungen können später in deinem Profil aktiviert werden.',
 
   'register.title': 'Konto erstellen',
   'register.subtitle': 'Beginnen Sie noch heute Ihre Fitnessreise',
@@ -8911,7 +10444,8 @@ const de: Record<string, string> = {
   'fitmind.importedDetail': 'wurde Ihrer Bibliothek hinzugefügt.',
   'fitmind.importFailed': 'Import fehlgeschlagen',
   'fitmind.importFailedDetail': 'Diese Datei konnte nicht importiert werden.',
-  'fitmind.noDocuments': 'Noch keine Dokumente. Tippen Sie auf +, um Ihr erstes Buch oder Ihren ersten Artikel hinzuzufügen.',
+  'fitmind.noDocuments':
+    'Noch keine Dokumente. Tippen Sie auf +, um Ihr erstes Buch oder Ihren ersten Artikel hinzuzufügen.',
   'fitmind.dayStreak': 'Tagessträhne',
   'fitmind.completed': 'Abgeschlossen',
   'fitmind.pagesRead': 'Gelesene Seiten',
@@ -9034,7 +10568,8 @@ const de: Record<string, string> = {
   'backup.createBackup': 'Backup erstellen',
   'backup.availableBackups': 'Verfügbare Backups',
   'backup.noBackups': 'Noch keine Backups.',
-  'backup.helperText': 'Erstellt eine verschlüsselte Sicherungsdatei Ihrer lokalen Datenbank. Wenn Sie eine Passphrase festlegen, müssen Sie für die Wiederherstellung dieselbe Passphrase verwenden.',
+  'backup.helperText':
+    'Erstellt eine verschlüsselte Sicherungsdatei Ihrer lokalen Datenbank. Wenn Sie eine Passphrase festlegen, müssen Sie für die Wiederherstellung dieselbe Passphrase verwenden.',
   'backup.optionalPassphrase': 'Optionale Passphrase',
   'backup.working': 'Arbeiten…',
   'backup.created': 'Backup erstellt',
@@ -9051,14 +10586,17 @@ const de: Record<string, string> = {
   'backup.uploaded': 'Hochgeladen',
   'backup.uploadFailed': 'Hochladen fehlgeschlagen',
   'backup.noCloudBackups': 'Noch keine Cloud-Backups.',
-  'backup.cloudHelper': 'Speichert den verschlüsselten Backup-Blob auf Ihrem Phase-2-Back-End. Der Server kann Ihre Daten nicht entschlüsseln.',
+  'backup.cloudHelper':
+    'Speichert den verschlüsselten Backup-Blob auf Ihrem Phase-2-Back-End. Der Server kann Ihre Daten nicht entschlüsseln.',
 
-  'audio.warmup.start': 'Beginnen wir mit einem Aufwärmen. Leichte Bewegungen, um Ihre Muskeln aufzuwecken und Ihren Körper vorzubereiten.',
+  'audio.warmup.start':
+    'Beginnen wir mit einem Aufwärmen. Leichte Bewegungen, um Ihre Muskeln aufzuwecken und Ihren Körper vorzubereiten.',
   'audio.main.start': 'Lasst uns darauf eingehen. Das Haupttraining beginnt jetzt.',
   'audio.cooldown.start': 'Zeit zum Abkühlen. Sanfte Bewegungen helfen Ihrem Körper, sich zu erholen.',
   'audio.warmup.toMain': 'Tolles Aufwärmen! Ihr Körper ist vorbereitet. Zeit für das Haupttraining. Lass uns gehen!',
   'audio.warmup.toCooldown': 'Aufwärmen abgeschlossen. Lass uns jetzt abkühlen.',
-  'audio.main.toCooldown': 'Haupttraining geschafft! Erstaunliche Anstrengung. Lassen Sie uns abkühlen und uns erholen.',
+  'audio.main.toCooldown':
+    'Haupttraining geschafft! Erstaunliche Anstrengung. Lassen Sie uns abkühlen und uns erholen.',
   'audio.main.toWarmup': 'Übergang zu Aufwärmübungen.',
   'audio.cooldown.toMain': 'Cool-Down-Übungen abgeschlossen. Zurück zum Haupttraining.',
   'audio.phase.fallback': 'Übergang zur {{phase}}-Phase.',
@@ -9098,6 +10636,143 @@ const de: Record<string, string> = {
   'audio.minutes': '{{minutes}} Minuten pure Anstrengung.',
   'audio.progressions': '{{count}} Übung bereit zum Levelaufstieg!|{{count}} Übungen bereit zum Levelaufstieg!',
   'audio.xpEarned': 'Plus {{xp}} XP verdient.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Progressionslogik aktiviert basierend auf jüngster Aktivität.',
+  'signal.transition.regressing.subtext': 'Trainingsbelastung reduziert um zum aktuellen Rhythmus zu passen.',
+  'signal.firstSession.headline': 'System bereit. Starte deine erste Einheit.',
+  'signal.firstSession.subtext': 'Jede Einheit kalibriert das System auf deine Kapazität.',
+  'signal.streakAtRisk.headline': '{{streak}} Tage durchgehend. Mach heute weiter um es zu verstärken.',
+  'signal.streakAtRisk.subtext.disciplined': 'Beständigkeit treibt die Progressionsgenauigkeit.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Eine kurze Einheit reicht um den Rhythmus zu halten.',
+  'signal.restAdvised.headline': 'Erholung empfohlen basierend auf Ermüdung.',
+  'signal.restAdvised.subtext.fatigue': 'Ermüdung bei {{fatigue}}%. Ruhe beschleunigt die Anpassung.',
+  'signal.restAdvised.subtext.readiness': 'Bereitschaft bei {{readiness}}%. Erholung läuft.',
+  'signal.momentum.headline': 'Einheit abgeschlossen. Daten aufgezeichnet.',
+  'signal.momentum.subtext.streak': '{{streak}}-Tage-Muster. System verfeinert dein Programm.',
+  'signal.momentum.subtext.default': 'Erholung beginnt. Nächste Einheit wird entsprechend angepasst.',
+  'signal.comeback.headline.inconsistent': '{{days}} Tage Pause. Einheit mit geringem Widerstand verfügbar.',
+  'signal.comeback.headline.disciplined': '{{days}} Tage seit letzter Einheit. Intensität neu kalibriert.',
+  'signal.comeback.subtext.inconsistent': 'System angepasst für leichteren Wiedereinstieg.',
+  'signal.comeback.subtext.disciplined': 'Volumen angepasst an aktuellen Erholungszustand.',
+  'signal.recoveryReady.headline.disciplined': 'Bereitschaft optimal. Progressionsbedingungen erfüllt.',
+  'signal.recoveryReady.headline.inconsistent': 'Erholung abgeschlossen. Gute Bedingungen für eine Einheit.',
+  'signal.recoveryReady.subtext': 'Bereitschaft bei {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} Tage durchgehend. System passt sich deinem Rhythmus an.',
+  'signal.streakBuilding.subtext.disciplined': 'Volumen und Intensität steigen basierend auf Leistung.',
+  'signal.streakBuilding.subtext.inconsistent': 'Beständigkeit baut sich auf. Herausforderung steigt schrittweise.',
+  'signal.expectToday.headline.disciplined': 'Trainingsfenster offen. System bereit.',
+  'signal.expectToday.headline.inconsistent': 'Einheit verfügbar wenn du bereit bist.',
+  'signal.expectToday.subtext.good': 'Bereitschaft {{readiness}}%. Gute Bedingungen.',
+  'signal.expectToday.subtext.moderate': 'Mittlere Bereitschaft. Leichte Einheit empfohlen.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Erste Einheit steht bevor. Das System lernt aus jeder Wiederholung.',
+  'memory.noHistory.trendStatement': 'Noch keine Daten. Deine erste Einheit setzt die Basislinie.',
+  'memory.lastSession.headline.crushed': 'Letzte Einheit: {{completed}} Übungen gemeistert in {{duration}}min.',
+  'memory.lastSession.headline.adjusted': 'Letzte Einheit: {{completed}}/{{total}} abgeschlossen. System angepasst.',
+  'memory.lastSession.headline.tough': 'Letzte Einheit war hart. {{completed}}/{{total}} abgeschlossen. Erholung priorisiert.',
+  'memory.trend.improving': 'Leistung steigt. System erhöht die Herausforderung.',
+  'memory.trend.declining': 'Jüngste Einheiten schwieriger. System angepasst um Schwung aufzubauen.',
+  'memory.trend.steady.data': 'Konstante Ergebnisse. Nahe der nächsten Progressionsstufe.',
+  'memory.trend.steady.building': 'Basislinie wird aufgebaut. Bleib dran.',
+  'memory.delta.firstWorkout': 'Erste Einheit. System kalibriert sich auf deinen Körper.',
+  'memory.delta.same': 'Gleiche Einheitsstruktur. System erkennt wachsende Beständigkeit.',
+  'memory.delta.mixed': '{{total}} Änderungen: {{removed}} ausgetauscht, {{added}} neu.',
+  'memory.delta.added': '{{count}} neue Übung{{plural}} für Abwechslung hinzugefügt.',
+  'memory.delta.removed': '{{count}} Übung{{plural}} für Erholung getauscht.',
+  'memory.progression.firstTime': 'Erstes Mal. System kalibriert ab dieser Einheit.',
+  'memory.progression.improving': '{{wins}} Siege in Folge. Fortschritt.',
+  'memory.progression.declining': 'Jüngster Rückgang erkannt. Volumen angepasst.',
+  'memory.progression.nearGate': '{{successes}} solide Einheit{{plural}}. Noch eine für Progressionsfreischaltung.',
+  'memory.progression.steady': 'Stabil. Beständigkeit ist der Plan.',
+  'memory.reason.retained': 'Konsistent mit deinem Progressionspfad.',
+  'memory.reason.addedBalance': 'Eingefügt für Muskelerholungsbalance.',
+  'memory.reason.removedFatigue': 'Entfernt aufgrund angehäufter Ermüdung.',
+  'memory.reason.removedVariety': 'Getauscht für Muskelbalance und Abwechslung.',
+  'memory.timeSince.minutes': 'Vor {{minutes}}m',
+  'memory.timeSince.hours': 'Vor {{hours}}h',
+  'memory.timeSince.yesterday': 'Gestern',
+  'memory.timeSince.days': 'Vor {{days}} Tagen',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Vollzugriff auf das System aktiviert.',
+  'trial.welcome.subtext': '14 Tage um jede Funktion zu erkunden. Ohne Einschränkungen.',
+  'trial.firstWin.headline': '{{workouts}} Einheit{{plural}} abgeschlossen. System lernt deine Muster.',
+  'trial.firstWin.subtext': 'Jede Einheit verbessert die Trainingsgenauigkeit.',
+  'trial.readyForFirst.headline': 'Tag {{day}}. System bereit für deine erste Einheit.',
+  'trial.readyForFirst.subtext': 'Starte ein Training um die Kalibrierung zu beginnen.',
+  'trial.improvementShown.headline': 'Einheitenvergleich jetzt verfügbar.',
+  'trial.improvementShown.subtext': 'Das System kann jetzt zeigen was sich geändert hat und warum.',
+  'trial.memoryIntro.headline': 'Trainingsintelligenz erweitert sich.',
+  'trial.memoryIntro.subtext': 'Tag {{day}}. Mehr Einheiten = schärfere Analyse.',
+  'trial.fullIntelligence.headline': 'Volle Intelligenz aktiv.',
+  'trial.fullIntelligence.subtext': 'Tag {{day}}. System passt sich deinen Mustern und Kapazität an.',
+  'trial.transitionClear.headline': '{{days}} Tag{{plural}} Vollzugriff verbleibend.',
+  'trial.transitionClear.subtext': 'Nach der Testphase bleiben Kernfunktionen verfügbar. Intelligenzebenen erfordern ein Abonnement.',
+  'trial.transitionSoft.headline': '{{days}} Tage verbleibend.',
+  'trial.transitionSoft.subtext': 'Deine Trainingsdaten und Fortschritte gehören immer dir. Abonnement setzt Intelligenzfunktionen fort.',
+  'trial.viewPlans': 'Pläne ansehen',
+  'trial.expired.headline': 'Testphase abgeschlossen.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} Einheiten aufgezeichnet. Kernfunktionen bleiben verfügbar. Abonniere um Intelligenzebenen wiederherzustellen.',
+  'trial.expired.subtext.noWorkouts': 'Kernfunktionen bleiben verfügbar. Abonniere um Intelligenzebenen freizuschalten.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Abbruch bei Übung {{index}} ({{name}}) — Volumen in nächster Einheit reduziert.',
+  'failure.skipHeavy': 'Hohe Überspringrate erkannt. Übungen passen möglicherweise nicht zur aktuellen Kapazität.',
+  'failure.lowVolume': 'Niedriges abgeschlossenes Volumen. Einheit ist möglicherweise zu fordernd.',
+  'failure.earlyDropout': 'Frühes Abbruchmuster. Einheitslänge wird reduziert.',
+  'failure.lateDropout': 'Ausdauer-Abbruch. Leichtere Übungen am Ende platziert.',
+  'failure.noFailure': 'Einheit erfolgreich abgeschlossen.',
+  'failure.insight.none': 'Einheit bei {{percent}}% abgeschlossen. Keine Anpassungen nötig.',
+  'failure.insight.earlyDropout': 'Abbruch bei Übung {{index}} ({{name}}) — Volumen in nächster Einheit reduziert.',
+  'failure.insight.midDropout': 'Abbruch bei Satz {{index}} ({{name}}) — Übungsanzahl wird angepasst.',
+  'failure.insight.lateDropout': 'Fast abgeschlossen ({{percent}}%). Geringe Anpassung vorgenommen.',
+  'failure.insight.skipHeavy': 'Einheit abgeschlossen aber {{percent}}% der Übungen übersprungen. Auswahl wird überprüft.',
+  'failure.insight.lowVolume': 'Niedriges abgeschlossenes Volumen ({{percent}}%). Satzvorgaben werden reduziert.',
+  'failure.insight.empty': 'Keine Übungen abgeschlossen. System reduziert Schwierigkeit der nächsten Einheit.',
+  'failure.adjustment.none': 'Keine Anpassung nötig.',
+  'failure.adjustment.earlyDropout': 'Früher Abbruch erkannt. Volumen und Dauer werden reduziert.',
+  'failure.adjustment.midDropout': 'Abbruch bei Übung {{index}}. Übungsanzahl wird reduziert.',
+  'failure.adjustment.lateDropout': 'Fast abgeschlossene Einheit. Geringe Volumenreduzierung.',
+  'failure.adjustment.skipHeavy': 'Hohe Überspringrate. Übungsauswahl muss überprüft werden.',
+  'failure.adjustment.lowVolume': 'Niedriges abgeschlossenes Volumen. Satzanzahl wird reduziert.',
+  'failure.adjustment.empty': 'Leere Einheit. Erhebliche Reduzierung vorgenommen.',
+  'failure.pattern.noData': 'Noch keine Einheitsdaten.',
+  'failure.pattern.noFailures': 'Alle jüngsten Einheiten erfolgreich abgeschlossen. Bedingungen unterstützen Progression.',
+  'failure.pattern.occasional': 'Gelegentlich unvollständige Einheiten. Aktuelles Volumen scheint tragbar.',
+  'failure.pattern.earlyDropoffs': 'Häufige frühe Abbrüche. Reduzierung der Einheitslänge oder Übungsanzahl empfohlen.',
+  'failure.pattern.highSkips': 'Hohe Überspringrate. Übungsauswahl benötigt möglicherweise Anpassung.',
+  'failure.pattern.worsening': 'Ausfallrate steigt. Erwäge Volumenreduzierung oder Erholungsfokus.',
+  'failure.pattern.general': '{{rate}}% Ausfallrate. Einheitsschwierigkeit wird angepasst.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'Serie wird zurückgesetzt.',
+  'simulation.skip.modeShift': 'Kann in ungleichmäßigen Modus wechseln.',
+  'simulation.skip.fatigueDrop': 'Ermüdung sinkt um {{delta}}.',
+  'simulation.skip.minimal': 'Minimale Auswirkung — du hast Spielraum.',
+  'simulation.train.fatigueUp': 'Ermüdung steigt um {{delta}}.',
+  'simulation.train.modeAdvance': 'Bewegt sich Richtung disziplinierter Modus.',
+  'simulation.train.reduceTomorrow': 'Morgen sollte leichter sein.',
+  'simulation.train.pushTomorrow': 'Spielraum um morgen härter zu trainieren.',
+  'simulation.rest.recovery': 'Erholung: Ermüdung sinkt um {{delta}}.',
+  'simulation.rest.streakReset': 'Serie wird zurückgesetzt aber Erholung hat Priorität.',
+  'simulation.rest.ready': 'Bereit für volle Einheit morgen.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'Erweiterte Intelligenz erfordert ein Abonnement.',
 };
 
 const pt: Record<string, string> = {
@@ -9144,6 +10819,7 @@ const pt: Record<string, string> = {
   'dashboard.of': 'de',
   'dashboard.incompleteSession': 'Sessão Incompleta',
   'dashboard.kcal': 'calorias',
+  'dashboard.startNow': 'COMEÇAR AGORA',
   'dashboard.stepsToday': 'Passos',
   'dashboard.activeMin': 'Minuto ativo',
   'dashboard.completionRate': 'Conclusão',
@@ -9266,13 +10942,17 @@ const pt: Record<string, string> = {
   'profile.craftMyBody': 'Crie meu corpo',
   'profile.craftMyBodySub': 'Plano personalizado de transformação corporal com nutrição e treino',
   'profile.adaptiveTraining': 'Treinamento Adaptativo',
-  'profile.adaptiveExplanation': 'Esses valores se ajustam automaticamente conforme você treina. Toque em cada métrica para saber mais.',
+  'profile.adaptiveExplanation':
+    'Esses valores se ajustam automaticamente conforme você treina. Toque em cada métrica para saber mais.',
   'profile.fatigueSensitivity': 'Sensibilidade à fadiga',
-  'profile.fatigueSensitivityDesc': 'A rapidez com que a fadiga aumenta durante os treinos. Valores mais altos significam que o algoritmo proporciona mais descanso entre sessões intensas. Ajusta com base nas taxas de conclusão do treino e nos padrões de recuperação.',
+  'profile.fatigueSensitivityDesc':
+    'A rapidez com que a fadiga aumenta durante os treinos. Valores mais altos significam que o algoritmo proporciona mais descanso entre sessões intensas. Ajusta com base nas taxas de conclusão do treino e nos padrões de recuperação.',
   'profile.progressionPace': 'Ritmo de progressão',
-  'profile.progressionPaceDesc': 'Quão agressivamente a dificuldade do exercício aumenta com o tempo. Valores mais altos significam avanço mais rápido para exercícios mais difíceis. Ajusta com base na conclusão consistente das séries/repetições prescritas.',
+  'profile.progressionPaceDesc':
+    'Quão agressivamente a dificuldade do exercício aumenta com o tempo. Valores mais altos significam avanço mais rápido para exercícios mais difíceis. Ajusta com base na conclusão consistente das séries/repetições prescritas.',
   'profile.volumeTolerance': 'Tolerância de volume',
-  'profile.volumeToleranceDesc': 'Quanto volume total de treinamento (séries x repetições) seu corpo pode suportar. Valores mais altos significam sessões de treino mais longas com mais exercícios. Ajusta com base na conclusão da sessão e nos exercícios ignorados.',
+  'profile.volumeToleranceDesc':
+    'Quanto volume total de treinamento (séries x repetições) seu corpo pode suportar. Valores mais altos significam sessões de treino mais longas com mais exercícios. Ajusta com base na conclusão da sessão e nos exercícios ignorados.',
   'profile.confidence': 'Confiança',
   'profile.samples': 'Amostras',
   'profile.rank': 'Classificação e progresso',
@@ -9345,6 +11025,10 @@ const pt: Record<string, string> = {
   'profile.appSection': 'Aplicativo',
   'profile.backupRestore': 'Backup e restauração',
   'profile.backupRestoreSub': 'Arquivos de backup locais criptografados',
+  'profile.subscription': 'Assinatura',
+  'profile.expired': 'Expirado',
+  'profile.subscribeToUnlock': 'Assine para desbloquear todos os recursos',
+  'profile.searchLanguages': 'Pesquisar idiomas…',
   'profile.about': 'Sobre FitQuest',
   'profile.version': 'Versão',
   'profile.saved': 'Salvo',
@@ -9499,7 +11183,8 @@ const pt: Record<string, string> = {
   'move.noStepHistory': 'Ainda não há histórico de etapas',
   'move.jogHistory': 'Histórico de corrida',
   'move.noJogHistory': 'Ainda não há sessões de corrida',
-  'move.infoXpAndFatigue': '1.000 passos = 4 XP • Corridas ganham 10 XP por 100m\\\\\\\\nO movimento não afeta a fadiga do treino',
+  'move.infoXpAndFatigue':
+    '1.000 passos = 4 XP • Corridas ganham 10 XP por 100m\\\\\\\\nO movimento não afeta a fadiga do treino',
   'move.jogComplete': 'Corrida completa! 🏃',
   'move.awesome': 'Incrível!',
   'move.km': 'quilômetros',
@@ -9543,7 +11228,8 @@ const pt: Record<string, string> = {
   'meal.location.tapEnable': 'Toque para ativar a localização',
   'meal.location.infoPrefix': 'Mostrando alimentos disponíveis em',
   'meal.location.infoSuffix': ', incluindo opções regionais e globais.',
-  'meal.location.infoNoLocation': 'Ative a localização para ver sugestões de alimentos específicos da região. Toque no emblema de localização acima para tentar novamente.',
+  'meal.location.infoNoLocation':
+    'Ative a localização para ver sugestões de alimentos específicos da região. Toque no emblema de localização acima para tentar novamente.',
 
   'legal.title': 'Centro Jurídico',
   'legal.documents': 'Documentos',
@@ -9569,64 +11255,103 @@ const pt: Record<string, string> = {
   'legal.termsOfServiceExternal': 'Termos de Serviço (Site)',
   'legal.readInApp': 'Leia no aplicativo',
   'legal.cannotOpenLink': 'Não foi possível abrir o link neste dispositivo',
-  'legal.noteMedical': 'A orientação sobre condicionamento físico neste aplicativo é educacional e não substitui o aconselhamento médico.',
-  'legal.noteCounsel': 'O texto jurídico final e o mapeamento da jurisdição devem ser revistos por um advogado antes da divulgação.',
+  'legal.noteMedical':
+    'A orientação sobre condicionamento físico neste aplicativo é educacional e não substitui o aconselhamento médico.',
+  'legal.noteCounsel':
+    'O texto jurídico final e o mapeamento da jurisdição devem ser revistos por um advogado antes da divulgação.',
   'legal.lastUpdated': 'Última atualização:',
   'legal.privacy.sections.developerTitle': 'Desenvolvedor',
-  'legal.privacy.sections.developerBody': 'FitQuest é desenvolvido e publicado por fitquest.dev. Esta política de privacidade rege o aplicativo móvel FitQuest disponível no Google Play e na Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest é desenvolvido e publicado por fitquest.dev. Esta política de privacidade rege o aplicativo móvel FitQuest disponível no Google Play e na Apple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Dados que coletamos',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest processa as seguintes categorias de dados para fornecer recursos personalizados de condicionamento físico e bem-estar:',
-  'legal.privacy.bullets.health': 'Métricas de saúde e atividade: frequência cardíaca, passos, dados de sono, histórico de exercícios, medidas corporais e pontuações de recuperação',
-  'legal.privacy.bullets.biometric': 'Dados biométricos: impressão digital ou reconhecimento facial utilizados para autenticação de aplicações (processados ​​apenas no dispositivo, nunca armazenados ou transmitidos)',
-  'legal.privacy.bullets.location': 'Dados de localização: coordenadas GPS durante o rastreamento de jog (somente quando você usa ativamente o recurso jog)',
-  'legal.privacy.bullets.account': 'Informações de perfil: metas de condicionamento físico, nível de experiência, preferências de equipamentos e horário de trabalho opcional',
-  'legal.privacy.bullets.usage': 'Padrões de uso do aplicativo e interações de recursos (anonimizados, usados ​​para melhorar o aplicativo)',
-  'legal.privacy.bullets.device': 'Tipo de dispositivo, versão do sistema operacional e versão do aplicativo para compatibilidade e relatórios de falhas',
-  'legal.privacy.bullets.photos': 'Fotos de perfil: armazenadas localmente em seu dispositivo, se você optar por definir uma',
-  'legal.privacy.bullets.healthConnect': 'Dados do Health Connect / HealthKit: passos, frequência cardíaca, sono e dados de treino (somente se você conceder permissão explícita)',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest processa as seguintes categorias de dados para fornecer recursos personalizados de condicionamento físico e bem-estar:',
+  'legal.privacy.bullets.health':
+    'Métricas de saúde e atividade: frequência cardíaca, passos, dados de sono, histórico de exercícios, medidas corporais e pontuações de recuperação',
+  'legal.privacy.bullets.biometric':
+    'Dados biométricos: impressão digital ou reconhecimento facial utilizados para autenticação de aplicações (processados ​​apenas no dispositivo, nunca armazenados ou transmitidos)',
+  'legal.privacy.bullets.location':
+    'Dados de localização: coordenadas GPS durante o rastreamento de jog (somente quando você usa ativamente o recurso jog)',
+  'legal.privacy.bullets.account':
+    'Informações de perfil: metas de condicionamento físico, nível de experiência, preferências de equipamentos e horário de trabalho opcional',
+  'legal.privacy.bullets.usage':
+    'Padrões de uso do aplicativo e interações de recursos (anonimizados, usados ​​para melhorar o aplicativo)',
+  'legal.privacy.bullets.device':
+    'Tipo de dispositivo, versão do sistema operacional e versão do aplicativo para compatibilidade e relatórios de falhas',
+  'legal.privacy.bullets.photos':
+    'Fotos de perfil: armazenadas localmente em seu dispositivo, se você optar por definir uma',
+  'legal.privacy.bullets.healthConnect':
+    'Dados do Health Connect / HealthKit: passos, frequência cardíaca, sono e dados de treino (somente se você conceder permissão explícita)',
   'legal.privacy.sections.storageTitle': '2) Armazenamento de dados',
-  'legal.privacy.sections.storageBody': 'FitQuest foi projetado como um aplicativo offline. Todos os seus dados de condicionamento físico são armazenados localmente no seu dispositivo usando SQLite. Nenhum dado pessoal é armazenado em servidores externos. Os registros de saúde confidenciais são criptografados antes do armazenamento usando a criptografia AES-256-GCM padrão do setor.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest foi projetado como um aplicativo offline. Todos os seus dados de condicionamento físico são armazenados localmente no seu dispositivo usando SQLite. Nenhum dado pessoal é armazenado em servidores externos. Os registros de saúde confidenciais são criptografados antes do armazenamento usando a criptografia AES-256-GCM padrão do setor.',
   'legal.privacy.sections.securityTitle': '3) Segurança de Dados',
-  'legal.privacy.sections.securityBody': 'Todos os dados confidenciais de saúde são criptografados usando criptografia AES-256-GCM antes de serem armazenados em seu dispositivo. As chaves de criptografia são protegidas pelo hardware seguro do seu dispositivo (Keychain no iOS, Keystore no Android). A autenticação biométrica fornece uma camada adicional de proteção. Empregamos derivação segura de chave (PBKDF2) e comparação em tempo constante para evitar ataques de temporização.',
+  'legal.privacy.sections.securityBody':
+    'Todos os dados confidenciais de saúde são criptografados usando criptografia AES-256-GCM antes de serem armazenados em seu dispositivo. As chaves de criptografia são protegidas pelo hardware seguro do seu dispositivo (Keychain no iOS, Keystore no Android). A autenticação biométrica fornece uma camada adicional de proteção. Empregamos derivação segura de chave (PBKDF2) e comparação em tempo constante para evitar ataques de temporização.',
   'legal.privacy.sections.thirdPartyTitle': '4) Serviços de terceiros',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest não vende, aluga ou comercializa seus dados pessoais. As seguintes integrações de terceiros podem processar dados limitados:',
-  'legal.privacy.bullets.thirdPartyAI': 'Recursos de IA: quando você usa o AI Coach ou Professor, seus prompts são enviados ao OpenRouter (por meio de modelos de linguagem Llama) para gerar respostas. Nenhum dado pessoal de saúde é incluído nessas solicitações – apenas o texto que você digita.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: Se você conceder permissão, FitQuest lê métricas de saúde desses serviços de plataforma. Os dados fluem unidirecionalmente (somente leitura) e são armazenados criptografados no seu dispositivo.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: gerencia a verificação de assinatura. Recebe apenas tokens de compra e identificadores de usuário anônimos – sem dados de saúde ou condicionamento físico.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: serviço de relatórios de falhas que recebe logs de erros anônimos. Nenhum dado pessoal ou métrica de saúde está incluído.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest não vende, aluga ou comercializa seus dados pessoais. As seguintes integrações de terceiros podem processar dados limitados:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'Recursos de IA: quando você usa o AI Coach ou Professor, seus prompts são enviados ao OpenRouter (por meio de modelos de linguagem Llama) para gerar respostas. Nenhum dado pessoal de saúde é incluído nessas solicitações – apenas o texto que você digita.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: Se você conceder permissão, FitQuest lê métricas de saúde desses serviços de plataforma. Os dados fluem unidirecionalmente (somente leitura) e são armazenados criptografados no seu dispositivo.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: gerencia a verificação de assinatura. Recebe apenas tokens de compra e identificadores de usuário anônimos – sem dados de saúde ou condicionamento físico.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: serviço de relatórios de falhas que recebe logs de erros anônimos. Nenhum dado pessoal ou métrica de saúde está incluído.',
   'legal.privacy.sections.childrenTitle': '5) Privacidade das Crianças',
-  'legal.privacy.sections.childrenBody': 'FitQuest foi projetado para usuários com 13 anos ou mais. Não coletamos intencionalmente informações pessoais de crianças menores de 13 anos. Se você acredita que uma criança nos forneceu dados, entre em contato conosco pelo e-mail fitquestsupp0rt@gmail.com para exclusão imediata.',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest foi projetado para usuários com 13 anos ou mais. Não coletamos intencionalmente informações pessoais de crianças menores de 13 anos. Se você acredita que uma criança nos forneceu dados, entre em contato conosco pelo e-mail fitquestsupp0rt@gmail.com para exclusão imediata.',
   'legal.privacy.sections.retentionTitle': '6) Retenção de dados',
-  'legal.privacy.sections.retentionBody': 'Seus dados são armazenados localmente no seu dispositivo e retidos enquanto o aplicativo estiver instalado. Você pode excluir todos os dados a qualquer momento em Perfil → Configurações → Excluir todos os dados. A desinstalação do aplicativo remove todos os dados locais permanentemente. Você também pode solicitar a exclusão de dados através do nosso site em https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Seus dados são armazenados localmente no seu dispositivo e retidos enquanto o aplicativo estiver instalado. Você pode excluir todos os dados a qualquer momento em Perfil → Configurações → Excluir todos os dados. A desinstalação do aplicativo remove todos os dados locais permanentemente. Você também pode solicitar a exclusão de dados através do nosso site em https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Seus direitos',
-  'legal.privacy.sections.rightsBody': 'De acordo com as leis de proteção de dados aplicáveis ​​(incluindo a Lei de Proteção de Dados de 2011 do Lesoto, GDPR na UE e CCPA na Califórnia), você tem os seguintes direitos:',
-  'legal.privacy.bullets.accessRight': 'Acesso: Visualize todos os dados que o aplicativo armazena sobre você em Perfil → Exportar dados',
-  'legal.privacy.bullets.deleteRight': 'Exclusão: Apague permanentemente todos os seus dados através das configurações do aplicativo ou do nosso site',
-  'legal.privacy.bullets.exportRight': 'Portabilidade: Exporte seus dados em formato JSON para transferência para outro serviço',
-  'legal.privacy.bullets.correctRight': 'Correção: Atualize ou modifique as informações do seu perfil a qualquer momento',
-  'legal.privacy.bullets.objectionRight': 'Objeção: Retirar o consentimento para processamento de dados a qualquer momento através da Central Jurídica',
+  'legal.privacy.sections.rightsBody':
+    'De acordo com as leis de proteção de dados aplicáveis ​​(incluindo a Lei de Proteção de Dados de 2011 do Lesoto, GDPR na UE e CCPA na Califórnia), você tem os seguintes direitos:',
+  'legal.privacy.bullets.accessRight':
+    'Acesso: Visualize todos os dados que o aplicativo armazena sobre você em Perfil → Exportar dados',
+  'legal.privacy.bullets.deleteRight':
+    'Exclusão: Apague permanentemente todos os seus dados através das configurações do aplicativo ou do nosso site',
+  'legal.privacy.bullets.exportRight':
+    'Portabilidade: Exporte seus dados em formato JSON para transferência para outro serviço',
+  'legal.privacy.bullets.correctRight':
+    'Correção: Atualize ou modifique as informações do seu perfil a qualquer momento',
+  'legal.privacy.bullets.objectionRight':
+    'Objeção: Retirar o consentimento para processamento de dados a qualquer momento através da Central Jurídica',
   'legal.privacy.sections.popiaTitle': '8) Conformidade com a proteção de dados (Lesoto)',
-  'legal.privacy.sections.popiaBody': 'De acordo com a Lei de Proteção de Dados de 2011 do Reino do Lesoto, fitquest.dev atua como responsável pelas suas informações pessoais. Processamos seus dados legalmente, minimizamos a coleta ao necessário, garantimos a precisão e mantemos proteções de segurança adequadas. Para utilizadores transfronteiriços, também cumprimos a POPIA (África do Sul), GDPR (UE) e CCPA (Califórnia), quando aplicável.',
+  'legal.privacy.sections.popiaBody':
+    'De acordo com a Lei de Proteção de Dados de 2011 do Reino do Lesoto, fitquest.dev atua como responsável pelas suas informações pessoais. Processamos seus dados legalmente, minimizamos a coleta ao necessário, garantimos a precisão e mantemos proteções de segurança adequadas. Para utilizadores transfronteiriços, também cumprimos a POPIA (África do Sul), GDPR (UE) e CCPA (Califórnia), quando aplicável.',
   'legal.privacy.sections.updatesTitle': '9) Atualizações de políticas',
-  'legal.privacy.sections.updatesBody': 'Poderemos atualizar esta política de privacidade de tempos em tempos. Quaisquer alterações serão refletidas no aplicativo com uma data atualizada de "Última atualização" e você será solicitado a revisar e aceitar a política atualizada. O uso continuado do aplicativo após as alterações constitui aceitação da nova política.',
+  'legal.privacy.sections.updatesBody':
+    'Poderemos atualizar esta política de privacidade de tempos em tempos. Quaisquer alterações serão refletidas no aplicativo com uma data atualizada de "Última atualização" e você será solicitado a revisar e aceitar a política atualizada. O uso continuado do aplicativo após as alterações constitui aceitação da nova política.',
   'legal.privacy.sections.contactTitle': '10) Contato',
-  'legal.privacy.sections.contactBody': 'Para solicitações de privacidade, envie um e-mail para fitquestsupp0rt@gmail.com. Você também pode visitar https://fitquest.dev/support. Inclua o identificador da sua conta quando disponível. Respondemos em até 30 dias úteis.',
+  'legal.privacy.sections.contactBody':
+    'Para solicitações de privacidade, envie um e-mail para fitquestsupp0rt@gmail.com. Você também pode visitar https://fitquest.dev/support. Inclua o identificador da sua conta quando disponível. Respondemos em até 30 dias úteis.',
   'legal.terms.sections.useTitle': '1) Uso Aceitável',
-  'legal.terms.sections.useBody': 'Você concorda em usar o FitQuest legalmente e não tentar fazer engenharia reversa, descompilar, ignorar controles de segurança, mecanismos de assinatura ou recursos de proteção de dados. Você não pode usar o aplicativo para qualquer finalidade ilegal ou em violação de quaisquer regulamentos aplicáveis.',
+  'legal.terms.sections.useBody':
+    'Você concorda em usar o FitQuest legalmente e não tentar fazer engenharia reversa, descompilar, ignorar controles de segurança, mecanismos de assinatura ou recursos de proteção de dados. Você não pode usar o aplicativo para qualquer finalidade ilegal ou em violação de quaisquer regulamentos aplicáveis.',
   'legal.terms.sections.medicalTitle': '2) Isenção de responsabilidade médica',
-  'legal.terms.sections.medicalBody': 'FitQuest é um aplicativo de fitness e bem-estar e NÃO é um dispositivo ou serviço médico. O aplicativo não fornece aconselhamento médico, diagnóstico ou tratamento. Sugestões de treino, pontuações de saúde, recomendações de recuperação e orientações geradas por IA são apenas para fins informativos e educacionais. Consulte sempre um profissional de saúde qualificado antes de iniciar, modificar ou interromper qualquer programa de exercícios, especialmente se você tiver problemas de saúde, lesões ou preocupações pré-existentes. Pare de se exercitar imediatamente se sentir dor, tontura ou desconforto.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest é um aplicativo de fitness e bem-estar e NÃO é um dispositivo ou serviço médico. O aplicativo não fornece aconselhamento médico, diagnóstico ou tratamento. Sugestões de treino, pontuações de saúde, recomendações de recuperação e orientações geradas por IA são apenas para fins informativos e educacionais. Consulte sempre um profissional de saúde qualificado antes de iniciar, modificar ou interromper qualquer programa de exercícios, especialmente se você tiver problemas de saúde, lesões ou preocupações pré-existentes. Pare de se exercitar imediatamente se sentir dor, tontura ou desconforto.',
   'legal.terms.sections.subscriptionTitle': '3) Assinatura e Faturamento',
-  'legal.terms.sections.subscriptionBody': 'FitQuest oferece um teste gratuito de 14 dias de todos os recursos premium. Após o término do período de avaliação, você poderá se inscrever para continuar usando os recursos premium ou continuar com o nível gratuito. As assinaturas premium são cobradas na Google Play Store ou na Apple App Store. As assinaturas são renovadas automaticamente no final de cada período de cobrança, a menos que sejam canceladas pelo menos 24 horas antes da data de renovação. Você pode gerenciar ou cancelar sua assinatura nas configurações da app store do seu dispositivo. Os reembolsos estão sujeitos à política de reembolso da respectiva plataforma. Os preços podem variar de acordo com a região e são exibidos na sua moeda local antes da compra.',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest oferece um teste gratuito de 14 dias de todos os recursos premium. Após o término do período de avaliação, você poderá se inscrever para continuar usando os recursos premium ou continuar com o nível gratuito. As assinaturas premium são cobradas na Google Play Store ou na Apple App Store. As assinaturas são renovadas automaticamente no final de cada período de cobrança, a menos que sejam canceladas pelo menos 24 horas antes da data de renovação. Você pode gerenciar ou cancelar sua assinatura nas configurações da app store do seu dispositivo. Os reembolsos estão sujeitos à política de reembolso da respectiva plataforma. Os preços podem variar de acordo com a região e são exibidos na sua moeda local antes da compra.',
   'legal.terms.sections.ipTitle': '4) Propriedade Intelectual',
-  'legal.terms.sections.ipBody': 'Todo o conteúdo, design, código, algoritmos, marca e materiais em FitQuest são propriedade intelectual de fitquest.dev e são protegidos pelas leis de direitos autorais e marcas registradas aplicáveis. Você não pode reproduzir, distribuir ou criar trabalhos derivados de qualquer parte do aplicativo sem permissão prévia por escrito.',
+  'legal.terms.sections.ipBody':
+    'Todo o conteúdo, design, código, algoritmos, marca e materiais em FitQuest são propriedade intelectual de fitquest.dev e são protegidos pelas leis de direitos autorais e marcas registradas aplicáveis. Você não pode reproduzir, distribuir ou criar trabalhos derivados de qualquer parte do aplicativo sem permissão prévia por escrito.',
   'legal.terms.sections.liabilityTitle': '5) Limitação de responsabilidade',
-  'legal.terms.sections.liabilityBody': 'Na extensão máxima permitida por lei, fitquest.dev não será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos decorrentes do uso do aplicativo, incluindo, entre outros, danos físicos, perda de dados ou interrupção do serviço. Nossa responsabilidade total não excederá o valor que você pagou pelos recursos premium nos 12 meses anteriores à reclamação.',
+  'legal.terms.sections.liabilityBody':
+    'Na extensão máxima permitida por lei, fitquest.dev não será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos decorrentes do uso do aplicativo, incluindo, entre outros, danos físicos, perda de dados ou interrupção do serviço. Nossa responsabilidade total não excederá o valor que você pagou pelos recursos premium nos 12 meses anteriores à reclamação.',
   'legal.terms.sections.terminationTitle': '6) Rescisão',
-  'legal.terms.sections.terminationBody': 'Reservamo-nos o direito de suspender ou encerrar seu acesso ao FitQuest se você violar estes termos. Você pode parar de usar o aplicativo a qualquer momento. Após a rescisão, os dados armazenados localmente permanecerão no dispositivo até você excluí-los ou desinstalar o aplicativo.',
+  'legal.terms.sections.terminationBody':
+    'Reservamo-nos o direito de suspender ou encerrar seu acesso ao FitQuest se você violar estes termos. Você pode parar de usar o aplicativo a qualquer momento. Após a rescisão, os dados armazenados localmente permanecerão no dispositivo até você excluí-los ou desinstalar o aplicativo.',
   'legal.terms.sections.governingLawTitle': '7) Legislação Aplicável',
-  'legal.terms.sections.governingLawBody': 'Estes termos são regidos e interpretados de acordo com as leis do Reino do Lesoto. Quaisquer disputas decorrentes destes termos ou do uso do FitQuest estarão sujeitas à jurisdição exclusiva dos tribunais do Lesoto. Se qualquer disposição destes termos for considerada inexequível, as restantes disposições continuarão em pleno vigor e efeito.',
-  'legal.terms.bullets.compliance': 'Você deve cumprir todas as políticas aplicáveis ​​do Google Play e da Apple App Store ao usar este aplicativo',
-  'legal.terms.bullets.accountDelete': 'Você pode excluir sua conta e todos os dados associados a qualquer momento em Perfil → Configurações ou em https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Estes termos são regidos e interpretados de acordo com as leis do Reino do Lesoto. Quaisquer disputas decorrentes destes termos ou do uso do FitQuest estarão sujeitas à jurisdição exclusiva dos tribunais do Lesoto. Se qualquer disposição destes termos for considerada inexequível, as restantes disposições continuarão em pleno vigor e efeito.',
+  'legal.terms.bullets.compliance':
+    'Você deve cumprir todas as políticas aplicáveis ​​do Google Play e da Apple App Store ao usar este aplicativo',
+  'legal.terms.bullets.accountDelete':
+    'Você pode excluir sua conta e todos os dados associados a qualquer momento em Perfil → Configurações ou em https://fitquest.dev/delete-account',
 
   'common.save': 'Salvar',
   'common.cancel': 'Cancelar',
@@ -9702,7 +11427,8 @@ const pt: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Comece a qualquer momento',
   'savedWorkouts.deleteFailed': 'Falha ao excluir o treino. Por favor, tente novamente.',
   'savedWorkouts.emptyTitle': 'Nenhum treino salvo ainda',
-  'savedWorkouts.emptySubtitle': 'Crie seu primeiro treino personalizado selecionando exercícios adaptados aos seus objetivos. Leva apenas um minuto!',
+  'savedWorkouts.emptySubtitle':
+    'Crie seu primeiro treino personalizado selecionando exercícios adaptados aos seus objetivos. Leva apenas um minuto!',
   'savedWorkouts.featurePick': 'Escolha seus exercícios',
   'savedWorkouts.featureSet': 'Defina repetições e descanso',
   'savedWorkouts.featureStart': 'Comece a qualquer momento',
@@ -9754,7 +11480,8 @@ const pt: Record<string, string> = {
   'help.featureDesc': 'Tem uma ideia para tornar o FitQuest melhor? Adoraríamos ouvir',
   'help.responseTime': 'Normalmente respondemos dentro de 24 a 48 horas',
 
-  'about.description': 'FitQuest é uma plataforma de fitness abrangente projetada para ajudá-lo a atingir seus objetivos de treinamento. Todos os seus dados permanecem no seu dispositivo, protegidos pela criptografia AES-256.',
+  'about.description':
+    'FitQuest é uma plataforma de fitness abrangente projetada para ajudá-lo a atingir seus objetivos de treinamento. Todos os seus dados permanecem no seu dispositivo, protegidos pela criptografia AES-256.',
   'about.platform': 'Plataforma',
   'about.dataStorage': 'Armazenamento de dados',
   'about.onDevice': 'Somente no dispositivo',
@@ -9984,9 +11711,17 @@ const pt: Record<string, string> = {
   'onboarding.heightPlaceholder': 'Altura (cm)',
   'onboarding.saveError': 'Falha ao salvar seu perfil. Por favor, tente novamente.',
   'onboarding.permTitle': 'Ativar permissões',
-  'onboarding.permSub': 'Essas ajudam o FitQuest a funcionar melhor para você. Você pode alterá-las a qualquer momento nas Configurações.',
+  'onboarding.permSub':
+    'Essas ajudam o FitQuest a funcionar melhor para você. Você pode alterá-las a qualquer momento nas Configurações.',
   'onboarding.perm.notifications': 'Lembretes de treino',
   'onboarding.perm.notificationsSub': 'Receba lembretes para manter seu cronograma de treino',
+  'onboarding.perm.motion': 'Movimento e Atividade',
+  'onboarding.perm.motionSub': 'Rastreie passos, detecte exercícios e conte repetições usando sensores de movimento',
+  'onboarding.perm.location': 'Localização (Rastreamento de Corrida)',
+  'onboarding.perm.locationSub': 'Mapeie suas rotas de corrida e calcule a distância com precisão',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub':
+    'Sincronize frequência cardíaca, sono e dados de treino com Android Health Connect',
   'onboarding.perm.allow': 'Permitir',
   'onboarding.perm.skipNote': 'Você pode pular isso — as permissões podem ser ativadas depois no seu perfil.',
 
@@ -10160,7 +11895,8 @@ const pt: Record<string, string> = {
   'backup.createBackup': 'Criar backup',
   'backup.availableBackups': 'Backups disponíveis',
   'backup.noBackups': 'Ainda não há backups.',
-  'backup.helperText': 'Cria um arquivo de backup criptografado do seu banco de dados local. Se você definir uma senha, deverá usar a mesma senha para restaurar.',
+  'backup.helperText':
+    'Cria um arquivo de backup criptografado do seu banco de dados local. Se você definir uma senha, deverá usar a mesma senha para restaurar.',
   'backup.optionalPassphrase': 'Senha opcional',
   'backup.working': 'Trabalhando…',
   'backup.created': 'Backup criado',
@@ -10177,9 +11913,11 @@ const pt: Record<string, string> = {
   'backup.uploaded': 'Carregado',
   'backup.uploadFailed': 'Falha no upload',
   'backup.noCloudBackups': 'Ainda não há backups na nuvem.',
-  'backup.cloudHelper': 'Armazena o blob de backup criptografado no back-end da Fase 2. O servidor não pode descriptografar seus dados.',
+  'backup.cloudHelper':
+    'Armazena o blob de backup criptografado no back-end da Fase 2. O servidor não pode descriptografar seus dados.',
 
-  'audio.warmup.start': 'Vamos começar com um aquecimento. Movimentos leves para despertar os músculos e preparar o corpo.',
+  'audio.warmup.start':
+    'Vamos começar com um aquecimento. Movimentos leves para despertar os músculos e preparar o corpo.',
   'audio.main.start': 'Vamos entrar no assunto. Treino principal começando agora.',
   'audio.cooldown.start': 'Hora de esfriar. Movimentos suaves para ajudar seu corpo a se recuperar.',
   'audio.warmup.toMain': 'Ótimo aquecimento! Seu corpo está preparado. Hora do treino principal. Vamos!',
@@ -10222,8 +11960,146 @@ const pt: Record<string, string> = {
   'audio.streak.60': 'Sessenta dias! A maioria das pessoas sonha com esse tipo de dedicação.',
   'audio.streak.90': 'Sequência de noventa dias! Você é absolutamente lendário.',
   'audio.minutes': '{{minutes}} minutos de puro esforço.',
-  'audio.progressions': '{{count}} exercícios prontos para subir de nível!|{{count}} exercícios prontos para subir de nível!',
+  'audio.progressions':
+    '{{count}} exercícios prontos para subir de nível!|{{count}} exercícios prontos para subir de nível!',
   'audio.xpEarned': 'Mais {{xp}} XP ganhos.',
+
+  // ============================================
+  // ENGINE — Behavioral Signals
+  // ============================================
+  'signal.transition.advancing.subtext': 'Lógica de progressão ativada com base na atividade recente.',
+  'signal.transition.regressing.subtext': 'Carga da sessão reduzida para corresponder ao ritmo atual.',
+  'signal.firstSession.headline': 'Sistema pronto. Comece a sua primeira sessão.',
+  'signal.firstSession.subtext': 'Cada sessão calibra o sistema à sua capacidade.',
+  'signal.streakAtRisk.headline': '{{streak}} dias consecutivos. Continue hoje para reforçar.',
+  'signal.streakAtRisk.subtext.disciplined': 'A consistência impulsiona a precisão da progressão.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Uma sessão curta é suficiente para manter o ritmo.',
+  'signal.restAdvised.headline': 'Recuperação recomendada com base na fadiga.',
+  'signal.restAdvised.subtext.fatigue': 'Fadiga a {{fatigue}}%. O descanso acelera a adaptação.',
+  'signal.restAdvised.subtext.readiness': 'Preparação a {{readiness}}%. Recuperação em progresso.',
+  'signal.momentum.headline': 'Sessão concluída. Dados registados.',
+  'signal.momentum.subtext.streak': 'Padrão de {{streak}} dias. O sistema aperfeiçoa o seu programa.',
+  'signal.momentum.subtext.default': 'A recuperação começa. A próxima sessão será ajustada em conformidade.',
+  'signal.comeback.headline.inconsistent': '{{days}} dias de pausa. Sessão de baixa resistência disponível.',
+  'signal.comeback.headline.disciplined': '{{days}} dias desde a última sessão. Intensidade recalibrada.',
+  'signal.comeback.subtext.inconsistent': 'Sistema ajustado para regresso mais fácil.',
+  'signal.comeback.subtext.disciplined': 'Volume ajustado para corresponder ao estado de recuperação atual.',
+  'signal.recoveryReady.headline.disciplined': 'Preparação ótima. Condições de progressão atingidas.',
+  'signal.recoveryReady.headline.inconsistent': 'Recuperação concluída. Boas condições para uma sessão.',
+  'signal.recoveryReady.subtext': 'Preparação a {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} dias consecutivos. O sistema adapta-se ao seu ritmo.',
+  'signal.streakBuilding.subtext.disciplined': 'Volume e intensidade a aumentar com base no desempenho.',
+  'signal.streakBuilding.subtext.inconsistent': 'Consistência em construção. Desafio aumenta gradualmente.',
+  'signal.expectToday.headline.disciplined': 'Janela de treino aberta. Sistema pronto.',
+  'signal.expectToday.headline.inconsistent': 'Sessão disponível quando estiver pronto.',
+  'signal.expectToday.subtext.good': 'Preparação {{readiness}}%. Boas condições.',
+  'signal.expectToday.subtext.moderate': 'Preparação moderada. Sessão leve recomendada.',
+
+  // ============================================
+  // ENGINE — Adaptive Memory
+  // ============================================
+  'memory.noHistory.headline': 'Primeira sessão a caminho. O sistema aprende com cada repetição.',
+  'memory.noHistory.trendStatement': 'Sem dados ainda. A sua primeira sessão define a linha de base.',
+  'memory.lastSession.headline.crushed': 'Última sessão: {{completed}} exercícios concluídos em {{duration}}min.',
+  'memory.lastSession.headline.adjusted': 'Última sessão: {{completed}}/{{total}} concluído. Sistema ajustado.',
+  'memory.lastSession.headline.tough': 'A última sessão foi dura. {{completed}}/{{total}} concluído. Recuperação priorizada.',
+  'memory.trend.improving': 'Desempenho em alta. O sistema aumenta o desafio.',
+  'memory.trend.declining': 'Sessões recentes mais difíceis. Sistema ajustado para reconstruir impulso.',
+  'memory.trend.steady.data': 'Resultados consistentes. Perto do próximo limiar de progressão.',
+  'memory.trend.steady.building': 'A construir linha de base. Continue a aparecer.',
+  'memory.delta.firstWorkout': 'Primeira sessão. O sistema calibra-se ao seu corpo.',
+  'memory.delta.same': 'Mesma estrutura de sessão. O sistema vê consistência a crescer.',
+  'memory.delta.mixed': '{{total}} alterações: {{removed}} retirados, {{added}} novos.',
+  'memory.delta.added': '{{count}} exercício{{plural}} novo adicionado para variedade.',
+  'memory.delta.removed': '{{count}} exercício{{plural}} trocado para recuperação.',
+  'memory.progression.firstTime': 'Primeira vez. O sistema calibrará a partir desta sessão.',
+  'memory.progression.improving': '{{wins}} vitórias consecutivas. A progredir.',
+  'memory.progression.declining': 'Declínio recente detetado. Volume ajustado.',
+  'memory.progression.nearGate': '{{successes}} sessão{{plural}} sólida. Mais uma para desbloquear progressão.',
+  'memory.progression.steady': 'Mantém-se estável. Consistência é a estratégia.',
+  'memory.reason.retained': 'Consistente com o seu caminho de progressão.',
+  'memory.reason.addedBalance': 'Adicionado para equilíbrio de recuperação muscular.',
+  'memory.reason.removedFatigue': 'Removido devido a fadiga acumulada.',
+  'memory.reason.removedVariety': 'Trocado para equilíbrio muscular e variedade.',
+  'memory.timeSince.minutes': 'Há {{minutes}}m',
+  'memory.timeSince.hours': 'Há {{hours}}h',
+  'memory.timeSince.yesterday': 'Ontem',
+  'memory.timeSince.days': 'Há {{days}} dias',
+
+  // ============================================
+  // ENGINE — Trial Progression
+  // ============================================
+  'trial.welcome.headline': 'Acesso completo ao sistema ativado.',
+  'trial.welcome.subtext': '14 dias para explorar cada funcionalidade. Sem restrições.',
+  'trial.firstWin.headline': '{{workouts}} sessão{{plural}} concluída. O sistema aprende os seus padrões.',
+  'trial.firstWin.subtext': 'Cada sessão melhora a precisão do treino.',
+  'trial.readyForFirst.headline': 'Dia {{day}}. Sistema pronto para a sua primeira sessão.',
+  'trial.readyForFirst.subtext': 'Comece um treino para iniciar a calibração.',
+  'trial.improvementShown.headline': 'Comparação de sessões agora disponível.',
+  'trial.improvementShown.subtext': 'O sistema agora pode mostrar o que mudou e porquê.',
+  'trial.memoryIntro.headline': 'Inteligência de treino a expandir.',
+  'trial.memoryIntro.subtext': 'Dia {{day}}. Mais sessões = análise mais precisa.',
+  'trial.fullIntelligence.headline': 'Inteligência completa ativa.',
+  'trial.fullIntelligence.subtext': 'Dia {{day}}. O sistema adapta-se aos seus padrões e capacidade.',
+  'trial.transitionClear.headline': '{{days}} dia{{plural}} restante em acesso completo.',
+  'trial.transitionClear.subtext': 'Após o período experimental as funções básicas permanecem. Camadas de inteligência requerem subscrição.',
+  'trial.transitionSoft.headline': '{{days}} dias restantes.',
+  'trial.transitionSoft.subtext': 'Os seus dados e progresso são sempre seus. A subscrição continua as funções de inteligência.',
+  'trial.viewPlans': 'Ver planos',
+  'trial.expired.headline': 'Período experimental concluído.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} sessões registadas. Funções básicas permanecem. Subscreva para restaurar camadas de inteligência.',
+  'trial.expired.subtext.noWorkouts': 'Funções básicas permanecem. Subscreva para desbloquear camadas de inteligência.',
+
+  // ============================================
+  // ENGINE — Failure Analysis
+  // ============================================
+  'failure.dropOff': 'Abandono no exercício {{index}} ({{name}}) — volume reduzido na próxima sessão.',
+  'failure.skipHeavy': 'Alta taxa de omissão detetada. Os exercícios podem não corresponder à capacidade atual.',
+  'failure.lowVolume': 'Baixo volume concluído. A sessão pode ser demasiado exigente.',
+  'failure.earlyDropout': 'Padrão de abandono precoce. A duração da sessão está a ser reduzida.',
+  'failure.lateDropout': 'Abandono de resistência. Exercícios mais leves colocados no final.',
+  'failure.noFailure': 'Sessão concluída com sucesso.',
+  'failure.insight.none': 'Sessão concluída a {{percent}}%. Sem ajustes necessários.',
+  'failure.insight.earlyDropout': 'Abandono no exercício {{index}} ({{name}}) — volume reduzido na próxima sessão.',
+  'failure.insight.midDropout': 'Abandono na série {{index}} ({{name}}) — a ajustar contagem de exercícios.',
+  'failure.insight.lateDropout': 'Quase concluída ({{percent}}%). Ajuste menor aplicado.',
+  'failure.insight.skipHeavy': 'Sessão concluída mas {{percent}}% dos exercícios omitidos. A rever seleção.',
+  'failure.insight.lowVolume': 'Baixo volume concluído ({{percent}}%). A reduzir prescrições de séries.',
+  'failure.insight.empty': 'Nenhum exercício concluído. O sistema reduz a dificuldade da próxima sessão.',
+  'failure.adjustment.none': 'Sem ajuste necessário.',
+  'failure.adjustment.earlyDropout': 'Abandono precoce detetado. A reduzir volume e duração.',
+  'failure.adjustment.midDropout': 'Abandono no exercício {{index}}. A reduzir contagem de exercícios.',
+  'failure.adjustment.lateDropout': 'Sessão quase concluída. Redução menor de volume.',
+  'failure.adjustment.skipHeavy': 'Alta taxa de omissão. A seleção de exercícios necessita de revisão.',
+  'failure.adjustment.lowVolume': 'Baixo volume concluído. A reduzir contagem de séries.',
+  'failure.adjustment.empty': 'Sessão vazia. Redução significativa aplicada.',
+  'failure.pattern.noData': 'Sem dados de sessão ainda.',
+  'failure.pattern.noFailures': 'Todas as sessões recentes concluídas com sucesso. Condições suportam progressão.',
+  'failure.pattern.occasional': 'Sessões incompletas ocasionais. O volume atual parece sustentável.',
+  'failure.pattern.earlyDropoffs': 'Abandonos precoces frequentes. Redução da duração ou contagem de exercícios recomendada.',
+  'failure.pattern.highSkips': 'Alta taxa de omissão. A seleção de exercícios pode precisar de ajuste.',
+  'failure.pattern.worsening': 'Taxa de falha a aumentar. Considere redução de volume ou foco na recuperação.',
+  'failure.pattern.general': '{{rate}}% taxa de falha. A ajustar dificuldade da sessão.',
+
+  // ============================================
+  // ENGINE — State Simulation
+  // ============================================
+  'simulation.skip.streakReset': 'A sequência será reiniciada.',
+  'simulation.skip.modeShift': 'Pode mudar para modo inconsistente.',
+  'simulation.skip.fatigueDrop': 'A fadiga baixa em {{delta}}.',
+  'simulation.skip.minimal': 'Impacto mínimo — tem margem.',
+  'simulation.train.fatigueUp': 'A fadiga aumenta em {{delta}}.',
+  'simulation.train.modeAdvance': 'Avança para modo disciplinado.',
+  'simulation.train.reduceTomorrow': 'Amanhã deve ser mais leve.',
+  'simulation.train.pushTomorrow': 'Margem para exigir mais amanhã.',
+  'simulation.rest.recovery': 'Recuperação: fadiga baixa em {{delta}}.',
+  'simulation.rest.streakReset': 'A sequência será reiniciada mas a recuperação tem prioridade.',
+  'simulation.rest.ready': 'Pronto para sessão completa amanhã.',
+
+  // ============================================
+  // ENGINE — Gating
+  // ============================================
+  'gating.previewMessage': 'Inteligência avançada requer subscrição.',
 };
 
 const zh: Record<string, string> = {
@@ -10270,6 +12146,7 @@ const zh: Record<string, string> = {
   'dashboard.of': '的',
   'dashboard.incompleteSession': '未完成的会话',
   'dashboard.kcal': '千卡',
+  'dashboard.startNow': '立即开始',
   'dashboard.stepsToday': '步骤',
   'dashboard.activeMin': '活跃分钟',
   'dashboard.completionRate': '完成',
@@ -10394,11 +12271,14 @@ const zh: Record<string, string> = {
   'profile.adaptiveTraining': '适应性训练',
   'profile.adaptiveExplanation': '这些值会在您训练时自动调整。点击每个指标以了解更多信息。',
   'profile.fatigueSensitivity': '疲劳敏感性',
-  'profile.fatigueSensitivityDesc': '锻炼期间疲劳产生的速度有多快。值越高意味着该算法可以让您在激烈的训练之间得到更多的休息。根据您的锻炼完成率和恢复模式进行调整。',
+  'profile.fatigueSensitivityDesc':
+    '锻炼期间疲劳产生的速度有多快。值越高意味着该算法可以让您在激烈的训练之间得到更多的休息。根据您的锻炼完成率和恢复模式进行调整。',
   'profile.progressionPace': '进展速度',
-  'profile.progressionPaceDesc': '随着时间的推移，锻炼强度会增加。较高的值意味着更快地进入更难的练习。根据您是否持续完成规定的组数/次数进行调整。',
+  'profile.progressionPaceDesc':
+    '随着时间的推移，锻炼强度会增加。较高的值意味着更快地进入更难的练习。根据您是否持续完成规定的组数/次数进行调整。',
   'profile.volumeTolerance': '体积公差',
-  'profile.volumeToleranceDesc': '您的身体可以承受的总训练量（组数 x 次数）。较高的值意味着更长的锻炼时间和更多的练习。根据您的课程完成情况和跳过的练习进行调整。',
+  'profile.volumeToleranceDesc':
+    '您的身体可以承受的总训练量（组数 x 次数）。较高的值意味着更长的锻炼时间和更多的练习。根据您的课程完成情况和跳过的练习进行调整。',
   'profile.confidence': '信心',
   'profile.samples': '样品',
   'profile.rank': '排名与进步',
@@ -10471,6 +12351,10 @@ const zh: Record<string, string> = {
   'profile.appSection': '应用程序',
   'profile.backupRestore': '备份与恢复',
   'profile.backupRestoreSub': '加密的本地备份文件',
+  'profile.subscription': '订阅',
+  'profile.expired': '已过期',
+  'profile.subscribeToUnlock': '订阅以解锁所有功能',
+  'profile.searchLanguages': '搜索语言…',
   'profile.about': '关于 FitQuest',
   'profile.version': '版本',
   'profile.saved': '已保存',
@@ -10699,58 +12583,81 @@ const zh: Record<string, string> = {
   'legal.noteCounsel': 'Final legal text and jurisdiction mapping should be reviewed by counsel before release.',
   'legal.lastUpdated': '最后更新：',
   'legal.privacy.sections.developerTitle': '开发商',
-  'legal.privacy.sections.developerBody': 'FitQuest 由 fitquest.dev 开发和发布。本隐私政策适用于 Google Play 和 Apple App Store 上提供的 FitQuest 移动应用程序。',
+  'legal.privacy.sections.developerBody':
+    'FitQuest 由 fitquest.dev 开发和发布。本隐私政策适用于 Google Play 和 Apple App Store 上提供的 FitQuest 移动应用程序。',
   'legal.privacy.sections.dataCollectTitle': '1) 我们收集的数据',
   'legal.privacy.sections.dataCollectBody': 'FitQuest 处理以下类别的数据以提供个性化的健身和健康功能：',
   'legal.privacy.bullets.health': '健康和活动指标：心率、步数、睡眠数据、锻炼历史、身体测量和恢复分数',
-  'legal.privacy.bullets.biometric': '生物识别数据：用于应用程序身份验证的指纹或面部识别（仅在设备上处理，从不存储或传输）',
+  'legal.privacy.bullets.biometric':
+    '生物识别数据：用于应用程序身份验证的指纹或面部识别（仅在设备上处理，从不存储或传输）',
   'legal.privacy.bullets.location': '位置数据：慢跑跟踪期间的 GPS 坐标（仅当您主动使用慢跑功能时）',
   'legal.privacy.bullets.account': '个人资料信息：健身目标、经验水平、设备偏好和可选的工作时间表',
   'legal.privacy.bullets.usage': '应用程序使用模式和功能交互（匿名，用于改进应用程序）',
   'legal.privacy.bullets.device': '用于兼容性和崩溃报告的设备类型、操作系统版本和应用程序版本',
   'legal.privacy.bullets.photos': '个人资料照片：如果您选择设置一张，则存储在您的设备本地',
-  'legal.privacy.bullets.healthConnect': 'Health Connect / HealthKit 数据：步数、心率、睡眠和锻炼数据（仅当您授予明确许可时）',
+  'legal.privacy.bullets.healthConnect':
+    'Health Connect / HealthKit 数据：步数、心率、睡眠和锻炼数据（仅当您授予明确许可时）',
   'legal.privacy.sections.storageTitle': '2) 数据存储',
-  'legal.privacy.sections.storageBody': 'FitQuest 被设计为离线优先的应用程序。您的所有健身数据都使用 SQLite 本地存储在您的设备上。外部服务器上不会存储任何个人数据。敏感健康记录在存储前使用行业标准 AES-256-GCM 加密进行加密。',
+  'legal.privacy.sections.storageBody':
+    'FitQuest 被设计为离线优先的应用程序。您的所有健身数据都使用 SQLite 本地存储在您的设备上。外部服务器上不会存储任何个人数据。敏感健康记录在存储前使用行业标准 AES-256-GCM 加密进行加密。',
   'legal.privacy.sections.securityTitle': '3) 数据安全',
-  'legal.privacy.sections.securityBody': '所有敏感健康数据在存储到您的设备上之前均使用 AES-256-GCM 加密进行加密。加密密钥受设备的安全硬件（iOS 上的钥匙串、Android 上的密钥库）保护。生物识别身份验证提供了额外的保护层。我们采用安全密钥派生（PBKDF2）和恒定时间比较来防止定时攻击。',
+  'legal.privacy.sections.securityBody':
+    '所有敏感健康数据在存储到您的设备上之前均使用 AES-256-GCM 加密进行加密。加密密钥受设备的安全硬件（iOS 上的钥匙串、Android 上的密钥库）保护。生物识别身份验证提供了额外的保护层。我们采用安全密钥派生（PBKDF2）和恒定时间比较来防止定时攻击。',
   'legal.privacy.sections.thirdPartyTitle': '4) 第三方服务',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest 不会出售、出租或交易您的个人数据。以下第三方集成可能会处理有限的数据：',
-  'legal.privacy.bullets.thirdPartyAI': 'AI 功能：当您使用 AI Coach 或 Professor 时，您的提示将发送到 OpenRouter（通过 Llama 语言模型）以生成响应。这些请求中不包含任何个人健康数据，仅包含您输入的文本。',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit：如果您授予权限，FitQuest 会从这些平台服务中读取健康指标。数据单向流动（只读）并加密存储在您的设备上。',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat：管理订阅验证。仅接收购买代币和匿名用户标识符——没有健康或健身数据。',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest 不会出售、出租或交易您的个人数据。以下第三方集成可能会处理有限的数据：',
+  'legal.privacy.bullets.thirdPartyAI':
+    'AI 功能：当您使用 AI Coach 或 Professor 时，您的提示将发送到 OpenRouter（通过 Llama 语言模型）以生成响应。这些请求中不包含任何个人健康数据，仅包含您输入的文本。',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit：如果您授予权限，FitQuest 会从这些平台服务中读取健康指标。数据单向流动（只读）并加密存储在您的设备上。',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat：管理订阅验证。仅接收购买代币和匿名用户标识符——没有健康或健身数据。',
   'legal.privacy.bullets.thirdPartySentry': 'Sentry：接收匿名错误日志的崩溃报告服务。不包含个人数据或健康指标。',
   'legal.privacy.sections.childrenTitle': '5) 儿童隐私',
-  'legal.privacy.sections.childrenBody': 'FitQuest 专为 13 岁及以上的用户设计。我们不会故意收集 13 岁以下儿童的个人信息。如果您认为儿童向我们提供了数据，请通过 fitquestsupp0rt@gmail.com 联系我们以便立即删除。',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest 专为 13 岁及以上的用户设计。我们不会故意收集 13 岁以下儿童的个人信息。如果您认为儿童向我们提供了数据，请通过 fitquestsupp0rt@gmail.com 联系我们以便立即删除。',
   'legal.privacy.sections.retentionTitle': '6) 数据保留',
-  'legal.privacy.sections.retentionBody': '您的数据本地存储在您的设备上，并在安装应用程序期间保留。您可以随时通过“个人资料”→“设置”→“删除所有数据”删除所有数据。卸载应用程序会永久删除所有本地数据。您还可以通过我们的网站 https://fitquest.dev/delete-account 请求删除数据。',
+  'legal.privacy.sections.retentionBody':
+    '您的数据本地存储在您的设备上，并在安装应用程序期间保留。您可以随时通过“个人资料”→“设置”→“删除所有数据”删除所有数据。卸载应用程序会永久删除所有本地数据。您还可以通过我们的网站 https://fitquest.dev/delete-account 请求删除数据。',
   'legal.privacy.sections.rightsTitle': '7) 您的权利',
-  'legal.privacy.sections.rightsBody': '根据适用的数据保护法（包括莱索托的《2011 年数据保护法》、欧盟的 GDPR 和加利福尼亚州的 CCPA），您拥有以下权利：',
+  'legal.privacy.sections.rightsBody':
+    '根据适用的数据保护法（包括莱索托的《2011 年数据保护法》、欧盟的 GDPR 和加利福尼亚州的 CCPA），您拥有以下权利：',
   'legal.privacy.bullets.accessRight': '访问：通过“个人资料”→“导出数据”',
-  'legal.privacy.bullets.deleteRight': '查看应用程序存储的有关您的所有数据删除：通过应用程序设置或我们的网站永久删除您的所有数据',
+  'legal.privacy.bullets.deleteRight':
+    '查看应用程序存储的有关您的所有数据删除：通过应用程序设置或我们的网站永久删除您的所有数据',
   'legal.privacy.bullets.exportRight': '可移植性：以 JSON 格式导出数据以传输到其他服务',
   'legal.privacy.bullets.correctRight': '更正：随时更新或修改您的个人资料信息',
   'legal.privacy.bullets.objectionRight': '反对：随时通过法律中心撤回数据处理同意',
   'legal.privacy.sections.popiaTitle': '8) 数据保护合规性（莱索托）',
-  'legal.privacy.sections.popiaBody': '根据莱索托王国 2011 年数据保护法，fitquest.dev 是您个人信息的责任方。我们合法处理您的数据，最大限度地减少必要的收集，确保准确性并维护适当的安全保障措施。对于跨境用户，我们还遵守 POPIA（南非）、GDPR（欧盟）和 CCPA（加利福尼亚州）（如果适用）。',
+  'legal.privacy.sections.popiaBody':
+    '根据莱索托王国 2011 年数据保护法，fitquest.dev 是您个人信息的责任方。我们合法处理您的数据，最大限度地减少必要的收集，确保准确性并维护适当的安全保障措施。对于跨境用户，我们还遵守 POPIA（南非）、GDPR（欧盟）和 CCPA（加利福尼亚州）（如果适用）。',
   'legal.privacy.sections.updatesTitle': '9) 政策更新',
-  'legal.privacy.sections.updatesBody': '我们可能会不时更新本隐私政策。任何更改都将反映在应用程序中，并带有更新的“上次更新”日期，并且系统将提示您查看并接受更新的政策。更改后继续使用该应用程序即表示接受新政策。',
+  'legal.privacy.sections.updatesBody':
+    '我们可能会不时更新本隐私政策。任何更改都将反映在应用程序中，并带有更新的“上次更新”日期，并且系统将提示您查看并接受更新的政策。更改后继续使用该应用程序即表示接受新政策。',
   'legal.privacy.sections.contactTitle': '10) 联系方式',
-  'legal.privacy.sections.contactBody': '对于隐私请求，请发送电子邮件至 fitquestsupp0rt@gmail.com。您也可以访问 https://fitquest.dev/support。包括您的帐户标识符（如果有）。我们会在 30 个工作日内回复。',
+  'legal.privacy.sections.contactBody':
+    '对于隐私请求，请发送电子邮件至 fitquestsupp0rt@gmail.com。您也可以访问 https://fitquest.dev/support。包括您的帐户标识符（如果有）。我们会在 30 个工作日内回复。',
   'legal.terms.sections.useTitle': '1) 可接受的使用',
-  'legal.terms.sections.useBody': '您同意合法使用 FitQuest，并且不会尝试进行逆向工程、反编译、绕过安全控制、订阅机制或数据保护功能。您不得将应用程序用于任何非法目的或违反任何适用法规。',
+  'legal.terms.sections.useBody':
+    '您同意合法使用 FitQuest，并且不会尝试进行逆向工程、反编译、绕过安全控制、订阅机制或数据保护功能。您不得将应用程序用于任何非法目的或违反任何适用法规。',
   'legal.terms.sections.medicalTitle': '2) 医疗免责声明',
-  'legal.terms.sections.medicalBody': 'FitQuest 是一款健身和健康应用程序，不是医疗设备或服务。该应用程序不提供医疗建议、诊断或治疗。锻炼建议、健康评分、恢复建议和人工智能生成的指导仅供参考和教育目的。在开始、修改或停止任何锻炼计划之前，请务必咨询合格的医疗保健专业人员，特别是如果您已有健康状况、受伤或疑虑。如果您感到疼痛、头晕或不适，请立即停止锻炼。',
+  'legal.terms.sections.medicalBody':
+    'FitQuest 是一款健身和健康应用程序，不是医疗设备或服务。该应用程序不提供医疗建议、诊断或治疗。锻炼建议、健康评分、恢复建议和人工智能生成的指导仅供参考和教育目的。在开始、修改或停止任何锻炼计划之前，请务必咨询合格的医疗保健专业人员，特别是如果您已有健康状况、受伤或疑虑。如果您感到疼痛、头晕或不适，请立即停止锻炼。',
   'legal.terms.sections.subscriptionTitle': '3) 订阅和计费',
-  'legal.terms.sections.subscriptionBody': 'FitQuest 提供所有高级功能的 14 天免费试用。试用期结束后，您可以订阅以继续使用高级功能或继续使用免费套餐。高级订阅通过 Google Play 商店或 Apple App Store 计费。除非在续订日期前至少 24 小时取消，否则订阅会在每个计费周期结束时自动续订。您可以通过设备的应用商店设置管理或取消订阅。退款须遵守各平台的退款政策。价格可能因地区而异，并在购买前以您的当地货币显示。',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest 提供所有高级功能的 14 天免费试用。试用期结束后，您可以订阅以继续使用高级功能或继续使用免费套餐。高级订阅通过 Google Play 商店或 Apple App Store 计费。除非在续订日期前至少 24 小时取消，否则订阅会在每个计费周期结束时自动续订。您可以通过设备的应用商店设置管理或取消订阅。退款须遵守各平台的退款政策。价格可能因地区而异，并在购买前以您的当地货币显示。',
   'legal.terms.sections.ipTitle': '4) 知识产权',
-  'legal.terms.sections.ipBody': 'FitQuest 中的所有内容、设计、代码、算法、品牌和材料均为 fitquest.dev 的知识产权，并受适用的版权和商标法保护。未经事先书面许可，您不得复制、分发应用程序的任何部分或创建衍生作品。',
+  'legal.terms.sections.ipBody':
+    'FitQuest 中的所有内容、设计、代码、算法、品牌和材料均为 fitquest.dev 的知识产权，并受适用的版权和商标法保护。未经事先书面许可，您不得复制、分发应用程序的任何部分或创建衍生作品。',
   'legal.terms.sections.liabilityTitle': '5) 责任限制',
-  'legal.terms.sections.liabilityBody': '在法律允许的最大范围内，fitquest.dev 不对因您使用该应用程序而产生的任何间接、偶然、特殊、后果性或惩罚性损害承担责任，包括但不限于人身伤害、数据丢失或服务中断。我们的总责任不得超过您在提出索赔前 12 个月内为高级功能支付的金额。',
+  'legal.terms.sections.liabilityBody':
+    '在法律允许的最大范围内，fitquest.dev 不对因您使用该应用程序而产生的任何间接、偶然、特殊、后果性或惩罚性损害承担责任，包括但不限于人身伤害、数据丢失或服务中断。我们的总责任不得超过您在提出索赔前 12 个月内为高级功能支付的金额。',
   'legal.terms.sections.terminationTitle': '6) 终止',
-  'legal.terms.sections.terminationBody': '如果您违反这些条款，我们保留暂停或终止您访问 FitQuest 的权利。您可以随时停止使用该应用程序。终止后，您本地存储的数据将保留在您的设备上，直到您将其删除或卸载应用程序。',
+  'legal.terms.sections.terminationBody':
+    '如果您违反这些条款，我们保留暂停或终止您访问 FitQuest 的权利。您可以随时停止使用该应用程序。终止后，您本地存储的数据将保留在您的设备上，直到您将其删除或卸载应用程序。',
   'legal.terms.sections.governingLawTitle': '7) 适用法律',
-  'legal.terms.sections.governingLawBody': '这些条款受莱索托王国法律管辖并按其解释。因这些条款或您使用 FitQuest 引起的任何争议均应受莱索托法院的专属管辖。如果发现这些条款的任何规定无法执行，则其余规定应继续完全有效。',
+  'legal.terms.sections.governingLawBody':
+    '这些条款受莱索托王国法律管辖并按其解释。因这些条款或您使用 FitQuest 引起的任何争议均应受莱索托法院的专属管辖。如果发现这些条款的任何规定无法执行，则其余规定应继续完全有效。',
   'legal.terms.bullets.compliance': '使用此应用程序时，您必须遵守所有适用的 Google Play 和 Apple App Store 政策',
   'legal.terms.bullets.accountDelete': '您可以随时通过“个人资料”→“设置”或访问 https://fitquest.dev/delete-account',
 
@@ -10880,7 +12787,8 @@ const zh: Record<string, string> = {
   'help.featureDesc': '有让 FitQuest 变得更好的想法吗？我们很想听听',
   'help.responseTime': '我们通常会在 24-48 小时内回复',
 
-  'about.description': 'FitQuest 是一个综合健身平台，旨在帮助您实现训练目标。您的所有数据都保留在您的设备上，并受 AES-256 加密保护。',
+  'about.description':
+    'FitQuest 是一个综合健身平台，旨在帮助您实现训练目标。您的所有数据都保留在您的设备上，并受 AES-256 加密保护。',
   'about.platform': '平台',
   'about.dataStorage': '数据存储',
   'about.onDevice': '仅限设备上',
@@ -11113,6 +13021,12 @@ const zh: Record<string, string> = {
   'onboarding.permSub': '这些帮助FitQuest更好地为您服务。您可以随时在设置中更改。',
   'onboarding.perm.notifications': '训练提醒',
   'onboarding.perm.notificationsSub': '获取提醒以保持您的训练计划',
+  'onboarding.perm.motion': '运动与活动',
+  'onboarding.perm.motionSub': '使用运动传感器追踪步数、检测锻炼并计算次数',
+  'onboarding.perm.location': '位置（跑步追踪）',
+  'onboarding.perm.locationSub': '绘制跑步路线并精确计算距离',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': '与Android Health Connect同步心率、睡眠和锻炼数据',
   'onboarding.perm.allow': '允许',
   'onboarding.perm.skipNote': '您可以跳过此步骤——权限可以稍后在您的个人资料中启用。',
 
@@ -11350,6 +13264,143 @@ const zh: Record<string, string> = {
   'audio.minutes': '{{minutes}}分钟的纯粹努力。',
   'audio.progressions': '{{count}} 个练习已准备好升级！|{{count}} 个练习已准备好升级！',
   'audio.xpEarned': '另外还获得了 {{xp}} XP。',
+
+  // ============================================
+  // ENGINE — 行为信号
+  // ============================================
+  'signal.transition.advancing.subtext': '基于近期活动已激活进阶逻辑。',
+  'signal.transition.regressing.subtext': '训练负荷已降低以匹配当前节奏。',
+  'signal.firstSession.headline': '系统就绪。开始你的第一次训练。',
+  'signal.firstSession.subtext': '每次训练都会校准系统以匹配你的能力。',
+  'signal.streakAtRisk.headline': '已连续 {{streak}} 天。今天继续以巩固。',
+  'signal.streakAtRisk.subtext.disciplined': '坚持性推动进阶精准度。',
+  'signal.streakAtRisk.subtext.inconsistent': '一次短训练就足以保持节奏。',
+  'signal.restAdvised.headline': '基于疲劳度建议休息。',
+  'signal.restAdvised.subtext.fatigue': '疲劳度 {{fatigue}}%。休息加速适应。',
+  'signal.restAdvised.subtext.readiness': '准备度 {{readiness}}%。恢复进行中。',
+  'signal.momentum.headline': '训练完成。数据已记录。',
+  'signal.momentum.subtext.streak': '{{streak}} 天模式。系统正在优化你的计划。',
+  'signal.momentum.subtext.default': '恢复开始。下次训练将相应调整。',
+  'signal.comeback.headline.inconsistent': '休息了 {{days}} 天。低强度训练可用。',
+  'signal.comeback.headline.disciplined': '距上次训练已 {{days}} 天。强度已重新校准。',
+  'signal.comeback.subtext.inconsistent': '系统已调整以便于重新开始。',
+  'signal.comeback.subtext.disciplined': '训练量已根据当前恢复状态调整。',
+  'signal.recoveryReady.headline.disciplined': '准备状态最佳。进阶条件已满足。',
+  'signal.recoveryReady.headline.inconsistent': '恢复完成。适合训练的好时机。',
+  'signal.recoveryReady.subtext': '准备度 {{readiness}}%。',
+  'signal.streakBuilding.headline': '已连续 {{streak}} 天。系统正在适应你的节奏。',
+  'signal.streakBuilding.subtext.disciplined': '基于表现，训练量和强度正在提升。',
+  'signal.streakBuilding.subtext.inconsistent': '坚持性正在建立。挑战逐步增加。',
+  'signal.expectToday.headline.disciplined': '训练窗口已开启。系统就绪。',
+  'signal.expectToday.headline.inconsistent': '准备好时可以开始训练。',
+  'signal.expectToday.subtext.good': '准备度 {{readiness}}%。状态良好。',
+  'signal.expectToday.subtext.moderate': '中等准备度。建议轻度训练。',
+
+  // ============================================
+  // ENGINE — 自适应记忆
+  // ============================================
+  'memory.noHistory.headline': '第一次训练即将开始。系统从每次重复中学习。',
+  'memory.noHistory.trendStatement': '暂无数据。你的第一次训练将设定基准线。',
+  'memory.lastSession.headline.crushed': '上次训练：{{completed}} 个练习在 {{duration}} 分钟内完成。',
+  'memory.lastSession.headline.adjusted': '上次训练：完成 {{completed}}/{{total}}。系统已调整。',
+  'memory.lastSession.headline.tough': '上次训练很艰难。完成 {{completed}}/{{total}}。优先恢复。',
+  'memory.trend.improving': '表现提升。系统增加挑战。',
+  'memory.trend.declining': '近期训练更困难。系统已调整以重建动力。',
+  'memory.trend.steady.data': '稳定表现。接近下一个进阶门槛。',
+  'memory.trend.steady.building': '正在建立基准。继续保持。',
+  'memory.delta.firstWorkout': '第一次训练。系统根据你的身体进行校准。',
+  'memory.delta.same': '相同的训练结构。系统看到坚持性在增长。',
+  'memory.delta.mixed': '{{total}} 项变更：{{removed}} 项替换，{{added}} 项新增。',
+  'memory.delta.added': '新增 {{count}} 个练习{{plural}}以增加多样性。',
+  'memory.delta.removed': '替换 {{count}} 个练习{{plural}}以便恢复。',
+  'memory.progression.firstTime': '第一次。系统将从这次训练开始校准。',
+  'memory.progression.improving': '连续 {{wins}} 次胜利。正在进步。',
+  'memory.progression.declining': '检测到近期下降。训练量已调整。',
+  'memory.progression.nearGate': '{{successes}} 次稳定训练{{plural}}。再完成一次即可解锁进阶。',
+  'memory.progression.steady': '保持稳定。坚持是策略。',
+  'memory.reason.retained': '与你的进阶路径一致。',
+  'memory.reason.addedBalance': '为肌肉恢复平衡而添加。',
+  'memory.reason.removedFatigue': '因累积疲劳而移除。',
+  'memory.reason.removedVariety': '为肌肉平衡和多样性而替换。',
+  'memory.timeSince.minutes': '{{minutes}}分钟前',
+  'memory.timeSince.hours': '{{hours}}小时前',
+  'memory.timeSince.yesterday': '昨天',
+  'memory.timeSince.days': '{{days}}天前',
+
+  // ============================================
+  // ENGINE — 试用进阶
+  // ============================================
+  'trial.welcome.headline': '系统完整访问已激活。',
+  'trial.welcome.subtext': '14天探索每个功能。无限制。',
+  'trial.firstWin.headline': '已完成 {{workouts}} 次训练{{plural}}。系统正在学习你的模式。',
+  'trial.firstWin.subtext': '每次训练都提高训练精准度。',
+  'trial.readyForFirst.headline': '第 {{day}} 天。系统已准备好进行你的第一次训练。',
+  'trial.readyForFirst.subtext': '开始训练以启动校准。',
+  'trial.improvementShown.headline': '训练对比现已可用。',
+  'trial.improvementShown.subtext': '系统现在可以展示变化内容及原因。',
+  'trial.memoryIntro.headline': '训练智能正在扩展。',
+  'trial.memoryIntro.subtext': '第 {{day}} 天。更多训练 = 更精确的分析。',
+  'trial.fullIntelligence.headline': '完整智能已激活。',
+  'trial.fullIntelligence.subtext': '第 {{day}} 天。系统适应你的模式和能力。',
+  'trial.transitionClear.headline': '完整访问剩余 {{days}} 天{{plural}}。',
+  'trial.transitionClear.subtext': '试用期结束后核心功能仍然可用。智能层需要订阅。',
+  'trial.transitionSoft.headline': '剩余 {{days}} 天。',
+  'trial.transitionSoft.subtext': '你的训练数据和进度始终属于你。订阅可继续使用智能功能。',
+  'trial.viewPlans': '查看方案',
+  'trial.expired.headline': '试用期已结束。',
+  'trial.expired.subtext.withWorkouts': '已记录 {{workouts}} 次训练。核心功能仍可用。订阅以恢复智能层。',
+  'trial.expired.subtext.noWorkouts': '核心功能仍可用。订阅以解锁智能层。',
+
+  // ============================================
+  // ENGINE — 失败分析
+  // ============================================
+  'failure.dropOff': '在练习 {{index}} ({{name}}) 处中断 — 下次训练减少训练量。',
+  'failure.skipHeavy': '检测到高跳过率。练习可能不符合当前能力。',
+  'failure.lowVolume': '完成量较低。训练可能要求过高。',
+  'failure.earlyDropout': '早期中断模式。正在缩短训练时长。',
+  'failure.lateDropout': '耐力中断。轻松练习置于末尾。',
+  'failure.noFailure': '训练成功完成。',
+  'failure.insight.none': '训练完成 {{percent}}%。无需调整。',
+  'failure.insight.earlyDropout': '在练习 {{index}} ({{name}}) 处中断 — 下次训练减少训练量。',
+  'failure.insight.midDropout': '在组 {{index}} ({{name}}) 处中断 — 正在调整练习数量。',
+  'failure.insight.lateDropout': '接近完成 ({{percent}}%)。已做微调。',
+  'failure.insight.skipHeavy': '训练已完成但跳过了 {{percent}}% 的练习。正在审查选择。',
+  'failure.insight.lowVolume': '完成量较低 ({{percent}}%)。正在减少组数要求。',
+  'failure.insight.empty': '未完成任何练习。系统降低下次训练难度。',
+  'failure.adjustment.none': '无需调整。',
+  'failure.adjustment.earlyDropout': '检测到早期中断。正在减少训练量和时长。',
+  'failure.adjustment.midDropout': '在练习 {{index}} 处中断。正在减少练习数量。',
+  'failure.adjustment.lateDropout': '训练接近完成。少量减少训练量。',
+  'failure.adjustment.skipHeavy': '高跳过率。练习选择需要审查。',
+  'failure.adjustment.lowVolume': '完成量较低。正在减少组数。',
+  'failure.adjustment.empty': '空训练。已做大幅减少。',
+  'failure.pattern.noData': '暂无训练数据。',
+  'failure.pattern.noFailures': '所有近期训练均成功完成。条件支持进阶。',
+  'failure.pattern.occasional': '偶尔未完成训练。当前训练量似乎可持续。',
+  'failure.pattern.earlyDropoffs': '频繁早期中断。建议减少训练时长或练习数量。',
+  'failure.pattern.highSkips': '高跳过率。练习选择可能需要调整。',
+  'failure.pattern.worsening': '失败率上升。考虑减少训练量或专注恢复。',
+  'failure.pattern.general': '{{rate}}% 失败率。正在调整训练难度。',
+
+  // ============================================
+  // ENGINE — 状态模拟
+  // ============================================
+  'simulation.skip.streakReset': '连续记录将重置。',
+  'simulation.skip.modeShift': '可能切换到不稳定模式。',
+  'simulation.skip.fatigueDrop': '疲劳度下降 {{delta}}。',
+  'simulation.skip.minimal': '影响最小 — 你有余量。',
+  'simulation.train.fatigueUp': '疲劳度上升 {{delta}}。',
+  'simulation.train.modeAdvance': '向自律模式迈进。',
+  'simulation.train.reduceTomorrow': '明天应该轻松一些。',
+  'simulation.train.pushTomorrow': '明天有余力加大强度。',
+  'simulation.rest.recovery': '恢复：疲劳度下降 {{delta}}。',
+  'simulation.rest.streakReset': '连续记录将重置但恢复优先。',
+  'simulation.rest.ready': '明天可以进行完整训练。',
+
+  // ============================================
+  // ENGINE — 访问控制
+  // ============================================
+  'gating.previewMessage': '高级智能功能需要订阅。',
 };
 
 const ja: Record<string, string> = {
@@ -11396,6 +13447,7 @@ const ja: Record<string, string> = {
   'dashboard.of': '',
   'dashboard.incompleteSession': 'の不完全なセッション',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': '今すぐ開始',
   'dashboard.stepsToday': '手順',
   'dashboard.activeMin': 'アクティブな最小値',
   'dashboard.completionRate': '完了',
@@ -11518,13 +13570,17 @@ const ja: Record<string, string> = {
   'profile.craftMyBody': '私の体を作ります',
   'profile.craftMyBodySub': '栄養とトレーニングによるパーソナライズされた身体変革プラン',
   'profile.adaptiveTraining': 'アダプティブ トレーニング',
-  'profile.adaptiveExplanation': 'これらの値はトレーニング中に自動調整されます。詳細については、各指標をタップしてください。',
+  'profile.adaptiveExplanation':
+    'これらの値はトレーニング中に自動調整されます。詳細については、各指標をタップしてください。',
   'profile.fatigueSensitivity': '疲労感受性',
-  'profile.fatigueSensitivityDesc': 'トレーニング中の疲労の蓄積速度。値が高いほど、アルゴリズムによって激しいセッションの間により多くの休憩が与えられることを意味します。ワークアウトの完了率と回復パターンに基づいて調整します。',
+  'profile.fatigueSensitivityDesc':
+    'トレーニング中の疲労の蓄積速度。値が高いほど、アルゴリズムによって激しいセッションの間により多くの休憩が与えられることを意味します。ワークアウトの完了率と回復パターンに基づいて調整します。',
   'profile.progressionPace': '進行ペース',
-  'profile.progressionPaceDesc': 'どれだけ積極的に運動するかは、時間の経過とともに難易度が上がります。値が高いほど、より難しいエクササイズに早く進むことができます。規定のセット/回数を一貫して完了したかどうかに基づいて調整します。',
+  'profile.progressionPaceDesc':
+    'どれだけ積極的に運動するかは、時間の経過とともに難易度が上がります。値が高いほど、より難しいエクササイズに早く進むことができます。規定のセット/回数を一貫して完了したかどうかに基づいて調整します。',
   'profile.volumeTolerance': '体積許容差',
-  'profile.volumeToleranceDesc': 'あなたの体がどれだけの総トレーニング量（セット×回数）を処理できるか。値が高いほど、より多くのエクササイズを伴うワークアウト セッションが長くなります。セッションの完了とスキップされた演習に基づいて調整します。',
+  'profile.volumeToleranceDesc':
+    'あなたの体がどれだけの総トレーニング量（セット×回数）を処理できるか。値が高いほど、より多くのエクササイズを伴うワークアウト セッションが長くなります。セッションの完了とスキップされた演習に基づいて調整します。',
   'profile.confidence': '自信',
   'profile.samples': 'サンプル',
   'profile.rank': 'ランクと進行状況',
@@ -11589,7 +13645,8 @@ const ja: Record<string, string> = {
   'profile.exportData': 'データをエクスポート',
   'profile.exportDataSub': 'クラウド メタデータのローカル JSON エクスポートとバックアップを作成する',
   'profile.menu.deleteCloudData': 'クラウド データを削除',
-  'profile.menu.deleteCloudDataConfirm': 'これにより、アカウントのバックアップとクラウドのメタデータが完全に削除されます。',
+  'profile.menu.deleteCloudDataConfirm':
+    'これにより、アカウントのバックアップとクラウドのメタデータが完全に削除されます。',
   'profile.menu.deletePermanently': '完全に削除',
   'profile.deleteCloudDataSub': 'サーバー側のアカウント データを完全に削除します',
   'profile.helpSupport': 'ヘルプとサポート',
@@ -11597,6 +13654,10 @@ const ja: Record<string, string> = {
   'profile.appSection': 'アプリ',
   'profile.backupRestore': 'バックアップと復元',
   'profile.backupRestoreSub': '暗号化されたローカル バックアップ ファイル',
+  'profile.subscription': 'サブスクリプション',
+  'profile.expired': '期限切れ',
+  'profile.subscribeToUnlock': 'すべての機能をアンロックするには購読してください',
+  'profile.searchLanguages': '言語を検索…',
   'profile.about': 'FitQuest について',
   'profile.version': 'バージョン',
   'profile.saved': '保存しました',
@@ -11751,7 +13812,8 @@ const ja: Record<string, string> = {
   'move.noStepHistory': 'まだ歩数履歴がありません',
   'move.jogHistory': 'ジョグ履歴',
   'move.noJogHistory': 'まだジョギングセッションはありません',
-  'move.infoXpAndFatigue': '1,000 歩 = 4 XP • ジョギングは 100 メートルごとに 10 XP を獲得します\\\\\\\\n動きはワークアウトの疲労には影響しません',
+  'move.infoXpAndFatigue':
+    '1,000 歩 = 4 XP • ジョギングは 100 メートルごとに 10 XP を獲得します\\\\\\\\n動きはワークアウトの疲労には影響しません',
   'move.jogComplete': 'ジョギング完了！ 🏃',
   'move.awesome': '素晴らしい！',
   'move.km': 'km',
@@ -11795,7 +13857,8 @@ const ja: Record<string, string> = {
   'meal.location.tapEnable': 'タップして位置情報を有効にします',
   'meal.location.infoPrefix': 'で入手可能な食品を表示しています',
   'meal.location.infoSuffix': '、地域およびグローバルのオプションを含みます。',
-  'meal.location.infoNoLocation': '位置情報を有効にすると、地域固有の食べ物の提案が表示されます。再試行するには、上の位置バッジをタップします。',
+  'meal.location.infoNoLocation':
+    '位置情報を有効にすると、地域固有の食べ物の提案が表示されます。再試行するには、上の位置バッジをタップします。',
 
   'legal.title': '法務センター',
   'legal.documents': '書類',
@@ -11821,64 +13884,96 @@ const ja: Record<string, string> = {
   'legal.termsOfServiceExternal': '利用規約 (ウェブサイト)',
   'legal.readInApp': 'アプリ内で読む',
   'legal.cannotOpenLink': 'このデバイスではリンクを開けません',
-  'legal.noteMedical': 'このアプリのフィットネス ガイダンスは教育的なものであり、医学的アドバイスに代わるものではありません。',
+  'legal.noteMedical':
+    'このアプリのフィットネス ガイダンスは教育的なものであり、医学的アドバイスに代わるものではありません。',
   'legal.noteCounsel': '最終的な法文と管轄区域のマッピングは、釈放前に弁護士によって検討される必要があります。',
   'legal.lastUpdated': '最終更新日:',
   'legal.privacy.sections.developerTitle': '開発者',
-  'legal.privacy.sections.developerBody': 'FitQuest は、fitquest.dev によって開発および公開されています。このプライバシー ポリシーは、Google Play および Apple App Store で入手できる FitQuest モバイル アプリケーションに適用されます。',
+  'legal.privacy.sections.developerBody':
+    'FitQuest は、fitquest.dev によって開発および公開されています。このプライバシー ポリシーは、Google Play および Apple App Store で入手できる FitQuest モバイル アプリケーションに適用されます。',
   'legal.privacy.sections.dataCollectTitle': '1) 当社が収集するデータ',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest は、次のカテゴリのデータを処理して、パーソナライズされたフィットネスおよびウェルネス機能を提供します。',
-  'legal.privacy.bullets.health': '健康と活動の指標: 心拍数、歩数、睡眠データ、トレーニング履歴、身体測定値、回復スコア',
-  'legal.privacy.bullets.biometric': '生体認証データ: アプリ認証に使用される指紋または顔認識 (デバイス上でのみ処理され、保存または送信されることはありません)',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest は、次のカテゴリのデータを処理して、パーソナライズされたフィットネスおよびウェルネス機能を提供します。',
+  'legal.privacy.bullets.health':
+    '健康と活動の指標: 心拍数、歩数、睡眠データ、トレーニング履歴、身体測定値、回復スコア',
+  'legal.privacy.bullets.biometric':
+    '生体認証データ: アプリ認証に使用される指紋または顔認識 (デバイス上でのみ処理され、保存または送信されることはありません)',
   'legal.privacy.bullets.location': '位置データ: ジョグ追跡中の GPS 座標 (ジョグ機能を積極的に使用している場合のみ)',
-  'legal.privacy.bullets.account': 'プロフィール情報: フィットネスの目標、経験レベル、機器の好み、およびオプションの作業スケジュール',
+  'legal.privacy.bullets.account':
+    'プロフィール情報: フィットネスの目標、経験レベル、機器の好み、およびオプションの作業スケジュール',
   'legal.privacy.bullets.usage': 'アプリの使用パターンと機能のインタラクション (匿名化、アプリの改善に使用)',
-  'legal.privacy.bullets.device': '互換性とクラッシュ レポートのためのデバイス タイプ、OS バージョン、アプリのバージョン',
+  'legal.privacy.bullets.device':
+    '互換性とクラッシュ レポートのためのデバイス タイプ、OS バージョン、アプリのバージョン',
   'legal.privacy.bullets.photos': 'プロフィール写真: 設定することを選択した場合は、デバイスにローカルに保存されます',
-  'legal.privacy.bullets.healthConnect': 'Health Connect / HealthKit データ: 歩数、心拍数、睡眠、トレーニング データ (明示的な許可を与えた場合のみ)',
+  'legal.privacy.bullets.healthConnect':
+    'Health Connect / HealthKit データ: 歩数、心拍数、睡眠、トレーニング データ (明示的な許可を与えた場合のみ)',
   'legal.privacy.sections.storageTitle': '2) データストレージ',
-  'legal.privacy.sections.storageBody': 'FitQuest はオフラインファーストのアプリケーションとして設計されています。すべてのフィットネス データは、SQLite を使用してデバイスにローカルに保存されます。個人データは外部サーバーに保存されません。機密の健康記録は、業界標準の AES-256-GCM 暗号化を使用して保存される前に暗号化されます。',
+  'legal.privacy.sections.storageBody':
+    'FitQuest はオフラインファーストのアプリケーションとして設計されています。すべてのフィットネス データは、SQLite を使用してデバイスにローカルに保存されます。個人データは外部サーバーに保存されません。機密の健康記録は、業界標準の AES-256-GCM 暗号化を使用して保存される前に暗号化されます。',
   'legal.privacy.sections.securityTitle': '3) データセキュリティ',
-  'legal.privacy.sections.securityBody': 'すべての機密健康データは、デバイスに保存される前に AES-256-GCM 暗号化を使用して暗号化されます。暗号化キーは、デバイスの安全なハードウェア (iOS のキーチェーン、Android のキーストア) によって保護されます。生体認証は追加の保護層を提供します。タイミング攻撃を防ぐために、安全なキー導出 (PBKDF2) と定数時間比較を採用しています。',
+  'legal.privacy.sections.securityBody':
+    'すべての機密健康データは、デバイスに保存される前に AES-256-GCM 暗号化を使用して暗号化されます。暗号化キーは、デバイスの安全なハードウェア (iOS のキーチェーン、Android のキーストア) によって保護されます。生体認証は追加の保護層を提供します。タイミング攻撃を防ぐために、安全なキー導出 (PBKDF2) と定数時間比較を採用しています。',
   'legal.privacy.sections.thirdPartyTitle': '4) サードパーティのサービス',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest は、お客様の個人データを販売、レンタル、または取引することはありません。次のサードパーティ統合では、限られたデータを処理する可能性があります:',
-  'legal.privacy.bullets.thirdPartyAI': 'AI 機能: AI Coach または Professor を使用すると、プロンプトが (Llama 言語モデル経由で) OpenRouter に送信され、応答が生成されます。これらのリクエストには個人の健康データは含まれておらず、入力したテキストのみが含まれます。',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: 許可を与えると、FitQuest はこれらのプラットフォーム サービスから健康指標を読み取ります。データは一方向 (読み取り専用) に流れ、デバイス上に暗号化されて保存されます。',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: サブスクリプションの検証を管理します。購入トークンと匿名のユーザー識別子のみを受け取ります。健康やフィットネスのデータは受け取りません。',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: 匿名化されたエラー ログを受信するクラッシュ レポート サービス。個人データや健康指標は含まれません。',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest は、お客様の個人データを販売、レンタル、または取引することはありません。次のサードパーティ統合では、限られたデータを処理する可能性があります:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'AI 機能: AI Coach または Professor を使用すると、プロンプトが (Llama 言語モデル経由で) OpenRouter に送信され、応答が生成されます。これらのリクエストには個人の健康データは含まれておらず、入力したテキストのみが含まれます。',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: 許可を与えると、FitQuest はこれらのプラットフォーム サービスから健康指標を読み取ります。データは一方向 (読み取り専用) に流れ、デバイス上に暗号化されて保存されます。',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: サブスクリプションの検証を管理します。購入トークンと匿名のユーザー識別子のみを受け取ります。健康やフィットネスのデータは受け取りません。',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: 匿名化されたエラー ログを受信するクラッシュ レポート サービス。個人データや健康指標は含まれません。',
   'legal.privacy.sections.childrenTitle': '5) 子供のプライバシー',
-  'legal.privacy.sections.childrenBody': 'FitQuest は 13 歳以上のユーザー向けに設計されています。当社は、13 歳未満の子供から故意に個人情報を収集することはありません。子供がデータを提供したと思われる場合は、即時削除するために、fitquestsupp0rt@gmail.com までご連絡ください。',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest は 13 歳以上のユーザー向けに設計されています。当社は、13 歳未満の子供から故意に個人情報を収集することはありません。子供がデータを提供したと思われる場合は、即時削除するために、fitquestsupp0rt@gmail.com までご連絡ください。',
   'legal.privacy.sections.retentionTitle': '6) データの保持',
-  'legal.privacy.sections.retentionBody': 'データはデバイス上にローカルに保存され、アプリがインストールされている限り保持されます。 「プロフィール」→「設定」→「すべてのデータを削除」でいつでもすべてのデータを削除できます。アプリをアンインストールすると、すべてのローカル データが完全に削除されます。弊社 Web サイト (https://fitquest.dev/delete-account) からデータ削除をリクエストすることもできます。',
+  'legal.privacy.sections.retentionBody':
+    'データはデバイス上にローカルに保存され、アプリがインストールされている限り保持されます。 「プロフィール」→「設定」→「すべてのデータを削除」でいつでもすべてのデータを削除できます。アプリをアンインストールすると、すべてのローカル データが完全に削除されます。弊社 Web サイト (https://fitquest.dev/delete-account) からデータ削除をリクエストすることもできます。',
   'legal.privacy.sections.rightsTitle': '7) あなたの権利',
-  'legal.privacy.sections.rightsBody': '適用されるデータ保護法 (レソトの 2011 年データ保護法、EU の GDPR、カリフォルニアの CCPA を含む) に基づき、お客様には次の権利があります。',
-  'legal.privacy.bullets.accessRight': 'アクセス: アプリに保存されているあなたに関するすべてのデータを表示するには、[プロフィール] → [データのエクスポート]',
-  'legal.privacy.bullets.deleteRight': 'を選択します。削除: アプリの設定または Web サイトからすべてのデータを永久に消去します',
+  'legal.privacy.sections.rightsBody':
+    '適用されるデータ保護法 (レソトの 2011 年データ保護法、EU の GDPR、カリフォルニアの CCPA を含む) に基づき、お客様には次の権利があります。',
+  'legal.privacy.bullets.accessRight':
+    'アクセス: アプリに保存されているあなたに関するすべてのデータを表示するには、[プロフィール] → [データのエクスポート]',
+  'legal.privacy.bullets.deleteRight':
+    'を選択します。削除: アプリの設定または Web サイトからすべてのデータを永久に消去します',
   'legal.privacy.bullets.exportRight': '移植性: 別のサービスに転送するためにデータを JSON 形式でエクスポートします。',
   'legal.privacy.bullets.correctRight': '訂正: プロフィール情報はいつでも更新または変更してください',
   'legal.privacy.bullets.objectionRight': '反対: 法務センター経由でいつでもデータ処理の同意を撤回してください',
   'legal.privacy.sections.popiaTitle': '8) データ保護コンプライアンス (レソト)',
-  'legal.privacy.sections.popiaBody': 'レソト王国の 2011 年データ保護法に従って、fitquest.dev はお客様の個人情報の責任者として機能します。当社はお客様のデータを合法的に処理し、収集を必要なものに最小限に抑え、正確性を確保し、適切なセキュリティ保護措置を維持します。国境を越えたユーザーの場合、当社は該当する場合、POPIA (南アフリカ)、GDPR (EU)、および CCPA (カリフォルニア) にも準拠します。',
+  'legal.privacy.sections.popiaBody':
+    'レソト王国の 2011 年データ保護法に従って、fitquest.dev はお客様の個人情報の責任者として機能します。当社はお客様のデータを合法的に処理し、収集を必要なものに最小限に抑え、正確性を確保し、適切なセキュリティ保護措置を維持します。国境を越えたユーザーの場合、当社は該当する場合、POPIA (南アフリカ)、GDPR (EU)、および CCPA (カリフォルニア) にも準拠します。',
   'legal.privacy.sections.updatesTitle': '9) ポリシーの更新',
-  'legal.privacy.sections.updatesBody': '当社は、このプライバシー ポリシーを随時更新することがあります。変更はすべて、更新された「最終更新日」とともにアプリに反映され、更新されたポリシーを確認して同意するように求められます。変更後もアプリを継続して使用すると、新しいポリシーに同意したことになります。',
+  'legal.privacy.sections.updatesBody':
+    '当社は、このプライバシー ポリシーを随時更新することがあります。変更はすべて、更新された「最終更新日」とともにアプリに反映され、更新されたポリシーを確認して同意するように求められます。変更後もアプリを継続して使用すると、新しいポリシーに同意したことになります。',
   'legal.privacy.sections.contactTitle': '10) 連絡先',
-  'legal.privacy.sections.contactBody': 'プライバシーに関するリクエストについては、fitquestsupp0rt@gmail.com まで電子メールでご連絡ください。 https://fitquest.dev/support にアクセスすることもできます。利用可能な場合はアカウント ID を含めます。 30 営業日以内にご返答いたします。',
+  'legal.privacy.sections.contactBody':
+    'プライバシーに関するリクエストについては、fitquestsupp0rt@gmail.com まで電子メールでご連絡ください。 https://fitquest.dev/support にアクセスすることもできます。利用可能な場合はアカウント ID を含めます。 30 営業日以内にご返答いたします。',
   'legal.terms.sections.useTitle': '1) 許容される使用方法',
-  'legal.terms.sections.useBody': 'お客様は、FitQuest を合法的に使用し、リバース エンジニアリング、逆コンパイル、セキュリティ制御、サブスクリプション メカニズム、またはデータ保護機能のバイパスを試みないことに同意します。アプリを違法な目的で使用したり、適用される規制に違反して使用することはできません。',
+  'legal.terms.sections.useBody':
+    'お客様は、FitQuest を合法的に使用し、リバース エンジニアリング、逆コンパイル、セキュリティ制御、サブスクリプション メカニズム、またはデータ保護機能のバイパスを試みないことに同意します。アプリを違法な目的で使用したり、適用される規制に違反して使用することはできません。',
   'legal.terms.sections.medicalTitle': '2) 医療上の免責事項',
-  'legal.terms.sections.medicalBody': 'FitQuest はフィットネスおよびウェルネス アプリケーションであり、医療機器またはサービスではありません。このアプリは医学的なアドバイス、診断、治療を提供するものではありません。ワークアウトの提案、健康スコア、回復の推奨事項、AI 生成のガイダンスは、情報提供と教育のみを目的としています。特に既存の健康状態、怪我、または懸念がある場合は、運動プログラムを開始、変更、または中止する前に必ず資格のある医療専門家に相談してください。痛み、めまい、不快感を感じた場合は、すぐに運動を中止してください。',
+  'legal.terms.sections.medicalBody':
+    'FitQuest はフィットネスおよびウェルネス アプリケーションであり、医療機器またはサービスではありません。このアプリは医学的なアドバイス、診断、治療を提供するものではありません。ワークアウトの提案、健康スコア、回復の推奨事項、AI 生成のガイダンスは、情報提供と教育のみを目的としています。特に既存の健康状態、怪我、または懸念がある場合は、運動プログラムを開始、変更、または中止する前に必ず資格のある医療専門家に相談してください。痛み、めまい、不快感を感じた場合は、すぐに運動を中止してください。',
   'legal.terms.sections.subscriptionTitle': '3) サブスクリプションと請求',
-  'legal.terms.sections.subscriptionBody': 'FitQuest では、すべてのプレミアム機能の 14 日間の無料トライアルを提供しています。試用期間が終了したら、購読してプレミアム機能を引き続き使用することも、無料利用枠を継続することもできます。プレミアム サブスクリプションは、Google Play ストアまたは Apple App Store を通じて請求されます。サブスクリプションは、更新日の少なくとも 24 時間前にキャンセルされない限り、各請求期間の終了時に自動更新されます。デバイスの App Store 設定からサブスクリプションを管理またはキャンセルできます。払い戻しには、それぞれのプラットフォームの払い戻しポリシーが適用されます。価格は地域によって異なる場合があり、購入前に現地通貨で表示されます。',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest では、すべてのプレミアム機能の 14 日間の無料トライアルを提供しています。試用期間が終了したら、購読してプレミアム機能を引き続き使用することも、無料利用枠を継続することもできます。プレミアム サブスクリプションは、Google Play ストアまたは Apple App Store を通じて請求されます。サブスクリプションは、更新日の少なくとも 24 時間前にキャンセルされない限り、各請求期間の終了時に自動更新されます。デバイスの App Store 設定からサブスクリプションを管理またはキャンセルできます。払い戻しには、それぞれのプラットフォームの払い戻しポリシーが適用されます。価格は地域によって異なる場合があり、購入前に現地通貨で表示されます。',
   'legal.terms.sections.ipTitle': '4) 知的財産',
-  'legal.terms.sections.ipBody': 'FitQuest のすべてのコンテンツ、デザイン、コード、アルゴリズム、ブランド、マテリアルは fitquest.dev の知的財産であり、適用される著作権法および商標法によって保護されています。事前の書面による許可なしに、アプリのいかなる部分も複製、配布、派生作品を作成することはできません。',
+  'legal.terms.sections.ipBody':
+    'FitQuest のすべてのコンテンツ、デザイン、コード、アルゴリズム、ブランド、マテリアルは fitquest.dev の知的財産であり、適用される著作権法および商標法によって保護されています。事前の書面による許可なしに、アプリのいかなる部分も複製、配布、派生作品を作成することはできません。',
   'legal.terms.sections.liabilityTitle': '5) 責任の制限',
-  'legal.terms.sections.liabilityBody': '法律で認められる最大限の範囲で、fitquest.dev は、アプリの使用から生じる間接的、付随的、特別、結果的、または懲罰的損害 (身体的傷害、データ損失、またはサービスの中断を含みますがこれらに限定されません) に対して責任を負わないものとします。当社の責任総額は、請求に先立つ 12 か月間にお客様がプレミアム機能に対して支払った金額を超えないものとします。',
+  'legal.terms.sections.liabilityBody':
+    '法律で認められる最大限の範囲で、fitquest.dev は、アプリの使用から生じる間接的、付随的、特別、結果的、または懲罰的損害 (身体的傷害、データ損失、またはサービスの中断を含みますがこれらに限定されません) に対して責任を負わないものとします。当社の責任総額は、請求に先立つ 12 か月間にお客様がプレミアム機能に対して支払った金額を超えないものとします。',
   'legal.terms.sections.terminationTitle': '6) 終了',
-  'legal.terms.sections.terminationBody': 'これらの規約に違反した場合、当社は FitQuest へのアクセスを一時停止または終了する権利を留保します。アプリの使用はいつでも停止できます。終了すると、ローカルに保存されたデータは、削除するかアプリをアンインストールするまでデバイスに残ります。',
+  'legal.terms.sections.terminationBody':
+    'これらの規約に違反した場合、当社は FitQuest へのアクセスを一時停止または終了する権利を留保します。アプリの使用はいつでも停止できます。終了すると、ローカルに保存されたデータは、削除するかアプリをアンインストールするまでデバイスに残ります。',
   'legal.terms.sections.governingLawTitle': '7) 準拠法',
-  'legal.terms.sections.governingLawBody': 'これらの規約は、レソト王国の法律に準拠し、それに従って解釈されます。これらの規約または FitQuest の使用に起因するあらゆる紛争は、レソトの裁判所の専属管轄権に従うものとします。本規約のいずれかの条項が法的強制力がないと判断された場合でも、残りの条項は引き続き完全に効力を有するものとします。',
-  'legal.terms.bullets.compliance': 'このアプリを使用するときは、該当するすべての Google Play および Apple App Store ポリシーに従う必要があります',
-  'legal.terms.bullets.accountDelete': 'アカウントと関連するすべてのデータは、[プロフィール] → [設定] から、または https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'これらの規約は、レソト王国の法律に準拠し、それに従って解釈されます。これらの規約または FitQuest の使用に起因するあらゆる紛争は、レソトの裁判所の専属管轄権に従うものとします。本規約のいずれかの条項が法的強制力がないと判断された場合でも、残りの条項は引き続き完全に効力を有するものとします。',
+  'legal.terms.bullets.compliance':
+    'このアプリを使用するときは、該当するすべての Google Play および Apple App Store ポリシーに従う必要があります',
+  'legal.terms.bullets.accountDelete':
+    'アカウントと関連するすべてのデータは、[プロフィール] → [設定] から、または https://fitquest.dev/delete-account',
 
   'common.save': '保存',
   'common.cancel': 'キャンセル',
@@ -11954,7 +14049,8 @@ const ja: Record<string, string> = {
   'savedWorkouts.startAnytime': 'いつでも始められる',
   'savedWorkouts.deleteFailed': 'ワークアウトの削除に失敗しました。もう一度試してください。',
   'savedWorkouts.emptyTitle': 'まだ保存されたワークアウトはありません',
-  'savedWorkouts.emptySubtitle': '目標に合わせたエクササイズを選択して、最初のカスタム ワークアウトを作成します。所要時間はわずか 1 分です。',
+  'savedWorkouts.emptySubtitle':
+    '目標に合わせたエクササイズを選択して、最初のカスタム ワークアウトを作成します。所要時間はわずか 1 分です。',
   'savedWorkouts.featurePick': 'エクササイズを選択してください',
   'savedWorkouts.featureSet': '回数と休憩を設定する',
   'savedWorkouts.featureStart': 'いつでも始められます',
@@ -12006,7 +14102,8 @@ const ja: Record<string, string> = {
   'help.featureDesc': 'FitQuest をより良くするためのアイデアはありますか?ぜひお聞かせください',
   'help.responseTime': '通常 24 ～ 48 時間以内に返信いたします',
 
-  'about.description': 'FitQuest は、トレーニング目標の達成を支援するために設計された総合的なフィットネス プラットフォームです。すべてのデータはデバイス上に残り、AES-256 暗号化によって保護されます。',
+  'about.description':
+    'FitQuest は、トレーニング目標の達成を支援するために設計された総合的なフィットネス プラットフォームです。すべてのデータはデバイス上に残り、AES-256 暗号化によって保護されます。',
   'about.platform': 'プラットフォーム',
   'about.dataStorage': 'データストレージ',
   'about.onDevice': 'デバイス上のみ',
@@ -12181,7 +14278,8 @@ const ja: Record<string, string> = {
   'paywall.features.cloudBackupSub': '進捗状況を決して失うことはありません',
 
   'onboarding.welcome': 'FitQuest へようこそ',
-  'onboarding.tagline': 'AI を活用したフィットネス コンパニオンです。\\\\\\\\nあなたのエクスペリエンスをパーソナライズしましょう。',
+  'onboarding.tagline':
+    'AI を活用したフィットネス コンパニオンです。\\\\\\\\nあなたのエクスペリエンスをパーソナライズしましょう。',
   'onboarding.heroBody': 'スマートにトレーニングする',
   'onboarding.heroMind': '鋭く考えてください',
   'onboarding.heroMove': 'さらに移動',
@@ -12239,6 +14337,12 @@ const ja: Record<string, string> = {
   'onboarding.permSub': 'これによりFitQuestがあなたに最適に動作します。設定からいつでも変更できます。',
   'onboarding.perm.notifications': 'トレーニングリマインダー',
   'onboarding.perm.notificationsSub': 'トレーニングスケジュールを守るためのリマインダーを受け取る',
+  'onboarding.perm.motion': 'モーションとアクティビティ',
+  'onboarding.perm.motionSub': 'モーションセンサーを使用してステップを追跡し、エクササイズを検出し、レップを数えます',
+  'onboarding.perm.location': '位置情報（ジョギング追跡）',
+  'onboarding.perm.locationSub': 'ジョギングルートをマップし、正確に距離を計算します',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'Android Health Connectと心拍数、睡眠、ワークアウトデータを同期',
   'onboarding.perm.allow': '許可',
   'onboarding.perm.skipNote': 'スキップできます——権限は後でプロフィールから有効にできます。',
 
@@ -12412,7 +14516,8 @@ const ja: Record<string, string> = {
   'backup.createBackup': 'バックアップの作成',
   'backup.availableBackups': '利用可能なバックアップ',
   'backup.noBackups': 'まだバックアップはありません。',
-  'backup.helperText': 'ローカル データベースの暗号化されたバックアップ ファイルを作成します。パスフレーズを設定した場合、復元には同じパスフレーズを使用する必要があります。',
+  'backup.helperText':
+    'ローカル データベースの暗号化されたバックアップ ファイルを作成します。パスフレーズを設定した場合、復元には同じパスフレーズを使用する必要があります。',
   'backup.optionalPassphrase': 'オプションのパスフレーズ',
   'backup.working': '働いています…',
   'backup.created': 'バックアップが作成されました',
@@ -12429,12 +14534,14 @@ const ja: Record<string, string> = {
   'backup.uploaded': 'アップロードされました',
   'backup.uploadFailed': 'アップロードに失敗しました',
   'backup.noCloudBackups': 'クラウドバックアップはまだありません。',
-  'backup.cloudHelper': '暗号化されたバックアップ BLOB をフェーズ 2 バックエンドに保存します。サーバーはデータを復号化できません。',
+  'backup.cloudHelper':
+    '暗号化されたバックアップ BLOB をフェーズ 2 バックエンドに保存します。サーバーはデータを復号化できません。',
 
   'audio.warmup.start': 'ウォーミングアップから始めましょう。軽い動きで筋肉を目覚めさせ、体の準備を整えます。',
   'audio.main.start': 'それでは始めましょう。これからメイントレーニングが始まります。',
   'audio.cooldown.start': 'クールダウンする時間です。穏やかな動きで身体の回復を促します。',
-  'audio.warmup.toMain': '素晴らしいウォーミングアップ！あなたの体は準備が整っています。メインのトレーニングの時間です。さあ行こう！',
+  'audio.warmup.toMain':
+    '素晴らしいウォーミングアップ！あなたの体は準備が整っています。メインのトレーニングの時間です。さあ行こう！',
   'audio.warmup.toCooldown': 'ウォームアップ完了。今すぐクールダウンしましょう。',
   'audio.main.toCooldown': 'メイントレーニング終了！素晴らしい努力です。クールダウンして回復しましょう。',
   'audio.main.toWarmup': '準備運動に切り替えます。',
@@ -12474,8 +14581,146 @@ const ja: Record<string, string> = {
   'audio.streak.60': '六十日！ほとんどの人はこの種の献身を夢見ています。',
   'audio.streak.90': '90日連続達成！あなたはまさに伝説的です。',
   'audio.minutes': '{{minutes}} 分間の純粋な努力。',
-  'audio.progressions': '{{count}} 個のエクササイズでレベルアップの準備ができました!|{{count}} 個のエクササイズでレベルアップの準備ができました!',
+  'audio.progressions':
+    '{{count}} 個のエクササイズでレベルアップの準備ができました!|{{count}} 個のエクササイズでレベルアップの準備ができました!',
   'audio.xpEarned': 'さらに {{xp}} XP を獲得しました。',
+
+  // ============================================
+  // ENGINE — 行動シグナル
+  // ============================================
+  'signal.transition.advancing.subtext': '最近の活動に基づき進行ロジックが有効化されました。',
+  'signal.transition.regressing.subtext': '現在のリズムに合わせてセッション負荷を軽減しました。',
+  'signal.firstSession.headline': 'システム準備完了。最初のセッションを始めましょう。',
+  'signal.firstSession.subtext': '各セッションがあなたの能力に合わせてシステムを調整します。',
+  'signal.streakAtRisk.headline': '{{streak}}日連続。今日も続けて強化しましょう。',
+  'signal.streakAtRisk.subtext.disciplined': '継続性が進行の精度を高めます。',
+  'signal.streakAtRisk.subtext.inconsistent': '短いセッションでもリズムを維持できます。',
+  'signal.restAdvised.headline': '疲労に基づき休息を推奨します。',
+  'signal.restAdvised.subtext.fatigue': '疲労度 {{fatigue}}%。休息が適応を加速します。',
+  'signal.restAdvised.subtext.readiness': '準備度 {{readiness}}%。回復進行中。',
+  'signal.momentum.headline': 'セッション完了。データ記録済み。',
+  'signal.momentum.subtext.streak': '{{streak}}日のパターン。システムがプログラムを最適化中。',
+  'signal.momentum.subtext.default': '回復開始。次のセッションはそれに応じて調整されます。',
+  'signal.comeback.headline.inconsistent': '{{days}}日間の休止。低強度セッションが利用可能です。',
+  'signal.comeback.headline.disciplined': '前回のセッションから {{days}} 日。強度を再調整しました。',
+  'signal.comeback.subtext.inconsistent': 'システムを調整して再開しやすくしました。',
+  'signal.comeback.subtext.disciplined': '現在の回復状態に合わせてボリュームを調整しました。',
+  'signal.recoveryReady.headline.disciplined': '準備状態最適。進行条件を満たしています。',
+  'signal.recoveryReady.headline.inconsistent': '回復完了。セッションに良い条件です。',
+  'signal.recoveryReady.subtext': '準備度 {{readiness}}%。',
+  'signal.streakBuilding.headline': '{{streak}}日連続。システムがあなたのリズムに適応中。',
+  'signal.streakBuilding.subtext.disciplined': 'パフォーマンスに基づきボリュームと強度が上昇中。',
+  'signal.streakBuilding.subtext.inconsistent': '継続性が構築されています。挑戦が徐々に増加します。',
+  'signal.expectToday.headline.disciplined': 'トレーニングウィンドウ開放。システム準備完了。',
+  'signal.expectToday.headline.inconsistent': '準備ができたらセッションを開始できます。',
+  'signal.expectToday.subtext.good': '準備度 {{readiness}}%。良好な状態です。',
+  'signal.expectToday.subtext.moderate': '中程度の準備度。軽めのセッションを推奨します。',
+
+  // ============================================
+  // ENGINE — 適応メモリ
+  // ============================================
+  'memory.noHistory.headline': '最初のセッションが近づいています。システムは毎回の繰り返しから学習します。',
+  'memory.noHistory.trendStatement': 'データがまだありません。最初のセッションがベースラインを設定します。',
+  'memory.lastSession.headline.crushed': '前回のセッション：{{completed}}種目のエクササイズを {{duration}}分で完了。',
+  'memory.lastSession.headline.adjusted': '前回のセッション：{{completed}}/{{total}}完了。システム調整済み。',
+  'memory.lastSession.headline.tough': '前回のセッションは厳しかった。{{completed}}/{{total}}完了。回復を優先。',
+  'memory.trend.improving': 'パフォーマンス向上中。システムがチャレンジを引き上げます。',
+  'memory.trend.declining': '最近のセッションがより困難に。勢いを取り戻すため調整済み。',
+  'memory.trend.steady.data': '安定した結果。次の進行閾値に近づいています。',
+  'memory.trend.steady.building': 'ベースライン構築中。続けましょう。',
+  'memory.delta.firstWorkout': '初回セッション。システムがあなたの体に合わせて調整します。',
+  'memory.delta.same': '同じセッション構成。システムが継続性の成長を認識。',
+  'memory.delta.mixed': '{{total}}件の変更：{{removed}}件入れ替え、{{added}}件新規。',
+  'memory.delta.added': 'バラエティのため {{count}} 種目{{plural}}の新しいエクササイズを追加。',
+  'memory.delta.removed': '回復のため {{count}} 種目{{plural}}のエクササイズを交換。',
+  'memory.progression.firstTime': '初回。システムはこのセッションから調整を開始します。',
+  'memory.progression.improving': '{{wins}}連勝。進歩中。',
+  'memory.progression.declining': '最近の低下を検出。ボリューム調整済み。',
+  'memory.progression.nearGate': '{{successes}}回の安定セッション{{plural}}。あと一回で進行解除。',
+  'memory.progression.steady': '安定維持。継続が戦略です。',
+  'memory.reason.retained': 'あなたの進行パスと一致しています。',
+  'memory.reason.addedBalance': '筋肉回復バランスのために追加。',
+  'memory.reason.removedFatigue': '累積疲労のため削除。',
+  'memory.reason.removedVariety': '筋肉バランスとバラエティのために交換。',
+  'memory.timeSince.minutes': '{{minutes}}分前',
+  'memory.timeSince.hours': '{{hours}}時間前',
+  'memory.timeSince.yesterday': '昨日',
+  'memory.timeSince.days': '{{days}}日前',
+
+  // ============================================
+  // ENGINE — トライアル進行
+  // ============================================
+  'trial.welcome.headline': 'システムへのフルアクセスが有効化されました。',
+  'trial.welcome.subtext': '14日間すべての機能を探索できます。制限なし。',
+  'trial.firstWin.headline': '{{workouts}}回のセッション{{plural}}完了。システムがあなたのパターンを学習中。',
+  'trial.firstWin.subtext': '各セッションがトレーニングの精度を向上させます。',
+  'trial.readyForFirst.headline': '{{day}}日目。最初のセッションの準備ができました。',
+  'trial.readyForFirst.subtext': 'トレーニングを開始して調整を始めましょう。',
+  'trial.improvementShown.headline': 'セッション比較が利用可能に。',
+  'trial.improvementShown.subtext': 'システムが何が変わったかとその理由を表示できるようになりました。',
+  'trial.memoryIntro.headline': 'トレーニングインテリジェンスが拡張中。',
+  'trial.memoryIntro.subtext': '{{day}}日目。セッションが增えるほど分析が正確に。',
+  'trial.fullIntelligence.headline': 'フルインテリジェンス有効。',
+  'trial.fullIntelligence.subtext': '{{day}}日目。システムがあなたのパターンと能力に適応します。',
+  'trial.transitionClear.headline': 'フルアクセス残り {{days}} 日{{plural}}。',
+  'trial.transitionClear.subtext': 'トライアル後もコア機能は利用可能。インテリジェンス層にはサブスクリプションが必要です。',
+  'trial.transitionSoft.headline': '残り {{days}} 日。',
+  'trial.transitionSoft.subtext': 'トレーニングデータと進歩は常にあなたのものです。サブスクリプションでインテリジェンス機能を継続。',
+  'trial.viewPlans': 'プランを見る',
+  'trial.expired.headline': 'トライアル期間終了。',
+  'trial.expired.subtext.withWorkouts': '{{workouts}}回のセッション記録済み。コア機能は利用可能。インテリジェンス層を復元するにはサブスクリプション。',
+  'trial.expired.subtext.noWorkouts': 'コア機能は利用可能。インテリジェンス層を解除するにはサブスクリプション。',
+
+  // ============================================
+  // ENGINE — 失敗分析
+  // ============================================
+  'failure.dropOff': 'エクササイズ {{index}} ({{name}}) で中断 — 次回セッションでボリュームを削減。',
+  'failure.skipHeavy': '高いスキップ率を検出。エクササイズが現在の能力に合っていない可能性。',
+  'failure.lowVolume': '完了ボリュームが低い。セッションが要求しすぎる可能性。',
+  'failure.earlyDropout': '早期中断パターン。セッション時間を短縮中。',
+  'failure.lateDropout': '持久力中断。軽めのエクササイズを後半に配置。',
+  'failure.noFailure': 'セッション正常完了。',
+  'failure.insight.none': 'セッション {{percent}}% 完了。調整不要。',
+  'failure.insight.earlyDropout': 'エクササイズ {{index}} ({{name}}) で中断 — 次回セッションでボリュームを削減。',
+  'failure.insight.midDropout': 'セット {{index}} ({{name}}) で中断 — エクササイズ数を調整中。',
+  'failure.insight.lateDropout': 'ほぼ完了 ({{percent}}%)。微調整を適用。',
+  'failure.insight.skipHeavy': 'セッション完了だが {{percent}}% のエクササイズをスキップ。選択を見直し中。',
+  'failure.insight.lowVolume': '完了ボリュームが低い ({{percent}}%)。セット指示を削減中。',
+  'failure.insight.empty': 'エクササイズ未完了。システムが次回セッションの難易度を下げます。',
+  'failure.adjustment.none': '調整不要。',
+  'failure.adjustment.earlyDropout': '早期中断を検出。ボリュームと時間を削減中。',
+  'failure.adjustment.midDropout': 'エクササイズ {{index}} で中断。エクササイズ数を削減中。',
+  'failure.adjustment.lateDropout': 'セッションほぼ完了。ボリュームを少し削減。',
+  'failure.adjustment.skipHeavy': '高いスキップ率。エクササイズ選択の見直しが必要。',
+  'failure.adjustment.lowVolume': '完了ボリュームが低い。セット数を削減中。',
+  'failure.adjustment.empty': '空のセッション。大幅な削減を適用。',
+  'failure.pattern.noData': 'セッションデータがまだありません。',
+  'failure.pattern.noFailures': '最近のセッションはすべて正常完了。進行条件をサポート。',
+  'failure.pattern.occasional': '時折未完了のセッション。現在のボリュームは継続可能なようです。',
+  'failure.pattern.earlyDropoffs': '頻繁な早期中断。セッション時間またはエクササイズ数の削減を推奨。',
+  'failure.pattern.highSkips': '高いスキップ率。エクササイズ選択の調整が必要かもしれません。',
+  'failure.pattern.worsening': '失敗率上昇中。ボリューム削減または回復重視を検討。',
+  'failure.pattern.general': '{{rate}}% の失敗率。セッション難易度を調整中。',
+
+  // ============================================
+  // ENGINE — 状態シミュレーション
+  // ============================================
+  'simulation.skip.streakReset': 'ストリークがリセットされます。',
+  'simulation.skip.modeShift': '不安定モードに切り替わる可能性。',
+  'simulation.skip.fatigueDrop': '疲労が {{delta}} 低下。',
+  'simulation.skip.minimal': '影響は最小限 — 余裕があります。',
+  'simulation.train.fatigueUp': '疲労が {{delta}} 上昇。',
+  'simulation.train.modeAdvance': '規律モードに向かって前進。',
+  'simulation.train.reduceTomorrow': '明日は軽めにすべきです。',
+  'simulation.train.pushTomorrow': '明日はもっと追い込む余裕があります。',
+  'simulation.rest.recovery': '回復：疲労が {{delta}} 低下。',
+  'simulation.rest.streakReset': 'ストリークはリセットされますが回復が優先。',
+  'simulation.rest.ready': '明日のフルセッションの準備完了。',
+
+  // ============================================
+  // ENGINE — アクセス制御
+  // ============================================
+  'gating.previewMessage': '高度なインテリジェンスにはサブスクリプションが必要です。',
 };
 
 const ko: Record<string, string> = {
@@ -12522,6 +14767,7 @@ const ko: Record<string, string> = {
   'dashboard.of': '',
   'dashboard.incompleteSession': '불완전한 세션',
   'dashboard.kcal': '칼로리',
+  'dashboard.startNow': '지금 시작',
   'dashboard.stepsToday': '단계',
   'dashboard.activeMin': '활성 분',
   'dashboard.completionRate': '완료',
@@ -12646,11 +14892,14 @@ const ko: Record<string, string> = {
   'profile.adaptiveTraining': '적응형 훈련',
   'profile.adaptiveExplanation': '이러한 값은 훈련할 때 자동으로 조정됩니다. 자세히 알아보려면 각 측정항목을 탭하세요.',
   'profile.fatigueSensitivity': '피로 민감도',
-  'profile.fatigueSensitivityDesc': '운동 중에 피로가 얼마나 빨리 쌓이는지. 값이 높을수록 알고리즘이 강렬한 세션 사이에 더 많은 휴식을 제공한다는 의미입니다. 운동 완료율과 회복 패턴에 따라 조정됩니다.',
+  'profile.fatigueSensitivityDesc':
+    '운동 중에 피로가 얼마나 빨리 쌓이는지. 값이 높을수록 알고리즘이 강렬한 세션 사이에 더 많은 휴식을 제공한다는 의미입니다. 운동 완료율과 회복 패턴에 따라 조정됩니다.',
   'profile.progressionPace': '진행 속도',
-  'profile.progressionPaceDesc': '시간이 지남에 따라 얼마나 공격적인 운동 난이도가 증가하는지. 값이 높을수록 더 어려운 운동으로 더 빠르게 발전할 수 있습니다. 처방된 세트/반복 횟수를 일관되게 완료하는지 여부에 따라 조정됩니다.',
+  'profile.progressionPaceDesc':
+    '시간이 지남에 따라 얼마나 공격적인 운동 난이도가 증가하는지. 값이 높을수록 더 어려운 운동으로 더 빠르게 발전할 수 있습니다. 처방된 세트/반복 횟수를 일관되게 완료하는지 여부에 따라 조정됩니다.',
   'profile.volumeTolerance': '볼륨 허용 오차',
-  'profile.volumeToleranceDesc': '신체가 감당할 수 있는 총 훈련량(세트 x 반복)입니다. 값이 높을수록 더 많은 운동을 포함하는 운동 세션이 길어집니다. 세션 완료 및 건너뛴 운동을 기준으로 조정됩니다.',
+  'profile.volumeToleranceDesc':
+    '신체가 감당할 수 있는 총 훈련량(세트 x 반복)입니다. 값이 높을수록 더 많은 운동을 포함하는 운동 세션이 길어집니다. 세션 완료 및 건너뛴 운동을 기준으로 조정됩니다.',
   'profile.confidence': '자신감',
   'profile.samples': '샘플',
   'profile.rank': '순위 및 진행 상황',
@@ -12723,6 +14972,10 @@ const ko: Record<string, string> = {
   'profile.appSection': '앱',
   'profile.backupRestore': '백업 및 복원',
   'profile.backupRestoreSub': '암호화된 로컬 백업 파일',
+  'profile.subscription': '구독',
+  'profile.expired': '만료됨',
+  'profile.subscribeToUnlock': '모든 기능을 잠금 해제하려면 구독하세요',
+  'profile.searchLanguages': '언어 검색…',
   'profile.about': 'FitQuest 소개',
   'profile.version': '버전',
   'profile.saved': '저장됨',
@@ -12877,7 +15130,8 @@ const ko: Record<string, string> = {
   'move.noStepHistory': '아직 걸음 기록이 없습니다',
   'move.jogHistory': '조그 기록',
   'move.noJogHistory': '아직 조깅 세션이 없습니다',
-  'move.infoXpAndFatigue': '1,000걸음 = 4 XP • 조깅은 100m당 10 XP를 얻습니다.\\\\\\\\n움직임은 운동 피로에 영향을 미치지 않습니다',
+  'move.infoXpAndFatigue':
+    '1,000걸음 = 4 XP • 조깅은 100m당 10 XP를 얻습니다.\\\\\\\\n움직임은 운동 피로에 영향을 미치지 않습니다',
   'move.jogComplete': '조깅 완료! 🏃',
   'move.awesome': '엄청난!',
   'move.km': 'km',
@@ -12921,7 +15175,8 @@ const ko: Record<string, string> = {
   'meal.location.tapEnable': '위치를 활성화하려면 탭하세요',
   'meal.location.infoPrefix': '다음에서 제공되는 음식 표시',
   'meal.location.infoSuffix': ', 지역 및 글로벌 옵션을 포함합니다.',
-  'meal.location.infoNoLocation': '지역별 음식 제안을 보려면 위치를 활성화하세요. 다시 시도하려면 위의 위치 배지를 탭하세요.',
+  'meal.location.infoNoLocation':
+    '지역별 음식 제안을 보려면 위치를 활성화하세요. 다시 시도하려면 위의 위치 배지를 탭하세요.',
 
   'legal.title': '법률센터',
   'legal.documents': '문서',
@@ -12951,59 +15206,85 @@ const ko: Record<string, string> = {
   'legal.noteCounsel': '최종 법적 텍스트 및 관할권 매핑은 공개 전에 변호사의 검토를 받아야 합니다.',
   'legal.lastUpdated': '마지막 업데이트:',
   'legal.privacy.sections.developerTitle': '개발자',
-  'legal.privacy.sections.developerBody': 'FitQuest는 fitquest.dev에서 개발하고 게시합니다. 본 개인정보 보호정책은 Google Play 및 Apple App Store에서 제공되는 FitQuest 모바일 애플리케이션에 적용됩니다.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest는 fitquest.dev에서 개발하고 게시합니다. 본 개인정보 보호정책은 Google Play 및 Apple App Store에서 제공되는 FitQuest 모바일 애플리케이션에 적용됩니다.',
   'legal.privacy.sections.dataCollectTitle': '1) 당사가 수집하는 데이터',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest는 개인화된 피트니스 및 웰니스 기능을 제공하기 위해 다음 범주의 데이터를 처리합니다.',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest는 개인화된 피트니스 및 웰니스 기능을 제공하기 위해 다음 범주의 데이터를 처리합니다.',
   'legal.privacy.bullets.health': '건강 및 활동 지표: 심박수, 걸음 수, 수면 데이터, 운동 기록, 신체 측정 및 회복 점수',
-  'legal.privacy.bullets.biometric': '생체 인식 데이터: 앱 인증에 사용되는 지문 또는 얼굴 인식(기기에서만 처리되며 저장되거나 전송되지 않음)',
+  'legal.privacy.bullets.biometric':
+    '생체 인식 데이터: 앱 인증에 사용되는 지문 또는 얼굴 인식(기기에서만 처리되며 저장되거나 전송되지 않음)',
   'legal.privacy.bullets.location': '위치 데이터: 조깅 추적 중 GPS 좌표(조그 기능을 적극적으로 사용하는 경우에만)',
   'legal.privacy.bullets.account': '프로필 정보: 피트니스 목표, 경험 수준, 장비 선호도 및 선택적 작업 일정',
   'legal.privacy.bullets.usage': '앱 사용 패턴 및 기능 상호 작용(익명화, 앱 개선에 사용)',
   'legal.privacy.bullets.device': '호환성 및 충돌 보고를 위한 기기 유형, OS 버전, 앱 버전',
   'legal.privacy.bullets.photos': '프로필 사진: 설정을 선택한 경우 기기에 로컬로 저장됩니다.',
-  'legal.privacy.bullets.healthConnect': '헬스 커넥트/HealthKit 데이터: 걸음 수, 심박수, 수면, 운동 데이터(명시적 권한을 부여한 경우에만)',
+  'legal.privacy.bullets.healthConnect':
+    '헬스 커넥트/HealthKit 데이터: 걸음 수, 심박수, 수면, 운동 데이터(명시적 권한을 부여한 경우에만)',
   'legal.privacy.sections.storageTitle': '2) 데이터 저장',
-  'legal.privacy.sections.storageBody': 'FitQuest는 오프라인 우선 애플리케이션으로 설계되었습니다. 모든 피트니스 데이터는 SQLite를 사용하여 장치에 로컬로 저장됩니다. 개인 데이터는 외부 서버에 저장되지 않습니다. 민감한 건강 기록은 업계 표준 AES-256-GCM 암호화를 사용하여 저장하기 전에 암호화됩니다.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest는 오프라인 우선 애플리케이션으로 설계되었습니다. 모든 피트니스 데이터는 SQLite를 사용하여 장치에 로컬로 저장됩니다. 개인 데이터는 외부 서버에 저장되지 않습니다. 민감한 건강 기록은 업계 표준 AES-256-GCM 암호화를 사용하여 저장하기 전에 암호화됩니다.',
   'legal.privacy.sections.securityTitle': '3) 데이터 보안',
-  'legal.privacy.sections.securityBody': '모든 민감한 건강 데이터는 장치에 저장되기 전에 AES-256-GCM 암호화를 사용하여 암호화됩니다. 암호화 키는 기기의 보안 하드웨어(iOS의 키체인, Android의 키스토어)로 보호됩니다. 생체 인식 인증은 추가적인 보호 계층을 제공합니다. 우리는 타이밍 공격을 방지하기 위해 보안 키 파생(PBKDF2) 및 상수 시간 비교를 사용합니다.',
+  'legal.privacy.sections.securityBody':
+    '모든 민감한 건강 데이터는 장치에 저장되기 전에 AES-256-GCM 암호화를 사용하여 암호화됩니다. 암호화 키는 기기의 보안 하드웨어(iOS의 키체인, Android의 키스토어)로 보호됩니다. 생체 인식 인증은 추가적인 보호 계층을 제공합니다. 우리는 타이밍 공격을 방지하기 위해 보안 키 파생(PBKDF2) 및 상수 시간 비교를 사용합니다.',
   'legal.privacy.sections.thirdPartyTitle': '4) 제3자 서비스',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest는 귀하의 개인 데이터를 판매, 임대 또는 거래하지 않습니다. 다음 타사 통합에서는 제한된 데이터를 처리할 수 있습니다.',
-  'legal.privacy.bullets.thirdPartyAI': 'AI 기능: AI Coach 또는 Professor를 사용하면 프롬프트가 OpenRouter(Llama 언어 모델을 통해)로 전송되어 응답을 생성합니다. 이러한 요청에는 개인 건강 데이터가 포함되지 않으며 귀하가 입력한 텍스트만 포함됩니다.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': '헬스 커넥트/HealthKit: 권한을 부여하면 FitQuest는 이러한 플랫폼 서비스에서 건강 지표를 읽습니다. 데이터는 단방향(읽기 전용)으로 흐르며 기기에 암호화되어 저장됩니다.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: 구독 확인을 관리합니다. 구매 토큰과 익명의 사용자 식별자만 수신하며 건강 또는 피트니스 데이터는 수신하지 않습니다.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: 익명화된 오류 로그를 수신하는 충돌 보고 서비스입니다. 개인 데이터나 건강 지표는 포함되지 않습니다.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest는 귀하의 개인 데이터를 판매, 임대 또는 거래하지 않습니다. 다음 타사 통합에서는 제한된 데이터를 처리할 수 있습니다.',
+  'legal.privacy.bullets.thirdPartyAI':
+    'AI 기능: AI Coach 또는 Professor를 사용하면 프롬프트가 OpenRouter(Llama 언어 모델을 통해)로 전송되어 응답을 생성합니다. 이러한 요청에는 개인 건강 데이터가 포함되지 않으며 귀하가 입력한 텍스트만 포함됩니다.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    '헬스 커넥트/HealthKit: 권한을 부여하면 FitQuest는 이러한 플랫폼 서비스에서 건강 지표를 읽습니다. 데이터는 단방향(읽기 전용)으로 흐르며 기기에 암호화되어 저장됩니다.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: 구독 확인을 관리합니다. 구매 토큰과 익명의 사용자 식별자만 수신하며 건강 또는 피트니스 데이터는 수신하지 않습니다.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: 익명화된 오류 로그를 수신하는 충돌 보고 서비스입니다. 개인 데이터나 건강 지표는 포함되지 않습니다.',
   'legal.privacy.sections.childrenTitle': '5) 아동의 개인정보 보호',
-  'legal.privacy.sections.childrenBody': 'FitQuest는 13세 이상의 사용자를 위해 설계되었습니다. 당사는 13세 미만 어린이로부터 고의로 개인정보를 수집하지 않습니다. 어린이가 당사에 데이터를 제공했다고 생각되는 경우 즉시 삭제를 위해 fitquestsupp0rt@gmail.com으로 문의해 주십시오.',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest는 13세 이상의 사용자를 위해 설계되었습니다. 당사는 13세 미만 어린이로부터 고의로 개인정보를 수집하지 않습니다. 어린이가 당사에 데이터를 제공했다고 생각되는 경우 즉시 삭제를 위해 fitquestsupp0rt@gmail.com으로 문의해 주십시오.',
   'legal.privacy.sections.retentionTitle': '6) 데이터 보존',
-  'legal.privacy.sections.retentionBody': '귀하의 데이터는 귀하의 기기에 로컬로 저장되며 앱이 설치되어 있는 동안 보관됩니다. 프로필 → 설정 → 모든 데이터 삭제를 통해 언제든지 모든 데이터를 삭제할 수 있습니다. 앱을 제거하면 모든 로컬 데이터가 영구적으로 제거됩니다. 귀하는 당사 웹사이트 https://fitquest.dev/delete-account를 통해 데이터 삭제를 요청할 수도 있습니다.',
+  'legal.privacy.sections.retentionBody':
+    '귀하의 데이터는 귀하의 기기에 로컬로 저장되며 앱이 설치되어 있는 동안 보관됩니다. 프로필 → 설정 → 모든 데이터 삭제를 통해 언제든지 모든 데이터를 삭제할 수 있습니다. 앱을 제거하면 모든 로컬 데이터가 영구적으로 제거됩니다. 귀하는 당사 웹사이트 https://fitquest.dev/delete-account를 통해 데이터 삭제를 요청할 수도 있습니다.',
   'legal.privacy.sections.rightsTitle': '7) 귀하의 권리',
-  'legal.privacy.sections.rightsBody': '관련 데이터 보호법(레소토의 2011년 데이터 보호법, EU의 GDPR, 캘리포니아의 CCPA 포함)에 따라 귀하는 다음과 같은 권리를 갖습니다.',
+  'legal.privacy.sections.rightsBody':
+    '관련 데이터 보호법(레소토의 2011년 데이터 보호법, EU의 GDPR, 캘리포니아의 CCPA 포함)에 따라 귀하는 다음과 같은 권리를 갖습니다.',
   'legal.privacy.bullets.accessRight': '액세스: 프로필 → 데이터 내보내기',
-  'legal.privacy.bullets.deleteRight': '를 통해 앱이 귀하에 대해 저장하는 모든 데이터를 봅니다. 삭제: 앱 설정이나 웹사이트를 통해 모든 데이터를 영구적으로 삭제',
+  'legal.privacy.bullets.deleteRight':
+    '를 통해 앱이 귀하에 대해 저장하는 모든 데이터를 봅니다. 삭제: 앱 설정이나 웹사이트를 통해 모든 데이터를 영구적으로 삭제',
   'legal.privacy.bullets.exportRight': '이식성: 다른 서비스로 전송하기 위해 데이터를 JSON 형식으로 내보냅니다.',
   'legal.privacy.bullets.correctRight': '정정: 언제든지 프로필 정보를 업데이트하거나 수정하세요',
   'legal.privacy.bullets.objectionRight': '이의 제기: 언제든지 법률 센터를 통해 데이터 처리에 대한 동의를 철회하세요',
   'legal.privacy.sections.popiaTitle': '8) 데이터 보호 규정 준수(레소토)',
-  'legal.privacy.sections.popiaBody': '레소토 왕국의 데이터 보호법 2011에 따라 fitquest.dev는 귀하의 개인 정보에 대한 책임 당사자 역할을 합니다. 당사는 귀하의 데이터를 합법적으로 처리하고 필요한 만큼 수집을 최소화하며 정확성을 보장하고 적절한 보안 보호 조치를 유지합니다. 해외 사용자의 경우 당사는 해당하는 경우 POPIA(남아프리카), GDPR(EU) 및 CCPA(캘리포니아)도 준수합니다.',
+  'legal.privacy.sections.popiaBody':
+    '레소토 왕국의 데이터 보호법 2011에 따라 fitquest.dev는 귀하의 개인 정보에 대한 책임 당사자 역할을 합니다. 당사는 귀하의 데이터를 합법적으로 처리하고 필요한 만큼 수집을 최소화하며 정확성을 보장하고 적절한 보안 보호 조치를 유지합니다. 해외 사용자의 경우 당사는 해당하는 경우 POPIA(남아프리카), GDPR(EU) 및 CCPA(캘리포니아)도 준수합니다.',
   'legal.privacy.sections.updatesTitle': '9) 정책 업데이트',
-  'legal.privacy.sections.updatesBody': '당사는 수시로 본 개인정보 보호정책을 업데이트할 수 있습니다. 모든 변경 사항은 업데이트된 "마지막 업데이트" 날짜와 함께 앱에 반영되며, 업데이트된 정책을 검토하고 동의하라는 메시지가 표시됩니다. 변경 후에도 앱을 계속 사용하면 새 정책에 동의하는 것으로 간주됩니다.',
+  'legal.privacy.sections.updatesBody':
+    '당사는 수시로 본 개인정보 보호정책을 업데이트할 수 있습니다. 모든 변경 사항은 업데이트된 "마지막 업데이트" 날짜와 함께 앱에 반영되며, 업데이트된 정책을 검토하고 동의하라는 메시지가 표시됩니다. 변경 후에도 앱을 계속 사용하면 새 정책에 동의하는 것으로 간주됩니다.',
   'legal.privacy.sections.contactTitle': '10) 연락처',
-  'legal.privacy.sections.contactBody': '개인정보 보호 요청은 fitquestsupp0rt@gmail.com으로 이메일을 보내주세요. https://fitquest.dev/support를 방문할 수도 있습니다. 가능한 경우 계정 식별자를 포함하세요. 우리는 영업일 기준 30일 이내에 응답합니다.',
+  'legal.privacy.sections.contactBody':
+    '개인정보 보호 요청은 fitquestsupp0rt@gmail.com으로 이메일을 보내주세요. https://fitquest.dev/support를 방문할 수도 있습니다. 가능한 경우 계정 식별자를 포함하세요. 우리는 영업일 기준 30일 이내에 응답합니다.',
   'legal.terms.sections.useTitle': '1) 허용되는 사용',
-  'legal.terms.sections.useBody': '귀하는 FitQuest를 합법적으로 사용하고 보안 제어, 구독 메커니즘 또는 데이터 보호 기능을 리버스 엔지니어링, 디컴파일, 우회하려고 시도하지 않을 것에 동의합니다. 불법적인 목적이나 관련 규정을 위반하여 앱을 사용할 수 없습니다.',
+  'legal.terms.sections.useBody':
+    '귀하는 FitQuest를 합법적으로 사용하고 보안 제어, 구독 메커니즘 또는 데이터 보호 기능을 리버스 엔지니어링, 디컴파일, 우회하려고 시도하지 않을 것에 동의합니다. 불법적인 목적이나 관련 규정을 위반하여 앱을 사용할 수 없습니다.',
   'legal.terms.sections.medicalTitle': '2) 의료 면책조항',
-  'legal.terms.sections.medicalBody': 'FitQuest는 피트니스 및 웰니스 애플리케이션이며 의료 기기나 서비스가 아닙니다. 이 앱은 의학적 조언, 진단 또는 치료를 제공하지 않습니다. 운동 제안, 건강 점수, 회복 권장 사항 및 AI 생성 지침은 정보 제공 및 교육 목적으로만 제공됩니다. 특히 기존 건강 상태, 부상 또는 우려 사항이 있는 경우 운동 프로그램을 시작, 수정 또는 중단하기 전에 항상 자격을 갖춘 의료 전문가와 상담하십시오. 통증, 현기증, 불편함을 느끼면 즉시 운동을 중단하세요.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest는 피트니스 및 웰니스 애플리케이션이며 의료 기기나 서비스가 아닙니다. 이 앱은 의학적 조언, 진단 또는 치료를 제공하지 않습니다. 운동 제안, 건강 점수, 회복 권장 사항 및 AI 생성 지침은 정보 제공 및 교육 목적으로만 제공됩니다. 특히 기존 건강 상태, 부상 또는 우려 사항이 있는 경우 운동 프로그램을 시작, 수정 또는 중단하기 전에 항상 자격을 갖춘 의료 전문가와 상담하십시오. 통증, 현기증, 불편함을 느끼면 즉시 운동을 중단하세요.',
   'legal.terms.sections.subscriptionTitle': '3) 구독 및 결제',
-  'legal.terms.sections.subscriptionBody': 'FitQuest는 모든 프리미엄 기능에 대한 14일 무료 평가판을 제공합니다. 평가판 기간이 끝난 후에도 구독하여 프리미엄 기능을 계속 사용하거나 무료 등급을 계속 사용할 수 있습니다. 프리미엄 구독은 Google Play Store 또는 Apple App Store를 통해 청구됩니다. 갱신 날짜 최소 24시간 전에 취소하지 않으면 각 청구 기간이 끝날 때 구독이 자동 갱신됩니다. 기기의 앱 스토어 설정을 통해 구독을 관리하거나 취소할 수 있습니다. 환불에는 해당 플랫폼의 환불 정책이 적용됩니다. 가격은 지역에 따라 다를 수 있으며 구매하기 전에 현지 통화로 표시됩니다.',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest는 모든 프리미엄 기능에 대한 14일 무료 평가판을 제공합니다. 평가판 기간이 끝난 후에도 구독하여 프리미엄 기능을 계속 사용하거나 무료 등급을 계속 사용할 수 있습니다. 프리미엄 구독은 Google Play Store 또는 Apple App Store를 통해 청구됩니다. 갱신 날짜 최소 24시간 전에 취소하지 않으면 각 청구 기간이 끝날 때 구독이 자동 갱신됩니다. 기기의 앱 스토어 설정을 통해 구독을 관리하거나 취소할 수 있습니다. 환불에는 해당 플랫폼의 환불 정책이 적용됩니다. 가격은 지역에 따라 다를 수 있으며 구매하기 전에 현지 통화로 표시됩니다.',
   'legal.terms.sections.ipTitle': '4) 지적재산권',
-  'legal.terms.sections.ipBody': 'FitQuest의 모든 콘텐츠, 디자인, 코드, 알고리즘, 브랜딩 및 자료는 fitquest.dev의 지적 재산이며 해당 저작권 및 상표법에 의해 보호됩니다. 사전 서면 허가 없이는 앱의 어떤 부분에서도 파생물을 복제, 배포 또는 생성할 수 없습니다.',
+  'legal.terms.sections.ipBody':
+    'FitQuest의 모든 콘텐츠, 디자인, 코드, 알고리즘, 브랜딩 및 자료는 fitquest.dev의 지적 재산이며 해당 저작권 및 상표법에 의해 보호됩니다. 사전 서면 허가 없이는 앱의 어떤 부분에서도 파생물을 복제, 배포 또는 생성할 수 없습니다.',
   'legal.terms.sections.liabilityTitle': '5) 책임의 제한',
-  'legal.terms.sections.liabilityBody': '법이 허용하는 최대 한도 내에서 fitquest.dev는 신체적 부상, 데이터 손실 또는 서비스 중단을 포함하되 이에 국한되지 않고 앱 사용으로 인해 발생하는 모든 간접적, 우발적, 특수적, 결과적 또는 징벌적 손해에 대해 책임을 지지 않습니다. 당사의 총 책임은 귀하가 청구 전 12개월 동안 프리미엄 기능에 대해 지불한 금액을 초과하지 않습니다.',
+  'legal.terms.sections.liabilityBody':
+    '법이 허용하는 최대 한도 내에서 fitquest.dev는 신체적 부상, 데이터 손실 또는 서비스 중단을 포함하되 이에 국한되지 않고 앱 사용으로 인해 발생하는 모든 간접적, 우발적, 특수적, 결과적 또는 징벌적 손해에 대해 책임을 지지 않습니다. 당사의 총 책임은 귀하가 청구 전 12개월 동안 프리미엄 기능에 대해 지불한 금액을 초과하지 않습니다.',
   'legal.terms.sections.terminationTitle': '6) 해지',
-  'legal.terms.sections.terminationBody': '당사는 귀하가 본 약관을 위반하는 경우 FitQuest에 대한 귀하의 액세스를 일시 중지하거나 종료할 권리를 보유합니다. 귀하는 언제든지 앱 사용을 중단할 수 있습니다. 종료 시 로컬에 저장된 데이터는 삭제하거나 앱을 제거할 때까지 기기에 남아 있습니다.',
+  'legal.terms.sections.terminationBody':
+    '당사는 귀하가 본 약관을 위반하는 경우 FitQuest에 대한 귀하의 액세스를 일시 중지하거나 종료할 권리를 보유합니다. 귀하는 언제든지 앱 사용을 중단할 수 있습니다. 종료 시 로컬에 저장된 데이터는 삭제하거나 앱을 제거할 때까지 기기에 남아 있습니다.',
   'legal.terms.sections.governingLawTitle': '7) 준거법',
-  'legal.terms.sections.governingLawBody': '본 약관은 레소토 왕국의 법률에 따라 규율되고 해석됩니다. 본 약관 또는 귀하의 FitQuest 사용으로 인해 발생하는 모든 분쟁은 레소토 법원의 전속적 관할권의 적용을 받습니다. 본 약관의 일부 조항이 시행 불가능한 것으로 판명되더라도 나머지 조항은 계속해서 완전한 효력을 유지합니다.',
-  'legal.terms.bullets.compliance': '이 앱을 사용할 때는 모든 관련 Google Play 및 Apple App Store 정책을 준수해야 합니다',
+  'legal.terms.sections.governingLawBody':
+    '본 약관은 레소토 왕국의 법률에 따라 규율되고 해석됩니다. 본 약관 또는 귀하의 FitQuest 사용으로 인해 발생하는 모든 분쟁은 레소토 법원의 전속적 관할권의 적용을 받습니다. 본 약관의 일부 조항이 시행 불가능한 것으로 판명되더라도 나머지 조항은 계속해서 완전한 효력을 유지합니다.',
+  'legal.terms.bullets.compliance':
+    '이 앱을 사용할 때는 모든 관련 Google Play 및 Apple App Store 정책을 준수해야 합니다',
   'legal.terms.bullets.accountDelete': '프로필 → 설정 또는 https://fitquest.dev/delete-account',
 
   'common.save': '저장',
@@ -13080,7 +15361,8 @@ const ko: Record<string, string> = {
   'savedWorkouts.startAnytime': '언제든지 시작하세요',
   'savedWorkouts.deleteFailed': '운동을 삭제하지 못했습니다. 다시 시도해 주세요.',
   'savedWorkouts.emptyTitle': '아직 저장된 운동이 없습니다',
-  'savedWorkouts.emptySubtitle': '목표에 맞는 운동을 선택하여 첫 번째 맞춤 운동을 만들어보세요. 단 1분밖에 걸리지 않습니다!',
+  'savedWorkouts.emptySubtitle':
+    '목표에 맞는 운동을 선택하여 첫 번째 맞춤 운동을 만들어보세요. 단 1분밖에 걸리지 않습니다!',
   'savedWorkouts.featurePick': '운동을 선택하세요',
   'savedWorkouts.featureSet': '횟수 설정 및 휴식',
   'savedWorkouts.featureStart': '언제든지 시작하세요',
@@ -13132,7 +15414,8 @@ const ko: Record<string, string> = {
   'help.featureDesc': 'FitQuest를 더 좋게 만들 아이디어가 있나요? 듣고 싶습니다',
   'help.responseTime': '우리는 일반적으로 24~48시간 이내에 응답합니다',
 
-  'about.description': 'FitQuest는 귀하의 훈련 목표 달성을 돕기 위해 설계된 포괄적인 피트니스 플랫폼입니다. 모든 데이터는 AES-256 암호화로 보호되는 장치에 유지됩니다.',
+  'about.description':
+    'FitQuest는 귀하의 훈련 목표 달성을 돕기 위해 설계된 포괄적인 피트니스 플랫폼입니다. 모든 데이터는 AES-256 암호화로 보호되는 장치에 유지됩니다.',
   'about.platform': '플랫폼',
   'about.dataStorage': '데이터 저장',
   'about.onDevice': '기기에서만',
@@ -13365,6 +15648,12 @@ const ko: Record<string, string> = {
   'onboarding.permSub': '이 권한은 FitQuest가 최적으로 작동하도록 도와줍니다. 설정에서 언제든지 변경할 수 있습니다.',
   'onboarding.perm.notifications': '운동 알림',
   'onboarding.perm.notificationsSub': '훈련 일정을 지키기 위한 알림을 받으세요',
+  'onboarding.perm.motion': '동작 및 활동',
+  'onboarding.perm.motionSub': '모션 센서를 사용하여 걸음 수 추적, 운동 감지 및 반복 횟수 계산',
+  'onboarding.perm.location': '위치 (조깅 추적)',
+  'onboarding.perm.locationSub': '조깅 경로를 매핑하고 정확한 거리 계산',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'Android Health Connect와 심박수, 수면 및 운동 데이터 동기화',
   'onboarding.perm.allow': '허용',
   'onboarding.perm.skipNote': '건너뛸 수 있습니다 — 권한은 나중에 프로필에서 활성화할 수 있습니다.',
 
@@ -13538,7 +15827,8 @@ const ko: Record<string, string> = {
   'backup.createBackup': '백업 생성',
   'backup.availableBackups': '사용 가능한 백업',
   'backup.noBackups': '아직 백업이 없습니다.',
-  'backup.helperText': '로컬 데이터베이스의 암호화된 백업 파일을 생성합니다. 암호를 설정한 경우 복원하려면 동일한 암호를 사용해야 합니다.',
+  'backup.helperText':
+    '로컬 데이터베이스의 암호화된 백업 파일을 생성합니다. 암호를 설정한 경우 복원하려면 동일한 암호를 사용해야 합니다.',
   'backup.optionalPassphrase': '선택적 암호',
   'backup.working': '일하는 중...',
   'backup.created': '백업이 생성됨',
@@ -13602,6 +15892,143 @@ const ko: Record<string, string> = {
   'audio.minutes': '{{minutes}}분의 순수한 노력입니다.',
   'audio.progressions': '레벨 업을 위한 {{count}}개의 운동 준비!|레벨 업을 위한 {{count}}개의 운동 준비!',
   'audio.xpEarned': '게다가 {{xp}} XP도 획득했습니다.',
+
+  // ============================================
+  // ENGINE — 행동 신호
+  // ============================================
+  'signal.transition.advancing.subtext': '최근 활동을 기반으로 진행 로직이 활성화되었습니다.',
+  'signal.transition.regressing.subtext': '현재 리듬에 맞춰 세션 부하가 감소했습니다.',
+  'signal.firstSession.headline': '시스템 준비 완료. 첫 세션을 시작하세요.',
+  'signal.firstSession.subtext': '각 세션이 당신의 능력에 맞춰 시스템을 보정합니다.',
+  'signal.streakAtRisk.headline': '{{streak}}일 연속. 오늘도 계속해서 강화하세요.',
+  'signal.streakAtRisk.subtext.disciplined': '꾸준함이 진행 정확도를 높입니다.',
+  'signal.streakAtRisk.subtext.inconsistent': '짧은 세션으로도 리듬을 유지할 수 있습니다.',
+  'signal.restAdvised.headline': '피로도에 따라 휴식이 권장됩니다.',
+  'signal.restAdvised.subtext.fatigue': '피로도 {{fatigue}}%. 휴식이 적응을 가속화합니다.',
+  'signal.restAdvised.subtext.readiness': '준비도 {{readiness}}%. 회복 진행 중.',
+  'signal.momentum.headline': '세션 완료. 데이터 기록됨.',
+  'signal.momentum.subtext.streak': '{{streak}}일 패턴. 시스템이 프로그램을 최적화 중.',
+  'signal.momentum.subtext.default': '회복 시작. 다음 세션은 그에 맞춰 조정됩니다.',
+  'signal.comeback.headline.inconsistent': '{{days}}일 휴식. 낮은 강도 세션 이용 가능.',
+  'signal.comeback.headline.disciplined': '마지막 세션 후 {{days}}일. 강도 재보정.',
+  'signal.comeback.subtext.inconsistent': '더 쉽게 복귀할 수 있도록 시스템이 조정되었습니다.',
+  'signal.comeback.subtext.disciplined': '현재 회복 상태에 맞춰 볼륨이 조정되었습니다.',
+  'signal.recoveryReady.headline.disciplined': '준비 상태 최적. 진행 조건 충족.',
+  'signal.recoveryReady.headline.inconsistent': '회복 완료. 세션에 좋은 조건.',
+  'signal.recoveryReady.subtext': '준비도 {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}}일 연속. 시스템이 당신의 리듬에 적응 중.',
+  'signal.streakBuilding.subtext.disciplined': '성과를 기반으로 볼륨과 강도가 상승 중.',
+  'signal.streakBuilding.subtext.inconsistent': '꾸준함이 구축되고 있습니다. 도전이 점진적으로 증가합니다.',
+  'signal.expectToday.headline.disciplined': '트레이닝 창 열림. 시스템 준비 완료.',
+  'signal.expectToday.headline.inconsistent': '준비되면 세션을 시작할 수 있습니다.',
+  'signal.expectToday.subtext.good': '준비도 {{readiness}}%. 좋은 상태.',
+  'signal.expectToday.subtext.moderate': '중간 준비도. 가벼운 세션 권장.',
+
+  // ============================================
+  // ENGINE — 적응형 메모리
+  // ============================================
+  'memory.noHistory.headline': '첫 세션이 다가오고 있습니다. 시스템은 매번 반복에서 학습합니다.',
+  'memory.noHistory.trendStatement': '데이터가 없습니다. 첫 세션이 기준선을 설정합니다.',
+  'memory.lastSession.headline.crushed': '지난 세션: {{completed}}개 운동을 {{duration}}분에 완료.',
+  'memory.lastSession.headline.adjusted': '지난 세션: {{completed}}/{{total}} 완료. 시스템 조정됨.',
+  'memory.lastSession.headline.tough': '지난 세션은 힘들었습니다. {{completed}}/{{total}} 완료. 회복 우선.',
+  'memory.trend.improving': '성과 향상 중. 시스템이 도전을 높입니다.',
+  'memory.trend.declining': '최근 세션이 더 어려웠습니다. 추진력을 되찾도록 조정됨.',
+  'memory.trend.steady.data': '일관된 결과. 다음 진행 임계값에 근접.',
+  'memory.trend.steady.building': '기준선을 구축 중. 계속 유지하세요.',
+  'memory.delta.firstWorkout': '첫 세션. 시스템이 당신의 신체에 맞춰 보정합니다.',
+  'memory.delta.same': '동일한 세션 구성. 시스템이 꾸준함 성장을 감지.',
+  'memory.delta.mixed': '{{total}}건 변경: {{removed}}건 교체, {{added}}건 신규.',
+  'memory.delta.added': '다양성을 위해 {{count}}개{{plural}} 새 운동 추가.',
+  'memory.delta.removed': '회복을 위해 {{count}}개{{plural}} 운동 교체.',
+  'memory.progression.firstTime': '첫 번째. 시스템이 이 세션부터 보정을 시작합니다.',
+  'memory.progression.improving': '{{wins}}연승. 진행 중.',
+  'memory.progression.declining': '최근 하락 감지. 볼륨 조정됨.',
+  'memory.progression.nearGate': '{{successes}}회 안정적 세션{{plural}}. 한 번 더 완료하면 진행 해제.',
+  'memory.progression.steady': '안정 유지. 꾸준함이 전략.',
+  'memory.reason.retained': '당신의 진행 경로와 일치.',
+  'memory.reason.addedBalance': '근육 회복 균형을 위해 추가.',
+  'memory.reason.removedFatigue': '누적된 피로로 인해 제거.',
+  'memory.reason.removedVariety': '근육 균형과 다양성을 위해 교체.',
+  'memory.timeSince.minutes': '{{minutes}}분 전',
+  'memory.timeSince.hours': '{{hours}}시간 전',
+  'memory.timeSince.yesterday': '어제',
+  'memory.timeSince.days': '{{days}}일 전',
+
+  // ============================================
+  // ENGINE — 트라이얼 진행
+  // ============================================
+  'trial.welcome.headline': '시스템 전체 액세스가 활성화되었습니다.',
+  'trial.welcome.subtext': '14일간 모든 기능을 탐색하세요. 제한 없음.',
+  'trial.firstWin.headline': '{{workouts}}회 세션{{plural}} 완료. 시스템이 패턴을 학습 중.',
+  'trial.firstWin.subtext': '각 세션이 트레이닝 정확도를 향상시킵니다.',
+  'trial.readyForFirst.headline': '{{day}}일째. 첫 세션 준비 완료.',
+  'trial.readyForFirst.subtext': '트레이닝을 시작해 보정을 시작하세요.',
+  'trial.improvementShown.headline': '세션 비교가 이용 가능합니다.',
+  'trial.improvementShown.subtext': '시스템이 무엇이 변했고 왜 변했는지 보여줄 수 있습니다.',
+  'trial.memoryIntro.headline': '트레이닝 인텔리전스 확장 중.',
+  'trial.memoryIntro.subtext': '{{day}}일째. 세션이 많을수록 분석이 정확해집니다.',
+  'trial.fullIntelligence.headline': '전체 인텔리전스 활성화.',
+  'trial.fullIntelligence.subtext': '{{day}}일째. 시스템이 패턴과 능력에 적응합니다.',
+  'trial.transitionClear.headline': '전체 액세스 {{days}}일{{plural}} 남음.',
+  'trial.transitionClear.subtext': '트라이얼 후 핵심 기능은 유지됩니다. 인텔리전스 계층은 구독이 필요합니다.',
+  'trial.transitionSoft.headline': '{{days}}일 남음.',
+  'trial.transitionSoft.subtext': '트레이닝 데이터와 진행 상황은 항상 당신의 것입니다. 구독으로 인텔리전스 기능을 계속하세요.',
+  'trial.viewPlans': '플랜 보기',
+  'trial.expired.headline': '트라이얼 종료.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}}회 세션 기록됨. 핵심 기능 유지. 인텔리전스 계층을 복원하려면 구독하세요.',
+  'trial.expired.subtext.noWorkouts': '핵심 기능 유지. 인텔리전스 계층을 해제하려면 구독하세요.',
+
+  // ============================================
+  // ENGINE — 실패 분석
+  // ============================================
+  'failure.dropOff': '운동 {{index}} ({{name}}) 에서 중단 — 다음 세션에서 볼륨 감소.',
+  'failure.skipHeavy': '높은 건너뛰기 비율 감지. 운동이 현재 능력에 맞지 않을 수 있음.',
+  'failure.lowVolume': '완료 볼륨 낮음. 세션이 너무 부담스러울 수 있음.',
+  'failure.earlyDropout': '조기 중단 패턴. 세션 시간을 줄이는 중.',
+  'failure.lateDropout': '지구력 중단. 가벼운 운동을 후반에 배치.',
+  'failure.noFailure': '세션 성공적으로 완료.',
+  'failure.insight.none': '세션 {{percent}}% 완료. 조정 불필요.',
+  'failure.insight.earlyDropout': '운동 {{index}} ({{name}}) 에서 중단 — 다음 세션에서 볼륨 감소.',
+  'failure.insight.midDropout': '세트 {{index}} ({{name}}) 에서 중단 — 운동 수 조정 중.',
+  'failure.insight.lateDropout': '거의 완료 ({{percent}}%). 미세 조정 적용.',
+  'failure.insight.skipHeavy': '세션 완료했지만 {{percent}}% 운동 건너뛰. 선택 검토 중.',
+  'failure.insight.lowVolume': '완료 볼륨 낮음 ({{percent}}%). 세트 처방 감소 중.',
+  'failure.insight.empty': '운동 미완료. 시스템이 다음 세션 난이도를 낮춤.',
+  'failure.adjustment.none': '조정 불필요.',
+  'failure.adjustment.earlyDropout': '조기 중단 감지. 볼륨과 시간 감소 중.',
+  'failure.adjustment.midDropout': '운동 {{index}} 에서 중단. 운동 수 감소 중.',
+  'failure.adjustment.lateDropout': '세션 거의 완료. 소폭 볼륨 감소.',
+  'failure.adjustment.skipHeavy': '높은 건너뛰기 비율. 운동 선택 검토 필요.',
+  'failure.adjustment.lowVolume': '완료 볼륨 낮음. 세트 수 감소 중.',
+  'failure.adjustment.empty': '빈 세션. 대폭 감소 적용.',
+  'failure.pattern.noData': '세션 데이터 없음.',
+  'failure.pattern.noFailures': '모든 최근 세션 성공적으로 완료. 조건이 진행을 지원.',
+  'failure.pattern.occasional': '가끔 미완료 세션. 현재 볼륨은 지속 가능해 보임.',
+  'failure.pattern.earlyDropoffs': '잦은 조기 중단. 세션 시간 또는 운동 수 감소 권장.',
+  'failure.pattern.highSkips': '높은 건너뛰기 비율. 운동 선택 조정 필요.',
+  'failure.pattern.worsening': '실패율 상승. 볼륨 감소 또는 회복 집중 고려.',
+  'failure.pattern.general': '{{rate}}% 실패율. 세션 난이도 조정 중.',
+
+  // ============================================
+  // ENGINE — 상태 시뮬레이션
+  // ============================================
+  'simulation.skip.streakReset': '스트릭이 재설정됩니다.',
+  'simulation.skip.modeShift': '비규칙적 모드로 전환될 수 있습니다.',
+  'simulation.skip.fatigueDrop': '피로도가 {{delta}} 감소.',
+  'simulation.skip.minimal': '영향 최소 — 여유가 있습니다.',
+  'simulation.train.fatigueUp': '피로도가 {{delta}} 상승.',
+  'simulation.train.modeAdvance': '규칙적 모드로 전진.',
+  'simulation.train.reduceTomorrow': '내일은 가볍게 해야 합니다.',
+  'simulation.train.pushTomorrow': '내일 더 밀어붙일 여유가 있습니다.',
+  'simulation.rest.recovery': '회복: 피로도가 {{delta}} 감소.',
+  'simulation.rest.streakReset': '스트릭은 재설정되지만 회복이 우선.',
+  'simulation.rest.ready': '내일 완전한 세션 준비 완료.',
+
+  // ============================================
+  // ENGINE — 액세스 제어
+  // ============================================
+  'gating.previewMessage': '고급 인텔리전스는 구독이 필요합니다.',
 };
 
 const ar: Record<string, string> = {
@@ -13648,6 +16075,7 @@ const ar: Record<string, string> = {
   'dashboard.of': 'من',
   'dashboard.incompleteSession': 'جلسة غير مكتملة',
   'dashboard.kcal': 'سعر حراري',
+  'dashboard.startNow': 'ابدأ الآن',
   'dashboard.stepsToday': 'الخطوات',
   'dashboard.activeMin': 'دقيقة نشطة',
   'dashboard.completionRate': 'الانتهاء',
@@ -13772,11 +16200,14 @@ const ar: Record<string, string> = {
   'profile.adaptiveTraining': 'التدريب التكيفي',
   'profile.adaptiveExplanation': 'يتم ضبط هذه القيم تلقائيًا أثناء التدريب. انقر على كل مقياس لمعرفة المزيد.',
   'profile.fatigueSensitivity': 'حساسية التعب',
-  'profile.fatigueSensitivityDesc': 'مدى سرعة تراكم التعب أثناء التدريبات. تعني القيم الأعلى أن الخوارزمية تمنحك المزيد من الراحة بين الجلسات المكثفة. يتم ضبطه بناءً على معدلات إكمال التمرين وأنماط التعافي.',
+  'profile.fatigueSensitivityDesc':
+    'مدى سرعة تراكم التعب أثناء التدريبات. تعني القيم الأعلى أن الخوارزمية تمنحك المزيد من الراحة بين الجلسات المكثفة. يتم ضبطه بناءً على معدلات إكمال التمرين وأنماط التعافي.',
   'profile.progressionPace': 'وتيرة التقدم',
-  'profile.progressionPaceDesc': 'كيف تزداد صعوبة ممارسة الرياضة بقوة مع مرور الوقت. القيم الأعلى تعني التقدم بشكل أسرع إلى التمارين الأصعب. يتم الضبط بناءً على ما إذا كنت تكمل المجموعات/التكرارات الموصوفة باستمرار.',
+  'profile.progressionPaceDesc':
+    'كيف تزداد صعوبة ممارسة الرياضة بقوة مع مرور الوقت. القيم الأعلى تعني التقدم بشكل أسرع إلى التمارين الأصعب. يتم الضبط بناءً على ما إذا كنت تكمل المجموعات/التكرارات الموصوفة باستمرار.',
   'profile.volumeTolerance': 'تحمل الحجم',
-  'profile.volumeToleranceDesc': 'ما هو حجم التدريب الإجمالي (المجموعات × التكرارات) الذي يمكن لجسمك التعامل معه. القيم الأعلى تعني جلسات تدريب أطول مع المزيد من التمارين. يتم ضبطه بناءً على إكمال الجلسة والتمارين التي تم تخطيها.',
+  'profile.volumeToleranceDesc':
+    'ما هو حجم التدريب الإجمالي (المجموعات × التكرارات) الذي يمكن لجسمك التعامل معه. القيم الأعلى تعني جلسات تدريب أطول مع المزيد من التمارين. يتم ضبطه بناءً على إكمال الجلسة والتمارين التي تم تخطيها.',
   'profile.confidence': 'الثقة',
   'profile.samples': 'عينات',
   'profile.rank': 'الرتبة والتقدم',
@@ -13841,7 +16272,8 @@ const ar: Record<string, string> = {
   'profile.exportData': 'تصدير بياناتي',
   'profile.exportDataSub': 'إنشاء تصدير JSON محلي للبيانات التعريفية السحابية + النسخ الاحتياطية',
   'profile.menu.deleteCloudData': 'حذف البيانات السحابية',
-  'profile.menu.deleteCloudDataConfirm': 'يؤدي هذا إلى حذف النسخ الاحتياطية لحسابك والبيانات التعريفية السحابية بشكل دائم.',
+  'profile.menu.deleteCloudDataConfirm':
+    'يؤدي هذا إلى حذف النسخ الاحتياطية لحسابك والبيانات التعريفية السحابية بشكل دائم.',
   'profile.menu.deletePermanently': 'حذف نهائيا',
   'profile.deleteCloudDataSub': 'إزالة بيانات الحساب من جانب الخادم نهائيًا',
   'profile.helpSupport': 'المساعدة والدعم',
@@ -13849,6 +16281,10 @@ const ar: Record<string, string> = {
   'profile.appSection': 'برنامج',
   'profile.backupRestore': 'النسخ الاحتياطي والاستعادة',
   'profile.backupRestoreSub': 'ملفات النسخ الاحتياطي المحلية المشفرة',
+  'profile.subscription': 'الاشتراك',
+  'profile.expired': 'منتهي الصلاحية',
+  'profile.subscribeToUnlock': 'اشترك لفتح جميع الميزات',
+  'profile.searchLanguages': 'بحث عن لغات…',
   'profile.about': 'حول FitQuest',
   'profile.version': 'النسخة',
   'profile.saved': 'تم الحفظ',
@@ -14047,7 +16483,8 @@ const ar: Record<string, string> = {
   'meal.location.tapEnable': 'انقر لتمكين الموقع',
   'meal.location.infoPrefix': 'عرض الأطعمة المتوفرة في',
   'meal.location.infoSuffix': 'بما في ذلك الخيارات الإقليمية والعالمية.',
-  'meal.location.infoNoLocation': 'تمكين الموقع لرؤية اقتراحات الطعام الخاصة بالمنطقة. اضغط على شارة الموقع أعلاه لإعادة المحاولة.',
+  'meal.location.infoNoLocation':
+    'تمكين الموقع لرؤية اقتراحات الطعام الخاصة بالمنطقة. اضغط على شارة الموقع أعلاه لإعادة المحاولة.',
 
   'legal.title': 'المركز القانوني',
   'legal.documents': 'وثائق',
@@ -14077,60 +16514,90 @@ const ar: Record<string, string> = {
   'legal.noteCounsel': 'وينبغي مراجعة النص القانوني النهائي وخرائط الولاية القضائية من قبل المحامي قبل إطلاق سراحه.',
   'legal.lastUpdated': 'آخر تحديث:',
   'legal.privacy.sections.developerTitle': 'المطور',
-  'legal.privacy.sections.developerBody': 'تم تطوير ونشر FitQuest بواسطة fitquest.dev. تحكم سياسة الخصوصية هذه تطبيق FitQuest للهاتف المحمول المتوفر على Google Play وApple App Store.',
+  'legal.privacy.sections.developerBody':
+    'تم تطوير ونشر FitQuest بواسطة fitquest.dev. تحكم سياسة الخصوصية هذه تطبيق FitQuest للهاتف المحمول المتوفر على Google Play وApple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) البيانات التي نجمعها',
-  'legal.privacy.sections.dataCollectBody': 'تقوم FitQuest بمعالجة فئات البيانات التالية لتقديم ميزات اللياقة البدنية والعافية المخصصة:',
-  'legal.privacy.bullets.health': 'مقاييس الصحة والنشاط: معدل ضربات القلب، والخطوات، وبيانات النوم، وتاريخ التمرين، وقياسات الجسم، ونتائج التعافي',
-  'legal.privacy.bullets.biometric': 'البيانات البيومترية: يتم استخدام التعرف على بصمات الأصابع أو الوجه لمصادقة التطبيق (تتم معالجتها على الجهاز فقط، ولا يتم تخزينها أو نقلها مطلقًا)',
-  'legal.privacy.bullets.location': 'بيانات الموقع: إحداثيات GPS أثناء تتبع الركض (فقط عند استخدام ميزة الركض بشكل فعال)',
-  'legal.privacy.bullets.account': 'معلومات الملف الشخصي: أهداف اللياقة البدنية ومستوى الخبرة وتفضيلات المعدات وجدول العمل الاختياري',
+  'legal.privacy.sections.dataCollectBody':
+    'تقوم FitQuest بمعالجة فئات البيانات التالية لتقديم ميزات اللياقة البدنية والعافية المخصصة:',
+  'legal.privacy.bullets.health':
+    'مقاييس الصحة والنشاط: معدل ضربات القلب، والخطوات، وبيانات النوم، وتاريخ التمرين، وقياسات الجسم، ونتائج التعافي',
+  'legal.privacy.bullets.biometric':
+    'البيانات البيومترية: يتم استخدام التعرف على بصمات الأصابع أو الوجه لمصادقة التطبيق (تتم معالجتها على الجهاز فقط، ولا يتم تخزينها أو نقلها مطلقًا)',
+  'legal.privacy.bullets.location':
+    'بيانات الموقع: إحداثيات GPS أثناء تتبع الركض (فقط عند استخدام ميزة الركض بشكل فعال)',
+  'legal.privacy.bullets.account':
+    'معلومات الملف الشخصي: أهداف اللياقة البدنية ومستوى الخبرة وتفضيلات المعدات وجدول العمل الاختياري',
   'legal.privacy.bullets.usage': 'أنماط استخدام التطبيق وتفاعلات الميزات (مجهولة المصدر، تُستخدم لتحسين التطبيق)',
   'legal.privacy.bullets.device': 'نوع الجهاز وإصدار نظام التشغيل وإصدار التطبيق للتوافق والإبلاغ عن الأعطال',
   'legal.privacy.bullets.photos': 'صور الملف الشخصي: يتم تخزينها محليًا على جهازك إذا اخترت تعيين واحدة',
-  'legal.privacy.bullets.healthConnect': 'بيانات Health Connect / HealthKit: الخطوات ومعدل ضربات القلب والنوم وبيانات التمرين (فقط إذا منحت إذنًا صريحًا)',
+  'legal.privacy.bullets.healthConnect':
+    'بيانات Health Connect / HealthKit: الخطوات ومعدل ضربات القلب والنوم وبيانات التمرين (فقط إذا منحت إذنًا صريحًا)',
   'legal.privacy.sections.storageTitle': '2) تخزين البيانات',
-  'legal.privacy.sections.storageBody': 'تم تصميم FitQuest كتطبيق أول بدون اتصال بالإنترنت. يتم تخزين جميع بيانات اللياقة البدنية الخاصة بك محليًا على جهازك باستخدام SQLite. لا يتم تخزين أي بيانات شخصية على خوادم خارجية. يتم تشفير السجلات الصحية الحساسة قبل تخزينها باستخدام تشفير AES-256-GCM المتوافق مع معايير الصناعة.',
+  'legal.privacy.sections.storageBody':
+    'تم تصميم FitQuest كتطبيق أول بدون اتصال بالإنترنت. يتم تخزين جميع بيانات اللياقة البدنية الخاصة بك محليًا على جهازك باستخدام SQLite. لا يتم تخزين أي بيانات شخصية على خوادم خارجية. يتم تشفير السجلات الصحية الحساسة قبل تخزينها باستخدام تشفير AES-256-GCM المتوافق مع معايير الصناعة.',
   'legal.privacy.sections.securityTitle': '3) أمن البيانات',
-  'legal.privacy.sections.securityBody': 'يتم تشفير جميع البيانات الصحية الحساسة باستخدام تشفير AES-256-GCM قبل تخزينها على جهازك. تتم حماية مفاتيح التشفير بواسطة الأجهزة الآمنة بجهازك (Keychain على iOS، وKeystore على Android). توفر المصادقة البيومترية طبقة إضافية من الحماية. نحن نستخدم الاشتقاق الآمن للمفتاح (PBKDF2) ومقارنة الوقت الثابت لمنع هجمات التوقيت.',
+  'legal.privacy.sections.securityBody':
+    'يتم تشفير جميع البيانات الصحية الحساسة باستخدام تشفير AES-256-GCM قبل تخزينها على جهازك. تتم حماية مفاتيح التشفير بواسطة الأجهزة الآمنة بجهازك (Keychain على iOS، وKeystore على Android). توفر المصادقة البيومترية طبقة إضافية من الحماية. نحن نستخدم الاشتقاق الآمن للمفتاح (PBKDF2) ومقارنة الوقت الثابت لمنع هجمات التوقيت.',
   'legal.privacy.sections.thirdPartyTitle': '4) خدمات الطرف الثالث',
-  'legal.privacy.sections.thirdPartyBody': 'لا تقوم FitQuest ببيع بياناتك الشخصية أو تأجيرها أو المتاجرة بها. قد تقوم عمليات تكامل الجهات الخارجية التالية بمعالجة بيانات محدودة:',
-  'legal.privacy.bullets.thirdPartyAI': 'ميزات الذكاء الاصطناعي: عند استخدام مدرب أو أستاذ الذكاء الاصطناعي، يتم إرسال مطالباتك إلى OpenRouter (عبر نماذج لغة اللاما) لإنشاء الاستجابات. لا يتم تضمين أي بيانات صحية شخصية في هذه الطلبات — فقط النص الذي تكتبه.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: إذا منحت الإذن، فإن FitQuest يقرأ المقاييس الصحية من خدمات النظام الأساسي هذه. تتدفق البيانات في اتجاه واحد (للقراءة فقط) ويتم تخزينها مشفرة على جهازك.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: يدير التحقق من الاشتراك. يتلقى فقط رموز الشراء ومعرفات المستخدم المجهولة - ولا توجد بيانات تتعلق بالصحة أو اللياقة البدنية.',
-  'legal.privacy.bullets.thirdPartySentry': 'Sentry: خدمة الإبلاغ عن الأعطال التي تتلقى سجلات أخطاء مجهولة المصدر. لا يتم تضمين أي بيانات شخصية أو مقاييس صحية.',
+  'legal.privacy.sections.thirdPartyBody':
+    'لا تقوم FitQuest ببيع بياناتك الشخصية أو تأجيرها أو المتاجرة بها. قد تقوم عمليات تكامل الجهات الخارجية التالية بمعالجة بيانات محدودة:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'ميزات الذكاء الاصطناعي: عند استخدام مدرب أو أستاذ الذكاء الاصطناعي، يتم إرسال مطالباتك إلى OpenRouter (عبر نماذج لغة اللاما) لإنشاء الاستجابات. لا يتم تضمين أي بيانات صحية شخصية في هذه الطلبات — فقط النص الذي تكتبه.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: إذا منحت الإذن، فإن FitQuest يقرأ المقاييس الصحية من خدمات النظام الأساسي هذه. تتدفق البيانات في اتجاه واحد (للقراءة فقط) ويتم تخزينها مشفرة على جهازك.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: يدير التحقق من الاشتراك. يتلقى فقط رموز الشراء ومعرفات المستخدم المجهولة - ولا توجد بيانات تتعلق بالصحة أو اللياقة البدنية.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Sentry: خدمة الإبلاغ عن الأعطال التي تتلقى سجلات أخطاء مجهولة المصدر. لا يتم تضمين أي بيانات شخصية أو مقاييس صحية.',
   'legal.privacy.sections.childrenTitle': '5) خصوصية الأطفال',
-  'legal.privacy.sections.childrenBody': 'تم تصميم FitQuest للمستخدمين الذين تبلغ أعمارهم 13 عامًا فما فوق. نحن لا نجمع معلومات شخصية عن عمد من الأطفال دون سن 13 عامًا. إذا كنت تعتقد أن أحد الأطفال قد زودنا بالبيانات، فيرجى الاتصال بنا على fitquestsupp0rt@gmail.com للحذف الفوري.',
+  'legal.privacy.sections.childrenBody':
+    'تم تصميم FitQuest للمستخدمين الذين تبلغ أعمارهم 13 عامًا فما فوق. نحن لا نجمع معلومات شخصية عن عمد من الأطفال دون سن 13 عامًا. إذا كنت تعتقد أن أحد الأطفال قد زودنا بالبيانات، فيرجى الاتصال بنا على fitquestsupp0rt@gmail.com للحذف الفوري.',
   'legal.privacy.sections.retentionTitle': '6) الاحتفاظ بالبيانات',
-  'legal.privacy.sections.retentionBody': 'يتم تخزين بياناتك محليًا على جهازك ويتم الاحتفاظ بها طالما تم تثبيت التطبيق. يمكنك حذف جميع البيانات في أي وقت من خلال الملف الشخصي → الإعدادات → حذف جميع البيانات. يؤدي إلغاء تثبيت التطبيق إلى إزالة جميع البيانات المحلية بشكل دائم. يمكنك أيضًا طلب حذف البيانات عبر موقعنا الإلكتروني https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'يتم تخزين بياناتك محليًا على جهازك ويتم الاحتفاظ بها طالما تم تثبيت التطبيق. يمكنك حذف جميع البيانات في أي وقت من خلال الملف الشخصي → الإعدادات → حذف جميع البيانات. يؤدي إلغاء تثبيت التطبيق إلى إزالة جميع البيانات المحلية بشكل دائم. يمكنك أيضًا طلب حذف البيانات عبر موقعنا الإلكتروني https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) حقوقك',
-  'legal.privacy.sections.rightsBody': 'بموجب قوانين حماية البيانات المعمول بها (بما في ذلك قانون حماية البيانات لعام 2011 في ليسوتو، واللائحة العامة لحماية البيانات في الاتحاد الأوروبي، وقانون خصوصية المستهلك في كاليفورنيا (CCPA) في كاليفورنيا)، فإنك تتمتع بالحقوق التالية:',
-  'legal.privacy.bullets.accessRight': 'الوصول: عرض جميع البيانات التي يخزنها التطبيق عنك عبر الملف الشخصي → تصدير البيانات',
+  'legal.privacy.sections.rightsBody':
+    'بموجب قوانين حماية البيانات المعمول بها (بما في ذلك قانون حماية البيانات لعام 2011 في ليسوتو، واللائحة العامة لحماية البيانات في الاتحاد الأوروبي، وقانون خصوصية المستهلك في كاليفورنيا (CCPA) في كاليفورنيا)، فإنك تتمتع بالحقوق التالية:',
+  'legal.privacy.bullets.accessRight':
+    'الوصول: عرض جميع البيانات التي يخزنها التطبيق عنك عبر الملف الشخصي → تصدير البيانات',
   'legal.privacy.bullets.deleteRight': 'الحذف: مسح جميع بياناتك نهائيًا عبر إعدادات التطبيق أو موقعنا',
   'legal.privacy.bullets.exportRight': 'إمكانية النقل: قم بتصدير بياناتك بتنسيق JSON لنقلها إلى خدمة أخرى',
   'legal.privacy.bullets.correctRight': 'التصحيح: قم بتحديث أو تعديل معلومات ملفك الشخصي في أي وقت',
   'legal.privacy.bullets.objectionRight': 'الاعتراض: سحب الموافقة على معالجة البيانات في أي وقت عبر المركز القانوني',
   'legal.privacy.sections.popiaTitle': '8) الامتثال لحماية البيانات (ليسوتو)',
-  'legal.privacy.sections.popiaBody': 'وفقًا لقانون حماية البيانات لعام 2011 في مملكة ليسوتو، يعمل موقع fitquest.dev باعتباره الطرف المسؤول عن معلوماتك الشخصية. نقوم بمعالجة بياناتك بشكل قانوني، وتقليل جمعها إلى ما هو ضروري، وضمان الدقة، والحفاظ على الضمانات الأمنية المناسبة. بالنسبة للمستخدمين عبر الحدود، فإننا نلتزم أيضًا بقانون POPIA (جنوب أفريقيا)، واللائحة العامة لحماية البيانات (الاتحاد الأوروبي)، وCCPA (كاليفورنيا) حيثما ينطبق ذلك.',
+  'legal.privacy.sections.popiaBody':
+    'وفقًا لقانون حماية البيانات لعام 2011 في مملكة ليسوتو، يعمل موقع fitquest.dev باعتباره الطرف المسؤول عن معلوماتك الشخصية. نقوم بمعالجة بياناتك بشكل قانوني، وتقليل جمعها إلى ما هو ضروري، وضمان الدقة، والحفاظ على الضمانات الأمنية المناسبة. بالنسبة للمستخدمين عبر الحدود، فإننا نلتزم أيضًا بقانون POPIA (جنوب أفريقيا)، واللائحة العامة لحماية البيانات (الاتحاد الأوروبي)، وCCPA (كاليفورنيا) حيثما ينطبق ذلك.',
   'legal.privacy.sections.updatesTitle': '9) تحديثات السياسة',
-  'legal.privacy.sections.updatesBody': 'قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. ستنعكس أي تغييرات في التطبيق مع تاريخ "آخر تحديث" وسيُطلب منك مراجعة السياسة المحدثة وقبولها. استمرار استخدام التطبيق بعد التغييرات يشكل قبولا للسياسة الجديدة.',
+  'legal.privacy.sections.updatesBody':
+    'قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. ستنعكس أي تغييرات في التطبيق مع تاريخ "آخر تحديث" وسيُطلب منك مراجعة السياسة المحدثة وقبولها. استمرار استخدام التطبيق بعد التغييرات يشكل قبولا للسياسة الجديدة.',
   'legal.privacy.sections.contactTitle': '10) الاتصال',
-  'legal.privacy.sections.contactBody': 'لطلبات الخصوصية، أرسل بريدًا إلكترونيًا إلى fitquestsupp0rt@gmail.com. يمكنك أيضًا زيارة https://fitquest.dev/support. قم بتضمين معرف حسابك عندما يكون متاحًا. نقوم بالرد خلال 30 يوم عمل.',
+  'legal.privacy.sections.contactBody':
+    'لطلبات الخصوصية، أرسل بريدًا إلكترونيًا إلى fitquestsupp0rt@gmail.com. يمكنك أيضًا زيارة https://fitquest.dev/support. قم بتضمين معرف حسابك عندما يكون متاحًا. نقوم بالرد خلال 30 يوم عمل.',
   'legal.terms.sections.useTitle': '1) الاستخدام المقبول',
-  'legal.terms.sections.useBody': 'أنت توافق على استخدام FitQuest بشكل قانوني وعدم محاولة إجراء هندسة عكسية أو فك ترجمتها أو تجاوز عناصر التحكم الأمنية أو آليات الاشتراك أو ميزات حماية البيانات. لا يجوز لك استخدام التطبيق لأي غرض غير قانوني أو انتهاك أي لوائح معمول بها.',
+  'legal.terms.sections.useBody':
+    'أنت توافق على استخدام FitQuest بشكل قانوني وعدم محاولة إجراء هندسة عكسية أو فك ترجمتها أو تجاوز عناصر التحكم الأمنية أو آليات الاشتراك أو ميزات حماية البيانات. لا يجوز لك استخدام التطبيق لأي غرض غير قانوني أو انتهاك أي لوائح معمول بها.',
   'legal.terms.sections.medicalTitle': '2) إخلاء المسؤولية الطبية',
-  'legal.terms.sections.medicalBody': 'FitQuest هو تطبيق للياقة البدنية والعافية وليس جهازًا أو خدمة طبية. لا يقدم التطبيق المشورة الطبية أو التشخيص أو العلاج. اقتراحات التمرين، والنتائج الصحية، وتوصيات التعافي، والإرشادات التي تم إنشاؤها بواسطة الذكاء الاصطناعي هي لأغراض إعلامية وتعليمية فقط. استشر دائمًا أخصائي رعاية صحية مؤهل قبل البدء في أي برنامج تمرين أو تعديله أو إيقافه، خاصة إذا كنت تعاني من حالات صحية أو إصابات أو مخاوف موجودة مسبقًا. توقف عن ممارسة الرياضة فورًا إذا شعرت بألم أو دوخة أو عدم راحة.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest هو تطبيق للياقة البدنية والعافية وليس جهازًا أو خدمة طبية. لا يقدم التطبيق المشورة الطبية أو التشخيص أو العلاج. اقتراحات التمرين، والنتائج الصحية، وتوصيات التعافي، والإرشادات التي تم إنشاؤها بواسطة الذكاء الاصطناعي هي لأغراض إعلامية وتعليمية فقط. استشر دائمًا أخصائي رعاية صحية مؤهل قبل البدء في أي برنامج تمرين أو تعديله أو إيقافه، خاصة إذا كنت تعاني من حالات صحية أو إصابات أو مخاوف موجودة مسبقًا. توقف عن ممارسة الرياضة فورًا إذا شعرت بألم أو دوخة أو عدم راحة.',
   'legal.terms.sections.subscriptionTitle': '3) الاشتراك والفواتير',
-  'legal.terms.sections.subscriptionBody': 'تقدم FitQuest نسخة تجريبية مجانية مدتها 14 يومًا لجميع الميزات المميزة. بعد انتهاء الفترة التجريبية، يمكنك الاشتراك لمواصلة استخدام الميزات المتميزة أو الاستمرار في الطبقة المجانية. تتم محاسبة الاشتراكات المميزة من خلال متجر Google Play أو متجر تطبيقات Apple. يتم تجديد الاشتراكات تلقائيًا في نهاية كل فترة فوترة ما لم يتم إلغاؤها قبل 24 ساعة على الأقل من تاريخ التجديد. يمكنك إدارة اشتراكك أو إلغاؤه من خلال إعدادات متجر التطبيقات بجهازك. تخضع المبالغ المستردة لسياسة استرداد الأموال الخاصة بالمنصة المعنية. قد تختلف الأسعار حسب المنطقة ويتم عرضها بعملتك المحلية قبل الشراء.',
+  'legal.terms.sections.subscriptionBody':
+    'تقدم FitQuest نسخة تجريبية مجانية مدتها 14 يومًا لجميع الميزات المميزة. بعد انتهاء الفترة التجريبية، يمكنك الاشتراك لمواصلة استخدام الميزات المتميزة أو الاستمرار في الطبقة المجانية. تتم محاسبة الاشتراكات المميزة من خلال متجر Google Play أو متجر تطبيقات Apple. يتم تجديد الاشتراكات تلقائيًا في نهاية كل فترة فوترة ما لم يتم إلغاؤها قبل 24 ساعة على الأقل من تاريخ التجديد. يمكنك إدارة اشتراكك أو إلغاؤه من خلال إعدادات متجر التطبيقات بجهازك. تخضع المبالغ المستردة لسياسة استرداد الأموال الخاصة بالمنصة المعنية. قد تختلف الأسعار حسب المنطقة ويتم عرضها بعملتك المحلية قبل الشراء.',
   'legal.terms.sections.ipTitle': '4) الملكية الفكرية',
-  'legal.terms.sections.ipBody': 'جميع المحتويات والتصميم والتعليمات البرمجية والخوارزميات والعلامات التجارية والمواد الموجودة في FitQuest هي ملكية فكرية لـ fitquest.dev وهي محمية بموجب قوانين حقوق الطبع والنشر والعلامات التجارية المعمول بها. لا يجوز لك إعادة إنتاج أو توزيع أو إنشاء أعمال مشتقة من أي جزء من التطبيق دون الحصول على إذن كتابي مسبق.',
+  'legal.terms.sections.ipBody':
+    'جميع المحتويات والتصميم والتعليمات البرمجية والخوارزميات والعلامات التجارية والمواد الموجودة في FitQuest هي ملكية فكرية لـ fitquest.dev وهي محمية بموجب قوانين حقوق الطبع والنشر والعلامات التجارية المعمول بها. لا يجوز لك إعادة إنتاج أو توزيع أو إنشاء أعمال مشتقة من أي جزء من التطبيق دون الحصول على إذن كتابي مسبق.',
   'legal.terms.sections.liabilityTitle': '5) حدود المسؤولية',
-  'legal.terms.sections.liabilityBody': 'إلى الحد الأقصى الذي يسمح به القانون، لن يكون fitquest.dev مسؤولاً عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية تنشأ عن استخدامك للتطبيق، بما في ذلك على سبيل المثال لا الحصر، الإصابة الجسدية أو فقدان البيانات أو انقطاع الخدمة. لن تتجاوز مسؤوليتنا الإجمالية المبلغ الذي دفعته مقابل الميزات المتميزة خلال الـ 12 شهرًا السابقة للمطالبة.',
+  'legal.terms.sections.liabilityBody':
+    'إلى الحد الأقصى الذي يسمح به القانون، لن يكون fitquest.dev مسؤولاً عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية تنشأ عن استخدامك للتطبيق، بما في ذلك على سبيل المثال لا الحصر، الإصابة الجسدية أو فقدان البيانات أو انقطاع الخدمة. لن تتجاوز مسؤوليتنا الإجمالية المبلغ الذي دفعته مقابل الميزات المتميزة خلال الـ 12 شهرًا السابقة للمطالبة.',
   'legal.terms.sections.terminationTitle': '6) الإنهاء',
-  'legal.terms.sections.terminationBody': 'نحن نحتفظ بالحق في تعليق أو إنهاء وصولك إلى FitQuest إذا انتهكت هذه الشروط. يمكنك التوقف عن استخدام التطبيق في أي وقت. عند الإنهاء، تظل بياناتك المخزنة محليًا على جهازك حتى تقوم بحذفها أو إلغاء تثبيت التطبيق.',
+  'legal.terms.sections.terminationBody':
+    'نحن نحتفظ بالحق في تعليق أو إنهاء وصولك إلى FitQuest إذا انتهكت هذه الشروط. يمكنك التوقف عن استخدام التطبيق في أي وقت. عند الإنهاء، تظل بياناتك المخزنة محليًا على جهازك حتى تقوم بحذفها أو إلغاء تثبيت التطبيق.',
   'legal.terms.sections.governingLawTitle': '7) القانون الحاكم',
-  'legal.terms.sections.governingLawBody': 'تخضع هذه الشروط وتفسر وفقًا لقوانين مملكة ليسوتو. تخضع أي نزاعات تنشأ عن هذه الشروط أو استخدامك لـ FitQuest للاختصاص القضائي الحصري لمحاكم ليسوتو. إذا تبين أن أي بند من هذه الشروط غير قابل للتنفيذ، فإن الأحكام المتبقية تظل سارية المفعول والتأثير الكامل.',
-  'legal.terms.bullets.compliance': 'يجب عليك الالتزام بجميع سياسات Google Play وApple App Store المعمول بها عند استخدام هذا التطبيق',
-  'legal.terms.bullets.accountDelete': 'يمكنك حذف حسابك وجميع البيانات المرتبطة به في أي وقت عبر الملف الشخصي → الإعدادات أو على https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'تخضع هذه الشروط وتفسر وفقًا لقوانين مملكة ليسوتو. تخضع أي نزاعات تنشأ عن هذه الشروط أو استخدامك لـ FitQuest للاختصاص القضائي الحصري لمحاكم ليسوتو. إذا تبين أن أي بند من هذه الشروط غير قابل للتنفيذ، فإن الأحكام المتبقية تظل سارية المفعول والتأثير الكامل.',
+  'legal.terms.bullets.compliance':
+    'يجب عليك الالتزام بجميع سياسات Google Play وApple App Store المعمول بها عند استخدام هذا التطبيق',
+  'legal.terms.bullets.accountDelete':
+    'يمكنك حذف حسابك وجميع البيانات المرتبطة به في أي وقت عبر الملف الشخصي → الإعدادات أو على https://fitquest.dev/delete-account',
 
   'common.save': 'حفظ',
   'common.cancel': 'إلغاء',
@@ -14206,7 +16673,8 @@ const ar: Record<string, string> = {
   'savedWorkouts.startAnytime': 'ابدأ في أي وقت',
   'savedWorkouts.deleteFailed': 'فشل في حذف التمرين. يرجى المحاولة مرة أخرى.',
   'savedWorkouts.emptyTitle': 'لم يتم حفظ التدريبات حتى الآن',
-  'savedWorkouts.emptySubtitle': 'أنشئ تمرينك المخصص الأول عن طريق اختيار تمارين مصممة خصيصًا لأهدافك. يستغرق دقيقة واحدة فقط!',
+  'savedWorkouts.emptySubtitle':
+    'أنشئ تمرينك المخصص الأول عن طريق اختيار تمارين مصممة خصيصًا لأهدافك. يستغرق دقيقة واحدة فقط!',
   'savedWorkouts.featurePick': 'اختر تمارينك',
   'savedWorkouts.featureSet': 'اضبط التكرارات والراحة',
   'savedWorkouts.featureStart': 'ابدأ في أي وقت',
@@ -14258,7 +16726,8 @@ const ar: Record<string, string> = {
   'help.featureDesc': 'هل لديك فكرة لجعل FitQuest أفضل؟ نحن نحب أن نسمع ذلك',
   'help.responseTime': 'نرد عادةً خلال 24-48 ساعة',
 
-  'about.description': 'FitQuest عبارة عن منصة لياقة بدنية شاملة مصممة لمساعدتك على تحقيق أهدافك التدريبية. تظل جميع بياناتك على جهازك محمية بتشفير AES-256.',
+  'about.description':
+    'FitQuest عبارة عن منصة لياقة بدنية شاملة مصممة لمساعدتك على تحقيق أهدافك التدريبية. تظل جميع بياناتك على جهازك محمية بتشفير AES-256.',
   'about.platform': 'منصة',
   'about.dataStorage': 'تخزين البيانات',
   'about.onDevice': 'على الجهاز فقط',
@@ -14491,6 +16960,12 @@ const ar: Record<string, string> = {
   'onboarding.permSub': 'تساعد هذه الأذونات FitQuest على العمل بشكل أفضل لك. يمكنك تغييرها في أي وقت من الإعدادات.',
   'onboarding.perm.notifications': 'تذكيرات التمرين',
   'onboarding.perm.notificationsSub': 'احصل على تذكيرات للبقاء على المسار مع جدول تدريبك',
+  'onboarding.perm.motion': 'الحركة والنشاط',
+  'onboarding.perm.motionSub': 'تتبع الخطوات واكتشاف التمارين وعد التكرارات باستخدام مستشعرات الحركة',
+  'onboarding.perm.location': 'الموقع (تتبع الجري)',
+  'onboarding.perm.locationSub': 'رسم خريطة مسارات الجري وحساب المسافة بدقة',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'مزامنة معدل ضربات القلب والنوم وبيانات التمرين مع Android Health Connect',
   'onboarding.perm.allow': 'السماح',
   'onboarding.perm.skipNote': 'يمكنك تخطي هذا — يمكن تفعيل الأذونات لاحقاً في ملفك الشخصي.',
 
@@ -14664,7 +17139,8 @@ const ar: Record<string, string> = {
   'backup.createBackup': 'إنشاء نسخة احتياطية',
   'backup.availableBackups': 'النسخ الاحتياطية المتوفرة',
   'backup.noBackups': 'لا توجد نسخ احتياطية حتى الآن.',
-  'backup.helperText': 'يقوم بإنشاء ملف نسخ احتياطي مشفر لقاعدة البيانات المحلية الخاصة بك. إذا قمت بتعيين عبارة مرور، فيجب عليك استخدام عبارة المرور نفسها لاستعادتها.',
+  'backup.helperText':
+    'يقوم بإنشاء ملف نسخ احتياطي مشفر لقاعدة البيانات المحلية الخاصة بك. إذا قمت بتعيين عبارة مرور، فيجب عليك استخدام عبارة المرور نفسها لاستعادتها.',
   'backup.optionalPassphrase': 'عبارة مرور اختيارية',
   'backup.working': 'العمل…',
   'backup.created': 'تم إنشاء نسخة احتياطية',
@@ -14681,7 +17157,8 @@ const ar: Record<string, string> = {
   'backup.uploaded': 'تم الرفع',
   'backup.uploadFailed': 'فشل التحميل',
   'backup.noCloudBackups': 'لا توجد نسخ احتياطية سحابية حتى الآن.',
-  'backup.cloudHelper': 'يقوم بتخزين كائن النسخ الاحتياطي المشفر على الواجهة الخلفية للمرحلة الثانية. لا يمكن للخادم فك تشفير بياناتك.',
+  'backup.cloudHelper':
+    'يقوم بتخزين كائن النسخ الاحتياطي المشفر على الواجهة الخلفية للمرحلة الثانية. لا يمكن للخادم فك تشفير بياناتك.',
 
   'audio.warmup.start': 'لنبدأ بالإحماء. حركات خفيفة لإيقاظ عضلاتك وتحضير جسمك.',
   'audio.main.start': 'دعونا ندخل في ذلك. التمرين الرئيسي يبدأ الآن.',
@@ -14728,6 +17205,143 @@ const ar: Record<string, string> = {
   'audio.minutes': '{{minutes}} دقيقة من الجهد الخالص.',
   'audio.progressions': '{{count}} تمرين جاهز للارتقاء إلى المستوى!|{{count}} تمرين جاهز للارتقاء إلى المستوى!',
   'audio.xpEarned': 'بالإضافة إلى {{xp}} XP المكتسبة.',
+
+  // ============================================
+  // ENGINE — الإشارات السلوكية
+  // ============================================
+  'signal.transition.advancing.subtext': 'تم تفعيل منطق التقدم بناءً على النشاط الأخير.',
+  'signal.transition.regressing.subtext': 'تم تقليل حمل الجلسة ليتناسب مع الإيقاع الحالي.',
+  'signal.firstSession.headline': 'النظام جاهز. ابدأ جلستك الأولى.',
+  'signal.firstSession.subtext': 'كل جلسة تعاير النظام حسب قدرتك.',
+  'signal.streakAtRisk.headline': '{{streak}} أيام متوالية. استمر اليوم للتعزيز.',
+  'signal.streakAtRisk.subtext.disciplined': 'الانتظام يزيد من دقة التقدم.',
+  'signal.streakAtRisk.subtext.inconsistent': 'جلسة قصيرة تكفي للحفاظ على الإيقاع.',
+  'signal.restAdvised.headline': 'ينصح بالراحة بناءً على الإرهاق.',
+  'signal.restAdvised.subtext.fatigue': 'الإرهاق {{fatigue}}%. الراحة تسرع التكيف.',
+  'signal.restAdvised.subtext.readiness': 'الاستعداد {{readiness}}%. التعافي جارٍ.',
+  'signal.momentum.headline': 'اكتملت الجلسة. تم تسجيل البيانات.',
+  'signal.momentum.subtext.streak': 'نمط {{streak}} يوم. النظام يحسّن برنامجك.',
+  'signal.momentum.subtext.default': 'بدأ التعافي. سيتم تعديل الجلسة التالية وفقًا لذلك.',
+  'signal.comeback.headline.inconsistent': '{{days}} أيام استراحة. جلسة بمقاومة منخفضة متاحة.',
+  'signal.comeback.headline.disciplined': '{{days}} أيام منذ الجلسة الأخيرة. تمت إعادة معايرة الشدة.',
+  'signal.comeback.subtext.inconsistent': 'تم تعديل النظام لعودة أسهل.',
+  'signal.comeback.subtext.disciplined': 'تم تعديل الحجم ليتناسب مع حالة التعافي الحالية.',
+  'signal.recoveryReady.headline.disciplined': 'الاستعداد الأمثل. تم استيفاء شروط التقدم.',
+  'signal.recoveryReady.headline.inconsistent': 'اكتمل التعافي. ظروف جيدة للجلسة.',
+  'signal.recoveryReady.subtext': 'الاستعداد {{readiness}}%.',
+  'signal.streakBuilding.headline': '{{streak}} أيام متوالية. النظام يتكيف مع إيقاعك.',
+  'signal.streakBuilding.subtext.disciplined': 'الحجم والشدة يرتفعان بناءً على الأداء.',
+  'signal.streakBuilding.subtext.inconsistent': 'الانتظام يبنى. التحدي يزداد تدريجيًا.',
+  'signal.expectToday.headline.disciplined': 'نافذة التدريب مفتوحة. النظام جاهز.',
+  'signal.expectToday.headline.inconsistent': 'الجلسة متاحة عندما تكون جاهزًا.',
+  'signal.expectToday.subtext.good': 'الاستعداد {{readiness}}%. ظروف جيدة.',
+  'signal.expectToday.subtext.moderate': 'استعداد متوسط. ينصح بجلسة خفيفة.',
+
+  // ============================================
+  // ENGINE — الذاكرة التكيفية
+  // ============================================
+  'memory.noHistory.headline': 'الجلسة الأولى قادمة. يتعلم النظام من كل تكرار.',
+  'memory.noHistory.trendStatement': 'لا توجد بيانات بعد. جلستك الأولى تحدد خط الأساس.',
+  'memory.lastSession.headline.crushed': 'الجلسة الأخيرة: {{completed}} تمرين مكتمل في {{duration}} دقيقة.',
+  'memory.lastSession.headline.adjusted': 'الجلسة الأخيرة: {{completed}}/{{total}} مكتمل. تم تعديل النظام.',
+  'memory.lastSession.headline.tough': 'الجلسة الأخيرة كانت صعبة. {{completed}}/{{total}} مكتمل. أولوية للتعافي.',
+  'memory.trend.improving': 'الأداء يتحسن. النظام يرفع التحدي.',
+  'memory.trend.declining': 'الجلسات الأخيرة أصعب. تم التعديل لاستعادة الزخم.',
+  'memory.trend.steady.data': 'نتائج مستقرة. قريب من عتبة التقدم التالية.',
+  'memory.trend.steady.building': 'يتم بناء خط الأساس. استمر.',
+  'memory.delta.firstWorkout': 'الجلسة الأولى. النظام يعاير نفسه حسب جسمك.',
+  'memory.delta.same': 'نفس بنية الجلسة. النظام يرى نمو الانتظام.',
+  'memory.delta.mixed': '{{total}} تغييرات: {{removed}} مستبدلة، {{added}} جديدة.',
+  'memory.delta.added': 'تمت إضافة {{count}} تمرين{{plural}} جديد للتنويع.',
+  'memory.delta.removed': 'تم استبدال {{count}} تمرين{{plural}} للتعافي.',
+  'memory.progression.firstTime': 'المرة الأولى. سيعاير النظام من هذه الجلسة.',
+  'memory.progression.improving': '{{wins}} انتصارات متتالية. تقدم مستمر.',
+  'memory.progression.declining': 'تراجع أخير مكتشف. تم تعديل الحجم.',
+  'memory.progression.nearGate': '{{successes}} جلسة{{plural}} قوية. واحدة أخرى لفتح التقدم.',
+  'memory.progression.steady': 'مستقر. الانتظام هو الخطة.',
+  'memory.reason.retained': 'متسق مع مسار تقدمك.',
+  'memory.reason.addedBalance': 'أضيف لتوازن تعافي العضلات.',
+  'memory.reason.removedFatigue': 'أزيل بسبب الإرهاق المتراكم.',
+  'memory.reason.removedVariety': 'استبدل لتوازن العضلات والتنويع.',
+  'memory.timeSince.minutes': 'منذ {{minutes}} دقيقة',
+  'memory.timeSince.hours': 'منذ {{hours}} ساعة',
+  'memory.timeSince.yesterday': 'أمس',
+  'memory.timeSince.days': 'منذ {{days}} يوم',
+
+  // ============================================
+  // ENGINE — تقدم الفترة التجريبية
+  // ============================================
+  'trial.welcome.headline': 'تم تفعيل الوصول الكامل للنظام.',
+  'trial.welcome.subtext': '14 يومًا لاستكشاف كل ميزة. بدون قيود.',
+  'trial.firstWin.headline': '{{workouts}} جلسة{{plural}} مكتملة. النظام يتعلم أنماطك.',
+  'trial.firstWin.subtext': 'كل جلسة تحسن دقة التدريب.',
+  'trial.readyForFirst.headline': 'اليوم {{day}}. النظام جاهز لجلستك الأولى.',
+  'trial.readyForFirst.subtext': 'ابدأ التدريب لبدء المعايرة.',
+  'trial.improvementShown.headline': 'مقارنة الجلسات متاحة الآن.',
+  'trial.improvementShown.subtext': 'يمكن للنظام الآن إظهار ما تغير ولماذا.',
+  'trial.memoryIntro.headline': 'ذكاء التدريب يتوسع.',
+  'trial.memoryIntro.subtext': 'اليوم {{day}}. المزيد من الجلسات = تحليل أدق.',
+  'trial.fullIntelligence.headline': 'الذكاء الكامل مفعل.',
+  'trial.fullIntelligence.subtext': 'اليوم {{day}}. النظام يتكيف مع أنماطك وقدرتك.',
+  'trial.transitionClear.headline': '{{days}} يوم{{plural}} متبقي من الوصول الكامل.',
+  'trial.transitionClear.subtext': 'بعد الفترة التجريبية تبقى الميزات الأساسية. طبقات الذكاء تتطلب اشتراكًا.',
+  'trial.transitionSoft.headline': '{{days}} يوم متبقي.',
+  'trial.transitionSoft.subtext': 'بيانات تدريبك وتقدمك ملكك دائمًا. الاشتراك يستمر في ميزات الذكاء.',
+  'trial.viewPlans': 'عرض الخطط',
+  'trial.expired.headline': 'انتهت الفترة التجريبية.',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} جلسة مسجلة. الميزات الأساسية متاحة. اشترك لاستعادة طبقات الذكاء.',
+  'trial.expired.subtext.noWorkouts': 'الميزات الأساسية متاحة. اشترك لفتح طبقات الذكاء.',
+
+  // ============================================
+  // ENGINE — تحليل الفشل
+  // ============================================
+  'failure.dropOff': 'توقف عند التمرين {{index}} ({{name}}) — تم تقليل الحجم في الجلسة التالية.',
+  'failure.skipHeavy': 'تم اكتشاف معدل تخطي عالٍ. قد لا تتناسب التمارين مع القدرة الحالية.',
+  'failure.lowVolume': 'حجم مكتمل منخفض. قد تكون الجلسة متطلبة أكثر من اللازم.',
+  'failure.earlyDropout': 'نمط توقف مبكر. يتم تقليل مدة الجلسة.',
+  'failure.lateDropout': 'توقف في التحمل. تم وضع تمارين أخف في النهاية.',
+  'failure.noFailure': 'اكتملت الجلسة بنجاح.',
+  'failure.insight.none': 'اكتملت الجلسة بنسبة {{percent}}%. لا تعديلات مطلوبة.',
+  'failure.insight.earlyDropout': 'توقف عند التمرين {{index}} ({{name}}) — تم تقليل الحجم في الجلسة التالية.',
+  'failure.insight.midDropout': 'توقف عند المجموعة {{index}} ({{name}}) — يتم تعديل عدد التمارين.',
+  'failure.insight.lateDropout': 'قريب من الاكتمال ({{percent}}%). تعديل طفيف مطبق.',
+  'failure.insight.skipHeavy': 'اكتملت الجلسة لكن تم تخطي {{percent}}% من التمارين. مراجعة الاختيار.',
+  'failure.insight.lowVolume': 'حجم مكتمل منخفض ({{percent}}%). يتم تقليل وصفات المجموعات.',
+  'failure.insight.empty': 'لم يكتمل أي تمرين. النظام يقلل صعوبة الجلسة التالية.',
+  'failure.adjustment.none': 'لا تعديل مطلوب.',
+  'failure.adjustment.earlyDropout': 'تم اكتشاف توقف مبكر. يتم تقليل الحجم والمدة.',
+  'failure.adjustment.midDropout': 'توقف عند التمرين {{index}}. يتم تقليل عدد التمارين.',
+  'failure.adjustment.lateDropout': 'جلسة شبه مكتملة. تقليل طفيف في الحجم.',
+  'failure.adjustment.skipHeavy': 'معدل تخطي عالٍ. اختيار التمارين يحتاج مراجعة.',
+  'failure.adjustment.lowVolume': 'حجم مكتمل منخفض. يتم تقليل عدد المجموعات.',
+  'failure.adjustment.empty': 'جلسة فارغة. تقليل كبير مطبق.',
+  'failure.pattern.noData': 'لا توجد بيانات جلسات بعد.',
+  'failure.pattern.noFailures': 'جميع الجلسات الأخيرة اكتملت بنجاح. الظروف تدعم التقدم.',
+  'failure.pattern.occasional': 'جلسات غير مكتملة من حين لآخر. الحجم الحالي يبدو مستدامًا.',
+  'failure.pattern.earlyDropoffs': 'توقفات مبكرة متكررة. ينصح بتقليل المدة أو عدد التمارين.',
+  'failure.pattern.highSkips': 'معدل تخطي عالٍ. قد يحتاج اختيار التمارين إلى تعديل.',
+  'failure.pattern.worsening': 'معدل الفشل يرتفع. فكر في تقليل الحجم أو التركيز على التعافي.',
+  'failure.pattern.general': '{{rate}}% معدل فشل. يتم تعديل صعوبة الجلسة.',
+
+  // ============================================
+  // ENGINE — محاكاة الحالة
+  // ============================================
+  'simulation.skip.streakReset': 'سيتم إعادة تعيين السلسلة.',
+  'simulation.skip.modeShift': 'قد ينتقل إلى الوضع غير المنتظم.',
+  'simulation.skip.fatigueDrop': 'الإرهاق ينخفض بمقدار {{delta}}.',
+  'simulation.skip.minimal': 'تأثير محدود — لديك مساحة.',
+  'simulation.train.fatigueUp': 'الإرهاق يرتفع بمقدار {{delta}}.',
+  'simulation.train.modeAdvance': 'يتقدم نحو الوضع المنضبط.',
+  'simulation.train.reduceTomorrow': 'غدًا يجب أن يكون أخف.',
+  'simulation.train.pushTomorrow': 'مساحة للضغط المزيد غدًا.',
+  'simulation.rest.recovery': 'تعافي: الإرهاق ينخفض بمقدار {{delta}}.',
+  'simulation.rest.streakReset': 'سيتم إعادة تعيين السلسلة لكن التعافي أولوية.',
+  'simulation.rest.ready': 'جاهز لجلسة كاملة غدًا.',
+
+  // ============================================
+  // ENGINE — التحكم في الوصول
+  // ============================================
+  'gating.previewMessage': 'الذكاء المتقدم يتطلب اشتراكًا.',
 };
 
 const hi: Record<string, string> = {
@@ -14774,6 +17388,7 @@ const hi: Record<string, string> = {
   'dashboard.of': 'का',
   'dashboard.incompleteSession': 'अधूरा सत्र',
   'dashboard.kcal': 'किलो कैलोरी',
+  'dashboard.startNow': 'अभी शुरू करें',
   'dashboard.stepsToday': 'चरण',
   'dashboard.activeMin': 'सक्रिय मिनट',
   'dashboard.completionRate': 'समापन',
@@ -14896,13 +17511,17 @@ const hi: Record<string, string> = {
   'profile.craftMyBody': 'क्राफ्ट माई बॉडी',
   'profile.craftMyBodySub': 'पोषण एवं प्रशिक्षण के साथ वैयक्तिकृत शारीरिक परिवर्तन योजना',
   'profile.adaptiveTraining': 'अनुकूली प्रशिक्षण',
-  'profile.adaptiveExplanation': 'जैसे ही आप प्रशिक्षण लेते हैं ये मान स्वतः समायोजित हो जाते हैं। अधिक जानने के लिए प्रत्येक मीट्रिक पर टैप करें।',
+  'profile.adaptiveExplanation':
+    'जैसे ही आप प्रशिक्षण लेते हैं ये मान स्वतः समायोजित हो जाते हैं। अधिक जानने के लिए प्रत्येक मीट्रिक पर टैप करें।',
   'profile.fatigueSensitivity': 'थकान संवेदनशीलता',
-  'profile.fatigueSensitivityDesc': 'वर्कआउट के दौरान कितनी जल्दी थकान हो जाती है। उच्च मूल्यों का मतलब है कि एल्गोरिदम आपको गहन सत्रों के बीच अधिक आराम देता है। आपकी कसरत पूर्णता दर और पुनर्प्राप्ति पैटर्न के आधार पर समायोजित होता है।',
+  'profile.fatigueSensitivityDesc':
+    'वर्कआउट के दौरान कितनी जल्दी थकान हो जाती है। उच्च मूल्यों का मतलब है कि एल्गोरिदम आपको गहन सत्रों के बीच अधिक आराम देता है। आपकी कसरत पूर्णता दर और पुनर्प्राप्ति पैटर्न के आधार पर समायोजित होता है।',
   'profile.progressionPace': 'प्रगति गति',
-  'profile.progressionPaceDesc': 'समय के साथ व्यायाम की कठिनाई कितनी आक्रामक रूप से बढ़ती है। उच्च मूल्यों का अर्थ है कठिन अभ्यासों की ओर तेजी से प्रगति। यह इस आधार पर समायोजित होता है कि आप निर्धारित सेट/प्रतिनिधि को लगातार पूरा करते हैं या नहीं।',
+  'profile.progressionPaceDesc':
+    'समय के साथ व्यायाम की कठिनाई कितनी आक्रामक रूप से बढ़ती है। उच्च मूल्यों का अर्थ है कठिन अभ्यासों की ओर तेजी से प्रगति। यह इस आधार पर समायोजित होता है कि आप निर्धारित सेट/प्रतिनिधि को लगातार पूरा करते हैं या नहीं।',
   'profile.volumeTolerance': 'वॉल्यूम सहनशीलता',
-  'profile.volumeToleranceDesc': 'आपका शरीर कुल प्रशिक्षण की कितनी मात्रा (x प्रतिनिधि सेट) संभाल सकता है। उच्च मूल्यों का मतलब है अधिक व्यायाम के साथ लंबे समय तक कसरत सत्र। आपके सत्र पूरा होने और छोड़े गए अभ्यासों के आधार पर समायोजन होता है।',
+  'profile.volumeToleranceDesc':
+    'आपका शरीर कुल प्रशिक्षण की कितनी मात्रा (x प्रतिनिधि सेट) संभाल सकता है। उच्च मूल्यों का मतलब है अधिक व्यायाम के साथ लंबे समय तक कसरत सत्र। आपके सत्र पूरा होने और छोड़े गए अभ्यासों के आधार पर समायोजन होता है।',
   'profile.confidence': 'आत्मविश्वास',
   'profile.samples': 'नमूने',
   'profile.rank': 'रैंक और प्रगति',
@@ -14975,6 +17594,10 @@ const hi: Record<string, string> = {
   'profile.appSection': 'अनुप्रयोग',
   'profile.backupRestore': 'बैकअप और पुनर्स्थापना',
   'profile.backupRestoreSub': 'एन्क्रिप्टेड स्थानीय बैकअप फ़ाइलें',
+  'profile.subscription': 'सदस्यता',
+  'profile.expired': 'समय सीमा समाप्त',
+  'profile.subscribeToUnlock': 'सभी सुविधाओं को अनलॉक करने के लिए सदस्यता लें',
+  'profile.searchLanguages': 'भाषाएं खोजें…',
   'profile.about': 'फिटक्वेस्ट के बारे में',
   'profile.version': 'संस्करण',
   'profile.saved': 'सहेजा गया',
@@ -15129,7 +17752,8 @@ const hi: Record<string, string> = {
   'move.noStepHistory': 'अभी तक कोई चरण इतिहास नहीं',
   'move.jogHistory': 'जोग इतिहास',
   'move.noJogHistory': 'अभी तक कोई जॉग सत्र नहीं',
-  'move.infoXpAndFatigue': '1,000 कदम = 4 एक्सपी • जॉगिंग प्रति 100 मीटर पर 10 एक्सपी कमाते हैं\\\\\\\\nमूवमेंट वर्कआउट की थकान को प्रभावित नहीं करता है',
+  'move.infoXpAndFatigue':
+    '1,000 कदम = 4 एक्सपी • जॉगिंग प्रति 100 मीटर पर 10 एक्सपी कमाते हैं\\\\\\\\nमूवमेंट वर्कआउट की थकान को प्रभावित नहीं करता है',
   'move.jogComplete': 'जॉगिंग पूरी! 🏃',
   'move.awesome': 'बहुत बढ़िया!',
   'move.km': 'किमी',
@@ -15173,7 +17797,8 @@ const hi: Record<string, string> = {
   'meal.location.tapEnable': 'स्थान सक्षम करने के लिए टैप करें',
   'meal.location.infoPrefix': 'में उपलब्ध खाद्य पदार्थ दिखा रहा है',
   'meal.location.infoSuffix': ', जिसमें क्षेत्रीय और वैश्विक विकल्प शामिल हैं।',
-  'meal.location.infoNoLocation': 'क्षेत्र-विशिष्ट भोजन सुझाव देखने के लिए स्थान सक्षम करें। पुनः प्रयास करने के लिए ऊपर स्थित स्थान बैज पर टैप करें।',
+  'meal.location.infoNoLocation':
+    'क्षेत्र-विशिष्ट भोजन सुझाव देखने के लिए स्थान सक्षम करें। पुनः प्रयास करने के लिए ऊपर स्थित स्थान बैज पर टैप करें।',
 
   'legal.title': 'कानूनी केंद्र',
   'legal.documents': 'दस्तावेज़',
@@ -15200,62 +17825,96 @@ const hi: Record<string, string> = {
   'legal.readInApp': 'इन-ऐप पढ़ें',
   'legal.cannotOpenLink': 'इस डिवाइस पर लिंक खोलने में असमर्थ',
   'legal.noteMedical': 'इस ऐप में फिटनेस मार्गदर्शन शैक्षिक है और चिकित्सा सलाह का विकल्प नहीं है।',
-  'legal.noteCounsel': 'रिहाई से पहले वकील द्वारा अंतिम कानूनी पाठ और क्षेत्राधिकार मानचित्रण की समीक्षा की जानी चाहिए।',
+  'legal.noteCounsel':
+    'रिहाई से पहले वकील द्वारा अंतिम कानूनी पाठ और क्षेत्राधिकार मानचित्रण की समीक्षा की जानी चाहिए।',
   'legal.lastUpdated': 'अंतिम अद्यतन:',
   'legal.privacy.sections.developerTitle': 'डेवलपर',
-  'legal.privacy.sections.developerBody': 'फिटक्वेस्ट को फिटक्वेस्ट.dev द्वारा विकसित और प्रकाशित किया गया है। यह गोपनीयता नीति Google Play और Apple App Store पर उपलब्ध FitQuest मोबाइल एप्लिकेशन को नियंत्रित करती है।',
+  'legal.privacy.sections.developerBody':
+    'फिटक्वेस्ट को फिटक्वेस्ट.dev द्वारा विकसित और प्रकाशित किया गया है। यह गोपनीयता नीति Google Play और Apple App Store पर उपलब्ध FitQuest मोबाइल एप्लिकेशन को नियंत्रित करती है।',
   'legal.privacy.sections.dataCollectTitle': '1) डेटा जो हम एकत्र करते हैं',
-  'legal.privacy.sections.dataCollectBody': 'फिटक्वेस्ट वैयक्तिकृत फिटनेस और कल्याण सुविधाएँ प्रदान करने के लिए डेटा की निम्नलिखित श्रेणियों को संसाधित करता है:',
-  'legal.privacy.bullets.health': 'स्वास्थ्य और गतिविधि मेट्रिक्स: हृदय गति, कदम, नींद का डेटा, कसरत का इतिहास, शरीर का माप और रिकवरी स्कोर',
-  'legal.privacy.bullets.biometric': 'बायोमेट्रिक डेटा: ऐप प्रमाणीकरण के लिए फिंगरप्रिंट या चेहरे की पहचान का उपयोग किया जाता है (केवल डिवाइस पर संसाधित, कभी संग्रहीत या प्रसारित नहीं)',
-  'legal.privacy.bullets.location': 'स्थान डेटा: जीपीएस जॉग ट्रैकिंग के दौरान समन्वय करता है (केवल जब आप सक्रिय रूप से जॉग सुविधा का उपयोग करते हैं)',
-  'legal.privacy.bullets.account': 'प्रोफ़ाइल जानकारी: फिटनेस लक्ष्य, अनुभव स्तर, उपकरण प्राथमिकताएँ, और वैकल्पिक कार्य अनुसूची',
-  'legal.privacy.bullets.usage': 'ऐप उपयोग पैटर्न और फीचर इंटरैक्शन (अनाम, ऐप को बेहतर बनाने के लिए उपयोग किया जाता है)',
+  'legal.privacy.sections.dataCollectBody':
+    'फिटक्वेस्ट वैयक्तिकृत फिटनेस और कल्याण सुविधाएँ प्रदान करने के लिए डेटा की निम्नलिखित श्रेणियों को संसाधित करता है:',
+  'legal.privacy.bullets.health':
+    'स्वास्थ्य और गतिविधि मेट्रिक्स: हृदय गति, कदम, नींद का डेटा, कसरत का इतिहास, शरीर का माप और रिकवरी स्कोर',
+  'legal.privacy.bullets.biometric':
+    'बायोमेट्रिक डेटा: ऐप प्रमाणीकरण के लिए फिंगरप्रिंट या चेहरे की पहचान का उपयोग किया जाता है (केवल डिवाइस पर संसाधित, कभी संग्रहीत या प्रसारित नहीं)',
+  'legal.privacy.bullets.location':
+    'स्थान डेटा: जीपीएस जॉग ट्रैकिंग के दौरान समन्वय करता है (केवल जब आप सक्रिय रूप से जॉग सुविधा का उपयोग करते हैं)',
+  'legal.privacy.bullets.account':
+    'प्रोफ़ाइल जानकारी: फिटनेस लक्ष्य, अनुभव स्तर, उपकरण प्राथमिकताएँ, और वैकल्पिक कार्य अनुसूची',
+  'legal.privacy.bullets.usage':
+    'ऐप उपयोग पैटर्न और फीचर इंटरैक्शन (अनाम, ऐप को बेहतर बनाने के लिए उपयोग किया जाता है)',
   'legal.privacy.bullets.device': 'अनुकूलता और क्रैश रिपोर्टिंग के लिए डिवाइस प्रकार, ओएस संस्करण और ऐप संस्करण',
-  'legal.privacy.bullets.photos': 'प्रोफ़ाइल फ़ोटो: यदि आप एक सेट करना चुनते हैं तो यह आपके डिवाइस पर स्थानीय रूप से संग्रहीत होती है',
-  'legal.privacy.bullets.healthConnect': 'हेल्थ कनेक्ट / हेल्थकिट डेटा: कदम, हृदय गति, नींद और कसरत डेटा (केवल अगर आप स्पष्ट अनुमति देते हैं)',
+  'legal.privacy.bullets.photos':
+    'प्रोफ़ाइल फ़ोटो: यदि आप एक सेट करना चुनते हैं तो यह आपके डिवाइस पर स्थानीय रूप से संग्रहीत होती है',
+  'legal.privacy.bullets.healthConnect':
+    'हेल्थ कनेक्ट / हेल्थकिट डेटा: कदम, हृदय गति, नींद और कसरत डेटा (केवल अगर आप स्पष्ट अनुमति देते हैं)',
   'legal.privacy.sections.storageTitle': '2) डेटा संग्रहण',
-  'legal.privacy.sections.storageBody': 'फिटक्वेस्ट को ऑफ़लाइन-प्रथम एप्लिकेशन के रूप में डिज़ाइन किया गया है। आपका सारा फिटनेस डेटा SQLite का उपयोग करके आपके डिवाइस पर स्थानीय रूप से संग्रहीत किया जाता है। कोई भी व्यक्तिगत डेटा बाहरी सर्वर पर संग्रहीत नहीं किया जाता है। उद्योग-मानक AES-256-GCM एन्क्रिप्शन का उपयोग करके भंडारण से पहले संवेदनशील स्वास्थ्य रिकॉर्ड एन्क्रिप्ट किए जाते हैं।',
+  'legal.privacy.sections.storageBody':
+    'फिटक्वेस्ट को ऑफ़लाइन-प्रथम एप्लिकेशन के रूप में डिज़ाइन किया गया है। आपका सारा फिटनेस डेटा SQLite का उपयोग करके आपके डिवाइस पर स्थानीय रूप से संग्रहीत किया जाता है। कोई भी व्यक्तिगत डेटा बाहरी सर्वर पर संग्रहीत नहीं किया जाता है। उद्योग-मानक AES-256-GCM एन्क्रिप्शन का उपयोग करके भंडारण से पहले संवेदनशील स्वास्थ्य रिकॉर्ड एन्क्रिप्ट किए जाते हैं।',
   'legal.privacy.sections.securityTitle': '3) डेटा सुरक्षा',
-  'legal.privacy.sections.securityBody': 'आपके डिवाइस पर संग्रहीत होने से पहले सभी संवेदनशील स्वास्थ्य डेटा को AES-256-GCM एन्क्रिप्शन का उपयोग करके एन्क्रिप्ट किया जाता है। एन्क्रिप्शन कुंजी आपके डिवाइस के सुरक्षित हार्डवेयर (आईओएस पर किचेन, एंड्रॉइड पर कीस्टोर) द्वारा संरक्षित हैं। बायोमेट्रिक प्रमाणीकरण सुरक्षा की एक अतिरिक्त परत प्रदान करता है। हम समय संबंधी हमलों को रोकने के लिए सुरक्षित कुंजी व्युत्पत्ति (पीबीकेडीएफ2) और निरंतर-समय तुलना का उपयोग करते हैं।',
+  'legal.privacy.sections.securityBody':
+    'आपके डिवाइस पर संग्रहीत होने से पहले सभी संवेदनशील स्वास्थ्य डेटा को AES-256-GCM एन्क्रिप्शन का उपयोग करके एन्क्रिप्ट किया जाता है। एन्क्रिप्शन कुंजी आपके डिवाइस के सुरक्षित हार्डवेयर (आईओएस पर किचेन, एंड्रॉइड पर कीस्टोर) द्वारा संरक्षित हैं। बायोमेट्रिक प्रमाणीकरण सुरक्षा की एक अतिरिक्त परत प्रदान करता है। हम समय संबंधी हमलों को रोकने के लिए सुरक्षित कुंजी व्युत्पत्ति (पीबीकेडीएफ2) और निरंतर-समय तुलना का उपयोग करते हैं।',
   'legal.privacy.sections.thirdPartyTitle': '4) तृतीय-पक्ष सेवाएँ',
-  'legal.privacy.sections.thirdPartyBody': 'फिटक्वेस्ट आपके व्यक्तिगत डेटा को बेचता, किराए पर या व्यापार नहीं करता है। निम्नलिखित तृतीय-पक्ष एकीकरण सीमित डेटा संसाधित कर सकते हैं:',
-  'legal.privacy.bullets.thirdPartyAI': 'एआई विशेषताएं: जब आप एआई कोच या प्रोफेसर का उपयोग करते हैं, तो प्रतिक्रियाएं उत्पन्न करने के लिए आपके संकेत ओपनराउटर (लामा भाषा मॉडल के माध्यम से) को भेजे जाते हैं। इन अनुरोधों में कोई व्यक्तिगत स्वास्थ्य डेटा शामिल नहीं है - केवल आपके द्वारा टाइप किया गया पाठ।',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'हेल्थ कनेक्ट/हेल्थकिट: यदि आप अनुमति देते हैं, तो फिटक्वेस्ट इन प्लेटफ़ॉर्म सेवाओं से स्वास्थ्य मेट्रिक्स पढ़ता है। डेटा एक तरफ़ा (केवल पढ़ने के लिए) प्रवाहित होता है और आपके डिवाइस पर एन्क्रिप्टेड रूप में संग्रहीत होता है।',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'रेवेन्यूकैट: सदस्यता सत्यापन का प्रबंधन करता है। केवल खरीद टोकन और अनाम उपयोगकर्ता पहचानकर्ता प्राप्त होते हैं - कोई स्वास्थ्य या फिटनेस डेटा नहीं।',
-  'legal.privacy.bullets.thirdPartySentry': 'संतरी: क्रैश रिपोर्टिंग सेवा जो अज्ञात त्रुटि लॉग प्राप्त करती है। कोई व्यक्तिगत डेटा या स्वास्थ्य मेट्रिक्स शामिल नहीं हैं।',
+  'legal.privacy.sections.thirdPartyBody':
+    'फिटक्वेस्ट आपके व्यक्तिगत डेटा को बेचता, किराए पर या व्यापार नहीं करता है। निम्नलिखित तृतीय-पक्ष एकीकरण सीमित डेटा संसाधित कर सकते हैं:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'एआई विशेषताएं: जब आप एआई कोच या प्रोफेसर का उपयोग करते हैं, तो प्रतिक्रियाएं उत्पन्न करने के लिए आपके संकेत ओपनराउटर (लामा भाषा मॉडल के माध्यम से) को भेजे जाते हैं। इन अनुरोधों में कोई व्यक्तिगत स्वास्थ्य डेटा शामिल नहीं है - केवल आपके द्वारा टाइप किया गया पाठ।',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'हेल्थ कनेक्ट/हेल्थकिट: यदि आप अनुमति देते हैं, तो फिटक्वेस्ट इन प्लेटफ़ॉर्म सेवाओं से स्वास्थ्य मेट्रिक्स पढ़ता है। डेटा एक तरफ़ा (केवल पढ़ने के लिए) प्रवाहित होता है और आपके डिवाइस पर एन्क्रिप्टेड रूप में संग्रहीत होता है।',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'रेवेन्यूकैट: सदस्यता सत्यापन का प्रबंधन करता है। केवल खरीद टोकन और अनाम उपयोगकर्ता पहचानकर्ता प्राप्त होते हैं - कोई स्वास्थ्य या फिटनेस डेटा नहीं।',
+  'legal.privacy.bullets.thirdPartySentry':
+    'संतरी: क्रैश रिपोर्टिंग सेवा जो अज्ञात त्रुटि लॉग प्राप्त करती है। कोई व्यक्तिगत डेटा या स्वास्थ्य मेट्रिक्स शामिल नहीं हैं।',
   'legal.privacy.sections.childrenTitle': '5) बच्चों की गोपनीयता',
-  'legal.privacy.sections.childrenBody': 'फिटक्वेस्ट 13 वर्ष और उससे अधिक उम्र के उपयोगकर्ताओं के लिए डिज़ाइन किया गया है। हम जानबूझकर 13 वर्ष से कम उम्र के बच्चों से व्यक्तिगत जानकारी एकत्र नहीं करते हैं। यदि आपको लगता है कि किसी बच्चे ने हमें डेटा प्रदान किया है, तो कृपया तत्काल हटाने के लिएfitquestsupp0rt@gmail.com पर हमसे संपर्क करें।',
+  'legal.privacy.sections.childrenBody':
+    'फिटक्वेस्ट 13 वर्ष और उससे अधिक उम्र के उपयोगकर्ताओं के लिए डिज़ाइन किया गया है। हम जानबूझकर 13 वर्ष से कम उम्र के बच्चों से व्यक्तिगत जानकारी एकत्र नहीं करते हैं। यदि आपको लगता है कि किसी बच्चे ने हमें डेटा प्रदान किया है, तो कृपया तत्काल हटाने के लिएfitquestsupp0rt@gmail.com पर हमसे संपर्क करें।',
   'legal.privacy.sections.retentionTitle': '6) डेटा प्रतिधारण',
-  'legal.privacy.sections.retentionBody': 'आपका डेटा आपके डिवाइस पर स्थानीय रूप से संग्रहीत किया जाता है और जब तक ऐप इंस्टॉल है तब तक रखा जाता है। आप प्रोफ़ाइल → सेटिंग्स → सभी डेटा हटाएं के माध्यम से किसी भी समय सभी डेटा हटा सकते हैं। ऐप को अनइंस्टॉल करने से सभी स्थानीय डेटा स्थायी रूप से हट जाता है। आप हमारी वेबसाइट https://fitquest.dev/delete-account के माध्यम से भी डेटा हटाने का अनुरोध कर सकते हैं।',
+  'legal.privacy.sections.retentionBody':
+    'आपका डेटा आपके डिवाइस पर स्थानीय रूप से संग्रहीत किया जाता है और जब तक ऐप इंस्टॉल है तब तक रखा जाता है। आप प्रोफ़ाइल → सेटिंग्स → सभी डेटा हटाएं के माध्यम से किसी भी समय सभी डेटा हटा सकते हैं। ऐप को अनइंस्टॉल करने से सभी स्थानीय डेटा स्थायी रूप से हट जाता है। आप हमारी वेबसाइट https://fitquest.dev/delete-account के माध्यम से भी डेटा हटाने का अनुरोध कर सकते हैं।',
   'legal.privacy.sections.rightsTitle': '7) आपके अधिकार',
-  'legal.privacy.sections.rightsBody': 'लागू डेटा सुरक्षा कानूनों (लेसोथो के डेटा संरक्षण अधिनियम 2011, ईयू में जीडीपीआर और कैलिफोर्निया में सीसीपीए सहित) के तहत, आपके पास निम्नलिखित अधिकार हैं:',
+  'legal.privacy.sections.rightsBody':
+    'लागू डेटा सुरक्षा कानूनों (लेसोथो के डेटा संरक्षण अधिनियम 2011, ईयू में जीडीपीआर और कैलिफोर्निया में सीसीपीए सहित) के तहत, आपके पास निम्नलिखित अधिकार हैं:',
   'legal.privacy.bullets.accessRight': 'पहुंच: प्रोफ़ाइल → निर्यात डेटा',
-  'legal.privacy.bullets.deleteRight': 'के माध्यम से ऐप आपके बारे में संग्रहीत सभी डेटा देखें हटाना: ऐप सेटिंग या हमारी वेबसाइट के माध्यम से अपना सारा डेटा स्थायी रूप से मिटा दें',
-  'legal.privacy.bullets.exportRight': 'पोर्टेबिलिटी: किसी अन्य सेवा में स्थानांतरण के लिए अपना डेटा JSON प्रारूप में निर्यात करें',
+  'legal.privacy.bullets.deleteRight':
+    'के माध्यम से ऐप आपके बारे में संग्रहीत सभी डेटा देखें हटाना: ऐप सेटिंग या हमारी वेबसाइट के माध्यम से अपना सारा डेटा स्थायी रूप से मिटा दें',
+  'legal.privacy.bullets.exportRight':
+    'पोर्टेबिलिटी: किसी अन्य सेवा में स्थानांतरण के लिए अपना डेटा JSON प्रारूप में निर्यात करें',
   'legal.privacy.bullets.correctRight': 'सुधार: किसी भी समय अपनी प्रोफ़ाइल जानकारी अपडेट या संशोधित करें',
-  'legal.privacy.bullets.objectionRight': 'आपत्ति: कानूनी केंद्र के माध्यम से किसी भी समय डेटा प्रोसेसिंग के लिए सहमति वापस लें',
+  'legal.privacy.bullets.objectionRight':
+    'आपत्ति: कानूनी केंद्र के माध्यम से किसी भी समय डेटा प्रोसेसिंग के लिए सहमति वापस लें',
   'legal.privacy.sections.popiaTitle': '8) डेटा सुरक्षा अनुपालन (लेसोथो)',
-  'legal.privacy.sections.popiaBody': 'लेसोथो साम्राज्य के डेटा संरक्षण अधिनियम 2011 के अनुसार, फिटक्वेस्ट.देव आपकी व्यक्तिगत जानकारी के लिए जिम्मेदार पक्ष के रूप में कार्य करता है। हम आपके डेटा को कानूनी रूप से संसाधित करते हैं, संग्रहण को आवश्यकतानुसार न्यूनतम करते हैं, सटीकता सुनिश्चित करते हैं और उचित सुरक्षा उपाय बनाए रखते हैं। सीमा पार उपयोगकर्ताओं के लिए, हम जहां लागू हो वहां POPIA (दक्षिण अफ्रीका), GDPR (EU), और CCPA (कैलिफ़ोर्निया) का भी अनुपालन करते हैं।',
+  'legal.privacy.sections.popiaBody':
+    'लेसोथो साम्राज्य के डेटा संरक्षण अधिनियम 2011 के अनुसार, फिटक्वेस्ट.देव आपकी व्यक्तिगत जानकारी के लिए जिम्मेदार पक्ष के रूप में कार्य करता है। हम आपके डेटा को कानूनी रूप से संसाधित करते हैं, संग्रहण को आवश्यकतानुसार न्यूनतम करते हैं, सटीकता सुनिश्चित करते हैं और उचित सुरक्षा उपाय बनाए रखते हैं। सीमा पार उपयोगकर्ताओं के लिए, हम जहां लागू हो वहां POPIA (दक्षिण अफ्रीका), GDPR (EU), और CCPA (कैलिफ़ोर्निया) का भी अनुपालन करते हैं।',
   'legal.privacy.sections.updatesTitle': '9) नीति अद्यतन',
-  'legal.privacy.sections.updatesBody': 'हम इस गोपनीयता नीति को समय-समय पर अद्यतन कर सकते हैं। कोई भी बदलाव ऐप में अपडेटेड "अंतिम अपडेटेड" तारीख के साथ दिखाई देगा और आपको अपडेटेड पॉलिसी की समीक्षा करने और उसे स्वीकार करने के लिए प्रेरित किया जाएगा। परिवर्तनों के बाद ऐप का निरंतर उपयोग नई नीति की स्वीकृति माना जाता है।',
+  'legal.privacy.sections.updatesBody':
+    'हम इस गोपनीयता नीति को समय-समय पर अद्यतन कर सकते हैं। कोई भी बदलाव ऐप में अपडेटेड "अंतिम अपडेटेड" तारीख के साथ दिखाई देगा और आपको अपडेटेड पॉलिसी की समीक्षा करने और उसे स्वीकार करने के लिए प्रेरित किया जाएगा। परिवर्तनों के बाद ऐप का निरंतर उपयोग नई नीति की स्वीकृति माना जाता है।',
   'legal.privacy.sections.contactTitle': '10) संपर्क करें',
-  'legal.privacy.sections.contactBody': 'गोपनीयता अनुरोधों के लिए,fitquestsupp0rt@gmail.com पर ईमेल करें। आप https://fitquest.dev/support पर भी जा सकते हैं। उपलब्ध होने पर अपना खाता पहचानकर्ता शामिल करें। हम 30 व्यावसायिक दिनों के भीतर जवाब देते हैं।',
+  'legal.privacy.sections.contactBody':
+    'गोपनीयता अनुरोधों के लिए,fitquestsupp0rt@gmail.com पर ईमेल करें। आप https://fitquest.dev/support पर भी जा सकते हैं। उपलब्ध होने पर अपना खाता पहचानकर्ता शामिल करें। हम 30 व्यावसायिक दिनों के भीतर जवाब देते हैं।',
   'legal.terms.sections.useTitle': '1) स्वीकार्य उपयोग',
-  'legal.terms.sections.useBody': 'आप कानूनी रूप से फिटक्वेस्ट का उपयोग करने के लिए सहमत हैं और रिवर्स-इंजीनियरिंग, डीकंपाइल, सुरक्षा नियंत्रण, सदस्यता तंत्र या डेटा-सुरक्षा सुविधाओं को बायपास करने का प्रयास नहीं करेंगे। आप किसी भी गैरकानूनी उद्देश्य के लिए या किसी भी लागू नियमों के उल्लंघन में ऐप का उपयोग नहीं कर सकते।',
+  'legal.terms.sections.useBody':
+    'आप कानूनी रूप से फिटक्वेस्ट का उपयोग करने के लिए सहमत हैं और रिवर्स-इंजीनियरिंग, डीकंपाइल, सुरक्षा नियंत्रण, सदस्यता तंत्र या डेटा-सुरक्षा सुविधाओं को बायपास करने का प्रयास नहीं करेंगे। आप किसी भी गैरकानूनी उद्देश्य के लिए या किसी भी लागू नियमों के उल्लंघन में ऐप का उपयोग नहीं कर सकते।',
   'legal.terms.sections.medicalTitle': '2) मेडिकल अस्वीकरण',
-  'legal.terms.sections.medicalBody': 'फिटक्वेस्ट एक फिटनेस और वेलनेस एप्लिकेशन है और यह कोई चिकित्सा उपकरण या सेवा नहीं है। ऐप चिकित्सा सलाह, निदान या उपचार प्रदान नहीं करता है। वर्कआउट सुझाव, स्वास्थ्य स्कोर, रिकवरी अनुशंसाएं और एआई-जनरेटेड मार्गदर्शन केवल सूचनात्मक और शैक्षिक उद्देश्यों के लिए हैं। किसी भी व्यायाम कार्यक्रम को शुरू करने, संशोधित करने या बंद करने से पहले हमेशा एक योग्य स्वास्थ्य देखभाल पेशेवर से परामर्श लें, खासकर यदि आपके पास पहले से मौजूद स्वास्थ्य स्थितियां, चोटें या चिंताएं हैं। यदि आपको दर्द, चक्कर आना या असुविधा का अनुभव हो तो तुरंत व्यायाम करना बंद कर दें।',
+  'legal.terms.sections.medicalBody':
+    'फिटक्वेस्ट एक फिटनेस और वेलनेस एप्लिकेशन है और यह कोई चिकित्सा उपकरण या सेवा नहीं है। ऐप चिकित्सा सलाह, निदान या उपचार प्रदान नहीं करता है। वर्कआउट सुझाव, स्वास्थ्य स्कोर, रिकवरी अनुशंसाएं और एआई-जनरेटेड मार्गदर्शन केवल सूचनात्मक और शैक्षिक उद्देश्यों के लिए हैं। किसी भी व्यायाम कार्यक्रम को शुरू करने, संशोधित करने या बंद करने से पहले हमेशा एक योग्य स्वास्थ्य देखभाल पेशेवर से परामर्श लें, खासकर यदि आपके पास पहले से मौजूद स्वास्थ्य स्थितियां, चोटें या चिंताएं हैं। यदि आपको दर्द, चक्कर आना या असुविधा का अनुभव हो तो तुरंत व्यायाम करना बंद कर दें।',
   'legal.terms.sections.subscriptionTitle': '3) सदस्यता एवं बिलिंग',
-  'legal.terms.sections.subscriptionBody': 'फिटक्वेस्ट सभी प्रीमियम सुविधाओं का 14 दिनों का निःशुल्क परीक्षण प्रदान करता है। परीक्षण अवधि समाप्त होने के बाद, आप प्रीमियम सुविधाओं का उपयोग जारी रखने या निःशुल्क स्तर के साथ जारी रखने के लिए सदस्यता ले सकते हैं। प्रीमियम सदस्यता का बिल Google Play Store या Apple App Store के माध्यम से किया जाता है। प्रत्येक बिलिंग अवधि के अंत में सदस्यता स्वतः नवीनीकृत हो जाती है जब तक कि नवीनीकरण तिथि से कम से कम 24 घंटे पहले रद्द न कर दी जाए। आप अपने डिवाइस की ऐप स्टोर सेटिंग के माध्यम से अपनी सदस्यता प्रबंधित या रद्द कर सकते हैं। रिफंड संबंधित प्लेटफ़ॉर्म की रिफंड नीति के अधीन है। कीमतें क्षेत्र के अनुसार भिन्न हो सकती हैं और खरीदारी से पहले आपकी स्थानीय मुद्रा में प्रदर्शित की जाती हैं।',
+  'legal.terms.sections.subscriptionBody':
+    'फिटक्वेस्ट सभी प्रीमियम सुविधाओं का 14 दिनों का निःशुल्क परीक्षण प्रदान करता है। परीक्षण अवधि समाप्त होने के बाद, आप प्रीमियम सुविधाओं का उपयोग जारी रखने या निःशुल्क स्तर के साथ जारी रखने के लिए सदस्यता ले सकते हैं। प्रीमियम सदस्यता का बिल Google Play Store या Apple App Store के माध्यम से किया जाता है। प्रत्येक बिलिंग अवधि के अंत में सदस्यता स्वतः नवीनीकृत हो जाती है जब तक कि नवीनीकरण तिथि से कम से कम 24 घंटे पहले रद्द न कर दी जाए। आप अपने डिवाइस की ऐप स्टोर सेटिंग के माध्यम से अपनी सदस्यता प्रबंधित या रद्द कर सकते हैं। रिफंड संबंधित प्लेटफ़ॉर्म की रिफंड नीति के अधीन है। कीमतें क्षेत्र के अनुसार भिन्न हो सकती हैं और खरीदारी से पहले आपकी स्थानीय मुद्रा में प्रदर्शित की जाती हैं।',
   'legal.terms.sections.ipTitle': '4) बौद्धिक संपदा',
-  'legal.terms.sections.ipBody': 'फिटक्वेस्ट में सभी सामग्री, डिज़ाइन, कोड, एल्गोरिदम, ब्रांडिंग और सामग्री फिटक्वेस्ट.देव की बौद्धिक संपदा हैं और लागू कॉपीराइट और ट्रेडमार्क कानूनों द्वारा संरक्षित हैं। आप पूर्व लिखित अनुमति के बिना ऐप के किसी भी हिस्से से व्युत्पन्न कार्यों का पुनरुत्पादन, वितरण या निर्माण नहीं कर सकते हैं।',
+  'legal.terms.sections.ipBody':
+    'फिटक्वेस्ट में सभी सामग्री, डिज़ाइन, कोड, एल्गोरिदम, ब्रांडिंग और सामग्री फिटक्वेस्ट.देव की बौद्धिक संपदा हैं और लागू कॉपीराइट और ट्रेडमार्क कानूनों द्वारा संरक्षित हैं। आप पूर्व लिखित अनुमति के बिना ऐप के किसी भी हिस्से से व्युत्पन्न कार्यों का पुनरुत्पादन, वितरण या निर्माण नहीं कर सकते हैं।',
   'legal.terms.sections.liabilityTitle': '5) दायित्व की सीमा',
-  'legal.terms.sections.liabilityBody': 'कानून द्वारा अनुमत अधिकतम सीमा तक, फिटक्वेस्ट.डेव ऐप के आपके उपयोग से उत्पन्न किसी भी अप्रत्यक्ष, आकस्मिक, विशेष, परिणामी या दंडात्मक क्षति के लिए उत्तरदायी नहीं होगा, जिसमें शारीरिक चोट, डेटा हानि, या सेवा में रुकावट शामिल है, लेकिन इन्हीं तक सीमित नहीं है। हमारी कुल देनदारी दावे से पहले 12 महीनों में प्रीमियम सुविधाओं के लिए आपके द्वारा भुगतान की गई राशि से अधिक नहीं होगी।',
+  'legal.terms.sections.liabilityBody':
+    'कानून द्वारा अनुमत अधिकतम सीमा तक, फिटक्वेस्ट.डेव ऐप के आपके उपयोग से उत्पन्न किसी भी अप्रत्यक्ष, आकस्मिक, विशेष, परिणामी या दंडात्मक क्षति के लिए उत्तरदायी नहीं होगा, जिसमें शारीरिक चोट, डेटा हानि, या सेवा में रुकावट शामिल है, लेकिन इन्हीं तक सीमित नहीं है। हमारी कुल देनदारी दावे से पहले 12 महीनों में प्रीमियम सुविधाओं के लिए आपके द्वारा भुगतान की गई राशि से अधिक नहीं होगी।',
   'legal.terms.sections.terminationTitle': '6) समाप्ति',
-  'legal.terms.sections.terminationBody': 'यदि आप इन शर्तों का उल्लंघन करते हैं तो हम फिटक्वेस्ट तक आपकी पहुंच को निलंबित या समाप्त करने का अधिकार सुरक्षित रखते हैं। आप किसी भी समय ऐप का उपयोग बंद कर सकते हैं। समाप्ति पर, आपका स्थानीय रूप से संग्रहीत डेटा आपके डिवाइस पर तब तक रहता है जब तक आप इसे हटा नहीं देते या ऐप को अनइंस्टॉल नहीं कर देते।',
+  'legal.terms.sections.terminationBody':
+    'यदि आप इन शर्तों का उल्लंघन करते हैं तो हम फिटक्वेस्ट तक आपकी पहुंच को निलंबित या समाप्त करने का अधिकार सुरक्षित रखते हैं। आप किसी भी समय ऐप का उपयोग बंद कर सकते हैं। समाप्ति पर, आपका स्थानीय रूप से संग्रहीत डेटा आपके डिवाइस पर तब तक रहता है जब तक आप इसे हटा नहीं देते या ऐप को अनइंस्टॉल नहीं कर देते।',
   'legal.terms.sections.governingLawTitle': '7) शासी कानून',
-  'legal.terms.sections.governingLawBody': 'ये शर्तें लेसोथो साम्राज्य के कानूनों के अनुसार शासित और समझी जाती हैं। इन शर्तों या फिटक्वेस्ट के आपके उपयोग से उत्पन्न होने वाला कोई भी विवाद लेसोथो की अदालतों के विशेष क्षेत्राधिकार के अधीन होगा। यदि इन शर्तों का कोई भी प्रावधान अप्रवर्तनीय पाया जाता है, तो शेष प्रावधान पूरी ताकत और प्रभाव से जारी रहेंगे।',
-  'legal.terms.bullets.compliance': 'इस ऐप का उपयोग करते समय आपको सभी लागू Google Play और Apple App Store नीतियों का अनुपालन करना होगा',
+  'legal.terms.sections.governingLawBody':
+    'ये शर्तें लेसोथो साम्राज्य के कानूनों के अनुसार शासित और समझी जाती हैं। इन शर्तों या फिटक्वेस्ट के आपके उपयोग से उत्पन्न होने वाला कोई भी विवाद लेसोथो की अदालतों के विशेष क्षेत्राधिकार के अधीन होगा। यदि इन शर्तों का कोई भी प्रावधान अप्रवर्तनीय पाया जाता है, तो शेष प्रावधान पूरी ताकत और प्रभाव से जारी रहेंगे।',
+  'legal.terms.bullets.compliance':
+    'इस ऐप का उपयोग करते समय आपको सभी लागू Google Play और Apple App Store नीतियों का अनुपालन करना होगा',
   'legal.terms.bullets.accountDelete': 'आप किसी भी समय प्रोफ़ाइल → सेटिंग्स या https://fitquest.dev/delete-account',
 
   'common.save': 'सहेजें',
@@ -15332,7 +17991,8 @@ const hi: Record<string, string> = {
   'savedWorkouts.startAnytime': 'कभी भी शुरू करें',
   'savedWorkouts.deleteFailed': 'वर्कआउट हटाने में विफल. कृपया पुन: प्रयास करें।',
   'savedWorkouts.emptyTitle': 'अभी तक कोई सहेजा गया वर्कआउट नहीं',
-  'savedWorkouts.emptySubtitle': 'अपने लक्ष्यों के अनुरूप अभ्यासों का चयन करके अपना पहला कस्टम वर्कआउट बनाएं। यह सिर्फ़ एक मिनट लेता है!',
+  'savedWorkouts.emptySubtitle':
+    'अपने लक्ष्यों के अनुरूप अभ्यासों का चयन करके अपना पहला कस्टम वर्कआउट बनाएं। यह सिर्फ़ एक मिनट लेता है!',
   'savedWorkouts.featurePick': 'अपना व्यायाम चुनें',
   'savedWorkouts.featureSet': 'प्रतिनिधि सेट करें और आराम करें',
   'savedWorkouts.featureStart': 'किसी भी समय प्रारंभ करें',
@@ -15384,7 +18044,8 @@ const hi: Record<string, string> = {
   'help.featureDesc': 'क्या आपके पास फिटक्वेस्ट को बेहतर बनाने का कोई विचार है? हमें इसे सुनना अच्छा लगेगा',
   'help.responseTime': 'हम आम तौर पर 24-48 घंटों के भीतर जवाब देते हैं',
 
-  'about.description': 'फिटक्वेस्ट एक व्यापक फिटनेस प्लेटफ़ॉर्म है जिसे आपके प्रशिक्षण लक्ष्यों को प्राप्त करने में मदद करने के लिए डिज़ाइन किया गया है। आपका सारा डेटा AES-256 एन्क्रिप्शन द्वारा सुरक्षित आपके डिवाइस पर रहता है।',
+  'about.description':
+    'फिटक्वेस्ट एक व्यापक फिटनेस प्लेटफ़ॉर्म है जिसे आपके प्रशिक्षण लक्ष्यों को प्राप्त करने में मदद करने के लिए डिज़ाइन किया गया है। आपका सारा डेटा AES-256 एन्क्रिप्शन द्वारा सुरक्षित आपके डिवाइस पर रहता है।',
   'about.platform': 'प्लेटफार्म',
   'about.dataStorage': 'डेटा संग्रहण',
   'about.onDevice': 'केवल ऑन-डिवाइस',
@@ -15614,9 +18275,16 @@ const hi: Record<string, string> = {
   'onboarding.heightPlaceholder': 'ऊंचाई (सेमी)',
   'onboarding.saveError': 'आपकी प्रोफ़ाइल सहेजने में विफल. कृपया पुन: प्रयास करें।',
   'onboarding.permTitle': 'अनुमतियाँ सक्षम करें',
-  'onboarding.permSub': 'ये FitQuest को आपके लिए बेहतर काम करने में मदद करती हैं। आप इन्हें कभी भी सेटिंग्स में बदल सकते हैं।',
+  'onboarding.permSub':
+    'ये FitQuest को आपके लिए बेहतर काम करने में मदद करती हैं। आप इन्हें कभी भी सेटिंग्स में बदल सकते हैं।',
   'onboarding.perm.notifications': 'व्यायाम अनुस्मारक',
   'onboarding.perm.notificationsSub': 'अपने प्रशिक्षण कार्यक्रम के अनुसार चलने के लिए अनुस्मारक प्राप्त करें',
+  'onboarding.perm.motion': 'गति और गतिविधि',
+  'onboarding.perm.motionSub': 'मोशन सेंसर का उपयोग करके कदमों को ट्रैक करें, व्यायाम का पता लगाएं और रेप गिनें',
+  'onboarding.perm.location': 'स्थान (जॉगिंग ट्रैकिंग)',
+  'onboarding.perm.locationSub': 'अपने जॉगिंग मार्गों का मानचित्र बनाएं और सटीक दूरी की गणना करें',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'Android Health Connect के साथ हृदय गति, नींद और वर्कआउट डेटा सिंक करें',
   'onboarding.perm.allow': 'अनुमति दें',
   'onboarding.perm.skipNote': 'आप इसे छोड़ सकते हैं — अनुमतियाँ बाद में आपकी प्रोफ़ाइल में सक्षम की जा सकती हैं।',
 
@@ -15690,7 +18358,8 @@ const hi: Record<string, string> = {
   'fitmind.reader.loadError': 'पृष्ठ सामग्री लोड करने में असमर्थ.',
   'fitmind.reader.openReader': 'रीडर खोलें',
   'fitmind.reader.binaryModeTitle': 'बाइनरी सामग्री',
-  'fitmind.reader.binaryModeBody': 'इस फ़ाइल में बाइनरी सामग्री है जिसे टेक्स्ट के रूप में प्रदर्शित नहीं किया जा सकता है।',
+  'fitmind.reader.binaryModeBody':
+    'इस फ़ाइल में बाइनरी सामग्री है जिसे टेक्स्ट के रूप में प्रदर्शित नहीं किया जा सकता है।',
 
   'exercises.library': 'व्यायाम पुस्तकालय',
   'exercises.searchPlaceholder': 'खोज अभ्यास...',
@@ -15790,7 +18459,8 @@ const hi: Record<string, string> = {
   'backup.createBackup': 'बैकअप बनाएं',
   'backup.availableBackups': 'उपलब्ध बैकअप',
   'backup.noBackups': 'अभी तक कोई बैकअप नहीं है.',
-  'backup.helperText': 'आपके स्थानीय डेटाबेस की एक एन्क्रिप्टेड बैकअप फ़ाइल बनाता है। यदि आप कोई पासफ़्रेज़ सेट करते हैं, तो आपको पुनर्स्थापित करने के लिए उसी पासफ़्रेज़ का उपयोग करना होगा।',
+  'backup.helperText':
+    'आपके स्थानीय डेटाबेस की एक एन्क्रिप्टेड बैकअप फ़ाइल बनाता है। यदि आप कोई पासफ़्रेज़ सेट करते हैं, तो आपको पुनर्स्थापित करने के लिए उसी पासफ़्रेज़ का उपयोग करना होगा।',
   'backup.optionalPassphrase': 'वैकल्पिक पासफ़्रेज़',
   'backup.working': 'काम कर रहे हैं…',
   'backup.created': 'बैकअप बनाया गया',
@@ -15807,9 +18477,11 @@ const hi: Record<string, string> = {
   'backup.uploaded': 'अपलोड किया गया',
   'backup.uploadFailed': 'अपलोड विफल',
   'backup.noCloudBackups': 'अभी तक कोई क्लाउड बैकअप नहीं है.',
-  'backup.cloudHelper': 'एन्क्रिप्टेड बैकअप ब्लॉब को आपके चरण 2 बैकएंड पर संग्रहीत करता है। सर्वर आपके डेटा को डिक्रिप्ट नहीं कर सकता.',
+  'backup.cloudHelper':
+    'एन्क्रिप्टेड बैकअप ब्लॉब को आपके चरण 2 बैकएंड पर संग्रहीत करता है। सर्वर आपके डेटा को डिक्रिप्ट नहीं कर सकता.',
 
-  'audio.warmup.start': 'आइए वार्मअप से शुरुआत करें। अपनी मांसपेशियों को जगाने और अपने शरीर को तैयार करने के लिए हल्की हरकतें करें।',
+  'audio.warmup.start':
+    'आइए वार्मअप से शुरुआत करें। अपनी मांसपेशियों को जगाने और अपने शरीर को तैयार करने के लिए हल्की हरकतें करें।',
   'audio.main.start': 'आइए इसमें शामिल हों। मुख्य कसरत अब शुरू हो रही है।',
   'audio.cooldown.start': 'ठंडा होने का समय. आपके शरीर को ठीक होने में मदद करने के लिए हल्की हरकतें।',
   'audio.warmup.toMain': 'बढ़िया वार्म अप! आपका शरीर तैयार है. मुख्य कसरत का समय. चल दर!',
@@ -15854,6 +18526,143 @@ const hi: Record<string, string> = {
   'audio.minutes': '{{minutes}} शुद्ध प्रयास के मिनट।',
   'audio.progressions': '{{count}} व्यायाम ऊपर उठने के लिए तैयार है!|{{count}} व्यायाम ऊपर चढ़ने के लिए तैयार है!',
   'audio.xpEarned': 'साथ ही {{xp}} XP अर्जित किया।',
+
+  // ============================================
+  // ENGINE — व्यवहार संकेत
+  // ============================================
+  'signal.transition.advancing.subtext': 'हाल की गतिविधि के आधार पर प्रगति तर्क सक्रिय हुआ।',
+  'signal.transition.regressing.subtext': 'वर्तमान लय से मेल खाने के लिए सत्र का भार कम किया गया।',
+  'signal.firstSession.headline': 'सिस्टम तैयार। अपना पहला सत्र शुरू करें।',
+  'signal.firstSession.subtext': 'प्रत्येक सत्र आपकी क्षमता के अनुसार सिस्टम को कैलिब्रेट करता है।',
+  'signal.streakAtRisk.headline': '{{streak}} दिन लगातार। मजबूत करने के लिए आज जारी रखें।',
+  'signal.streakAtRisk.subtext.disciplined': 'निरंतरता प्रगति की सटीकता बढ़ाती है।',
+  'signal.streakAtRisk.subtext.inconsistent': 'एक छोटा सत्र भी लय बनाए रखने के लिए काफी है।',
+  'signal.restAdvised.headline': 'थकान के आधार पर आराम की सलाह।',
+  'signal.restAdvised.subtext.fatigue': 'थकान {{fatigue}}%। आराम अनुकूलन को तेज़ करता है।',
+  'signal.restAdvised.subtext.readiness': 'तैयारी {{readiness}}%। रिकवरी जारी।',
+  'signal.momentum.headline': 'सत्र पूरा। डेटा रिकॉर्ड किया गया।',
+  'signal.momentum.subtext.streak': '{{streak}} दिन का पैटर्न। सिस्टम आपके प्रोग्राम को बेहतर बना रहा है।',
+  'signal.momentum.subtext.default': 'रिकवरी शुरू। अगला सत्र उसके अनुसार समायोजित होगा।',
+  'signal.comeback.headline.inconsistent': '{{days}} दिन का अवकाश। कम तीव्रता सत्र उपलब्ध।',
+  'signal.comeback.headline.disciplined': 'अंतिम सत्र से {{days}} दिन। तीव्रता पुनः कैलिब्रेट।',
+  'signal.comeback.subtext.inconsistent': 'आसान वापसी के लिए सिस्टम समायोजित।',
+  'signal.comeback.subtext.disciplined': 'वर्तमान रिकवरी स्थिति के अनुसार वॉल्यूम समायोजित।',
+  'signal.recoveryReady.headline.disciplined': 'तैयारी इष्टतम। प्रगति शर्तें पूरी।',
+  'signal.recoveryReady.headline.inconsistent': 'रिकवरी पूरी। सत्र के लिए अच्छी स्थिति।',
+  'signal.recoveryReady.subtext': 'तैयारी {{readiness}}%।',
+  'signal.streakBuilding.headline': '{{streak}} दिन लगातार। सिस्टम आपकी लय के अनुसार ढल रहा है।',
+  'signal.streakBuilding.subtext.disciplined': 'प्रदर्शन के आधार पर वॉल्यूम और तीव्रता बढ़ रही है।',
+  'signal.streakBuilding.subtext.inconsistent': 'निरंतरता बन रही है। चुनौती धीरे-धीरे बढ़ती है।',
+  'signal.expectToday.headline.disciplined': 'प्रशिक्षण विंडो खुली। सिस्टम तैयार।',
+  'signal.expectToday.headline.inconsistent': 'तैयार होने पर सत्र उपलब्ध।',
+  'signal.expectToday.subtext.good': 'तैयारी {{readiness}}%। अच्छी स्थिति।',
+  'signal.expectToday.subtext.moderate': 'मध्यम तैयारी। हल्का सत्र सुझाव।',
+
+  // ============================================
+  // ENGINE — अनुकूली मेमोरी
+  // ============================================
+  'memory.noHistory.headline': 'पहला सत्र आने वाला है। सिस्टम हर दोहराव से सीखता है।',
+  'memory.noHistory.trendStatement': 'अभी कोई डेटा नहीं। आपका पहला सत्र बेसलाइन सेट करेगा।',
+  'memory.lastSession.headline.crushed': 'पिछला सत्र: {{completed}} अभ्यास {{duration}} मिनट में पूरे।',
+  'memory.lastSession.headline.adjusted': 'पिछला सत्र: {{completed}}/{{total}} पूरे। सिस्टम समायोजित।',
+  'memory.lastSession.headline.tough': 'पिछला सत्र कठिन था। {{completed}}/{{total}} पूरे। रिकवरी प्राथमिकता।',
+  'memory.trend.improving': 'प्रदर्शन बेहतर हो रहा है। सिस्टम चुनौती बढ़ा रहा है।',
+  'memory.trend.declining': 'हाल के सत्र कठिन रहे। गति बनाने के लिए समायोजित।',
+  'memory.trend.steady.data': 'स्थिर परिणाम। अगले प्रगति स्तर के करीब।',
+  'memory.trend.steady.building': 'बेसलाइन बन रही है। जारी रखें।',
+  'memory.delta.firstWorkout': 'पहला सत्र। सिस्टम आपके शरीर के अनुसार कैलिब्रेट होता है।',
+  'memory.delta.same': 'समान सत्र संरचना। सिस्टम निरंतरता की वृद्धि देख रहा है।',
+  'memory.delta.mixed': '{{total}} परिवर्तन: {{removed}} बदले गए, {{added}} नए।',
+  'memory.delta.added': 'विविधता के लिए {{count}} नया अभ्यास{{plural}} जोड़ा गया।',
+  'memory.delta.removed': 'रिकवरी के लिए {{count}} अभ्यास{{plural}} बदला गया।',
+  'memory.progression.firstTime': 'पहली बार। सिस्टम इस सत्र से कैलिब्रेट करेगा।',
+  'memory.progression.improving': '{{wins}} लगातार जीत। प्रगति हो रही है।',
+  'memory.progression.declining': 'हाल में गिरावट पता चली। वॉल्यूम समायोजित।',
+  'memory.progression.nearGate': '{{successes}} मजबूत सत्र{{plural}}। एक और पूरा करें तो प्रगति अनलॉक होगी।',
+  'memory.progression.steady': 'स्थिर बने रहें। निरंतरता ही योजना है।',
+  'memory.reason.retained': 'आपके प्रगति पथ के अनुरूप।',
+  'memory.reason.addedBalance': 'मांसपेशी रिकवरी संतुलन के लिए जोड़ा गया।',
+  'memory.reason.removedFatigue': 'संचित थकान के कारण हटाया गया।',
+  'memory.reason.removedVariety': 'मांसपेशी संतुलन और विविधता के लिए बदला गया।',
+  'memory.timeSince.minutes': '{{minutes}} मिनट पहले',
+  'memory.timeSince.hours': '{{hours}} घंटे पहले',
+  'memory.timeSince.yesterday': 'कल',
+  'memory.timeSince.days': '{{days}} दिन पहले',
+
+  // ============================================
+  // ENGINE — ट्रायल प्रगति
+  // ============================================
+  'trial.welcome.headline': 'सिस्टम का पूर्ण एक्सेस सक्रिय।',
+  'trial.welcome.subtext': 'हर सुविधा को एक्सप्लोर करने के लिए 14 दिन। कोई प्रतिबंध नहीं।',
+  'trial.firstWin.headline': '{{workouts}} सत्र{{plural}} पूरे। सिस्टम आपके पैटर्न सीख रहा है।',
+  'trial.firstWin.subtext': 'प्रत्येक सत्र प्रशिक्षण सटीकता में सुधार करता है।',
+  'trial.readyForFirst.headline': 'दिन {{day}}। आपके पहले सत्र के लिए सिस्टम तैयार।',
+  'trial.readyForFirst.subtext': 'कैलिब्रेशन शुरू करने के लिए वर्कआउट शुरू करें।',
+  'trial.improvementShown.headline': 'सत्र तुलना अब उपलब्ध।',
+  'trial.improvementShown.subtext': 'सिस्टम अब दिखा सकता है कि क्या बदला और क्यों।',
+  'trial.memoryIntro.headline': 'प्रशिक्षण बुद्धिमत्ता विस्तार हो रही है।',
+  'trial.memoryIntro.subtext': 'दिन {{day}}। अधिक सत्र = अधिक सटीक विश्लेषण।',
+  'trial.fullIntelligence.headline': 'पूर्ण बुद्धिमत्ता सक्रिय।',
+  'trial.fullIntelligence.subtext': 'दिन {{day}}। सिस्टम आपके पैटर्न और क्षमता के अनुसार ढलता है।',
+  'trial.transitionClear.headline': 'पूर्ण एक्सेस में {{days}} दिन{{plural}} शेष।',
+  'trial.transitionClear.subtext': 'ट्रायल के बाद मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तरों के लिए सदस्यता आवश्यक।',
+  'trial.transitionSoft.headline': '{{days}} दिन शेष।',
+  'trial.transitionSoft.subtext': 'आपका प्रशिक्षण डेटा और प्रगति हमेशा आपकी है। सदस्यता बुद्धिमत्ता सुविधाओं को जारी रखती है।',
+  'trial.viewPlans': 'योजनाएं देखें',
+  'trial.expired.headline': 'ट्रायल समाप्त।',
+  'trial.expired.subtext.withWorkouts': '{{workouts}} सत्र रिकॉर्ड। मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तर बहाल करने के लिए सदस्यता लें।',
+  'trial.expired.subtext.noWorkouts': 'मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तर अनलॉक करने के लिए सदस्यता लें।',
+
+  // ============================================
+  // ENGINE — विफलता विश्लेषण
+  // ============================================
+  'failure.dropOff': 'अभ्यास {{index}} ({{name}}) पर रुका — अगले सत्र में वॉल्यूम कम।',
+  'failure.skipHeavy': 'उच्च स्किप दर पाई गई। अभ्यास वर्तमान क्षमता से मेल नहीं खा सकते।',
+  'failure.lowVolume': 'कम वॉल्यूम पूरा हुआ। सत्र बहुत कठिन हो सकता है।',
+  'failure.earlyDropout': 'जल्दी रुकने का पैटर्न। सत्र की अवधि कम हो रही है।',
+  'failure.lateDropout': 'सहनशक्ति रुकावट। हल्के अभ्यास अंत में रखे गए।',
+  'failure.noFailure': 'सत्र सफलतापूर्वक पूरा।',
+  'failure.insight.none': 'सत्र {{percent}}% पूरा। कोई समायोजन आवश्यक नहीं।',
+  'failure.insight.earlyDropout': 'अभ्यास {{index}} ({{name}}) पर रुका — अगले सत्र में वॉल्यूम कम।',
+  'failure.insight.midDropout': 'सेट {{index}} ({{name}}) पर रुका — अभ्यास संख्या समायोजित हो रही है।',
+  'failure.insight.lateDropout': 'लगभग पूरा ({{percent}}%)। छोटा समायोजन लागू।',
+  'failure.insight.skipHeavy': 'सत्र पूरा लेकिन {{percent}}% अभ्यास छोड़े गए। चयन की समीक्षा।',
+  'failure.insight.lowVolume': 'कम वॉल्यूम पूरा ({{percent}}%)। सेट निर्देश कम हो रहे हैं।',
+  'failure.insight.empty': 'कोई अभ्यास पूरा नहीं हुआ। सिस्टम अगले सत्र की कठिनाई कम करता है।',
+  'failure.adjustment.none': 'कोई समायोजन आवश्यक नहीं।',
+  'failure.adjustment.earlyDropout': 'जल्दी रुकावट पाई गई। वॉल्यूम और अवधि कम हो रही है।',
+  'failure.adjustment.midDropout': 'अभ्यास {{index}} पर रुका। अभ्यास संख्या कम हो रही है।',
+  'failure.adjustment.lateDropout': 'सत्र लगभग पूरा। थोड़ी वॉल्यूम कमी।',
+  'failure.adjustment.skipHeavy': 'उच्च स्किप दर। अभ्यास चयन की समीक्षा जरूरी।',
+  'failure.adjustment.lowVolume': 'कम वॉल्यूम पूरा। सेट संख्या कम हो रही है।',
+  'failure.adjustment.empty': 'खाली सत्र। बड़ी कमी लागू।',
+  'failure.pattern.noData': 'अभी कोई सत्र डेटा नहीं।',
+  'failure.pattern.noFailures': 'सभी हाल के सत्र सफलतापूर्वक पूरे। स्थितियाँ प्रगति का समर्थन करती हैं।',
+  'failure.pattern.occasional': 'कभी-कभी अपूर्ण सत्र। वर्तमान वॉल्यूम टिकाऊ लगता है।',
+  'failure.pattern.earlyDropoffs': 'बार-बार जल्दी रुकावट। सत्र अवधि या अभ्यास संख्या कम करने की सलाह।',
+  'failure.pattern.highSkips': 'उच्च स्किप दर। अभ्यास चयन में समायोजन आवश्यक हो सकता है।',
+  'failure.pattern.worsening': 'विफलता दर बढ़ रही है। वॉल्यूम कमी या रिकवरी पर ध्यान दें।',
+  'failure.pattern.general': '{{rate}}% विफलता दर। सत्र कठिनाई समायोजित हो रही है।',
+
+  // ============================================
+  // ENGINE — स्थिति अनुकरण
+  // ============================================
+  'simulation.skip.streakReset': 'स्ट्रीक रीसेट होगी।',
+  'simulation.skip.modeShift': 'अनियमित मोड में जा सकता है।',
+  'simulation.skip.fatigueDrop': 'थकान {{delta}} कम होता है।',
+  'simulation.skip.minimal': 'न्यूनतम प्रभाव — आपके पास गुंजाइश है।',
+  'simulation.train.fatigueUp': 'थकान {{delta}} बढ़ती है।',
+  'simulation.train.modeAdvance': 'अनुशासित मोड की ओर बढ़ता है।',
+  'simulation.train.reduceTomorrow': 'कल हल्का होना चाहिए।',
+  'simulation.train.pushTomorrow': 'कल और जोर लगाने की गुंजाइश।',
+  'simulation.rest.recovery': 'रिकवरी: थकान {{delta}} कम होता है।',
+  'simulation.rest.streakReset': 'स्ट्रीक रीसेट होगी लेकिन रिकवरी प्राथमिकता।',
+  'simulation.rest.ready': 'कल पूरे सत्र के लिए तैयार।',
+
+  // ============================================
+  // ENGINE — एक्सेस नियंत्रण
+  // ============================================
+  'gating.previewMessage': 'उन्नत बुद्धिमत्ता के लिए सदस्यता आवश्यक।',
 };
 
 const sw: Record<string, string> = {
@@ -15900,6 +18709,7 @@ const sw: Record<string, string> = {
   'dashboard.of': 'ya',
   'dashboard.incompleteSession': 'Kikao Kisichokamilika',
   'dashboard.kcal': 'kcal',
+  'dashboard.startNow': 'ANZA SASA',
   'dashboard.stepsToday': 'Hatua',
   'dashboard.activeMin': 'Dak amilifu',
   'dashboard.completionRate': 'Kukamilika',
@@ -15957,7 +18767,8 @@ const sw: Record<string, string> = {
   'fitquest.keepGoing': 'Endelea',
   'fitquest.cancelWorkout': 'Ghairi Mazoezi',
   'fitquest.recordingProgress': 'Inarekodi maendeleo...',
-  'fitquest.idleSub': 'Kizazi cha mazoezi ya akili kinachoendeshwa na\\\\\\\\injini tatu zinazofanya kazi kwa upatanifu',
+  'fitquest.idleSub':
+    'Kizazi cha mazoezi ya akili kinachoendeshwa na\\\\\\\\injini tatu zinazofanya kazi kwa upatanifu',
   'fitquest.currentProfile': 'Wasifu wa Sasa',
   'fitquest.sessions': 'vikao',
   'fitquest.generateWorkout': 'Tengeneza Mazoezi',
@@ -16022,13 +18833,17 @@ const sw: Record<string, string> = {
   'profile.craftMyBody': 'Unda Mwili Wangu',
   'profile.craftMyBodySub': 'Mpango wa mabadiliko ya mwili uliobinafsishwa na lishe na mafunzo',
   'profile.adaptiveTraining': 'Mafunzo ya Adaptive',
-  'profile.adaptiveExplanation': 'Thamani hizi hurekebisha kiotomatiki unapofanya mazoezi. Gusa kila kipimo ili upate maelezo zaidi.',
+  'profile.adaptiveExplanation':
+    'Thamani hizi hurekebisha kiotomatiki unapofanya mazoezi. Gusa kila kipimo ili upate maelezo zaidi.',
   'profile.fatigueSensitivity': 'Usikivu wa uchovu',
-  'profile.fatigueSensitivityDesc': 'Jinsi uchovu huongezeka haraka wakati wa mazoezi. Thamani za juu zinamaanisha kuwa kanuni inakupa kupumzika zaidi kati ya vipindi vikali. Hurekebisha kulingana na viwango vya kukamilisha mazoezi yako na mifumo ya urejeshaji.',
+  'profile.fatigueSensitivityDesc':
+    'Jinsi uchovu huongezeka haraka wakati wa mazoezi. Thamani za juu zinamaanisha kuwa kanuni inakupa kupumzika zaidi kati ya vipindi vikali. Hurekebisha kulingana na viwango vya kukamilisha mazoezi yako na mifumo ya urejeshaji.',
   'profile.progressionPace': 'Kasi ya maendeleo',
-  'profile.progressionPaceDesc': 'Jinsi ugumu wa kufanya mazoezi kwa nguvu unavyoongezeka kwa muda. Maadili ya juu yanamaanisha maendeleo ya haraka kwa mazoezi magumu. Hurekebisha kulingana na kama unakamilisha seti/reps zilizowekwa mara kwa mara.',
+  'profile.progressionPaceDesc':
+    'Jinsi ugumu wa kufanya mazoezi kwa nguvu unavyoongezeka kwa muda. Maadili ya juu yanamaanisha maendeleo ya haraka kwa mazoezi magumu. Hurekebisha kulingana na kama unakamilisha seti/reps zilizowekwa mara kwa mara.',
   'profile.volumeTolerance': 'Uvumilivu wa kiasi',
-  'profile.volumeToleranceDesc': 'Kiasi gani cha jumla cha mafunzo (huweka x reps) mwili wako unaweza kushughulikia. Maadili ya juu yanamaanisha vipindi virefu vya mazoezi na mazoezi zaidi. Hurekebisha kulingana na kukamilika kwa kipindi chako na mazoezi yaliyoruka.',
+  'profile.volumeToleranceDesc':
+    'Kiasi gani cha jumla cha mafunzo (huweka x reps) mwili wako unaweza kushughulikia. Maadili ya juu yanamaanisha vipindi virefu vya mazoezi na mazoezi zaidi. Hurekebisha kulingana na kukamilika kwa kipindi chako na mazoezi yaliyoruka.',
   'profile.confidence': 'Kujiamini',
   'profile.samples': 'Sampuli',
   'profile.rank': 'Cheo & Maendeleo',
@@ -16101,6 +18916,10 @@ const sw: Record<string, string> = {
   'profile.appSection': 'Programu',
   'profile.backupRestore': 'Hifadhi nakala na Rejesha',
   'profile.backupRestoreSub': 'Faili za chelezo za ndani zilizosimbwa kwa njia fiche',
+  'profile.subscription': 'Usajili',
+  'profile.expired': 'Imeisha',
+  'profile.subscribeToUnlock': 'Jiandikishe kufungua vipengele vyote',
+  'profile.searchLanguages': 'Tafuta lugha…',
   'profile.about': 'Kuhusu FitQuest',
   'profile.version': 'Toleo',
   'profile.saved': 'Imehifadhiwa',
@@ -16255,7 +19074,8 @@ const sw: Record<string, string> = {
   'move.noStepHistory': 'Hakuna historia ya hatua bado',
   'move.jogHistory': 'Historia ya Jog',
   'move.noJogHistory': 'Bado hakuna vipindi vya kukimbia',
-  'move.infoXpAndFatigue': 'Hatua 1,000 = XP 4 • Wanaokimbia mbio hupata XP 10 kwa kila mita 100\\\\\\\\nKusogea hakuathiri uchovu wa mazoezi',
+  'move.infoXpAndFatigue':
+    'Hatua 1,000 = XP 4 • Wanaokimbia mbio hupata XP 10 kwa kila mita 100\\\\\\\\nKusogea hakuathiri uchovu wa mazoezi',
   'move.jogComplete': 'Jog Imekamilika! 🏃',
   'move.awesome': 'Inashangaza!',
   'move.km': 'km',
@@ -16299,7 +19119,8 @@ const sw: Record<string, string> = {
   'meal.location.tapEnable': 'Gusa ili kuwezesha eneo',
   'meal.location.infoPrefix': 'Inaonyesha vyakula vinavyopatikana ndani',
   'meal.location.infoSuffix': ', ikijumuisha chaguzi za kikanda na kimataifa.',
-  'meal.location.infoNoLocation': 'Washa eneo ili kuona mapendekezo ya chakula mahususi ya eneo. Gusa beji ya eneo hapo juu ili ujaribu tena.',
+  'meal.location.infoNoLocation':
+    'Washa eneo ili kuona mapendekezo ya chakula mahususi ya eneo. Gusa beji ya eneo hapo juu ili ujaribu tena.',
 
   'legal.title': 'Kituo cha Sheria',
   'legal.documents': 'Nyaraka',
@@ -16325,64 +19146,101 @@ const sw: Record<string, string> = {
   'legal.termsOfServiceExternal': 'Masharti ya Huduma (Tovuti)',
   'legal.readInApp': 'Soma ndani ya programu',
   'legal.cannotOpenLink': 'Imeshindwa kufungua kiungo kwenye kifaa hiki',
-  'legal.noteMedical': 'Mwongozo wa mazoezi ya mwili katika programu hii ni wa kuelimisha na si mbadala wa ushauri wa matibabu.',
-  'legal.noteCounsel': 'Maandishi ya mwisho ya kisheria na ramani ya mamlaka inapaswa kukaguliwa na wakili kabla ya kuachiliwa.',
+  'legal.noteMedical':
+    'Mwongozo wa mazoezi ya mwili katika programu hii ni wa kuelimisha na si mbadala wa ushauri wa matibabu.',
+  'legal.noteCounsel':
+    'Maandishi ya mwisho ya kisheria na ramani ya mamlaka inapaswa kukaguliwa na wakili kabla ya kuachiliwa.',
   'legal.lastUpdated': 'Ilisasishwa mwisho:',
   'legal.privacy.sections.developerTitle': 'Msanidi',
-  'legal.privacy.sections.developerBody': 'FitQuest imetengenezwa na kuchapishwa na fitquest.dev. Sera hii ya faragha inasimamia programu ya simu ya FitQuest inayopatikana kwenye Google Play na Apple App Store.',
+  'legal.privacy.sections.developerBody':
+    'FitQuest imetengenezwa na kuchapishwa na fitquest.dev. Sera hii ya faragha inasimamia programu ya simu ya FitQuest inayopatikana kwenye Google Play na Apple App Store.',
   'legal.privacy.sections.dataCollectTitle': '1) Data Tunayokusanya',
-  'legal.privacy.sections.dataCollectBody': 'FitQuest huchakata kategoria zifuatazo za data ili kutoa vipengele vya siha na siha vilivyobinafsishwa:',
-  'legal.privacy.bullets.health': 'Vipimo vya afya na shughuli: mapigo ya moyo, hatua, data ya usingizi, historia ya mazoezi, vipimo vya mwili na alama za kupona',
-  'legal.privacy.bullets.biometric': 'Data ya kibayometriki: alama ya vidole au utambuzi wa uso unaotumika kwa uthibitishaji wa programu (huchakatwa kwenye kifaa pekee, haihifadhiwi wala kutumwa)',
-  'legal.privacy.bullets.location': 'Data ya eneo: GPS inaratibu wakati wa kufuatilia jog (tu unapotumia kipengele cha jog kikamilifu)',
-  'legal.privacy.bullets.account': 'Maelezo ya wasifu: malengo ya siha, kiwango cha uzoefu, mapendeleo ya vifaa na ratiba ya kazi ya hiari',
-  'legal.privacy.bullets.usage': 'Mitindo ya utumiaji wa programu na mwingiliano wa vipengele (bila jina, hutumika kuboresha programu)',
-  'legal.privacy.bullets.device': 'Aina ya kifaa, toleo la mfumo wa uendeshaji na toleo la programu kwa uoanifu na kuripoti kuacha kufanya kazi',
+  'legal.privacy.sections.dataCollectBody':
+    'FitQuest huchakata kategoria zifuatazo za data ili kutoa vipengele vya siha na siha vilivyobinafsishwa:',
+  'legal.privacy.bullets.health':
+    'Vipimo vya afya na shughuli: mapigo ya moyo, hatua, data ya usingizi, historia ya mazoezi, vipimo vya mwili na alama za kupona',
+  'legal.privacy.bullets.biometric':
+    'Data ya kibayometriki: alama ya vidole au utambuzi wa uso unaotumika kwa uthibitishaji wa programu (huchakatwa kwenye kifaa pekee, haihifadhiwi wala kutumwa)',
+  'legal.privacy.bullets.location':
+    'Data ya eneo: GPS inaratibu wakati wa kufuatilia jog (tu unapotumia kipengele cha jog kikamilifu)',
+  'legal.privacy.bullets.account':
+    'Maelezo ya wasifu: malengo ya siha, kiwango cha uzoefu, mapendeleo ya vifaa na ratiba ya kazi ya hiari',
+  'legal.privacy.bullets.usage':
+    'Mitindo ya utumiaji wa programu na mwingiliano wa vipengele (bila jina, hutumika kuboresha programu)',
+  'legal.privacy.bullets.device':
+    'Aina ya kifaa, toleo la mfumo wa uendeshaji na toleo la programu kwa uoanifu na kuripoti kuacha kufanya kazi',
   'legal.privacy.bullets.photos': 'Picha za wasifu: zilizohifadhiwa ndani ya kifaa chako ukichagua kuweka moja',
-  'legal.privacy.bullets.healthConnect': 'Data ya Health Connect / HealthKit: hatua, mapigo ya moyo, usingizi na data ya mazoezi (ikiwa tu utatoa ruhusa wazi)',
+  'legal.privacy.bullets.healthConnect':
+    'Data ya Health Connect / HealthKit: hatua, mapigo ya moyo, usingizi na data ya mazoezi (ikiwa tu utatoa ruhusa wazi)',
   'legal.privacy.sections.storageTitle': '2) Hifadhi ya data',
-  'legal.privacy.sections.storageBody': 'FitQuest imeundwa kama programu ya nje ya mtandao ya kwanza. Data yako yote ya siha huhifadhiwa ndani ya kifaa chako kwa kutumia SQLite. Hakuna data ya kibinafsi iliyohifadhiwa kwenye seva za nje. Rekodi nyeti za afya husimbwa kwa njia fiche kabla ya kuhifadhi kwa kutumia usimbaji fiche wa kiwango cha sekta ya AES-256-GCM.',
+  'legal.privacy.sections.storageBody':
+    'FitQuest imeundwa kama programu ya nje ya mtandao ya kwanza. Data yako yote ya siha huhifadhiwa ndani ya kifaa chako kwa kutumia SQLite. Hakuna data ya kibinafsi iliyohifadhiwa kwenye seva za nje. Rekodi nyeti za afya husimbwa kwa njia fiche kabla ya kuhifadhi kwa kutumia usimbaji fiche wa kiwango cha sekta ya AES-256-GCM.',
   'legal.privacy.sections.securityTitle': '3) Usalama wa data',
-  'legal.privacy.sections.securityBody': 'Data zote nyeti za afya husimbwa kwa njia fiche kwa kutumia usimbaji fiche wa AES-256-GCM kabla ya kuhifadhiwa kwenye kifaa chako. Vifunguo vya usimbaji fiche zinalindwa na maunzi salama ya kifaa chako (Keychain kwenye iOS, Keystore kwenye Android). Uthibitishaji wa biometriska hutoa safu ya ziada ya ulinzi. Tunatumia utokaji wa ufunguo salama (PBKDF2) na ulinganisho wa mara kwa mara ili kuzuia mashambulizi ya saa.',
+  'legal.privacy.sections.securityBody':
+    'Data zote nyeti za afya husimbwa kwa njia fiche kwa kutumia usimbaji fiche wa AES-256-GCM kabla ya kuhifadhiwa kwenye kifaa chako. Vifunguo vya usimbaji fiche zinalindwa na maunzi salama ya kifaa chako (Keychain kwenye iOS, Keystore kwenye Android). Uthibitishaji wa biometriska hutoa safu ya ziada ya ulinzi. Tunatumia utokaji wa ufunguo salama (PBKDF2) na ulinganisho wa mara kwa mara ili kuzuia mashambulizi ya saa.',
   'legal.privacy.sections.thirdPartyTitle': '4) Huduma za Watu wa Tatu',
-  'legal.privacy.sections.thirdPartyBody': 'FitQuest haiuzi, kukodisha, au kuuza data yako ya kibinafsi. Miunganisho ifuatayo ya wahusika wengine inaweza kuchakata data ndogo:',
-  'legal.privacy.bullets.thirdPartyAI': 'Vipengele vya AI: Unapotumia Kocha au Profesa wa AI, vidokezo vyako hutumwa kwa OpenRouter (kupitia miundo ya lugha ya Llama) kutoa majibu. Hakuna data ya afya ya kibinafsi iliyojumuishwa katika maombi haya - maandishi unayoandika pekee.',
-  'legal.privacy.bullets.thirdPartyHealthConnect': 'Health Connect / HealthKit: Ukitoa ruhusa, FitQuest inasoma vipimo vya afya kutoka kwa huduma hizi za jukwaa. Data hutiririka kwa njia moja (kusoma pekee) na huhifadhiwa kwa njia fiche kwenye kifaa chako.',
-  'legal.privacy.bullets.thirdPartyRevenueCat': 'RevenueCat: Hudhibiti uthibitishaji wa usajili. Hupokea tu tokeni za ununuzi na vitambulishi vya watumiaji bila majina - hakuna data ya afya au siha.',
-  'legal.privacy.bullets.thirdPartySentry': 'Mtumaji: Huduma ya kuripoti kuacha kufanya kazi ambayo hupokea kumbukumbu za makosa ambazo hazikutambulisha. Hakuna data ya kibinafsi au vipimo vya afya vilivyojumuishwa.',
+  'legal.privacy.sections.thirdPartyBody':
+    'FitQuest haiuzi, kukodisha, au kuuza data yako ya kibinafsi. Miunganisho ifuatayo ya wahusika wengine inaweza kuchakata data ndogo:',
+  'legal.privacy.bullets.thirdPartyAI':
+    'Vipengele vya AI: Unapotumia Kocha au Profesa wa AI, vidokezo vyako hutumwa kwa OpenRouter (kupitia miundo ya lugha ya Llama) kutoa majibu. Hakuna data ya afya ya kibinafsi iliyojumuishwa katika maombi haya - maandishi unayoandika pekee.',
+  'legal.privacy.bullets.thirdPartyHealthConnect':
+    'Health Connect / HealthKit: Ukitoa ruhusa, FitQuest inasoma vipimo vya afya kutoka kwa huduma hizi za jukwaa. Data hutiririka kwa njia moja (kusoma pekee) na huhifadhiwa kwa njia fiche kwenye kifaa chako.',
+  'legal.privacy.bullets.thirdPartyRevenueCat':
+    'RevenueCat: Hudhibiti uthibitishaji wa usajili. Hupokea tu tokeni za ununuzi na vitambulishi vya watumiaji bila majina - hakuna data ya afya au siha.',
+  'legal.privacy.bullets.thirdPartySentry':
+    'Mtumaji: Huduma ya kuripoti kuacha kufanya kazi ambayo hupokea kumbukumbu za makosa ambazo hazikutambulisha. Hakuna data ya kibinafsi au vipimo vya afya vilivyojumuishwa.',
   'legal.privacy.sections.childrenTitle': '5) Faragha ya Watoto',
-  'legal.privacy.sections.childrenBody': 'FitQuest imeundwa kwa ajili ya watumiaji wenye umri wa miaka 13 na zaidi. Hatukusanyi taarifa za kibinafsi kutoka kwa watoto walio na umri wa chini ya miaka 13 kwa kufahamu. Ikiwa unaamini kuwa mtoto ametupatia data, tafadhali wasiliana nasi kupitia fitquestsupp0rt@gmail.com ili ufute mara moja.',
+  'legal.privacy.sections.childrenBody':
+    'FitQuest imeundwa kwa ajili ya watumiaji wenye umri wa miaka 13 na zaidi. Hatukusanyi taarifa za kibinafsi kutoka kwa watoto walio na umri wa chini ya miaka 13 kwa kufahamu. Ikiwa unaamini kuwa mtoto ametupatia data, tafadhali wasiliana nasi kupitia fitquestsupp0rt@gmail.com ili ufute mara moja.',
   'legal.privacy.sections.retentionTitle': '6) Uhifadhi wa Data',
-  'legal.privacy.sections.retentionBody': 'Data yako huhifadhiwa kwenye kifaa chako na kuhifadhiwa mradi tu programu imesakinishwa. Unaweza kufuta data yote wakati wowote kupitia Wasifu → Mipangilio → Futa Data Yote. Kuondoa programu huondoa data yote ya ndani kabisa. Unaweza pia kuomba kufutwa kwa data kupitia tovuti yetu katika https://fitquest.dev/delete-account.',
+  'legal.privacy.sections.retentionBody':
+    'Data yako huhifadhiwa kwenye kifaa chako na kuhifadhiwa mradi tu programu imesakinishwa. Unaweza kufuta data yote wakati wowote kupitia Wasifu → Mipangilio → Futa Data Yote. Kuondoa programu huondoa data yote ya ndani kabisa. Unaweza pia kuomba kufutwa kwa data kupitia tovuti yetu katika https://fitquest.dev/delete-account.',
   'legal.privacy.sections.rightsTitle': '7) Haki zako',
-  'legal.privacy.sections.rightsBody': 'Chini ya sheria zinazotumika za ulinzi wa data (ikijumuisha Sheria ya Kulinda Data ya 2011 ya Lesotho, GDPR katika Umoja wa Ulaya na CCPA huko California), una haki zifuatazo:',
-  'legal.privacy.bullets.accessRight': 'Ufikiaji: Tazama data yote ambayo programu huhifadhi kukuhusu kupitia Wasifu → Hamisha Data',
-  'legal.privacy.bullets.deleteRight': 'Ufutaji: Futa kabisa data yako yote kupitia mipangilio ya programu au tovuti yetu',
-  'legal.privacy.bullets.exportRight': 'Uwezo wa kubebeka: Hamisha data yako katika umbizo la JSON ili kuhamishiwa kwenye huduma nyingine',
+  'legal.privacy.sections.rightsBody':
+    'Chini ya sheria zinazotumika za ulinzi wa data (ikijumuisha Sheria ya Kulinda Data ya 2011 ya Lesotho, GDPR katika Umoja wa Ulaya na CCPA huko California), una haki zifuatazo:',
+  'legal.privacy.bullets.accessRight':
+    'Ufikiaji: Tazama data yote ambayo programu huhifadhi kukuhusu kupitia Wasifu → Hamisha Data',
+  'legal.privacy.bullets.deleteRight':
+    'Ufutaji: Futa kabisa data yako yote kupitia mipangilio ya programu au tovuti yetu',
+  'legal.privacy.bullets.exportRight':
+    'Uwezo wa kubebeka: Hamisha data yako katika umbizo la JSON ili kuhamishiwa kwenye huduma nyingine',
   'legal.privacy.bullets.correctRight': 'Marekebisho: Sasisha au urekebishe maelezo yako mafupi wakati wowote',
-  'legal.privacy.bullets.objectionRight': 'Pingamizi: Ondoa idhini ya kuchakata data wakati wowote kupitia Kituo cha Kisheria',
+  'legal.privacy.bullets.objectionRight':
+    'Pingamizi: Ondoa idhini ya kuchakata data wakati wowote kupitia Kituo cha Kisheria',
   'legal.privacy.sections.popiaTitle': '8) Uzingatiaji wa Ulinzi wa Data (Lesotho)',
-  'legal.privacy.sections.popiaBody': 'Kwa mujibu wa Sheria ya Ulinzi wa Data ya 2011 ya Ufalme wa Lesotho, fitquest.dev ni mhusika anayewajibika kwa taarifa zako za kibinafsi. Tunachakata data yako kihalali, kupunguza ukusanyaji kwa kile kinachohitajika, kuhakikisha usahihi na kudumisha ulinzi ufaao wa usalama. Kwa watumiaji wa mipakani, tunatii pia POPIA (Afrika Kusini), GDPR (EU), na CCPA (California) inapohitajika.',
+  'legal.privacy.sections.popiaBody':
+    'Kwa mujibu wa Sheria ya Ulinzi wa Data ya 2011 ya Ufalme wa Lesotho, fitquest.dev ni mhusika anayewajibika kwa taarifa zako za kibinafsi. Tunachakata data yako kihalali, kupunguza ukusanyaji kwa kile kinachohitajika, kuhakikisha usahihi na kudumisha ulinzi ufaao wa usalama. Kwa watumiaji wa mipakani, tunatii pia POPIA (Afrika Kusini), GDPR (EU), na CCPA (California) inapohitajika.',
   'legal.privacy.sections.updatesTitle': '9) Sasisho za Sera',
-  'legal.privacy.sections.updatesBody': 'Tunaweza kusasisha sera hii ya faragha mara kwa mara. Mabadiliko yoyote yataonyeshwa kwenye programu na tarehe ya "Ilisasishwa Mwisho" iliyosasishwa na utaombwa kukagua na kukubali sera iliyosasishwa. Kuendelea kutumia programu baada ya mabadiliko kunajumuisha kukubalika kwa sera mpya.',
+  'legal.privacy.sections.updatesBody':
+    'Tunaweza kusasisha sera hii ya faragha mara kwa mara. Mabadiliko yoyote yataonyeshwa kwenye programu na tarehe ya "Ilisasishwa Mwisho" iliyosasishwa na utaombwa kukagua na kukubali sera iliyosasishwa. Kuendelea kutumia programu baada ya mabadiliko kunajumuisha kukubalika kwa sera mpya.',
   'legal.privacy.sections.contactTitle': '10) Mawasiliano',
-  'legal.privacy.sections.contactBody': 'Kwa maombi ya faragha, tuma barua pepe kwa fitquestsup0rt@gmail.com. Unaweza pia kutembelea https://fitquest.dev/support. Jumuisha kitambulisho cha akaunti yako kinapopatikana. Tunajibu ndani ya siku 30 za kazi.',
+  'legal.privacy.sections.contactBody':
+    'Kwa maombi ya faragha, tuma barua pepe kwa fitquestsup0rt@gmail.com. Unaweza pia kutembelea https://fitquest.dev/support. Jumuisha kitambulisho cha akaunti yako kinapopatikana. Tunajibu ndani ya siku 30 za kazi.',
   'legal.terms.sections.useTitle': '1) Matumizi Yanayokubalika',
-  'legal.terms.sections.useBody': 'Unakubali kutumia FitQuest kihalali na usijaribu kubadilisha uhandisi, kutenganisha, kukwepa vidhibiti vya usalama, njia za usajili, au vipengele vya ulinzi wa data. Huruhusiwi kutumia programu kwa madhumuni yoyote kinyume cha sheria au ukiukaji wa kanuni zozote zinazotumika.',
+  'legal.terms.sections.useBody':
+    'Unakubali kutumia FitQuest kihalali na usijaribu kubadilisha uhandisi, kutenganisha, kukwepa vidhibiti vya usalama, njia za usajili, au vipengele vya ulinzi wa data. Huruhusiwi kutumia programu kwa madhumuni yoyote kinyume cha sheria au ukiukaji wa kanuni zozote zinazotumika.',
   'legal.terms.sections.medicalTitle': '2) Kanusho la Matibabu',
-  'legal.terms.sections.medicalBody': 'FitQuest ni programu ya siha na siha na SI kifaa cha matibabu au huduma. Programu haitoi ushauri wa matibabu, utambuzi au matibabu. Mapendekezo ya mazoezi, alama za afya, mapendekezo ya uokoaji na mwongozo unaozalishwa na AI ni kwa madhumuni ya taarifa na elimu pekee. Daima wasiliana na mtaalamu wa afya aliyehitimu kabla ya kuanza, kurekebisha, au kuacha programu yoyote ya mazoezi, hasa ikiwa una hali za afya, majeraha, au wasiwasi. Acha kufanya mazoezi mara moja ikiwa unapata maumivu, kizunguzungu, au usumbufu.',
+  'legal.terms.sections.medicalBody':
+    'FitQuest ni programu ya siha na siha na SI kifaa cha matibabu au huduma. Programu haitoi ushauri wa matibabu, utambuzi au matibabu. Mapendekezo ya mazoezi, alama za afya, mapendekezo ya uokoaji na mwongozo unaozalishwa na AI ni kwa madhumuni ya taarifa na elimu pekee. Daima wasiliana na mtaalamu wa afya aliyehitimu kabla ya kuanza, kurekebisha, au kuacha programu yoyote ya mazoezi, hasa ikiwa una hali za afya, majeraha, au wasiwasi. Acha kufanya mazoezi mara moja ikiwa unapata maumivu, kizunguzungu, au usumbufu.',
   'legal.terms.sections.subscriptionTitle': '3) Usajili na Malipo',
-  'legal.terms.sections.subscriptionBody': 'FitQuest inatoa jaribio la bure la siku 14 la vipengele vyote vinavyolipishwa. Baada ya kipindi cha majaribio kuisha, unaweza kujiandikisha ili kuendelea kutumia vipengele vinavyolipishwa au kuendelea na kiwango cha bila malipo. Usajili unaolipishwa hutozwa kupitia Google Play Store au Apple App Store. Usajili husasishwa kiotomatiki mwishoni mwa kila kipindi cha bili isipokuwa kama kughairiwa angalau saa 24 kabla ya tarehe ya kusasisha. Unaweza kudhibiti au kughairi usajili wako kupitia mipangilio ya duka la programu ya kifaa chako. Urejeshaji wa pesa hutegemea sera ya kurejesha pesa ya mfumo husika. Bei zinaweza kutofautiana kulingana na eneo na kuonyeshwa katika sarafu ya nchi yako kabla ya kununua.',
+  'legal.terms.sections.subscriptionBody':
+    'FitQuest inatoa jaribio la bure la siku 14 la vipengele vyote vinavyolipishwa. Baada ya kipindi cha majaribio kuisha, unaweza kujiandikisha ili kuendelea kutumia vipengele vinavyolipishwa au kuendelea na kiwango cha bila malipo. Usajili unaolipishwa hutozwa kupitia Google Play Store au Apple App Store. Usajili husasishwa kiotomatiki mwishoni mwa kila kipindi cha bili isipokuwa kama kughairiwa angalau saa 24 kabla ya tarehe ya kusasisha. Unaweza kudhibiti au kughairi usajili wako kupitia mipangilio ya duka la programu ya kifaa chako. Urejeshaji wa pesa hutegemea sera ya kurejesha pesa ya mfumo husika. Bei zinaweza kutofautiana kulingana na eneo na kuonyeshwa katika sarafu ya nchi yako kabla ya kununua.',
   'legal.terms.sections.ipTitle': '4) Miliki',
-  'legal.terms.sections.ipBody': 'Maudhui yote, muundo, msimbo, algoriti, chapa na nyenzo katika FitQuest ni haki miliki ya fitquest.dev na zinalindwa na sheria zinazotumika za hakimiliki na chapa ya biashara. Huruhusiwi kuzaliana, kusambaza, au kuunda kazi zinazotokana na sehemu yoyote ya programu bila kibali cha maandishi.',
+  'legal.terms.sections.ipBody':
+    'Maudhui yote, muundo, msimbo, algoriti, chapa na nyenzo katika FitQuest ni haki miliki ya fitquest.dev na zinalindwa na sheria zinazotumika za hakimiliki na chapa ya biashara. Huruhusiwi kuzaliana, kusambaza, au kuunda kazi zinazotokana na sehemu yoyote ya programu bila kibali cha maandishi.',
   'legal.terms.sections.liabilityTitle': '5) Ukomo wa Dhima',
-  'legal.terms.sections.liabilityBody': 'Kwa kiwango cha juu kinachoruhusiwa na sheria, fitquest.dev haitawajibika kwa uharibifu wowote usio wa moja kwa moja, wa bahati mbaya, maalum, unaofuata, au wa adhabu kutokana na matumizi yako ya programu, ikijumuisha lakini sio tu majeraha ya kimwili, kupoteza data au kukatizwa kwa huduma. Jumla ya dhima yetu haitazidi kiasi ulicholipa kwa vipengele vya malipo katika miezi 12 iliyotangulia dai.',
+  'legal.terms.sections.liabilityBody':
+    'Kwa kiwango cha juu kinachoruhusiwa na sheria, fitquest.dev haitawajibika kwa uharibifu wowote usio wa moja kwa moja, wa bahati mbaya, maalum, unaofuata, au wa adhabu kutokana na matumizi yako ya programu, ikijumuisha lakini sio tu majeraha ya kimwili, kupoteza data au kukatizwa kwa huduma. Jumla ya dhima yetu haitazidi kiasi ulicholipa kwa vipengele vya malipo katika miezi 12 iliyotangulia dai.',
   'legal.terms.sections.terminationTitle': '6) Kukomesha',
-  'legal.terms.sections.terminationBody': 'Tunahifadhi haki ya kusimamisha au kusitisha ufikiaji wako kwa FitQuest ikiwa utakiuka sheria na masharti haya. Unaweza kuacha kutumia programu wakati wowote. Baada ya kusitishwa, data yako iliyohifadhiwa kwenye kifaa chako itasalia kwenye kifaa chako hadi uifute au uondoe programu.',
+  'legal.terms.sections.terminationBody':
+    'Tunahifadhi haki ya kusimamisha au kusitisha ufikiaji wako kwa FitQuest ikiwa utakiuka sheria na masharti haya. Unaweza kuacha kutumia programu wakati wowote. Baada ya kusitishwa, data yako iliyohifadhiwa kwenye kifaa chako itasalia kwenye kifaa chako hadi uifute au uondoe programu.',
   'legal.terms.sections.governingLawTitle': '7) Sheria ya Utawala',
-  'legal.terms.sections.governingLawBody': 'Masharti haya yanatawaliwa na kufasiriwa kwa mujibu wa sheria za Ufalme wa Lesotho. Mizozo yoyote inayotokana na sheria na masharti haya au matumizi yako ya FitQuest itakuwa chini ya mamlaka ya kipekee ya mahakama za Lesotho. Iwapo kifungu chochote cha masharti haya kitapatikana kuwa hakitekelezeki, masharti yaliyosalia yataendelea kwa nguvu kamili na athari.',
-  'legal.terms.bullets.compliance': 'Ni lazima utii sera zote zinazotumika za Google Play na Apple App Store unapotumia programu hii',
-  'legal.terms.bullets.accountDelete': 'Unaweza kufuta akaunti yako na data yote inayohusishwa wakati wowote kupitia Wasifu → Mipangilio au kwa https://fitquest.dev/delete-account',
+  'legal.terms.sections.governingLawBody':
+    'Masharti haya yanatawaliwa na kufasiriwa kwa mujibu wa sheria za Ufalme wa Lesotho. Mizozo yoyote inayotokana na sheria na masharti haya au matumizi yako ya FitQuest itakuwa chini ya mamlaka ya kipekee ya mahakama za Lesotho. Iwapo kifungu chochote cha masharti haya kitapatikana kuwa hakitekelezeki, masharti yaliyosalia yataendelea kwa nguvu kamili na athari.',
+  'legal.terms.bullets.compliance':
+    'Ni lazima utii sera zote zinazotumika za Google Play na Apple App Store unapotumia programu hii',
+  'legal.terms.bullets.accountDelete':
+    'Unaweza kufuta akaunti yako na data yote inayohusishwa wakati wowote kupitia Wasifu → Mipangilio au kwa https://fitquest.dev/delete-account',
 
   'common.save': 'Hifadhi',
   'common.cancel': 'Ghairi',
@@ -16458,7 +19316,8 @@ const sw: Record<string, string> = {
   'savedWorkouts.startAnytime': 'Anza wakati wowote',
   'savedWorkouts.deleteFailed': 'Imeshindwa kufuta mazoezi. Tafadhali jaribu tena.',
   'savedWorkouts.emptyTitle': 'Bado Hakuna Mazoezi Yaliyohifadhiwa',
-  'savedWorkouts.emptySubtitle': 'Jenga mazoezi yako ya kwanza maalum kwa kuchagua mazoezi yanayolingana na malengo yako. Inachukua dakika moja tu!',
+  'savedWorkouts.emptySubtitle':
+    'Jenga mazoezi yako ya kwanza maalum kwa kuchagua mazoezi yanayolingana na malengo yako. Inachukua dakika moja tu!',
   'savedWorkouts.featurePick': 'Chagua mazoezi yako',
   'savedWorkouts.featureSet': 'Weka wawakilishi na kupumzika',
   'savedWorkouts.featureStart': 'Anza wakati wowote',
@@ -16510,7 +19369,8 @@ const sw: Record<string, string> = {
   'help.featureDesc': 'Je, una wazo la kufanya FitQuest iwe bora zaidi? Tungependa kuisikia',
   'help.responseTime': 'Kwa kawaida tunajibu ndani ya saa 24-48',
 
-  'about.description': 'FitQuest ni jukwaa pana la mazoezi ya viungo lililoundwa ili kukusaidia kufikia malengo yako ya mafunzo. Data yako yote itasalia kwenye kifaa chako, ikilindwa na usimbaji fiche wa AES-256.',
+  'about.description':
+    'FitQuest ni jukwaa pana la mazoezi ya viungo lililoundwa ili kukusaidia kufikia malengo yako ya mafunzo. Data yako yote itasalia kwenye kifaa chako, ikilindwa na usimbaji fiche wa AES-256.',
   'about.platform': 'Jukwaa',
   'about.dataStorage': 'Hifadhi ya Data',
   'about.onDevice': 'Kwenye kifaa pekee',
@@ -16685,7 +19545,8 @@ const sw: Record<string, string> = {
   'paywall.features.cloudBackupSub': 'Usiwahi kupoteza maendeleo yako',
 
   'onboarding.welcome': 'Karibu kwenye FitQuest',
-  'onboarding.tagline': 'Mwenza wako wa mazoezi ya viungo inayoendeshwa na AI.\\\\\\\\nHebu tubinafsishe matumizi yako.',
+  'onboarding.tagline':
+    'Mwenza wako wa mazoezi ya viungo inayoendeshwa na AI.\\\\\\\\nHebu tubinafsishe matumizi yako.',
   'onboarding.heroBody': 'Treni Smart',
   'onboarding.heroMind': 'Fikiria Mkali',
   'onboarding.heroMove': 'Sogeza Zaidi',
@@ -16740,9 +19601,16 @@ const sw: Record<string, string> = {
   'onboarding.heightPlaceholder': 'Urefu (cm)',
   'onboarding.saveError': 'Imeshindwa kuhifadhi wasifu wako. Tafadhali jaribu tena.',
   'onboarding.permTitle': 'Washa ruhusa',
-  'onboarding.permSub': 'Hizi husaidia FitQuest kufanya kazi vizuri kwako. Unaweza kuzibadilisha wakati wowote katika Mipangilio.',
+  'onboarding.permSub':
+    'Hizi husaidia FitQuest kufanya kazi vizuri kwako. Unaweza kuzibadilisha wakati wowote katika Mipangilio.',
   'onboarding.perm.notifications': 'Vikumbusho vya mazoezi',
   'onboarding.perm.notificationsSub': 'Pokea vikumbusho ili kubaki kwenye ratiba yako ya mazoezi',
+  'onboarding.perm.motion': 'Mwendo na Shughuli',
+  'onboarding.perm.motionSub': 'Fuatilia hatua, gundua mazoezi na hesabu marudio kwa kutumia sensori za mwendo',
+  'onboarding.perm.location': 'Eneo (Ufuatiliaji wa Kukimbia)',
+  'onboarding.perm.locationSub': 'Unda ramani ya njia zako za kukimbia na uhesabu umbali kwa usahihi',
+  'onboarding.perm.healthConnect': 'Health Connect',
+  'onboarding.perm.healthConnectSub': 'Sawazisha mapigo ya moyo, usingizi na data ya mazoezi na Android Health Connect',
   'onboarding.perm.allow': 'Ruhusu',
   'onboarding.perm.skipNote': 'Unaweza kuruka hii — ruhusa zinaweza kuwashwa baadaye katika wasifu wako.',
 
@@ -16916,7 +19784,8 @@ const sw: Record<string, string> = {
   'backup.createBackup': 'Unda Hifadhi Nakala',
   'backup.availableBackups': 'Nakala Inapatikana',
   'backup.noBackups': 'Bado hakuna chelezo.',
-  'backup.helperText': 'Huunda faili chelezo iliyosimbwa kwa hifadhidata ya eneo lako. Ukiweka neno la siri, lazima utumie neno la siri sawa ili kurejesha.',
+  'backup.helperText':
+    'Huunda faili chelezo iliyosimbwa kwa hifadhidata ya eneo lako. Ukiweka neno la siri, lazima utumie neno la siri sawa ili kurejesha.',
   'backup.optionalPassphrase': 'Nenosiri la hiari',
   'backup.working': 'Inafanya kazi...',
   'backup.created': 'Hifadhi rudufu imeundwa',
@@ -16933,7 +19802,8 @@ const sw: Record<string, string> = {
   'backup.uploaded': 'Imepakiwa',
   'backup.uploadFailed': 'Imeshindwa kupakia',
   'backup.noCloudBackups': 'Bado hakuna chelezo za wingu.',
-  'backup.cloudHelper': 'Huhifadhi bahasha iliyosimbwa kwa njia fiche kwenye mandharinyuma ya Awamu yako ya 2. Seva haiwezi kusimbua data yako.',
+  'backup.cloudHelper':
+    'Huhifadhi bahasha iliyosimbwa kwa njia fiche kwenye mandharinyuma ya Awamu yako ya 2. Seva haiwezi kusimbua data yako.',
 
   'audio.warmup.start': 'Wacha tuanze na kuongeza joto. Harakati nyepesi kuamsha misuli yako na kuandaa mwili wako.',
   'audio.main.start': 'Hebu tuingie ndani yake. Mazoezi kuu yanaanza sasa.',
@@ -16980,6 +19850,143 @@ const sw: Record<string, string> = {
   'audio.minutes': 'Dakika {{minutes}} za bidii.',
   'audio.progressions': '{{count}} mazoezi tayari kupanda!|{{count}} mazoezi tayari kupanda ngazi!',
   'audio.xpEarned': 'Pamoja na XP {{xp}} iliyopatikana.',
+
+  // ============================================
+  // ENGINE — Ishara za Tabia
+  // ============================================
+  'signal.transition.advancing.subtext': 'Mantiki ya maendeleo imewashwa kulingana na shughuli za hivi karibuni.',
+  'signal.transition.regressing.subtext': 'Mzigo wa kikao umepunguzwa ili kulingana na mdundo wa sasa.',
+  'signal.firstSession.headline': 'Mfumo tayari. Anza kikao chako cha kwanza.',
+  'signal.firstSession.subtext': 'Kila kikao kinasawazisha mfumo kwa uwezo wako.',
+  'signal.streakAtRisk.headline': 'Siku {{streak}} mfululizo. Endelea leo kuimarisha.',
+  'signal.streakAtRisk.subtext.disciplined': 'Uthabiti unaboresha usahihi wa maendeleo.',
+  'signal.streakAtRisk.subtext.inconsistent': 'Kikao kifupi kinatosha kudumisha mdundo.',
+  'signal.restAdvised.headline': 'Kupumzika kunashauriwa kulingana na uchovu.',
+  'signal.restAdvised.subtext.fatigue': 'Uchovu {{fatigue}}%. Kupumzika kunaharakisha kubadilika.',
+  'signal.restAdvised.subtext.readiness': 'Utayari {{readiness}}%. Kupona kunaendelea.',
+  'signal.momentum.headline': 'Kikao kimekamilika. Data imerekodiwa.',
+  'signal.momentum.subtext.streak': 'Mtindo wa siku {{streak}}. Mfumo unaboresha programu yako.',
+  'signal.momentum.subtext.default': 'Kupona kunaanza. Kikao kifuatacho kitarekebishwa ipasavyo.',
+  'signal.comeback.headline.inconsistent': 'Siku {{days}} za mapumziko. Kikao cha upinzani mdogo kinapatikana.',
+  'signal.comeback.headline.disciplined': 'Siku {{days}} tangu kikao cha mwisho. Ukali umesawazishwa upya.',
+  'signal.comeback.subtext.inconsistent': 'Mfumo umerekebishwa kwa kurejea kwa urahisi.',
+  'signal.comeback.subtext.disciplined': 'Kiasi kimerekebishwa kulingana na hali ya sasa ya kupona.',
+  'signal.recoveryReady.headline.disciplined': 'Utayari bora. Masharti ya maendeleo yametimizwa.',
+  'signal.recoveryReady.headline.inconsistent': 'Kupona kumekamilika. Hali nzuri kwa kikao.',
+  'signal.recoveryReady.subtext': 'Utayari {{readiness}}%.',
+  'signal.streakBuilding.headline': 'Siku {{streak}} mfululizo. Mfumo unakubaliana na mdundo wako.',
+  'signal.streakBuilding.subtext.disciplined': 'Kiasi na ukali vinapanda kulingana na utendaji.',
+  'signal.streakBuilding.subtext.inconsistent': 'Uthabiti unajengwa. Changamoto inaongezeka polepole.',
+  'signal.expectToday.headline.disciplined': 'Dirisha la mafunzo limefunguliwa. Mfumo tayari.',
+  'signal.expectToday.headline.inconsistent': 'Kikao kinapatikana ukiwa tayari.',
+  'signal.expectToday.subtext.good': 'Utayari {{readiness}}%. Hali nzuri.',
+  'signal.expectToday.subtext.moderate': 'Utayari wa wastani. Kikao nyepesi kinashauriwa.',
+
+  // ============================================
+  // ENGINE — Kumbukumbu Inayobadilika
+  // ============================================
+  'memory.noHistory.headline': 'Kikao cha kwanza kinakuja. Mfumo unajifunza kutoka kila marudio.',
+  'memory.noHistory.trendStatement': 'Hakuna data bado. Kikao chako cha kwanza kitaweka msingi.',
+  'memory.lastSession.headline.crushed': 'Kikao cha mwisho: mazoezi {{completed}} yakakamilika katika dakika {{duration}}.',
+  'memory.lastSession.headline.adjusted': 'Kikao cha mwisho: {{completed}}/{{total}} kukamilika. Mfumo umerekebishwa.',
+  'memory.lastSession.headline.tough': 'Kikao cha mwisho kilikuwa kigumu. {{completed}}/{{total}} kukamilika. Kupona kunapewa kipaumbele.',
+  'memory.trend.improving': 'Utendaji unapanda. Mfumo unaongeza changamoto.',
+  'memory.trend.declining': 'Vikao vya hivi karibuni vigumu zaidi. Mfumo umerekebishwa kujenga kasi.',
+  'memory.trend.steady.data': 'Matokeo thabiti. Karibu na kiwango kifuatacho cha maendeleo.',
+  'memory.trend.steady.building': 'Msingi unajengwa. Endelea kujitokeza.',
+  'memory.delta.firstWorkout': 'Kikao cha kwanza. Mfumo unasawazisha kwa mwili wako.',
+  'memory.delta.same': 'Muundo wa kikao sawa. Mfumo unaona uthabiti ukikua.',
+  'memory.delta.mixed': 'Mabadiliko {{total}}: {{removed}} yamebadilishwa, {{added}} mapya.',
+  'memory.delta.added': 'Mazoezi {{count}}{{plural}} mapya yameongezwa kwa utofauti.',
+  'memory.delta.removed': 'Mazoezi {{count}}{{plural}} yamebadilishwa kwa kupona.',
+  'memory.progression.firstTime': 'Mara ya kwanza. Mfumo utasawazisha kutoka kikao hiki.',
+  'memory.progression.improving': 'Ushindi {{wins}} mfululizo. Maendeleo.',
+  'memory.progression.declining': 'Kushuka kwa hivi karibuni kumegunduliwa. Kiasi kimerekebishwa.',
+  'memory.progression.nearGate': 'Vikao {{successes}}{{plural}} imara. Moja zaidi kufungua maendeleo.',
+  'memory.progression.steady': 'Thabiti. Uthabiti ndio mkakati.',
+  'memory.reason.retained': 'Sawa na njia yako ya maendeleo.',
+  'memory.reason.addedBalance': 'Imeongezwa kwa usawa wa kupona misuli.',
+  'memory.reason.removedFatigue': 'Imeondolewa kwa sababu ya uchovu uliojilimbikiza.',
+  'memory.reason.removedVariety': 'Imebadilishwa kwa usawa wa misuli na utofauti.',
+  'memory.timeSince.minutes': 'Dakika {{minutes}} zilizopita',
+  'memory.timeSince.hours': 'Masaa {{hours}} yaliyopita',
+  'memory.timeSince.yesterday': 'Jana',
+  'memory.timeSince.days': 'Siku {{days}} zilizopita',
+
+  // ============================================
+  // ENGINE — Maendeleo ya Jaribio
+  // ============================================
+  'trial.welcome.headline': 'Ufikiaji kamili wa mfumo umewashwa.',
+  'trial.welcome.subtext': 'Siku 14 kuchunguza kila kipengele. Bila vikwazo.',
+  'trial.firstWin.headline': 'Vikao {{workouts}}{{plural}} vimekamilika. Mfumo unajifunza mifumo yako.',
+  'trial.firstWin.subtext': 'Kila kikao kinaboresha usahihi wa mafunzo.',
+  'trial.readyForFirst.headline': 'Siku {{day}}. Mfumo tayari kwa kikao chako cha kwanza.',
+  'trial.readyForFirst.subtext': 'Anza mafunzo kuanza kusawazisha.',
+  'trial.improvementShown.headline': 'Ulinganisho wa vikao sasa unapatikana.',
+  'trial.improvementShown.subtext': 'Mfumo sasa unaweza kuonyesha nini kilibadilika na kwa nini.',
+  'trial.memoryIntro.headline': 'Akili ya mafunzo inapanuka.',
+  'trial.memoryIntro.subtext': 'Siku {{day}}. Vikao zaidi = uchambuzi sahihi zaidi.',
+  'trial.fullIntelligence.headline': 'Akili kamili imewashwa.',
+  'trial.fullIntelligence.subtext': 'Siku {{day}}. Mfumo unakubaliana na mifumo na uwezo wako.',
+  'trial.transitionClear.headline': 'Siku {{days}}{{plural}} za ufikiaji kamili zimebaki.',
+  'trial.transitionClear.subtext': 'Baada ya jaribio vipengele vya msingi vinabaki. Tabaka za akili zinahitaji usajili.',
+  'trial.transitionSoft.headline': 'Siku {{days}} zimebaki.',
+  'trial.transitionSoft.subtext': 'Data yako ya mafunzo na maendeleo ni yako daima. Usajili unaendeleza vipengele vya akili.',
+  'trial.viewPlans': 'Tazama mipango',
+  'trial.expired.headline': 'Jaribio limekamilika.',
+  'trial.expired.subtext.withWorkouts': 'Vikao {{workouts}} vimerekodiwa. Vipengele vya msingi vinabaki. Sajili kurejesha tabaka za akili.',
+  'trial.expired.subtext.noWorkouts': 'Vipengele vya msingi vinabaki. Sajili kufungua tabaka za akili.',
+
+  // ============================================
+  // ENGINE — Uchambuzi wa Kushindwa
+  // ============================================
+  'failure.dropOff': 'Kusimama kwenye zoezi {{index}} ({{name}}) — kiasi kimepunguzwa katika kikao kifuatacho.',
+  'failure.skipHeavy': 'Kiwango cha juu cha kuruka kimegunduliwa. Mazoezi yanaweza yasilingane na uwezo wa sasa.',
+  'failure.lowVolume': 'Kiasi kilichokamilika ni kidogo. Kikao kinaweza kuwa kigumu sana.',
+  'failure.earlyDropout': 'Muundo wa kusimama mapema. Muda wa kikao unapunguzwa.',
+  'failure.lateDropout': 'Kusimama kwa uvumilivu. Mazoezi nyepesi yamewekwa mwishoni.',
+  'failure.noFailure': 'Kikao kimekamilika kwa mafanikio.',
+  'failure.insight.none': 'Kikao kimekamilika kwa {{percent}}%. Hakuna marekebisho yanayohitajika.',
+  'failure.insight.earlyDropout': 'Kusimama kwenye zoezi {{index}} ({{name}}) — kiasi kimepunguzwa katika kikao kifuatacho.',
+  'failure.insight.midDropout': 'Kusimama kwenye seti {{index}} ({{name}}) — idadi ya mazoezi inarekebishwa.',
+  'failure.insight.lateDropout': 'Karibu kukamilika ({{percent}}%). Marekebisho madogo yamefanywa.',
+  'failure.insight.skipHeavy': 'Kikao kimekamilika lakini {{percent}}% ya mazoezi yamerukwa. Uchaguzi unakaguliwa.',
+  'failure.insight.lowVolume': 'Kiasi kilichokamilika ni kidogo ({{percent}}%). Maagizo ya seti yanapunguzwa.',
+  'failure.insight.empty': 'Hakuna mazoezi yaliyokamilika. Mfumo unapunguza ugumu wa kikao kifuatacho.',
+  'failure.adjustment.none': 'Hakuna marekebisho yanayohitajika.',
+  'failure.adjustment.earlyDropout': 'Kusimama mapema kumegunduliwa. Kiasi na muda unapunguzwa.',
+  'failure.adjustment.midDropout': 'Kusimama kwenye zoezi {{index}}. Idadi ya mazoezi inapunguzwa.',
+  'failure.adjustment.lateDropout': 'Kikao karibu kukamilika. Upunguzaji mdogo wa kiasi.',
+  'failure.adjustment.skipHeavy': 'Kiwango cha juu cha kuruka. Uchaguzi wa mazoezi unahitaji kuangaliwa.',
+  'failure.adjustment.lowVolume': 'Kiasi kilichokamilika ni kidogo. Idadi ya seti inapunguzwa.',
+  'failure.adjustment.empty': 'Kikao tupu. Upunguzaji mkubwa umefanywa.',
+  'failure.pattern.noData': 'Hakuna data ya vikao bado.',
+  'failure.pattern.noFailures': 'Vikao vyote vya hivi karibuni vimekamilika kwa mafanikio. Hali inaunga mkono maendeleo.',
+  'failure.pattern.occasional': 'Vikao visivyokamilika mara kwa mara. Kiasi cha sasa kinaonekana endelevu.',
+  'failure.pattern.earlyDropoffs': 'Kusimama mapema mara kwa mara. Kupunguza muda au idadi ya mazoezi kunashauriwa.',
+  'failure.pattern.highSkips': 'Kiwango cha juu cha kuruka. Uchaguzi wa mazoezi unaweza kuhitaji marekebisho.',
+  'failure.pattern.worsening': 'Kiwango cha kushindwa kinapanda. Fikiria kupunguza kiasi au kuzingatia kupona.',
+  'failure.pattern.general': '{{rate}}% kiwango cha kushindwa. Ugumu wa kikao unarekebishwa.',
+
+  // ============================================
+  // ENGINE — Uigaji wa Hali
+  // ============================================
+  'simulation.skip.streakReset': 'Mfululizo utawekwa upya.',
+  'simulation.skip.modeShift': 'Inaweza kubadilika hadi hali isiyo thabiti.',
+  'simulation.skip.fatigueDrop': 'Uchovu unapungua kwa {{delta}}.',
+  'simulation.skip.minimal': 'Athari ndogo — una nafasi.',
+  'simulation.train.fatigueUp': 'Uchovu unapanda kwa {{delta}}.',
+  'simulation.train.modeAdvance': 'Inaelekea hali ya nidhamu.',
+  'simulation.train.reduceTomorrow': 'Kesho inapaswa kuwa nyepesi.',
+  'simulation.train.pushTomorrow': 'Nafasi ya kushinikiza zaidi kesho.',
+  'simulation.rest.recovery': 'Kupona: uchovu unapungua kwa {{delta}}.',
+  'simulation.rest.streakReset': 'Mfululizo utawekwa upya lakini kupona kuna kipaumbele.',
+  'simulation.rest.ready': 'Tayari kwa kikao kamili kesho.',
+
+  // ============================================
+  // ENGINE — Udhibiti wa Ufikiaji
+  // ============================================
+  'gating.previewMessage': 'Akili ya hali ya juu inahitaji usajili.',
 };
 
 export const translations: Record<string, Record<string, string>> = {
@@ -17011,7 +20018,7 @@ export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
   { code: 'af', name: 'Afrikaans', flag: '🇿🇦' },
   { code: 'zu', name: 'isiZulu', flag: '🇿🇦' },
   { code: 'xh', name: 'isiXhosa', flag: '🇿🇦' },
-  { code: 'st', name: 'Sesotho', flag: '�🇸' },
+  { code: 'st', name: 'Sesotho', flag: '🇱🇸' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },

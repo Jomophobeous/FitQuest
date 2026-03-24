@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useDatabase } from '../../src/context/DatabaseContext';
 import ThemedText from '../../src/components/ThemedText';
+import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import { getRecentSessions } from '../../src/database/service';
 
 interface SessionExerciseRow {
@@ -20,6 +21,7 @@ interface SessionExerciseRow {
 export default function WorkoutDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { theme } = useTheme();
+  const router = useRouter();
   const { isReady: dbReady } = useDatabase();
   const [session, setSession] = useState<any | null>(null);
   const [exercises, setExercises] = useState<SessionExerciseRow[]>([]);
@@ -48,13 +50,16 @@ export default function WorkoutDetail() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
+      <View
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}
+      >
         <ActivityIndicator color={theme.colors.accent} size="large" />
       </View>
     );
   }
 
   return (
+    <ScreenErrorBoundary screenName="WorkoutDetail" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing[4] }}>
       <ThemedText variant="h2" color="primary">
         Workout Session
@@ -75,5 +80,6 @@ export default function WorkoutDetail() {
         </ThemedText>
       )}
     </ScrollView>
+    </ScreenErrorBoundary>
   );
 }

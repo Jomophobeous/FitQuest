@@ -2,9 +2,9 @@
  * FitQuest Glass UI Components
  * Premium, high-tech visual components with glass-morphism,
  * animated cards, gradients, and micro-interactions.
- * 
+ *
  * Uses: react-native-reanimated, expo-linear-gradient, expo-blur
- * 
+ *
  * Keeps existing colors from theme-system.ts — only adds texture & feel.
  */
 
@@ -87,12 +87,8 @@ export const GlassCard = memo(function GlassCard({
       style={[
         styles.glassCard,
         {
-          backgroundColor: theme.isDark
-            ? 'rgba(255,255,255,0.04)'
-            : 'rgba(255,255,255,0.95)',
-          borderColor: theme.isDark
-            ? 'rgba(255,255,255,0.06)'
-            : 'rgba(0,0,0,0.06)',
+          backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.95)',
+          borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
         },
         style,
       ]}
@@ -170,11 +166,15 @@ export function GradientHeader({ title, subtitle, icon, rightContent }: Gradient
 // PULSE DOT (Live indicator - only pulses when active)
 // ============================================
 
-export function PulseDot({ 
-  color = '#10B981', 
-  size = 8, 
-  active = true 
-}: { color?: string; size?: number; active?: boolean }) {
+export function PulseDot({
+  color = '#10B981',
+  size = 8,
+  active = true,
+}: {
+  color?: string;
+  size?: number;
+  active?: boolean;
+}) {
   const haloOpacity = useSharedValue(active ? 0.4 : 0);
 
   useEffect(() => {
@@ -184,7 +184,8 @@ export function PulseDot({
           withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
           withTiming(0.3, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
         ),
-        -1, true,
+        -1,
+        true,
       );
     } else {
       haloOpacity.value = withTiming(0, { duration: 200 });
@@ -199,12 +200,15 @@ export function PulseDot({
     <View style={styles.pulseDotContainer}>
       {!!active && (
         <Animated.View
-          style={[{
-            width: size * 2.5,
-            height: size * 2.5,
-            borderRadius: size * 1.25,
-            backgroundColor: color + '30',
-          }, haloStyle]}
+          style={[
+            {
+              width: size * 2.5,
+              height: size * 2.5,
+              borderRadius: size * 1.25,
+              backgroundColor: color + '30',
+            },
+            haloStyle,
+          ]}
         />
       )}
       <View
@@ -274,7 +278,8 @@ export const AnimatedCounter = memo(function AnimatedCounter({ value, suffix = '
   return (
     <Animated.View entering={ZoomIn.delay(200).duration(150)}>
       <Text style={[styles.animatedCounter, { color: theme.colors.text }, style]}>
-        {value}{suffix}
+        {value}
+        {suffix}
       </Text>
     </Animated.View>
   );
@@ -329,7 +334,7 @@ export const GradientButton = memo(function GradientButton({
 
   const paddingY = size === 'sm' ? 10 : size === 'lg' ? 18 : 14;
   const fontSize = size === 'sm' ? 13 : size === 'lg' ? 17 : 15;
-  const bgColor = disabled ? theme.colors.surfaceVariant : (colors?.[0] || variantColors[variant]);
+  const bgColor = disabled ? theme.colors.surfaceVariant : colors?.[0] || variantColors[variant];
 
   return (
     <Animated.View style={[animatedStyle, containerStyle]}>
@@ -337,7 +342,10 @@ export const GradientButton = memo(function GradientButton({
         activeOpacity={1}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        onPress={() => { haptic('buttonPress'); onPress(); }}
+        onPress={() => {
+          haptic('buttonPress');
+          onPress();
+        }}
         disabled={disabled}
         accessibilityRole="button"
         accessibilityLabel={title}
@@ -346,15 +354,20 @@ export const GradientButton = memo(function GradientButton({
         <View
           style={[
             styles.gradientButton,
-            { 
-              paddingVertical: paddingY, 
+            {
+              paddingVertical: paddingY,
               opacity: disabled ? 0.5 : 1,
               backgroundColor: bgColor,
             },
           ]}
         >
           {!!icon && (
-            <MaterialCommunityIcons name={icon} size={fontSize + 4} color={theme.colors.onAccent} style={{ marginRight: 8 }} />
+            <MaterialCommunityIcons
+              name={icon}
+              size={fontSize + 4}
+              color={theme.colors.onAccent}
+              style={{ marginRight: 8 }}
+            />
           )}
           <Text style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>{title}</Text>
         </View>
@@ -403,30 +416,21 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
             style={[
               styles.calendarDay,
               isActive && { backgroundColor: theme.colors.accent },
-              isToday && !isActive && {
-                borderColor: theme.colors.accent,
-                borderWidth: 1.5,
-              },
+              isToday &&
+                !isActive && {
+                  borderColor: theme.colors.accent,
+                  borderWidth: 1.5,
+                },
             ]}
             onPress={() => onDatePress?.(day)}
             accessibilityRole="button"
             accessibilityLabel={`${dayNames[i]}, ${day.getDate()}${isToday ? ', today' : ''}${hasWorkout ? ', workout completed' : ''}`}
             accessibilityState={{ selected: isActive }}
           >
-            <Text
-              style={[
-                styles.calendarDayName,
-                { color: isActive ? '#fff' : theme.colors.textMuted },
-              ]}
-            >
+            <Text style={[styles.calendarDayName, { color: isActive ? '#fff' : theme.colors.textMuted }]}>
               {dayNames[i]}
             </Text>
-            <Text
-              style={[
-                styles.calendarDayNum,
-                { color: isActive ? '#fff' : theme.colors.text },
-              ]}
-            >
+            <Text style={[styles.calendarDayNum, { color: isActive ? '#fff' : theme.colors.text }]}>
               {day.getDate()}
             </Text>
             {!!hasWorkout && (
@@ -456,13 +460,7 @@ interface ProgressRingProps {
   children?: React.ReactNode;
 }
 
-export function ProgressRing({
-  progress,
-  size = 80,
-  strokeWidth = 6,
-  color,
-  children,
-}: ProgressRingProps) {
+export function ProgressRing({ progress, size = 80, strokeWidth = 6, color, children }: ProgressRingProps) {
   const { theme } = useTheme();
   const ringColor = color || theme.colors.accent;
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
@@ -524,10 +522,7 @@ interface SectionHeaderProps {
 export const SectionHeader = memo(function SectionHeader({ title, action, onAction, delay = 0 }: SectionHeaderProps) {
   const { theme } = useTheme();
   return (
-    <Animated.View
-      entering={FadeInLeft.delay(delay).duration(150)}
-      style={styles.sectionHeader}
-    >
+    <Animated.View entering={FadeInLeft.delay(delay).duration(150)} style={styles.sectionHeader}>
       <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{title}</Text>
       {action && onAction && (
         <TouchableOpacity onPress={onAction} accessibilityRole="button" accessibilityLabel={action}>
@@ -552,7 +547,15 @@ interface AnimatedListItemProps {
   accessibilityHint?: string;
 }
 
-export function AnimatedListItem({ children, index, style, onPress, accessibilityRole: a11yRole, accessibilityLabel, accessibilityHint }: AnimatedListItemProps) {
+export function AnimatedListItem({
+  children,
+  index,
+  style,
+  onPress,
+  accessibilityRole: a11yRole,
+  accessibilityLabel,
+  accessibilityHint,
+}: AnimatedListItemProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -562,10 +565,7 @@ export function AnimatedListItem({ children, index, style, onPress, accessibilit
   // Separate transform wrapper from layout animation to avoid Reanimated conflicts
   const content = (
     <Animated.View style={animatedStyle}>
-      <Animated.View
-        entering={FadeIn.delay(Math.min(index * 30, 200)).duration(120)}
-        style={style}
-      >
+      <Animated.View entering={FadeIn.delay(Math.min(index * 30, 200)).duration(120)} style={style}>
         {children}
       </Animated.View>
     </Animated.View>
@@ -575,10 +575,14 @@ export function AnimatedListItem({ children, index, style, onPress, accessibilit
     return (
       <TouchableOpacity
         activeOpacity={0.85}
-        onPressIn={() => { scale.value = withTiming(0.98, { duration: 120 }); }}
-        onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
+        onPressIn={() => {
+          scale.value = withTiming(0.98, { duration: 120 });
+        }}
+        onPressOut={() => {
+          scale.value = withTiming(1, { duration: 120 });
+        }}
         onPress={onPress}
-        accessibilityRole={a11yRole || "button"}
+        accessibilityRole={a11yRole || 'button'}
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
       >

@@ -49,14 +49,7 @@ export default function CountdownRing({
     <View style={[styles.container, { width: size, height: size }]}>
       <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {/* Background track */}
-        <Circle
-          cx={center}
-          cy={center}
-          r={radius}
-          stroke={bgColor}
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
+        <Circle cx={center} cy={center} r={radius} stroke={bgColor} strokeWidth={strokeWidth} fill="none" />
         {/* Countdown arc — starts at 12 o'clock, depletes clockwise */}
         <Circle
           cx={center}
@@ -73,9 +66,7 @@ export default function CountdownRing({
         />
       </Svg>
       {/* Centre content (timer digits, etc.) */}
-      <View style={[styles.content, { width: size, height: size }]}>
-        {children}
-      </View>
+      <View style={[styles.content, { width: size, height: size }]}>{children}</View>
     </View>
   );
 }

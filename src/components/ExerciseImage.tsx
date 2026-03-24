@@ -14,14 +14,7 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  Platform,
-  type ViewStyle,
-  type ImageStyle,
-} from 'react-native';
+import { View, Image, StyleSheet, Platform, type ViewStyle, type ImageStyle } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -92,7 +85,7 @@ export default function ExerciseImage({
           // No pre-loaded paths — import service lazily to avoid circular deps
           const { getExerciseImages } = await import('../database/service');
           const images = await getExerciseImages(exerciseId);
-          paths.push(...images.map(img => img.image_path));
+          paths.push(...images.map((img) => img.image_path));
         }
 
         // Fallback: use exerciseImageMap (primary strategy) or derive from name
@@ -101,13 +94,18 @@ export default function ExerciseImage({
           const db = await getDatabase();
           const ex = await db.getFirstAsync<{ external_id: string | null; name: string }>(
             'SELECT external_id, name FROM exercises WHERE id = ?',
-            [exerciseId]
+            [exerciseId],
           );
           if (ex) {
             // Primary: use the comprehensive image map
             const mappedFolder = resolveExerciseImageFolder(ex.name);
             if (mappedFolder) {
-              paths.push(`${mappedFolder}/0.webp`, `${mappedFolder}/1.webp`, `${mappedFolder}/0.jpg`, `${mappedFolder}/1.jpg`);
+              paths.push(
+                `${mappedFolder}/0.webp`,
+                `${mappedFolder}/1.webp`,
+                `${mappedFolder}/0.jpg`,
+                `${mappedFolder}/1.jpg`,
+              );
             } else {
               // Fallback: try external_id or underscored name
               const candidates: string[] = [];
@@ -188,7 +186,9 @@ export default function ExerciseImage({
     }
 
     resolveImages();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [exerciseId, preloadedPaths]);
 
   // Animation timer: toggle between frames
@@ -196,7 +196,7 @@ export default function ExerciseImage({
     if (!animate || resolvedUris.length < 2) return;
 
     intervalRef.current = setInterval(() => {
-      setCurrentFrame(prev => (prev + 1) % resolvedUris.length);
+      setCurrentFrame((prev) => (prev + 1) % resolvedUris.length);
     }, ANIMATION_INTERVAL_MS);
 
     return () => {
@@ -207,7 +207,7 @@ export default function ExerciseImage({
   const handleError = useCallback(() => {
     // On first error, try alternate format (.webp ↔ .jpg) for APK assets
     if (retryCount === 0 && resolvedUris.length > 0 && Platform.OS === 'android') {
-      const altUris = resolvedUris.map(uri => {
+      const altUris = resolvedUris.map((uri) => {
         if (uri.endsWith('.webp')) return uri.replace(/\.webp$/, '.jpg');
         if (uri.endsWith('.jpg')) return uri.replace(/\.jpg$/, '.webp');
         return uri;
@@ -220,7 +220,7 @@ export default function ExerciseImage({
     }
     // On second error, try documentDirectory as last resort
     if (retryCount === 1 && resolvedUris.length > 0) {
-      const docUris = resolvedUris.map(uri => {
+      const docUris = resolvedUris.map((uri) => {
         const assetPrefix = APK_ASSETS_DIR;
         if (uri.startsWith(assetPrefix)) {
           const relPath = uri.slice(assetPrefix.length);
@@ -242,18 +242,20 @@ export default function ExerciseImage({
     const uri = resolvedUris[currentFrame] ?? resolvedUris[0];
     const borderRadius = variant === 'thumbnail' ? 8 : 12;
     return (
-      <View style={[
-        dimensions,
-        styles.container,
-        {
-          borderRadius,
-          borderWidth: 1.5,
-          borderColor: theme.colors.border,
-          backgroundColor: theme.colors.surfaceVariant,
-          overflow: 'hidden',
-        },
-        style,
-      ]}>
+      <View
+        style={[
+          dimensions,
+          styles.container,
+          {
+            borderRadius,
+            borderWidth: 1.5,
+            borderColor: theme.colors.border,
+            backgroundColor: theme.colors.surfaceVariant,
+            overflow: 'hidden',
+          },
+          style,
+        ]}
+      >
         <Image
           source={{ uri }}
           style={[dimensions, styles.image, { borderRadius: borderRadius - 1 }] as ImageStyle[]}
@@ -284,17 +286,19 @@ export default function ExerciseImage({
   const showDualHint = variant === 'detail' || variant === 'hero';
   const placeholderRadius = variant === 'thumbnail' ? 8 : 12;
   return (
-    <View style={[
-      dimensions,
-      styles.container,
-      {
-        borderRadius: placeholderRadius,
-        borderWidth: 1.5,
-        borderColor: theme.colors.border,
-        overflow: 'hidden',
-      },
-      style,
-    ]}>
+    <View
+      style={[
+        dimensions,
+        styles.container,
+        {
+          borderRadius: placeholderRadius,
+          borderWidth: 1.5,
+          borderColor: theme.colors.border,
+          overflow: 'hidden',
+        },
+        style,
+      ]}
+    >
       <LinearGradient
         colors={config.colors}
         start={{ x: 0, y: 0 }}
@@ -304,11 +308,7 @@ export default function ExerciseImage({
         {showDualHint ? (
           <View style={styles.dualPlaceholder}>
             <View style={styles.dualFrame}>
-              <MaterialCommunityIcons
-                name={config.icon}
-                size={dimensions.height * 0.3}
-                color="rgba(255,255,255,0.5)"
-              />
+              <MaterialCommunityIcons name={config.icon} size={dimensions.height * 0.3} color="rgba(255,255,255,0.5)" />
               <View style={[styles.dualLabel, { backgroundColor: 'rgba(0,0,0,0.25)' }]}>
                 <MaterialCommunityIcons name="numeric-1-circle-outline" size={12} color="rgba(255,255,255,0.7)" />
               </View>
@@ -326,11 +326,7 @@ export default function ExerciseImage({
             </View>
           </View>
         ) : (
-          <MaterialCommunityIcons
-            name={config.icon}
-            size={dimensions.height * 0.45}
-            color="rgba(255,255,255,0.6)"
-          />
+          <MaterialCommunityIcons name={config.icon} size={dimensions.height * 0.45} color="rgba(255,255,255,0.6)" />
         )}
       </LinearGradient>
     </View>

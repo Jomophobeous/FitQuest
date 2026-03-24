@@ -1,18 +1,18 @@
 /**
  * FitQuest Encrypted Database Layer — v2
- * 
+ *
  * Application-layer authenticated encryption for sensitive SQLite columns.
- * 
+ *
  * v2 Improvements over v1:
  * - CTR-mode cipher with PBKDF2-derived key streams (replaces XOR)
  * - HMAC-SHA256 Encrypt-then-MAC authentication (tamper detection)
  * - Per-message random IV + salt (no key reuse)
  * - Automatic v1→v2 transparent migration on read
  * - Constant-time tag comparison (timing attack resistant)
- * 
+ *
  * Encrypted data types: health metrics, personal notes, AI conversations,
  * heart rate readings, emergency locations.
- * 
+ *
  * Non-sensitive data (exercises, workouts, themes) stays plaintext for performance.
  */
 
@@ -31,6 +31,7 @@ import {
   insertEncryptedHealthRow,
   insertEncryptedNoteRow,
   insertHealthAlertRow,
+  deleteOldAIConversations,
   secureDeleteEncryptedRow,
   updateEncryptedAIConversationRow,
   updateEncryptedHealthRow,
@@ -145,7 +146,11 @@ export class EncryptedDatabaseService {
 
   private async migrateBlob(blob: string): Promise<string | null> {
     let payload: any;
-    try { payload = JSON.parse(blob); } catch { return null; }
+    try {
+      payload = JSON.parse(blob);
+    } catch {
+      return null;
+    }
     if (!isV1Payload(payload) && !isV2Payload(payload)) return null;
 
     try {
@@ -191,7 +196,11 @@ export class EncryptedDatabaseService {
       await updateEncryptedHealthRow({ id, data_blob: migrated, updated_at: Date.now() });
     }
 
-    try { return JSON.parse(plaintext); } catch { return null; }
+    try {
+      return JSON.parse(plaintext);
+    } catch {
+      return null;
+    }
   }
 
   async getRecentHealthData(category: string, limit = 50): Promise<object[]> {
@@ -203,7 +212,11 @@ export class EncryptedDatabaseService {
       try {
         const plaintext = await this.decrypt(row.data_blob);
         const parsed = JSON.parse(plaintext);
-        results.push({ id: row.id, ...(parsed && typeof parsed === 'object' ? parsed : {}), created_at: row.created_at });
+        results.push({
+          id: row.id,
+          ...(parsed && typeof parsed === 'object' ? parsed : {}),
+          created_at: row.created_at,
+        });
 
         const migrated = await this.migrateBlob(row.data_blob);
         if (migrated) {
@@ -234,7 +247,7 @@ export class EncryptedDatabaseService {
       modelVersion?: string;
       tokensUsed?: number;
       processingTimeMs?: number;
-    }
+    },
   ): Promise<string> {
     this.ensureInitialized();
     const id = await generateSecureUUID();
@@ -257,28 +270,37 @@ export class EncryptedDatabaseService {
     return id;
   }
 
-  async getAIConversations(personality: 'COACH' | 'PROFESSOR', limit = 20): Promise<
-    Array<{ id: string; query: string; response: string; created_at: number }>
-  > {
+  async getAIConversations(
+    personality: 'COACH' | 'PROFESSOR',
+    limit = 20,
+  ): Promise<Array<{ id: string; query: string; response: string; created_at: number }>> {
     this.ensureInitialized();
     const rows = await getEncryptedAIConversations(personality, limit);
 
     // Decrypt all blobs in parallel (was sequential — 40 ops × 20-40ms = 800-1600ms)
     const settled = await Promise.allSettled(
       rows.map(async (row) => {
-        const [query, response] = await Promise.all([
-          this.decrypt(row.query_blob),
-          this.decrypt(row.response_blob),
-        ]);
+        const [query, response] = await Promise.all([this.decrypt(row.query_blob), this.decrypt(row.response_blob)]);
         return { id: row.id, query, response, created_at: row.created_at };
-      })
+      }),
     );
 
     return settled
-      .filter((r): r is PromiseFulfilledResult<{ id: string; query: string; response: string; created_at: number }> =>
-        r.status === 'fulfilled'
+      .filter(
+        (r): r is PromiseFulfilledResult<{ id: string; query: string; response: string; created_at: number }> =>
+          r.status === 'fulfilled',
       )
-      .map(r => r.value);
+      .map((r) => r.value);
+  }
+
+  /**
+   * Delete AI conversations older than 24 hours for the given personality.
+   * Returns the number of deleted rows.
+   */
+  async cleanupOldConversations(personality: 'COACH' | 'PROFESSOR'): Promise<number> {
+    this.ensureInitialized();
+    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+    return deleteOldAIConversations(personality, twentyFourHoursAgo);
   }
 
   // ============================================
@@ -289,7 +311,7 @@ export class EncryptedDatabaseService {
     alertType: string,
     severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
     data: object,
-    location?: { latitude: number; longitude: number; accuracy: number }
+    location?: { latitude: number; longitude: number; accuracy: number },
   ): Promise<string> {
     this.ensureInitialized();
     const id = await generateSecureUUID();

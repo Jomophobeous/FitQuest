@@ -1,13 +1,13 @@
 /**
  * FitQuest Sensor Fusion Engine
- * 
+ *
  * Combines accelerometer + gyroscope + pedometer data for:
  * - Real-time step counting with noise filtering
  * - Activity classification (walking, running, cycling, stationary)
  * - Rep counting via motion pattern detection
  * - Calorie estimation using MET-based calculations
  * - Fall detection (sudden deceleration patterns)
- * 
+ *
  * Uses expo-sensors (Accelerometer, Gyroscope, Pedometer).
  * All processing is on-device — no data leaves the phone.
  */
@@ -39,9 +39,9 @@ export interface SensorReading {
 
 export interface StepData {
   steps: number;
-  distance: number;     // meters
-  calories: number;     // kcal
-  cadence: number;      // steps per minute
+  distance: number; // meters
+  calories: number; // kcal
+  cadence: number; // steps per minute
   startTime: number;
   endTime: number;
 }
@@ -50,7 +50,7 @@ export interface ActivitySegment {
   type: ActivityType;
   startTime: number;
   endTime: number;
-  confidence: number;   // 0-1
+  confidence: number; // 0-1
   avgIntensity: number; // 0-10
   steps: number;
   calories: number;
@@ -59,8 +59,8 @@ export interface ActivitySegment {
 export interface MotionSnapshot {
   activity: ActivityType;
   confidence: number;
-  intensity: number;        // 0-10
-  currentCadence: number;   // steps/min
+  intensity: number; // 0-10
+  currentCadence: number; // steps/min
   repCount: number;
   isActive: boolean;
 }
@@ -83,22 +83,22 @@ const MET_VALUES: Record<ActivityType, number> = {
 
 /** Accelerometer magnitude thresholds for activity classification */
 const ACTIVITY_THRESHOLDS = {
-  STATIONARY_MAX: 1.1,    // < 1.1g = sitting/standing
-  WALKING_MIN: 1.1,       // 1.1-1.8g = walking
+  STATIONARY_MAX: 1.1, // < 1.1g = sitting/standing
+  WALKING_MIN: 1.1, // 1.1-1.8g = walking
   WALKING_MAX: 1.8,
-  RUNNING_MIN: 1.8,       // > 1.8g = running
+  RUNNING_MIN: 1.8, // > 1.8g = running
   CYCLING_GYRO_THRESHOLD: 2.0, // Low accel + moderate gyroscope
 };
 
 /** Sensor update intervals (ms) */
 const UPDATE_INTERVALS = {
-  ACCELEROMETER: 100,  // 10 Hz
-  GYROSCOPE: 100,      // 10 Hz
-  PEDOMETER: 1000,     // 1 Hz (OS-level)
+  ACCELEROMETER: 100, // 10 Hz
+  GYROSCOPE: 100, // 10 Hz
+  PEDOMETER: 1000, // 1 Hz (OS-level)
 };
 
 /** Sliding window for activity classification */
-const WINDOW_SIZE = 30;  // 3 seconds of readings at 10 Hz
+const WINDOW_SIZE = 30; // 3 seconds of readings at 10 Hz
 
 /** Step detection: minimum peak-to-peak time (ms) to avoid double-counting */
 const MIN_STEP_INTERVAL_MS = 250;
@@ -119,8 +119,10 @@ export class SensorFusionEngine {
   // Subscriptions
   private accelSub: ReturnType<typeof Accelerometer.addListener> | null = null;
   private gyroSub: ReturnType<typeof Gyroscope.addListener> | null = null;
+  private gyroAvailable = false;
   private pedometerSub: { remove: () => void } | null = null;
   private appStateSub: NativeEventSubscription | null = null;
+  private appStateDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   private pausedByBackground = false;
 
   // Sensor data buffers (sliding window)
@@ -200,7 +202,9 @@ export class SensorFusionEngine {
     if (options?.repThreshold) this.repThreshold = options.repThreshold;
 
     // Check availability
-    let accelAvail = false, gyroAvail = false, pedometerAvail = false;
+    let accelAvail = false,
+      gyroAvail = false,
+      pedometerAvail = false;
     try {
       [accelAvail, gyroAvail, pedometerAvail] = await Promise.all([
         Accelerometer.isAvailableAsync(),
@@ -216,6 +220,9 @@ export class SensorFusionEngine {
       if (__DEV__) console.warn('[SensorFusion] Accelerometer not available');
       return false;
     }
+
+    // Cache gyro availability for resume path
+    this.gyroAvailable = gyroAvail;
 
     // Reset state
     this.resetState();
@@ -250,32 +257,36 @@ export class SensorFusionEngine {
 
     this.running = true;
 
-    // Auto-pause sensors when app moves to background
+    // Auto-pause sensors when app moves to background (debounced to prevent churn from rapid flickers)
     this.appStateSub = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'background' || nextState === 'inactive') {
-        if (this.running && !this.pausedByBackground) {
-          this.accelSub?.remove();
-          this.gyroSub?.remove();
-          this.accelSub = null;
-          this.gyroSub = null;
-          this.pausedByBackground = true;
-          if (__DEV__) console.log('[SensorFusion] Paused — app backgrounded');
-        }
-      } else if (nextState === 'active' && this.pausedByBackground) {
-        this.pausedByBackground = false;
-        Accelerometer.setUpdateInterval(100);
-        this.accelSub = Accelerometer.addListener((data) => this.handleAccelerometer(data));
-        Gyroscope.isAvailableAsync().then((avail) => {
-          if (avail) {
+      if (this.appStateDebounceTimer) clearTimeout(this.appStateDebounceTimer);
+      this.appStateDebounceTimer = setTimeout(() => {
+        if (nextState === 'background' || nextState === 'inactive') {
+          if (this.running && !this.pausedByBackground) {
+            this.accelSub?.remove();
+            this.gyroSub?.remove();
+            this.accelSub = null;
+            this.gyroSub = null;
+            this.pausedByBackground = true;
+            if (__DEV__) console.log('[SensorFusion] Paused — app backgrounded');
+          }
+        } else if (nextState === 'active' && this.pausedByBackground) {
+          this.pausedByBackground = false;
+          Accelerometer.setUpdateInterval(100);
+          this.accelSub = Accelerometer.addListener((data) => this.handleAccelerometer(data));
+          if (this.gyroAvailable) {
             Gyroscope.setUpdateInterval(100);
             this.gyroSub = Gyroscope.addListener((data) => this.handleGyroscope(data));
           }
-        });
-        if (__DEV__) console.log('[SensorFusion] Resumed — app foregrounded');
-      }
+          if (__DEV__) console.log('[SensorFusion] Resumed — app foregrounded');
+        }
+      }, 300);
     });
 
-    if (__DEV__) console.log(`[SensorFusion] Started. Accel: ✓, Gyro: ${gyroAvail ? '✓' : '✗'}, Pedometer: ${pedometerAvail ? '✓' : '✗'}`);
+    if (__DEV__)
+      console.log(
+        `[SensorFusion] Started. Accel: ✓, Gyro: ${gyroAvail ? '✓' : '✗'}, Pedometer: ${pedometerAvail ? '✓' : '✗'}`,
+      );
     return true;
   }
 
@@ -283,6 +294,10 @@ export class SensorFusionEngine {
    * Stop all sensor subscriptions.
    */
   stop(): void {
+    if (this.appStateDebounceTimer) {
+      clearTimeout(this.appStateDebounceTimer);
+      this.appStateDebounceTimer = null;
+    }
     this.appStateSub?.remove();
     this.appStateSub = null;
     this.pausedByBackground = false;
@@ -395,14 +410,10 @@ export class SensorFusionEngine {
 
     // Feed raw data to ML classifier buffer
     if (this.mlModelReady) {
-      const lastGyro = this.gyroBuffer.length > 0
-        ? this.gyroBuffer[this.gyroBuffer.length - 1]
-        : null;
+      const lastGyro = this.gyroBuffer.length > 0 ? this.gyroBuffer[this.gyroBuffer.length - 1] : null;
       this.rawSensorBuffer.push({
         accel: { x: data.x, y: data.y, z: data.z },
-        gyro: lastGyro
-          ? { x: 0, y: 0, z: lastGyro.magnitude }
-          : { x: 0, y: 0, z: 0 },
+        gyro: lastGyro ? { x: 0, y: 0, z: lastGyro.magnitude } : { x: 0, y: 0, z: 0 },
         timestamp: now,
       });
       // Keep buffer manageable
@@ -509,8 +520,12 @@ export class SensorFusionEngine {
     if (this.deepModelReady && this.rawSensorBuffer.length >= 100) {
       const latestSample = this.rawSensorBuffer[this.rawSensorBuffer.length - 1]!;
       const deepResult = deepActivityClassifier.addSample([
-        latestSample.accel.x, latestSample.accel.y, latestSample.accel.z,
-        latestSample.gyro.x, latestSample.gyro.y, latestSample.gyro.z,
+        latestSample.accel.x,
+        latestSample.accel.y,
+        latestSample.accel.z,
+        latestSample.gyro.x,
+        latestSample.gyro.y,
+        latestSample.gyro.z,
       ]);
       if (deepResult && deepResult.confidence > 0.5) {
         const deepActivityStr = deepResult.activity;
@@ -561,8 +576,7 @@ export class SensorFusionEngine {
     // Compute stats over window
     const magnitudes = this.accelBuffer.map((r) => r.magnitude);
     const mean = magnitudes.reduce((a, b) => a + b, 0) / magnitudes.length;
-    const variance =
-      magnitudes.reduce((sum, m) => sum + (m - mean) ** 2, 0) / magnitudes.length;
+    const variance = magnitudes.reduce((sum, m) => sum + (m - mean) ** 2, 0) / magnitudes.length;
     const stddev = Math.sqrt(variance);
 
     // Gyroscope average (if available)
@@ -655,11 +669,11 @@ export class SensorFusionEngine {
 // REACT HOOK
 // ============================================
 
-import { useState as useStateHook, useEffect as useEffectHook, useRef } from 'react';
+import { useState as useStateHook, useEffect as useEffectHook, useRef, useCallback as useCallbackHook } from 'react';
 
 /**
  * React hook for accessing sensor fusion data.
- * 
+ *
  * @example
  * const { snapshot, stepData, isActive, start, stop } = useSensorFusion();
  */
@@ -673,12 +687,14 @@ export function useSensorFusion(options?: { autoStart?: boolean; weightKg?: numb
     isActive: false,
   });
   const [isActive, setIsActive] = useStateHook(false);
+  const [stepData, setStepData] = useStateHook(SensorFusionEngine.getInstance().getStepData());
   const engineRef = useRef(SensorFusionEngine.getInstance());
 
   useEffectHook(() => {
     const engine = engineRef.current;
     const unsubscribe = engine.onUpdate((snap) => {
       setSnapshot(snap);
+      setStepData(engine.getStepData());
     });
 
     if (options?.autoStart) {
@@ -695,24 +711,27 @@ export function useSensorFusion(options?: { autoStart?: boolean; weightKg?: numb
     };
   }, []);
 
-  const start = async () => {
+  const start = useCallbackHook(async () => {
     const started = await engineRef.current.start({ weightKg: options?.weightKg });
     setIsActive(started);
     return started;
-  };
+  }, [options?.weightKg]);
 
-  const stop = () => {
+  const stop = useCallbackHook(() => {
     engineRef.current.stop();
     setIsActive(false);
-  };
+  }, []);
+
+  const resetReps = useCallbackHook((threshold?: number) => engineRef.current.resetRepCount(threshold), []);
+  const saveSession = useCallbackHook(() => engineRef.current.saveSessionToDatabase(), []);
 
   return {
     snapshot,
-    stepData: engineRef.current.getStepData(),
+    stepData,
     isActive,
     start,
     stop,
-    resetReps: (threshold?: number) => engineRef.current.resetRepCount(threshold),
-    saveSession: () => engineRef.current.saveSessionToDatabase(),
+    resetReps,
+    saveSession,
   };
 }

@@ -11,20 +11,9 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  StyleSheet,
-  Vibration,
-} from 'react-native';
+import { View, Text, Modal, StyleSheet, Vibration } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, {
-  ZoomIn,
-  FadeIn,
-  FadeInUp,
-  FadeInDown,
-} from 'react-native-reanimated';
+import Animated, { ZoomIn, FadeIn, FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -70,9 +59,7 @@ export default function GetReadyOverlay({
   const hasSpokenSetup = useRef(false);
 
   // ── Colour per countdown tick ──
-  const countColor = count <= 2 ? theme.colors.error
-    : count <= 3 ? theme.colors.warning
-    : theme.colors.accent;
+  const countColor = count <= 2 ? theme.colors.error : count <= 3 ? theme.colors.warning : theme.colors.accent;
 
   // ── Start countdown when visible ──
   useEffect(() => {
@@ -97,7 +84,7 @@ export default function GetReadyOverlay({
     Vibration.vibrate(40);
 
     intervalRef.current = setInterval(() => {
-      setCount(prev => {
+      setCount((prev) => {
         const next = prev - 1;
         if (next > 0) {
           // Haptic + audio countdown for <=3
@@ -134,12 +121,7 @@ export default function GetReadyOverlay({
   if (!visible || !exercise) return null;
 
   return (
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent={false}
-      statusBarTranslucent
-    >
+    <Modal visible={visible} animationType="fade" transparent={false} statusBarTranslucent>
       <View style={[styles.bg, { backgroundColor: theme.colors.background }]}>
         <SafeAreaView style={styles.safeArea}>
           {/* Equipment change banner */}
@@ -171,11 +153,7 @@ export default function GetReadyOverlay({
 
           {/* Exercise preview */}
           <Animated.View entering={FadeInUp.delay(150).duration(200)} style={styles.previewWrap}>
-            <ExerciseImage
-              exerciseId={exercise.exerciseId}
-              category={exercise.category}
-              variant="detail"
-            />
+            <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="detail" />
             <Text style={[styles.exName, { color: theme.colors.text }]} numberOfLines={2}>
               {exercise.name}
             </Text>
@@ -185,7 +163,9 @@ export default function GetReadyOverlay({
 
             {/* Setup cue */}
             {exercise.setupCue ? (
-              <View style={[styles.cueBubble, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <View
+                style={[styles.cueBubble, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+              >
                 <MaterialCommunityIcons name="lightbulb-outline" size={16} color={theme.colors.accent} />
                 <Text style={[styles.cueText, { color: theme.colors.textSecondary }]} numberOfLines={3}>
                   {exercise.setupCue}

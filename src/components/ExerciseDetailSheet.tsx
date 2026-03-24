@@ -77,37 +77,42 @@ function getDifficultyConfig(difficulty: string) {
 // ─── Equipment label helper ───
 
 function formatEquipmentLabel(equip: string): string {
-  return equip
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return equip.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // ─── Category label ───
 
 function formatCategory(cat: string): string {
-  return cat
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return cat.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // ─── Impact level icon ───
 
 function getImpactIcon(impact: string): keyof typeof MaterialCommunityIcons.glyphMap {
   switch (impact) {
-    case 'no_impact': return 'feather';
-    case 'low_impact': return 'walk';
-    case 'high_impact': return 'run-fast';
-    default: return 'help-circle-outline';
+    case 'no_impact':
+      return 'feather';
+    case 'low_impact':
+      return 'walk';
+    case 'high_impact':
+      return 'run-fast';
+    default:
+      return 'help-circle-outline';
   }
 }
 
 function getSpaceLabel(space: string): string {
   switch (space) {
-    case 'mat_only_1x1': return 'Mat (1×1m)';
-    case 'small_bedroom_2x2': return 'Small (2×2m)';
-    case 'living_room_3x3': return 'Room (3×3m)';
-    case 'outdoors_hall': return 'Outdoors';
-    default: return space.replace(/_/g, ' ');
+    case 'mat_only_1x1':
+      return 'Mat (1×1m)';
+    case 'small_bedroom_2x2':
+      return 'Small (2×2m)';
+    case 'living_room_3x3':
+      return 'Room (3×3m)';
+    case 'outdoors_hall':
+      return 'Outdoors';
+    default:
+      return space.replace(/_/g, ' ');
   }
 }
 
@@ -122,12 +127,7 @@ interface ExerciseDetailSheetProps {
   onAddToWorkout?: (exercise: ExerciseWithDetails) => void;
 }
 
-export function ExerciseDetailSheet({
-  exercise,
-  visible,
-  onClose,
-  onAddToWorkout,
-}: ExerciseDetailSheetProps) {
+export function ExerciseDetailSheet({ exercise, visible, onClose, onAddToWorkout }: ExerciseDetailSheetProps) {
   const { theme } = useTheme();
   const { height: screenHeight } = useWindowDimensions();
 
@@ -138,17 +138,10 @@ export function ExerciseDetailSheet({
     ...exercise.primary_muscles.map((m) => ({ name: m, primary: true })),
     ...exercise.secondary_muscles.map((m) => ({ name: m, primary: false })),
   ];
-  const hasEquipment =
-    exercise.equipment_required.length > 0 || exercise.equipment_optional.length > 0;
+  const hasEquipment = exercise.equipment_required.length > 0 || exercise.equipment_optional.length > 0;
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
       {/* Backdrop */}
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Animated.View entering={FadeIn.duration(200)} style={styles.backdropFill} />
@@ -173,11 +166,7 @@ export function ExerciseDetailSheet({
           <View style={[styles.handle, { backgroundColor: theme.colors.textMuted + '40' }]} />
         </View>
 
-        <ScrollView
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
+        <ScrollView bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           {/* ── Exercise Image ── */}
           <Animated.View entering={FadeIn.delay(60).duration(250)}>
             <ExerciseImage
@@ -193,25 +182,15 @@ export function ExerciseDetailSheet({
           <Animated.View entering={FadeInDown.delay(80).duration(200)}>
             <View style={styles.headerSection}>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.exerciseName, { color: theme.colors.text }]}>
-                  {exercise.name}
-                </Text>
+                <Text style={[styles.exerciseName, { color: theme.colors.text }]}>{exercise.name}</Text>
                 <View style={styles.headerTags}>
-                  <View
-                    style={[
-                      styles.categoryTag,
-                      { backgroundColor: theme.colors.accent + '15' },
-                    ]}
-                  >
+                  <View style={[styles.categoryTag, { backgroundColor: theme.colors.accent + '15' }]}>
                     <Text style={[styles.categoryText, { color: theme.colors.accent }]}>
                       {formatCategory(exercise.category)}
                     </Text>
                   </View>
                   <View
-                    style={[
-                      styles.diffTag,
-                      { backgroundColor: (theme.colors as any)[diffConfig.colorKey] + '15' },
-                    ]}
+                    style={[styles.diffTag, { backgroundColor: (theme.colors as any)[diffConfig.colorKey] + '15' }]}
                   >
                     <Text style={[styles.diffTagText, { color: (theme.colors as any)[diffConfig.colorKey] }]}>
                       {diffConfig.label}
@@ -248,9 +227,7 @@ export function ExerciseDetailSheet({
                   ]}
                 />
               ))}
-              <Text style={[styles.diffLabel, { color: theme.colors.textMuted }]}>
-                Difficulty
-              </Text>
+              <Text style={[styles.diffLabel, { color: theme.colors.textMuted }]}>Difficulty</Text>
             </View>
           </Animated.View>
 
@@ -259,7 +236,7 @@ export function ExerciseDetailSheet({
             <View style={styles.statsRow}>
               <StatPill
                 icon={getImpactIcon(exercise.impact_level)}
-                label={exercise.impact_level.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                label={exercise.impact_level.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                 color={theme.colors.accent2 || theme.colors.accent}
                 theme={theme}
               />
@@ -289,12 +266,8 @@ export function ExerciseDetailSheet({
                     style={[
                       styles.muscleChip,
                       {
-                        backgroundColor: primary
-                          ? theme.colors.accent + '15'
-                          : theme.colors.textMuted + '10',
-                        borderColor: primary
-                          ? theme.colors.accent + '30'
-                          : theme.colors.textMuted + '15',
+                        backgroundColor: primary ? theme.colors.accent + '15' : theme.colors.textMuted + '10',
+                        borderColor: primary ? theme.colors.accent + '30' : theme.colors.textMuted + '15',
                       },
                     ]}
                   >
@@ -307,18 +280,14 @@ export function ExerciseDetailSheet({
                       style={[
                         styles.muscleText,
                         {
-                          color: primary
-                            ? theme.colors.accent
-                            : theme.colors.textSecondary,
+                          color: primary ? theme.colors.accent : theme.colors.textSecondary,
                           fontWeight: primary ? '600' : '400',
                         },
                       ]}
                     >
                       {name.replace(/_/g, ' ')}
                     </Text>
-                    {primary && (
-                      <View style={[styles.primaryDot, { backgroundColor: theme.colors.accent }]} />
-                    )}
+                    {primary && <View style={[styles.primaryDot, { backgroundColor: theme.colors.accent }]} />}
                   </View>
                 ))}
               </View>
@@ -332,14 +301,8 @@ export function ExerciseDetailSheet({
               <View style={styles.equipmentList}>
                 {exercise.equipment_required.map((eq, idx) => (
                   <View key={`req-${idx}`} style={styles.equipRow}>
-                    <MaterialCommunityIcons
-                      name="check-circle"
-                      size={16}
-                      color={theme.colors.accent}
-                    />
-                    <Text style={[styles.equipText, { color: theme.colors.text }]}>
-                      {formatEquipmentLabel(eq)}
-                    </Text>
+                    <MaterialCommunityIcons name="check-circle" size={16} color={theme.colors.accent} />
+                    <Text style={[styles.equipText, { color: theme.colors.text }]}>{formatEquipmentLabel(eq)}</Text>
                     <View style={[styles.requiredBadge, { backgroundColor: theme.colors.accent + '15' }]}>
                       <Text style={[styles.requiredText, { color: theme.colors.accent }]}>Required</Text>
                     </View>
@@ -347,11 +310,7 @@ export function ExerciseDetailSheet({
                 ))}
                 {exercise.equipment_optional.map((eq, idx) => (
                   <View key={`opt-${idx}`} style={styles.equipRow}>
-                    <MaterialCommunityIcons
-                      name="circle-outline"
-                      size={16}
-                      color={theme.colors.textMuted}
-                    />
+                    <MaterialCommunityIcons name="circle-outline" size={16} color={theme.colors.textMuted} />
                     <Text style={[styles.equipText, { color: theme.colors.textSecondary }]}>
                       {formatEquipmentLabel(eq)}
                     </Text>
@@ -382,19 +341,10 @@ export function ExerciseDetailSheet({
             <View style={styles.instructionsList}>
               {exercise.instructions.map((instruction, idx) => (
                 <View key={idx} style={styles.instructionRow}>
-                  <View
-                    style={[
-                      styles.stepNumber,
-                      { backgroundColor: theme.colors.accent + '15' },
-                    ]}
-                  >
-                    <Text style={[styles.stepNumText, { color: theme.colors.accent }]}>
-                      {idx + 1}
-                    </Text>
+                  <View style={[styles.stepNumber, { backgroundColor: theme.colors.accent + '15' }]}>
+                    <Text style={[styles.stepNumText, { color: theme.colors.accent }]}>{idx + 1}</Text>
                   </View>
-                  <Text style={[styles.instructionText, { color: theme.colors.text }]}>
-                    {instruction}
-                  </Text>
+                  <Text style={[styles.instructionText, { color: theme.colors.text }]}>{instruction}</Text>
                 </View>
               ))}
             </View>
@@ -408,13 +358,7 @@ export function ExerciseDetailSheet({
                 {exercise.training_types
                   .sort((a, b) => b.effectiveness - a.effectiveness)
                   .map(({ type, effectiveness }, idx) => (
-                    <View
-                      key={idx}
-                      style={[
-                        styles.trainingChip,
-                        { backgroundColor: theme.colors.surfaceVariant },
-                      ]}
-                    >
+                    <View key={idx} style={[styles.trainingChip, { backgroundColor: theme.colors.surfaceVariant }]}>
                       <Text style={[styles.trainingLabel, { color: theme.colors.text }]}>
                         {type.replace(/_/g, ' ')}
                       </Text>
@@ -459,9 +403,7 @@ export function ExerciseDetailSheet({
                   activeOpacity={0.7}
                 >
                   <MaterialCommunityIcons name="playlist-plus" size={20} color={theme.colors.accent} />
-                  <Text style={[styles.addBtnText, { color: theme.colors.accent }]}>
-                    Add to Workout
-                  </Text>
+                  <Text style={[styles.addBtnText, { color: theme.colors.accent }]}>Add to Workout</Text>
                 </TouchableOpacity>
               )}
             </View>

@@ -1,12 +1,13 @@
 /**
  * HealthKit Adapter (iOS)
- * 
+ *
  * Implements IHealthAdapter for iOS HealthKit.
  * Uses react-native-health under the hood.
  * All sensitive data is written to encryptedDB.
  */
 
 import { Platform } from 'react-native';
+import { generateSecureId } from '../../security/randomId';
 import type {
   IHealthAdapter,
   HealthProvider,
@@ -111,12 +112,7 @@ class HealthKitAdapter implements IHealthAdapter {
                 'AppleExerciseTime',
                 'DistanceWalkingRunning',
               ],
-              write: [
-                'StepCount',
-                'ActiveEnergyBurned',
-                'Weight',
-                'Workout',
-              ],
+              write: ['StepCount', 'ActiveEnergyBurned', 'Weight', 'Workout'],
             },
           },
           (error: Error | null) => {
@@ -130,7 +126,7 @@ class HealthKitAdapter implements IHealthAdapter {
               this.initialized = true;
               resolve(true);
             }
-          }
+          },
         );
       });
     } catch (error) {
@@ -159,9 +155,14 @@ class HealthKitAdapter implements IHealthAdapter {
       available: true,
       initialized: this.initialized,
       permissions: await this.checkPermissions([
-        'steps', 'calories', 'heart_rate', 'sleep', 'workout', 'active_minutes'
+        'steps',
+        'calories',
+        'heart_rate',
+        'sleep',
+        'workout',
+        'active_minutes',
       ]),
-      lastSyncTime: await this.getLastSyncTime() || undefined,
+      lastSyncTime: (await this.getLastSyncTime()) || undefined,
     };
   }
 
@@ -169,15 +170,12 @@ class HealthKitAdapter implements IHealthAdapter {
   // PERMISSIONS
   // ============================================
 
-  async requestPermissions(
-    categories: HealthDataCategory[],
-    readOnly = false
-  ): Promise<HealthPermission[]> {
+  async requestPermissions(categories: HealthDataCategory[], readOnly = false): Promise<HealthPermission[]> {
     try {
       const hk = await this.getHealthKit();
       if (!hk) return [];
 
-      const readPerms = categories.map(cat => CATEGORY_TO_HK_PERMISSION[cat]).filter(Boolean);
+      const readPerms = categories.map((cat) => CATEGORY_TO_HK_PERMISSION[cat]).filter(Boolean);
       const writePerms = readOnly ? [] : readPerms;
 
       return new Promise((resolve) => {
@@ -194,17 +192,19 @@ class HealthKitAdapter implements IHealthAdapter {
                 provider: 'healthkit',
                 action: 'auth',
               });
-              resolve(categories.map(cat => ({ category: cat, read: false, write: false })));
+              resolve(categories.map((cat) => ({ category: cat, read: false, write: false })));
             } else {
               this.initialized = true;
               // HealthKit doesn't tell us exactly what was granted, assume all
-              resolve(categories.map(cat => ({ 
-                category: cat, 
-                read: true, 
-                write: !readOnly 
-              })));
+              resolve(
+                categories.map((cat) => ({
+                  category: cat,
+                  read: true,
+                  write: !readOnly,
+                })),
+              );
             }
-          }
+          },
         );
       });
     } catch (error) {
@@ -219,7 +219,7 @@ class HealthKitAdapter implements IHealthAdapter {
   async checkPermissions(categories: HealthDataCategory[]): Promise<HealthPermission[]> {
     // HealthKit doesn't provide a way to check individual permissions
     // Return optimistic permissions if initialized
-    return categories.map(cat => ({
+    return categories.map((cat) => ({
       category: cat,
       read: this.initialized,
       write: this.initialized,
@@ -237,10 +237,7 @@ class HealthKitAdapter implements IHealthAdapter {
   // READ OPERATIONS
   // ============================================
 
-  async readRecords<T extends HealthRecord>(
-    category: HealthDataCategory,
-    dateRange: DateRange
-  ): Promise<T[]> {
+  async readRecords<T extends HealthRecord>(category: HealthDataCategory, dateRange: DateRange): Promise<T[]> {
     try {
       const hk = await this.getHealthKit();
       if (!hk) return [];
@@ -256,22 +253,22 @@ class HealthKitAdapter implements IHealthAdapter {
 
       switch (category) {
         case 'steps':
-          records.push(...await this.readSteps(hk, options));
+          records.push(...(await this.readSteps(hk, options)));
           break;
         case 'heart_rate':
-          records.push(...await this.readHeartRate(hk, options));
+          records.push(...(await this.readHeartRate(hk, options)));
           break;
         case 'calories':
-          records.push(...await this.readCalories(hk, options));
+          records.push(...(await this.readCalories(hk, options)));
           break;
         case 'sleep':
-          records.push(...await this.readSleep(hk, options));
+          records.push(...(await this.readSleep(hk, options)));
           break;
         case 'weight':
-          records.push(...await this.readWeight(hk, options));
+          records.push(...(await this.readWeight(hk, options)));
           break;
         case 'workout':
-          records.push(...await this.readWorkouts(hk, options));
+          records.push(...(await this.readWorkouts(hk, options)));
           break;
       }
 
@@ -309,9 +306,7 @@ class HealthKitAdapter implements IHealthAdapter {
     return Array.from(dailyMap.values()).sort((a, b) => a.date.localeCompare(b.date));
   }
 
-  async getLatestRecord<T extends HealthRecord>(
-    category: HealthDataCategory
-  ): Promise<T | null> {
+  async getLatestRecord<T extends HealthRecord>(category: HealthDataCategory): Promise<T | null> {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -342,7 +337,7 @@ class HealthKitAdapter implements IHealthAdapter {
       for (const record of records) {
         const success = await this.writeRecordToHealthKit(hk, record);
         if (success) {
-          ids.push(`hk_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+          ids.push(await generateSecureId('hk'));
 
           // Store sensitive data in encrypted storage
           if (SENSITIVE_CATEGORIES_SET.has(record.category)) {
@@ -365,10 +360,7 @@ class HealthKitAdapter implements IHealthAdapter {
   // SYNC OPERATIONS
   // ============================================
 
-  async syncToLocal(
-    categories?: HealthDataCategory[],
-    since?: Date
-  ): Promise<{ synced: number; errors: number }> {
+  async syncToLocal(categories?: HealthDataCategory[], since?: Date): Promise<{ synced: number; errors: number }> {
     const categoriesToSync = categories || ['steps', 'calories', 'heart_rate', 'sleep', 'workout'];
     const startDate = since || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const endDate = new Date();
@@ -417,7 +409,6 @@ class HealthKitAdapter implements IHealthAdapter {
 
     if (!this.appleHealthKit) {
       try {
-        // @ts-ignore - Package is dynamically imported on iOS only
         const module = await import('react-native-health');
         this.appleHealthKit = module.default;
       } catch {
@@ -429,62 +420,88 @@ class HealthKitAdapter implements IHealthAdapter {
 
   private readSteps(hk: AppleHealthKitType, options: { startDate: string; endDate: string }): Promise<HealthRecord[]> {
     return new Promise((resolve) => {
-      hk.getStepCount(options, (err: Error | null, results: { startDate: string; endDate: string; value: number } | { startDate: string; endDate: string; value: number }[]) => {
-        if (err || !results) {
-          resolve([]);
-          return;
-        }
-        const samples = Array.isArray(results) ? results : [results];
-        resolve(samples.map((s: { startDate: string; endDate: string; value: number }) => ({
-          sourceId: `hk_steps_${s.startDate}`,
-          provider: 'healthkit' as HealthProvider,
-          category: 'steps' as HealthDataCategory,
-          startTime: new Date(s.startDate),
-          endTime: new Date(s.endDate),
-          value: s.value,
-          unit: 'count',
-        })));
-      });
+      hk.getStepCount(
+        options,
+        (
+          err: Error | null,
+          results:
+            | { startDate: string; endDate: string; value: number }
+            | { startDate: string; endDate: string; value: number }[],
+        ) => {
+          if (err || !results) {
+            resolve([]);
+            return;
+          }
+          const samples = Array.isArray(results) ? results : [results];
+          resolve(
+            samples.map((s: { startDate: string; endDate: string; value: number }) => ({
+              sourceId: `hk_steps_${s.startDate}`,
+              provider: 'healthkit' as HealthProvider,
+              category: 'steps' as HealthDataCategory,
+              startTime: new Date(s.startDate),
+              endTime: new Date(s.endDate),
+              value: s.value,
+              unit: 'count',
+            })),
+          );
+        },
+      );
     });
   }
 
-  private readHeartRate(hk: AppleHealthKitType, options: { startDate: string; endDate: string }): Promise<HealthRecord[]> {
+  private readHeartRate(
+    hk: AppleHealthKitType,
+    options: { startDate: string; endDate: string },
+  ): Promise<HealthRecord[]> {
     return new Promise((resolve) => {
-      hk.getHeartRateSamples(options, (err: Error | null, results: { startDate: string; endDate: string; value: number }[]) => {
-        if (err || !results) {
-          resolve([]);
-          return;
-        }
-        resolve(results.map((s: { startDate: string; endDate: string; value: number }) => ({
-          sourceId: `hk_hr_${s.startDate}`,
-          provider: 'healthkit' as HealthProvider,
-          category: 'heart_rate' as HealthDataCategory,
-          startTime: new Date(s.startDate),
-          endTime: new Date(s.endDate),
-          value: s.value,
-          unit: 'bpm',
-        })));
-      });
+      hk.getHeartRateSamples(
+        options,
+        (err: Error | null, results: { startDate: string; endDate: string; value: number }[]) => {
+          if (err || !results) {
+            resolve([]);
+            return;
+          }
+          resolve(
+            results.map((s: { startDate: string; endDate: string; value: number }) => ({
+              sourceId: `hk_hr_${s.startDate}`,
+              provider: 'healthkit' as HealthProvider,
+              category: 'heart_rate' as HealthDataCategory,
+              startTime: new Date(s.startDate),
+              endTime: new Date(s.endDate),
+              value: s.value,
+              unit: 'bpm',
+            })),
+          );
+        },
+      );
     });
   }
 
-  private readCalories(hk: AppleHealthKitType, options: { startDate: string; endDate: string }): Promise<HealthRecord[]> {
+  private readCalories(
+    hk: AppleHealthKitType,
+    options: { startDate: string; endDate: string },
+  ): Promise<HealthRecord[]> {
     return new Promise((resolve) => {
-      hk.getActiveEnergyBurned(options, (err: Error | null, results: { startDate: string; endDate: string; value: number }[]) => {
-        if (err || !results) {
-          resolve([]);
-          return;
-        }
-        resolve(results.map((s: { startDate: string; endDate: string; value: number }) => ({
-          sourceId: `hk_cal_${s.startDate}`,
-          provider: 'healthkit' as HealthProvider,
-          category: 'calories' as HealthDataCategory,
-          startTime: new Date(s.startDate),
-          endTime: new Date(s.endDate),
-          value: s.value,
-          unit: 'kcal',
-        })));
-      });
+      hk.getActiveEnergyBurned(
+        options,
+        (err: Error | null, results: { startDate: string; endDate: string; value: number }[]) => {
+          if (err || !results) {
+            resolve([]);
+            return;
+          }
+          resolve(
+            results.map((s: { startDate: string; endDate: string; value: number }) => ({
+              sourceId: `hk_cal_${s.startDate}`,
+              provider: 'healthkit' as HealthProvider,
+              category: 'calories' as HealthDataCategory,
+              startTime: new Date(s.startDate),
+              endTime: new Date(s.endDate),
+              value: s.value,
+              unit: 'kcal',
+            })),
+          );
+        },
+      );
     });
   }
 
@@ -495,80 +512,91 @@ class HealthKitAdapter implements IHealthAdapter {
           resolve([]);
           return;
         }
-        resolve(results.map((s: { startDate: string; endDate: string }) => ({
-          sourceId: `hk_sleep_${s.startDate}`,
-          provider: 'healthkit' as HealthProvider,
-          category: 'sleep' as HealthDataCategory,
-          startTime: new Date(s.startDate),
-          endTime: new Date(s.endDate),
-          value: (new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000,
-          unit: 'minutes',
-        })));
+        resolve(
+          results.map((s: { startDate: string; endDate: string }) => ({
+            sourceId: `hk_sleep_${s.startDate}`,
+            provider: 'healthkit' as HealthProvider,
+            category: 'sleep' as HealthDataCategory,
+            startTime: new Date(s.startDate),
+            endTime: new Date(s.endDate),
+            value: (new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000,
+            unit: 'minutes',
+          })),
+        );
       });
     });
   }
 
   private readWeight(hk: AppleHealthKitType, options: { startDate: string; endDate: string }): Promise<HealthRecord[]> {
     return new Promise((resolve) => {
-      hk.getWeightSamples({ ...options, unit: 'kilogram' }, (err: Error | null, results: { startDate: string; endDate: string; value: number }[]) => {
-        if (err || !results) {
-          resolve([]);
-          return;
-        }
-        resolve(results.map((s: { startDate: string; endDate: string; value: number }) => ({
-          sourceId: `hk_weight_${s.startDate}`,
-          provider: 'healthkit' as HealthProvider,
-          category: 'weight' as HealthDataCategory,
-          startTime: new Date(s.startDate),
-          endTime: new Date(s.endDate),
-          value: s.value,
-          unit: 'kg',
-        })));
-      });
+      hk.getWeightSamples(
+        { ...options, unit: 'kilogram' },
+        (err: Error | null, results: { startDate: string; endDate: string; value: number }[]) => {
+          if (err || !results) {
+            resolve([]);
+            return;
+          }
+          resolve(
+            results.map((s: { startDate: string; endDate: string; value: number }) => ({
+              sourceId: `hk_weight_${s.startDate}`,
+              provider: 'healthkit' as HealthProvider,
+              category: 'weight' as HealthDataCategory,
+              startTime: new Date(s.startDate),
+              endTime: new Date(s.endDate),
+              value: s.value,
+              unit: 'kg',
+            })),
+          );
+        },
+      );
     });
   }
 
-  private readWorkouts(hk: AppleHealthKitType, options: { startDate: string; endDate: string }): Promise<HealthRecord[]> {
-    return new Promise((resolve) => {
-      hk.getSamples({
-        ...options,
-        type: 'Workout',
-      }, (err: Error | null, results: { startDate: string; endDate: string; activityName?: string }[]) => {
-        if (err || !results) {
-          resolve([]);
-          return;
-        }
-        resolve(results.map((s: { startDate: string; endDate: string; activityName?: string }) => ({
-          sourceId: `hk_workout_${s.startDate}`,
-          provider: 'healthkit' as HealthProvider,
-          category: 'workout' as HealthDataCategory,
-          startTime: new Date(s.startDate),
-          endTime: new Date(s.endDate),
-          value: (new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000,
-          unit: 'minutes',
-          workoutType: s.activityName || 'workout',
-        } as WorkoutRecord)));
-      });
-    });
-  }
-
-  private writeRecordToHealthKit(
+  private readWorkouts(
     hk: AppleHealthKitType,
-    record: HealthRecord
-  ): Promise<boolean> {
+    options: { startDate: string; endDate: string },
+  ): Promise<HealthRecord[]> {
+    return new Promise((resolve) => {
+      hk.getSamples(
+        {
+          ...options,
+          type: 'Workout',
+        },
+        (err: Error | null, results: { startDate: string; endDate: string; activityName?: string }[]) => {
+          if (err || !results) {
+            resolve([]);
+            return;
+          }
+          resolve(
+            results.map(
+              (s: { startDate: string; endDate: string; activityName?: string }) =>
+                ({
+                  sourceId: `hk_workout_${s.startDate}`,
+                  provider: 'healthkit' as HealthProvider,
+                  category: 'workout' as HealthDataCategory,
+                  startTime: new Date(s.startDate),
+                  endTime: new Date(s.endDate),
+                  value: (new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000,
+                  unit: 'minutes',
+                  workoutType: s.activityName || 'workout',
+                }) as WorkoutRecord,
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  private writeRecordToHealthKit(hk: AppleHealthKitType, record: HealthRecord): Promise<boolean> {
     return new Promise((resolve) => {
       switch (record.category) {
         case 'steps':
-          hk.saveSteps(
-            { value: record.value, startDate: record.startTime.toISOString() },
-            (err: Error | null) => resolve(!err)
+          hk.saveSteps({ value: record.value, startDate: record.startTime.toISOString() }, (err: Error | null) =>
+            resolve(!err),
           );
           break;
         case 'weight':
-          hk.saveWeight(
-            { value: record.value, unit: 'kilogram' },
-            (err: Error | null) => resolve(!err)
-          );
+          hk.saveWeight({ value: record.value, unit: 'kilogram' }, (err: Error | null) => resolve(!err));
           break;
         default:
           resolve(false);

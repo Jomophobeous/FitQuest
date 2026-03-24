@@ -1,16 +1,16 @@
 /**
  * Enhanced Step Counter Engine
- * 
+ *
  * Advanced step tracking with stride estimation, distance calculation,
  * cadence tracking, and activity detection.
- * 
+ *
  * Features:
  * - Height-based stride length estimation
  * - Distance calculation from steps (when GPS unavailable)
  * - Cadence tracking (steps per minute)
  * - Activity detection (walking vs running vs cycling)
  * - Calorie estimation with activity-specific multipliers
- * 
+ *
  * Usage:
  * ```tsx
  * import { stepCounterEngine, useStepCounter } from '../engines/StepCounterEngine';
@@ -31,7 +31,7 @@ class EventEmitter {
 
   off(event: string, fn: EventListener): this {
     const list = this._listeners[event];
-    if (list) this._listeners[event] = list.filter(f => f !== fn);
+    if (list) this._listeners[event] = list.filter((f) => f !== fn);
     return this;
   }
 
@@ -56,21 +56,21 @@ class EventEmitter {
 export type ActivityMode = 'STATIONARY' | 'WALKING' | 'RUNNING' | 'CYCLING' | 'UNKNOWN';
 
 export interface StepCounterConfig {
-  heightCm: number;           // User height for stride estimation
-  weightKg: number;           // User weight for calorie estimation
+  heightCm: number; // User height for stride estimation
+  weightKg: number; // User weight for calorie estimation
   sex: 'male' | 'female' | 'other';
 }
 
 export interface StrideFactors {
-  walking: number;            // Multiplier for walking stride (height * factor)
-  running: number;            // Multiplier for running stride
-  heightFallback: number;     // Default height if not provided
+  walking: number; // Multiplier for walking stride (height * factor)
+  running: number; // Multiplier for running stride
+  heightFallback: number; // Default height if not provided
 }
 
 export interface StepData {
   steps: number;
   distanceMeters: number;
-  cadence: number;            // Steps per minute
+  cadence: number; // Steps per minute
   currentActivity: ActivityMode;
   caloriesBurned: number;
   averageStrideLength: number;
@@ -104,11 +104,11 @@ const STRIDE_FACTORS: StrideFactors = {
  * Based on typical step rates during different activities
  */
 const CADENCE_THRESHOLDS = {
-  stationary: 10,      // Below 10 spm = not moving
-  walking: 80,         // 10-80 spm = casual walking
-  briskWalking: 120,   // 80-120 spm = brisk walking
-  running: 180,        // 120-180 spm = running/jogging
-  sprinting: 220,      // Above 180 spm = sprinting
+  stationary: 10, // Below 10 spm = not moving
+  walking: 80, // 10-80 spm = casual walking
+  briskWalking: 120, // 80-120 spm = brisk walking
+  running: 180, // 120-180 spm = running/jogging
+  sprinting: 220, // Above 180 spm = sprinting
 };
 
 /**
@@ -134,7 +134,7 @@ const CADENCE_WINDOW_SECONDS = 10;
 
 class StepCounterEngine extends EventEmitter {
   private static instance: StepCounterEngine;
-  
+
   private config: StepCounterConfig;
   private totalSteps = 0;
   private walkingSteps = 0;
@@ -143,13 +143,13 @@ class StepCounterEngine extends EventEmitter {
   private caloriesBurned = 0;
   private activeMinutes = 0;
   private currentActivity: ActivityMode = 'STATIONARY';
-  
+
   private cadenceWindow: CadenceWindow[] = [];
   private lastStepTime: number | null = null;
   private sessionStartTime: number | null = null;
   private walkingStrideLength: number;
   private runningStrideLength: number;
-  
+
   private activityStartTime: number | null = null;
   private activityStepsCount = 0;
 
@@ -183,7 +183,7 @@ class StepCounterEngine extends EventEmitter {
     this.config = { ...this.config, ...config };
     this.walkingStrideLength = this.calculateStrideLength('walking');
     this.runningStrideLength = this.calculateStrideLength('running');
-    
+
     if (__DEV__) {
       console.log('[StepCounter] Configured:', {
         heightCm: this.config.heightCm,
@@ -219,14 +219,12 @@ class StepCounterEngine extends EventEmitter {
     if (stepCount <= 0) return;
 
     const now = Date.now();
-    
+
     // Detect activity based on step rate
     const activity = this.detectActivity(stepCount, now);
-    
+
     // Calculate stride based on activity
-    const strideLength = activity === 'RUNNING' 
-      ? this.runningStrideLength 
-      : this.walkingStrideLength;
+    const strideLength = activity === 'RUNNING' ? this.runningStrideLength : this.walkingStrideLength;
 
     // Update totals
     this.totalSteps += stepCount;
@@ -362,9 +360,8 @@ class StepCounterEngine extends EventEmitter {
     const instantCadence = (stepCount / timeDeltaSeconds) * 60;
 
     // Smooth with recent cadence
-    const smoothedCadence = this.cadenceWindow.length > 0
-      ? (instantCadence + this.getCurrentCadence()) / 2
-      : instantCadence;
+    const smoothedCadence =
+      this.cadenceWindow.length > 0 ? (instantCadence + this.getCurrentCadence()) / 2 : instantCadence;
 
     // Classify activity
     if (smoothedCadence < CADENCE_THRESHOLDS.stationary) {
@@ -386,7 +383,7 @@ class StepCounterEngine extends EventEmitter {
 
     // Remove entries older than window
     const cutoff = now - CADENCE_WINDOW_SECONDS * 1000;
-    this.cadenceWindow = this.cadenceWindow.filter(w => w.timestamp >= cutoff);
+    this.cadenceWindow = this.cadenceWindow.filter((w) => w.timestamp >= cutoff);
   }
 
   /**
@@ -402,15 +399,11 @@ class StepCounterEngine extends EventEmitter {
     // Get MET for activity
     let met: number;
     const cadence = this.getCurrentCadence();
-    
+
     if (activity === 'RUNNING' || cadence >= CADENCE_THRESHOLDS.running) {
-      met = cadence >= CADENCE_THRESHOLDS.sprinting 
-        ? MET_VALUES.sprinting 
-        : MET_VALUES.running;
+      met = cadence >= CADENCE_THRESHOLDS.sprinting ? MET_VALUES.sprinting : MET_VALUES.running;
     } else if (activity === 'WALKING') {
-      met = cadence >= CADENCE_THRESHOLDS.briskWalking 
-        ? MET_VALUES.briskWalking 
-        : MET_VALUES.walking;
+      met = cadence >= CADENCE_THRESHOLDS.briskWalking ? MET_VALUES.briskWalking : MET_VALUES.walking;
     } else {
       met = MET_VALUES.stationary;
     }
@@ -437,7 +430,8 @@ class StepCounterEngine extends EventEmitter {
     // Add time since last check
     if (this.lastStepTime !== null) {
       const deltaMinutes = (now - this.lastStepTime) / 1000 / 60;
-      if (deltaMinutes < 1) { // Only count if gap is reasonable (< 1 min)
+      if (deltaMinutes < 1) {
+        // Only count if gap is reasonable (< 1 min)
         this.activeMinutes += deltaMinutes;
       }
     }

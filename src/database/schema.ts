@@ -5,6 +5,12 @@
 
 import * as SQLite from 'expo-sqlite';
 import { SCHEMA_VERSION } from './types';
+import {
+  validateDatabaseIntegrity,
+  repairDatabaseIntegrity,
+  runMigrationSandboxed,
+  createIndexSafe,
+} from './DatabaseLifecycle';
 
 const DATABASE_NAME = 'fitquest.db';
 
@@ -48,159 +54,234 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
 }
 
 /**
- * Initialize database schema
+ * Initialize database schema — strict lifecycle:
+ *
+ *   1. Create table structures (WITHOUT unique index)
+ *   2. Run versioned migrations (each sandboxed)
+ *   3. Validate data integrity (pre-flight)
+ *   4. Repair if dirty (FK-safe dedup + orphan cleanup)
+ *   5. Create unique index (ONLY after data is verified clean)
+ *   6. Bump schema version
+ *
+ * NO direct createTables() without validation gate on existing data.
  */
 async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> {
-  // Check current schema version
-  const versionResult = await database.getFirstAsync<{ user_version: number }>(
-    'PRAGMA user_version'
-  );
+  const versionResult = await database.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   const currentVersion = versionResult?.user_version ?? 0;
 
   if (currentVersion < SCHEMA_VERSION) {
-    // CRITICAL: Create all tables FIRST (IF NOT EXISTS) so that migration
-    // ALTER TABLE / SELECT statements never hit "no such table" on fresh installs.
     if (__DEV__) console.log(`[FitQuest DB] Schema upgrade needed: v${currentVersion} → v${SCHEMA_VERSION}`);
-    try {
-      await createTables(database);
-    } catch (createErr) {
-      if (__DEV__) console.error('[FitQuest DB] createTables() FAILED:', createErr);
-      throw createErr;
+
+    // ── Step 1: Create table structures (without unique index) ──
+    // This ensures all tables exist so migrations can ALTER/SELECT safely.
+    await createTables(database);
+
+    // ── Step 2: Run versioned migrations ──
+    await runVersionedMigrations(database, currentVersion);
+
+    // Migrate FitMind legacy tables
+    await migrateFitMindLegacyTables(database);
+
+    // Re-run createTables to ensure any tables dropped by migrations are recreated
+    await createTables(database);
+
+    // ── Step 3: Validate data integrity ──
+    const hasExercises = await database.getFirstAsync<{ cnt: number }>(`SELECT COUNT(*) as cnt FROM exercises`);
+
+    if ((hasExercises?.cnt ?? 0) > 0) {
+      const report = await validateDatabaseIntegrity(database);
+
+      // ── Step 4: Repair if dirty ──
+      if (!report.isClean) {
+        if (__DEV__) console.warn(`[FitQuest DB] Data issues detected: ${report.summary}`);
+
+        const repair = await repairDatabaseIntegrity(database, report);
+
+        if (!repair.success) {
+          // Repair failed — last resort: drop exercise tables for clean re-seed
+          if (__DEV__) console.error('[FitQuest DB] Repair failed — nuclear reset of exercise tables');
+          await database.execAsync('PRAGMA foreign_keys = OFF');
+          await database.execAsync(`
+            DROP TABLE IF EXISTS exercise_images;
+            DROP TABLE IF EXISTS exercise_training_types;
+            DROP TABLE IF EXISTS exercise_equipment;
+            DROP TABLE IF EXISTS exercise_muscles;
+            DROP TABLE IF EXISTS exercises;
+          `);
+          await database.execAsync('PRAGMA foreign_keys = ON');
+          await createTables(database);
+          // Tables are now empty — seedExercises will repopulate
+        } else {
+          // Verify repair succeeded
+          const recheck = await validateDatabaseIntegrity(database);
+          if (!recheck.isClean) {
+            if (__DEV__) console.error('[FitQuest DB] Repair incomplete — nuclear reset');
+            await database.execAsync('PRAGMA foreign_keys = OFF');
+            await database.execAsync(`
+              DROP TABLE IF EXISTS exercise_images;
+              DROP TABLE IF EXISTS exercise_training_types;
+              DROP TABLE IF EXISTS exercise_equipment;
+              DROP TABLE IF EXISTS exercise_muscles;
+              DROP TABLE IF EXISTS exercises;
+            `);
+            await database.execAsync('PRAGMA foreign_keys = ON');
+            await createTables(database);
+          }
+        }
+      }
     }
 
-    // Migration v0–v5 → v6+: drop exercise catalogue for clean re-seed (audio_transition bug)
-    if (currentVersion >= 1 && currentVersion < 6) {
-      if (__DEV__) console.log(`[FitQuest DB] Migrating v${currentVersion} → v${SCHEMA_VERSION}: dropping exercise tables for clean re-seed`);
+    // ── Step 5: Create unique index (only after data is verified clean) ──
+    try {
+      await createIndexSafe(database);
+    } catch (indexErr) {
+      // If index creation still fails, the data isn't clean — nuclear reset
+      if (__DEV__) console.error('[FitQuest DB] Index creation failed after validation:', indexErr);
+      await database.execAsync('PRAGMA foreign_keys = OFF');
       await database.execAsync(`
+        DROP TABLE IF EXISTS exercise_images;
         DROP TABLE IF EXISTS exercise_training_types;
         DROP TABLE IF EXISTS exercise_equipment;
         DROP TABLE IF EXISTS exercise_muscles;
         DROP TABLE IF EXISTS exercises;
       `);
+      await database.execAsync('PRAGMA foreign_keys = ON');
+      await createTables(database);
+      await createIndexSafe(database); // Empty table — guaranteed success
     }
 
-    // v6 → v7: additive migration only (new module tables).
-    // No exercise table drops needed — CREATE IF NOT EXISTS is safe.
-    if (currentVersion < 7) {
-      if (__DEV__) console.log(`[FitQuest DB] Migrating to v7: adding security, FitMind, and health analytics tables`);
-    }
-
-    // v7 → v8: advanced health monitoring tables (anomaly, sleep, HR, daily health)
-    if (currentVersion < 8) {
-      if (__DEV__) console.log(`[FitQuest DB] Migrating to v8: adding anomaly detection, sleep tracking, health monitoring tables`);
-    }
-
-    // v8 → v9: trial_state table for subscription onboarding
-    if (currentVersion < 9) {
-      if (__DEV__) console.log(`[FitQuest DB] Migrating to v9: adding trial state table`);
-    }
-
-    // v9 → v10: external exercise DB import, force_type, mechanic, exercise_images
-    if (currentVersion < 10) {
-      if (__DEV__) console.log(`[FitQuest DB] Migrating to v10: adding force_type, mechanic columns and exercise_images table`);
-      // Add new columns to existing exercises table
-      const hasForceType = await hasTableColumn(database, 'exercises', 'force_type');
-      if (!hasForceType) {
-        await database.execAsync(`ALTER TABLE exercises ADD COLUMN force_type TEXT`);
-      }
-      const hasMechanic = await hasTableColumn(database, 'exercises', 'mechanic');
-      if (!hasMechanic) {
-        await database.execAsync(`ALTER TABLE exercises ADD COLUMN mechanic TEXT`);
-      }
-      const hasExternalId = await hasTableColumn(database, 'exercises', 'external_id');
-      if (!hasExternalId) {
-        await database.execAsync(`ALTER TABLE exercises ADD COLUMN external_id TEXT`);
-      }
-    }
-
-    // v10 → v11: FSRS flashcard algorithm (stability, state, lapses, learning_steps)
-    if (currentVersion < 11) {
-      if (__DEV__) console.log(`[FitQuest DB] Migrating to v11: upgrading flashcards from SM-2 to FSRS algorithm`);
-      await migrateFSRSFlashcards(database);
-    }
-
-    // v11 → v12: Remove bloat variation exercises (Tempo/Pause/Isometric/Plyometric/Unilateral/Elevated/Weighted)
-    if (currentVersion < 12) {
-      try {
-        if (__DEV__) console.log(`[FitQuest DB] Migrating to v12: removing variation exercises (keeping base exercises only)`);
-        await cleanVariationExercises(database);
-      } catch (e) {
-        if (__DEV__) console.error('[FitQuest DB] v12 migration failed:', e);
-        throw e;
-      }
-    }
-
-    // v12 → v13: Re-run cleanup (v12 migration was skipped on some devices due to stale Metro bundle)
-    // Also adds image sharing from external exercises to core exercises
-    if (currentVersion < 13) {
-      try {
-        if (__DEV__) console.log(`[FitQuest DB] Migrating to v13: ensuring variation cleanup + image sharing`);
-        await cleanVariationExercises(database);
-        await shareExternalImagesToCore(database);
-      } catch (e) {
-        if (__DEV__) console.error('[FitQuest DB] v13 migration failed:', e);
-        throw e;
-      }
-    }
-
-    // v13 → v14: Category rename
-    // calisthenics→body_control, getting_taller→posture, faster→speed,
-    // flexible→mobility, mental_clarity→focus, building_muscle→strength
-    if (currentVersion < 14) {
-      try {
-        if (__DEV__) console.log(`[FitQuest DB] Migrating to v14: renaming exercise categories`);
-        await migrateCategoryRename(database);
-      } catch (e) {
-        if (__DEV__) console.error('[FitQuest DB] v14 migration failed:', e);
-        throw e;
-      }
-    }
-
-    // v14 → v15: Repair stale-bundle category rename.
-    // Some devices reached user_version=14 via a stale Metro bundle that
-    // never contained the v14 migration code. Re-run the rename if old
-    // category names are still present in the exercises table.
-    if (currentVersion < 15) {
-      const oldCats = await database.getFirstAsync<{ cnt: number }>(
-        `SELECT COUNT(*) as cnt FROM exercises WHERE category IN ('calisthenics','getting_taller','faster','flexible','mental_clarity','building_muscle')`
+    // ── Step 6: Log + bump version ──
+    try {
+      await database.runAsync(
+        `INSERT OR REPLACE INTO app_state (key, value, updated_at) VALUES (?, ?, datetime('now'))`,
+        ['last_migration', JSON.stringify({ from: currentVersion, to: SCHEMA_VERSION, ts: Date.now() })],
       );
-      if ((oldCats?.cnt ?? 0) > 0) {
-        if (__DEV__) console.log(`[FitQuest DB] Migrating to v15: repairing ${oldCats!.cnt} exercises with stale category names`);
-        await migrateCategoryRename(database);
-      } else {
-        if (__DEV__) console.log(`[FitQuest DB] v15: categories already correct, skipping rename`);
-      }
+    } catch {
+      /* non-critical */
     }
 
-    // v15 → v16: Nuclear category fix.
-    // Previous v14/v15 migrations used complex table-rebuild approach that
-    // silently failed on some devices. Drop exercise tables entirely and
-    // let seedExercises + seedExternalExercises re-populate with correct
-    // category names. Also rebuild user_profile to fix goal CHECK constraint.
-    if (currentVersion < 16) {
-      const oldCats = await database.getFirstAsync<{ cnt: number }>(
-        `SELECT COUNT(*) as cnt FROM exercises WHERE category IN ('calisthenics','getting_taller','faster','flexible','mental_clarity','building_muscle')`
-      );
-      if ((oldCats?.cnt ?? 0) > 0) {
-        if (__DEV__) console.log(`[FitQuest DB] v16: ${oldCats!.cnt} exercises with old categories — dropping for clean re-seed`);
-        await database.execAsync('PRAGMA foreign_keys = OFF');
-        await database.execAsync('DROP TABLE IF EXISTS exercise_images');
-        await database.execAsync('DROP TABLE IF EXISTS exercise_training_types');
-        await database.execAsync('DROP TABLE IF EXISTS exercise_equipment');
-        await database.execAsync('DROP TABLE IF EXISTS exercise_muscles');
-        await database.execAsync('DROP TABLE IF EXISTS exercises');
-        if (__DEV__) console.log(`[FitQuest DB] v16: exercise tables dropped, will re-seed after createTables`);
+    await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+    if (__DEV__) console.log(`[FitQuest DB] Migration complete: v${currentVersion} → v${SCHEMA_VERSION}`);
+  }
+}
 
-        // Rebuild user_profile to fix goal CHECK constraint
+/**
+ * Run all versioned migrations applicable to the current schema version.
+ * Each destructive migration is wrapped in a SAVEPOINT for safety.
+ */
+async function runVersionedMigrations(database: SQLite.SQLiteDatabase, currentVersion: number): Promise<void> {
+  // v0–v5 → v6+: drop exercise catalogue for clean re-seed (audio_transition bug)
+  if (currentVersion >= 1 && currentVersion < 6) {
+    await runMigrationSandboxed(database, '6', async (db) => {
+      if (__DEV__)
+        console.log(`[FitQuest DB] Migrating v${currentVersion} → v6: dropping exercise tables for clean re-seed`);
+      await db.execAsync(`
+        DROP TABLE IF EXISTS exercise_training_types;
+        DROP TABLE IF EXISTS exercise_equipment;
+        DROP TABLE IF EXISTS exercise_muscles;
+        DROP TABLE IF EXISTS exercises;
+      `);
+    });
+  }
+
+  // v6 → v7: additive (new module tables — created by createTables IF NOT EXISTS)
+  if (currentVersion < 7) {
+    if (__DEV__) console.log(`[FitQuest DB] Migrating to v7: security, FitMind, health analytics tables`);
+  }
+
+  // v7 → v8: advanced health monitoring (created by createTables)
+  if (currentVersion < 8) {
+    if (__DEV__) console.log(`[FitQuest DB] Migrating to v8: anomaly detection, sleep, health monitoring`);
+  }
+
+  // v8 → v9: trial_state
+  if (currentVersion < 9) {
+    if (__DEV__) console.log(`[FitQuest DB] Migrating to v9: trial state table`);
+  }
+
+  // v9 → v10: ALTER TABLE for exercise columns
+  if (currentVersion < 10) {
+    await runMigrationSandboxed(database, '10', async (db) => {
+      if (__DEV__) console.log(`[FitQuest DB] Migrating to v10: force_type, mechanic, external_id columns`);
+      const hasForceType = await hasTableColumn(db, 'exercises', 'force_type');
+      if (!hasForceType) await db.execAsync(`ALTER TABLE exercises ADD COLUMN force_type TEXT`);
+      const hasMechanic = await hasTableColumn(db, 'exercises', 'mechanic');
+      if (!hasMechanic) await db.execAsync(`ALTER TABLE exercises ADD COLUMN mechanic TEXT`);
+      const hasExternalId = await hasTableColumn(db, 'exercises', 'external_id');
+      if (!hasExternalId) await db.execAsync(`ALTER TABLE exercises ADD COLUMN external_id TEXT`);
+    });
+  }
+
+  // v10 → v11: FSRS flashcards
+  if (currentVersion < 11) {
+    await runMigrationSandboxed(database, '11', async (db) => {
+      if (__DEV__) console.log(`[FitQuest DB] Migrating to v11: FSRS flashcards`);
+      await migrateFSRSFlashcards(db);
+    });
+  }
+
+  // v11 → v12: Remove variation exercises
+  if (currentVersion < 12) {
+    await runMigrationSandboxed(database, '12', async (db) => {
+      if (__DEV__) console.log(`[FitQuest DB] Migrating to v12: removing variation exercises`);
+      await cleanVariationExercises(db);
+    });
+  }
+
+  // v12 → v13: Re-run cleanup + image sharing
+  if (currentVersion < 13) {
+    await runMigrationSandboxed(database, '13', async (db) => {
+      if (__DEV__) console.log(`[FitQuest DB] Migrating to v13: variation cleanup + image sharing`);
+      await cleanVariationExercises(db);
+      await shareExternalImagesToCore(db);
+    });
+  }
+
+  // v13 → v14: Category rename
+  if (currentVersion < 14) {
+    await runMigrationSandboxed(database, '14', async (db) => {
+      if (__DEV__) console.log(`[FitQuest DB] Migrating to v14: category rename`);
+      await migrateCategoryRename(db);
+    });
+  }
+
+  // v14 → v15: Repair stale-bundle category rename
+  if (currentVersion < 15) {
+    const oldCats = await database.getFirstAsync<{ cnt: number }>(
+      `SELECT COUNT(*) as cnt FROM exercises WHERE category IN ('calisthenics','getting_taller','faster','flexible','mental_clarity','building_muscle')`,
+    );
+    if ((oldCats?.cnt ?? 0) > 0) {
+      await runMigrationSandboxed(database, '15', async (db) => {
+        if (__DEV__) console.log(`[FitQuest DB] Migrating to v15: repairing ${oldCats!.cnt} stale categories`);
+        await migrateCategoryRename(db);
+      });
+    } else {
+      if (__DEV__) console.log(`[FitQuest DB] v15: categories already correct`);
+    }
+  }
+
+  // v15 → v16: Nuclear category fix + user_profile goal constraint
+  if (currentVersion < 16) {
+    const oldCats = await database.getFirstAsync<{ cnt: number }>(
+      `SELECT COUNT(*) as cnt FROM exercises WHERE category IN ('calisthenics','getting_taller','faster','flexible','mental_clarity','building_muscle')`,
+    );
+    if ((oldCats?.cnt ?? 0) > 0) {
+      await runMigrationSandboxed(database, '16', async (db) => {
+        if (__DEV__) console.log(`[FitQuest DB] v16: ${oldCats!.cnt} old categories — nuclear drop`);
+        await db.execAsync('PRAGMA foreign_keys = OFF');
+        await db.execAsync('DROP TABLE IF EXISTS exercise_images');
+        await db.execAsync('DROP TABLE IF EXISTS exercise_training_types');
+        await db.execAsync('DROP TABLE IF EXISTS exercise_equipment');
+        await db.execAsync('DROP TABLE IF EXISTS exercise_muscles');
+        await db.execAsync('DROP TABLE IF EXISTS exercises');
+
         try {
-          await migrateUserProfileGoals(database);
+          await migrateUserProfileGoals(db);
         } catch (e) {
-          if (__DEV__) console.warn(`[FitQuest DB] v16: user_profile goal migration skipped:`, e);
+          if (__DEV__) console.warn(`[FitQuest DB] v16: user_profile migration skipped:`, e);
         }
-
-        // Update body_craft_algorithms goal_type
         try {
-          await database.execAsync(`
+          await db.execAsync(`
             UPDATE body_craft_algorithms SET goal_type =
               CASE goal_type
                 WHEN 'calisthenics' THEN 'body_control'
@@ -213,107 +294,104 @@ async function initializeSchema(database: SQLite.SQLiteDatabase): Promise<void> 
               END
           `);
         } catch (e) {
-          if (__DEV__) console.warn(`[FitQuest DB] v16: body_craft goal update skipped:`, e);
+          if (__DEV__) console.warn(`[FitQuest DB] v16: body_craft update skipped:`, e);
         }
-
-        await database.execAsync('PRAGMA foreign_keys = ON');
-      } else {
-        if (__DEV__) console.log(`[FitQuest DB] v16: categories already correct`);
-      }
+        await db.execAsync('PRAGMA foreign_keys = ON');
+      });
+    } else {
+      if (__DEV__) console.log(`[FitQuest DB] v16: categories already correct`);
     }
+  }
 
-    // ── v17: User interests, personal goals, mind XP, regional pricing ──
-    if (currentVersion < 17) {
-      if (__DEV__) console.log('[FitQuest DB] v17: Adding user interests, personal goals, mind XP tables');
-      // Tables created via CREATE IF NOT EXISTS in createTables() — no additional migration needed
-    }
+  // v16 → v17: User interests, personal goals (tables created by createTables)
+  if (currentVersion < 17) {
+    if (__DEV__) console.log('[FitQuest DB] v17: user interests, personal goals, mind XP');
+  }
 
-    // ── v18: Fix external exercise equipment_level ──
-    // External exercises from free-exercise-db were all seeded with equipment_level='none'
-    // even when they require barbell, dumbbell, cable, machine, etc.
-    // Fix: update equipment_level based on exercise_equipment table entries.
-    if (currentVersion < 18) {
+  // v17 → v18: Fix external exercise equipment_level
+  if (currentVersion < 18) {
+    await runMigrationSandboxed(database, '18', async (db) => {
       if (__DEV__) console.log('[FitQuest DB] v18: Fixing external exercise equipment levels');
-      try {
-        // Any exercise that has required equipment entries should NOT be 'none'
-        // Set to 'playground' for gym equipment (barbell, dumbbell, cable, machine, etc.)
-        const fixed = await database.runAsync(`
-          UPDATE exercises SET equipment_level = 'playground'
-          WHERE equipment_level = 'none'
-            AND id LIKE 'fed_%'
-            AND id IN (
-              SELECT DISTINCT exercise_id FROM exercise_equipment
-              WHERE is_required = 1
-                AND equipment IN ('barbell', 'dumbbell', 'kettlebell', 'cable_machine', 'machine', 'exercise_ball', 'medicine_ball')
-            )
-        `);
-        if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${fixed.changes} exercises to playground level`);
+      const fixed = await db.runAsync(`
+        UPDATE exercises SET equipment_level = 'playground'
+        WHERE equipment_level = 'none' AND id LIKE 'fed_%'
+          AND id IN (SELECT DISTINCT exercise_id FROM exercise_equipment
+            WHERE is_required = 1 AND equipment IN ('barbell','dumbbell','kettlebell','cable_machine','machine','exercise_ball','medicine_ball'))
+      `);
+      if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${fixed.changes} exercises to playground`);
 
-        // For exercises with name-based equipment hints but no exercise_equipment entries,
-        // update based on exercise name containing equipment keywords
-        const nameFix = await database.runAsync(`
-          UPDATE exercises SET equipment_level = 'playground'
-          WHERE equipment_level = 'none'
-            AND id LIKE 'fed_%'
-            AND (
-              name LIKE '%Barbell%' OR name LIKE '%Dumbbell%' OR name LIKE '%Kettlebell%'
-              OR name LIKE '%Cable%' OR name LIKE '%Machine%' OR name LIKE '%Smith%'
-              OR name LIKE '%EZ-Bar%' OR name LIKE '%E-Z Curl%' OR name LIKE '%Lat Pulldown%'
-              OR name LIKE '%Leg Press%' OR name LIKE '%Hack Squat%' OR name LIKE '%Pec Deck%'
-            )
-        `);
-        if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${nameFix.changes} more exercises by name`);
+      const nameFix = await db.runAsync(`
+        UPDATE exercises SET equipment_level = 'playground'
+        WHERE equipment_level = 'none' AND id LIKE 'fed_%'
+          AND (name LIKE '%Barbell%' OR name LIKE '%Dumbbell%' OR name LIKE '%Kettlebell%'
+            OR name LIKE '%Cable%' OR name LIKE '%Machine%' OR name LIKE '%Smith%'
+            OR name LIKE '%EZ-Bar%' OR name LIKE '%E-Z Curl%' OR name LIKE '%Lat Pulldown%'
+            OR name LIKE '%Leg Press%' OR name LIKE '%Hack Squat%' OR name LIKE '%Pec Deck%')
+      `);
+      if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${nameFix.changes} by name`);
 
-        // Bench/pull-up bar exercises → 'playground'
-        const benchFix = await database.runAsync(`
-          UPDATE exercises SET equipment_level = 'playground'
-          WHERE equipment_level = 'none'
-            AND id LIKE 'fed_%'
-            AND (
-              name LIKE '%Bench Press%' OR name LIKE '%Incline Press%' OR name LIKE '%Decline Press%'
-              OR name LIKE '%Pull-Up%' OR name LIKE '%Pullup%' OR name LIKE '%Chin-Up%'
-              OR name LIKE '%Chinup%' OR name LIKE '%Dip%' OR name LIKE '%Ring%'
-            )
-        `);
-        if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${benchFix.changes} more bench/bar exercises`);
+      const benchFix = await db.runAsync(`
+        UPDATE exercises SET equipment_level = 'playground'
+        WHERE equipment_level = 'none' AND id LIKE 'fed_%'
+          AND (name LIKE '%Bench Press%' OR name LIKE '%Incline Press%' OR name LIKE '%Decline Press%'
+            OR name LIKE '%Pull-Up%' OR name LIKE '%Pullup%' OR name LIKE '%Chin-Up%'
+            OR name LIKE '%Chinup%' OR name LIKE '%Dip%' OR name LIKE '%Ring%')
+      `);
+      if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${benchFix.changes} bench/bar exercises`);
 
-        // Band/minimal equipment → 'minimal'
-        const minimalFix = await database.runAsync(`
-          UPDATE exercises SET equipment_level = 'minimal'
-          WHERE equipment_level = 'none'
-            AND id LIKE 'fed_%'
-            AND id IN (
-              SELECT DISTINCT exercise_id FROM exercise_equipment
-              WHERE is_required = 1
-                AND equipment IN ('band', 'foam_roller', 'jump_rope', 'towel', 'strap', 'backpack')
-            )
-        `);
-        if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${minimalFix.changes} exercises to minimal level`);
-      } catch (e) {
-        if (__DEV__) console.warn('[FitQuest DB] v18: Equipment level fix failed:', e);
-      }
-    }
+      const minimalFix = await db.runAsync(`
+        UPDATE exercises SET equipment_level = 'minimal'
+        WHERE equipment_level = 'none' AND id LIKE 'fed_%'
+          AND id IN (SELECT DISTINCT exercise_id FROM exercise_equipment
+            WHERE is_required = 1 AND equipment IN ('band','foam_roller','jump_rope','towel','strap','backpack'))
+      `);
+      if (__DEV__) console.log(`[FitQuest DB] v18: Fixed ${minimalFix.changes} to minimal`);
+    });
+  }
 
-    await migrateFitMindLegacyTables(database);
-    await createTables(database);
-    await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+  // v18 → v19: Dedup handled by lifecycle validation (Phase 3 above)
+  // The old v19 migration was a manual dedup — now replaced by the systematic
+  // validateDatabaseIntegrity + repairDatabaseIntegrity lifecycle.
+  if (currentVersion < 19) {
+    if (__DEV__) console.log('[FitQuest DB] v19: exercise dedup handled by lifecycle validation');
+  }
+
+  // v20: exercise_translations table for i18n
+  if (currentVersion < 20) {
+    await runMigrationSandboxed(database, '20', async (db) => {
+      if (__DEV__) console.log('[FitQuest DB] v20: creating exercise_translations table');
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS exercise_translations (
+          exercise_id TEXT NOT NULL,
+          language TEXT NOT NULL,
+          name TEXT NOT NULL,
+          instructions TEXT NOT NULL,
+          audio_intro TEXT NOT NULL DEFAULT '',
+          audio_setup TEXT NOT NULL DEFAULT '',
+          audio_execution TEXT NOT NULL DEFAULT '',
+          audio_transition TEXT NOT NULL DEFAULT '',
+          created_at TEXT NOT NULL DEFAULT (datetime('now')),
+          PRIMARY KEY (exercise_id, language),
+          FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_exercise_translations_lang ON exercise_translations(language);
+      `);
+    });
   }
 }
 
 async function hasTableColumn(
   database: SQLite.SQLiteDatabase,
   tableName: string,
-  columnName: string
+  columnName: string,
 ): Promise<boolean> {
-  const columns = await database.getAllAsync<{ name: string }>(
-    `PRAGMA table_info(${tableName})`
-  );
+  const columns = await database.getAllAsync<{ name: string }>(`PRAGMA table_info(${tableName})`);
   return columns.some((column) => column.name === columnName);
 }
 
 /**
  * Migrate flashcards from SM-2 to FSRS algorithm (v10 → v11).
- * 
+ *
  * FSRS fields:
  * - stability: Memory stability in days (how long until 90% retention drops)
  * - state: 0=New, 1=Learning, 2=Review, 3=Relearning
@@ -387,21 +465,21 @@ async function migrateFSRSFlashcards(database: SQLite.SQLiteDatabase): Promise<v
 
 /**
  * Remove variation exercises from v11→v12 migration.
- * 
+ *
  * The exercise generator previously created Tempo/Pause/Isometric/Plyometric/
  * Unilateral/Elevated/Weighted variations from each base template.
  * These added ~340 low-value duplicate exercises with the same instructions.
  * This migration removes them, keeping only base exercises.
- * 
+ *
  * Variation exercise IDs contain patterns like: _tempo_, _pause_, _iso_, _plyo_, _single_, _elevated_, _weighted_
  * External exercises (fed_*) and handcrafted exercises (cal_*, tall_*, etc.) are NOT affected.
  */
 async function cleanVariationExercises(database: SQLite.SQLiteDatabase): Promise<void> {
   // Count before
   const before = await database.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercises WHERE id LIKE '%_gen_%'`
+    `SELECT COUNT(*) as count FROM exercises WHERE id LIKE '%_gen_%'`,
   );
-  
+
   // Delete variation exercises (CASCADE handles junction tables: exercise_muscles, exercise_equipment, exercise_training_types, exercise_images)
   await database.execAsync(`
     DELETE FROM exercises WHERE 
@@ -413,40 +491,48 @@ async function cleanVariationExercises(database: SQLite.SQLiteDatabase): Promise
       id LIKE '%_elevated_%' OR
       id LIKE '%_weighted_%'
   `);
-  
+
   // Count after
   const after = await database.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercises WHERE id LIKE '%_gen_%'`
+    `SELECT COUNT(*) as count FROM exercises WHERE id LIKE '%_gen_%'`,
   );
-  
+
   const removed = (before?.count ?? 0) - (after?.count ?? 0);
-  if (__DEV__) console.log(`[FitQuest DB] Removed ${removed} variation exercises (${before?.count ?? 0} → ${after?.count ?? 0} generated exercises)`);
+  if (__DEV__)
+    console.log(
+      `[FitQuest DB] Removed ${removed} variation exercises (${before?.count ?? 0} → ${after?.count ?? 0} generated exercises)`,
+    );
 }
 
 /**
  * Share images from external exercises to matching core/generated exercises.
- * 
+ *
  * Strategy:
  * 1. For each core exercise (id NOT starting with 'fed_'), normalize its name
  * 2. Find a matching external exercise by normalized name
  * 3. Copy the image_path from the external exercise's images to the core exercise
- * 
+ *
  * This is idempotent — uses INSERT OR IGNORE.
  */
 async function shareExternalImagesToCore(database: SQLite.SQLiteDatabase): Promise<void> {
   // Get all core exercises (non-external)
   const coreExercises = await database.getAllAsync<{ id: string; name: string }>(
-    `SELECT id, name FROM exercises WHERE id NOT LIKE 'fed_%'`
+    `SELECT id, name FROM exercises WHERE id NOT LIKE 'fed_%'`,
   );
-  
+
   // Get all external exercise names → image paths (both start and end frame)
-  const externalImages = await database.getAllAsync<{ exercise_id: string; name: string; image_path: string; image_order: number }>(
+  const externalImages = await database.getAllAsync<{
+    exercise_id: string;
+    name: string;
+    image_path: string;
+    image_order: number;
+  }>(
     `SELECT e.id as exercise_id, e.name, ei.image_path, ei.image_order 
      FROM exercises e 
      JOIN exercise_images ei ON e.id = ei.exercise_id 
-     WHERE e.id LIKE 'fed_%'`
+     WHERE e.id LIKE 'fed_%'`,
   );
-  
+
   // Build lookup: normalized name → image records
   const imagesByName = new Map<string, { image_path: string; image_order: number }[]>();
   for (const img of externalImages) {
@@ -456,21 +542,21 @@ async function shareExternalImagesToCore(database: SQLite.SQLiteDatabase): Promi
     }
     imagesByName.get(normalized)!.push({ image_path: img.image_path, image_order: img.image_order });
   }
-  
+
   let shared = 0;
-  
+
   for (const core of coreExercises) {
     // Already has images?
     const existing = await database.getFirstAsync<{ cnt: number }>(
       `SELECT COUNT(*) as cnt FROM exercise_images WHERE exercise_id = ?`,
-      [core.id]
+      [core.id],
     );
     if (existing && existing.cnt > 0) continue;
-    
+
     // Try exact normalized match
     const normalized = normalizeName(core.name);
     let images = imagesByName.get(normalized);
-    
+
     // Try partial match (strip common prefixes from generated exercises)
     if (!images) {
       const stripped = normalized
@@ -480,23 +566,26 @@ async function shareExternalImagesToCore(database: SQLite.SQLiteDatabase): Promi
         images = imagesByName.get(stripped);
       }
     }
-    
+
     if (images && images.length > 0) {
       for (const img of images) {
         await database.runAsync(
           `INSERT OR IGNORE INTO exercise_images (exercise_id, image_path, image_order, source) VALUES (?, ?, ?, 'shared')`,
-          [core.id, img.image_path, img.image_order]
+          [core.id, img.image_path, img.image_order],
         );
       }
       shared++;
     }
   }
-  
+
   const totalWithImages = await database.getFirstAsync<{ cnt: number }>(
-    `SELECT COUNT(DISTINCT exercise_id) as cnt FROM exercise_images`
+    `SELECT COUNT(DISTINCT exercise_id) as cnt FROM exercise_images`,
   );
-  
-  if (__DEV__) console.log(`[FitQuest DB] Shared images to ${shared} core exercises. Total exercises with images: ${totalWithImages?.cnt ?? 0}`);
+
+  if (__DEV__)
+    console.log(
+      `[FitQuest DB] Shared images to ${shared} core exercises. Total exercises with images: ${totalWithImages?.cnt ?? 0}`,
+    );
 }
 
 /** Normalize exercise name for fuzzy matching */
@@ -504,7 +593,7 @@ function normalizeName(name: string): string {
   return name
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '') // strip special chars
-    .replace(/\s+/g, ' ')        // collapse whitespace
+    .replace(/\s+/g, ' ') // collapse whitespace
     .trim();
 }
 
@@ -696,10 +785,9 @@ async function migrateCategoryRename(database: SQLite.SQLiteDatabase): Promise<v
 
     // Log result
     const categories = await database.getAllAsync<{ category: string; count: number }>(
-      `SELECT category, COUNT(*) as count FROM exercises GROUP BY category ORDER BY count DESC`
+      `SELECT category, COUNT(*) as count FROM exercises GROUP BY category ORDER BY count DESC`,
     );
     if (__DEV__) console.log(`[FitQuest DB] Category rename complete:`, JSON.stringify(categories));
-
   } catch (error) {
     await database.execAsync('ROLLBACK');
     await database.execAsync('PRAGMA foreign_keys = ON');
@@ -1008,6 +1096,8 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_exercises_difficulty ON exercises(difficulty);
     CREATE INDEX IF NOT EXISTS idx_exercises_equipment ON exercises(equipment_level);
     CREATE INDEX IF NOT EXISTS idx_exercises_external_id ON exercises(external_id);
+    -- NOTE: UNIQUE index idx_exercises_name_category is created by createIndexSafe()
+    -- in the lifecycle flow AFTER data validation — NOT here.
 
     -- v10: Exercise images from external databases
     CREATE TABLE IF NOT EXISTS exercise_images (
@@ -1567,6 +1657,26 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
       scanned_at INTEGER NOT NULL,
       FOREIGN KEY (document_id) REFERENCES fitmind_documents(id) ON DELETE CASCADE
     );
+
+    -- ============================================
+    -- EXERCISE TRANSLATIONS (v20 — i18n)
+    -- ============================================
+
+    CREATE TABLE IF NOT EXISTS exercise_translations (
+      exercise_id TEXT NOT NULL,
+      language TEXT NOT NULL,
+      name TEXT NOT NULL,
+      instructions TEXT NOT NULL, -- JSON array of instruction steps
+      audio_intro TEXT NOT NULL DEFAULT '',
+      audio_setup TEXT NOT NULL DEFAULT '',
+      audio_execution TEXT NOT NULL DEFAULT '',
+      audio_transition TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (exercise_id, language),
+      FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_exercise_translations_lang ON exercise_translations(language);
   `);
   if (__DEV__) console.log('[FitQuest DB] createTables() — all tables created successfully');
 }

@@ -17,12 +17,14 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
@@ -54,10 +56,30 @@ type Step = (typeof STEPS)[number];
 const BODY_TYPES: { key: BodyType; label: string; icon: string; desc: string }[] = [
   { key: 'ectomorph', label: 'Ectomorph', icon: 'human-male', desc: 'Slim build, fast metabolism, lean frame' },
   { key: 'mesomorph', label: 'Mesomorph', icon: 'human-male-board', desc: 'Athletic build, gains muscle easily' },
-  { key: 'endomorph', label: 'Endomorph', icon: 'human-greeting-variant', desc: 'Stocky build, stores fat more easily' },
-  { key: 'ecto_mesomorph', label: 'Ecto-Mesomorph', icon: 'run-fast', desc: 'Lean & athletic, builds muscle while staying slim' },
-  { key: 'meso_endomorph', label: 'Meso-Endomorph', icon: 'weight-lifter', desc: 'Strong & powerful, gains muscle and fat easily' },
-  { key: 'endo_ectomorph', label: 'Endo-Ectomorph', icon: 'human-male-height-variant', desc: 'Slim upper body, stores fat around lower body' },
+  {
+    key: 'endomorph',
+    label: 'Endomorph',
+    icon: 'human-greeting-variant',
+    desc: 'Stocky build, stores fat more easily',
+  },
+  {
+    key: 'ecto_mesomorph',
+    label: 'Ecto-Mesomorph',
+    icon: 'run-fast',
+    desc: 'Lean & athletic, builds muscle while staying slim',
+  },
+  {
+    key: 'meso_endomorph',
+    label: 'Meso-Endomorph',
+    icon: 'weight-lifter',
+    desc: 'Strong & powerful, gains muscle and fat easily',
+  },
+  {
+    key: 'endo_ectomorph',
+    label: 'Endo-Ectomorph',
+    icon: 'human-male-height-variant',
+    desc: 'Slim upper body, stores fat around lower body',
+  },
 ];
 
 const FITNESS_LEVELS: { key: FitnessLevel; label: string }[] = [
@@ -74,10 +96,30 @@ const ACTIVITY_LEVELS: { key: ActivityLevel; label: string; desc: string }[] = [
 ];
 
 const GOAL_OPTIONS: { key: GoalType; label: string; icon: string; desc: string }[] = [
-  { key: 'lean_athletic', label: 'Lean & Athletic', icon: 'run-fast', desc: 'Low body fat, visible abs, functional strength' },
-  { key: 'muscular_powerful', label: 'Muscular & Powerful', icon: 'arm-flex', desc: 'Max hypertrophy, broad shoulders, big legs' },
-  { key: 'tall_flexible', label: 'Tall & Flexible', icon: 'yoga', desc: 'Posture correction, decompression, elongated muscles' },
-  { key: 'balanced_toned', label: 'Balanced & Toned', icon: 'meditation', desc: 'Moderate muscle, low fat, overall aesthetics' },
+  {
+    key: 'lean_athletic',
+    label: 'Lean & Athletic',
+    icon: 'run-fast',
+    desc: 'Low body fat, visible abs, functional strength',
+  },
+  {
+    key: 'muscular_powerful',
+    label: 'Muscular & Powerful',
+    icon: 'arm-flex',
+    desc: 'Max hypertrophy, broad shoulders, big legs',
+  },
+  {
+    key: 'tall_flexible',
+    label: 'Tall & Flexible',
+    icon: 'yoga',
+    desc: 'Posture correction, decompression, elongated muscles',
+  },
+  {
+    key: 'balanced_toned',
+    label: 'Balanced & Toned',
+    icon: 'meditation',
+    desc: 'Moderate muscle, low fat, overall aesthetics',
+  },
   { key: 'custom', label: 'Custom', icon: 'tune-vertical', desc: 'Select specific focus areas' },
 ];
 
@@ -100,7 +142,9 @@ const TIMELINE_OPTIONS: { months: TimelineMonths; label: string; desc: string; i
 
 const PRIORITY_CYCLE: MusclePriority[] = ['maintain', 'priority', 'ignore'];
 
-const getPriorityConfig = (colors: typeof import('../src/design/theme-system').colorSystem.dark): Record<MusclePriority, { label: string; color: string }> => ({
+const getPriorityConfig = (
+  colors: typeof import('../src/design/theme-system').colorSystem.dark,
+): Record<MusclePriority, { label: string; color: string }> => ({
   priority: { label: 'Priority', color: colors.accent },
   maintain: { label: 'Maintain', color: colors.warning },
   ignore: { label: 'Ignore', color: colors.textMuted },
@@ -132,8 +176,8 @@ export default function CraftMyBodyScreen() {
   const [goalType, setGoalType] = useState<GoalType>('balanced_toned');
 
   // Step 3: Focus areas
-  const [musclePriorities, setMusclePriorities] = useState<Record<string, MusclePriority>>(
-    () => Object.fromEntries(MUSCLE_GROUPS.map((m) => [m.key, 'maintain' as MusclePriority]))
+  const [musclePriorities, setMusclePriorities] = useState<Record<string, MusclePriority>>(() =>
+    Object.fromEntries(MUSCLE_GROUPS.map((m) => [m.key, 'maintain' as MusclePriority])),
   );
 
   // Step 4: Timeline
@@ -147,12 +191,14 @@ export default function CraftMyBodyScreen() {
   // Pre-fill height/weight/sex from user profile
   useEffect(() => {
     if (!dbReady) return;
-    getUserProfile('user_local_001').then(profile => {
-      if (!profile) return;
-      if (profile.height_cm && !heightCm) setHeightCm(String(Math.round(profile.height_cm)));
-      if (profile.weight_kg && !weightKg) setWeightKg(String(Math.round(profile.weight_kg)));
-      if (profile.sex && (profile.sex === 'male' || profile.sex === 'female')) setSex(profile.sex);
-    }).catch(() => {});
+    getUserProfile('user_local_001')
+      .then((profile) => {
+        if (!profile) return;
+        if (profile.height_cm && !heightCm) setHeightCm(String(Math.round(profile.height_cm)));
+        if (profile.weight_kg && !weightKg) setWeightKg(String(Math.round(profile.weight_kg)));
+        if (profile.sex && (profile.sex === 'male' || profile.sex === 'female')) setSex(profile.sex);
+      })
+      .catch(() => {});
   }, [dbReady]);
 
   // ========== Navigation ==========
@@ -177,7 +223,10 @@ export default function CraftMyBodyScreen() {
       if (!hv.valid) errs.heightCm = hv.error!;
       if (!wv.valid) errs.weightKg = wv.error!;
       if (!av.valid) errs.age = av.error!;
-      if (Object.keys(errs).length > 0) { setFieldErrors(errs); return; }
+      if (Object.keys(errs).length > 0) {
+        setFieldErrors(errs);
+        return;
+      }
       setFieldErrors({});
     }
 
@@ -201,7 +250,19 @@ export default function CraftMyBodyScreen() {
       return;
     }
     if (stepIndex < STEPS.length - 1) setStepIndex((i) => i + 1);
-  }, [stepIndex, heightCm, weightKg, age, sex, bodyType, fitnessLevel, activityLevel, goalType, musclePriorities, timeline]);
+  }, [
+    stepIndex,
+    heightCm,
+    weightKg,
+    age,
+    sex,
+    bodyType,
+    fitnessLevel,
+    activityLevel,
+    goalType,
+    musclePriorities,
+    timeline,
+  ]);
 
   const goBack = useCallback(() => {
     if (stepIndex > 0) setStepIndex((i) => i - 1);
@@ -210,7 +271,7 @@ export default function CraftMyBodyScreen() {
 
   const toggleMusclePriority = useCallback((key: string) => {
     setMusclePriorities((prev) => {
-      const current = prev[key] ?? 'maintain' as MusclePriority;
+      const current = prev[key] ?? ('maintain' as MusclePriority);
       const idx = PRIORITY_CYCLE.indexOf(current);
       const next = PRIORITY_CYCLE[(idx + 1) % PRIORITY_CYCLE.length] ?? ('maintain' as MusclePriority);
       return { ...prev, [key]: next };
@@ -258,14 +319,25 @@ export default function CraftMyBodyScreen() {
                 style={[
                   styles.progressDot,
                   {
-                    backgroundColor: isDone ? colors.accent : isActive ? colors.accent : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+                    backgroundColor: isDone
+                      ? colors.accent
+                      : isActive
+                        ? colors.accent
+                        : isDark
+                          ? 'rgba(255,255,255,0.15)'
+                          : 'rgba(0,0,0,0.1)',
                     transform: [{ scale: isActive ? 1.3 : 1 }],
                   },
                 ]}
               >
                 {isDone && <MaterialCommunityIcons name="check" size={10} color="#fff" />}
               </View>
-              <Text style={[styles.progressLabel, { color: isActive ? colors.accent : colors.textMuted, fontWeight: isActive ? '700' : '400' }]}>
+              <Text
+                style={[
+                  styles.progressLabel,
+                  { color: isActive ? colors.accent : colors.textMuted, fontWeight: isActive ? '700' : '400' },
+                ]}
+              >
                 {label}
               </Text>
             </View>
@@ -274,7 +346,12 @@ export default function CraftMyBodyScreen() {
       </View>
       {/* Connecting line */}
       <View style={[styles.progressLine, { backgroundColor: colors.border }]}>
-        <View style={[styles.progressLineFill, { backgroundColor: colors.accent, width: `${(stepIndex / (STEPS.length - 1)) * 100}%` }]} />
+        <View
+          style={[
+            styles.progressLineFill,
+            { backgroundColor: colors.accent, width: `${(stepIndex / (STEPS.length - 1)) * 100}%` },
+          ]}
+        />
       </View>
     </Animated.View>
   );
@@ -295,10 +372,22 @@ export default function CraftMyBodyScreen() {
               accessibilityRole="radio"
               accessibilityLabel={s === 'male' ? 'Male' : 'Female'}
               accessibilityState={{ selected: sex === s }}
-              style={[styles.chip, { backgroundColor: sex === s ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', borderColor: sex === s ? colors.accent : 'transparent' }]}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: sex === s ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                  borderColor: sex === s ? colors.accent : 'transparent',
+                },
+              ]}
             >
-              <MaterialCommunityIcons name={s === 'male' ? 'gender-male' : 'gender-female'} size={18} color={sex === s ? colors.onAccent : colors.textMuted} />
-              <Text style={[styles.chipText, { color: sex === s ? colors.onAccent : colors.text }]}>{s === 'male' ? 'Male' : 'Female'}</Text>
+              <MaterialCommunityIcons
+                name={s === 'male' ? 'gender-male' : 'gender-female'}
+                size={18}
+                color={sex === s ? colors.onAccent : colors.textMuted}
+              />
+              <Text style={[styles.chipText, { color: sex === s ? colors.onAccent : colors.text }]}>
+                {s === 'male' ? 'Male' : 'Female'}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -310,18 +399,57 @@ export default function CraftMyBodyScreen() {
         <View style={styles.inputRow}>
           <View style={styles.inputGroup}>
             <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.heightLabel')}</Text>
-            <TextInput style={inputStyle} value={heightCm} onChangeText={v => { setHeightCm(v); if (fieldErrors.heightCm) setFieldErrors(e => ({ ...e, heightCm: '' })); }} keyboardType="numeric" maxLength={6} placeholder="175" placeholderTextColor={colors.textMuted} />
-            {!!fieldErrors.heightCm && <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.heightCm}</Text>}
+            <TextInput
+              style={inputStyle}
+              value={heightCm}
+              onChangeText={(v) => {
+                setHeightCm(v);
+                if (fieldErrors.heightCm) setFieldErrors((e) => ({ ...e, heightCm: '' }));
+              }}
+              keyboardType="numeric"
+              maxLength={6}
+              placeholder="175"
+              placeholderTextColor={colors.textMuted}
+            />
+            {!!fieldErrors.heightCm && (
+              <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.heightCm}</Text>
+            )}
           </View>
           <View style={styles.inputGroup}>
             <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.weightLabel')}</Text>
-            <TextInput style={inputStyle} value={weightKg} onChangeText={v => { setWeightKg(v); if (fieldErrors.weightKg) setFieldErrors(e => ({ ...e, weightKg: '' })); }} keyboardType="numeric" maxLength={6} placeholder="70" placeholderTextColor={colors.textMuted} />
-            {!!fieldErrors.weightKg && <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.weightKg}</Text>}
+            <TextInput
+              style={inputStyle}
+              value={weightKg}
+              onChangeText={(v) => {
+                setWeightKg(v);
+                if (fieldErrors.weightKg) setFieldErrors((e) => ({ ...e, weightKg: '' }));
+              }}
+              keyboardType="numeric"
+              maxLength={6}
+              placeholder="70"
+              placeholderTextColor={colors.textMuted}
+            />
+            {!!fieldErrors.weightKg && (
+              <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.weightKg}</Text>
+            )}
           </View>
           <View style={styles.inputGroup}>
             <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.ageLabel')}</Text>
-            <TextInput style={inputStyle} value={age} onChangeText={v => { setAge(v); if (fieldErrors.age) setFieldErrors(e => ({ ...e, age: '' })); }} keyboardType="numeric" maxLength={3} placeholder="25" placeholderTextColor={colors.textMuted} />
-            {!!fieldErrors.age && <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.age}</Text>}
+            <TextInput
+              style={inputStyle}
+              value={age}
+              onChangeText={(v) => {
+                setAge(v);
+                if (fieldErrors.age) setFieldErrors((e) => ({ ...e, age: '' }));
+              }}
+              keyboardType="numeric"
+              maxLength={3}
+              placeholder="25"
+              placeholderTextColor={colors.textMuted}
+            />
+            {!!fieldErrors.age && (
+              <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.age}</Text>
+            )}
           </View>
         </View>
       </GlassCard>
@@ -336,9 +464,20 @@ export default function CraftMyBodyScreen() {
             accessibilityRole="radio"
             accessibilityLabel={`${bt.label}: ${bt.desc}`}
             accessibilityState={{ selected: bodyType === bt.key }}
-            style={[styles.optionRow, { backgroundColor: bodyType === bt.key ? `${colors.accent}18` : 'transparent', borderColor: bodyType === bt.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}
+            style={[
+              styles.optionRow,
+              {
+                backgroundColor: bodyType === bt.key ? `${colors.accent}18` : 'transparent',
+                borderColor:
+                  bodyType === bt.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              },
+            ]}
           >
-            <MaterialCommunityIcons name={bt.icon as any} size={24} color={bodyType === bt.key ? colors.accent : colors.textMuted} />
+            <MaterialCommunityIcons
+              name={bt.icon as any}
+              size={24}
+              color={bodyType === bt.key ? colors.accent : colors.textMuted}
+            />
             <View style={styles.optionText}>
               <Text style={[styles.optionTitle, { color: colors.text }]}>{bt.label}</Text>
               <Text style={[styles.optionDesc, { color: colors.textMuted }]}>{bt.desc}</Text>
@@ -359,9 +498,18 @@ export default function CraftMyBodyScreen() {
               accessibilityRole="radio"
               accessibilityLabel={fl.label}
               accessibilityState={{ selected: fitnessLevel === fl.key }}
-              style={[styles.chip, { backgroundColor: fitnessLevel === fl.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', borderColor: fitnessLevel === fl.key ? colors.accent : 'transparent' }]}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor:
+                    fitnessLevel === fl.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                  borderColor: fitnessLevel === fl.key ? colors.accent : 'transparent',
+                },
+              ]}
             >
-              <Text style={[styles.chipText, { color: fitnessLevel === fl.key ? colors.onAccent : colors.text }]}>{fl.label}</Text>
+              <Text style={[styles.chipText, { color: fitnessLevel === fl.key ? colors.onAccent : colors.text }]}>
+                {fl.label}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -374,7 +522,14 @@ export default function CraftMyBodyScreen() {
           <TouchableOpacity
             key={al.key}
             onPress={() => setActivityLevel(al.key)}
-            style={[styles.optionRow, { backgroundColor: activityLevel === al.key ? `${colors.accent}18` : 'transparent', borderColor: activityLevel === al.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]}
+            style={[
+              styles.optionRow,
+              {
+                backgroundColor: activityLevel === al.key ? `${colors.accent}18` : 'transparent',
+                borderColor:
+                  activityLevel === al.key ? colors.accent : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              },
+            ]}
           >
             <View style={styles.optionText}>
               <Text style={[styles.optionTitle, { color: colors.text }]}>{al.label}</Text>
@@ -393,9 +548,23 @@ export default function CraftMyBodyScreen() {
       <SectionHeader title={t('craftBody.chooseGoal')} />
       {GOAL_OPTIONS.map((g) => (
         <GlassCard key={g.key} style={styles.card} onPress={() => setGoalType(g.key)}>
-          <View style={[styles.goalRow, { borderColor: goalType === g.key ? colors.accent : 'transparent', backgroundColor: goalType === g.key ? `${colors.accent}12` : 'transparent' }]}>
-            <View style={[styles.goalIcon, { backgroundColor: goalType === g.key ? colors.accent : colors.surfaceVariant }]}>
-              <MaterialCommunityIcons name={g.icon as any} size={28} color={goalType === g.key ? colors.onAccent : colors.textMuted} />
+          <View
+            style={[
+              styles.goalRow,
+              {
+                borderColor: goalType === g.key ? colors.accent : 'transparent',
+                backgroundColor: goalType === g.key ? `${colors.accent}12` : 'transparent',
+              },
+            ]}
+          >
+            <View
+              style={[styles.goalIcon, { backgroundColor: goalType === g.key ? colors.accent : colors.surfaceVariant }]}
+            >
+              <MaterialCommunityIcons
+                name={g.icon as any}
+                size={28}
+                color={goalType === g.key ? colors.onAccent : colors.textMuted}
+              />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.goalTitle, { color: colors.text }]}>{g.label}</Text>
@@ -418,9 +587,16 @@ export default function CraftMyBodyScreen() {
           const priority: MusclePriority = musclePriorities[mg.key] ?? 'maintain';
           const cfg = getPriorityConfig(colors)[priority];
           return (
-            <TouchableOpacity key={mg.key} onPress={() => toggleMusclePriority(mg.key)} activeOpacity={0.7}
-              accessibilityRole="button" accessibilityLabel={`${mg.label}: ${cfg.label}. Tap to cycle priority`}>
-              <GlassCard style={{ ...styles.muscleCard, borderColor: cfg.color, borderWidth: priority === 'priority' ? 2 : 1 }}>
+            <TouchableOpacity
+              key={mg.key}
+              onPress={() => toggleMusclePriority(mg.key)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`${mg.label}: ${cfg.label}. Tap to cycle priority`}
+            >
+              <GlassCard
+                style={{ ...styles.muscleCard, borderColor: cfg.color, borderWidth: priority === 'priority' ? 2 : 1 }}
+              >
                 <MaterialCommunityIcons name={mg.icon as any} size={28} color={cfg.color} />
                 <Text style={[styles.muscleLabel, { color: colors.text }]}>{mg.label}</Text>
                 <View style={[styles.priorityBadge, { backgroundColor: cfg.color }]}>
@@ -440,9 +616,26 @@ export default function CraftMyBodyScreen() {
       <SectionHeader title={t('craftBody.yourTimeline')} />
       {TIMELINE_OPTIONS.map((t) => (
         <GlassCard key={t.months} style={styles.card} onPress={() => setTimeline(t.months)}>
-          <View style={[styles.goalRow, { borderColor: timeline === t.months ? colors.accent : 'transparent', backgroundColor: timeline === t.months ? `${colors.accent}12` : 'transparent' }]}>
-            <View style={[styles.goalIcon, { backgroundColor: timeline === t.months ? colors.accent : colors.surfaceVariant }]}>
-              <MaterialCommunityIcons name={t.icon as any} size={28} color={timeline === t.months ? colors.onAccent : colors.textMuted} />
+          <View
+            style={[
+              styles.goalRow,
+              {
+                borderColor: timeline === t.months ? colors.accent : 'transparent',
+                backgroundColor: timeline === t.months ? `${colors.accent}12` : 'transparent',
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.goalIcon,
+                { backgroundColor: timeline === t.months ? colors.accent : colors.surfaceVariant },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name={t.icon as any}
+                size={28}
+                color={timeline === t.months ? colors.onAccent : colors.textMuted}
+              />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.goalTitle, { color: colors.text }]}>{t.label}</Text>
@@ -460,9 +653,9 @@ export default function CraftMyBodyScreen() {
     if (!algorithm) return null;
 
     const macroTotal = algorithm.protein_g * 4 + algorithm.carbs_g * 4 + algorithm.fats_g * 9;
-    const proteinPct = macroTotal > 0 ? Math.round((algorithm.protein_g * 4 / macroTotal) * 100) : 0;
-    const carbsPct = macroTotal > 0 ? Math.round((algorithm.carbs_g * 4 / macroTotal) * 100) : 0;
-    const fatsPct = macroTotal > 0 ? Math.round((algorithm.fats_g * 9 / macroTotal) * 100) : 0;
+    const proteinPct = macroTotal > 0 ? Math.round(((algorithm.protein_g * 4) / macroTotal) * 100) : 0;
+    const carbsPct = macroTotal > 0 ? Math.round(((algorithm.carbs_g * 4) / macroTotal) * 100) : 0;
+    const fatsPct = macroTotal > 0 ? Math.round(((algorithm.fats_g * 9) / macroTotal) * 100) : 0;
 
     return (
       <Animated.View entering={FadeInDown.duration(150)} key="step-results">
@@ -475,15 +668,38 @@ export default function CraftMyBodyScreen() {
             <Text style={[styles.resultTitle, { color: colors.text }]}>Training Split</Text>
           </View>
           <Text style={[styles.resultValue, { color: colors.accent }]}>{algorithm.recommended_training_split}</Text>
-          <Text style={[styles.resultSub, { color: colors.textMuted }]}>{algorithm.training_days_per_week} days/week</Text>
+          <Text style={[styles.resultSub, { color: colors.textMuted }]}>
+            {algorithm.training_days_per_week} days/week
+          </Text>
 
           <View style={styles.scheduleRow}>
             {algorithm.weekly_schedule.map((day, i) => {
               const isRest = day === 'Rest';
               return (
-                <View key={i} style={[styles.scheduleDay, { backgroundColor: isRest ? (isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)') : `${colors.accent}20` }]}>
-                  <Text style={[styles.scheduleDayLabel, { color: colors.textMuted }]}>{['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}</Text>
-                  <Text style={[styles.scheduleDayText, { color: isRest ? colors.textMuted : colors.accent, fontWeight: isRest ? '400' : '600' }]}>{day}</Text>
+                <View
+                  key={i}
+                  style={[
+                    styles.scheduleDay,
+                    {
+                      backgroundColor: isRest
+                        ? isDark
+                          ? 'rgba(255,255,255,0.04)'
+                          : 'rgba(0,0,0,0.03)'
+                        : `${colors.accent}20`,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.scheduleDayLabel, { color: colors.textMuted }]}>
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.scheduleDayText,
+                      { color: isRest ? colors.textMuted : colors.accent, fontWeight: isRest ? '400' : '600' },
+                    ]}
+                  >
+                    {day}
+                  </Text>
                 </View>
               );
             })}
@@ -496,7 +712,9 @@ export default function CraftMyBodyScreen() {
             <MaterialCommunityIcons name="food-apple-outline" size={22} color={colors.accent} />
             <Text style={[styles.resultTitle, { color: colors.text }]}>Daily Nutrition</Text>
           </View>
-          <Text style={[styles.caloriesBig, { color: colors.text }]}>{algorithm.calories_target} <Text style={{ fontSize: 16, color: colors.textMuted }}>kcal/day</Text></Text>
+          <Text style={[styles.caloriesBig, { color: colors.text }]}>
+            {algorithm.calories_target} <Text style={{ fontSize: 16, color: colors.textMuted }}>kcal/day</Text>
+          </Text>
 
           <View style={styles.macroRow}>
             <View style={styles.macroItem}>
@@ -515,9 +733,23 @@ export default function CraftMyBodyScreen() {
 
           {/* Macro bar */}
           <View style={[styles.macroBar, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}>
-            <View style={{ flex: proteinPct, backgroundColor: colors.error, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }} />
+            <View
+              style={{
+                flex: proteinPct,
+                backgroundColor: colors.error,
+                borderTopLeftRadius: 4,
+                borderBottomLeftRadius: 4,
+              }}
+            />
             <View style={{ flex: carbsPct, backgroundColor: colors.warning }} />
-            <View style={{ flex: fatsPct, backgroundColor: colors.purple, borderTopRightRadius: 4, borderBottomRightRadius: 4 }} />
+            <View
+              style={{
+                flex: fatsPct,
+                backgroundColor: colors.purple,
+                borderTopRightRadius: 4,
+                borderBottomRightRadius: 4,
+              }}
+            />
           </View>
         </GlassCard>
 
@@ -554,7 +786,12 @@ export default function CraftMyBodyScreen() {
           </View>
           {algorithm.nutrition_tips.map((tip, i) => (
             <View key={i} style={styles.tipRow}>
-              <MaterialCommunityIcons name="check-circle-outline" size={16} color={colors.accent} style={{ marginTop: 2 }} />
+              <MaterialCommunityIcons
+                name="check-circle-outline"
+                size={16}
+                color={colors.accent}
+                style={{ marginTop: 2 }}
+              />
               <Text style={[styles.tipText, { color: colors.text }]}>{tip}</Text>
             </View>
           ))}
@@ -577,72 +814,138 @@ export default function CraftMyBodyScreen() {
 
   const stepContent = [renderAssessment, renderGoalSelection, renderFocusAreas, renderTimeline, renderResults];
 
+  if (!dbReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    );
+  }
+
   return (
-    <PremiumGate featureName="Body Craft Algorithm">
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['bottom']}>
-      <ScreenTutorial
-        screenKey="craft-my-body"
-        icon="human-male-board"
-        title="Craft My Body"
-        description="Build your ideal physique with our AI body-transformation wizard. Enter your stats, choose your goal, select focus areas, and get a personalized plan."
-      />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {stepIndex === 0 && <MedicalDisclaimer screen="craft-my-body" compact />}
-        {renderProgressBar()}
-        {stepContent[stepIndex]?.()}
-      </ScrollView>
-
-      {/* Bottom Nav Bar */}
-      {stepIndex < 4 && (
-        <Animated.View entering={FadeIn.duration(150)} style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          <TouchableOpacity onPress={goBack} style={[styles.navBtn, { backgroundColor: colors.surfaceVariant, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12 }]}>
-            <MaterialCommunityIcons name="arrow-left" size={20} color={colors.textMuted} />
-            <Text style={[styles.navBtnText, { color: colors.text }]}>Back</Text>
-          </TouchableOpacity>
-
-          <Text style={[styles.stepIndicator, { color: colors.textMuted }]}>{stepIndex + 1} / {STEPS.length}</Text>
-
-          <TouchableOpacity
-            onPress={goNext}
-            disabled={!canGoNext()}
-            accessibilityRole="button"
-            accessibilityLabel={stepIndex === 3 ? 'Generate plan' : 'Next step'}
-            style={[styles.navBtn, {
-              backgroundColor: canGoNext() ? colors.accent + '20' : colors.surfaceVariant,
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: canGoNext() ? colors.accent : colors.border,
-              opacity: canGoNext() ? 1 : 0.6,
-            }]}
+    <ScreenErrorBoundary screenName="CraftMyBody" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <PremiumGate featureName="Body Craft Algorithm">
+        <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['bottom']}>
+          <ScreenTutorial
+            screenKey="craft-my-body"
+            icon="human-male-board"
+            title="Craft My Body"
+            description="Build your ideal physique with our AI body-transformation wizard. Enter your stats, choose your goal, select focus areas, and get a personalized plan."
+          />
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
           >
-            <Text style={[styles.navBtnText, { color: canGoNext() ? colors.accent : colors.textMuted, fontWeight: '700' }]}>
-              {stepIndex === 3 ? 'Generate' : 'Next'}
-            </Text>
-            <MaterialCommunityIcons name={stepIndex === 3 ? 'creation' : 'arrow-right'} size={20} color={canGoNext() ? colors.accent : colors.textMuted} />
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+            {stepIndex === 0 && <MedicalDisclaimer screen="craft-my-body" compact />}
+            {renderProgressBar()}
+            {stepContent[stepIndex]?.()}
+          </ScrollView>
 
-      {stepIndex === 4 && (
-        <Animated.View entering={FadeIn.duration(150)} style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-          <TouchableOpacity onPress={goBack} style={[styles.navBtn, { backgroundColor: colors.surfaceVariant, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12 }]}>
-            <MaterialCommunityIcons name="arrow-left" size={20} color={colors.text} />
-            <Text style={[styles.navBtnText, { color: colors.text }]}>Edit</Text>
-          </TouchableOpacity>
+          {/* Bottom Nav Bar */}
+          {stepIndex < 4 && (
+            <Animated.View
+              entering={FadeIn.duration(150)}
+              style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
+            >
+              <TouchableOpacity
+                onPress={goBack}
+                style={[
+                  styles.navBtn,
+                  {
+                    backgroundColor: colors.surfaceVariant,
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons name="arrow-left" size={20} color={colors.textMuted} />
+                <Text style={[styles.navBtnText, { color: colors.text }]}>Back</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
-            style={[styles.navBtn, { backgroundColor: colors.accent + '20', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: colors.accent }]}
-          >
-            <Text style={[styles.navBtnText, { color: colors.accent, fontWeight: '700' }]}>Done</Text>
-            <MaterialCommunityIcons name="check" size={20} color={colors.accent} />
-          </TouchableOpacity>
-        </Animated.View>
-      )}
-    </SafeAreaView>
-    </PremiumGate>
+              <Text style={[styles.stepIndicator, { color: colors.textMuted }]}>
+                {stepIndex + 1} / {STEPS.length}
+              </Text>
+
+              <TouchableOpacity
+                onPress={goNext}
+                disabled={!canGoNext()}
+                accessibilityRole="button"
+                accessibilityLabel={stepIndex === 3 ? 'Generate plan' : 'Next step'}
+                style={[
+                  styles.navBtn,
+                  {
+                    backgroundColor: canGoNext() ? colors.accent + '20' : colors.surfaceVariant,
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: canGoNext() ? colors.accent : colors.border,
+                    opacity: canGoNext() ? 1 : 0.6,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.navBtnText,
+                    { color: canGoNext() ? colors.accent : colors.textMuted, fontWeight: '700' },
+                  ]}
+                >
+                  {stepIndex === 3 ? 'Generate' : 'Next'}
+                </Text>
+                <MaterialCommunityIcons
+                  name={stepIndex === 3 ? 'creation' : 'arrow-right'}
+                  size={20}
+                  color={canGoNext() ? colors.accent : colors.textMuted}
+                />
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+
+          {stepIndex === 4 && (
+            <Animated.View
+              entering={FadeIn.duration(150)}
+              style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
+            >
+              <TouchableOpacity
+                onPress={goBack}
+                style={[
+                  styles.navBtn,
+                  {
+                    backgroundColor: colors.surfaceVariant,
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons name="arrow-left" size={20} color={colors.text} />
+                <Text style={[styles.navBtnText, { color: colors.text }]}>Edit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+                style={[
+                  styles.navBtn,
+                  {
+                    backgroundColor: colors.accent + '20',
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: colors.accent,
+                  },
+                ]}
+              >
+                <Text style={[styles.navBtnText, { color: colors.accent, fontWeight: '700' }]}>Done</Text>
+                <MaterialCommunityIcons name="check" size={20} color={colors.accent} />
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+        </SafeAreaView>
+      </PremiumGate>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -659,7 +962,14 @@ const styles = StyleSheet.create({
   progressContainer: { marginBottom: 24 },
   progressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   progressStep: { alignItems: 'center', flex: 1 },
-  progressDot: { width: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  progressDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
   progressLabel: { fontSize: 10, textAlign: 'center' },
   progressLine: { height: 3, borderRadius: 2, marginHorizontal: 32 },
   progressLineFill: { height: 3, borderRadius: 2 },
@@ -674,15 +984,38 @@ const styles = StyleSheet.create({
   // Inputs
   inputRow: { flexDirection: 'row', gap: 8 },
   inputGroup: { flex: 1 },
-  textInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, fontSize: 16, fontWeight: '600' },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
+    fontWeight: '600',
+  },
 
   // Chips
   chipRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 24, borderWidth: 1 },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 24,
+    borderWidth: 1,
+  },
   chipText: { fontSize: 14, fontWeight: '500' },
 
   // Option rows
-  optionRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 8, borderWidth: 1, marginBottom: 8 },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
   optionText: { flex: 1 },
   optionTitle: { fontSize: 15, fontWeight: '600' },
   optionDesc: { fontSize: 12, marginTop: 2 },
@@ -735,7 +1068,14 @@ const styles = StyleSheet.create({
   applyContainer: { marginTop: 8, marginBottom: 32 },
 
   // Bottom bar
-  bottomBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderTopWidth: 1 },
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+  },
   navBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   navBtnText: { fontSize: 15, fontWeight: '600' },
   stepIndicator: { fontSize: 13, fontWeight: '500' },

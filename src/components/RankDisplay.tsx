@@ -14,8 +14,8 @@ import type { ThemeMode } from '../design/theme-system';
 import { getUserRankInfo, getLevelQuote, type UserRankInfo, type RankMilestone } from '../services/rankingService';
 import { GlassCard, ProgressRing } from './ui/GlassUI';
 
-/** 
- * Get theme-aware color — replaces green with gold in blackGold mode 
+/**
+ * Get theme-aware color — replaces green with gold in blackGold mode
  */
 function getThemedColor(color: string, themeMode: ThemeMode): string {
   if (themeMode !== 'blackGold') return color;
@@ -50,27 +50,38 @@ export function RankBadge({ level, size = 'md' }: RankBadgeProps) {
   const s = sizes[size];
 
   return (
-    <View style={[styles.badge, {
-      backgroundColor: rankColor + '20',
-      borderColor: rankColor + '40',
-      paddingHorizontal: s.pad,
-      height: s.height,
-    }]}>
-      <MaterialCommunityIcons
-        name={currentRank.icon as any}
-        size={s.icon}
-        color={rankColor}
-      />
-      <Text style={[styles.badgeText, {
-        color: rankColor,
-        fontSize: s.font,
-      }]}>
+    <View
+      style={[
+        styles.badge,
+        {
+          backgroundColor: rankColor + '20',
+          borderColor: rankColor + '40',
+          paddingHorizontal: s.pad,
+          height: s.height,
+        },
+      ]}
+    >
+      <MaterialCommunityIcons name={currentRank.icon as any} size={s.icon} color={rankColor} />
+      <Text
+        style={[
+          styles.badgeText,
+          {
+            color: rankColor,
+            fontSize: s.font,
+          },
+        ]}
+      >
         {currentRank.rank}
       </Text>
-      <Text style={[styles.badgeLevel, {
-        color: theme.colors.textMuted,
-        fontSize: s.font - 1,
-      }]}>
+      <Text
+        style={[
+          styles.badgeLevel,
+          {
+            color: theme.colors.textMuted,
+            fontSize: s.font - 1,
+          },
+        ]}
+      >
         Lv.{level}
       </Text>
     </View>
@@ -103,31 +114,19 @@ export function RankCard({ level, totalXP, showQuote = true }: RankCardProps) {
               colors={[rankColor + '30', rankColor + '08'] as [string, string]}
               style={styles.rankIconCircle}
             >
-              <MaterialCommunityIcons
-                name={currentRank.icon as any}
-                size={36}
-                color={rankColor}
-              />
+              <MaterialCommunityIcons name={currentRank.icon as any} size={36} color={rankColor} />
             </LinearGradient>
           </Animated.View>
           <View style={styles.rankInfo}>
-            <Text style={[styles.rankName, { color: rankColor }]}>
-              {currentRank.rank}
-            </Text>
-            <Text style={[styles.rankTitle, { color: theme.colors.text }]}>
-              {currentRank.title}
-            </Text>
-            <Text style={[styles.rankSubtitle, { color: theme.colors.textMuted }]}>
-              {currentRank.subtitle}
-            </Text>
+            <Text style={[styles.rankName, { color: rankColor }]}>{currentRank.rank}</Text>
+            <Text style={[styles.rankTitle, { color: theme.colors.text }]}>{currentRank.title}</Text>
+            <Text style={[styles.rankSubtitle, { color: theme.colors.textMuted }]}>{currentRank.subtitle}</Text>
           </View>
         </View>
 
         {/* Tier badge */}
         <View style={[styles.tierBadge, { backgroundColor: tierColor + '15', borderColor: tierColor + '30' }]}>
-          <Text style={[styles.tierText, { color: tierColor }]}>
-            {tier.name} Tier
-          </Text>
+          <Text style={[styles.tierText, { color: tierColor }]}>{tier.name} Tier</Text>
           <Text style={[styles.tierDesc, { color: theme.colors.textMuted }]}>
             {milestonesAchieved}/{totalMilestones} milestones
           </Text>
@@ -140,53 +139,40 @@ export function RankCard({ level, totalXP, showQuote = true }: RankCardProps) {
               <Text style={[styles.progressLabel, { color: theme.colors.textSecondary }]}>
                 Next: {nextRank.rank} (Lv.{nextRank.level})
               </Text>
-              <Text style={[styles.progressLevels, { color: theme.colors.textMuted }]}>
-                {levelsToNext} levels away
-              </Text>
+              <Text style={[styles.progressLevels, { color: theme.colors.textMuted }]}>{levelsToNext} levels away</Text>
             </View>
             <View style={[styles.progressBar, { backgroundColor: theme.colors.surfaceVariant }]}>
-              <View style={[styles.progressFill, {
-                width: `${Math.round(progressToNext * 100)}%`,
-                backgroundColor: rankColor,
-              }]} />
+              <View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${Math.round(progressToNext * 100)}%`,
+                    backgroundColor: rankColor,
+                  },
+                ]}
+              />
             </View>
           </View>
         )}
 
         {/* Motivational quote — unique per level */}
-        {showQuote && (
-          <Text style={[styles.quote, { color: theme.colors.textMuted }]}>
-            {getLevelQuote(level)}
-          </Text>
-        )}
+        {showQuote && <Text style={[styles.quote, { color: theme.colors.textMuted }]}>{getLevelQuote(level)}</Text>}
 
         {/* XP + Level display */}
         <View style={[styles.statsRow, { borderTopColor: theme.colors.border }]}>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-              {totalXP.toLocaleString()}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>
-              Total XP
-            </Text>
+            <Text style={[styles.statValue, { color: theme.colors.text }]}>{totalXP.toLocaleString()}</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>Total XP</Text>
           </View>
           <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-              {level}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>
-              Level
-            </Text>
+            <Text style={[styles.statValue, { color: theme.colors.text }]}>{level}</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>Level</Text>
           </View>
           <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: currentRank.color }]}>
-              ×{currentRank.xpMultiplier.toFixed(1)}
-            </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>
-              XP Bonus
-            </Text>
+            <Text style={[styles.statValue, { color: currentRank.color }]}>×{currentRank.xpMultiplier.toFixed(1)}</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>XP Bonus</Text>
           </View>
         </View>
       </GlassCard>
@@ -208,7 +194,7 @@ export function MilestoneList({ currentLevel, maxVisible = 6 }: MilestoneListPro
   const { allRanks } = rankInfo;
 
   // Show milestones around current level (some achieved, some upcoming)
-  const currentIndex = allRanks.findIndex(r => r.level > currentLevel);
+  const currentIndex = allRanks.findIndex((r) => r.level > currentLevel);
   const startIndex = Math.max(0, (currentIndex === -1 ? allRanks.length : currentIndex) - 2);
   const visibleRanks = allRanks.slice(startIndex, startIndex + maxVisible);
 
@@ -220,57 +206,83 @@ export function MilestoneList({ currentLevel, maxVisible = 6 }: MilestoneListPro
         const milestoneColor = getThemedColor(milestone.color, mode);
 
         return (
-          <Animated.View
-            key={milestone.level}
-            entering={FadeInDown.delay(i * 80).duration(150)}
-          >
+          <Animated.View key={milestone.level} entering={FadeInDown.delay(i * 80).duration(150)}>
             <View style={styles.milestoneRow}>
               {/* Timeline line */}
               <View style={styles.timelineCol}>
                 {i > 0 && (
-                  <View style={[styles.timelineLine, {
-                    backgroundColor: achieved ? milestoneColor + '60' : theme.colors.border,
-                  }]} />
+                  <View
+                    style={[
+                      styles.timelineLine,
+                      {
+                        backgroundColor: achieved ? milestoneColor + '60' : theme.colors.border,
+                      },
+                    ]}
+                  />
                 )}
-                <View style={[styles.timelineDot, {
-                  backgroundColor: achieved ? milestoneColor : theme.colors.surfaceVariant,
-                  borderColor: isCurrent ? milestoneColor : (achieved ? milestoneColor + '60' : theme.colors.border),
-                  borderWidth: isCurrent ? 3 : 1,
-                }]}>
-                  {achieved && (
-                    <MaterialCommunityIcons
-                      name={milestone.icon as any}
-                      size={14}
-                      color="#fff"
-                    />
-                  )}
+                <View
+                  style={[
+                    styles.timelineDot,
+                    {
+                      backgroundColor: achieved ? milestoneColor : theme.colors.surfaceVariant,
+                      borderColor: isCurrent ? milestoneColor : achieved ? milestoneColor + '60' : theme.colors.border,
+                      borderWidth: isCurrent ? 3 : 1,
+                    },
+                  ]}
+                >
+                  {achieved && <MaterialCommunityIcons name={milestone.icon as any} size={14} color="#fff" />}
                 </View>
                 {i < visibleRanks.length - 1 && (
-                  <View style={[styles.timelineLine, {
-                    backgroundColor: achieved ? milestoneColor + '40' : theme.colors.border,
-                  }]} />
+                  <View
+                    style={[
+                      styles.timelineLine,
+                      {
+                        backgroundColor: achieved ? milestoneColor + '40' : theme.colors.border,
+                      },
+                    ]}
+                  />
                 )}
               </View>
 
               {/* Milestone info */}
-              <View style={[styles.milestoneInfo, {
-                opacity: achieved ? 1 : 0.5,
-              }]}>
+              <View
+                style={[
+                  styles.milestoneInfo,
+                  {
+                    opacity: achieved ? 1 : 0.5,
+                  },
+                ]}
+              >
                 <View style={styles.milestoneHeader}>
-                  <Text style={[styles.milestoneName, {
-                    color: achieved ? milestoneColor : theme.colors.textMuted,
-                  }]}>
+                  <Text
+                    style={[
+                      styles.milestoneName,
+                      {
+                        color: achieved ? milestoneColor : theme.colors.textMuted,
+                      },
+                    ]}
+                  >
                     {milestone.rank}
                   </Text>
-                  <Text style={[styles.milestoneLevel, {
-                    color: theme.colors.textMuted,
-                  }]}>
+                  <Text
+                    style={[
+                      styles.milestoneLevel,
+                      {
+                        color: theme.colors.textMuted,
+                      },
+                    ]}
+                  >
                     Lv.{milestone.level}
                   </Text>
                 </View>
-                <Text style={[styles.milestoneTitle, {
-                  color: achieved ? theme.colors.text : theme.colors.textMuted,
-                }]}>
+                <Text
+                  style={[
+                    styles.milestoneTitle,
+                    {
+                      color: achieved ? theme.colors.text : theme.colors.textMuted,
+                    },
+                  ]}
+                >
                   {milestone.title}
                 </Text>
               </View>

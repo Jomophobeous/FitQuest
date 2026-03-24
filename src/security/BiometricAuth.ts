@@ -1,6 +1,6 @@
 /**
  * FitQuest Biometric Authentication Service
- * 
+ *
  * Biometric-first local authentication using expo-local-authentication.
  * Features:
  * - Face ID / Touch ID / fingerprint as primary unlock
@@ -8,7 +8,7 @@
  * - 30-minute session expiry (re-authenticate after idle)
  * - Session tokens stored in SecureStore (not AsyncStorage)
  * - Graceful fallback when biometrics unavailable
- * 
+ *
  * Usage:
  *   const bio = BiometricAuthService.getInstance();
  *   await bio.initialize();
@@ -70,11 +70,11 @@ const EMERGENCY_WIPE_THRESHOLD = 15; // After 15 failures, wipe sensitive data
 // is higher than pure-native PBKDF2. 1000 JS iterations ≈ 100K native.
 const PASSCODE_PBKDF2_ITERATIONS = 1_000;
 const LOCKOUT_DURATIONS_MS = [
-  30_000,    // 30 sec after 1st lockout
-  60_000,    // 1 min
-  300_000,   // 5 min
-  900_000,   // 15 min
-  3600_000,  // 1 hour (max)
+  30_000, // 30 sec after 1st lockout
+  60_000, // 1 min
+  300_000, // 5 min
+  900_000, // 15 min
+  3600_000, // 1 hour (max)
 ];
 
 // ============================================
@@ -272,9 +272,10 @@ export class BiometricAuthService {
     return {
       success: false,
       method: 'PASSCODE',
-      error: remaining > 0
-        ? `Wrong passcode. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`
-        : 'Account locked. Too many failed attempts.',
+      error:
+        remaining > 0
+          ? `Wrong passcode. ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining.`
+          : 'Account locked. Too many failed attempts.',
     };
   }
 
@@ -311,10 +312,7 @@ export class BiometricAuthService {
     if (!this.currentSession) return;
 
     this.currentSession.expiresAt = Date.now() + SESSION_DURATION_MS;
-    await SecureStore.setItemAsync(
-      SECURE_KEYS.SESSION_EXPIRY,
-      this.currentSession.expiresAt.toString()
-    );
+    await SecureStore.setItemAsync(SECURE_KEYS.SESSION_EXPIRY, this.currentSession.expiresAt.toString());
   }
 
   /**
@@ -398,9 +396,7 @@ export class BiometricAuthService {
     if (attempts >= MAX_FAILED_ATTEMPTS) {
       // Calculate lockout duration (exponential backoff)
       const lockoutCount = Math.floor(attempts / MAX_FAILED_ATTEMPTS) - 1;
-      const duration = LOCKOUT_DURATIONS_MS[
-        Math.min(lockoutCount, LOCKOUT_DURATIONS_MS.length - 1)
-      ]!;
+      const duration = LOCKOUT_DURATIONS_MS[Math.min(lockoutCount, LOCKOUT_DURATIONS_MS.length - 1)]!;
       const lockoutUntil = Date.now() + duration;
       await SecureStore.setItemAsync(SECURE_KEYS.LOCKOUT_UNTIL, lockoutUntil.toString());
       if (__DEV__) console.warn(`[FitQuest Auth] Lockout triggered: ${duration / 1000}s`);
@@ -489,20 +485,14 @@ export class BiometricAuthService {
    * SHA-256 in a HMAC-like construction: H(salt || iteration || previous)
    */
   private async pbkdf2Hash(passcode: string, salt: string): Promise<string> {
-    let hash = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      `${salt}:${passcode}:0`
-    );
+    let hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `${salt}:${passcode}:0`);
 
     // Iterate — each round feeds the previous hash back in
     // We do fewer JS-level iterations (1000) since each SHA-256
     // call has native overhead. This provides ~equivalent resistance
     // to 100K iterations of a pure-native PBKDF2 given the per-call cost.
     for (let i = 1; i < PASSCODE_PBKDF2_ITERATIONS; i++) {
-      hash = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        `${salt}:${hash}:${i}`
-      );
+      hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, `${salt}:${hash}:${i}`);
     }
 
     return hash;

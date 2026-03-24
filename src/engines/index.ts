@@ -1,11 +1,11 @@
 /**
  * FitQuest Engines Module
- * 
+ *
  * Three engines that power the app:
  * - Workout Generator (brain)
  * - Progression Engine (improvement)
  * - Recovery Engine (burnout prevention)
- * 
+ *
  * Plus critical supporting systems:
  * - Edge-Case Guards (graceful degradation)
  * - Transparency Layer (explainability)
@@ -13,11 +13,7 @@
  */
 
 // ENGINE 1: Workout Generator
-export {
-  generateWorkout,
-  persistWorkout,
-  createWorkout,
-} from './workoutGenerator';
+export { generateWorkout, persistWorkout, createWorkout } from './workoutGenerator';
 
 // ENGINE 2: Progression Engine
 export {
@@ -73,6 +69,93 @@ export {
   type DeloadExplanation,
   type RecoveryExplanation,
 } from './transparencyLayer';
+
+// ADAPTIVE MEMORY ENGINE
+export {
+  getLastSessionImpact,
+  getWorkoutDelta,
+  getProgressionNarratives,
+  type LastSessionImpact,
+  type WorkoutDelta,
+  type ExerciseProgressionNarrative,
+} from './AdaptiveMemoryEngine';
+
+// BEHAVIORAL SIGNAL ENGINE
+export {
+  getDailySignal,
+  type BehavioralSignal,
+  type SignalType,
+  type SignalUrgency,
+} from './BehavioralSignalEngine';
+
+// CONSISTENCY CLASSIFIER
+export {
+  classifyConsistency,
+  type ConsistencyProfile,
+  type BehavioralMode,
+} from './ConsistencyClassifier';
+
+// TRIAL PROGRESSION ENGINE
+export {
+  getTrialSnapshot,
+  getFeatureGating,
+  type TrialSnapshot,
+  type TrialPhase,
+  type TrialMessage,
+  type TrialMessageType,
+  type FeatureGating,
+  type TrialStats,
+} from './TrialProgressionEngine';
+
+// LONG-TERM PROGRESSION ENGINE
+export {
+  getProgressionProfile,
+  getNextLoad,
+  type ProgressionProfile,
+  type StrengthTrend,
+  type VolumeTolerance,
+  type RecoveryRate,
+  type OverloadRecommendation,
+  type MovementPattern,
+} from './LongTermProgressionEngine';
+
+// FAILURE ANALYSIS ENGINE
+export {
+  analyzeSession,
+  getFailurePattern,
+  type SessionFailureAnalysis,
+  type FailurePattern,
+  type FailureType,
+  type SessionAdjustment,
+} from './FailureAnalysisEngine';
+
+// USER STATE ENGINE (single source of truth)
+export {
+  getUserState,
+  invalidateUserState,
+  getCachedUserState,
+  type UserState,
+} from './UserStateEngine';
+
+// STATE SIMULATION ENGINE
+export {
+  simulateNextDay,
+  predictAction,
+  type SimulatedAction,
+  type StatePrediction,
+  type SimulationReport,
+} from './StateSimulationEngine';
+
+// COMPUTATION CACHE
+export {
+  cached,
+  getCached,
+  setCache,
+  invalidate as invalidateCache,
+  invalidatePrefix,
+  clearAll as clearComputationCache,
+  cacheSize,
+} from './ComputationCache';
 
 // STATE RESET DOCTRINE
 export {
@@ -143,7 +226,7 @@ export async function startWorkoutSession(userId: string) {
 export async function completeSession(
   userId: string,
   sessionId: string,
-  performances: ExercisePerformance[]
+  performances: ExercisePerformance[],
 ): Promise<{
   streak: { current: number; longest: number };
   progressionDecisions: Awaited<ReturnType<typeof recordSessionPerformance>>;
@@ -153,23 +236,18 @@ export async function completeSession(
   const progressionDecisions = await recordSessionPerformance(userId, sessionId, performances);
 
   // 2. Update fatigue for each exercise (batch-load to avoid N+1)
-  const exerciseIds = performances.map(p => p.exercise_id);
+  const exerciseIds = performances.map((p) => p.exercise_id);
   const exerciseMap = await getExercisesByIds(exerciseIds);
 
   for (const perf of performances) {
     const exercise = exerciseMap.get(perf.exercise_id);
     if (exercise) {
-      await accumulateFatigue(
-        userId,
-        exercise.primary_muscles,
-        exercise.secondary_muscles,
-        perf.completed_sets
-      );
+      await accumulateFatigue(userId, exercise.primary_muscles, exercise.secondary_muscles, perf.completed_sets);
     }
   }
 
   // 3. Mark session complete
-  const completedCount = performances.filter(p => p.success).length;
+  const completedCount = performances.filter((p) => p.success).length;
   const overallSuccess = completedCount >= performances.length * 0.8;
   await completeWorkoutSession(sessionId, completedCount, overallSuccess);
 

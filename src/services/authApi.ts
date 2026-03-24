@@ -96,10 +96,7 @@ export async function registerWithEmail(options: {
   return (await res.json()) as AuthSessionResponse;
 }
 
-export async function loginWithEmail(options: {
-  email: string;
-  password: string;
-}): Promise<AuthSessionResponse> {
+export async function loginWithEmail(options: { email: string; password: string }): Promise<AuthSessionResponse> {
   const res = await postJson('/auth/email/login', {
     email: options.email,
     password: options.password,
@@ -108,9 +105,7 @@ export async function loginWithEmail(options: {
   return (await res.json()) as AuthSessionResponse;
 }
 
-export async function loginWithGoogleIdToken(options: {
-  idToken: string;
-}): Promise<AuthSessionResponse> {
+export async function loginWithGoogleIdToken(options: { idToken: string }): Promise<AuthSessionResponse> {
   const idToken = String(options.idToken || '').trim();
   if (!idToken) throw new Error('Missing Google id token');
 
@@ -119,9 +114,7 @@ export async function loginWithGoogleIdToken(options: {
   return (await res.json()) as AuthSessionResponse;
 }
 
-export async function loginWithAppleIdToken(options: {
-  idToken: string;
-}): Promise<AuthSessionResponse> {
+export async function loginWithAppleIdToken(options: { idToken: string }): Promise<AuthSessionResponse> {
   const idToken = String(options.idToken || '').trim();
   if (!idToken) throw new Error('Missing Apple id token');
 
@@ -205,7 +198,9 @@ export async function recordConsentTimestamp(): Promise<{ ok: boolean; consentTi
   return (await res.json()) as { ok: boolean; consentTimestamp: number };
 }
 
-export async function registerMigrationDevice(deviceId: string): Promise<{ ok: boolean; deviceId: string; last_synced_at: number }> {
+export async function registerMigrationDevice(
+  deviceId: string,
+): Promise<{ ok: boolean; deviceId: string; last_synced_at: number }> {
   const trimmed = String(deviceId || '').trim();
   if (!trimmed) throw new Error('deviceId is required');
 

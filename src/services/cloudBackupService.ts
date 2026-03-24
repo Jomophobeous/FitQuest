@@ -1,11 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 
 import { getAppState, setAppState } from '../database/service';
-import {
-  exportEncryptedBackup,
-  importEncryptedBackupFromString,
-  listEncryptedBackups,
-} from './backupService';
+import { exportEncryptedBackup, importEncryptedBackupFromString, listEncryptedBackups } from './backupService';
 import { fetchWithAuth } from './authApi';
 import { getApiBaseUrl } from './apiBaseUrl';
 import { enqueueMutation } from './mutationQueueService';
@@ -45,8 +41,7 @@ export async function listCloudBackups(): Promise<CloudBackupListItem[]> {
 
 export async function uploadLocalBackupToCloud(options?: {
   passphrase?: string;
-}): Promise<{ id: string; createdAt: number }>
-{
+}): Promise<{ id: string; createdAt: number }> {
   requireBaseUrl();
 
   const exported = await exportEncryptedBackup({ passphrase: options?.passphrase });
@@ -78,10 +73,7 @@ export async function uploadLocalBackupToCloud(options?: {
   return (await res.json()) as { id: string; createdAt: number };
 }
 
-export async function restoreCloudBackup(options: {
-  id: string;
-  passphrase?: string;
-}): Promise<void> {
+export async function restoreCloudBackup(options: { id: string; passphrase?: string }): Promise<void> {
   requireBaseUrl();
 
   const res = await fetchWithAuth(`/backups/${encodeURIComponent(options.id)}`, {

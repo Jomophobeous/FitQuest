@@ -1,19 +1,12 @@
 /**
  * Themed Chart Wrapper
- * 
+ *
  * Provides consistent theming, date range selector, and loading states
  * for all Victory-native chart components.
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Dimensions,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import {
   DateRangeOption,
@@ -80,8 +73,7 @@ export function DateRangeSelector({
           style={[
             styles.rangeButton,
             {
-              backgroundColor:
-                selected === range ? chartTheme.primary : chartTheme.surface,
+              backgroundColor: selected === range ? chartTheme.primary : chartTheme.surface,
               borderColor: chartTheme.grid,
             },
           ]}
@@ -131,9 +123,7 @@ export function ThemedChartWrapper({
       return (
         <View style={[styles.stateContainer, { height: mergedConfig.height }]}>
           <ActivityIndicator size="large" color={chartTheme.primary} />
-          <Text style={[styles.stateText, { color: chartTheme.textMuted }]}>
-            Loading chart data...
-          </Text>
+          <Text style={[styles.stateText, { color: chartTheme.textMuted }]}>Loading chart data...</Text>
         </View>
       );
     }
@@ -142,9 +132,7 @@ export function ThemedChartWrapper({
       return (
         <View style={[styles.stateContainer, { height: mergedConfig.height }]}>
           <Text style={[styles.stateIcon, { color: chartTheme.error }]}>⚠️</Text>
-          <Text style={[styles.stateText, { color: chartTheme.error }]}>
-            {error}
-          </Text>
+          <Text style={[styles.stateText, { color: chartTheme.error }]}>{error}</Text>
         </View>
       );
     }
@@ -153,9 +141,7 @@ export function ThemedChartWrapper({
       return (
         <View style={[styles.stateContainer, { height: mergedConfig.height }]}>
           <Text style={[styles.stateIcon, { color: chartTheme.textMuted }]}>📊</Text>
-          <Text style={[styles.stateText, { color: chartTheme.textMuted }]}>
-            {emptyMessage}
-          </Text>
+          <Text style={[styles.stateText, { color: chartTheme.textMuted }]}>{emptyMessage}</Text>
         </View>
       );
     }
@@ -164,32 +150,15 @@ export function ThemedChartWrapper({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: chartTheme.surface, borderColor: chartTheme.grid },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: chartTheme.surface, borderColor: chartTheme.grid }]}>
       {(title || showDateRange) && (
         <View style={styles.header}>
           <View style={styles.titleContainer}>
-            {title && (
-              <Text style={[styles.title, { color: chartTheme.text }]}>
-                {title}
-              </Text>
-            )}
-            {subtitle && (
-              <Text style={[styles.subtitle, { color: chartTheme.textMuted }]}>
-                {subtitle}
-              </Text>
-            )}
+            {title && <Text style={[styles.title, { color: chartTheme.text }]}>{title}</Text>}
+            {subtitle && <Text style={[styles.subtitle, { color: chartTheme.textMuted }]}>{subtitle}</Text>}
           </View>
           {showDateRange && onDateRangeChange && (
-            <DateRangeSelector
-              selected={dateRange}
-              onChange={onDateRangeChange}
-              options={availableRanges}
-            />
+            <DateRangeSelector selected={dateRange} onChange={onDateRangeChange} options={availableRanges} />
           )}
         </View>
       )}
@@ -211,26 +180,15 @@ interface MiniStatProps {
 
 export function MiniStat({ label, value, delta, unit }: MiniStatProps) {
   const chartTheme = useChartTheme();
-  const deltaColor =
-    delta === undefined
-      ? chartTheme.textMuted
-      : delta >= 0
-      ? chartTheme.success
-      : chartTheme.error;
+  const deltaColor = delta === undefined ? chartTheme.textMuted : delta >= 0 ? chartTheme.success : chartTheme.error;
 
   return (
     <View style={styles.miniStatContainer}>
-      <Text style={[styles.miniStatLabel, { color: chartTheme.textMuted }]}>
-        {label}
-      </Text>
+      <Text style={[styles.miniStatLabel, { color: chartTheme.textMuted }]}>{label}</Text>
       <View style={styles.miniStatValueRow}>
         <Text style={[styles.miniStatValue, { color: chartTheme.text }]}>
           {value}
-          {unit && (
-            <Text style={[styles.miniStatUnit, { color: chartTheme.textMuted }]}>
-              {' '}{unit}
-            </Text>
-          )}
+          {unit && <Text style={[styles.miniStatUnit, { color: chartTheme.textMuted }]}> {unit}</Text>}
         </Text>
         {delta !== undefined && (
           <Text style={[styles.miniStatDelta, { color: deltaColor }]}>
@@ -257,29 +215,17 @@ interface ChartLegendProps {
   orientation?: 'horizontal' | 'vertical';
 }
 
-export function ChartLegend({
-  items,
-  orientation = 'horizontal',
-}: ChartLegendProps) {
+export function ChartLegend({ items, orientation = 'horizontal' }: ChartLegendProps) {
   const chartTheme = useChartTheme();
 
   return (
-    <View
-      style={[
-        styles.legendContainer,
-        orientation === 'vertical' && styles.legendVertical,
-      ]}
-    >
+    <View style={[styles.legendContainer, orientation === 'vertical' && styles.legendVertical]}>
       {items.map((item, index) => (
         <View key={index} style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: item.color }]} />
-          <Text style={[styles.legendLabel, { color: chartTheme.textMuted }]}>
-            {item.label}
-          </Text>
+          <Text style={[styles.legendLabel, { color: chartTheme.textMuted }]}>{item.label}</Text>
           {item.value !== undefined && (
-            <Text style={[styles.legendValue, { color: chartTheme.text }]}>
-              {item.value}
-            </Text>
+            <Text style={[styles.legendValue, { color: chartTheme.text }]}>{item.value}</Text>
           )}
         </View>
       ))}

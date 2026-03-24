@@ -1,13 +1,13 @@
 /**
  * FitQuest XP & Leveling Service
  * Persisted XP system using app_state table in SQLite
- * 
+ *
  * XP Sources:
  * - Workout completion: 100 XP base + 20 per exercise completed
  * - Movement (steps): 4 XP per 1,000 steps (awarded incrementally)
  * - Jog session: 10 XP per 100m jogged
  * - Streak bonus: streak_days × 10 XP per workout
- * 
+ *
  * Level Formula: XP needed = 250 × level (level 1 = 250 XP, level 2 = 500 XP, etc.)
  * This ensures a single workout cannot inflate past level 2.
  */
@@ -15,6 +15,7 @@
 import { getAppState, setAppState } from '../database/service';
 import { getXPMultiplier, checkMilestoneReached } from './rankingService';
 import { logEvent } from './telemetry';
+import { walService } from './WriteAheadLogService';
 
 // ============================================
 // TYPES
@@ -23,9 +24,9 @@ import { logEvent } from './telemetry';
 export interface XPData {
   totalXP: number;
   level: number;
-  currentLevelXP: number;   // XP earned within current level
-  xpToNextLevel: number;    // XP needed to reach next level
-  progressPercent: number;  // 0-100
+  currentLevelXP: number; // XP earned within current level
+  xpToNextLevel: number; // XP needed to reach next level
+  progressPercent: number; // 0-100
 }
 
 export interface XPGainResult {
@@ -103,7 +104,7 @@ export async function getXPData(): Promise<XPData> {
 export async function awardWorkoutXP(
   completedExercises: number,
   totalExercises: number,
-  streakDays: number = 0
+  streakDays: number = 0,
 ): Promise<XPGainResult> {
   const baseXP = 100;
   const exerciseXP = completedExercises * 20;
@@ -115,7 +116,7 @@ export async function awardWorkoutXP(
   const currentData = await getXPData();
   const multiplier = getXPMultiplier(currentData.level);
   const totalGain = Math.round(rawGain * multiplier);
-  
+
   return addXP(totalGain);
 }
 
@@ -167,15 +168,29 @@ export async function awardProgressPhotoXP(): Promise<XPGainResult> {
  * Generic add XP function
  */
 export async function addXP(amount: number): Promise<XPGainResult> {
-  if (amount <= 0) return { xpEarned: 0, levelUp: false, oldLevel: 0, newLevel: 0, data: buildXPData(await loadTotalXP()) };
+  if (amount <= 0)
+    return { xpEarned: 0, levelUp: false, oldLevel: 0, newLevel: 0, data: buildXPData(await loadTotalXP()) };
   const oldTotal = await loadTotalXP();
   const oldData = buildXPData(oldTotal);
-  
+
   const newTotal = oldTotal + amount;
-  await saveTotalXP(newTotal);
-  
+
+  const walId = await walService.logIntent({
+    operation: 'add_xp',
+    table_name: 'app_state',
+    record_id: 'user_total_xp',
+    payload: { amount, oldTotal, newTotal },
+  });
+  try {
+    await saveTotalXP(newTotal);
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
+
   const newData = buildXPData(newTotal);
-  
+
   void logEvent('xp_earned', {
     xp_amount: amount,
     new_total: newTotal,
@@ -274,10 +289,13 @@ export async function awardReadingXP(
  * Award Mind XP for flashcard review
  * Base: 3 XP per card, 5 XP if correct
  */
-export async function awardFlashcardXP(cardsReviewed: number, correctCount: number = 0): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
+export async function awardFlashcardXP(
+  cardsReviewed: number,
+  correctCount: number = 0,
+): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
   try {
     const { awardMindXP } = await import('../database/service');
-    const xp = (cardsReviewed * 3) + (correctCount * 2);
+    const xp = cardsReviewed * 3 + correctCount * 2;
     const result = await awardMindXP('user_local_001', xp, 'flashcard');
     return { xpEarned: xp, mindLevel: result.mind_level, levelUp: result.levelUp };
   } catch (e) {
@@ -290,7 +308,9 @@ export async function awardFlashcardXP(cardsReviewed: number, correctCount: numb
  * Award Mind XP for completing a document
  * Base: 50 XP × content quality multiplier
  */
-export async function awardDocumentCompleteXP(contentQuality: number = 1.0): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
+export async function awardDocumentCompleteXP(
+  contentQuality: number = 1.0,
+): Promise<{ xpEarned: number; mindLevel: number; levelUp: boolean }> {
   try {
     const { awardMindXP } = await import('../database/service');
     const xp = Math.max(10, Math.round(50 * contentQuality));

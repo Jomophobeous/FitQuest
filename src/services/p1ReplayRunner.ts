@@ -42,7 +42,12 @@ async function handleSyncOnDemand(job: MutationJob): Promise<void> {
   await syncOnDemand({ userId: payload.userId, deviceId: payload.deviceId });
 }
 
-export async function runP1ReplayCycle(): Promise<{ processed: number; succeeded: number; failed: number; pending: number }> {
+export async function runP1ReplayCycle(): Promise<{
+  processed: number;
+  succeeded: number;
+  failed: number;
+  pending: number;
+}> {
   return flushMutationQueue(
     {
       'legal.sync_consent': handleLegalSyncConsent,

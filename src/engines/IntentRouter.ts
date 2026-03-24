@@ -14,7 +14,7 @@
  * Designed for on-device, zero-latency classification.
  */
 
-import { AIPersonality, AIContext, AIResponse, DualAIEngine } from '../fitmind/DualAIEngine';
+import { AIPersonality, AIContext, AIResponse, DualAIEngine } from './DualAIEngine';
 import { trainedIntentRouter } from '../ai/TrainedIntentRouter';
 // NeuralIntentRouter removed — 48MB JS transformer is too heavy for 4GB devices.
 // The lightweight TF-IDF + keyword classifier provides equivalent routing quality.
@@ -23,14 +23,7 @@ import { trainedIntentRouter } from '../ai/TrainedIntentRouter';
 // TYPES
 // ============================================
 
-export type IntentCategory =
-  | 'COACH'
-  | 'PROFESSOR'
-  | 'HEALTH'
-  | 'WORKOUT'
-  | 'NAVIGATION'
-  | 'SETTINGS'
-  | 'GENERAL';
+export type IntentCategory = 'COACH' | 'PROFESSOR' | 'HEALTH' | 'WORKOUT' | 'NAVIGATION' | 'SETTINGS' | 'GENERAL';
 
 export interface ClassifiedIntent {
   /** Primary intent category */
@@ -170,26 +163,88 @@ const INTENT_KEYWORDS: Record<IntentCategory, { keywords: string[]; weight: numb
 // Entity extraction patterns
 const ENTITY_PATTERNS = {
   exercises: [
-    'push-up', 'pushup', 'pull-up', 'pullup', 'squat', 'lunge', 'plank',
-    'deadlift', 'bench press', 'crunch', 'burpee', 'dip', 'row',
-    'curl', 'press', 'fly', 'raise', 'extension', 'sit-up', 'situp',
+    'push-up',
+    'pushup',
+    'pull-up',
+    'pullup',
+    'squat',
+    'lunge',
+    'plank',
+    'deadlift',
+    'bench press',
+    'crunch',
+    'burpee',
+    'dip',
+    'row',
+    'curl',
+    'press',
+    'fly',
+    'raise',
+    'extension',
+    'sit-up',
+    'situp',
   ],
   muscleGroups: [
-    'chest', 'back', 'legs', 'arms', 'shoulders', 'core', 'abs',
-    'glutes', 'hamstrings', 'quads', 'quadriceps', 'biceps', 'triceps',
-    'calves', 'forearms', 'traps', 'lats', 'deltoids', 'obliques',
+    'chest',
+    'back',
+    'legs',
+    'arms',
+    'shoulders',
+    'core',
+    'abs',
+    'glutes',
+    'hamstrings',
+    'quads',
+    'quadriceps',
+    'biceps',
+    'triceps',
+    'calves',
+    'forearms',
+    'traps',
+    'lats',
+    'deltoids',
+    'obliques',
   ],
   timeReferences: [
-    'today', 'yesterday', 'tomorrow', 'this week', 'last week', 'next week',
-    'this month', 'last month', 'this year', 'morning', 'evening', 'night',
+    'today',
+    'yesterday',
+    'tomorrow',
+    'this week',
+    'last week',
+    'next week',
+    'this month',
+    'last month',
+    'this year',
+    'morning',
+    'evening',
+    'night',
   ],
   metrics: [
-    'weight', 'height', 'bmi', 'body fat', 'heart rate', 'bpm',
-    'calories', 'steps', 'sleep', 'recovery', 'vo2max',
+    'weight',
+    'height',
+    'bmi',
+    'body fat',
+    'heart rate',
+    'bpm',
+    'calories',
+    'steps',
+    'sleep',
+    'recovery',
+    'vo2max',
   ],
   screens: [
-    'dashboard', 'home', 'profile', 'settings', 'exercises', 'fitquest',
-    'move', 'meal prep', 'analytics', 'craft my body', 'library', 'reader',
+    'dashboard',
+    'home',
+    'profile',
+    'settings',
+    'exercises',
+    'fitquest',
+    'move',
+    'meal prep',
+    'analytics',
+    'craft my body',
+    'library',
+    'reader',
   ],
 };
 
@@ -251,16 +306,16 @@ export class IntentRouter {
       if (mlResult.confidence >= this.config.confidenceThreshold) {
         // Map ML intent to our IntentCategory
         const categoryMap: Record<string, IntentCategory> = {
-          'WORKOUT': 'WORKOUT',
-          'FORM_CHECK': 'COACH',
-          'HEALTH_QUERY': 'HEALTH',
-          'MOTIVATION': 'COACH',
-          'NUTRITION': 'HEALTH',
-          'NAVIGATION': 'NAVIGATION',
-          'SETTINGS': 'SETTINGS',
-          'GENERAL': 'GENERAL',
-          'COACH': 'COACH',
-          'PROFESSOR': 'PROFESSOR',
+          WORKOUT: 'WORKOUT',
+          FORM_CHECK: 'COACH',
+          HEALTH_QUERY: 'HEALTH',
+          MOTIVATION: 'COACH',
+          NUTRITION: 'HEALTH',
+          NAVIGATION: 'NAVIGATION',
+          SETTINGS: 'SETTINGS',
+          GENERAL: 'GENERAL',
+          COACH: 'COACH',
+          PROFESSOR: 'PROFESSOR',
         };
 
         const category = categoryMap[mlResult.intent] ?? 'GENERAL';
@@ -354,6 +409,12 @@ export class IntentRouter {
     // Extract entities
     const entities = this.extractEntities(normalizedQuery);
 
+    // PROFESSOR system disabled — merge PROFESSOR score into COACH
+    if (scores.PROFESSOR > 0) {
+      scores.COACH += scores.PROFESSOR;
+      scores.PROFESSOR = 0;
+    }
+
     // Find top two categories
     const sorted = Object.entries(scores)
       .sort(([, a], [, b]) => b - a)
@@ -392,9 +453,7 @@ export class IntentRouter {
       category: primaryCategory,
       confidence: Math.round(confidence * 100) / 100,
       secondaryCategory,
-      secondaryConfidence: secondaryConfidence
-        ? Math.round(secondaryConfidence * 100) / 100
-        : undefined,
+      secondaryConfidence: secondaryConfidence ? Math.round(secondaryConfidence * 100) / 100 : undefined,
       entities,
       query,
       classificationTimeMs: Date.now() - startTime,
@@ -488,12 +547,13 @@ export class IntentRouter {
       }
 
       case 'PROFESSOR': {
+        // Professor disabled — route to Coach instead
         const context: AIContext = {
-          personality: 'PROFESSOR' as AIPersonality,
+          personality: 'COACH' as AIPersonality,
           ...additionalContext,
         };
         response = await this.dualAI.query(query, context);
-        handler = 'DualAI:PROFESSOR';
+        handler = 'DualAI:COACH';
         break;
       }
 
@@ -548,9 +608,9 @@ export class IntentRouter {
     if (q.includes('calorie') || q.includes('tdee') || q.includes('bmr')) {
       message =
         'I can calculate your daily calorie needs! Head to your Profile to enter your stats, ' +
-        'and I\'ll compute your BMR and TDEE using the Mifflin-St Jeor equation. ' +
+        "and I'll compute your BMR and TDEE using the Mifflin-St Jeor equation. " +
         'Your calorie target depends on your goal — deficit for fat loss, surplus for muscle gain.';
-      followUp = ['What\'s my TDEE?', 'How many calories to lose weight?', 'Calculate my macros'];
+      followUp = ["What's my TDEE?", 'How many calories to lose weight?', 'Calculate my macros'];
     } else if (q.includes('heart rate') || q.includes('bpm') || q.includes('pulse')) {
       message =
         'Your heart rate data is tracked through the Health Dashboard. ' +
@@ -608,7 +668,7 @@ export class IntentRouter {
         'Your workout streaks and XP keep you motivated! You earn 100 XP base per workout ' +
         'plus 20 XP per exercise completed, with streak bonuses for consistency. ' +
         'Keep your streak alive by working out regularly!';
-      followUp = ['What\'s my streak?', 'How much XP do I have?', 'How to earn more XP?'];
+      followUp = ["What's my streak?", 'How much XP do I have?', 'How to earn more XP?'];
     } else if (q.includes('history') || q.includes('log') || q.includes('record')) {
       message =
         'Your workout history shows all completed sessions with exercises, sets, and progress. ' +
@@ -641,7 +701,6 @@ export class IntentRouter {
       'meal prep': { screen: '/meal-prep', description: 'nutrition planning and meal ideas' },
       analytics: { screen: '/analytics', description: 'your progress charts and statistics' },
       'craft my body': { screen: '/craft-my-body', description: 'body customization and goal setting' },
-      library: { screen: '/fitmind-library', description: 'your document library for cognitive fitness' },
     };
 
     let message = 'Here are the main sections of FitQuest:\n';
@@ -658,8 +717,8 @@ export class IntentRouter {
     if (!targetScreen) {
       message =
         'I can help you navigate! Available screens: Dashboard, FitQuest (workouts), ' +
-        'Move (activity tracking), Exercises (catalogue), Profile, Meal Prep, Analytics, ' +
-        'and the FitMind Library. Which one would you like to visit?';
+        'Move (activity tracking), Exercises (catalogue), Profile, Meal Prep, Analytics. ' +
+        'Which one would you like to visit?';
     }
 
     return {
@@ -676,15 +735,20 @@ export class IntentRouter {
     let message: string;
 
     if (q.includes('theme') || q.includes('dark') || q.includes('light')) {
-      message = 'You can switch between dark and light mode in your Profile settings. The app defaults to dark mode for a premium feel.';
+      message =
+        'You can switch between dark and light mode in your Profile settings. The app defaults to dark mode for a premium feel.';
     } else if (q.includes('language') || q.includes('translate')) {
-      message = 'FitQuest supports 15 languages! Go to Profile → Language to change. Available: English, Afrikaans, Zulu, Xhosa, Sesotho, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Arabic, Hindi, and Swahili.';
+      message =
+        'FitQuest supports 15 languages! Go to Profile → Language to change. Available: English, Afrikaans, Zulu, Xhosa, Sesotho, Spanish, French, German, Portuguese, Chinese, Japanese, Korean, Arabic, Hindi, and Swahili.';
     } else if (q.includes('security') || q.includes('biometric') || q.includes('fingerprint')) {
-      message = 'Your data is protected with biometric authentication and encrypted storage. Go to Profile → Security to manage biometric settings and passcode.';
+      message =
+        'Your data is protected with biometric authentication and encrypted storage. Go to Profile → Security to manage biometric settings and passcode.';
     } else if (q.includes('subscription') || q.includes('premium') || q.includes('upgrade')) {
-      message = 'Premium features are coming soon! Stay tuned for advanced analytics, custom workout programs, and AI-powered coaching upgrades.';
+      message =
+        'Premium features are coming soon! Stay tuned for advanced analytics, custom workout programs, and AI-powered coaching upgrades.';
     } else {
-      message = 'App settings are available in your Profile. You can configure theme, language, security, notifications, and more. What would you like to change?';
+      message =
+        'App settings are available in your Profile. You can configure theme, language, security, notifications, and more. What would you like to change?';
     }
 
     return {
@@ -718,8 +782,13 @@ export class IntentRouter {
   /** Get classification stats */
   getStats(): Record<IntentCategory, number> {
     const stats: Record<IntentCategory, number> = {
-      COACH: 0, PROFESSOR: 0, HEALTH: 0, WORKOUT: 0,
-      NAVIGATION: 0, SETTINGS: 0, GENERAL: 0,
+      COACH: 0,
+      PROFESSOR: 0,
+      HEALTH: 0,
+      WORKOUT: 0,
+      NAVIGATION: 0,
+      SETTINGS: 0,
+      GENERAL: 0,
     };
     for (const intent of this.recentIntents) {
       stats[intent.category]++;

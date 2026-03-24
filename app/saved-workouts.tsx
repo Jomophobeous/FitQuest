@@ -5,39 +5,21 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Alert,
-  RefreshControl,
-} from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  ZoomIn,
-  SlideInRight,
-} from 'react-native-reanimated';
+import { View, FlatList, StyleSheet, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn, SlideInRight } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { getRecentSessions, deleteWorkoutSession, getSessionExercises } from '../src/database/service';
 import type { WorkoutSession } from '../src/database/types';
 import { useDataSync } from '../src/services/dataSyncService';
 import ExerciseImage from '../src/components/ExerciseImage';
-import {
-  GlassCard,
-  GradientButton,
-  SectionHeader,
-  AnimatedListItem,
-} from '../src/components/ui/GlassUI';
+import { GlassCard, GradientButton, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 
 // ============================================
@@ -99,7 +81,12 @@ export default function SavedWorkoutsScreen() {
 
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [expandedExercises, setExpandedExercises] = useState<Record<string, Array<{ exercise_id: string; name: string; category: string; prescribed_sets: number; prescribed_reps: string }>>>({});
+  const [expandedExercises, setExpandedExercises] = useState<
+    Record<
+      string,
+      Array<{ exercise_id: string; name: string; category: string; prescribed_sets: number; prescribed_reps: string }>
+    >
+  >({});
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -110,9 +97,7 @@ export default function SavedWorkoutsScreen() {
   const loadWorkouts = useCallback(async () => {
     try {
       const sessions = await getRecentSessions(USER_ID, 50);
-      const custom = sessions.filter(
-        (s) => s.id.startsWith('custom_') || s.notes?.startsWith('Custom:'),
-      );
+      const custom = sessions.filter((s) => s.id.startsWith('custom_') || s.notes?.startsWith('Custom:'));
       setWorkouts(custom);
     } catch (err) {
       if (__DEV__) console.warn('[SavedWorkouts] Failed to load:', err);
@@ -148,26 +133,22 @@ export default function SavedWorkoutsScreen() {
 
   const confirmDelete = (session: WorkoutSession) => {
     const name = getWorkoutName(session);
-    Alert.alert(
-      t('savedWorkouts.deleteTitle'),
-      t('savedWorkouts.deleteConfirm').replace('{name}', name),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteWorkoutSession(session.id);
-              setWorkouts((prev) => prev.filter((w) => w.id !== session.id));
-              if (expandedId === session.id) setExpandedId(null);
-            } catch (err) {
-              Alert.alert(t('error.title'), t('savedWorkouts.deleteError'));
-            }
-          },
+    Alert.alert(t('savedWorkouts.deleteTitle'), t('savedWorkouts.deleteConfirm').replace('{name}', name), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteWorkoutSession(session.id);
+            setWorkouts((prev) => prev.filter((w) => w.id !== session.id));
+            if (expandedId === session.id) setExpandedId(null);
+          } catch (err) {
+            Alert.alert(t('error.title'), t('savedWorkouts.deleteError'));
+          }
         },
-      ],
-    );
+      },
+    ]);
   };
 
   const handleStartWorkout = (session: WorkoutSession) => {
@@ -187,7 +168,7 @@ export default function SavedWorkoutsScreen() {
     if (!expandedExercises[id]) {
       try {
         const exercises = await getSessionExercises(id);
-        setExpandedExercises(prev => ({ ...prev, [id]: exercises }));
+        setExpandedExercises((prev) => ({ ...prev, [id]: exercises }));
       } catch {
         // Session exercises might not be available
       }
@@ -200,31 +181,15 @@ export default function SavedWorkoutsScreen() {
 
   const renderEmptyState = () => (
     <Animated.View entering={FadeIn.delay(200).duration(150)} style={styles.emptyContainer}>
-      <GlassCard
-        style={styles.emptyCard}
-        gradient
-        glowColor={theme.colors.accent}
-        delay={100}
-      >
+      <GlassCard style={styles.emptyCard} gradient glowColor={theme.colors.accent} delay={100}>
         <View style={styles.emptyContent}>
           <Animated.View entering={ZoomIn.delay(400).duration(150)}>
-            <View
-              style={[
-                styles.emptyIconCircle,
-                { backgroundColor: theme.colors.accent + '18' },
-              ]}
-            >
-              <MaterialCommunityIcons
-                name="bookmark-plus-outline"
-                size={56}
-                color={theme.colors.accent}
-              />
+            <View style={[styles.emptyIconCircle, { backgroundColor: theme.colors.accent + '18' }]}>
+              <MaterialCommunityIcons name="bookmark-plus-outline" size={56} color={theme.colors.accent} />
             </View>
           </Animated.View>
 
-          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
-            {t('savedWorkouts.emptyTitle')}
-          </Text>
+          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('savedWorkouts.emptyTitle')}</Text>
           <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
             {t('savedWorkouts.emptySubtitle')}
           </Text>
@@ -240,21 +205,10 @@ export default function SavedWorkoutsScreen() {
                 entering={SlideInRight.delay(600 + i * 120).duration(150)}
                 style={styles.emptyFeatureRow}
               >
-                <View
-                  style={[
-                    styles.emptyFeatureIcon,
-                    { backgroundColor: theme.colors.accent + '14' },
-                  ]}
-                >
-                  <MaterialCommunityIcons
-                    name={f.icon}
-                    size={18}
-                    color={theme.colors.accent}
-                  />
+                <View style={[styles.emptyFeatureIcon, { backgroundColor: theme.colors.accent + '14' }]}>
+                  <MaterialCommunityIcons name={f.icon} size={18} color={theme.colors.accent} />
                 </View>
-                <Text style={[styles.emptyFeatureText, { color: theme.colors.textSecondary }]}>
-                  {f.text}
-                </Text>
+                <Text style={[styles.emptyFeatureText, { color: theme.colors.textSecondary }]}>{f.text}</Text>
               </Animated.View>
             ))}
           </View>
@@ -276,360 +230,297 @@ export default function SavedWorkoutsScreen() {
   // RENDER: WORKOUT CARD
   // ------------------------------------------
 
-  const renderWorkoutCard = (session: WorkoutSession, index: number) => {
-    const isExpanded = expandedId === session.id;
-    const name = getWorkoutName(session);
-    const duration = formatDuration(session.duration_minutes);
-    const dateLabel = formatDate(session.started_at, t);
-    const exerciseCount = session.total_exercises;
-    const completed = session.completed_exercises;
-    const wasSuccessful = !!session.success;
+  const renderWorkoutCard = useCallback(
+    (session: WorkoutSession, index: number) => {
+      const isExpanded = expandedId === session.id;
+      const name = getWorkoutName(session);
+      const duration = formatDuration(session.duration_minutes);
+      const dateLabel = formatDate(session.started_at, t);
+      const exerciseCount = session.total_exercises;
+      const completed = session.completed_exercises;
+      const wasSuccessful = !!session.success;
 
-    // Accent colour per card for visual variety
-    const cardAccents = [
-      theme.colors.accent,
-      theme.colors.accent2 ?? '#7C3AED',
-      theme.colors.accent3 ?? '#10B981',
-      theme.colors.success,
-      theme.colors.warning,
-    ];
-    const accentColor = cardAccents[index % cardAccents.length]!;
+      // Accent colour per card for visual variety
+      const cardAccents = [
+        theme.colors.accent,
+        theme.colors.accent2 ?? '#7C3AED',
+        theme.colors.accent3 ?? '#10B981',
+        theme.colors.success,
+        theme.colors.warning,
+      ];
+      const accentColor = cardAccents[index % cardAccents.length]!;
 
-    return (
-      <AnimatedListItem key={session.id} index={index} style={styles.cardOuter}>
-        <GlassCard
-          style={styles.workoutCard}
-          gradient
-          glowColor={accentColor}
-          delay={index * 80}
-          onPress={() => toggleExpand(session.id)}
-        >
-          {/* Card Header */}
-          <View style={styles.cardHeader}>
-            <View
-              style={[
-                styles.cardIconWrap,
-                { backgroundColor: accentColor + '20' },
-              ]}
-            >
-              <MaterialCommunityIcons
-                name="lightning-bolt"
-                size={22}
-                color={accentColor}
-              />
-            </View>
+      return (
+        <AnimatedListItem key={session.id} index={index} style={styles.cardOuter}>
+          <GlassCard
+            style={styles.workoutCard}
+            gradient
+            glowColor={accentColor}
+            delay={index * 80}
+            onPress={() => toggleExpand(session.id)}
+          >
+            {/* Card Header */}
+            <View style={styles.cardHeader}>
+              <View style={[styles.cardIconWrap, { backgroundColor: accentColor + '20' }]}>
+                <MaterialCommunityIcons name="lightning-bolt" size={22} color={accentColor} />
+              </View>
 
-            <View style={styles.cardTitleArea}>
-              <Text
-                style={[styles.cardTitle, { color: theme.colors.text }]}
-                numberOfLines={1}
-              >
-                {name}
-              </Text>
-              <Text style={[styles.cardDate, { color: theme.colors.textMuted }]}>
-                {dateLabel}
-              </Text>
-            </View>
-
-            {/* Status badge */}
-            {!!wasSuccessful && (
-              <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: theme.colors.success + '18' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="check-circle"
-                  size={14}
-                  color={theme.colors.success}
-                />
-                <Text style={[styles.statusText, { color: theme.colors.success }]}>
-                  Done
+              <View style={styles.cardTitleArea}>
+                <Text style={[styles.cardTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                  {name}
                 </Text>
+                <Text style={[styles.cardDate, { color: theme.colors.textMuted }]}>{dateLabel}</Text>
               </View>
-            )}
 
-            {/* Delete (long-press alternative trigger) */}
-            <TouchableOpacity
-              onPress={() => confirmDelete(session)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.deleteBtn}
-              accessibilityRole="button"
-              accessibilityLabel="Delete workout session"
-            >
-              <MaterialCommunityIcons
-                name="trash-can-outline"
-                size={20}
-                color={theme.colors.error}
-              />
-            </TouchableOpacity>
-          </View>
+              {/* Status badge */}
+              {!!wasSuccessful && (
+                <View style={[styles.statusBadge, { backgroundColor: theme.colors.success + '18' }]}>
+                  <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.success} />
+                  <Text style={[styles.statusText, { color: theme.colors.success }]}>Done</Text>
+                </View>
+              )}
 
-          {/* Stats Row */}
-          <View style={styles.statsRow}>
-            <StatPill
-              icon="dumbbell"
-              value={`${exerciseCount}`}
-              label="exercises"
-              color={accentColor}
-              textColor={theme.colors.textSecondary}
-              bgColor={accentColor + '12'}
-            />
-            <StatPill
-              icon="clock-outline"
-              value={duration}
-              label=""
-              color={accentColor}
-              textColor={theme.colors.textSecondary}
-              bgColor={accentColor + '12'}
-            />
-            {completed > 0 && (
+              {/* Delete (long-press alternative trigger) */}
+              <TouchableOpacity
+                onPress={() => confirmDelete(session)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={styles.deleteBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Delete workout session"
+              >
+                <MaterialCommunityIcons name="trash-can-outline" size={20} color={theme.colors.error} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Stats Row */}
+            <View style={styles.statsRow}>
               <StatPill
-                icon="check-bold"
-                value={`${completed}/${exerciseCount}`}
-                label="done"
-                color={theme.colors.success}
+                icon="dumbbell"
+                value={`${exerciseCount}`}
+                label="exercises"
+                color={accentColor}
                 textColor={theme.colors.textSecondary}
-                bgColor={theme.colors.success + '12'}
+                bgColor={accentColor + '12'}
               />
-            )}
-          </View>
-
-          {/* Expanded Area */}
-          {!!isExpanded && (
-            <Animated.View entering={FadeInDown.duration(150)} style={styles.expandedArea}>
-              <View
-                style={[
-                  styles.expandedDivider,
-                  { backgroundColor: theme.colors.border },
-                ]}
+              <StatPill
+                icon="clock-outline"
+                value={duration}
+                label=""
+                color={accentColor}
+                textColor={theme.colors.textSecondary}
+                bgColor={accentColor + '12'}
               />
+              {completed > 0 && (
+                <StatPill
+                  icon="check-bold"
+                  value={`${completed}/${exerciseCount}`}
+                  label="done"
+                  color={theme.colors.success}
+                  textColor={theme.colors.textSecondary}
+                  bgColor={theme.colors.success + '12'}
+                />
+              )}
+            </View>
 
-              {/* Session details */}
-              <View style={styles.expandedDetails}>
-                <View style={styles.detailRow}>
-                  <MaterialCommunityIcons
-                    name="calendar-clock"
-                    size={16}
-                    color={theme.colors.textMuted}
-                  />
-                  <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
-                    Created {dateLabel}
-                  </Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <MaterialCommunityIcons
-                    name="timer-sand"
-                    size={16}
-                    color={theme.colors.textMuted}
-                  />
-                  <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
-                    Estimated {duration}
-                  </Text>
-                </View>
-              </View>
+            {/* Expanded Area */}
+            {!!isExpanded && (
+              <Animated.View entering={FadeInDown.duration(150)} style={styles.expandedArea}>
+                <View style={[styles.expandedDivider, { backgroundColor: theme.colors.border }]} />
 
-              {/* Exercise list with images */}
-              {(() => {
-                const exList = expandedExercises[session.id];
-                if (!exList || exList.length === 0) return null;
-                return (
-                <View style={styles.expandedExerciseList}>
-                  <Text style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>
-                    Exercises
-                  </Text>
-                  {exList.map((ex, idx) => (
-                    <View key={ex.exercise_id + idx} style={[styles.exerciseRow, { borderColor: theme.colors.border }]}>
-                      <ExerciseImage
-                        exerciseId={ex.exercise_id}
-                        category={ex.category as any}
-                        variant="thumbnail"
-                        animate={false}
-                      />
-                      <View style={{ flex: 1, marginLeft: 10 }}>
-                        <Text style={[styles.exerciseRowName, { color: theme.colors.text }]} numberOfLines={1}>
-                          {ex.name}
-                        </Text>
-                        <Text style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
-                          {ex.prescribed_sets} sets × {ex.prescribed_reps}
-                        </Text>
-                      </View>
+                {/* Session details */}
+                <View style={styles.expandedDetails}>
+                  <View style={styles.detailRow}>
+                    <MaterialCommunityIcons name="calendar-clock" size={16} color={theme.colors.textMuted} />
+                    <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>Created {dateLabel}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <MaterialCommunityIcons name="timer-sand" size={16} color={theme.colors.textMuted} />
+                    <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>Estimated {duration}</Text>
+                  </View>
+                </View>
+
+                {/* Exercise list with images */}
+                {(() => {
+                  const exList = expandedExercises[session.id];
+                  if (!exList || exList.length === 0) return null;
+                  return (
+                    <View style={styles.expandedExerciseList}>
+                      <Text style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>Exercises</Text>
+                      {exList.map((ex, idx) => (
+                        <View
+                          key={ex.exercise_id + idx}
+                          style={[styles.exerciseRow, { borderColor: theme.colors.border }]}
+                        >
+                          <ExerciseImage
+                            exerciseId={ex.exercise_id}
+                            category={ex.category as any}
+                            variant="thumbnail"
+                            animate={false}
+                          />
+                          <View style={{ flex: 1, marginLeft: 10 }}>
+                            <Text style={[styles.exerciseRowName, { color: theme.colors.text }]} numberOfLines={1}>
+                              {ex.name}
+                            </Text>
+                            <Text style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
+                              {ex.prescribed_sets} sets × {ex.prescribed_reps}
+                            </Text>
+                          </View>
+                        </View>
+                      ))}
                     </View>
-                  ))}
-                </View>
-              );
-              })()}
+                  );
+                })()}
 
-              {/* Action Buttons */}
-              <View style={styles.expandedActions}>
-                <View style={{ flex: 1 }}>
-                  <GradientButton
-                    title={t('savedWorkouts.startWorkout')}
-                    icon="play"
-                    onPress={() => handleStartWorkout(session)}
-                    variant="primary"
-                    size="md"
-                  />
+                {/* Action Buttons */}
+                <View style={styles.expandedActions}>
+                  <View style={{ flex: 1 }}>
+                    <GradientButton
+                      title={t('savedWorkouts.startWorkout')}
+                      icon="play"
+                      onPress={() => handleStartWorkout(session)}
+                      variant="primary"
+                      size="md"
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={[
+                      styles.deleteActionBtn,
+                      {
+                        borderColor: theme.colors.error + '30',
+                        backgroundColor: theme.colors.error + '0A',
+                      },
+                    ]}
+                    onPress={() => confirmDelete(session)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Delete workout"
+                  >
+                    <MaterialCommunityIcons name="delete-outline" size={22} color={theme.colors.error} />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  style={[
-                    styles.deleteActionBtn,
-                    {
-                      borderColor: theme.colors.error + '30',
-                      backgroundColor: theme.colors.error + '0A',
-                    },
-                  ]}
-                  onPress={() => confirmDelete(session)}
-                  accessibilityRole="button"
-                  accessibilityLabel="Delete workout"
-                >
-                  <MaterialCommunityIcons
-                    name="delete-outline"
-                    size={22}
-                    color={theme.colors.error}
-                  />
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-          )}
+              </Animated.View>
+            )}
 
-          {/* Expand chevron */}
-          <View style={styles.chevronRow}>
-            <MaterialCommunityIcons
-              name={isExpanded ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={theme.colors.textMuted}
-            />
-          </View>
-        </GlassCard>
-      </AnimatedListItem>
-    );
-  };
+            {/* Expand chevron */}
+            <View style={styles.chevronRow}>
+              <MaterialCommunityIcons
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={theme.colors.textMuted}
+              />
+            </View>
+          </GlassCard>
+        </AnimatedListItem>
+      );
+    },
+    [expandedId, expandedExercises, theme, t, confirmDelete, handleStartWorkout, toggleExpand],
+  );
+
+  const renderWorkoutItem = useCallback(
+    ({ item, index }: { item: WorkoutSession; index: number }) => renderWorkoutCard(item, index),
+    [renderWorkoutCard],
+  );
+  const keyExtractorWorkout = useCallback((item: WorkoutSession) => item.id, []);
 
   // ------------------------------------------
   // MAIN RENDER
   // ------------------------------------------
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
-      <ScreenTutorial
-        screenKey="saved-workouts"
-        icon="content-save-all"
-        title="Saved Workouts"
-        description="View your completed workout history. Tap any workout to see details, or long-press to delete. Your progress is saved automatically."
-      />
-      {/* Header */}
-      <Animated.View entering={FadeInDown.duration(150)} style={styles.headerContainer}>
-        <LinearGradient
-          colors={
-            theme.isDark
-              ? ([theme.colors.accent + '25', 'transparent'] as [string, string])
-              : ([theme.colors.accent + '10', 'transparent'] as [string, string])
-          }
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.headerGradient}
-        >
-          <TouchableOpacity
-            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
-            style={[styles.backBtn, { backgroundColor: theme.colors.surface }]}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-          >
-            <MaterialCommunityIcons
-              name="arrow-left"
-              size={22}
-              color={theme.colors.text}
-            />
-          </TouchableOpacity>
-
-          <View style={styles.headerTextArea}>
-            <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
-              Saved Workouts
-            </Text>
-            <Text style={[styles.heroSubtitle, { color: theme.colors.textMuted }]}>
-              {workouts.length > 0
-                ? `${workouts.length} custom workout${workouts.length !== 1 ? 's' : ''}`
-                : 'Your personal collection'}
-            </Text>
-          </View>
-
-          <View
-            style={[
-              styles.headerIconWrap,
-              { backgroundColor: theme.colors.accent + '18' },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="bookmark-multiple"
-              size={26}
-              color={theme.colors.accent}
-            />
-          </View>
-        </LinearGradient>
-      </Animated.View>
-
-      {/* Body */}
-      {loading ? (
-        <Animated.View entering={FadeIn.duration(150)} style={styles.loadingContainer}>
-          <MaterialCommunityIcons
-            name="loading"
-            size={36}
-            color={theme.colors.accent}
-          />
-          <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>
-            Loading workouts…
-          </Text>
-        </Animated.View>
-      ) : workouts.length === 0 ? (
-        renderEmptyState()
-      ) : (
-        <FlatList
-          data={workouts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => renderWorkoutCard(item, index)}
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={8}
-          maxToRenderPerBatch={6}
-          windowSize={5}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              tintColor={theme.colors.accent}
-              colors={[theme.colors.accent]}
-            />
-          }
-          ListHeaderComponent={<SectionHeader title={t('savedWorkouts.myWorkouts')} delay={100} />}
-          ListFooterComponent={<View style={styles.bottomSpacer} />}
+    <ScreenErrorBoundary screenName="SavedWorkouts" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
+        <ScreenTutorial
+          screenKey="saved-workouts"
+          icon="content-save-all"
+          title="Saved Workouts"
+          description="View your completed workout history. Tap any workout to see details, or long-press to delete. Your progress is saved automatically."
         />
-      )}
-
-      {/* Floating Action Button */}
-      {!loading && (
-        <Animated.View
-          entering={ZoomIn.delay(100).duration(150)}
-          style={styles.fabContainer}
-        >
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => router.push('/create-workout')}
+        {/* Header */}
+        <Animated.View entering={FadeInDown.duration(150)} style={styles.headerContainer}>
+          <LinearGradient
+            colors={
+              theme.isDark
+                ? ([theme.colors.accent + '25', 'transparent'] as [string, string])
+                : ([theme.colors.accent + '10', 'transparent'] as [string, string])
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.headerGradient}
           >
-            <LinearGradient
-              colors={[theme.colors.accent, '#4338CA'] as [string, string]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.fab}
+            <TouchableOpacity
+              onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+              style={[styles.backBtn, { backgroundColor: theme.colors.surface }]}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
             >
-              <MaterialCommunityIcons name="plus" size={28} color="#fff" />
-            </LinearGradient>
-          </TouchableOpacity>
+              <MaterialCommunityIcons name="arrow-left" size={22} color={theme.colors.text} />
+            </TouchableOpacity>
+
+            <View style={styles.headerTextArea}>
+              <Text style={[styles.heroTitle, { color: theme.colors.text }]}>Saved Workouts</Text>
+              <Text style={[styles.heroSubtitle, { color: theme.colors.textMuted }]}>
+                {workouts.length > 0
+                  ? `${workouts.length} custom workout${workouts.length !== 1 ? 's' : ''}`
+                  : 'Your personal collection'}
+              </Text>
+            </View>
+
+            <View style={[styles.headerIconWrap, { backgroundColor: theme.colors.accent + '18' }]}>
+              <MaterialCommunityIcons name="bookmark-multiple" size={26} color={theme.colors.accent} />
+            </View>
+          </LinearGradient>
         </Animated.View>
-      )}
-    </SafeAreaView>
+
+        {/* Body */}
+        {loading ? (
+          <Animated.View entering={FadeIn.duration(150)} style={styles.loadingContainer}>
+            <MaterialCommunityIcons name="loading" size={36} color={theme.colors.accent} />
+            <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>Loading workouts…</Text>
+          </Animated.View>
+        ) : workouts.length === 0 ? (
+          renderEmptyState()
+        ) : (
+          <FlatList
+            data={workouts}
+            keyExtractor={keyExtractorWorkout}
+            renderItem={renderWorkoutItem}
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={8}
+            maxToRenderPerBatch={6}
+            windowSize={5}
+            removeClippedSubviews={true}
+            scrollEventThrottle={100}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={theme.colors.accent}
+                colors={[theme.colors.accent]}
+              />
+            }
+            ListHeaderComponent={<SectionHeader title={t('savedWorkouts.myWorkouts')} delay={100} />}
+            ListFooterComponent={<View style={styles.bottomSpacer} />}
+          />
+        )}
+
+        {/* Floating Action Button */}
+        {!loading && (
+          <Animated.View entering={ZoomIn.delay(100).duration(150)} style={styles.fabContainer}>
+            <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/create-workout')}>
+              <LinearGradient
+                colors={[theme.colors.accent, '#4338CA'] as [string, string]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.fab}
+              >
+                <MaterialCommunityIcons name="plus" size={28} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -651,9 +542,7 @@ function StatPill({ icon, value, label, color, textColor, bgColor }: StatPillPro
     <View style={[styles.statPill, { backgroundColor: bgColor }]}>
       <MaterialCommunityIcons name={icon} size={14} color={color} />
       <Text style={[styles.statPillValue, { color }]}>{value}</Text>
-      {label ? (
-        <Text style={[styles.statPillLabel, { color: textColor }]}>{label}</Text>
-      ) : null}
+      {label ? <Text style={[styles.statPillLabel, { color: textColor }]}>{label}</Text> : null}
     </View>
   );
 }

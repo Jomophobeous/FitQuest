@@ -27,7 +27,7 @@ export function scoreAutomationConfidence(signalStrength: number, dataQuality: n
 export function decideAutomationAction(
   policy: AutomationPolicy,
   readinessScore: number,
-  strainScore: number
+  strainScore: number,
 ): AutomationDecision {
   const boundedReadiness = clamp(readinessScore, 0, 100);
   const boundedStrain = clamp(strainScore, 0, 100);

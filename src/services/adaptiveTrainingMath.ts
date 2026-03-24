@@ -67,7 +67,7 @@ function buildRationale(successRate: number, averageDifficulty: number): string[
 export function deriveAdaptiveTrainingProfile(
   current: AdaptiveTrainingProfile,
   input: AdaptiveSessionInput,
-  now = Date.now()
+  now = Date.now(),
 ): AdaptiveTrainingProfile {
   const totalCount = Math.max(1, input.totalCount);
   const successRate = clamp(input.completedCount / totalCount, 0, 1);
@@ -80,20 +80,16 @@ export function deriveAdaptiveTrainingProfile(
   const targetFatigueSensitivity = clamp(
     1 + (successTarget - successRate) * 0.45 + (normalizedDifficulty - 0.6) * 0.2,
     0.8,
-    1.25
+    1.25,
   );
 
   const targetProgressionAggressiveness = clamp(
     1 + successDelta * 0.55 - (normalizedDifficulty - 0.65) * 0.15,
     0.8,
-    1.25
+    1.25,
   );
 
-  const targetVolumeTolerance = clamp(
-    1 + successDelta * 0.35 - (normalizedDifficulty - 0.6) * 0.2,
-    0.8,
-    1.2
-  );
+  const targetVolumeTolerance = clamp(1 + successDelta * 0.35 - (normalizedDifficulty - 0.6) * 0.2, 0.8, 1.2);
 
   const nextSamples = current.samples + 1;
   const alpha = clamp(0.18 + Math.min(nextSamples, 20) * 0.01, 0.18, 0.38);
@@ -102,7 +98,7 @@ export function deriveAdaptiveTrainingProfile(
     userId: current.userId,
     fatigueSensitivity: round2(smooth(current.fatigueSensitivity, targetFatigueSensitivity, alpha)),
     progressionAggressiveness: round2(
-      smooth(current.progressionAggressiveness, targetProgressionAggressiveness, alpha)
+      smooth(current.progressionAggressiveness, targetProgressionAggressiveness, alpha),
     ),
     volumeTolerance: round2(smooth(current.volumeTolerance, targetVolumeTolerance, alpha)),
     confidence: round2(clamp(nextSamples / 20, 0, 1)),

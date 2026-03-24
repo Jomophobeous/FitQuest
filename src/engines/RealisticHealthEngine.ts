@@ -1,6 +1,6 @@
 /**
  * FitQuest Realistic Health Analytics Engine
- * 
+ *
  * Evidence-based health calculations using established formulas:
  * - BMR: Mifflin-St Jeor equation
  * - TDEE: Activity-adjusted BMR
@@ -10,7 +10,7 @@
  * - Calorie tracking: MET-based activity expenditure
  * - Hydration needs: body weight + activity factor
  * - Macro calculations: based on goals + body stats
- * 
+ *
  * All calculations run on-device with no external dependencies.
  */
 
@@ -29,25 +29,25 @@ export interface UserBodyStats {
   sex: BiologicalSex;
   heightCm: number;
   weightKg: number;
-  bodyFatPercent?: number;  // measured or estimated
-  waistCm?: number;        // for Navy body fat estimate
+  bodyFatPercent?: number; // measured or estimated
+  waistCm?: number; // for Navy body fat estimate
   neckCm?: number;
-  hipCm?: number;          // females only
+  hipCm?: number; // females only
   restingHeartRate?: number;
-  maxHeartRate?: number;    // measured or age-estimated
+  maxHeartRate?: number; // measured or age-estimated
   activityLevel: ActivityLevel;
   goal: FitnessGoal;
 }
 
 export interface MetabolicProfile {
-  bmr: number;              // Basal Metabolic Rate (kcal/day)
-  tdee: number;             // Total Daily Energy Expenditure
-  targetCalories: number;   // Adjusted for goal
+  bmr: number; // Basal Metabolic Rate (kcal/day)
+  tdee: number; // Total Daily Energy Expenditure
+  targetCalories: number; // Adjusted for goal
   bmi: number;
   bmiCategory: string;
   estimatedBodyFat: number; // percent
-  leanMass: number;         // kg
-  fatMass: number;          // kg
+  leanMass: number; // kg
+  fatMass: number; // kg
 }
 
 export interface MacroTargets {
@@ -71,28 +71,28 @@ export interface HeartRateZones {
 }
 
 export interface RecoveryScore {
-  score: number;          // 0-100
+  score: number; // 0-100
   status: 'POOR' | 'LOW' | 'MODERATE' | 'GOOD' | 'EXCELLENT';
   recommendation: string;
   factors: {
-    sleep: number;         // 0-25
-    hrv: number;           // 0-25
-    trainingLoad: number;  // 0-25
-    nutrition: number;     // 0-25
+    sleep: number; // 0-25
+    hrv: number; // 0-25
+    trainingLoad: number; // 0-25
+    nutrition: number; // 0-25
   };
 }
 
 export interface HydrationTarget {
-  baseLiters: number;       // from body weight
+  baseLiters: number; // from body weight
   activityAddLiters: number; // from exercise
   totalLiters: number;
-  glasses: number;           // ~250ml per glass
+  glasses: number; // ~250ml per glass
 }
 
 export interface WorkoutCalorieEstimate {
-  grossCalories: number;    // total burned
-  netCalories: number;      // above resting
-  met: number;              // metabolic equivalent
+  grossCalories: number; // total burned
+  netCalories: number; // above resting
+  met: number; // metabolic equivalent
   durationMinutes: number;
 }
 
@@ -109,57 +109,57 @@ const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
 };
 
 const GOAL_CALORIE_ADJUSTMENT: Record<FitnessGoal, number> = {
-  LOSE_FAT: -500,       // 500 kcal deficit
+  LOSE_FAT: -500, // 500 kcal deficit
   MAINTAIN: 0,
-  BUILD_MUSCLE: 300,    // 300 kcal surplus
-  PERFORMANCE: 200,     // slight surplus
+  BUILD_MUSCLE: 300, // 300 kcal surplus
+  PERFORMANCE: 200, // slight surplus
 };
 
 /** MET values for common activities */
 const ACTIVITY_METS: Record<string, number> = {
   // Strength training
-  'weight_training_light': 3.5,
-  'weight_training_moderate': 5.0,
-  'weight_training_vigorous': 6.0,
-  'circuit_training': 8.0,
-  'crossfit': 8.0,
+  weight_training_light: 3.5,
+  weight_training_moderate: 5.0,
+  weight_training_vigorous: 6.0,
+  circuit_training: 8.0,
+  crossfit: 8.0,
 
   // Cardio
-  'walking_slow': 2.5,
-  'walking_brisk': 4.0,
-  'jogging': 7.0,
-  'running_moderate': 8.5,
-  'running_fast': 10.0,
-  'sprinting': 15.0,
-  'cycling_light': 4.0,
-  'cycling_moderate': 6.8,
-  'cycling_vigorous': 10.0,
-  'swimming': 7.0,
-  'rowing': 7.0,
-  'jump_rope': 12.0,
-  'stair_climbing': 9.0,
-  'elliptical': 5.0,
+  walking_slow: 2.5,
+  walking_brisk: 4.0,
+  jogging: 7.0,
+  running_moderate: 8.5,
+  running_fast: 10.0,
+  sprinting: 15.0,
+  cycling_light: 4.0,
+  cycling_moderate: 6.8,
+  cycling_vigorous: 10.0,
+  swimming: 7.0,
+  rowing: 7.0,
+  jump_rope: 12.0,
+  stair_climbing: 9.0,
+  elliptical: 5.0,
 
   // Flexibility & recovery
-  'yoga': 2.5,
-  'pilates': 3.0,
-  'stretching': 2.3,
-  'foam_rolling': 2.0,
+  yoga: 2.5,
+  pilates: 3.0,
+  stretching: 2.3,
+  foam_rolling: 2.0,
 
   // Sports
-  'basketball': 6.5,
-  'soccer': 7.0,
-  'tennis': 7.3,
-  'hiking': 5.3,
-  'rock_climbing': 8.0,
-  'martial_arts': 10.3,
-  'dance': 5.0,
+  basketball: 6.5,
+  soccer: 7.0,
+  tennis: 7.3,
+  hiking: 5.3,
+  rock_climbing: 8.0,
+  martial_arts: 10.3,
+  dance: 5.0,
 
   // Daily activities
-  'standing': 1.8,
-  'walking_casual': 2.0,
-  'housework': 3.5,
-  'gardening': 4.0,
+  standing: 1.8,
+  walking_casual: 2.0,
+  housework: 3.5,
+  gardening: 4.0,
 };
 
 // ============================================
@@ -197,7 +197,7 @@ export class RealisticHealthEngine {
     const tdee = Math.round(bmr * ACTIVITY_MULTIPLIERS[stats.activityLevel]);
     const targetCalories = tdee + GOAL_CALORIE_ADJUSTMENT[stats.goal];
 
-    const bmi = stats.weightKg / ((stats.heightCm / 100) ** 2);
+    const bmi = stats.weightKg / (stats.heightCm / 100) ** 2;
     const bmiCategory = RealisticHealthEngine.getBMICategory(bmi);
 
     // Body fat estimation
@@ -238,18 +238,14 @@ export class RealisticHealthEngine {
     if (!stats.waistCm || !stats.neckCm) return 25; // fallback
 
     if (stats.sex === 'MALE') {
-      // Male: 86.010 × log10(waist - neck) - 70.041 × log10(height) + 36.76
-      return Math.max(3,
-        86.010 * Math.log10(stats.waistCm - stats.neckCm) -
-        70.041 * Math.log10(stats.heightCm) + 36.76
-      );
+      const circumDiff = stats.waistCm - stats.neckCm;
+      if (circumDiff <= 0) return 25; // guard: log10 of non-positive is NaN
+      return Math.max(3, 86.01 * Math.log10(circumDiff) - 70.041 * Math.log10(stats.heightCm) + 36.76);
     } else {
-      // Female: 163.205 × log10(waist + hip - neck) - 97.684 × log10(height) - 78.387
-      const hip = stats.hipCm || stats.waistCm * 1.1; // estimate if missing
-      return Math.max(10,
-        163.205 * Math.log10(stats.waistCm + hip - stats.neckCm) -
-        97.684 * Math.log10(stats.heightCm) - 78.387
-      );
+      const hip = stats.hipCm || stats.waistCm * 1.1;
+      const circumDiff = stats.waistCm + hip - stats.neckCm;
+      if (circumDiff <= 0) return 25; // guard: log10 of non-positive is NaN
+      return Math.max(10, 163.205 * Math.log10(circumDiff) - 97.684 * Math.log10(stats.heightCm) - 78.387);
     }
   }
 
@@ -284,14 +280,13 @@ export class RealisticHealthEngine {
     const calories = profile.targetCalories;
 
     // Protein: 1.6-2.2g per kg lean mass (based on goal)
-    const proteinMultiplier = stats.goal === 'BUILD_MUSCLE' ? 2.2 :
-                              stats.goal === 'LOSE_FAT' ? 2.0 :
-                              stats.goal === 'PERFORMANCE' ? 1.8 : 1.6;
+    const proteinMultiplier =
+      stats.goal === 'BUILD_MUSCLE' ? 2.2 : stats.goal === 'LOSE_FAT' ? 2.0 : stats.goal === 'PERFORMANCE' ? 1.8 : 1.6;
     const proteinGrams = Math.round(profile.leanMass * proteinMultiplier);
     const proteinCalories = proteinGrams * 4;
 
     // Fat: 25-35% of total calories
-    const fatPercent = stats.goal === 'LOSE_FAT' ? 0.25 : 0.30;
+    const fatPercent = stats.goal === 'LOSE_FAT' ? 0.25 : 0.3;
     const fatCalories = Math.round(calories * fatPercent);
     const fatGrams = Math.round(fatCalories / 9);
 
@@ -323,7 +318,7 @@ export class RealisticHealthEngine {
    */
   static calculateHRZones(stats: UserBodyStats): HeartRateZones {
     const restingHR = stats.restingHeartRate || 70;
-    const maxHR = stats.maxHeartRate || (220 - stats.age);
+    const maxHR = stats.maxHeartRate || 220 - stats.age;
     const hrr = maxHR - restingHR; // Heart Rate Reserve
 
     const zone = (low: number, high: number) => ({
@@ -332,11 +327,11 @@ export class RealisticHealthEngine {
     });
 
     return {
-      zone1: { name: 'Recovery', ...zone(0.50, 0.60), description: 'Easy effort, warm-up/cool-down' },
-      zone2: { name: 'Endurance', ...zone(0.60, 0.70), description: 'Fat burning, conversational pace' },
-      zone3: { name: 'Tempo', ...zone(0.70, 0.80), description: 'Aerobic fitness, moderate effort' },
-      zone4: { name: 'Threshold', ...zone(0.80, 0.90), description: 'Lactate threshold, hard effort' },
-      zone5: { name: 'VO2 Max', ...zone(0.90, 1.00), description: 'Maximum effort, sprint intervals' },
+      zone1: { name: 'Recovery', ...zone(0.5, 0.6), description: 'Easy effort, warm-up/cool-down' },
+      zone2: { name: 'Endurance', ...zone(0.6, 0.7), description: 'Fat burning, conversational pace' },
+      zone3: { name: 'Tempo', ...zone(0.7, 0.8), description: 'Aerobic fitness, moderate effort' },
+      zone4: { name: 'Threshold', ...zone(0.8, 0.9), description: 'Lactate threshold, hard effort' },
+      zone5: { name: 'VO2 Max', ...zone(0.9, 1.0), description: 'Maximum effort, sprint intervals' },
       maxHR,
       restingHR,
     };
@@ -349,11 +344,7 @@ export class RealisticHealthEngine {
   /**
    * Estimate calories burned for a specific activity using MET values.
    */
-  static estimateCalories(
-    activityKey: string,
-    durationMinutes: number,
-    weightKg: number
-  ): WorkoutCalorieEstimate {
+  static estimateCalories(activityKey: string, durationMinutes: number, weightKg: number): WorkoutCalorieEstimate {
     const met = ACTIVITY_METS[activityKey] || 5.0;
     const durationHours = durationMinutes / 60;
 
@@ -416,13 +407,13 @@ export class RealisticHealthEngine {
    */
   static calculateRecoveryScore(inputs: {
     sleepHours?: number;
-    sleepQuality?: number;     // 1-5
+    sleepQuality?: number; // 1-5
     restingHeartRate?: number;
-    avgRestingHR?: number;     // 7-day average for comparison
+    avgRestingHR?: number; // 7-day average for comparison
     trainingLoadToday?: number; // minutes of exercise
-    trainingLoadWeek?: number;  // total minutes this week
-    hydrationPercent?: number;  // % of target met
-    moodScore?: number;         // 1-5
+    trainingLoadWeek?: number; // total minutes this week
+    hydrationPercent?: number; // % of target met
+    moodScore?: number; // 1-5
   }): RecoveryScore {
     let sleepScore = 12; // default
     let hrvScore = 12;
@@ -443,11 +434,15 @@ export class RealisticHealthEngine {
     if (inputs.restingHeartRate && inputs.avgRestingHR) {
       const hrDelta = inputs.restingHeartRate - inputs.avgRestingHR;
       // Higher than average = less recovered
-      if (hrDelta <= -3) hrvScore = 25;        // Much lower = great recovery
-      else if (hrDelta <= 0) hrvScore = 20;     // Slightly lower = good
-      else if (hrDelta <= 3) hrvScore = 15;     // Slightly higher = moderate
-      else if (hrDelta <= 6) hrvScore = 8;      // Higher = poor
-      else hrvScore = 3;                         // Much higher = very poor
+      if (hrDelta <= -3)
+        hrvScore = 25; // Much lower = great recovery
+      else if (hrDelta <= 0)
+        hrvScore = 20; // Slightly lower = good
+      else if (hrDelta <= 3)
+        hrvScore = 15; // Slightly higher = moderate
+      else if (hrDelta <= 6)
+        hrvScore = 8; // Higher = poor
+      else hrvScore = 3; // Much higher = very poor
     }
 
     // Training load factor (0-25)
@@ -461,7 +456,7 @@ export class RealisticHealthEngine {
       } else if (inputs.trainingLoadToday < 90) {
         loadScore = 10; // Heavy session
       } else {
-        loadScore = 5;  // Very heavy
+        loadScore = 5; // Very heavy
       }
     }
 
@@ -480,7 +475,7 @@ export class RealisticHealthEngine {
 
     if (totalScore >= 85) {
       status = 'EXCELLENT';
-      recommendation = 'You\'re fully recovered! Great day for a challenging workout.';
+      recommendation = "You're fully recovered! Great day for a challenging workout.";
     } else if (totalScore >= 70) {
       status = 'GOOD';
       recommendation = 'Good recovery. You can train normally today.';
@@ -518,7 +513,7 @@ export class RealisticHealthEngine {
   static estimateTimeToGoal(
     currentWeightKg: number,
     targetWeightKg: number,
-    dailyCalorieBalance: number // negative = deficit, positive = surplus
+    dailyCalorieBalance: number, // negative = deficit, positive = surplus
   ): { weeks: number; days: number; achievable: boolean; safeRate: boolean } {
     const weightDelta = targetWeightKg - currentWeightKg;
 
@@ -535,9 +530,7 @@ export class RealisticHealthEngine {
 
     // Safe rate: 0.5-1kg per week loss, 0.25-0.5kg per week gain
     const weeklyChange = (dailyRate * 7) / 7700;
-    const safeRate = weightDelta < 0
-      ? weeklyChange <= 1.0 && weeklyChange >= 0.25
-      : weeklyChange <= 0.5;
+    const safeRate = weightDelta < 0 ? weeklyChange <= 1.0 && weeklyChange >= 0.25 : weeklyChange <= 0.5;
 
     return { weeks, days, achievable: true, safeRate };
   }
@@ -558,12 +551,12 @@ export class RealisticHealthEngine {
    */
   static getWorkingWeights(oneRepMax: number): Record<string, number> {
     return {
-      'Warm-up (50%)': Math.round(oneRepMax * 0.50),
-      'Endurance (60%)': Math.round(oneRepMax * 0.60),
-      'Hypertrophy (70%)': Math.round(oneRepMax * 0.70),
-      'Strength (80%)': Math.round(oneRepMax * 0.80),
+      'Warm-up (50%)': Math.round(oneRepMax * 0.5),
+      'Endurance (60%)': Math.round(oneRepMax * 0.6),
+      'Hypertrophy (70%)': Math.round(oneRepMax * 0.7),
+      'Strength (80%)': Math.round(oneRepMax * 0.8),
       'Power (85%)': Math.round(oneRepMax * 0.85),
-      'Peak (90%)': Math.round(oneRepMax * 0.90),
+      'Peak (90%)': Math.round(oneRepMax * 0.9),
       'Max (95%)': Math.round(oneRepMax * 0.95),
     };
   }

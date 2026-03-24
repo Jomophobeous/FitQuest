@@ -17,54 +17,8 @@ interface PremiumGateProps {
 }
 
 export default function PremiumGate({ children, featureName }: PremiumGateProps) {
-  const { accessState, state } = useSubscription();
-  const { theme } = useTheme();
-  const router = useRouter();
-
-  // RESOLVING: suppress render until access state is hydrated — avoids layout shift
-  if (accessState === 'RESOLVING') {
-    return null;
-  }
-
-  // TRIAL or FULL: user has legitimate access
-  if (accessState === 'TRIAL' || accessState === 'FULL') {
-    return <>{children}</>;
-  }
-
-  return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.iconWrap, { backgroundColor: theme.colors.accent + '15' }]}>
-        <MaterialCommunityIcons name="lock-outline" size={48} color={theme.colors.accent} />
-      </View>
-
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        Premium Feature
-      </Text>
-
-      <Text style={[styles.feature, { color: theme.colors.accent }]}>
-        {featureName}
-      </Text>
-
-      <Text style={[styles.desc, { color: theme.colors.textMuted }]}>
-        {state.status === 'EXPIRED'
-          ? 'Your trial has ended. Upgrade to continue using this feature.'
-          : 'This feature requires a FitQuest subscription.'}
-      </Text>
-
-      <View style={styles.cta}>
-        <GradientButton
-          title="Upgrade Now"
-          variant="primary"
-          size="lg"
-          onPress={() => router.push('/paywall')}
-        />
-      </View>
-
-      <Text style={[styles.hint, { color: theme.colors.textMuted }]}>
-        Start with a free 14-day trial
-      </Text>
-    </View>
-  );
+  // App is FREE — all features unlocked unconditionally.
+  return <>{children}</>;
 }
 
 const styles = StyleSheet.create({

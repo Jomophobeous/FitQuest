@@ -1,6 +1,6 @@
 /**
  * Workout Engine Types
- * 
+ *
  * Shared interfaces for the modular workout generation system.
  */
 
@@ -109,18 +109,18 @@ export interface WorkoutPlan {
  * Volume landmarks per muscle group (sets per week)
  */
 export interface VolumeLandmarks {
-  MV: number;   // Maintenance Volume - minimum to maintain gains
-  MEV: number;  // Minimum Effective Volume - minimum to make progress
-  MAV: number;  // Maximum Adaptive Volume - optimal for most people
-  MRV: number;  // Maximum Recoverable Volume - upper limit
+  MV: number; // Maintenance Volume - minimum to maintain gains
+  MEV: number; // Minimum Effective Volume - minimum to make progress
+  MAV: number; // Maximum Adaptive Volume - optimal for most people
+  MRV: number; // Maximum Recoverable Volume - upper limit
 }
 
 /**
  * Fatigue decay parameters per muscle
  */
 export interface FatigueParams {
-  decayRate: number;      // λ in exponential decay (higher = faster recovery)
-  sensitivityFactor: number;  // How much a single session adds
+  decayRate: number; // λ in exponential decay (higher = faster recovery)
+  sensitivityFactor: number; // How much a single session adds
 }
 
 /**
@@ -146,7 +146,7 @@ export interface WorkoutTemplate {
   name: string;
   description: string;
   targetGoals: Category[];
-  muscleGroups: TargetMuscle[][];  // Groups to hit each session
+  muscleGroups: TargetMuscle[][]; // Groups to hit each session
   sessionsPerWeek: number;
   estimatedDuration: number;
   volumeMultiplier: number;
@@ -221,20 +221,20 @@ export const GOAL_TRAINING_PRIORITIES: Record<Category, TrainingType[]> = {
  * Default volume landmarks by muscle (sets per week)
  */
 export const DEFAULT_VOLUME_LANDMARKS: Record<string, VolumeLandmarks> = {
-  large: { MV: 6, MEV: 10, MAV: 18, MRV: 22 },   // chest, back, quads
-  medium: { MV: 4, MEV: 8, MAV: 14, MRV: 18 },   // shoulders, glutes, hamstrings
-  small: { MV: 2, MEV: 4, MAV: 10, MRV: 14 },    // biceps, triceps, calves
-  core: { MV: 4, MEV: 6, MAV: 16, MRV: 20 },     // abs, obliques
+  large: { MV: 6, MEV: 10, MAV: 18, MRV: 22 }, // chest, back, quads
+  medium: { MV: 4, MEV: 8, MAV: 14, MRV: 18 }, // shoulders, glutes, hamstrings
+  small: { MV: 2, MEV: 4, MAV: 10, MRV: 14 }, // biceps, triceps, calves
+  core: { MV: 4, MEV: 6, MAV: 16, MRV: 20 }, // abs, obliques
 };
 
 /**
  * Fatigue decay rates by muscle size (larger muscles recover slower)
  */
 export const FATIGUE_DECAY_RATES: Record<string, FatigueParams> = {
-  large: { decayRate: 0.02, sensitivityFactor: 1.2 },   // ~35 hrs half-life
-  medium: { decayRate: 0.03, sensitivityFactor: 1.0 },  // ~23 hrs half-life
-  small: { decayRate: 0.04, sensitivityFactor: 0.8 },   // ~17 hrs half-life
-  core: { decayRate: 0.05, sensitivityFactor: 0.6 },    // ~14 hrs half-life
+  large: { decayRate: 0.02, sensitivityFactor: 1.2 }, // ~35 hrs half-life
+  medium: { decayRate: 0.03, sensitivityFactor: 1.0 }, // ~23 hrs half-life
+  small: { decayRate: 0.04, sensitivityFactor: 0.8 }, // ~17 hrs half-life
+  core: { decayRate: 0.05, sensitivityFactor: 0.6 }, // ~14 hrs half-life
 };
 
 /**
@@ -248,7 +248,7 @@ export const MUSCLE_SIZE_MAP: Partial<Record<TargetMuscle, 'large' | 'medium' | 
   chest_lower: 'large',
   lats: 'large',
   quads: 'large',
-  
+
   // Medium muscles
   shoulders: 'medium',
   deltoids_front: 'medium',
@@ -259,7 +259,7 @@ export const MUSCLE_SIZE_MAP: Partial<Record<TargetMuscle, 'large' | 'medium' | 
   rhomboids: 'medium',
   traps_upper: 'medium',
   traps_mid: 'medium',
-  
+
   // Small muscles
   biceps: 'small',
   triceps: 'small',
@@ -270,7 +270,7 @@ export const MUSCLE_SIZE_MAP: Partial<Record<TargetMuscle, 'large' | 'medium' | 
   hip_flexors: 'small',
   rotator_cuff: 'small',
   serratus: 'small',
-  
+
   // Core muscles
   abs: 'core',
   obliques: 'core',

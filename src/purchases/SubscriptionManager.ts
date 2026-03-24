@@ -1,9 +1,9 @@
 /**
  * FitQuest Subscription Manager
- * 
+ *
  * Simple subscription model: 14-day free trial, then monthly or annual.
  * No tiered features — full access for subscribers.
- * 
+ *
  * Uses react-native-purchases (RevenueCat) when available,
  * with a local SQLite fallback for development/testing.
  */
@@ -11,16 +11,18 @@
 import { getTrialState, upsertTrialState, updateTrialConverted } from '../database/service';
 import * as SecureStore from 'expo-secure-store';
 import { safeWarn } from '../services/logger';
+import { captureException } from '../services/crashReporting';
+import { logEvent } from '../services/telemetry';
 
 // ============================================
 // TYPES
 // ============================================
 
 export type SubscriptionStatus =
-  | 'TRIAL'      // First 14 days
-  | 'ACTIVE'     // Paying subscriber
-  | 'EXPIRED'    // Trial ended or cancelled
-  | 'LIFETIME';  // Optional grandfathering
+  | 'TRIAL' // First 14 days
+  | 'ACTIVE' // Paying subscriber
+  | 'EXPIRED' // Trial ended or cancelled
+  | 'LIFETIME'; // DORMANT — type preserved, no activation paths exist
 
 export interface SubscriptionState {
   status: SubscriptionStatus;
@@ -51,6 +53,7 @@ const PRODUCT_ANNUAL = 'fitquest_annual';
 const RC_PUBLIC_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY;
 const SUBSCRIPTION_CACHE_KEY = 'fitquest_subscription_cache_v1';
 const SUBSCRIPTION_LAST_VERIFIED_KEY = 'fitquest_subscription_last_verified_at';
+const CLOCK_CHECKPOINT_KEY = 'fitquest_clock_checkpoint';
 
 // ============================================
 // SUBSCRIPTION MANAGER
@@ -100,7 +103,13 @@ export class SubscriptionManager {
           if (__DEV__) console.warn('[SubscriptionManager] Skipping RevenueCat: test key in production');
           this.revenueCatAvailable = false;
         } else if (apiKey && !apiKey.includes('your_key_here')) {
-          Purchases.configure({ apiKey: apiKey.trim() });
+          // Guard: RevenueCat native SDK retains state across JS reloads (HMR).
+          // Only configure if not already configured to avoid duplicate init warning.
+          if (typeof Purchases.isConfigured === 'function' && Purchases.isConfigured()) {
+            if (__DEV__) console.log('[SubscriptionManager] RevenueCat already configured, skipping');
+          } else {
+            Purchases.configure({ apiKey: apiKey.trim() });
+          }
           this.revenueCatAvailable = true;
 
           // Listen for purchase events
@@ -155,6 +164,44 @@ export class SubscriptionManager {
     }
   }
 
+  /**
+   * Detect device clock tampering:
+   * L1 — backward rollback: current time < last recorded time (>60s tolerance)
+   * L2 — abnormal forward jump: clock jumped >24h since last checkpoint
+   * Returns true if clock appears tampered.
+   */
+  private async isClockTampered(): Promise<boolean> {
+    const now = Date.now();
+    try {
+      const raw = await SecureStore.getItemAsync(CLOCK_CHECKPOINT_KEY);
+      if (raw) {
+        const lastSeen = Number(raw);
+        if (Number.isFinite(lastSeen)) {
+          // L1: backward rollback (>60s tolerance for NTP drift)
+          if (now < lastSeen - 60_000) {
+            safeWarn('[SubscriptionManager] Clock rollback detected', { now, lastSeen });
+            return true;
+          }
+          // L2: abnormal forward jump (>24h since last app lifecycle)
+          const FORWARD_JUMP_THRESHOLD = 24 * 60 * 60 * 1000; // 24h
+          if (now - lastSeen > FORWARD_JUMP_THRESHOLD) {
+            safeWarn('[SubscriptionManager] Abnormal forward clock jump detected', {
+              now,
+              lastSeen,
+              deltaHours: Math.round((now - lastSeen) / 3600000),
+            });
+            return true;
+          }
+        }
+      }
+      // Always advance the checkpoint
+      await SecureStore.setItemAsync(CLOCK_CHECKPOINT_KEY, String(now));
+    } catch {
+      // SecureStore failure — non-fatal, continue without guard
+    }
+    return false;
+  }
+
   private async refreshFromLocal(): Promise<SubscriptionState> {
     const userId = 'user_local_001';
 
@@ -204,6 +251,24 @@ export class SubscriptionManager {
     }
 
     const now = Date.now();
+
+    // Clock tamper guard: if device clock rolled back, force expire
+    const tampered = await this.isClockTampered();
+    if (tampered && !trial.converted) {
+      const state: SubscriptionState = {
+        status: 'EXPIRED',
+        isTrial: false,
+        trialEndDate: trial.ends_at,
+        expiresDate: trial.ends_at,
+        willRenew: false,
+        productIdentifier: null,
+        verificationSource: 'local',
+        lastVerifiedAt: null,
+      };
+      this.updateState(state);
+      return state;
+    }
+
     if (now < trial.ends_at) {
       const state: SubscriptionState = {
         status: 'TRIAL',
@@ -234,10 +299,7 @@ export class SubscriptionManager {
     return state;
   }
 
-  private parseCustomerInfo(
-    info: any,
-    source: 'revenuecat' | 'local' = 'local'
-  ): SubscriptionState {
+  private parseCustomerInfo(info: any, source: 'revenuecat' | 'local' = 'local'): SubscriptionState {
     const now = Date.now();
     const entitlement = info?.entitlements?.active?.[ENTITLEMENT_ID];
 
@@ -255,9 +317,7 @@ export class SubscriptionManager {
     }
 
     const isTrial = entitlement.periodType === 'TRIAL';
-    const expiresDate = entitlement.expirationDate
-      ? new Date(entitlement.expirationDate).getTime()
-      : null;
+    const expiresDate = entitlement.expirationDate ? new Date(entitlement.expirationDate).getTime() : null;
 
     return {
       status: isTrial ? 'TRIAL' : 'ACTIVE',
@@ -292,7 +352,11 @@ export class SubscriptionManager {
       const lastVerifiedAt = Number(rawVerifiedAt);
       if (!Number.isFinite(lastVerifiedAt)) return null;
 
-      if (Date.now() - lastVerifiedAt > OFFLINE_GRACE_MS) {
+      const now = Date.now();
+      // Reject if clock moved backward past verification time (tampering)
+      if (now < lastVerifiedAt) return null;
+
+      if (now - lastVerifiedAt > OFFLINE_GRACE_MS) {
         return null;
       }
 
@@ -349,16 +413,14 @@ export class SubscriptionManager {
   private async purchaseRevenueCat(plan: 'monthly' | 'annual'): Promise<boolean> {
     try {
       const Purchases = await this.getRevenueCatModule();
-      if (!Purchases) return this.purchaseLocal(plan === 'monthly' ? PRODUCT_MONTHLY : PRODUCT_ANNUAL);
+      if (!Purchases) return false; // RC module unavailable — purchase not possible
 
       const offerings = await Purchases.getOfferings();
-      const pkg = plan === 'monthly'
-        ? offerings.current?.monthly
-        : offerings.current?.annual;
+      const pkg = plan === 'monthly' ? offerings.current?.monthly : offerings.current?.annual;
 
       if (!pkg) {
-        if (__DEV__) console.warn(`[SubscriptionManager] ${plan} package not found — falling back to local purchase`);
-        return this.purchaseLocal(plan === 'monthly' ? PRODUCT_MONTHLY : PRODUCT_ANNUAL);
+        if (__DEV__) console.warn(`[SubscriptionManager] ${plan} package not found in RC offerings`);
+        return false;
       }
 
       const { customerInfo } = await Purchases.purchasePackage(pkg);
@@ -372,10 +434,16 @@ export class SubscriptionManager {
         if (Purchases && Purchases.isCancelError?.(error)) {
           return false; // User cancelled — don't fall back
         }
-      } catch { /* swallow */ }
+      } catch {
+        /* swallow */
+      }
 
-      if (__DEV__) console.warn('[SubscriptionManager] RC purchase failed, falling back to local:', error?.message);
-      return this.purchaseLocal(plan === 'monthly' ? PRODUCT_MONTHLY : PRODUCT_ANNUAL);
+      // CRITICAL: Do NOT fall back to purchaseLocal() when RC is available.
+      // A transient RC error must NOT grant free access on real devices.
+      if (__DEV__) console.warn('[SubscriptionManager] RC purchase failed:', error?.message);
+      captureException(error, { flow: 'purchase', plan, source: 'revenuecat' });
+      void logEvent('purchase_failed', { plan, error: error?.message });
+      return false;
     }
   }
 
@@ -406,22 +474,24 @@ export class SubscriptionManager {
     }
     this.purchaseInProgress = true;
     try {
-    if (this.revenueCatAvailable) {
-      try {
-        const Purchases = await this.getRevenueCatModule();
-        if (Purchases) {
-          const info = await Purchases.restorePurchases();
-          const state = this.parseCustomerInfo(info);
-          this.updateState(state);
-          return state;
+      if (this.revenueCatAvailable) {
+        try {
+          const Purchases = await this.getRevenueCatModule();
+          if (Purchases) {
+            const info = await Purchases.restorePurchases();
+            const state = this.parseCustomerInfo(info);
+            this.updateState(state);
+            return state;
+          }
+        } catch (error) {
+          safeWarn('[SubscriptionManager] Restore failed', {
+            error: error instanceof Error ? error.message : String(error),
+          });
+          captureException(error, { flow: 'restore_purchases', source: 'revenuecat' });
+          void logEvent('restore_purchases_failed', { error: error instanceof Error ? error.message : String(error) });
         }
-      } catch (error) {
-        safeWarn('[SubscriptionManager] Restore failed', {
-          error: error instanceof Error ? error.message : String(error),
-        });
       }
-    }
-    return this.refresh();
+      return this.refresh();
     } finally {
       this.purchaseInProgress = false;
     }
@@ -437,20 +507,26 @@ export class SubscriptionManager {
           const annual = offerings.current?.annual;
 
           return {
-            monthly: monthly ? {
-              price: monthly.product.priceString,
-              pricePerMonth: monthly.product.priceString,
-              identifier: monthly.product.identifier,
-            } : null,
-            annual: annual ? {
-              price: annual.product.priceString,
-              pricePerMonth: `$${(annual.product.price / 12).toFixed(2)}`,
-              identifier: annual.product.identifier,
-              savingsPercent: 33,
-            } : null,
+            monthly: monthly
+              ? {
+                  price: monthly.product.priceString,
+                  pricePerMonth: monthly.product.priceString,
+                  identifier: monthly.product.identifier,
+                }
+              : null,
+            annual: annual
+              ? {
+                  price: annual.product.priceString,
+                  pricePerMonth: `$${(annual.product.price / 12).toFixed(2)}`,
+                  identifier: annual.product.identifier,
+                  savingsPercent: 33,
+                }
+              : null,
           };
         }
-      } catch { /* fall through */ }
+      } catch {
+        /* fall through */
+      }
     }
 
     // Default offerings for development
@@ -476,9 +552,7 @@ export class SubscriptionManager {
   }
 
   hasAccess(): boolean {
-    return this.currentState.status === 'TRIAL'
-      || this.currentState.status === 'ACTIVE'
-      || this.currentState.status === 'LIFETIME';
+    return this.currentState.status === 'TRIAL' || this.currentState.status === 'ACTIVE';
   }
 
   getTrialDaysRemaining(): number {
@@ -492,13 +566,13 @@ export class SubscriptionManager {
   addListener(callback: (state: SubscriptionState) => void): () => void {
     this.listeners.push(callback);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== callback);
+      this.listeners = this.listeners.filter((l) => l !== callback);
     };
   }
 
   private updateState(state: SubscriptionState): void {
     this.currentState = state;
-    this.listeners.forEach(l => l(state));
+    this.listeners.forEach((l) => l(state));
   }
 
   private handleCustomerInfoUpdate(info: any): void {

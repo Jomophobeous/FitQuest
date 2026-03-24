@@ -1,17 +1,13 @@
 /**
  * XP Progress Chart
- * 
+ *
  * Area/line chart showing XP accumulation over time.
  */
 
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
-import {
-  ThemedChartWrapper,
-  useChartTheme,
-  MiniStat,
-} from './ThemedChart';
+import { ThemedChartWrapper, useChartTheme, MiniStat } from './ThemedChart';
 import type { XPProgressChartProps, XPDataPoint } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -28,20 +24,16 @@ function calculateStats(data: XPDataPoint[]) {
   const totalXP = data[data.length - 1]?.totalXP ?? 0;
   const totalDelta = data.reduce((sum, d) => sum + d.deltaXP, 0);
   const avgDaily = Math.round(totalDelta / data.length);
-  const bestDay = Math.max(...data.map(d => d.deltaXP));
+  const bestDay = Math.max(...data.map((d) => d.deltaXP));
 
   // Calculate trend
   const midpoint = Math.floor(data.length / 2);
   const firstHalf = data.slice(0, midpoint);
   const secondHalf = data.slice(midpoint);
-  
-  const firstAvg = firstHalf.length > 0
-    ? firstHalf.reduce((s, d) => s + d.deltaXP, 0) / firstHalf.length
-    : 0;
-  const secondAvg = secondHalf.length > 0
-    ? secondHalf.reduce((s, d) => s + d.deltaXP, 0) / secondHalf.length
-    : 0;
-  
+
+  const firstAvg = firstHalf.length > 0 ? firstHalf.reduce((s, d) => s + d.deltaXP, 0) / firstHalf.length : 0;
+  const secondAvg = secondHalf.length > 0 ? secondHalf.reduce((s, d) => s + d.deltaXP, 0) / secondHalf.length : 0;
+
   const trend = firstAvg > 0 ? Math.round(((secondAvg - firstAvg) / firstAvg) * 100) : 0;
 
   return { totalXP, avgDaily, bestDay, trend };
@@ -58,17 +50,12 @@ interface SimpleAreaChartProps {
   mutedColor: string;
 }
 
-function SimpleAreaChart({
-  data,
-  height,
-  primaryColor,
-  mutedColor,
-}: SimpleAreaChartProps) {
+function SimpleAreaChart({ data, height, primaryColor, mutedColor }: SimpleAreaChartProps) {
   const chartHeight = height - 40;
   const chartWidth = SCREEN_WIDTH - 80;
-  
-  const maxValue = Math.max(...data.map(d => d.totalXP), 1);
-  const minValue = Math.min(...data.map(d => d.totalXP));
+
+  const maxValue = Math.max(...data.map((d) => d.totalXP), 1);
+  const minValue = Math.min(...data.map((d) => d.totalXP));
   const range = maxValue - minValue || 1;
 
   // Generate SVG-like path points
@@ -83,13 +70,7 @@ function SimpleAreaChart({
       {/* Grid lines */}
       <View style={styles.gridLines}>
         {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => (
-          <View
-            key={i}
-            style={[
-              styles.gridLine,
-              { top: pct * chartHeight, backgroundColor: mutedColor },
-            ]}
-          />
+          <View key={i} style={[styles.gridLine, { top: pct * chartHeight, backgroundColor: mutedColor }]} />
         ))}
       </View>
 
@@ -108,7 +89,7 @@ function SimpleAreaChart({
             ]}
           />
         ))}
-        
+
         {/* Area fill representation */}
         <View
           style={[
@@ -124,24 +105,16 @@ function SimpleAreaChart({
 
       {/* Y-axis labels */}
       <View style={styles.yAxisLabels}>
-        <Text style={[styles.yLabel, { color: mutedColor }]}>
-          {formatXP(maxValue)}
-        </Text>
-        <Text style={[styles.yLabel, { color: mutedColor }]}>
-          {formatXP(Math.round((maxValue + minValue) / 2))}
-        </Text>
-        <Text style={[styles.yLabel, { color: mutedColor }]}>
-          {formatXP(minValue)}
-        </Text>
+        <Text style={[styles.yLabel, { color: mutedColor }]}>{formatXP(maxValue)}</Text>
+        <Text style={[styles.yLabel, { color: mutedColor }]}>{formatXP(Math.round((maxValue + minValue) / 2))}</Text>
+        <Text style={[styles.yLabel, { color: mutedColor }]}>{formatXP(minValue)}</Text>
       </View>
 
       {/* X-axis labels */}
       <View style={styles.xAxisLabels}>
         {data.length > 0 && (
           <>
-            <Text style={[styles.xLabel, { color: mutedColor }]}>
-              {formatDate(parseISO(data[0]!.date), 'MMM d')}
-            </Text>
+            <Text style={[styles.xLabel, { color: mutedColor }]}>{formatDate(parseISO(data[0]!.date), 'MMM d')}</Text>
             <Text style={[styles.xLabel, { color: mutedColor }]}>
               {formatDate(parseISO(data[data.length - 1]!.date), 'MMM d')}
             </Text>
@@ -175,11 +148,11 @@ export function XPProgressChart({
 }: XPProgressChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 200;
-  
+
   const stats = useMemo(() => calculateStats(data), [data]);
-  
+
   const isEmpty = data.length === 0;
-  
+
   return (
     <ThemedChartWrapper
       title="XP Progress"
@@ -190,30 +163,13 @@ export function XPProgressChart({
     >
       {/* Stats Row */}
       <View style={styles.statsRow}>
-        <MiniStat
-          label="Total XP"
-          value={formatXP(stats.totalXP)}
-        />
-        <MiniStat
-          label="Avg/Day"
-          value={stats.avgDaily}
-          unit="XP"
-          delta={stats.trend}
-        />
-        <MiniStat
-          label="Best Day"
-          value={stats.bestDay}
-          unit="XP"
-        />
+        <MiniStat label="Total XP" value={formatXP(stats.totalXP)} />
+        <MiniStat label="Avg/Day" value={stats.avgDaily} unit="XP" delta={stats.trend} />
+        <MiniStat label="Best Day" value={stats.bestDay} unit="XP" />
       </View>
 
       {/* Chart */}
-      <SimpleAreaChart
-        data={data}
-        height={height}
-        primaryColor={chartTheme.accent}
-        mutedColor={chartTheme.textMuted}
-      />
+      <SimpleAreaChart data={data} height={height} primaryColor={chartTheme.accent} mutedColor={chartTheme.textMuted} />
     </ThemedChartWrapper>
   );
 }

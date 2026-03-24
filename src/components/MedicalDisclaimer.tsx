@@ -72,12 +72,16 @@ export default function MedicalDisclaimer({ screen, compact = false }: MedicalDi
       <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)}>
         <TouchableOpacity
           onPress={handleAcknowledge}
-          style={[styles.compactBanner, { backgroundColor: theme.colors.warning + '12', borderColor: theme.colors.warning + '30' }]}
+          style={[
+            styles.compactBanner,
+            { backgroundColor: theme.colors.warning + '12', borderColor: theme.colors.warning + '30' },
+          ]}
           activeOpacity={0.7}
         >
           <MaterialCommunityIcons name="alert-circle-outline" size={14} color={theme.colors.warning} />
           <ThemedText variant="caption" style={{ color: theme.colors.warning, flex: 1 }}>
-            {t('legal.noteMedical') || 'Not a substitute for medical advice. Consult a physician before starting any fitness program.'}
+            {t('legal.noteMedical') ||
+              'Not a substitute for medical advice. Consult a physician before starting any fitness program.'}
           </ThemedText>
           <MaterialCommunityIcons name="close" size={14} color={theme.colors.warning} />
         </TouchableOpacity>
@@ -87,7 +91,12 @@ export default function MedicalDisclaimer({ screen, compact = false }: MedicalDi
 
   return (
     <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)}>
-      <View style={[styles.banner, { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '25' }]}>
+      <View
+        style={[
+          styles.banner,
+          { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '25' },
+        ]}
+      >
         <View style={styles.bannerHeader}>
           <View style={[styles.iconWrap, { backgroundColor: theme.colors.warning + '20' }]}>
             <MaterialCommunityIcons name="stethoscope" size={18} color={theme.colors.warning} />
@@ -100,7 +109,8 @@ export default function MedicalDisclaimer({ screen, compact = false }: MedicalDi
           </TouchableOpacity>
         </View>
         <ThemedText variant="caption" style={{ color: theme.colors.textSecondary, lineHeight: 18 }}>
-          {t('legal.terms.sections.medicalBody') || 'FitQuest is not a medical service. Always consult a qualified clinician before beginning or changing training or nutrition routines.'}
+          {t('legal.terms.sections.medicalBody') ||
+            'FitQuest is not a medical service. Always consult a qualified clinician before beginning or changing training or nutrition routines.'}
         </ThemedText>
         <TouchableOpacity
           onPress={handleAcknowledge}

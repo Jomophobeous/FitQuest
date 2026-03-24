@@ -32,7 +32,7 @@ export interface WarmupCooldownExercise {
 export interface WarmupCooldownResult {
   warmup: WarmupCooldownExercise[];
   cooldown: WarmupCooldownExercise[];
-  warmupDurationEstimate: number;  // seconds
+  warmupDurationEstimate: number; // seconds
   cooldownDurationEstimate: number; // seconds
 }
 
@@ -57,16 +57,12 @@ const PER_EXERCISE_SECONDS = 45;
  * Score an exercise candidate for warm-up or cool-down selection.
  * Higher = better fit.
  */
-function scoreCandidate(
-  exercise: ExerciseWithDetails,
-  targetMuscles: Set<string>,
-  usedIds: Set<string>,
-): number {
+function scoreCandidate(exercise: ExerciseWithDetails, targetMuscles: Set<string>, usedIds: Set<string>): number {
   let score = 0;
 
   // Muscle overlap — exercises that target workout muscles are more useful
-  const primaryOverlap = exercise.primary_muscles.filter(m => targetMuscles.has(m)).length;
-  const secondaryOverlap = exercise.secondary_muscles.filter(m => targetMuscles.has(m)).length;
+  const primaryOverlap = exercise.primary_muscles.filter((m) => targetMuscles.has(m)).length;
+  const secondaryOverlap = exercise.secondary_muscles.filter((m) => targetMuscles.has(m)).length;
   score += primaryOverlap * 10 + secondaryOverlap * 4;
 
   // Prefer beginner difficulty (gentler movement)
@@ -103,7 +99,7 @@ function selectBest(
   excludeIds: Set<string>,
 ): ExerciseWithDetails[] {
   const scored = candidates
-    .map(ex => ({ ex, score: scoreCandidate(ex, targetMuscles, excludeIds) }))
+    .map((ex) => ({ ex, score: scoreCandidate(ex, targetMuscles, excludeIds) }))
     .sort((a, b) => b.score - a.score);
 
   const selected: ExerciseWithDetails[] = [];
@@ -114,12 +110,12 @@ function selectBest(
     if (excludeIds.has(ex.id)) continue;
 
     // Try for muscle diversity — skip if all its primary muscles are already covered
-    const newMuscle = ex.primary_muscles.some(m => !usedMuscleGroups.has(m));
+    const newMuscle = ex.primary_muscles.some((m) => !usedMuscleGroups.has(m));
     if (selected.length >= 1 && !newMuscle && scored.length > count * 2) continue;
 
     selected.push(ex);
     excludeIds.add(ex.id);
-    ex.primary_muscles.forEach(m => usedMuscleGroups.add(m));
+    ex.primary_muscles.forEach((m) => usedMuscleGroups.add(m));
   }
 
   return selected;
@@ -142,8 +138,8 @@ export async function generateWarmupCooldown(
   // Collect target muscles from main workout
   const targetMuscles = new Set<string>();
   for (const { exercise } of mainExercises) {
-    exercise.primary_muscles.forEach(m => targetMuscles.add(m));
-    exercise.secondary_muscles.forEach(m => targetMuscles.add(m));
+    exercise.primary_muscles.forEach((m) => targetMuscles.add(m));
+    exercise.secondary_muscles.forEach((m) => targetMuscles.add(m));
   }
 
   // Fetch candidates from DB
@@ -155,27 +151,19 @@ export async function generateWarmupCooldown(
   // Select exercises
   const excludeIds = new Set(mainExerciseIds);
 
-  const warmupCount = warmupCandidates.length >= WARMUP_COUNT.max
-    ? WARMUP_COUNT.max
-    : Math.max(WARMUP_COUNT.min, warmupCandidates.length);
+  const warmupCount =
+    warmupCandidates.length >= WARMUP_COUNT.max
+      ? WARMUP_COUNT.max
+      : Math.max(WARMUP_COUNT.min, warmupCandidates.length);
 
-  const warmupExercises = selectBest(
-    warmupCandidates,
-    targetMuscles,
-    warmupCount,
-    excludeIds,
-  );
+  const warmupExercises = selectBest(warmupCandidates, targetMuscles, warmupCount, excludeIds);
 
-  const cooldownCount = cooldownCandidates.length >= COOLDOWN_COUNT.max
-    ? COOLDOWN_COUNT.max
-    : Math.max(COOLDOWN_COUNT.min, cooldownCandidates.length);
+  const cooldownCount =
+    cooldownCandidates.length >= COOLDOWN_COUNT.max
+      ? COOLDOWN_COUNT.max
+      : Math.max(COOLDOWN_COUNT.min, cooldownCandidates.length);
 
-  const cooldownExercises = selectBest(
-    cooldownCandidates,
-    targetMuscles,
-    cooldownCount,
-    excludeIds,
-  );
+  const cooldownExercises = selectBest(cooldownCandidates, targetMuscles, cooldownCount, excludeIds);
 
   // Build results
   const warmup: WarmupCooldownExercise[] = warmupExercises.map((ex, i) => ({
@@ -206,9 +194,7 @@ export async function generateWarmupCooldown(
  * Fetch exercises matching the given training types, limited to
  * beginner/intermediate difficulty and no/minimal equipment.
  */
-async function fetchCandidates(
-  trainingTypes: TrainingType[],
-): Promise<ExerciseWithDetails[]> {
+async function fetchCandidates(trainingTypes: TrainingType[]): Promise<ExerciseWithDetails[]> {
   try {
     const exercises = await getExercises({
       difficulties: ['beginner', 'intermediate'],

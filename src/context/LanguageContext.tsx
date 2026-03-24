@@ -6,6 +6,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { translations, SUPPORTED_LANGUAGES } from '../i18n/translations';
+import { audioService } from '../services/audioService';
+import { setCurrentLanguage } from '../i18n/engine-i18n';
 
 const LANGUAGE_STORAGE_KEY = 'fitquest.language';
 
@@ -55,7 +57,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Fallback to English
         const enStrings = translations.en;
-        result = (enStrings && enStrings[key]) ? enStrings[key] : key;
+        result = enStrings && enStrings[key] ? enStrings[key] : key;
       }
       // Interpolation: replace {{var}} with value
       if (vars) {
@@ -68,20 +70,29 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     [language],
   );
 
-  const languageName = useMemo(() =>
-    SUPPORTED_LANGUAGES.find((l) => l.code === language)?.name || 'English',
-    [language]
+  const languageName = useMemo(
+    () => SUPPORTED_LANGUAGES.find((l) => l.code === language)?.name || 'English',
+    [language],
   );
 
-  const contextValue = useMemo(() => ({
-    language, setLanguage, t, languageName,
-  }), [language, setLanguage, t, languageName]);
-
-  return (
-    <LanguageContext.Provider value={contextValue}>
-      {children}
-    </LanguageContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      language,
+      setLanguage,
+      t,
+      languageName,
+    }),
+    [language, setLanguage, t, languageName],
   );
+
+  // Keep audioService TTS language in sync (was separate AudioLanguageSyncer component)
+  useEffect(() => {
+    setCurrentLanguage(language);
+    audioService.setLanguage(language);
+    audioService.setTranslator(t);
+  }, [language, t]);
+
+  return <LanguageContext.Provider value={contextValue}>{children}</LanguageContext.Provider>;
 }
 
 export function useLanguage() {

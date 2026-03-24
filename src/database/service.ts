@@ -35,6 +35,7 @@ import type {
 } from './types';
 import type { BodyCraftAlgorithm } from '../engines/bodyCraftEngine';
 import { generateSecureId } from '../security/randomId';
+import { walService } from '../services/WriteAheadLogService';
 
 // ============================================
 // HELPERS
@@ -60,7 +61,10 @@ function safeParseInstructions(raw: string | null | undefined): string[] {
     }
   }
   // Plain text — split by newlines or return as single-element array
-  const lines = trimmed.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const lines = trimmed
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
   return lines.length > 0 ? lines : [trimmed];
 }
 
@@ -143,7 +147,7 @@ export async function getExercises(filter?: ExerciseFilter): Promise<ExerciseWit
 
   const rows = await db.getAllAsync<any>(sql, params);
 
-  const exerciseIds = rows.map(row => row.id as string);
+  const exerciseIds = rows.map((row) => row.id as string);
   const trainingTypesByExercise = new Map<string, Array<{ type: TrainingType; effectiveness: number }>>();
 
   if (exerciseIds.length > 0) {
@@ -157,7 +161,7 @@ export async function getExercises(filter?: ExerciseFilter): Promise<ExerciseWit
        FROM exercise_training_types
        WHERE exercise_id IN (${placeholders})
        ORDER BY exercise_id, effectiveness DESC`,
-      exerciseIds
+      exerciseIds,
     );
 
     for (const row of trainingRows) {
@@ -170,7 +174,7 @@ export async function getExercises(filter?: ExerciseFilter): Promise<ExerciseWit
     }
   }
 
-  return rows.map(row => ({
+  return rows.map((row) => ({
     ...row,
     instructions: safeParseInstructions(row.instructions),
     primary_muscles: row.primary_muscles?.split(',').filter(Boolean) || [],
@@ -187,10 +191,7 @@ export async function getExercises(filter?: ExerciseFilter): Promise<ExerciseWit
 export async function getExerciseById(id: string): Promise<ExerciseWithDetails | null> {
   const db = await getDatabase();
 
-  const exercise = await db.getFirstAsync<any>(
-    `SELECT * FROM exercises WHERE id = ?`,
-    [id]
-  );
+  const exercise = await db.getFirstAsync<any>(`SELECT * FROM exercises WHERE id = ?`, [id]);
 
   if (!exercise) return null;
 
@@ -198,26 +199,26 @@ export async function getExerciseById(id: string): Promise<ExerciseWithDetails |
   const [muscles, equipment, trainingTypes] = await Promise.all([
     db.getAllAsync<{ muscle: string; is_primary: number }>(
       `SELECT muscle, is_primary FROM exercise_muscles WHERE exercise_id = ?`,
-      [id]
+      [id],
     ),
     db.getAllAsync<{ equipment: string; is_required: number }>(
       `SELECT equipment, is_required FROM exercise_equipment WHERE exercise_id = ?`,
-      [id]
+      [id],
     ),
     db.getAllAsync<{ training_type: string; effectiveness: number }>(
       `SELECT training_type, effectiveness FROM exercise_training_types WHERE exercise_id = ?`,
-      [id]
+      [id],
     ),
   ]);
 
   return {
     ...exercise,
     instructions: safeParseInstructions(exercise.instructions),
-    primary_muscles: muscles.filter(m => m.is_primary).map(m => m.muscle as TargetMuscle),
-    secondary_muscles: muscles.filter(m => !m.is_primary).map(m => m.muscle as TargetMuscle),
-    equipment_required: equipment.filter(e => e.is_required).map(e => e.equipment as EquipmentItem),
-    equipment_optional: equipment.filter(e => !e.is_required).map(e => e.equipment as EquipmentItem),
-    training_types: trainingTypes.map(t => ({
+    primary_muscles: muscles.filter((m) => m.is_primary).map((m) => m.muscle as TargetMuscle),
+    secondary_muscles: muscles.filter((m) => !m.is_primary).map((m) => m.muscle as TargetMuscle),
+    equipment_required: equipment.filter((e) => e.is_required).map((e) => e.equipment as EquipmentItem),
+    equipment_optional: equipment.filter((e) => !e.is_required).map((e) => e.equipment as EquipmentItem),
+    training_types: trainingTypes.map((t) => ({
       type: t.training_type as TrainingType,
       effectiveness: t.effectiveness,
     })),
@@ -234,21 +235,18 @@ export async function getExercisesByIds(ids: string[]): Promise<Map<string, Exer
   const placeholders = ids.map(() => '?').join(',');
 
   const [rows, muscles, equipment, trainingTypes] = await Promise.all([
-    db.getAllAsync<any>(
-      `SELECT * FROM exercises WHERE id IN (${placeholders})`,
-      ids
-    ),
+    db.getAllAsync<any>(`SELECT * FROM exercises WHERE id IN (${placeholders})`, ids),
     db.getAllAsync<{ exercise_id: string; muscle: string; is_primary: number }>(
       `SELECT exercise_id, muscle, is_primary FROM exercise_muscles WHERE exercise_id IN (${placeholders})`,
-      ids
+      ids,
     ),
     db.getAllAsync<{ exercise_id: string; equipment: string; is_required: number }>(
       `SELECT exercise_id, equipment, is_required FROM exercise_equipment WHERE exercise_id IN (${placeholders})`,
-      ids
+      ids,
     ),
     db.getAllAsync<{ exercise_id: string; training_type: string; effectiveness: number }>(
       `SELECT exercise_id, training_type, effectiveness FROM exercise_training_types WHERE exercise_id IN (${placeholders})`,
-      ids
+      ids,
     ),
   ]);
 
@@ -279,10 +277,10 @@ export async function getExercisesByIds(ids: string[]): Promise<Map<string, Exer
     result.set(row.id, {
       ...row,
       instructions: safeParseInstructions(row.instructions),
-      primary_muscles: mus.filter(m => m.is_primary).map(m => m.muscle as TargetMuscle),
-      secondary_muscles: mus.filter(m => !m.is_primary).map(m => m.muscle as TargetMuscle),
-      equipment_required: eq.filter(e => e.is_required).map(e => e.equipment as EquipmentItem),
-      equipment_optional: eq.filter(e => !e.is_required).map(e => e.equipment as EquipmentItem),
+      primary_muscles: mus.filter((m) => m.is_primary).map((m) => m.muscle as TargetMuscle),
+      secondary_muscles: mus.filter((m) => !m.is_primary).map((m) => m.muscle as TargetMuscle),
+      equipment_required: eq.filter((e) => e.is_required).map((e) => e.equipment as EquipmentItem),
+      equipment_optional: eq.filter((e) => !e.is_required).map((e) => e.equipment as EquipmentItem),
       training_types: ttMap.get(row.id) || [],
     });
   }
@@ -301,7 +299,7 @@ export async function getExercisesByCategory(category: Category): Promise<Exerci
  */
 export async function getExercisesByMuscle(
   muscles: TargetMuscle[],
-  primaryOnly = true
+  primaryOnly = true,
 ): Promise<ExerciseWithDetails[]> {
   if (!muscles.length) return [];
 
@@ -327,7 +325,7 @@ export async function getExercisesByMuscle(
   `;
 
   const rows = await db.getAllAsync<any>(sql, muscles);
-  return rows.map(row => ({
+  return rows.map((row) => ({
     ...row,
     instructions: safeParseInstructions(row.instructions),
     primary_muscles: row.primary_muscles?.split(',').filter(Boolean) || [],
@@ -352,7 +350,7 @@ export async function getExerciseImages(exerciseId: string): Promise<ExerciseIma
      FROM exercise_images 
      WHERE exercise_id = ? 
      ORDER BY image_order`,
-    [exerciseId]
+    [exerciseId],
   );
 }
 
@@ -364,7 +362,7 @@ export async function getExercisePrimaryImage(exerciseId: string): Promise<strin
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ image_path: string }>(
     `SELECT image_path FROM exercise_images WHERE exercise_id = ? ORDER BY image_order LIMIT 1`,
-    [exerciseId]
+    [exerciseId],
   );
   return row?.image_path ?? null;
 }
@@ -382,7 +380,7 @@ export async function getExerciseImageMap(exerciseIds: string[]): Promise<Map<st
      FROM exercise_images 
      WHERE exercise_id IN (${placeholders})
      GROUP BY exercise_id`,
-    exerciseIds
+    exerciseIds,
   );
   const map = new Map<string, string>();
   for (const row of rows) {
@@ -397,9 +395,7 @@ export async function getExerciseImageMap(exerciseIds: string[]): Promise<Map<st
 
 export async function getExerciseCount(): Promise<number> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) as count FROM exercises`
-  );
+  const result = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM exercises`);
   return result?.count ?? 0;
 }
 
@@ -445,8 +441,21 @@ export async function insertSeedExercise(params: {
   audio_transition: string;
 }): Promise<void> {
   const db = await getDatabase();
+  // Pre-insert dedup: reject if a different exercise with the same normalized name+category exists.
+  // This is the service-layer firewall — the UNIQUE index is the last line of defense.
+  const existing = await db.getFirstAsync<{ id: string }>(
+    `SELECT id FROM exercises WHERE LOWER(TRIM(name)) = LOWER(TRIM(?)) AND category = ? LIMIT 1`,
+    [params.name, params.category],
+  );
+  if (existing && existing.id !== params.id) {
+    if (__DEV__)
+      console.log(
+        `[DB] Skipping duplicate exercise: "${params.name}" (${params.category}) — existing id: ${existing.id}`,
+      );
+    return;
+  }
   await db.runAsync(
-    `INSERT OR REPLACE INTO exercises (id, name, category, difficulty, equipment_level, 
+    `INSERT OR IGNORE INTO exercises (id, name, category, difficulty, equipment_level, 
       impact_level, space_required, time_per_set_seconds, instructions, order_in_category,
       audio_intro, audio_setup, audio_execution, audio_transition)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -465,7 +474,7 @@ export async function insertSeedExercise(params: {
       params.audio_setup,
       params.audio_execution,
       params.audio_transition,
-    ]
+    ],
   );
 }
 
@@ -475,10 +484,11 @@ export async function insertSeedExerciseMuscle(params: {
   isPrimary: boolean;
 }): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `INSERT OR IGNORE INTO exercise_muscles (exercise_id, muscle, is_primary) VALUES (?, ?, ?)` ,
-    [params.exerciseId, params.muscle, params.isPrimary ? 1 : 0]
-  );
+  await db.runAsync(`INSERT OR IGNORE INTO exercise_muscles (exercise_id, muscle, is_primary) VALUES (?, ?, ?)`, [
+    params.exerciseId,
+    params.muscle,
+    params.isPrimary ? 1 : 0,
+  ]);
 }
 
 export async function insertSeedExerciseEquipment(params: {
@@ -487,10 +497,11 @@ export async function insertSeedExerciseEquipment(params: {
   isRequired: boolean;
 }): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `INSERT OR IGNORE INTO exercise_equipment (exercise_id, equipment, is_required) VALUES (?, ?, ?)`,
-    [params.exerciseId, params.equipment, params.isRequired ? 1 : 0]
-  );
+  await db.runAsync(`INSERT OR IGNORE INTO exercise_equipment (exercise_id, equipment, is_required) VALUES (?, ?, ?)`, [
+    params.exerciseId,
+    params.equipment,
+    params.isRequired ? 1 : 0,
+  ]);
 }
 
 export async function insertSeedExerciseTrainingType(params: {
@@ -501,7 +512,7 @@ export async function insertSeedExerciseTrainingType(params: {
   const db = await getDatabase();
   await db.runAsync(
     `INSERT OR IGNORE INTO exercise_training_types (exercise_id, training_type, effectiveness) VALUES (?, ?, ?)`,
-    [params.exerciseId, params.trainingType, params.effectiveness]
+    [params.exerciseId, params.trainingType, params.effectiveness],
   );
 }
 
@@ -513,36 +524,49 @@ export async function insertSeedExerciseTrainingType(params: {
  * Get or create user profile
  */
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  return queryCache.getOrFetch(`profile:${userId}`, async () => {
-    const db = await getDatabase();
-    return db.getFirstAsync<UserProfile>(
-      `SELECT * FROM user_profile WHERE id = ?`,
-      [userId]
-    );
-  }, 60_000);
+  return queryCache.getOrFetch(
+    `profile:${userId}`,
+    async () => {
+      const db = await getDatabase();
+      return db.getFirstAsync<UserProfile>(`SELECT * FROM user_profile WHERE id = ?`, [userId]);
+    },
+    60_000,
+  );
 }
 
 /**
  * Create user profile
  */
 export async function createUserProfile(profile: Omit<UserProfile, 'created_at' | 'updated_at'>): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT INTO user_profile (id, sex, weight_kg, height_cm, goal, experience, 
-      training_days_per_week, time_per_session_minutes, locked)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      profile.id,
-      profile.sex || null,
-      profile.weight_kg || null,
-      profile.height_cm || null,
-      profile.goal,
-      profile.experience,
-      profile.training_days_per_week,
-      profile.time_per_session_minutes,
-      profile.locked ? 1 : 0,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'create_user_profile',
+    table_name: 'user_profile',
+    record_id: profile.id,
+    payload: { goal: profile.goal, experience: profile.experience },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT INTO user_profile (id, sex, weight_kg, height_cm, goal, experience, 
+        training_days_per_week, time_per_session_minutes, locked)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        profile.id,
+        profile.sex || null,
+        profile.weight_kg || null,
+        profile.height_cm || null,
+        profile.goal,
+        profile.experience,
+        profile.training_days_per_week,
+        profile.time_per_session_minutes,
+        profile.locked ? 1 : 0,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
@@ -551,10 +575,8 @@ export async function createUserProfile(profile: Omit<UserProfile, 'created_at' 
  */
 export async function updateUserProfile(
   userId: string,
-  updates: Partial<Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>>
+  updates: Partial<Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>>,
 ): Promise<boolean> {
-  const db = await getDatabase();
-
   const fields: string[] = [];
   const values: any[] = [];
 
@@ -567,16 +589,26 @@ export async function updateUserProfile(
 
   if (!fields.length) return true;
 
-  fields.push(`updated_at = datetime('now')`);
-  values.push(userId);
+  const walId = await walService.logIntent({
+    operation: 'update_user_profile',
+    table_name: 'user_profile',
+    record_id: userId,
+    payload: { fields: Object.keys(updates) },
+  });
+  try {
+    const db = await getDatabase();
+    fields.push(`updated_at = datetime('now')`);
+    values.push(userId);
 
-  await db.runAsync(
-    `UPDATE user_profile SET ${fields.join(', ')} WHERE id = ?`,
-    values
-  );
+    await db.runAsync(`UPDATE user_profile SET ${fields.join(', ')} WHERE id = ?`, values);
 
-  queryCache.invalidate(`profile:${userId}`);
-  return true;
+    queryCache.invalidate(`profile:${userId}`);
+    await walService.commit(walId);
+    return true;
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
@@ -584,10 +616,7 @@ export async function updateUserProfile(
  */
 export async function lockUserProfile(userId: string): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE user_profile SET locked = 1, updated_at = datetime('now') WHERE id = ?`,
-    [userId]
-  );
+  await db.runAsync(`UPDATE user_profile SET locked = 1, updated_at = datetime('now') WHERE id = ?`, [userId]);
   queryCache.invalidate(`profile:${userId}`);
 }
 
@@ -600,30 +629,35 @@ export async function lockUserProfile(userId: string): Promise<void> {
  */
 export async function getUserEquipment(userId: string): Promise<EquipmentItem[]> {
   const db = await getDatabase();
-  const rows = await db.getAllAsync<{ equipment: string }>(
-    `SELECT equipment FROM user_equipment WHERE user_id = ?`,
-    [userId]
-  );
-  return rows.map(r => r.equipment as EquipmentItem);
+  const rows = await db.getAllAsync<{ equipment: string }>(`SELECT equipment FROM user_equipment WHERE user_id = ?`, [
+    userId,
+  ]);
+  return rows.map((r) => r.equipment as EquipmentItem);
 }
 
 /**
  * Set user's equipment (replaces existing)
  */
 export async function setUserEquipment(userId: string, equipment: EquipmentItem[]): Promise<void> {
-  const db = await getDatabase();
-
-  // Wrap in transaction for atomicity — prevents partial equipment loss on crash
-  await db.withTransactionAsync(async () => {
-    await db.runAsync(`DELETE FROM user_equipment WHERE user_id = ?`, [userId]);
-
-    for (const item of equipment) {
-      await db.runAsync(
-        `INSERT INTO user_equipment (user_id, equipment) VALUES (?, ?)`,
-        [userId, item]
-      );
-    }
+  const walId = await walService.logIntent({
+    operation: 'set_user_equipment',
+    table_name: 'user_equipment',
+    record_id: userId,
+    payload: { equipment },
   });
+  try {
+    const db = await getDatabase();
+    await db.withTransactionAsync(async () => {
+      await db.runAsync(`DELETE FROM user_equipment WHERE user_id = ?`, [userId]);
+      for (const item of equipment) {
+        await db.runAsync(`INSERT INTO user_equipment (user_id, equipment) VALUES (?, ?)`, [userId, item]);
+      }
+    });
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 // ============================================
@@ -635,10 +669,7 @@ export async function setUserEquipment(userId: string, equipment: EquipmentItem[
  */
 export async function getUserInjuries(userId: string): Promise<UserInjury[]> {
   const db = await getDatabase();
-  return db.getAllAsync<UserInjury>(
-    `SELECT * FROM user_injuries WHERE user_id = ?`,
-    [userId]
-  );
+  return db.getAllAsync<UserInjury>(`SELECT * FROM user_injuries WHERE user_id = ?`, [userId]);
 }
 
 /**
@@ -647,13 +678,26 @@ export async function getUserInjuries(userId: string): Promise<UserInjury[]> {
 export async function setUserInjury(
   userId: string,
   muscle: TargetMuscle,
-  severity: 'mild' | 'moderate' | 'severe'
+  severity: 'mild' | 'moderate' | 'severe',
 ): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT OR REPLACE INTO user_injuries (user_id, muscle, severity) VALUES (?, ?, ?)`,
-    [userId, muscle, severity]
-  );
+  const walId = await walService.logIntent({
+    operation: 'set_user_injury',
+    table_name: 'user_injuries',
+    record_id: userId,
+    payload: { muscle, severity },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(`INSERT OR REPLACE INTO user_injuries (user_id, muscle, severity) VALUES (?, ?, ?)`, [
+      userId,
+      muscle,
+      severity,
+    ]);
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
@@ -661,10 +705,7 @@ export async function setUserInjury(
  */
 export async function removeUserInjury(userId: string, muscle: TargetMuscle): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `DELETE FROM user_injuries WHERE user_id = ? AND muscle = ?`,
-    [userId, muscle]
-  );
+  await db.runAsync(`DELETE FROM user_injuries WHERE user_id = ? AND muscle = ?`, [userId, muscle]);
 }
 
 // ============================================
@@ -675,26 +716,24 @@ export async function removeUserInjury(userId: string, muscle: TargetMuscle): Pr
  * Get muscle fatigue levels for user
  */
 export async function getMuscleFatigue(userId: string): Promise<MuscleFatigue[]> {
-  return queryCache.getOrFetch(`fatigue:${userId}`, async () => {
-    const db = await getDatabase();
-    return db.getAllAsync<MuscleFatigue>(
-      `SELECT * FROM muscle_fatigue WHERE user_id = ?`,
-      [userId]
-    );
-  }, 30_000);
+  return queryCache.getOrFetch(
+    `fatigue:${userId}`,
+    async () => {
+      const db = await getDatabase();
+      return db.getAllAsync<MuscleFatigue>(`SELECT * FROM muscle_fatigue WHERE user_id = ?`, [userId]);
+    },
+    30_000,
+  );
 }
 
 /**
  * Get fatigue for specific muscle
  */
-export async function getMuscleFatigueLevel(
-  userId: string,
-  muscle: TargetMuscle
-): Promise<number> {
+export async function getMuscleFatigueLevel(userId: string, muscle: TargetMuscle): Promise<number> {
   const db = await getDatabase();
   const result = await db.getFirstAsync<{ fatigue_level: number }>(
     `SELECT fatigue_level FROM muscle_fatigue WHERE user_id = ? AND muscle = ?`,
-    [userId, muscle]
+    [userId, muscle],
   );
   return result?.fatigue_level ?? 0;
 }
@@ -706,7 +745,7 @@ export async function updateMuscleFatigue(
   userId: string,
   muscle: TargetMuscle,
   fatigueLevel: number,
-  trained = false
+  trained = false,
 ): Promise<void> {
   const db = await getDatabase();
   const clampedLevel = Math.max(0, Math.min(100, fatigueLevel));
@@ -718,7 +757,7 @@ export async function updateMuscleFatigue(
        fatigue_level = ?,
        last_trained_at = ${trained ? "datetime('now')" : 'last_trained_at'},
        updated_at = datetime('now')`,
-    [userId, muscle, clampedLevel, clampedLevel]
+    [userId, muscle, clampedLevel, clampedLevel],
   );
   queryCache.invalidate(`fatigue:${userId}`);
 }
@@ -733,7 +772,7 @@ export async function applyDailyRecovery(userId: string, recoveryRate = 8): Prom
      SET fatigue_level = MAX(0, fatigue_level - ?),
          updated_at = datetime('now')
      WHERE user_id = ?`,
-    [recoveryRate, userId]
+    [recoveryRate, userId],
   );
 }
 
@@ -745,24 +784,36 @@ export async function applyDailyRecovery(userId: string, recoveryRate = 8): Prom
  * Create a new workout session
  */
 export async function createWorkoutSession(
-  session: Omit<WorkoutSession, 'started_at' | 'completed_at'>
+  session: Omit<WorkoutSession, 'started_at' | 'completed_at'>,
 ): Promise<string> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT INTO workout_sessions (id, user_id, duration_minutes, total_exercises, 
-      completed_exercises, success, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [
-      session.id,
-      session.user_id,
-      session.duration_minutes,
-      session.total_exercises,
-      session.completed_exercises,
-      session.success ? 1 : 0,
-      session.notes || null,
-    ]
-  );
-  return session.id;
+  const walId = await walService.logIntent({
+    operation: 'create_workout_session',
+    table_name: 'workout_sessions',
+    record_id: session.id,
+    payload: { user_id: session.user_id, total_exercises: session.total_exercises },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT INTO workout_sessions (id, user_id, duration_minutes, total_exercises, 
+        completed_exercises, success, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        session.id,
+        session.user_id,
+        session.duration_minutes,
+        session.total_exercises,
+        session.completed_exercises,
+        session.success ? 1 : 0,
+        session.notes || null,
+      ],
+    );
+    await walService.commit(walId);
+    return session.id;
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
@@ -771,35 +822,44 @@ export async function createWorkoutSession(
 export async function completeWorkoutSession(
   sessionId: string,
   completedExercises: number,
-  success: boolean
+  success: boolean,
 ): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE workout_sessions 
-     SET completed_at = datetime('now'),
-         completed_exercises = ?,
-         success = ?
-     WHERE id = ?`,
-    [completedExercises, success ? 1 : 0, sessionId]
-  );
-  queryCache.invalidatePrefix('progress:');
-  queryCache.invalidatePrefix('streak:');
+  const walId = await walService.logIntent({
+    operation: 'complete_workout_session',
+    table_name: 'workout_sessions',
+    record_id: sessionId,
+    payload: { completedExercises, success },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `UPDATE workout_sessions 
+       SET completed_at = datetime('now'),
+           completed_exercises = ?,
+           success = ?
+       WHERE id = ?`,
+      [completedExercises, success ? 1 : 0, sessionId],
+    );
+    queryCache.invalidatePrefix('progress:');
+    queryCache.invalidatePrefix('streak:');
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
  * Get recent sessions for user
  */
-export async function getRecentSessions(
-  userId: string,
-  limit = 7
-): Promise<WorkoutSession[]> {
+export async function getRecentSessions(userId: string, limit = 7): Promise<WorkoutSession[]> {
   const db = await getDatabase();
   return db.getAllAsync<WorkoutSession>(
     `SELECT * FROM workout_sessions 
      WHERE user_id = ? 
      ORDER BY started_at DESC 
      LIMIT ?`,
-    [userId, limit]
+    [userId, limit],
   );
 }
 
@@ -817,46 +877,70 @@ export async function deleteWorkoutSession(sessionId: string): Promise<void> {
  * Add exercise to session
  */
 export async function addSessionExercise(exercise: SessionExercise): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT INTO session_exercises (id, session_id, exercise_id, order_in_session,
-      prescribed_sets, prescribed_reps, completed_sets, completed_reps, skipped, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      exercise.id,
-      exercise.session_id,
-      exercise.exercise_id,
-      exercise.order_in_session,
-      exercise.prescribed_sets,
-      exercise.prescribed_reps,
-      exercise.completed_sets,
-      exercise.completed_reps || null,
-      exercise.skipped ? 1 : 0,
-      exercise.notes || null,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'add_session_exercise',
+    table_name: 'session_exercises',
+    record_id: exercise.id,
+    payload: {
+      session_id: exercise.session_id,
+      exercise_id: exercise.exercise_id,
+      order_in_session: exercise.order_in_session,
+      prescribed_sets: exercise.prescribed_sets,
+      prescribed_reps: exercise.prescribed_reps,
+      completed_sets: exercise.completed_sets,
+      completed_reps: exercise.completed_reps,
+      skipped: exercise.skipped,
+      notes: exercise.notes,
+    },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT INTO session_exercises (id, session_id, exercise_id, order_in_session,
+        prescribed_sets, prescribed_reps, completed_sets, completed_reps, skipped, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        exercise.id,
+        exercise.session_id,
+        exercise.exercise_id,
+        exercise.order_in_session,
+        exercise.prescribed_sets,
+        exercise.prescribed_reps,
+        exercise.completed_sets,
+        exercise.completed_reps || null,
+        exercise.skipped ? 1 : 0,
+        exercise.notes || null,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
  * Get session exercises with full exercise details (for loading custom workouts)
  */
-export async function getSessionExercises(sessionId: string): Promise<Array<{
-  id: string;
-  exercise_id: string;
-  order_in_session: number;
-  prescribed_sets: number;
-  prescribed_reps: string;
-  completed_sets: number;
-  skipped: boolean;
-  name: string;
-  category: string;
-  difficulty: string;
-  instructions: string;
-  audio_intro: string;
-  audio_setup: string;
-  audio_execution: string;
-  audio_transition: string;
-}>> {
+export async function getSessionExercises(sessionId: string): Promise<
+  Array<{
+    id: string;
+    exercise_id: string;
+    order_in_session: number;
+    prescribed_sets: number;
+    prescribed_reps: string;
+    completed_sets: number;
+    skipped: boolean;
+    name: string;
+    category: string;
+    difficulty: string;
+    instructions: string;
+    audio_intro: string;
+    audio_setup: string;
+    audio_execution: string;
+    audio_transition: string;
+  }>
+> {
   const db = await getDatabase();
   return db.getAllAsync(
     `SELECT se.id, se.exercise_id, se.order_in_session,
@@ -868,7 +952,7 @@ export async function getSessionExercises(sessionId: string): Promise<Array<{
      LEFT JOIN exercises e ON se.exercise_id = e.id
      WHERE se.session_id = ? AND e.id IS NOT NULL
      ORDER BY se.order_in_session ASC`,
-    [sessionId]
+    [sessionId],
   );
 }
 
@@ -877,10 +961,7 @@ export async function getSessionExercises(sessionId: string): Promise<Array<{
  */
 export async function getWorkoutSession(sessionId: string): Promise<WorkoutSession | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<WorkoutSession>(
-    `SELECT * FROM workout_sessions WHERE id = ?`,
-    [sessionId]
-  );
+  return db.getFirstAsync<WorkoutSession>(`SELECT * FROM workout_sessions WHERE id = ?`, [sessionId]);
 }
 
 // ============================================
@@ -891,56 +972,61 @@ export async function getWorkoutSession(sessionId: string): Promise<WorkoutSessi
  * Record progress for an exercise
  */
 export async function recordProgress(record: ProgressRecord): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT INTO progress_records (id, user_id, exercise_id, date, 
-      sets_completed, reps_achieved, difficulty_rating, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      record.id,
-      record.user_id,
-      record.exercise_id,
-      record.date,
-      record.sets_completed,
-      record.reps_achieved,
-      record.difficulty_rating || null,
-      record.notes || null,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'record_progress',
+    table_name: 'progress_records',
+    record_id: record.id,
+    payload: { exercise_id: record.exercise_id, sets: record.sets_completed },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT INTO progress_records (id, user_id, exercise_id, date, 
+        sets_completed, reps_achieved, difficulty_rating, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        record.id,
+        record.user_id,
+        record.exercise_id,
+        record.date,
+        record.sets_completed,
+        record.reps_achieved,
+        record.difficulty_rating || null,
+        record.notes || null,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
  * Get progress history for an exercise
  */
-export async function getProgressHistory(
-  userId: string,
-  exerciseId: string,
-  limit = 30
-): Promise<ProgressRecord[]> {
+export async function getProgressHistory(userId: string, exerciseId: string, limit = 30): Promise<ProgressRecord[]> {
   const db = await getDatabase();
   return db.getAllAsync<ProgressRecord>(
     `SELECT * FROM progress_records 
      WHERE user_id = ? AND exercise_id = ?
      ORDER BY date DESC
      LIMIT ?`,
-    [userId, exerciseId, limit]
+    [userId, exerciseId, limit],
   );
 }
 
 /**
  * Get all progress records for a user (across all exercises)
  */
-export async function getAllProgressRecords(
-  userId: string,
-  limit = 100
-): Promise<ProgressRecord[]> {
+export async function getAllProgressRecords(userId: string, limit = 100): Promise<ProgressRecord[]> {
   const db = await getDatabase();
   return db.getAllAsync<ProgressRecord>(
     `SELECT * FROM progress_records 
      WHERE user_id = ?
      ORDER BY date DESC
      LIMIT ?`,
-    [userId, limit]
+    [userId, limit],
   );
 }
 
@@ -953,40 +1039,52 @@ export async function getAllProgressRecords(
  */
 export async function getSubscriptionState(userId: string): Promise<SubscriptionState | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<SubscriptionState>(
-    `SELECT * FROM subscription_state WHERE user_id = ?`,
-    [userId]
-  );
+  return db.getFirstAsync<SubscriptionState>(`SELECT * FROM subscription_state WHERE user_id = ?`, [userId]);
 }
 
 /**
  * Update subscription state
  */
-export async function updateSubscriptionState(
-  state: Omit<SubscriptionState, 'last_verified_at'>
-): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT INTO subscription_state (user_id, tier, expires_at, grace_period_start, receipt_data)
-     VALUES (?, ?, ?, ?, ?)
-     ON CONFLICT(user_id) DO UPDATE SET
-       tier = ?,
-       expires_at = ?,
-       last_verified_at = datetime('now'),
-       grace_period_start = ?,
-       receipt_data = ?`,
-    [
-      state.user_id,
-      state.tier,
-      state.expires_at || null,
-      state.grace_period_start || null,
-      state.receipt_data || null,
-      state.tier,
-      state.expires_at || null,
-      state.grace_period_start || null,
-      state.receipt_data || null,
-    ]
-  );
+export async function updateSubscriptionState(state: Omit<SubscriptionState, 'last_verified_at'>): Promise<void> {
+  const walId = await walService.logIntent({
+    operation: 'update_subscription_state',
+    table_name: 'subscription_state',
+    record_id: state.user_id,
+    payload: {
+      tier: state.tier,
+      expires_at: state.expires_at,
+      grace_period_start: state.grace_period_start,
+      receipt_data: state.receipt_data,
+    },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT INTO subscription_state (user_id, tier, expires_at, grace_period_start, receipt_data)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(user_id) DO UPDATE SET
+         tier = ?,
+         expires_at = ?,
+         last_verified_at = datetime('now'),
+         grace_period_start = ?,
+         receipt_data = ?`,
+      [
+        state.user_id,
+        state.tier,
+        state.expires_at || null,
+        state.grace_period_start || null,
+        state.receipt_data || null,
+        state.tier,
+        state.expires_at || null,
+        state.grace_period_start || null,
+        state.receipt_data || null,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 // ============================================
@@ -998,10 +1096,7 @@ export async function updateSubscriptionState(
  */
 export async function getAppState(key: string): Promise<string | null> {
   const db = await getDatabase();
-  const result = await db.getFirstAsync<{ value: string }>(
-    `SELECT value FROM app_state WHERE key = ?`,
-    [key]
-  );
+  const result = await db.getFirstAsync<{ value: string }>(`SELECT value FROM app_state WHERE key = ?`, [key]);
   return result?.value ?? null;
 }
 
@@ -1013,7 +1108,7 @@ export async function setAppState(key: string, value: string): Promise<void> {
   await db.runAsync(
     `INSERT INTO app_state (key, value, updated_at) VALUES (?, ?, datetime('now'))
      ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = datetime('now')`,
-    [key, value, value]
+    [key, value, value],
   );
 }
 
@@ -1022,10 +1117,7 @@ export async function setAppState(key: string, value: string): Promise<void> {
  */
 export async function deleteAppStateByPrefix(prefix: string): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `DELETE FROM app_state WHERE key LIKE ?`,
-    [`${prefix}%`]
-  );
+  await db.runAsync(`DELETE FROM app_state WHERE key LIKE ?`, [`${prefix}%`]);
 }
 
 // ============================================
@@ -1042,10 +1134,7 @@ export async function updateStreak(userId: string): Promise<{ current: number; l
     current_streak: number;
     longest_streak: number;
     last_workout_date: string | null;
-  }>(
-    `SELECT * FROM workout_streaks WHERE user_id = ?`,
-    [userId]
-  );
+  }>(`SELECT * FROM workout_streaks WHERE user_id = ?`, [userId]);
 
   const today = new Date().toISOString().split('T')[0]!;
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]!;
@@ -1063,37 +1152,53 @@ export async function updateStreak(userId: string): Promise<{ current: number; l
     longestStreak = currentStreak;
   }
 
-  await db.runAsync(
-    `INSERT INTO workout_streaks (user_id, current_streak, longest_streak, last_workout_date)
-     VALUES (?, ?, ?, ?)
-     ON CONFLICT(user_id) DO UPDATE SET
-       current_streak = ?,
-       longest_streak = ?,
-       last_workout_date = ?,
-       updated_at = datetime('now')`,
-    [userId, currentStreak, longestStreak, today, currentStreak, longestStreak, today]
-  );
+  const walId = await walService.logIntent({
+    operation: 'update_streak',
+    table_name: 'workout_streaks',
+    record_id: userId,
+    payload: { currentStreak, longestStreak, date: today },
+  });
+  try {
+    await db.runAsync(
+      `INSERT INTO workout_streaks (user_id, current_streak, longest_streak, last_workout_date)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(user_id) DO UPDATE SET
+         current_streak = ?,
+         longest_streak = ?,
+         last_workout_date = ?,
+         updated_at = datetime('now')`,
+      [userId, currentStreak, longestStreak, today, currentStreak, longestStreak, today],
+    );
 
-  queryCache.invalidate(`streak:${userId}`);
-  queryCache.invalidatePrefix('progress:');
-  return { current: currentStreak, longest: longestStreak };
+    queryCache.invalidate(`streak:${userId}`);
+    queryCache.invalidatePrefix('progress:');
+    await walService.commit(walId);
+    return { current: currentStreak, longest: longestStreak };
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 /**
  * Get current streak
  */
 export async function getStreak(userId: string): Promise<{ current: number; longest: number }> {
-  return queryCache.getOrFetch(`streak:${userId}`, async () => {
-    const db = await getDatabase();
-    const result = await db.getFirstAsync<{ current_streak: number; longest_streak: number }>(
-      `SELECT current_streak, longest_streak FROM workout_streaks WHERE user_id = ?`,
-      [userId]
-    );
-    return {
-      current: result?.current_streak ?? 0,
-      longest: result?.longest_streak ?? 0,
-    };
-  }, 60_000);
+  return queryCache.getOrFetch(
+    `streak:${userId}`,
+    async () => {
+      const db = await getDatabase();
+      const result = await db.getFirstAsync<{ current_streak: number; longest_streak: number }>(
+        `SELECT current_streak, longest_streak FROM workout_streaks WHERE user_id = ?`,
+        [userId],
+      );
+      return {
+        current: result?.current_streak ?? 0,
+        longest: result?.longest_streak ?? 0,
+      };
+    },
+    60_000,
+  );
 }
 
 // ============================================
@@ -1114,98 +1219,113 @@ export interface UserProgressData {
  * Get aggregated user progress for dashboard
  */
 export async function getUserProgress(userId: string = 'user_local_001'): Promise<UserProgressData> {
-  return queryCache.getOrFetch(`progress:${userId}`, async () => {
-    const db = await getDatabase();
-  
-  // Get workout stats
-  const workoutStats = await db.getFirstAsync<{
-    total: number;
-    completed: number;
-    exercises: number;
-  }>(
-    `SELECT 
+  return queryCache.getOrFetch(
+    `progress:${userId}`,
+    async () => {
+      const db = await getDatabase();
+
+      // Get workout stats
+      const workoutStats = await db.getFirstAsync<{
+        total: number;
+        completed: number;
+        exercises: number;
+      }>(
+        `SELECT 
        COUNT(*) as total,
        SUM(CASE WHEN completed_at IS NOT NULL THEN 1 ELSE 0 END) as completed,
        SUM(completed_exercises) as exercises
      FROM workout_sessions WHERE user_id = ?`,
-    [userId]
-  );
-  
-  // Get streak info
-  const streakInfo = await getStreak(userId);
-  
-  // Get last workout date
-  const lastWorkout = await db.getFirstAsync<{ last_date: string | null }>(
-    `SELECT MAX(started_at) as last_date FROM workout_sessions WHERE user_id = ? AND completed_at IS NOT NULL`,
-    [userId]
-  );
-  
-  // Calculate weekly XP matching xpService formula: 100 base + 20/exercise + 50 completion bonus + 10*streak
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const weeklyWorkoutData = await db.getFirstAsync<{ count: number; exercises: number; total_exercises: number }>(
-    `SELECT COUNT(*) as count,
+        [userId],
+      );
+
+      // Get streak info
+      const streakInfo = await getStreak(userId);
+
+      // Get last workout date
+      const lastWorkout = await db.getFirstAsync<{ last_date: string | null }>(
+        `SELECT MAX(started_at) as last_date FROM workout_sessions WHERE user_id = ? AND completed_at IS NOT NULL`,
+        [userId],
+      );
+
+      // Calculate weekly XP matching xpService formula: 100 base + 20/exercise + 50 completion bonus + 10*streak
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const weeklyWorkoutData = await db.getFirstAsync<{ count: number; exercises: number; total_exercises: number }>(
+        `SELECT COUNT(*) as count,
             COALESCE(SUM(completed_exercises), 0) as exercises,
             COALESCE(SUM(total_exercises), 0) as total_exercises
      FROM workout_sessions 
      WHERE user_id = ? AND started_at > ? AND completed_at IS NOT NULL`,
-    [userId, weekAgo]
+        [userId, weekAgo],
+      );
+      const wkCount = weeklyWorkoutData?.count ?? 0;
+      const wkExercises = weeklyWorkoutData?.exercises ?? 0;
+      const wkTotalEx = weeklyWorkoutData?.total_exercises ?? 0;
+      const wkCompletionBonus = wkExercises >= wkTotalEx && wkTotalEx > 0 ? 50 * wkCount : 0;
+      const wkStreakBonus = streakInfo.current * 10;
+      const weeklyXP = wkCount * 100 + wkExercises * 20 + wkCompletionBonus + wkStreakBonus;
+
+      return {
+        total_workouts: workoutStats?.total ?? 0,
+        completed_workouts: workoutStats?.completed ?? 0,
+        current_streak: streakInfo.current,
+        longest_streak: streakInfo.longest,
+        total_exercises_done: workoutStats?.exercises ?? 0,
+        weekly_xp: weeklyXP,
+        last_workout_date: lastWorkout?.last_date ?? null,
+      };
+    },
+    60_000,
   );
-  const wkCount = weeklyWorkoutData?.count ?? 0;
-  const wkExercises = weeklyWorkoutData?.exercises ?? 0;
-  const wkTotalEx = weeklyWorkoutData?.total_exercises ?? 0;
-  const wkCompletionBonus = (wkExercises >= wkTotalEx && wkTotalEx > 0) ? 50 * wkCount : 0;
-  const wkStreakBonus = streakInfo.current * 10;
-  const weeklyXP = wkCount * 100 + wkExercises * 20 + wkCompletionBonus + wkStreakBonus;
-  
-  return {
-    total_workouts: workoutStats?.total ?? 0,
-    completed_workouts: workoutStats?.completed ?? 0,
-    current_streak: streakInfo.current,
-    longest_streak: streakInfo.longest,
-    total_exercises_done: workoutStats?.exercises ?? 0,
-    weekly_xp: weeklyXP,
-    last_workout_date: lastWorkout?.last_date ?? null,
-  };
-  }, 60_000);
 }
 
 // ============================================
 // FITMIND QUERIES
 // ============================================
 
-export async function addFitMindDocument(
-  doc: Omit<FitMindDocument, 'created_at' | 'updated_at'>
-): Promise<string> {
+export async function addFitMindDocument(doc: Omit<FitMindDocument, 'created_at' | 'updated_at'>): Promise<string> {
   const db = await getDatabase();
   const now = Date.now();
 
-  await db.runAsync(
-    `INSERT INTO fitmind_documents
-     (id, title, author, type, status, category, tags, file_path, file_size, total_pages,
-      current_page, content, word_count, reading_level, estimated_minutes, cover_color,
-      created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      doc.id,
-      doc.title,
-      doc.author,
-      doc.type,
-      doc.status,
-      doc.category,
-      doc.tags,
-      doc.file_path,
-      doc.file_size,
-      doc.total_pages,
-      doc.current_page,
-      doc.content,
-      doc.word_count,
-      doc.reading_level,
-      doc.estimated_minutes,
-      doc.cover_color,
-      now,
-      now,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'add_fitmind_document',
+    table_name: 'fitmind_documents',
+    record_id: doc.id,
+    payload: { ...doc, created_at: now, updated_at: now },
+  });
+
+  try {
+    await db.runAsync(
+      `INSERT INTO fitmind_documents
+       (id, title, author, type, status, category, tags, file_path, file_size, total_pages,
+        current_page, content, word_count, reading_level, estimated_minutes, cover_color,
+        created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        doc.id,
+        doc.title,
+        doc.author,
+        doc.type,
+        doc.status,
+        doc.category,
+        doc.tags,
+        doc.file_path,
+        doc.file_size,
+        doc.total_pages,
+        doc.current_page,
+        doc.content,
+        doc.word_count,
+        doc.reading_level,
+        doc.estimated_minutes,
+        doc.cover_color,
+        now,
+        now,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 
   return doc.id;
 }
@@ -1215,69 +1335,99 @@ export async function getFitMindDocuments(status?: DocumentStatus): Promise<FitM
   if (status) {
     return db.getAllAsync<FitMindDocument>(
       `SELECT * FROM fitmind_documents WHERE status = ? ORDER BY updated_at DESC, created_at DESC`,
-      [status]
+      [status],
     );
   }
-  return db.getAllAsync<FitMindDocument>(
-    `SELECT * FROM fitmind_documents ORDER BY updated_at DESC, created_at DESC`
-  );
+  return db.getAllAsync<FitMindDocument>(`SELECT * FROM fitmind_documents ORDER BY updated_at DESC, created_at DESC`);
 }
 
 export async function getFitMindDocument(id: string): Promise<FitMindDocument | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<FitMindDocument>(
-    `SELECT * FROM fitmind_documents WHERE id = ?`,
-    [id]
-  );
+  return db.getFirstAsync<FitMindDocument>(`SELECT * FROM fitmind_documents WHERE id = ?`, [id]);
 }
 
 export async function updateFitMindProgress(docId: string, currentPage: number): Promise<void> {
   const db = await getDatabase();
   const now = Date.now();
 
-  await db.runAsync(
-    `UPDATE fitmind_documents
-     SET current_page = ?,
-         updated_at = ?,
-         status = CASE
-           WHEN ? >= total_pages AND total_pages > 0 THEN 'COMPLETED'
-           ELSE 'READING'
-         END
-     WHERE id = ?`,
-    [currentPage, now, currentPage, docId]
-  );
+  const walId = await walService.logIntent({
+    operation: 'update_fitmind_progress',
+    table_name: 'fitmind_documents',
+    record_id: docId,
+    payload: { current_page: currentPage },
+  });
+
+  try {
+    await db.runAsync(
+      `UPDATE fitmind_documents
+       SET current_page = ?,
+           updated_at = ?,
+           status = CASE
+             WHEN ? >= total_pages AND total_pages > 0 THEN 'COMPLETED'
+             ELSE 'READING'
+           END
+       WHERE id = ?`,
+      [currentPage, now, currentPage, docId],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 }
 
 export async function deleteFitMindDocument(id: string): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(`DELETE FROM fitmind_documents WHERE id = ?`, [id]);
+  const walId = await walService.logIntent({
+    operation: 'delete_fitmind_document',
+    table_name: 'fitmind_documents',
+    record_id: id,
+  });
+  try {
+    await db.runAsync(`DELETE FROM fitmind_documents WHERE id = ?`, [id]);
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 }
 
-export async function recordFitMindSession(
-  session: Omit<ReadingSession, 'id' | 'created_at'>
-): Promise<string> {
+export async function recordFitMindSession(session: Omit<ReadingSession, 'id' | 'created_at'>): Promise<string> {
   const db = await getDatabase();
   const id = await generateSecureId('rs');
   const now = Date.now();
 
-  await db.runAsync(
-    `INSERT INTO fitmind_reading_sessions
-     (id, document_id, start_page, end_page, duration_minutes, words_read, comprehension_score, notes, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      id,
-      session.document_id,
-      session.start_page,
-      session.end_page,
-      session.duration_minutes,
-      session.words_read,
-      session.comprehension_score,
-      session.notes,
-      now,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'record_fitmind_session',
+    table_name: 'fitmind_reading_sessions',
+    record_id: id,
+    payload: { ...session, created_at: now },
+  });
 
-  await updateFitMindProgress(session.document_id, session.end_page);
+  try {
+    await db.runAsync(
+      `INSERT INTO fitmind_reading_sessions
+       (id, document_id, start_page, end_page, duration_minutes, words_read, comprehension_score, notes, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        session.document_id,
+        session.start_page,
+        session.end_page,
+        session.duration_minutes,
+        session.words_read,
+        session.comprehension_score,
+        session.notes,
+        now,
+      ],
+    );
+
+    await updateFitMindProgress(session.document_id, session.end_page);
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 
   return id;
 }
@@ -1286,33 +1436,44 @@ export async function getFitMindSessions(docId: string, limit = 20): Promise<Rea
   const db = await getDatabase();
   return db.getAllAsync<ReadingSession>(
     `SELECT * FROM fitmind_reading_sessions WHERE document_id = ? ORDER BY created_at DESC LIMIT ?`,
-    [docId, limit]
+    [docId, limit],
   );
 }
 
-export async function addFitMindAnnotation(
-  annotation: Omit<Annotation, 'id' | 'created_at'>
-): Promise<string> {
+export async function addFitMindAnnotation(annotation: Omit<Annotation, 'id' | 'created_at'>): Promise<string> {
   const db = await getDatabase();
   const id = await generateSecureId('ann');
   const now = Date.now();
 
-  await db.runAsync(
-    `INSERT INTO fitmind_annotations
-     (id, document_id, page_number, type, content, color, position_start, position_end, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      id,
-      annotation.document_id,
-      annotation.page_number,
-      annotation.type,
-      annotation.content,
-      annotation.color,
-      annotation.position_start,
-      annotation.position_end,
-      now,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'add_fitmind_annotation',
+    table_name: 'fitmind_annotations',
+    record_id: id,
+    payload: { ...annotation, created_at: now },
+  });
+
+  try {
+    await db.runAsync(
+      `INSERT INTO fitmind_annotations
+       (id, document_id, page_number, type, content, color, position_start, position_end, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        annotation.document_id,
+        annotation.page_number,
+        annotation.type,
+        annotation.content,
+        annotation.color,
+        annotation.position_start,
+        annotation.position_end,
+        now,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 
   return id;
 }
@@ -1322,18 +1483,29 @@ export async function getFitMindAnnotations(docId: string, page?: number): Promi
   if (page !== undefined) {
     return db.getAllAsync<Annotation>(
       `SELECT * FROM fitmind_annotations WHERE document_id = ? AND page_number = ? ORDER BY created_at`,
-      [docId, page]
+      [docId, page],
     );
   }
   return db.getAllAsync<Annotation>(
     `SELECT * FROM fitmind_annotations WHERE document_id = ? ORDER BY page_number, created_at`,
-    [docId]
+    [docId],
   );
 }
 
 export async function deleteFitMindAnnotation(id: string): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(`DELETE FROM fitmind_annotations WHERE id = ?`, [id]);
+  const walId = await walService.logIntent({
+    operation: 'delete_fitmind_annotation',
+    table_name: 'fitmind_annotations',
+    record_id: id,
+  });
+  try {
+    await db.runAsync(`DELETE FROM fitmind_annotations WHERE id = ?`, [id]);
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 }
 
 export async function addFitMindFlashcard(card: {
@@ -1351,14 +1523,36 @@ export async function addFitMindFlashcard(card: {
   const initialState = 0; // State.New
   const initialStability = 0;
 
-  await db.runAsync(
-    `INSERT INTO fitmind_flashcards
-     (id, document_id, front, back, difficulty, stability, state, due, scheduled_days,
-      reps, lapses, learning_steps, ease_factor, repetitions, interval_days, next_review, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 2.5, 0, 1, ?, ?)`,
-    [id, card.documentId, card.front, card.back, initialDifficulty, initialStability, 
-     initialState, now, now, now]
-  );
+  const walId = await walService.logIntent({
+    operation: 'add_fitmind_flashcard',
+    table_name: 'fitmind_flashcards',
+    record_id: id,
+    payload: {
+      document_id: card.documentId,
+      front: card.front,
+      back: card.back,
+      difficulty: initialDifficulty,
+      stability: initialStability,
+      state: initialState,
+      due: now,
+      next_review: now,
+      created_at: now,
+    },
+  });
+
+  try {
+    await db.runAsync(
+      `INSERT INTO fitmind_flashcards
+       (id, document_id, front, back, difficulty, stability, state, due, scheduled_days,
+        reps, lapses, learning_steps, ease_factor, repetitions, interval_days, next_review, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 2.5, 0, 1, ?, ?)`,
+      [id, card.documentId, card.front, card.back, initialDifficulty, initialStability, initialState, now, now, now],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 
   return id;
 }
@@ -1371,7 +1565,7 @@ export async function getFitMindDueFlashcards(limit = 20): Promise<Flashcard[]> 
     `SELECT * FROM fitmind_flashcards 
      WHERE COALESCE(due, next_review) <= ? 
      ORDER BY COALESCE(due, next_review) ASC LIMIT ?`,
-    [now, limit]
+    [now, limit],
   );
 }
 
@@ -1380,10 +1574,7 @@ export async function getFitMindDueFlashcards(limit = 20): Promise<Flashcard[]> 
  */
 export async function getFitMindFlashcard(cardId: string): Promise<Flashcard | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<Flashcard>(
-    `SELECT * FROM fitmind_flashcards WHERE id = ?`,
-    [cardId]
-  );
+  return db.getFirstAsync<Flashcard>(`SELECT * FROM fitmind_flashcards WHERE id = ?`, [cardId]);
 }
 
 /**
@@ -1402,23 +1593,46 @@ export async function updateFitMindFlashcardFSRS(
     lapses: number;
     learning_steps: number;
     last_review: number;
-  }
+  },
 ): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE fitmind_flashcards
-     SET due = ?, stability = ?, difficulty = ?, state = ?, scheduled_days = ?,
-         reps = ?, lapses = ?, learning_steps = ?, last_review = ?,
-         next_review = ?, interval_days = ?, repetitions = ?
-     WHERE id = ?`,
-    [
-      update.due, update.stability, update.difficulty, update.state, update.scheduled_days,
-      update.reps, update.lapses, update.learning_steps, update.last_review,
-      // Also update legacy columns for compatibility
-      update.due, update.scheduled_days, update.reps,
-      cardId
-    ]
-  );
+
+  const walId = await walService.logIntent({
+    operation: 'update_fitmind_flashcard_fsrs',
+    table_name: 'fitmind_flashcards',
+    record_id: cardId,
+    payload: { ...update },
+  });
+
+  try {
+    await db.runAsync(
+      `UPDATE fitmind_flashcards
+       SET due = ?, stability = ?, difficulty = ?, state = ?, scheduled_days = ?,
+           reps = ?, lapses = ?, learning_steps = ?, last_review = ?,
+           next_review = ?, interval_days = ?, repetitions = ?
+       WHERE id = ?`,
+      [
+        update.due,
+        update.stability,
+        update.difficulty,
+        update.state,
+        update.scheduled_days,
+        update.reps,
+        update.lapses,
+        update.learning_steps,
+        update.last_review,
+        // Also update legacy columns for compatibility
+        update.due,
+        update.scheduled_days,
+        update.reps,
+        cardId,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
+  }
 }
 
 /**
@@ -1427,19 +1641,16 @@ export async function updateFitMindFlashcardFSRS(
  */
 export async function reviewFitMindFlashcard(cardId: string, quality: number): Promise<void> {
   const db = await getDatabase();
-  const card = await db.getFirstAsync<Flashcard>(
-    `SELECT * FROM fitmind_flashcards WHERE id = ?`,
-    [cardId]
-  );
+  const card = await db.getFirstAsync<Flashcard>(`SELECT * FROM fitmind_flashcards WHERE id = ?`, [cardId]);
 
   if (!card) return;
 
   // Now delegate to FSRS
   // Map SM-2 quality (0-5) to FSRS rating:
   // 0-2 = Again, 3 = Hard, 4 = Good, 5 = Easy
-  let fsrsService;
+  let fsrsService: any;
   try {
-    const mod = await import('../fitmind/FSRSService');
+    const mod: any = await import('../fitmind/FSRSService');
     fsrsService = mod.fsrsService;
   } catch {
     if (__DEV__) console.warn('[FitMind] FSRS module unavailable, skipping review');
@@ -1482,7 +1693,7 @@ export async function getFitMindReadingStreak(): Promise<{
       `INSERT INTO fitmind_reading_streaks
        (user_id, current_streak, longest_streak, total_books_completed, total_minutes_read, total_pages_read, updated_at)
        VALUES ('user_local_001', 0, 0, 0, 0, 0, ?)`,
-      [now]
+      [now],
     );
     return {
       currentStreak: 0,
@@ -1502,54 +1713,67 @@ export async function getFitMindReadingStreak(): Promise<{
   };
 }
 
-export async function updateFitMindReadingStreak(
-  pagesRead: number,
-  minutesRead: number
-): Promise<void> {
+export async function updateFitMindReadingStreak(pagesRead: number, minutesRead: number): Promise<void> {
   const db = await getDatabase();
   const today = new Date().toISOString().split('T')[0]!;
   const now = Date.now();
 
-  const row = await db.getFirstAsync<{
-    current_streak: number;
-    longest_streak: number;
-    last_read_date: string | null;
-  }>(`SELECT current_streak, longest_streak, last_read_date FROM fitmind_reading_streaks WHERE user_id = 'user_local_001'`);
+  const walId = await walService.logIntent({
+    operation: 'update_fitmind_reading_streak',
+    table_name: 'fitmind_reading_streaks',
+    record_id: 'user_local_001',
+    payload: { pages_read: pagesRead, minutes_read: minutesRead, date: today },
+  });
 
-  if (!row) {
-    await db.runAsync(
-      `INSERT INTO fitmind_reading_streaks
-       (user_id, current_streak, longest_streak, last_read_date, total_pages_read, total_minutes_read, updated_at)
-       VALUES ('user_local_001', 1, 1, ?, ?, ?, ?)`,
-      [today, pagesRead, minutesRead, now]
+  try {
+    const row = await db.getFirstAsync<{
+      current_streak: number;
+      longest_streak: number;
+      last_read_date: string | null;
+    }>(
+      `SELECT current_streak, longest_streak, last_read_date FROM fitmind_reading_streaks WHERE user_id = 'user_local_001'`,
     );
-    return;
-  }
 
-  let newStreak = row.current_streak;
-  if (row.last_read_date !== today) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0]!;
-
-    if (row.last_read_date === yesterdayStr) {
-      newStreak++;
-    } else {
-      newStreak = 1;
+    if (!row) {
+      await db.runAsync(
+        `INSERT INTO fitmind_reading_streaks
+         (user_id, current_streak, longest_streak, last_read_date, total_pages_read, total_minutes_read, updated_at)
+         VALUES ('user_local_001', 1, 1, ?, ?, ?, ?)`,
+        [today, pagesRead, minutesRead, now],
+      );
+      await walService.commit(walId);
+      return;
     }
+
+    let newStreak = row.current_streak;
+    if (row.last_read_date !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0]!;
+
+      if (row.last_read_date === yesterdayStr) {
+        newStreak++;
+      } else {
+        newStreak = 1;
+      }
+    }
+
+    const longestStreak = Math.max(row.longest_streak, newStreak);
+
+    await db.runAsync(
+      `UPDATE fitmind_reading_streaks
+       SET current_streak = ?, longest_streak = ?, last_read_date = ?,
+           total_pages_read = total_pages_read + ?,
+           total_minutes_read = total_minutes_read + ?,
+           updated_at = ?
+       WHERE user_id = 'user_local_001'`,
+      [newStreak, longestStreak, today, pagesRead, minutesRead, now],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId);
+    throw error;
   }
-
-  const longestStreak = Math.max(row.longest_streak, newStreak);
-
-  await db.runAsync(
-    `UPDATE fitmind_reading_streaks
-     SET current_streak = ?, longest_streak = ?, last_read_date = ?,
-         total_pages_read = total_pages_read + ?,
-         total_minutes_read = total_minutes_read + ?,
-         updated_at = ?
-     WHERE user_id = 'user_local_001'`,
-    [newStreak, longestStreak, today, pagesRead, minutesRead, now]
-  );
 }
 
 export async function getFitMindReadingAnalytics(days = 30): Promise<{
@@ -1578,16 +1802,16 @@ export async function getFitMindReadingAnalytics(days = 30): Promise<{
        SUM(duration_minutes) as total_minutes
      FROM fitmind_reading_sessions
      WHERE created_at > ?`,
-    [since]
+    [since],
   );
 
   const completed = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM fitmind_documents WHERE status = 'COMPLETED' AND updated_at > ?`,
-    [since]
+    [since],
   );
 
   const reading = await db.getFirstAsync<{ cnt: number }>(
-    `SELECT COUNT(*) as cnt FROM fitmind_documents WHERE status = 'READING'`
+    `SELECT COUNT(*) as cnt FROM fitmind_documents WHERE status = 'READING'`,
   );
 
   const totalMinutes = sessionStats?.total_minutes || 0;
@@ -1599,9 +1823,7 @@ export async function getFitMindReadingAnalytics(days = 30): Promise<{
     avgFocusScore: 0,
     totalPagesRead: sessionStats?.total_pages || 0,
     totalTimeMs,
-    avgSessionDurationMs: sessionStats?.cnt
-      ? Math.round(totalTimeMs / sessionStats.cnt)
-      : 0,
+    avgSessionDurationMs: sessionStats?.cnt ? Math.round(totalTimeMs / sessionStats.cnt) : 0,
     booksCompleted: completed?.cnt || 0,
     currentlyReading: reading?.cnt || 0,
   };
@@ -1622,47 +1844,76 @@ export interface TrialStateRow {
 
 export async function getTrialState(userId: string): Promise<TrialStateRow | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<TrialStateRow>(
-    `SELECT * FROM trial_state WHERE user_id = ?`,
-    [userId]
-  );
+  return db.getFirstAsync<TrialStateRow>(`SELECT * FROM trial_state WHERE user_id = ?`, [userId]);
 }
 
 export async function upsertTrialState(state: TrialStateRow): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT OR REPLACE INTO trial_state
-     (user_id, started_at, ends_at, converted, product_identifier, notifications_sent)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [
-      state.user_id,
-      state.started_at,
-      state.ends_at,
-      state.converted,
-      state.product_identifier,
-      state.notifications_sent,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'upsert_trial_state',
+    table_name: 'trial_state',
+    record_id: state.user_id,
+    payload: {
+      started_at: state.started_at,
+      ends_at: state.ends_at,
+      converted: state.converted,
+      product_identifier: state.product_identifier,
+      notifications_sent: state.notifications_sent,
+    },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT OR REPLACE INTO trial_state
+       (user_id, started_at, ends_at, converted, product_identifier, notifications_sent)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        state.user_id,
+        state.started_at,
+        state.ends_at,
+        state.converted,
+        state.product_identifier,
+        state.notifications_sent,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 export async function updateTrialConverted(userId: string, productId: string | null): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE trial_state SET converted = 1, product_identifier = ? WHERE user_id = ?`,
-    [productId, userId]
-  );
+  const walId = await walService.logIntent({
+    operation: 'update_trial_converted',
+    table_name: 'trial_state',
+    record_id: userId,
+    payload: { product_identifier: productId },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(`UPDATE trial_state SET converted = 1, product_identifier = ? WHERE user_id = ?`, [
+      productId,
+      userId,
+    ]);
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 export async function getTrialStartedAt(userId: string): Promise<number | null> {
   const db = await getDatabase();
-  const row = await db.getFirstAsync<{ started_at: number }>(
-    `SELECT started_at FROM trial_state WHERE user_id = ?`,
-    [userId]
-  );
+  const row = await db.getFirstAsync<{ started_at: number }>(`SELECT started_at FROM trial_state WHERE user_id = ?`, [
+    userId,
+  ]);
   return row?.started_at ?? null;
 }
 
-export async function getTrialStats(userId: string, startedAt: number): Promise<{
+export async function getTrialStats(
+  userId: string,
+  startedAt: number,
+): Promise<{
   workouts: number;
   pagesRead: number;
   stepsTotal: number;
@@ -1673,25 +1924,25 @@ export async function getTrialStats(userId: string, startedAt: number): Promise<
   const workoutResult = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM workout_sessions
      WHERE user_id = ? AND started_at >= ?`,
-    [userId, startedAt]
+    [userId, startedAt],
   );
 
   const stepResult = await db.getFirstAsync<{ total: number }>(
     `SELECT COALESCE(SUM(steps), 0) as total FROM daily_steps
      WHERE user_id = ? AND date >= ?`,
-    [userId, new Date(startedAt).toISOString().split('T')[0]!]
+    [userId, new Date(startedAt).toISOString().split('T')[0]!],
   );
 
   const readingResult = await db.getFirstAsync<{ pages: number }>(
     `SELECT COALESCE(SUM(end_page - start_page), 0) as pages FROM fitmind_reading_sessions
      WHERE created_at >= ?`,
-    [startedAt]
+    [startedAt],
   );
 
   const activeDays = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(DISTINCT date) as cnt FROM daily_steps
      WHERE user_id = ? AND date >= ? AND steps > 100`,
-    [userId, new Date(startedAt).toISOString().split('T')[0]!]
+    [userId, new Date(startedAt).toISOString().split('T')[0]!],
   );
 
   return {
@@ -1708,12 +1959,12 @@ export async function getTrialStats(userId: string, startedAt: number): Promise<
 
 export async function getDailyStepsForDate(
   userId: string,
-  date: string
+  date: string,
 ): Promise<{ steps: number; active_minutes: number } | null> {
   const db = await getDatabase();
   return db.getFirstAsync<{ steps: number; active_minutes: number }>(
     `SELECT steps, active_minutes FROM daily_steps WHERE user_id = ? AND date = ?`,
-    [userId, date]
+    [userId, date],
   );
 }
 
@@ -1721,27 +1972,39 @@ export async function upsertDailySteps(
   userId: string,
   date: string,
   steps: number,
-  activeMinutes: number
+  activeMinutes: number,
 ): Promise<void> {
-  const db = await getDatabase();
   const id = await generateSecureId('steps');
-  await db.runAsync(
-    `INSERT INTO daily_steps (id, user_id, date, steps, active_minutes)
-     VALUES (?, ?, ?, ?, ?)
-     ON CONFLICT(user_id, date) DO UPDATE SET steps = ?, active_minutes = ?`,
-    [id, userId, date, steps, activeMinutes, steps, activeMinutes]
-  );
+  const walId = await walService.logIntent({
+    operation: 'upsert_daily_steps',
+    table_name: 'daily_steps',
+    record_id: id,
+    payload: { user_id: userId, date, steps, active_minutes: activeMinutes },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `INSERT INTO daily_steps (id, user_id, date, steps, active_minutes)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(user_id, date) DO UPDATE SET steps = ?, active_minutes = ?`,
+      [id, userId, date, steps, activeMinutes, steps, activeMinutes],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 export async function getStepHistory(
   userId: string,
-  days: number
+  days: number,
 ): Promise<Array<{ date: string; steps: number; active_minutes: number }>> {
   const db = await getDatabase();
   return db.getAllAsync<{ date: string; steps: number; active_minutes: number }>(
     `SELECT date, steps, active_minutes FROM daily_steps
      WHERE user_id = ? ORDER BY date DESC LIMIT ?`,
-    [userId, days]
+    [userId, days],
   );
 }
 
@@ -1754,36 +2017,49 @@ export async function createJogSession(params: {
   caloriesEstimate?: number | null;
   routeData?: string | null;
 }): Promise<void> {
-  const db = await getDatabase();
-
-  // Ensure user profile exists to satisfy FK constraint
-  const profile = await db.getFirstAsync<{ id: string }>(
-    `SELECT id FROM user_profile WHERE id = ?`,
-    [params.userId]
-  );
-  if (!profile) {
-    // Create a minimal default profile so the FK doesn't block jog sessions
+  const walId = await walService.logIntent({
+    operation: 'create_jog_session',
+    table_name: 'jog_sessions',
+    record_id: params.id,
+    payload: {
+      user_id: params.userId,
+      start_time: new Date(params.startTime).toISOString(),
+      distance_meters: params.distanceMeters,
+      avg_pace_per_km: params.avgPacePerKm,
+      calories_estimate: params.caloriesEstimate,
+      route_data: params.routeData,
+    },
+  });
+  try {
+    const db = await getDatabase();
+    // Ensure user profile exists to satisfy FK constraint
+    const profile = await db.getFirstAsync<{ id: string }>(`SELECT id FROM user_profile WHERE id = ?`, [params.userId]);
+    if (!profile) {
+      await db.runAsync(
+        `INSERT OR IGNORE INTO user_profile (id, goal, experience, training_days_per_week, time_per_session_minutes, locked)
+         VALUES (?, 'body_control', 'intermediate', 4, 30, 1)`,
+        [params.userId],
+      );
+    }
     await db.runAsync(
-      `INSERT OR IGNORE INTO user_profile (id, goal, experience, training_days_per_week, time_per_session_minutes, locked)
-       VALUES (?, 'body_control', 'intermediate', 4, 30, 1)`,
-      [params.userId]
+      `INSERT INTO jog_sessions
+       (id, user_id, start_time, distance_meters, avg_pace_per_km, calories_estimate, route_data, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+      [
+        params.id,
+        params.userId,
+        new Date(params.startTime).toISOString(),
+        params.distanceMeters,
+        params.avgPacePerKm ?? null,
+        params.caloriesEstimate ?? null,
+        params.routeData ?? null,
+      ],
     );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
   }
-
-  await db.runAsync(
-    `INSERT INTO jog_sessions
-     (id, user_id, start_time, distance_meters, avg_pace_per_km, calories_estimate, route_data, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
-    [
-      params.id,
-      params.userId,
-      new Date(params.startTime).toISOString(),
-      params.distanceMeters,
-      params.avgPacePerKm ?? null,
-      params.caloriesEstimate ?? null,
-      params.routeData ?? null,
-    ]
-  );
 }
 
 export async function endJogSession(params: {
@@ -1794,25 +2070,43 @@ export async function endJogSession(params: {
   caloriesEstimate?: number | null;
   routeData?: string | null;
 }): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE jog_sessions
-     SET end_time = ?, distance_meters = ?, avg_pace_per_km = ?, calories_estimate = ?, route_data = ?
-     WHERE id = ?`,
-    [
-      new Date(params.endTime).toISOString(),
-      params.distanceMeters,
-      params.avgPacePerKm ?? null,
-      params.caloriesEstimate ?? null,
-      params.routeData ?? null,
-      params.id,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'end_jog_session',
+    table_name: 'jog_sessions',
+    record_id: params.id,
+    payload: {
+      end_time: new Date(params.endTime).toISOString(),
+      distance_meters: params.distanceMeters,
+      avg_pace_per_km: params.avgPacePerKm,
+      calories_estimate: params.caloriesEstimate,
+      route_data: params.routeData,
+    },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync(
+      `UPDATE jog_sessions
+       SET end_time = ?, distance_meters = ?, avg_pace_per_km = ?, calories_estimate = ?, route_data = ?
+       WHERE id = ?`,
+      [
+        new Date(params.endTime).toISOString(),
+        params.distanceMeters,
+        params.avgPacePerKm ?? null,
+        params.caloriesEstimate ?? null,
+        params.routeData ?? null,
+        params.id,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 export async function getJogHistory(
   userId: string,
-  limit: number
+  limit: number,
 ): Promise<
   Array<{
     id: string;
@@ -1834,20 +2128,18 @@ export async function getJogHistory(
   }>(
     `SELECT id, start_time, end_time, distance_meters, avg_pace_per_km, calories_estimate
      FROM jog_sessions WHERE user_id = ? ORDER BY start_time DESC LIMIT ?`,
-    [userId, limit]
+    [userId, limit],
   );
 }
 
 /**
  * Get a jog session's route data for map display
  */
-export async function getJogRoute(
-  jogId: string
-): Promise<[number, number][] | null> {
+export async function getJogRoute(jogId: string): Promise<[number, number][] | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ route_data: string | null }>(
     `SELECT route_data FROM jog_sessions WHERE id = ?`,
-    [jogId]
+    [jogId],
   );
   if (!row?.route_data) return null;
   try {
@@ -1855,6 +2147,21 @@ export async function getJogRoute(
   } catch {
     return null;
   }
+}
+
+// ============================================
+// JOG TOTALS (aggregate stats)
+// ============================================
+
+export async function getJogTotals(userId: string): Promise<{ total: number; longest: number; runs: number } | null> {
+  const db = await getDatabase();
+  return db.getFirstAsync<{ total: number; longest: number; runs: number }>(
+    `SELECT COALESCE(SUM(distance_meters), 0) as total,
+            COALESCE(MAX(distance_meters), 0) as longest,
+            COUNT(*) as runs
+     FROM jog_sessions WHERE user_id = ? AND end_time IS NOT NULL`,
+    [userId],
+  );
 }
 
 // ============================================
@@ -1871,10 +2178,7 @@ export async function getAudioSettingsRow(userId: string): Promise<{
     voice_enabled: number;
     speech_rate: number;
     countdown_cues_enabled: number;
-  }>(
-    `SELECT * FROM audio_settings WHERE user_id = ?`,
-    [userId]
-  );
+  }>(`SELECT * FROM audio_settings WHERE user_id = ?`, [userId]);
 }
 
 export async function createAudioSettingsRow(params: {
@@ -1887,12 +2191,7 @@ export async function createAudioSettingsRow(params: {
   await db.runAsync(
     `INSERT INTO audio_settings (user_id, voice_enabled, speech_rate, countdown_cues_enabled)
      VALUES (?, ?, ?, ?)`,
-    [
-      params.userId,
-      params.voiceEnabled ? 1 : 0,
-      params.speechRate,
-      params.countdownCuesEnabled ? 1 : 0,
-    ]
+    [params.userId, params.voiceEnabled ? 1 : 0, params.speechRate, params.countdownCuesEnabled ? 1 : 0],
   );
 }
 
@@ -1907,12 +2206,7 @@ export async function updateAudioSettingsRow(params: {
     `UPDATE audio_settings
      SET voice_enabled = ?, speech_rate = ?, countdown_cues_enabled = ?, updated_at = datetime('now')
      WHERE user_id = ?`,
-    [
-      params.voiceEnabled ? 1 : 0,
-      params.speechRate,
-      params.countdownCuesEnabled ? 1 : 0,
-      params.userId,
-    ]
+    [params.voiceEnabled ? 1 : 0, params.speechRate, params.countdownCuesEnabled ? 1 : 0, params.userId],
   );
 }
 
@@ -1920,10 +2214,7 @@ export async function updateAudioSettingsRow(params: {
 // WORKOUT GENERATOR SUPPORT
 // ============================================
 
-export async function getRecentlyTrainedMuscles(
-  userId: string,
-  sinceIso: string
-): Promise<string[]> {
+export async function getRecentlyTrainedMuscles(userId: string, sinceIso: string): Promise<string[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<{ muscle: string }>(
     `SELECT DISTINCT em.muscle
@@ -1931,22 +2222,19 @@ export async function getRecentlyTrainedMuscles(
      JOIN workout_sessions ws ON se.session_id = ws.id
      JOIN exercise_muscles em ON se.exercise_id = em.exercise_id
      WHERE ws.user_id = ? AND ws.started_at > ? AND em.is_primary = 1`,
-    [userId, sinceIso]
+    [userId, sinceIso],
   );
   return rows.map((r) => r.muscle);
 }
 
-export async function getRecentExerciseIds(
-  userId: string,
-  sinceIso: string
-): Promise<string[]> {
+export async function getRecentExerciseIds(userId: string, sinceIso: string): Promise<string[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<{ exercise_id: string }>(
     `SELECT DISTINCT se.exercise_id
      FROM session_exercises se
      JOIN workout_sessions ws ON se.session_id = ws.id
      WHERE ws.user_id = ? AND ws.started_at > ?`,
-    [userId, sinceIso]
+    [userId, sinceIso],
   );
   return rows.map((r) => r.exercise_id);
 }
@@ -1956,44 +2244,70 @@ export async function getRecentExerciseIds(
 // ============================================
 
 export async function saveBodyCraftAlgorithm(algo: BodyCraftAlgorithm): Promise<void> {
-  const db = await getDatabase();
-
-  await db.runAsync(
-    'UPDATE body_craft_algorithms SET active = 0 WHERE user_id = ? AND active = 1',
-    [algo.user_id]
-  );
-
-  await db.runAsync(
-    `INSERT INTO body_craft_algorithms (
-      id, user_id, body_type, goal_type, timeline_months,
-      muscle_priorities, recommended_training_split, training_days_per_week,
-      calories_target, protein_g, carbs_g, fats_g,
-      daily_water_liters, sleep_hours, cardio_minutes_per_week,
-      exercise_category_weights, weekly_schedule, nutrition_tips,
-      active, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
-    [
-      algo.id,
-      algo.user_id,
-      algo.body_type,
-      algo.goal_type,
-      algo.timeline_months,
-      JSON.stringify(algo.muscle_priorities),
-      algo.recommended_training_split,
-      algo.training_days_per_week,
-      algo.calories_target,
-      algo.protein_g,
-      algo.carbs_g,
-      algo.fats_g,
-      algo.daily_water_liters,
-      algo.sleep_hours,
-      algo.cardio_minutes_per_week,
-      JSON.stringify(algo.exercise_category_weights),
-      JSON.stringify(algo.weekly_schedule),
-      JSON.stringify(algo.nutrition_tips),
-      algo.created_at,
-    ]
-  );
+  const walId = await walService.logIntent({
+    operation: 'save_body_craft_algorithm',
+    table_name: 'body_craft_algorithms',
+    record_id: algo.id,
+    payload: {
+      user_id: algo.user_id,
+      body_type: algo.body_type,
+      goal_type: algo.goal_type,
+      timeline_months: algo.timeline_months,
+      muscle_priorities: JSON.stringify(algo.muscle_priorities),
+      recommended_training_split: algo.recommended_training_split,
+      training_days_per_week: algo.training_days_per_week,
+      calories_target: algo.calories_target,
+      protein_g: algo.protein_g,
+      carbs_g: algo.carbs_g,
+      fats_g: algo.fats_g,
+      daily_water_liters: algo.daily_water_liters,
+      sleep_hours: algo.sleep_hours,
+      cardio_minutes_per_week: algo.cardio_minutes_per_week,
+      exercise_category_weights: JSON.stringify(algo.exercise_category_weights),
+      weekly_schedule: JSON.stringify(algo.weekly_schedule),
+      nutrition_tips: JSON.stringify(algo.nutrition_tips),
+      created_at: algo.created_at,
+    },
+  });
+  try {
+    const db = await getDatabase();
+    await db.runAsync('UPDATE body_craft_algorithms SET active = 0 WHERE user_id = ? AND active = 1', [algo.user_id]);
+    await db.runAsync(
+      `INSERT INTO body_craft_algorithms (
+        id, user_id, body_type, goal_type, timeline_months,
+        muscle_priorities, recommended_training_split, training_days_per_week,
+        calories_target, protein_g, carbs_g, fats_g,
+        daily_water_liters, sleep_hours, cardio_minutes_per_week,
+        exercise_category_weights, weekly_schedule, nutrition_tips,
+        active, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+      [
+        algo.id,
+        algo.user_id,
+        algo.body_type,
+        algo.goal_type,
+        algo.timeline_months,
+        JSON.stringify(algo.muscle_priorities),
+        algo.recommended_training_split,
+        algo.training_days_per_week,
+        algo.calories_target,
+        algo.protein_g,
+        algo.carbs_g,
+        algo.fats_g,
+        algo.daily_water_liters,
+        algo.sleep_hours,
+        algo.cardio_minutes_per_week,
+        JSON.stringify(algo.exercise_category_weights),
+        JSON.stringify(algo.weekly_schedule),
+        JSON.stringify(algo.nutrition_tips),
+        algo.created_at,
+      ],
+    );
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
+  }
 }
 
 export async function getActiveBodyCraftAlgorithm(userId: string): Promise<BodyCraftAlgorithm | null> {
@@ -2001,13 +2315,17 @@ export async function getActiveBodyCraftAlgorithm(userId: string): Promise<BodyC
 
   const row = await db.getFirstAsync<Record<string, any>>(
     'SELECT * FROM body_craft_algorithms WHERE user_id = ? AND active = 1 ORDER BY created_at DESC LIMIT 1',
-    [userId]
+    [userId],
   );
 
   if (!row) return null;
 
   const safeParse = (str: string, fallback: any = []) => {
-    try { return JSON.parse(str); } catch { return fallback; }
+    try {
+      return JSON.parse(str);
+    } catch {
+      return fallback;
+    }
   };
 
   return {
@@ -2033,10 +2351,7 @@ export async function getActiveBodyCraftAlgorithm(userId: string): Promise<BodyC
   };
 }
 
-export async function applyBodyCraftAlgorithmToProfile(
-  userId: string,
-  algo: BodyCraftAlgorithm
-): Promise<void> {
+export async function applyBodyCraftAlgorithmToProfile(userId: string, algo: BodyCraftAlgorithm): Promise<void> {
   const db = await getDatabase();
   const goalToCategory: Record<string, string> = {
     lean_athletic: 'body_control',
@@ -2050,7 +2365,7 @@ export async function applyBodyCraftAlgorithmToProfile(
 
   await db.runAsync(
     `UPDATE user_profile SET goal = ?, training_days_per_week = ?, updated_at = datetime('now') WHERE id = ?`,
-    [mappedGoal, algo.training_days_per_week, userId]
+    [mappedGoal, algo.training_days_per_week, userId],
   );
 }
 
@@ -2063,7 +2378,7 @@ export async function getWorkoutCountSince(timestamp: number): Promise<number> {
   const sinceIso = new Date(timestamp).toISOString();
   const row = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM workout_sessions WHERE started_at >= ?`,
-    [sinceIso]
+    [sinceIso],
   );
   return row?.cnt ?? 0;
 }
@@ -2071,7 +2386,7 @@ export async function getWorkoutCountSince(timestamp: number): Promise<number> {
 export async function getAverageFatigueLevel(): Promise<number | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ avg_fatigue: number }>(
-    `SELECT AVG(fatigue_level) as avg_fatigue FROM muscle_fatigue`
+    `SELECT AVG(fatigue_level) as avg_fatigue FROM muscle_fatigue`,
   );
   return row?.avg_fatigue ?? null;
 }
@@ -2080,18 +2395,20 @@ export async function getWorkoutStreakCurrent(userId: string): Promise<number> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ current_streak: number }>(
     `SELECT current_streak FROM workout_streaks WHERE user_id = ?`,
-    [userId]
+    [userId],
   );
   return row?.current_streak ?? 0;
 }
 
-export async function getRecoveryScoresSince(since: number): Promise<Array<{ recovery_score: number; updated_at: number }>> {
+export async function getRecoveryScoresSince(
+  since: number,
+): Promise<Array<{ recovery_score: number; updated_at: number }>> {
   const db = await getDatabase();
   const sinceIso = new Date(since).toISOString();
   const rows = await db.getAllAsync<{ recovery_score: number; updated_at: string }>(
     `SELECT (100 - fatigue_level) as recovery_score, updated_at FROM muscle_fatigue
      WHERE updated_at > ? ORDER BY updated_at DESC LIMIT 30`,
-    [sinceIso]
+    [sinceIso],
   );
 
   return rows.map((row) => ({
@@ -2108,7 +2425,7 @@ export async function getProgressExerciseIds(userId: string): Promise<string[]> 
   const db = await getDatabase();
   const rows = await db.getAllAsync<{ exercise_id: string }>(
     `SELECT DISTINCT exercise_id FROM progress_records WHERE user_id = ?`,
-    [userId]
+    [userId],
   );
   return rows.map((r) => r.exercise_id);
 }
@@ -2135,26 +2452,20 @@ export async function insertEncryptedHealthRow(params: {
   await db.runAsync(
     `INSERT INTO encrypted_health_data (id, category, data_blob, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?)`,
-    [params.id, params.category, params.data_blob, params.created_at, params.updated_at]
+    [params.id, params.category, params.data_blob, params.created_at, params.updated_at],
   );
 }
 
 export async function getEncryptedHealthRow(id: string): Promise<EncryptedRow | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<EncryptedRow>(
-    `SELECT * FROM encrypted_health_data WHERE id = ?`,
-    [id]
-  );
+  return db.getFirstAsync<EncryptedRow>(`SELECT * FROM encrypted_health_data WHERE id = ?`, [id]);
 }
 
-export async function getEncryptedHealthRowsByCategory(
-  category: string,
-  limit: number
-): Promise<EncryptedRow[]> {
+export async function getEncryptedHealthRowsByCategory(category: string, limit: number): Promise<EncryptedRow[]> {
   const db = await getDatabase();
   return db.getAllAsync<EncryptedRow>(
     `SELECT * FROM encrypted_health_data WHERE category = ? ORDER BY created_at DESC LIMIT ?`,
-    [category, limit]
+    [category, limit],
   );
 }
 
@@ -2164,17 +2475,16 @@ export async function updateEncryptedHealthRow(params: {
   updated_at: number;
 }): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE encrypted_health_data SET data_blob = ?, updated_at = ? WHERE id = ?`,
-    [params.data_blob, params.updated_at, params.id]
-  );
+  await db.runAsync(`UPDATE encrypted_health_data SET data_blob = ?, updated_at = ? WHERE id = ?`, [
+    params.data_blob,
+    params.updated_at,
+    params.id,
+  ]);
 }
 
 export async function getAllEncryptedHealthRows(): Promise<Array<{ id: string; data_blob: string }>> {
   const db = await getDatabase();
-  return db.getAllAsync<{ id: string; data_blob: string }>(
-    `SELECT id, data_blob FROM encrypted_health_data`
-  );
+  return db.getAllAsync<{ id: string; data_blob: string }>(`SELECT id, data_blob FROM encrypted_health_data`);
 }
 
 export async function insertEncryptedAIConversationRow(params: {
@@ -2203,13 +2513,13 @@ export async function insertEncryptedAIConversationRow(params: {
       params.tokens_used ?? 0,
       params.processing_time_ms ?? 0,
       params.created_at,
-    ]
+    ],
   );
 }
 
 export async function getEncryptedAIConversations(
   personality: 'COACH' | 'PROFESSOR',
-  limit: number
+  limit: number,
 ): Promise<Array<{ id: string; query_blob: string; response_blob: string; created_at: number }>> {
   const db = await getDatabase();
   return db.getAllAsync<{
@@ -2222,7 +2532,7 @@ export async function getEncryptedAIConversations(
      FROM encrypted_ai_conversations
      WHERE ai_personality = ?
      ORDER BY created_at DESC LIMIT ?`,
-    [personality, limit]
+    [personality, limit],
   );
 }
 
@@ -2232,10 +2542,24 @@ export async function updateEncryptedAIConversationRow(params: {
   response_blob: string;
 }): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE encrypted_ai_conversations SET query_blob = ?, response_blob = ? WHERE id = ?`,
-    [params.query_blob, params.response_blob, params.id]
+  await db.runAsync(`UPDATE encrypted_ai_conversations SET query_blob = ?, response_blob = ? WHERE id = ?`, [
+    params.query_blob,
+    params.response_blob,
+    params.id,
+  ]);
+}
+
+/** Delete AI conversations older than the given Unix epoch timestamp */
+export async function deleteOldAIConversations(
+  personality: 'COACH' | 'PROFESSOR',
+  olderThanMs: number,
+): Promise<number> {
+  const db = await getDatabase();
+  const result = await db.runAsync(
+    `DELETE FROM encrypted_ai_conversations WHERE ai_personality = ? AND created_at < ?`,
+    [personality, olderThanMs],
   );
+  return result.changes;
 }
 
 export async function getAllEncryptedAIConversationRows(): Promise<
@@ -2243,7 +2567,7 @@ export async function getAllEncryptedAIConversationRows(): Promise<
 > {
   const db = await getDatabase();
   return db.getAllAsync<{ id: string; query_blob: string; response_blob: string }>(
-    `SELECT id, query_blob, response_blob FROM encrypted_ai_conversations`
+    `SELECT id, query_blob, response_blob FROM encrypted_ai_conversations`,
   );
 }
 
@@ -2259,23 +2583,13 @@ export async function insertHealthAlertRow(params: {
   await db.runAsync(
     `INSERT INTO health_alerts (id, alert_type, severity, data_blob, location_blob, created_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [
-      params.id,
-      params.alert_type,
-      params.severity,
-      params.data_blob,
-      params.location_blob,
-      params.created_at,
-    ]
+    [params.id, params.alert_type, params.severity, params.data_blob, params.location_blob, params.created_at],
   );
 }
 
 export async function acknowledgeHealthAlertRow(id: string, acknowledgedAt: number): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE health_alerts SET acknowledged_at = ? WHERE id = ?`,
-    [acknowledgedAt, id]
-  );
+  await db.runAsync(`UPDATE health_alerts SET acknowledged_at = ? WHERE id = ?`, [acknowledgedAt, id]);
 }
 
 export async function getActiveHealthAlertRows(): Promise<
@@ -2290,7 +2604,7 @@ export async function getActiveHealthAlertRows(): Promise<
     created_at: number;
   }>(
     `SELECT id, alert_type, severity, data_blob, created_at
-     FROM health_alerts WHERE acknowledged_at IS NULL ORDER BY created_at DESC`
+     FROM health_alerts WHERE acknowledged_at IS NULL ORDER BY created_at DESC`,
   );
 }
 
@@ -2306,23 +2620,13 @@ export async function insertEncryptedNoteRow(params: {
   await db.runAsync(
     `INSERT INTO encrypted_notes (id, reference_type, reference_id, content_blob, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [
-      params.id,
-      params.reference_type,
-      params.reference_id,
-      params.content_blob,
-      params.created_at,
-      params.updated_at,
-    ]
+    [params.id, params.reference_type, params.reference_id, params.content_blob, params.created_at, params.updated_at],
   );
 }
 
 export async function getEncryptedNoteRow(id: string): Promise<{ content_blob: string } | null> {
   const db = await getDatabase();
-  return db.getFirstAsync<{ content_blob: string }>(
-    `SELECT content_blob FROM encrypted_notes WHERE id = ?`,
-    [id]
-  );
+  return db.getFirstAsync<{ content_blob: string }>(`SELECT content_blob FROM encrypted_notes WHERE id = ?`, [id]);
 }
 
 export async function secureDeleteEncryptedRow(params: {
@@ -2369,18 +2673,23 @@ export async function getUserInterests(userId: string): Promise<Array<{ topic: s
   const db = await getDatabase();
   return db.getAllAsync<{ topic: string; priority: number }>(
     'SELECT topic, priority FROM user_interests WHERE user_id = ? ORDER BY priority DESC',
-    [userId]
+    [userId],
   );
 }
 
-export async function setUserInterests(userId: string, interests: Array<{ topic: string; priority: number }>): Promise<void> {
+export async function setUserInterests(
+  userId: string,
+  interests: Array<{ topic: string; priority: number }>,
+): Promise<void> {
   const db = await getDatabase();
   await db.runAsync('DELETE FROM user_interests WHERE user_id = ?', [userId]);
   for (const interest of interests) {
-    await db.runAsync(
-      'INSERT INTO user_interests (user_id, topic, priority, created_at) VALUES (?, ?, ?, ?)',
-      [userId, interest.topic, interest.priority, Date.now()]
-    );
+    await db.runAsync('INSERT INTO user_interests (user_id, topic, priority, created_at) VALUES (?, ?, ?, ?)', [
+      userId,
+      interest.topic,
+      interest.priority,
+      Date.now(),
+    ]);
   }
 }
 
@@ -2388,67 +2697,100 @@ export async function setUserInterests(userId: string, interests: Array<{ topic:
 // USER PERSONAL GOALS (v17)
 // ============================================
 
-export async function getUserPersonalGoals(userId: string, status?: 'active' | 'completed' | 'paused'): Promise<Array<{ id: string; goal_text: string; category: string; status: string; created_at: number; updated_at: number }>> {
+export async function getUserPersonalGoals(
+  userId: string,
+  status?: 'active' | 'completed' | 'paused',
+): Promise<
+  Array<{ id: string; goal_text: string; category: string; status: string; created_at: number; updated_at: number }>
+> {
   const db = await getDatabase();
   if (status) {
     return db.getAllAsync(
       'SELECT id, goal_text, category, status, created_at, updated_at FROM user_personal_goals WHERE user_id = ? AND status = ? ORDER BY updated_at DESC',
-      [userId, status]
+      [userId, status],
     );
   }
   return db.getAllAsync(
     'SELECT id, goal_text, category, status, created_at, updated_at FROM user_personal_goals WHERE user_id = ? ORDER BY updated_at DESC',
-    [userId]
+    [userId],
   );
 }
 
 export async function addUserPersonalGoal(userId: string, goalText: string, category: string): Promise<string> {
   const db = await getDatabase();
-  const id = `goal_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const id = await generateSecureId('goal');
   const now = Date.now();
   await db.runAsync(
     'INSERT INTO user_personal_goals (id, user_id, goal_text, category, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [id, userId, goalText, category, 'active', now, now]
+    [id, userId, goalText, category, 'active', now, now],
   );
   return id;
 }
 
-export async function updateUserPersonalGoalStatus(goalId: string, status: 'active' | 'completed' | 'paused'): Promise<void> {
+export async function updateUserPersonalGoalStatus(
+  goalId: string,
+  status: 'active' | 'completed' | 'paused',
+): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    'UPDATE user_personal_goals SET status = ?, updated_at = ? WHERE id = ?',
-    [status, Date.now(), goalId]
-  );
+  await db.runAsync('UPDATE user_personal_goals SET status = ?, updated_at = ? WHERE id = ?', [
+    status,
+    Date.now(),
+    goalId,
+  ]);
 }
 
 // ============================================
 // MIND XP (v17)
 // ============================================
 
-export async function getMindXP(userId: string): Promise<{ total_mind_xp: number; mind_level: number; pages_read_total: number; flashcards_reviewed_total: number; documents_completed: number } | null> {
+export async function getMindXP(
+  userId: string,
+): Promise<{
+  total_mind_xp: number;
+  mind_level: number;
+  pages_read_total: number;
+  flashcards_reviewed_total: number;
+  documents_completed: number;
+} | null> {
   const db = await getDatabase();
   return db.getFirstAsync(
     'SELECT total_mind_xp, mind_level, pages_read_total, flashcards_reviewed_total, documents_completed FROM mind_xp WHERE user_id = ?',
-    [userId]
+    [userId],
   );
 }
 
-export async function awardMindXP(userId: string, xpAmount: number, source: 'reading' | 'flashcard' | 'document_complete'): Promise<{ total_mind_xp: number; mind_level: number; levelUp: boolean }> {
+export async function awardMindXP(
+  userId: string,
+  xpAmount: number,
+  source: 'reading' | 'flashcard' | 'document_complete',
+): Promise<{ total_mind_xp: number; mind_level: number; levelUp: boolean }> {
   const db = await getDatabase();
   const MIND_XP_PER_LEVEL = 200;
   const now = Date.now();
 
   // Upsert mind_xp row
-  const existing = await db.getFirstAsync<{ total_mind_xp: number; mind_level: number; pages_read_total: number; flashcards_reviewed_total: number; documents_completed: number }>(
-    'SELECT * FROM mind_xp WHERE user_id = ?', [userId]
-  );
+  const existing = await db.getFirstAsync<{
+    total_mind_xp: number;
+    mind_level: number;
+    pages_read_total: number;
+    flashcards_reviewed_total: number;
+    documents_completed: number;
+  }>('SELECT * FROM mind_xp WHERE user_id = ?', [userId]);
 
   if (!existing) {
     const newXP = xpAmount;
     const level = Math.floor(newXP / MIND_XP_PER_LEVEL) + 1;
     await db.runAsync(
       'INSERT INTO mind_xp (user_id, total_mind_xp, mind_level, pages_read_total, flashcards_reviewed_total, documents_completed, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [userId, newXP, level, source === 'reading' ? 1 : 0, source === 'flashcard' ? 1 : 0, source === 'document_complete' ? 1 : 0, now]
+      [
+        userId,
+        newXP,
+        level,
+        source === 'reading' ? 1 : 0,
+        source === 'flashcard' ? 1 : 0,
+        source === 'document_complete' ? 1 : 0,
+        now,
+      ],
     );
     return { total_mind_xp: newXP, mind_level: level, levelUp: level > 1 };
   }
@@ -2462,7 +2804,7 @@ export async function awardMindXP(userId: string, xpAmount: number, source: 'rea
 
   await db.runAsync(
     `UPDATE mind_xp SET total_mind_xp = ?, mind_level = ?, pages_read_total = pages_read_total + ?, flashcards_reviewed_total = flashcards_reviewed_total + ?, documents_completed = documents_completed + ?, updated_at = ? WHERE user_id = ?`,
-    [newTotal, newLevel, incPages, incFlash, incDocs, now, userId]
+    [newTotal, newLevel, incPages, incFlash, incDocs, now, userId],
   );
 
   return { total_mind_xp: newTotal, mind_level: newLevel, levelUp: newLevel > oldLevel };
@@ -2472,19 +2814,25 @@ export async function awardMindXP(userId: string, xpAmount: number, source: 'rea
 // DOCUMENT IMPORTANCE (v17)
 // ============================================
 
-export async function setDocumentImportance(documentId: string, score: number, matchedInterests: string[]): Promise<void> {
+export async function setDocumentImportance(
+  documentId: string,
+  score: number,
+  matchedInterests: string[],
+): Promise<void> {
   const db = await getDatabase();
   await db.runAsync(
     `INSERT OR REPLACE INTO document_importance (document_id, importance_score, matched_interests, auto_recommended, scanned_at) VALUES (?, ?, ?, 1, ?)`,
-    [documentId, Math.max(0, Math.min(100, score)), JSON.stringify(matchedInterests), Date.now()]
+    [documentId, Math.max(0, Math.min(100, score)), JSON.stringify(matchedInterests), Date.now()],
   );
 }
 
-export async function getDocumentImportance(documentId: string): Promise<{ importance_score: number; matched_interests: string; auto_recommended: number } | null> {
+export async function getDocumentImportance(
+  documentId: string,
+): Promise<{ importance_score: number; matched_interests: string; auto_recommended: number } | null> {
   const db = await getDatabase();
   return db.getFirstAsync(
     'SELECT importance_score, matched_interests, auto_recommended FROM document_importance WHERE document_id = ?',
-    [documentId]
+    [documentId],
   );
 }
 
@@ -2493,43 +2841,55 @@ export async function getDocumentImportance(documentId: string): Promise<{ impor
  * Preserves exercise catalogue (seed data) but removes all user-generated content.
  */
 export async function deleteAllUserData(userId: string): Promise<void> {
-  const db = await getDatabase();
-  const tables = [
-    { table: 'session_exercises', where: `session_id IN (SELECT id FROM workout_sessions WHERE user_id = ?)` },
-    { table: 'workout_sessions', where: `user_id = ?` },
-    { table: 'progress_records', where: `user_id = ?` },
-    { table: 'muscle_fatigue', where: `user_id = ?` },
-    { table: 'user_injuries', where: `user_id = ?` },
-    { table: 'user_equipment', where: `user_id = ?` },
-    { table: 'workout_streaks', where: `user_id = ?` },
-    { table: 'daily_steps', where: `user_id = ?` },
-    { table: 'jog_sessions', where: `user_id = ?` },
-    { table: 'audio_settings', where: `user_id = ?` },
-    { table: 'body_craft_algorithms', where: `user_id = ?` },
-    { table: 'subscription_state', where: `user_id = ?` },
-    { table: 'trial_state', where: `user_id = ?` },
-    { table: 'encrypted_health_data', where: null },
-    { table: 'encrypted_ai_conversations', where: null },
-    { table: 'encrypted_notes', where: null },
-    { table: 'health_alerts', where: `user_id = ?` },
-    { table: 'heart_rate_readings', where: `user_id = ?` },
-    { table: 'anomaly_log', where: `user_id = ?` },
-    { table: 'daily_health_summaries', where: `user_id = ?` },
-    { table: 'fitmind_reading_sessions', where: null },
-    { table: 'fitmind_annotations', where: null },
-    { table: 'fitmind_flashcards', where: null },
-    { table: 'fitmind_reading_goals', where: `user_id = ?` },
-    { table: 'fitmind_reading_streaks', where: `user_id = ?` },
-    { table: 'fitmind_documents', where: null },
-    { table: 'document_content_hashes', where: null },
-    { table: 'app_state', where: null },
-    { table: 'user_profile', where: `id = ?` },
-  ];
-  for (const { table, where } of tables) {
-    if (where) {
-      await db.runAsync(`DELETE FROM ${table} WHERE ${where}`, userId);
-    } else {
-      await db.runAsync(`DELETE FROM ${table}`);
+  const walId = await walService.logIntent({
+    operation: 'delete_all_user_data',
+    table_name: 'user_profile',
+    record_id: userId,
+    payload: {},
+  });
+  try {
+    const db = await getDatabase();
+    const tables = [
+      { table: 'session_exercises', where: `session_id IN (SELECT id FROM workout_sessions WHERE user_id = ?)` },
+      { table: 'workout_sessions', where: `user_id = ?` },
+      { table: 'progress_records', where: `user_id = ?` },
+      { table: 'muscle_fatigue', where: `user_id = ?` },
+      { table: 'user_injuries', where: `user_id = ?` },
+      { table: 'user_equipment', where: `user_id = ?` },
+      { table: 'workout_streaks', where: `user_id = ?` },
+      { table: 'daily_steps', where: `user_id = ?` },
+      { table: 'jog_sessions', where: `user_id = ?` },
+      { table: 'audio_settings', where: `user_id = ?` },
+      { table: 'body_craft_algorithms', where: `user_id = ?` },
+      { table: 'subscription_state', where: `user_id = ?` },
+      { table: 'trial_state', where: `user_id = ?` },
+      { table: 'encrypted_health_data', where: null },
+      { table: 'encrypted_ai_conversations', where: null },
+      { table: 'encrypted_notes', where: null },
+      { table: 'health_alerts', where: `user_id = ?` },
+      { table: 'heart_rate_readings', where: `user_id = ?` },
+      { table: 'anomaly_log', where: `user_id = ?` },
+      { table: 'daily_health_summaries', where: `user_id = ?` },
+      { table: 'fitmind_reading_sessions', where: null },
+      { table: 'fitmind_annotations', where: null },
+      { table: 'fitmind_flashcards', where: null },
+      { table: 'fitmind_reading_goals', where: `user_id = ?` },
+      { table: 'fitmind_reading_streaks', where: `user_id = ?` },
+      { table: 'fitmind_documents', where: null },
+      { table: 'document_content_hashes', where: null },
+      { table: 'app_state', where: null },
+      { table: 'user_profile', where: `id = ?` },
+    ];
+    for (const { table, where } of tables) {
+      if (where) {
+        await db.runAsync(`DELETE FROM ${table} WHERE ${where}`, userId);
+      } else {
+        await db.runAsync(`DELETE FROM ${table}`);
+      }
     }
+    await walService.commit(walId);
+  } catch (error) {
+    await walService.markFailed(walId).catch(() => {});
+    throw error;
   }
 }

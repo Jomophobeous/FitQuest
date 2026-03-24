@@ -10,10 +10,7 @@ export default function ThemeToggle() {
 
   return (
     <Card variant={theme.isDark ? 'elevated' : 'flat'}>
-      <TouchableOpacity
-        onPress={toggleTheme}
-        style={[styles.container, { padding: theme.spacing[4] }]}
-      >
+      <TouchableOpacity onPress={toggleTheme} style={[styles.container, { padding: theme.spacing[4] }]}>
         <View style={styles.content}>
           <View style={styles.iconContainer}>
             <MaterialCommunityIcons
@@ -31,11 +28,7 @@ export default function ThemeToggle() {
             </ThemedText>
           </View>
         </View>
-        <MaterialCommunityIcons
-          name="chevron-right"
-          size={24}
-          color={theme.colors.textMuted}
-        />
+        <MaterialCommunityIcons name="chevron-right" size={24} color={theme.colors.textMuted} />
       </TouchableOpacity>
     </Card>
   );

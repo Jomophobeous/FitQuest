@@ -1,6 +1,6 @@
 /**
  * Regional Food Database — Lazy-loaded from JSON asset.
- * 
+ *
  * Data is NOT parsed at import time. The 189KB JSON is loaded on first access
  * via the getter, keeping the JS bundle lean at startup.
  */

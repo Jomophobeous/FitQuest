@@ -83,8 +83,8 @@ class DataSyncService {
    * Subscribe to multiple channels at once
    */
   subscribeMany(channels: DataChannel[], listener: DataListener): () => void {
-    const unsubs = channels.map(ch => this.subscribe(ch, listener));
-    return () => unsubs.forEach(fn => fn());
+    const unsubs = channels.map((ch) => this.subscribe(ch, listener));
+    return () => unsubs.forEach((fn) => fn());
   }
 
   /**
@@ -251,15 +251,12 @@ export function notifySettingsChanged(key: string): void {
  */
 import { useEffect, useRef, useMemo } from 'react';
 
-export function useDataSync(
-  channels: DataChannel | DataChannel[],
-  onUpdate: (event: DataEvent) => void,
-): void {
+export function useDataSync(channels: DataChannel | DataChannel[], onUpdate: (event: DataEvent) => void): void {
   // Memoize channelArray to prevent recreation on every render
   const channelArray = useMemo(
     () => (Array.isArray(channels) ? channels : [channels]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [Array.isArray(channels) ? channels.join(',') : channels]
+    [Array.isArray(channels) ? channels.join(',') : channels],
   );
   const callbackRef = useRef(onUpdate);
   callbackRef.current = onUpdate;

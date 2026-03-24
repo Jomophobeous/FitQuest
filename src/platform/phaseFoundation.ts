@@ -23,11 +23,7 @@ function clampPercent(value: number): number {
 }
 
 export function computePhaseCompletion(pillars: PhasePillarProgress): number {
-  const weighted =
-    pillars.architecture * 0.35 +
-    pillars.data * 0.25 +
-    pillars.product * 0.20 +
-    pillars.validation * 0.20;
+  const weighted = pillars.architecture * 0.35 + pillars.data * 0.25 + pillars.product * 0.2 + pillars.validation * 0.2;
   return clampPercent(weighted);
 }
 
@@ -35,7 +31,7 @@ export function buildPhaseStatus(
   phase: PhaseId,
   name: string,
   pillars: PhasePillarProgress,
-  blockers: string[] = []
+  blockers: string[] = [],
 ): PhaseFoundationStatus {
   return {
     phase,

@@ -39,10 +39,7 @@ function isSyncConfigured(): boolean {
 }
 
 async function digestObject(input: unknown): Promise<string> {
-  return Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    JSON.stringify(input)
-  );
+  return Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, JSON.stringify(input));
 }
 
 function parseNumber(value: string | null, fallback: number): number {
@@ -51,10 +48,7 @@ function parseNumber(value: string | null, fallback: number): number {
   return Math.floor(n);
 }
 
-export function mergeEventsById(
-  localEvents: SyncOutcomeEvent[],
-  remoteEvents: SyncOutcomeEvent[]
-): SyncOutcomeEvent[] {
+export function mergeEventsById(localEvents: SyncOutcomeEvent[], remoteEvents: SyncOutcomeEvent[]): SyncOutcomeEvent[] {
   const out = new Map<string, SyncOutcomeEvent>();
   for (const event of [...localEvents, ...remoteEvents]) {
     if (!event?.id) continue;
@@ -124,9 +118,12 @@ export async function appendOutcomeEvents(events: SyncOutcomeEvent[]): Promise<{
 
 export async function fetchOutcomeEvents(since = 0, limit = 200): Promise<SyncOutcomeEvent[]> {
   if (!isSyncConfigured()) return [];
-  const res = await fetchWithAuth(`/sync/events?since=${Math.max(0, Math.floor(since))}&limit=${Math.max(1, Math.floor(limit))}`, {
-    method: 'GET',
-  });
+  const res = await fetchWithAuth(
+    `/sync/events?since=${Math.max(0, Math.floor(since))}&limit=${Math.max(1, Math.floor(limit))}`,
+    {
+      method: 'GET',
+    },
+  );
   if (!res.ok) throw new Error(`[Sync] fetch events failed (${res.status})`);
   const json = (await res.json()) as { events?: Array<Record<string, unknown>> };
 
@@ -136,7 +133,7 @@ export async function fetchOutcomeEvents(since = 0, limit = 200): Promise<SyncOu
     occurred_at: Number(event.occurredAt || event.occurred_at || Date.now()),
     device_id: typeof event.device_id === 'string' ? event.device_id : null,
     state_version: typeof event.state_version === 'number' ? event.state_version : null,
-    payload: (event.payload && typeof event.payload === 'object') ? (event.payload as Record<string, unknown>) : {},
+    payload: event.payload && typeof event.payload === 'object' ? (event.payload as Record<string, unknown>) : {},
   }));
 }
 
@@ -160,7 +157,12 @@ export async function buildLocalStateMeta(userId = 'user_local_001'): Promise<Sy
       .map((entry) => ({ muscle: entry.muscle, fatigue_level: entry.fatigue_level, updated_at: entry.updated_at }))
       .sort((a, b) => a.muscle.localeCompare(b.muscle)),
     sessions: recentSessions
-      .map((session) => ({ id: session.id, started_at: session.started_at, completed_at: session.completed_at, success: session.success }))
+      .map((session) => ({
+        id: session.id,
+        started_at: session.started_at,
+        completed_at: session.completed_at,
+        success: session.success,
+      }))
       .sort((a, b) => a.started_at.localeCompare(b.started_at)),
   };
 
@@ -177,10 +179,7 @@ export async function buildLocalStateMeta(userId = 'user_local_001'): Promise<Sy
   };
 }
 
-export async function syncOnDemand(options?: {
-  userId?: string;
-  deviceId?: string;
-}): Promise<SyncDecision> {
+export async function syncOnDemand(options?: { userId?: string; deviceId?: string }): Promise<SyncDecision> {
   const effectiveUserId = options?.userId || 'user_local_001';
   const effectiveDeviceId = options?.deviceId || null;
 

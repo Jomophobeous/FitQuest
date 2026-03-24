@@ -1,9 +1,9 @@
 /**
  * FitQuest Subscription Context
- * 
+ *
  * React context + hook for subscription state across the app.
  * Wraps SubscriptionManager and provides reactive updates.
- * 
+ *
  * Access gating: uses an explicit AccessState machine to prevent UI
  * from evaluating access before subscription state is fully hydrated.
  * Waits for DatabaseProvider.isReady before initializing to avoid
@@ -20,12 +20,12 @@ import { useDatabase } from '../context/DatabaseContext';
 // ============================================
 
 /** Explicit access state machine — consumers MUST handle RESOLVING before rendering gated content */
-export type AccessState = 'RESOLVING' | 'TRIAL' | 'FULL' | 'LOCKED';
+export type AccessState = 'RESOLVING' | 'TRIAL_ACTIVE' | 'SUBSCRIBED' | 'EXPIRED';
 
 interface SubscriptionContextType {
   /** Current subscription state */
   state: SubscriptionState;
-  /** Explicit access state: RESOLVING → show loading, TRIAL/FULL → show content, LOCKED → show paywall */
+  /** Explicit access state: RESOLVING → show loading, TRIAL_ACTIVE/SUBSCRIBED → show content, EXPIRED → show paywall */
   accessState: AccessState;
   /** Whether the user has access (trial or paid). False while RESOLVING. */
   hasAccess: boolean;
@@ -199,16 +199,28 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [manager]);
 
   // ── Derived access state ──
-  // Explicit state machine: RESOLVING blocks UI, TRIAL/FULL grants access, LOCKED shows paywall
+  // Maps SubscriptionManager status to AccessState for UI gating.
+  // During trial → full access, zero paywalls.
+  // After expiry → immediate full-screen paywall lock.
   const accessState: AccessState = isLoading
     ? 'RESOLVING'
     : state.status === 'TRIAL'
-      ? 'TRIAL'
-      : state.status === 'ACTIVE' || state.status === 'LIFETIME'
-        ? 'FULL'
-        : 'LOCKED';
+      ? 'TRIAL_ACTIVE'
+      : state.status === 'ACTIVE'
+        ? 'SUBSCRIBED'
+        : 'EXPIRED';
 
-  const hasAccess = accessState === 'TRIAL' || accessState === 'FULL';
+  // DEV-ONLY: catch unmapped status values that would silently fall to EXPIRED
+  if (__DEV__ && !isLoading) {
+    const known = ['TRIAL', 'ACTIVE', 'EXPIRED'];
+    if (state.status === 'LIFETIME') {
+      console.error('[SubscriptionContext] LIFETIME status reached — no activation path should produce this');
+    } else if (!known.includes(state.status)) {
+      console.error(`[SubscriptionContext] Unknown status "${state.status}" mapped to EXPIRED — add explicit handling`);
+    }
+  }
+
+  const hasAccess = accessState === 'TRIAL_ACTIVE' || accessState === 'SUBSCRIBED';
   const trialDaysRemaining = manager?.getTrialDaysRemaining() ?? 14;
 
   const value: SubscriptionContextType = {
@@ -224,9 +236,5 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     refresh,
   };
 
-  return (
-    <SubscriptionContext.Provider value={value}>
-      {children}
-    </SubscriptionContext.Provider>
-  );
+  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 };

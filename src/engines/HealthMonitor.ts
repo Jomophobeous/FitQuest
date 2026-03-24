@@ -1,38 +1,39 @@
 /**
  * FitQuest Health Monitor
- * 
+ *
  * Continuous health monitoring service that:
  * - Tracks daily activity (steps, calories, active minutes)
  * - Monitors workout intensity and recovery
  * - Detects anomalies (sudden heart rate changes, unusual inactivity)
  * - Generates health alerts stored via encrypted database
  * - Provides daily/weekly/monthly health summaries
- * 
+ *
  * All data processed and stored on-device. Nothing leaves the phone.
  */
 
 import { SensorFusionEngine, type ActivityType, type StepData, type MotionSnapshot } from './SensorFusionEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
 import { getAppState, setAppState } from '../database/service';
+import { systemGuard } from '../services/SystemGuard';
 
 // ============================================
 // TYPES
 // ============================================
 
 export interface DailyHealthSummary {
-  date: string;                // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   totalSteps: number;
-  totalDistance: number;        // meters
-  totalCalories: number;       // kcal
+  totalDistance: number; // meters
+  totalCalories: number; // kcal
   activeMinutes: number;
   workoutCount: number;
-  avgIntensity: number;        // 0-10
+  avgIntensity: number; // 0-10
   dominantActivity: ActivityType;
-  restingHeartRate?: number;   // bpm (manual input or wearable)
-  sleepHours?: number;         // manual input
-  hydrationLiters?: number;    // manual input
-  moodScore?: number;          // 1-5
-  energyLevel?: number;        // 1-5
+  restingHeartRate?: number; // bpm (manual input or wearable)
+  sleepHours?: number; // manual input
+  hydrationLiters?: number; // manual input
+  moodScore?: number; // 1-5
+  energyLevel?: number; // 1-5
   streakDays: number;
 }
 
@@ -50,12 +51,12 @@ export interface WeeklySummary {
 }
 
 export interface HealthGoals {
-  dailySteps: number;          // default 10000
-  dailyCalories: number;       // default 500
-  dailyActiveMinutes: number;  // default 30
-  weeklyWorkouts: number;      // default 4
-  dailyWaterLiters: number;    // default 2.5
-  sleepHoursTarget: number;    // default 7.5
+  dailySteps: number; // default 10000
+  dailyCalories: number; // default 500
+  dailyActiveMinutes: number; // default 30
+  weeklyWorkouts: number; // default 4
+  dailyWaterLiters: number; // default 2.5
+  sleepHoursTarget: number; // default 7.5
 }
 
 export interface HealthAlert {
@@ -80,8 +81,8 @@ const DEFAULT_GOALS: HealthGoals = {
   sleepHoursTarget: 7.5,
 };
 
-const INACTIVITY_THRESHOLD_MINUTES = 60;   // Alert after 60 min no movement
-const OVERTRAINING_THRESHOLD_HOURS = 2.5;  // Alert after 2.5h continuous exercise
+const INACTIVITY_THRESHOLD_MINUTES = 60; // Alert after 60 min no movement
+const OVERTRAINING_THRESHOLD_HOURS = 2.5; // Alert after 2.5h continuous exercise
 
 // ============================================
 // HEALTH MONITOR SERVICE
@@ -126,6 +127,10 @@ export class HealthMonitorService {
    */
   async initialize(): Promise<void> {
     if (this.initialized) return;
+    if (!systemGuard.isReady) {
+      if (__DEV__) console.warn('[HealthMonitor] Cannot initialize — system not READY');
+      return;
+    }
 
     // Load saved goals
     await this.loadGoals();
@@ -140,9 +145,12 @@ export class HealthMonitorService {
     });
 
     // Start periodic monitoring (check for alerts every 5 min)
-    this.monitoringInterval = setInterval(() => {
-      this.checkForAlerts();
-    }, 5 * 60 * 1000);
+    this.monitoringInterval = setInterval(
+      () => {
+        this.checkForAlerts();
+      },
+      5 * 60 * 1000,
+    );
 
     this.initialized = true;
     if (__DEV__) console.log('[HealthMonitor] Initialized');
@@ -222,9 +230,10 @@ export class HealthMonitorService {
    */
   getGoalProgress(): Record<string, number> {
     return {
-      steps: Math.min(1, this.todaySteps / this.goals.dailySteps),
-      calories: Math.min(1, this.todayCalories / this.goals.dailyCalories),
-      activeMinutes: Math.min(1, this.todayActiveMinutes / this.goals.dailyActiveMinutes),
+      steps: this.goals.dailySteps > 0 ? Math.min(1, this.todaySteps / this.goals.dailySteps) : 0,
+      calories: this.goals.dailyCalories > 0 ? Math.min(1, this.todayCalories / this.goals.dailyCalories) : 0,
+      activeMinutes:
+        this.goals.dailyActiveMinutes > 0 ? Math.min(1, this.todayActiveMinutes / this.goals.dailyActiveMinutes) : 0,
     };
   }
 
@@ -277,8 +286,7 @@ export class HealthMonitorService {
     const secondHalf = stepsPerDay.slice(mid);
     const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / (firstHalf.length || 1);
     const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / (secondHalf.length || 1);
-    const trend = secondAvg > firstAvg * 1.1 ? 'IMPROVING' :
-                  secondAvg < firstAvg * 0.9 ? 'DECLINING' : 'STABLE';
+    const trend = secondAvg > firstAvg * 1.1 ? 'IMPROVING' : secondAvg < firstAvg * 0.9 ? 'DECLINING' : 'STABLE';
 
     const now = new Date();
     const weekStart = new Date(now);
@@ -362,11 +370,11 @@ export class HealthMonitorService {
     for (const alert of alerts) {
       if (this.alertsFiredToday.has(alert.type)) continue;
       this.alertsFiredToday.add(alert.type);
-      await encryptedDB.createHealthAlert(
-        alert.type,
-        alert.severity,
-        { title: alert.title, message: alert.message, action: alert.action }
-      );
+      await encryptedDB.createHealthAlert(alert.type, alert.severity, {
+        title: alert.title,
+        message: alert.message,
+        action: alert.action,
+      });
     }
   }
 
@@ -417,7 +425,7 @@ export class HealthMonitorService {
         this.todayWorkouts = (todaySummary as any).workoutCount || 0;
       }
     } catch (e) {
-      if (__DEV__) console.warn('[HealthMonitor] Failed to load today\'s summary:', e);
+      if (__DEV__) console.warn("[HealthMonitor] Failed to load today's summary:", e);
     }
   }
 

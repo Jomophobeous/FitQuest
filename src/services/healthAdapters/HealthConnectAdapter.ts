@@ -1,6 +1,6 @@
 /**
  * Health Connect Adapter (Android)
- * 
+ *
  * Implements IHealthAdapter for Android Health Connect.
  * Uses react-native-health-connect under the hood.
  * All sensitive data is written to encryptedDB.
@@ -26,6 +26,7 @@ import type {
 import { encryptedDB } from '../../security/EncryptedDatabase';
 import { captureHealthError } from '../errorTelemetry';
 import { setAppState, getAppState } from '../../database/service';
+import { featureFlags, FEATURE_FLAGS } from '../featureFlags';
 
 // Note: react-native-health-connect is installed at runtime for Android only
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,19 +64,82 @@ const SENSITIVE_CATEGORIES_SET = new Set<HealthDataCategory>([
 // HEALTH CONNECT ADAPTER
 // ============================================
 
+/**
+ * Safely execute a HealthConnect operation. Catches native crashes
+ * (UninitializedPropertyAccessException, delegate not ready, etc.) and returns fallback.
+ * Triggers quarantine on fatal native errors.
+ */
+async function safeHealthConnectCall<T>(fn: () => Promise<T>, fallback: T, label: string): Promise<T> {
+  try {
+    return await fn();
+  } catch (error: any) {
+    const msg = error?.message || String(error);
+    const code = error?.code || '';
+    // Known native crash/failure patterns — quarantine and return fallback
+    if (
+      msg.includes('UninitializedPropertyAccessException') ||
+      msg.includes('has not been initialized') ||
+      msg.includes('not linked') ||
+      msg.includes('not installed') ||
+      msg.includes('ActivityNotFoundException') ||
+      msg.includes('delegate not initialized') ||
+      code === 'HEALTH_CONNECT_DELEGATE_NOT_READY' ||
+      code === 'HEALTH_CONNECT_PERMISSION_ERROR'
+    ) {
+      if (__DEV__) console.warn(`[HealthConnect] ${label}: native failure — quarantining. ${msg.slice(0, 120)}`);
+      // Quarantine: disable HC for the rest of this session to prevent repeat crashes
+      HealthConnectAdapter.quarantine('Native failure in ' + label);
+      return fallback;
+    }
+    throw error;
+  }
+}
+
 class HealthConnectAdapter implements IHealthAdapter {
   readonly provider: HealthProvider = 'health_connect';
   private initialized = false;
   private healthConnect: HealthConnectModule | null = null;
 
+  // Quarantine: if a native crash is detected, disable all HC operations for
+  // the rest of this app session to prevent repeated crashes.
+  private static quarantined = false;
+  private static quarantineReason = '';
+
+  static quarantine(reason: string): void {
+    if (!HealthConnectAdapter.quarantined) {
+      HealthConnectAdapter.quarantined = true;
+      HealthConnectAdapter.quarantineReason = reason;
+      if (__DEV__) console.warn(`[HealthConnect] QUARANTINED: ${reason}`);
+    }
+  }
+
+  static isQuarantined(): boolean {
+    return HealthConnectAdapter.quarantined;
+  }
+
+  static getQuarantineReason(): string {
+    return HealthConnectAdapter.quarantineReason;
+  }
+
+  // Permission cache: avoids hitting native getGrantedPermissions() on every read cycle.
+  // Invalidated after PERMISSION_CACHE_TTL_MS or when requestPermissions() is called.
+  private static readonly PERMISSION_CACHE_TTL_MS = 5 * 60 * 1000; // 5 min
+  private permissionCache: Map<HealthDataCategory, { read: boolean; write: boolean }> | null = null;
+  private permissionCacheTime = 0;
+
   // ============================================
   // LIFECYCLE
   // ============================================
 
+  /** Hard kill switch: feature flag OFF → all operations return safe defaults */
+  private static isKilled(): boolean {
+    return !featureFlags.isEnabled(FEATURE_FLAGS.HEALTH_SYNC);
+  }
+
   async isAvailable(): Promise<boolean> {
-    if (Platform.OS !== 'android') {
-      return false;
-    }
+    if (HealthConnectAdapter.isKilled()) return false;
+    if (Platform.OS !== 'android') return false;
+    if (HealthConnectAdapter.quarantined) return false;
 
     try {
       const hc = await this.getHealthConnect();
@@ -88,7 +152,7 @@ class HealthConnectAdapter implements IHealthAdapter {
       // Only log as warning in dev — this is expected in Expo Go
       if (__DEV__) {
         const msg = error instanceof Error ? error.message : String(error);
-        if (msg.includes('doesn\'t seem to be linked') || msg.includes('not linked')) {
+        if (msg.includes("doesn't seem to be linked") || msg.includes('not linked')) {
           if (__DEV__) console.log('[HealthConnect] Not linked — expected in Expo Go, use dev-client build');
         } else {
           await captureHealthError(error instanceof Error ? error : String(error), {
@@ -102,7 +166,9 @@ class HealthConnectAdapter implements IHealthAdapter {
   }
 
   async initialize(): Promise<boolean> {
+    if (HealthConnectAdapter.isKilled()) return false;
     if (this.initialized) return true;
+    if (HealthConnectAdapter.quarantined) return false;
 
     try {
       const hc = await this.getHealthConnect();
@@ -128,7 +194,10 @@ class HealthConnectAdapter implements IHealthAdapter {
         available: false,
         initialized: false,
         permissions: [],
-        error: Platform.OS !== 'android' ? 'Health Connect is only available on Android' : 'Health Connect SDK not available',
+        error:
+          Platform.OS !== 'android'
+            ? 'Health Connect is only available on Android'
+            : 'Health Connect SDK not available',
       };
     }
 
@@ -137,9 +206,14 @@ class HealthConnectAdapter implements IHealthAdapter {
       available: true,
       initialized: this.initialized,
       permissions: await this.checkPermissions([
-        'steps', 'calories', 'heart_rate', 'sleep', 'workout', 'active_minutes'
+        'steps',
+        'calories',
+        'heart_rate',
+        'sleep',
+        'workout',
+        'active_minutes',
       ]),
-      lastSyncTime: await this.getLastSyncTime() || undefined,
+      lastSyncTime: (await this.getLastSyncTime()) || undefined,
     };
   }
 
@@ -147,50 +221,49 @@ class HealthConnectAdapter implements IHealthAdapter {
   // PERMISSIONS
   // ============================================
 
-  async requestPermissions(
-    categories: HealthDataCategory[],
-    readOnly = false
-  ): Promise<HealthPermission[]> {
+  async requestPermissions(categories: HealthDataCategory[], readOnly = false): Promise<HealthPermission[]> {
+    if (HealthConnectAdapter.isKilled()) return [];
+    if (HealthConnectAdapter.quarantined) {
+      if (__DEV__) console.warn('[HealthConnect] requestPermissions blocked — quarantined');
+      return [];
+    }
+
     try {
       const hc = await this.getHealthConnect();
       if (!hc) return [];
 
       await this.initialize();
 
-      const permissions = categories.map(cat => {
-        const recordType = CATEGORY_TO_RECORD_TYPE[cat];
-        const perms: Array<{ accessType: 'read' | 'write'; recordType: string }> = [
-          { accessType: 'read', recordType }
-        ];
-        if (!readOnly) {
-          perms.push({ accessType: 'write', recordType });
-        }
-        return perms;
-      }).flat();
+      const permissions = categories
+        .map((cat) => {
+          const recordType = CATEGORY_TO_RECORD_TYPE[cat];
+          const perms: Array<{ accessType: 'read' | 'write'; recordType: string }> = [
+            { accessType: 'read', recordType },
+          ];
+          if (!readOnly) {
+            perms.push({ accessType: 'write', recordType });
+          }
+          return perms;
+        })
+        .flat();
 
-      let granted: Array<{ accessType: string; recordType: string }> = [];
-      try {
-        granted = await hc.requestPermission(permissions);
-      } catch (permError: any) {
-        // Native requestPermission delegate may not be initialized (requires Activity setup)
-        const msg = permError?.message || String(permError);
-        if (msg.includes('UninitializedPropertyAccessException') || msg.includes('requestPermission has not been initialized')) {
-          if (__DEV__) console.log('[HealthConnect] Permission dialog unavailable — Activity delegate not initialized. Skipping.');
-          return [];
-        }
-        throw permError;
-      }
+      const granted = await safeHealthConnectCall(
+        () => hc.requestPermission(permissions),
+        [] as Array<{ accessType: string; recordType: string }>,
+        'requestPermission',
+      );
+
+      // If quarantined during the call, bail out
+      if (HealthConnectAdapter.quarantined) return [];
 
       // Convert to HealthPermission format
-      const result: HealthPermission[] = categories.map(cat => {
+      const result: HealthPermission[] = categories.map((cat) => {
         const recordType = CATEGORY_TO_RECORD_TYPE[cat];
         const readGranted = granted.some(
-          (p: { accessType: string; recordType: string }) => 
-            p.accessType === 'read' && p.recordType === recordType
+          (p: { accessType: string; recordType: string }) => p.accessType === 'read' && p.recordType === recordType,
         );
         const writeGranted = granted.some(
-          (p: { accessType: string; recordType: string }) => 
-            p.accessType === 'write' && p.recordType === recordType
+          (p: { accessType: string; recordType: string }) => p.accessType === 'write' && p.recordType === recordType,
         );
         return {
           category: cat,
@@ -206,39 +279,57 @@ class HealthConnectAdapter implements IHealthAdapter {
         action: 'auth',
       });
       return [];
+    } finally {
+      // Invalidate permission cache after user explicitly requests permissions
+      this.permissionCache = null;
     }
   }
 
   async checkPermissions(categories: HealthDataCategory[]): Promise<HealthPermission[]> {
+    if (HealthConnectAdapter.isKilled()) return categories.map((cat) => ({ category: cat, read: false, write: false }));
+    // Serve from cache if fresh
+    const now = Date.now();
+    if (this.permissionCache && now - this.permissionCacheTime < HealthConnectAdapter.PERMISSION_CACHE_TTL_MS) {
+      return categories.map((cat) => {
+        const cached = this.permissionCache!.get(cat);
+        return { category: cat, read: cached?.read ?? false, write: cached?.write ?? false };
+      });
+    }
+
     try {
       const hc = await this.getHealthConnect();
-      if (!hc) return categories.map(cat => ({ category: cat, read: false, write: false }));
+      if (!hc) return categories.map((cat) => ({ category: cat, read: false, write: false }));
 
       const granted = await hc.getGrantedPermissions();
 
-      return categories.map(cat => {
+      // Rebuild entire cache from native result
+      const allCategories = Object.keys(CATEGORY_TO_RECORD_TYPE) as HealthDataCategory[];
+      this.permissionCache = new Map();
+      for (const cat of allCategories) {
         const recordType = CATEGORY_TO_RECORD_TYPE[cat];
-        const readGranted = granted.some(
-          (p: { accessType?: string; recordType?: string }) => 
-            p.accessType === 'read' && p.recordType === recordType
-        );
-        const writeGranted = granted.some(
-          (p: { accessType?: string; recordType?: string }) => 
-            p.accessType === 'write' && p.recordType === recordType
-        );
-        return {
-          category: cat,
-          read: readGranted,
-          write: writeGranted,
-        };
+        this.permissionCache.set(cat, {
+          read: granted.some(
+            (p: { accessType?: string; recordType?: string }) => p.accessType === 'read' && p.recordType === recordType,
+          ),
+          write: granted.some(
+            (p: { accessType?: string; recordType?: string }) =>
+              p.accessType === 'write' && p.recordType === recordType,
+          ),
+        });
+      }
+      this.permissionCacheTime = now;
+
+      return categories.map((cat) => {
+        const cached = this.permissionCache!.get(cat);
+        return { category: cat, read: cached?.read ?? false, write: cached?.write ?? false };
       });
     } catch {
-      return categories.map(cat => ({ category: cat, read: false, write: false }));
+      return categories.map((cat) => ({ category: cat, read: false, write: false }));
     }
   }
 
   openSettings(): void {
-    this.getHealthConnect().then(hc => {
+    this.getHealthConnect().then((hc) => {
       if (hc) {
         hc.openHealthConnectSettings();
       }
@@ -249,10 +340,10 @@ class HealthConnectAdapter implements IHealthAdapter {
   // READ OPERATIONS
   // ============================================
 
-  async readRecords<T extends HealthRecord>(
-    category: HealthDataCategory,
-    dateRange: DateRange
-  ): Promise<T[]> {
+  async readRecords<T extends HealthRecord>(category: HealthDataCategory, dateRange: DateRange): Promise<T[]> {
+    if (HealthConnectAdapter.isKilled()) return [];
+    if (HealthConnectAdapter.quarantined) return [];
+
     try {
       const hc = await this.getHealthConnect();
       if (!hc) return [];
@@ -262,9 +353,6 @@ class HealthConnectAdapter implements IHealthAdapter {
       // Check permission before reading — avoids SecurityException spam
       const perms = await this.checkPermissions([category]);
       if (!perms[0]?.read) {
-        if (__DEV__) {
-          console.log(`[HealthConnect] Skipping ${category} — read permission not granted`);
-        }
         return [];
       }
 
@@ -298,6 +386,8 @@ class HealthConnectAdapter implements IHealthAdapter {
   }
 
   async getDailyAggregates(dateRange: DateRange): Promise<DailyAggregate[]> {
+    if (HealthConnectAdapter.quarantined) return [];
+
     try {
       const hc = await this.getHealthConnect();
       if (!hc) return [];
@@ -306,8 +396,8 @@ class HealthConnectAdapter implements IHealthAdapter {
 
       // Check permissions before reading — avoids SecurityException on startup
       const perms = await this.checkPermissions(['steps', 'calories']);
-      const canReadSteps = perms.find(p => p.category === 'steps')?.read;
-      const canReadCalories = perms.find(p => p.category === 'calories')?.read;
+      const canReadSteps = perms.find((p) => p.category === 'steps')?.read;
+      const canReadCalories = perms.find((p) => p.category === 'calories')?.read;
 
       const dailyMap = new Map<string, DailyAggregate>();
 
@@ -321,7 +411,7 @@ class HealthConnectAdapter implements IHealthAdapter {
               endTime: dateRange.end.toISOString(),
             },
           });
-          for (const record of (stepsResult.records || [])) {
+          for (const record of stepsResult.records || []) {
             const date = new Date(record.startTime).toISOString().split('T')[0]!;
             const existing = dailyMap.get(date) || { date, steps: 0, caloriesBurned: 0 };
             existing.steps = (existing.steps || 0) + (record.count || 0);
@@ -345,7 +435,7 @@ class HealthConnectAdapter implements IHealthAdapter {
               endTime: dateRange.end.toISOString(),
             },
           });
-          for (const record of (caloriesResult.records || [])) {
+          for (const record of caloriesResult.records || []) {
             const date = new Date(record.startTime).toISOString().split('T')[0]!;
             const existing = dailyMap.get(date) || { date, steps: 0, caloriesBurned: 0 };
             existing.caloriesBurned = (existing.caloriesBurned || 0) + (record.energy?.inKilocalories || 0);
@@ -370,9 +460,7 @@ class HealthConnectAdapter implements IHealthAdapter {
     }
   }
 
-  async getLatestRecord<T extends HealthRecord>(
-    category: HealthDataCategory
-  ): Promise<T | null> {
+  async getLatestRecord<T extends HealthRecord>(category: HealthDataCategory): Promise<T | null> {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -393,6 +481,8 @@ class HealthConnectAdapter implements IHealthAdapter {
   }
 
   async writeRecords(records: HealthRecord[]): Promise<string[]> {
+    if (HealthConnectAdapter.quarantined) return [];
+
     try {
       const hc = await this.getHealthConnect();
       if (!hc) return [];
@@ -438,10 +528,7 @@ class HealthConnectAdapter implements IHealthAdapter {
   // SYNC OPERATIONS
   // ============================================
 
-  async syncToLocal(
-    categories?: HealthDataCategory[],
-    since?: Date
-  ): Promise<{ synced: number; errors: number }> {
+  async syncToLocal(categories?: HealthDataCategory[], since?: Date): Promise<{ synced: number; errors: number }> {
     const categoriesToSync = categories || ['steps', 'calories', 'heart_rate', 'sleep', 'workout'];
     const startDate = since || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
     const endDate = new Date();
@@ -493,7 +580,6 @@ class HealthConnectAdapter implements IHealthAdapter {
     if (!this.healthConnect) {
       try {
         // Dynamic import to avoid loading on non-Android platforms
-        // @ts-ignore - Package is dynamically imported on Android only
         const hcModule = await import('react-native-health-connect');
         // Verify the native module is actually linked (fails in Expo Go)
         if (!hcModule || typeof hcModule.getSdkStatus !== 'function') {
@@ -512,10 +598,7 @@ class HealthConnectAdapter implements IHealthAdapter {
     return this.healthConnect;
   }
 
-  private normalizeRecords(
-    category: HealthDataCategory,
-    rawRecords: unknown[]
-  ): HealthRecord[] {
+  private normalizeRecords(category: HealthDataCategory, rawRecords: unknown[]): HealthRecord[] {
     const records: HealthRecord[] = [];
 
     for (const raw of rawRecords) {
@@ -536,24 +619,24 @@ class HealthConnectAdapter implements IHealthAdapter {
           baseRecord.unit = 'count';
           break;
         case 'heart_rate':
-          baseRecord.value = ((r.samples as Array<{ beatsPerMinute: number }>)?.[0]?.beatsPerMinute) || 0;
+          baseRecord.value = (r.samples as Array<{ beatsPerMinute: number }>)?.[0]?.beatsPerMinute || 0;
           baseRecord.unit = 'bpm';
           break;
         case 'calories':
-          baseRecord.value = ((r.energy as { inKilocalories: number })?.inKilocalories) || 0;
+          baseRecord.value = (r.energy as { inKilocalories: number })?.inKilocalories || 0;
           baseRecord.unit = 'kcal';
           break;
         case 'sleep':
-          baseRecord.value = 
+          baseRecord.value =
             (new Date(r.endTime as string).getTime() - new Date(r.startTime as string).getTime()) / 60000;
           baseRecord.unit = 'minutes';
           break;
         case 'weight':
-          baseRecord.value = ((r.weight as { inKilograms: number })?.inKilograms) || 0;
+          baseRecord.value = (r.weight as { inKilograms: number })?.inKilograms || 0;
           baseRecord.unit = 'kg';
           break;
         case 'workout':
-          baseRecord.value = 
+          baseRecord.value =
             (new Date(r.endTime as string).getTime() - new Date(r.startTime as string).getTime()) / 60000;
           baseRecord.unit = 'minutes';
           (baseRecord as WorkoutRecord).workoutType = (r.exerciseType as string) || 'unknown';
@@ -570,7 +653,7 @@ class HealthConnectAdapter implements IHealthAdapter {
 
   private toHealthConnectRecords(
     category: HealthDataCategory,
-    records: HealthRecord[]
+    records: HealthRecord[],
   ): Array<Record<string, unknown>> {
     const hcRecords: Array<Record<string, unknown>> = [];
     const recordType = CATEGORY_TO_RECORD_TYPE[category];
@@ -587,18 +670,20 @@ class HealthConnectAdapter implements IHealthAdapter {
           hcRecords.push({ ...base, count: record.value });
           break;
         case 'weight':
-          hcRecords.push({ 
-            ...base, 
-            weight: { value: record.value, unit: 'kilograms' } 
+          hcRecords.push({
+            ...base,
+            weight: { value: record.value, unit: 'kilograms' },
           });
           break;
         case 'heart_rate':
           hcRecords.push({
             ...base,
-            samples: [{ 
-              time: record.startTime.toISOString(), 
-              beatsPerMinute: record.value 
-            }],
+            samples: [
+              {
+                time: record.startTime.toISOString(),
+                beatsPerMinute: record.value,
+              },
+            ],
           });
           break;
         // Add more as needed

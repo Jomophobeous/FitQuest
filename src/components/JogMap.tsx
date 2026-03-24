@@ -11,13 +11,7 @@
  */
 
 import React, { useRef, useEffect, useMemo, memo, useState, Component, type ReactNode } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { GeoPoint } from '../engines/DistanceEngine';
@@ -98,9 +92,7 @@ interface JogMapProps {
 // ============================================
 
 /** Normalize route data to [lng, lat] coordinate pairs (GeoJSON order) */
-function normalizeRoute(
-  points: GeoPoint[] | [number, number][]
-): [number, number][] {
+function normalizeRoute(points: GeoPoint[] | [number, number][]): [number, number][] {
   if (points.length === 0) return [];
   // Check if first element is a GeoPoint object or a tuple
   const first = points[0];
@@ -136,9 +128,14 @@ function getBounds(coords: [number, number][]): {
 }
 
 /** Build GeoJSON LineString from coordinates */
-function routeToGeoJSON(
-  coords: [number, number][]
-): { type: string; features: Array<{ type: string; properties: Record<string, unknown>; geometry: { type: string; coordinates: [number, number][] } }> } {
+function routeToGeoJSON(coords: [number, number][]): {
+  type: string;
+  features: Array<{
+    type: string;
+    properties: Record<string, unknown>;
+    geometry: { type: string; coordinates: [number, number][] };
+  }>;
+} {
   return {
     type: 'FeatureCollection',
     features: [
@@ -195,7 +192,12 @@ class MapErrorBoundary extends Component<MapErrorBoundaryProps, MapErrorBoundary
 // ============================================
 
 /** Renders a simple SVG-like route path using React Native Views */
-function MiniRoute({ coords, color, width: w, height: h }: {
+function MiniRoute({
+  coords,
+  color,
+  width: w,
+  height: h,
+}: {
   coords: [number, number][];
   color: string;
   width: number;
@@ -204,10 +206,12 @@ function MiniRoute({ coords, color, width: w, height: h }: {
   if (coords.length < 2) return null;
 
   // Normalize coordinates to pixel positions
-  const lngs = coords.map(c => c[0]);
-  const lats = coords.map(c => c[1]);
-  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
-  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const lngs = coords.map((c) => c[0]);
+  const lats = coords.map((c) => c[1]);
+  const minLng = Math.min(...lngs),
+    maxLng = Math.max(...lngs);
+  const minLat = Math.min(...lats),
+    maxLat = Math.max(...lats);
   const lngRange = maxLng - minLng || 0.001;
   const latRange = maxLat - minLat || 0.001;
   const padding = 12;
@@ -300,7 +304,12 @@ const JogMap = memo(function JogMap({
         {/* Mini route path visualization (simple polyline) */}
         {hasRoute && (
           <View style={styles.miniRouteWrap}>
-            <MiniRoute coords={coords} color={theme.colors.accent} width={styles.miniRouteWrap.width} height={styles.miniRouteWrap.height} />
+            <MiniRoute
+              coords={coords}
+              color={theme.colors.accent}
+              width={styles.miniRouteWrap.width}
+              height={styles.miniRouteWrap.height}
+            />
           </View>
         )}
 
@@ -323,7 +332,7 @@ const JogMap = memo(function JogMap({
         </View>
 
         {/* Distance + pace row */}
-        {(distanceMeters != null && distanceMeters > 0) && (
+        {distanceMeters != null && distanceMeters > 0 && (
           <View style={styles.fallbackStatsRow}>
             <View style={styles.fallbackStat}>
               <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.colors.accent} />
@@ -335,18 +344,14 @@ const JogMap = memo(function JogMap({
             {durationLabel ? (
               <View style={styles.fallbackStat}>
                 <MaterialCommunityIcons name="speedometer" size={16} color={theme.colors.warning} />
-                <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>
-                  {durationLabel}
-                </Text>
+                <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>{durationLabel}</Text>
                 <Text style={[styles.fallbackStatLabel, { color: theme.colors.textMuted }]}>Pace</Text>
               </View>
             ) : null}
             {hasRoute && (
               <View style={styles.fallbackStat}>
                 <MaterialCommunityIcons name="map-marker" size={16} color={theme.colors.indigo} />
-                <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>
-                  {coords.length}
-                </Text>
+                <Text style={[styles.fallbackStatValue, { color: theme.colors.text }]}>{coords.length}</Text>
                 <Text style={[styles.fallbackStatLabel, { color: theme.colors.textMuted }]}>Points</Text>
               </View>
             )}
@@ -354,9 +359,7 @@ const JogMap = memo(function JogMap({
         )}
 
         {!distanceMeters && !isLive && (
-          <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
-            Map requires native build
-          </Text>
+          <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>Map requires native build</Text>
         )}
       </View>
     );
@@ -365,10 +368,8 @@ const JogMap = memo(function JogMap({
   if (coords.length === 0 && !isLive) {
     if (__DEV__) console.warn('[JogMap] No route coords available (routePoints empty)');
     return (
-      <View style={[styles.emptyContainer, { height, backgroundColor: theme.colors.surfaceVariant }]}> 
-        <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}> 
-          No route data available
-        </Text>
+      <View style={[styles.emptyContainer, { height, backgroundColor: theme.colors.surfaceVariant }]}>
+        <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>No route data available</Text>
       </View>
     );
   }
@@ -379,143 +380,117 @@ const JogMap = memo(function JogMap({
   const mapFallback = (
     <View style={[styles.emptyContainer, { height, backgroundColor: theme.colors.surfaceVariant }]}>
       <MaterialCommunityIcons name="map-marker-path" size={32} color={theme.colors.textMuted} />
-      <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 8 }]}>
-        Map unavailable
-      </Text>
+      <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 8 }]}>Map unavailable</Text>
       {distanceMeters != null && distanceMeters > 0 && (
         <Text style={[styles.distanceText, { color: theme.colors.accent, marginTop: 8 }]}>
           {formatDistance(distanceMeters)}
         </Text>
       )}
-      {pace && (
-        <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 4 }]}>
-          {pace}
-        </Text>
-      )}
+      {pace && <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 4 }]}>{pace}</Text>}
     </View>
   );
 
   return (
     <MapErrorBoundary fallback={mapFallback}>
-    <View style={[styles.container, { height }]}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        mapStyle={styleURL}
-        logoEnabled={false}
-        attributionEnabled={false}
-        compassEnabled={false}
-        onDidFinishLoadingMap={onReady}
-      >
-        {/* Camera */}
-        <Camera
-          ref={cameraRef}
-          defaultSettings={{
-            centerCoordinate: defaultCenter,
-            zoomLevel: isLive ? 16 : 14,
-          }}
-          {...(isLive && endPoint
-            ? {
-                centerCoordinate: endPoint,
-                zoomLevel: 16,
-                animationMode: 'flyTo',
-                animationDuration: 800,
-              }
-            : {})}
-        />
-
-        {/* User location puck (live mode only) */}
-        {isLive && (
-          <UserLocation
-            visible
-            showsUserHeadingIndicator
-            androidRenderMode="compass"
+      <View style={[styles.container, { height }]}>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          mapStyle={styleURL}
+          logoEnabled={false}
+          attributionEnabled={false}
+          compassEnabled={false}
+          onDidFinishLoadingMap={onReady}
+        >
+          {/* Camera */}
+          <Camera
+            ref={cameraRef}
+            defaultSettings={{
+              centerCoordinate: defaultCenter,
+              zoomLevel: isLive ? 16 : 14,
+            }}
+            {...(isLive && endPoint
+              ? {
+                  centerCoordinate: endPoint,
+                  zoomLevel: 16,
+                  animationMode: 'flyTo',
+                  animationDuration: 800,
+                }
+              : {})}
           />
-        )}
 
-        {/* Route trail */}
-        {coords.length >= 2 && (
-          <ShapeSource id="routeSource" shape={routeGeoJSON}>
-            {/* Glow layer (wider, semi-transparent beneath) */}
-            <LineLayer
-              id="routeGlow"
-              style={{
-                lineColor: accentColor + '40',
-                lineWidth: 8,
-                lineCap: 'round',
-                lineJoin: 'round',
-              }}
-            />
-            {/* Main route line */}
-            <LineLayer
-              id="routeLine"
-              style={{
-                lineColor: accentColor,
-                lineWidth: 4,
-                lineCap: 'round',
-                lineJoin: 'round',
-              }}
-            />
-          </ShapeSource>
-        )}
+          {/* User location puck (live mode only) */}
+          {isLive && <UserLocation visible showsUserHeadingIndicator androidRenderMode="compass" />}
 
-        {/* Start marker */}
-        {startPoint && (
-          <PointAnnotation
-            id="startMarker"
-            coordinate={startPoint}
-          >
-            <View style={[styles.marker, styles.startMarker, { backgroundColor: accentColor }]}>
-              <View style={styles.markerInner} />
-            </View>
-          </PointAnnotation>
-        )}
-
-        {/* End / current position marker (review mode) */}
-        {!isLive && endPoint && coords.length > 1 && (
-          <PointAnnotation
-            id="endMarker"
-            coordinate={endPoint}
-          >
-            <View style={[styles.marker, styles.endMarker, { backgroundColor: theme.colors.error }]}>
-              <View style={styles.markerInner} />
-            </View>
-          </PointAnnotation>
-        )}
-      </MapView>
-
-      {/* Distance badge overlay */}
-      {distanceMeters != null && distanceMeters > 0 && (
-        <View style={[styles.distanceBadge, { backgroundColor: theme.colors.surface + 'DD' }]}>
-          <Text style={[styles.distanceText, { color: accentColor }]}>
-            {formatDistance(distanceMeters)}
-          </Text>
-          {pace && (
-            <Text style={[styles.paceText, { color: theme.colors.textMuted }]}>
-              {pace}
-            </Text>
+          {/* Route trail */}
+          {coords.length >= 2 && (
+            <ShapeSource id="routeSource" shape={routeGeoJSON}>
+              {/* Glow layer (wider, semi-transparent beneath) */}
+              <LineLayer
+                id="routeGlow"
+                style={{
+                  lineColor: accentColor + '40',
+                  lineWidth: 8,
+                  lineCap: 'round',
+                  lineJoin: 'round',
+                }}
+              />
+              {/* Main route line */}
+              <LineLayer
+                id="routeLine"
+                style={{
+                  lineColor: accentColor,
+                  lineWidth: 4,
+                  lineCap: 'round',
+                  lineJoin: 'round',
+                }}
+              />
+            </ShapeSource>
           )}
-        </View>
-      )}
 
-      {/* LIVE indicator */}
-      {isLive && (
-        <View style={[styles.liveBadge, { backgroundColor: theme.colors.error }]}>
-          <View style={styles.liveDot} />
-          <Text style={styles.liveText}>LIVE</Text>
-        </View>
-      )}
+          {/* Start marker */}
+          {startPoint && (
+            <PointAnnotation id="startMarker" coordinate={startPoint}>
+              <View style={[styles.marker, styles.startMarker, { backgroundColor: accentColor }]}>
+                <View style={styles.markerInner} />
+              </View>
+            </PointAnnotation>
+          )}
 
-      {/* Loading overlay for initial tile download */}
-      {coords.length === 0 && isLive && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator color={accentColor} size="small" />
-          <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>
-            Waiting for GPS...
-          </Text>
-        </View>
-      )}
-    </View>
+          {/* End / current position marker (review mode) */}
+          {!isLive && endPoint && coords.length > 1 && (
+            <PointAnnotation id="endMarker" coordinate={endPoint}>
+              <View style={[styles.marker, styles.endMarker, { backgroundColor: theme.colors.error }]}>
+                <View style={styles.markerInner} />
+              </View>
+            </PointAnnotation>
+          )}
+        </MapView>
+
+        {/* Distance badge overlay */}
+        {distanceMeters != null && distanceMeters > 0 && (
+          <View style={[styles.distanceBadge, { backgroundColor: theme.colors.surface + 'DD' }]}>
+            <Text style={[styles.distanceText, { color: accentColor }]}>{formatDistance(distanceMeters)}</Text>
+            {pace && <Text style={[styles.paceText, { color: theme.colors.textMuted }]}>{pace}</Text>}
+          </View>
+        )}
+
+        {/* LIVE indicator */}
+        {isLive && (
+          <View style={[styles.liveBadge, { backgroundColor: theme.colors.error }]}>
+            <View style={styles.liveDot} />
+            <Text style={styles.liveText}>LIVE</Text>
+          </View>
+        )}
+
+        {/* Loading overlay for initial tile download */}
+        {coords.length === 0 && isLive && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator color={accentColor} size="small" />
+            <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>Waiting for GPS...</Text>
+          </View>
+        )}
+      </View>
     </MapErrorBoundary>
   );
 });

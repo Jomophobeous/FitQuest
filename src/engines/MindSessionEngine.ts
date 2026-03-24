@@ -1,16 +1,16 @@
 /**
  * MindSessionEngine
- * 
+ *
  * Generates guided meditation timelines for focus/mindfulness exercises.
  * Each mind exercise gets a structured timeline of phases:
  *   intro → guided → silence → guided → closing
- * 
+ *
  * Unlike physical exercises (reps, sets, rest), mind exercises use:
  *   - Timed narration blocks (TTS speaks guidance)
  *   - Silence periods (the actual practice)
  *   - Bell cues (transition markers)
  *   - Breathing guides (visual pacing)
- * 
+ *
  * The engine determines:
  *   1. How long each phase lasts
  *   2. What narration text to speak
@@ -66,26 +66,26 @@ export interface MindTimeline {
   intention: string;
 }
 
-export type MindArchetype = 
-  | 'breathing'      // Box, 4-7-8, 5-5-5, diaphragmatic, alternate nostril, extended exhale
-  | 'meditation'     // Seated, walking, loving-kindness, gratitude, visualization
+export type MindArchetype =
+  | 'breathing' // Box, 4-7-8, 5-5-5, diaphragmatic, alternate nostril, extended exhale
+  | 'meditation' // Seated, walking, loving-kindness, gratitude, visualization
   | 'body_awareness' // Body scan, PMR, yoga nidra, mindful movement
-  | 'grounding';     // Grounding 5-4-3-2-1, bilateral tapping, tension shake, cold exposure
+  | 'grounding'; // Grounding 5-4-3-2-1, bilateral tapping, tension shake, cold exposure
 
 // ============================================
 // BREATHING PRESETS
 // ============================================
 
 const BREATHING_PATTERNS: Record<string, BreathingPattern> = {
-  box:        { name: 'Box Breathing',   inhale: 4, holdIn: 4, exhale: 4, holdOut: 4, cycles: 0 },
-  '4-7-8':    { name: '4-7-8 Breathing', inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, cycles: 0 },
-  '5-5-5':    { name: '5-5-5 Breathing', inhale: 5, holdIn: 5, exhale: 5, holdOut: 0, cycles: 0 },
-  diaphragm:  { name: 'Belly Breathing', inhale: 4, holdIn: 0, exhale: 6, holdOut: 0, cycles: 0 },
-  extended:   { name: 'Extended Exhale', inhale: 3, holdIn: 0, exhale: 7, holdOut: 0, cycles: 0 },
-  alternate:  { name: 'Alternate Nostril', inhale: 4, holdIn: 4, exhale: 4, holdOut: 0, cycles: 0 },
-  natural:    { name: 'Natural Breath',  inhale: 4, holdIn: 0, exhale: 4, holdOut: 0, cycles: 0 },
-  settling:   { name: 'Settling Breath', inhale: 4, holdIn: 2, exhale: 6, holdOut: 0, cycles: 3 },
-  power:      { name: 'Power Breath',    inhale: 2, holdIn: 0, exhale: 2, holdOut: 0, cycles: 0 },
+  box: { name: 'Box Breathing', inhale: 4, holdIn: 4, exhale: 4, holdOut: 4, cycles: 0 },
+  '4-7-8': { name: '4-7-8 Breathing', inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, cycles: 0 },
+  '5-5-5': { name: '5-5-5 Breathing', inhale: 5, holdIn: 5, exhale: 5, holdOut: 0, cycles: 0 },
+  diaphragm: { name: 'Belly Breathing', inhale: 4, holdIn: 0, exhale: 6, holdOut: 0, cycles: 0 },
+  extended: { name: 'Extended Exhale', inhale: 3, holdIn: 0, exhale: 7, holdOut: 0, cycles: 0 },
+  alternate: { name: 'Alternate Nostril', inhale: 4, holdIn: 4, exhale: 4, holdOut: 0, cycles: 0 },
+  natural: { name: 'Natural Breath', inhale: 4, holdIn: 0, exhale: 4, holdOut: 0, cycles: 0 },
+  settling: { name: 'Settling Breath', inhale: 4, holdIn: 2, exhale: 6, holdOut: 0, cycles: 3 },
+  power: { name: 'Power Breath', inhale: 2, holdIn: 0, exhale: 2, holdOut: 0, cycles: 0 },
 };
 
 // ============================================
@@ -94,14 +94,24 @@ const BREATHING_PATTERNS: Record<string, BreathingPattern> = {
 
 function getArchetype(exerciseName: string): MindArchetype {
   const name = exerciseName.toLowerCase();
-  
+
   if (name.includes('breathing') || name.includes('breath') || name.includes('nostril') || name.includes('exhale')) {
     return 'breathing';
   }
-  if (name.includes('body scan') || name.includes('yoga nidra') || name.includes('progressive muscle') || name.includes('mindful movement')) {
+  if (
+    name.includes('body scan') ||
+    name.includes('yoga nidra') ||
+    name.includes('progressive muscle') ||
+    name.includes('mindful movement')
+  ) {
     return 'body_awareness';
   }
-  if (name.includes('grounding') || name.includes('tapping') || name.includes('shake') || name.includes('cold exposure')) {
+  if (
+    name.includes('grounding') ||
+    name.includes('tapping') ||
+    name.includes('shake') ||
+    name.includes('cold exposure')
+  ) {
     return 'grounding';
   }
   return 'meditation';
@@ -114,17 +124,17 @@ function getArchetype(exerciseName: string): MindArchetype {
 /** Generate timeline for breathing exercises (box, 4-7-8, 5-5-5, etc.) */
 function generateBreathingTimeline(exerciseName: string, totalSeconds: number): MindTimeline {
   const name = exerciseName.toLowerCase();
-  
+
   // Pick the right breathing pattern
   let pattern: BreathingPattern;
-  if (name.includes('box'))              pattern = BREATHING_PATTERNS.box!;
-  else if (name.includes('4-7-8'))       pattern = BREATHING_PATTERNS['4-7-8']!;
-  else if (name.includes('5-5-5'))       pattern = BREATHING_PATTERNS['5-5-5']!;
-  else if (name.includes('diaphragm'))   pattern = BREATHING_PATTERNS.diaphragm!;
-  else if (name.includes('extended'))    pattern = BREATHING_PATTERNS.extended!;
-  else if (name.includes('alternate'))   pattern = BREATHING_PATTERNS.alternate!;
-  else if (name.includes('power'))       pattern = BREATHING_PATTERNS.power!;
-  else                                   pattern = BREATHING_PATTERNS.natural!;
+  if (name.includes('box')) pattern = BREATHING_PATTERNS.box!;
+  else if (name.includes('4-7-8')) pattern = BREATHING_PATTERNS['4-7-8']!;
+  else if (name.includes('5-5-5')) pattern = BREATHING_PATTERNS['5-5-5']!;
+  else if (name.includes('diaphragm')) pattern = BREATHING_PATTERNS.diaphragm!;
+  else if (name.includes('extended')) pattern = BREATHING_PATTERNS.extended!;
+  else if (name.includes('alternate')) pattern = BREATHING_PATTERNS.alternate!;
+  else if (name.includes('power')) pattern = BREATHING_PATTERNS.power!;
+  else pattern = BREATHING_PATTERNS.natural!;
 
   const cycleTime = pattern.inhale + pattern.holdIn + pattern.exhale + pattern.holdOut;
   const introDuration = Math.min(15, Math.floor(totalSeconds * 0.12));
@@ -220,7 +230,8 @@ function generateMeditationTimeline(exerciseName: string, totalSeconds: number):
     {
       type: 'closing',
       duration: closingDuration,
-      narration: 'Gently deepen your breath. Wiggle your fingers and toes. When you are ready, slowly open your eyes. Carry this stillness with you.',
+      narration:
+        'Gently deepen your breath. Wiggle your fingers and toes. When you are ready, slowly open your eyes. Carry this stillness with you.',
       bellAtStart: true,
       bellAtEnd: true,
       breathing: null,
@@ -277,7 +288,8 @@ function generateBodyAwarenessTimeline(exerciseName: string, totalSeconds: numbe
     {
       type: 'closing',
       duration: closingDuration,
-      narration: 'Begin to deepen your breath. Gently press your fingers and toes. When ready, slowly roll to one side and press yourself up. Notice how your body feels.',
+      narration:
+        'Begin to deepen your breath. Gently press your fingers and toes. When ready, slowly roll to one side and press yourself up. Notice how your body feels.',
       bellAtStart: false,
       bellAtEnd: true,
       breathing: null,
@@ -337,25 +349,25 @@ function generateGroundingTimeline(exerciseName: string, totalSeconds: number): 
 
 function generateBreathingNarration(pattern: BreathingPattern, cycles: number): string {
   const parts: string[] = [];
-  
+
   parts.push(`Let us begin. Follow the rhythm on screen.`);
-  
+
   // First cycle is always narrated for guidance
   parts.push(`Inhale ${inWords(pattern.inhale)}.`);
   if (pattern.holdIn > 0) parts.push(`Hold ${inWords(pattern.holdIn)}.`);
   parts.push(`Exhale ${inWords(pattern.exhale)}.`);
   if (pattern.holdOut > 0) parts.push(`Hold ${inWords(pattern.holdOut)}.`);
-  
+
   // Middle cycles: let the visual guide take over
   if (cycles > 3) {
     parts.push('Continue following the guide. Let your breathing become effortless.');
   }
-  
+
   // Final cycle reminder
   if (cycles > 1) {
     parts.push('Last cycle now. Deep inhale. And release.');
   }
-  
+
   return parts.join(' ');
 }
 
@@ -374,23 +386,25 @@ function inWords(seconds: number): string {
 
 function getBreathingIntention(name: string): string {
   const n = name.toLowerCase();
-  if (n.includes('box'))            return 'This technique calms the nervous system and sharpens focus.';
-  if (n.includes('4-7-8'))         return 'This pattern activates deep relaxation. Perfect before sleep.';
-  if (n.includes('5-5-5'))         return 'Balanced breathing to centre your mind.';
-  if (n.includes('diaphragm'))     return 'Belly breathing strengthens your diaphragm and reduces stress.';
-  if (n.includes('extended'))      return 'Longer exhales activate the parasympathetic nervous system.';
-  if (n.includes('alternate'))     return 'Balancing breath between nostrils harmonises the mind.';
-  if (n.includes('cold') || n.includes('power')) return 'Controlled hyperventilation followed by breath holds builds mental resilience.';
+  if (n.includes('box')) return 'This technique calms the nervous system and sharpens focus.';
+  if (n.includes('4-7-8')) return 'This pattern activates deep relaxation. Perfect before sleep.';
+  if (n.includes('5-5-5')) return 'Balanced breathing to centre your mind.';
+  if (n.includes('diaphragm')) return 'Belly breathing strengthens your diaphragm and reduces stress.';
+  if (n.includes('extended')) return 'Longer exhales activate the parasympathetic nervous system.';
+  if (n.includes('alternate')) return 'Balancing breath between nostrils harmonises the mind.';
+  if (n.includes('cold') || n.includes('power'))
+    return 'Controlled hyperventilation followed by breath holds builds mental resilience.';
   return 'Conscious breathing resets your autonomic nervous system.';
 }
 
 function getMeditationIntention(name: string): string {
   const n = name.toLowerCase();
   if (n.includes('loving') || n.includes('kindness')) return 'Cultivate compassion for yourself and others.';
-  if (n.includes('gratitude'))     return 'Training the mind to notice what is already good.';
-  if (n.includes('visualization') || n.includes('visuali')) return 'The mind cannot distinguish a vivid image from reality. Use this power.';
-  if (n.includes('walking'))       return 'Bringing full awareness to every single step.';
-  if (n.includes('laughing'))      return 'Laughter releases endorphins and shifts your state instantly.';
+  if (n.includes('gratitude')) return 'Training the mind to notice what is already good.';
+  if (n.includes('visualization') || n.includes('visuali'))
+    return 'The mind cannot distinguish a vivid image from reality. Use this power.';
+  if (n.includes('walking')) return 'Bringing full awareness to every single step.';
+  if (n.includes('laughing')) return 'Laughter releases endorphins and shifts your state instantly.';
   return 'Simply being present. No goal, no effort. Just awareness.';
 }
 
@@ -413,9 +427,9 @@ function getMeditationGuidance(name: string): string {
 
 function getBodyAwarenessIntention(name: string): string {
   const n = name.toLowerCase();
-  if (n.includes('body scan'))     return 'Scanning your body from toes to crown, releasing tension layer by layer.';
-  if (n.includes('yoga nidra'))    return 'Yoga Nidra — the yoga of conscious sleep. Deep restoration while awake.';
-  if (n.includes('progressive'))   return 'Tense and release each muscle group to find true relaxation.';
+  if (n.includes('body scan')) return 'Scanning your body from toes to crown, releasing tension layer by layer.';
+  if (n.includes('yoga nidra')) return 'Yoga Nidra — the yoga of conscious sleep. Deep restoration while awake.';
+  if (n.includes('progressive')) return 'Tense and release each muscle group to find true relaxation.';
   if (n.includes('mindful move')) return 'Moving with total awareness. Every sensation noticed.';
   return 'Bringing awareness to the body exactly as it is right now.';
 }
@@ -439,10 +453,11 @@ function getBodyAwarenessGuidance(name: string, durationSecs: number): string {
 
 function getGroundingIntention(name: string): string {
   const n = name.toLowerCase();
-  if (n.includes('5-4-3-2-1') || n.includes('grounding')) return 'Anchoring to the present moment through your five senses.';
-  if (n.includes('tapping'))       return 'Bilateral stimulation calms the amygdala and reduces anxiety.';
-  if (n.includes('shake'))         return 'Shaking releases stored stress from the body, like animals do in the wild.';
-  if (n.includes('cold'))          return 'Mental fortitude through controlled breathing under challenge.';
+  if (n.includes('5-4-3-2-1') || n.includes('grounding'))
+    return 'Anchoring to the present moment through your five senses.';
+  if (n.includes('tapping')) return 'Bilateral stimulation calms the amygdala and reduces anxiety.';
+  if (n.includes('shake')) return 'Shaking releases stored stress from the body, like animals do in the wild.';
+  if (n.includes('cold')) return 'Mental fortitude through controlled breathing under challenge.';
   return 'Coming back to the here and now.';
 }
 
@@ -474,22 +489,18 @@ export function isMindExercise(category: string): boolean {
 
 /**
  * Generate a guided meditation timeline for a mind exercise.
- * 
+ *
  * @param exerciseName - The exercise name (e.g., "Box Breathing", "Body Scan Meditation")
  * @param category - Exercise category (should be 'focus')
- * @param durationSeconds - Total session duration 
+ * @param durationSeconds - Total session duration
  * @returns MindTimeline with phases, narration, bells, and breathing patterns
  */
-export function generateMindTimeline(
-  exerciseName: string,
-  category: string,
-  durationSeconds: number,
-): MindTimeline {
+export function generateMindTimeline(exerciseName: string, category: string, durationSeconds: number): MindTimeline {
   // Ensure minimum duration for meaningful practice
   const duration = Math.max(60, durationSeconds);
-  
+
   const archetype = getArchetype(exerciseName);
-  
+
   switch (archetype) {
     case 'breathing':
       return generateBreathingTimeline(exerciseName, duration);
@@ -506,32 +517,29 @@ export function generateMindTimeline(
  * Get the recommended session duration for a mind exercise.
  * Mind exercises don't use reps/sets — they use time.
  */
-export function getMindDuration(
-  exerciseName: string,
-  experience: 'beginner' | 'intermediate' | 'advanced',
-): number {
+export function getMindDuration(exerciseName: string, experience: 'beginner' | 'intermediate' | 'advanced'): number {
   const archetype = getArchetype(exerciseName);
-  
+
   const durations: Record<MindArchetype, Record<string, number>> = {
     breathing: {
-      beginner: 120,     // 2 min
+      beginner: 120, // 2 min
       intermediate: 180, // 3 min
-      advanced: 300,     // 5 min
+      advanced: 300, // 5 min
     },
     meditation: {
-      beginner: 180,     // 3 min
+      beginner: 180, // 3 min
       intermediate: 300, // 5 min
-      advanced: 600,     // 10 min
+      advanced: 600, // 10 min
     },
     body_awareness: {
-      beginner: 180,     // 3 min
+      beginner: 180, // 3 min
       intermediate: 300, // 5 min
-      advanced: 600,     // 10 min
+      advanced: 600, // 10 min
     },
     grounding: {
-      beginner: 90,      // 1.5 min
+      beginner: 90, // 1.5 min
       intermediate: 120, // 2 min
-      advanced: 180,     // 3 min
+      advanced: 180, // 3 min
     },
   };
 

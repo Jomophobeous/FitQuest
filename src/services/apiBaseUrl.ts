@@ -2,7 +2,25 @@ function sanitizeBaseUrl(raw: unknown): string | null {
   if (typeof raw !== 'string') return null;
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  return trimmed.replace(/\/+$/, '');
+
+  // Validate URL structure and enforce HTTPS-only
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    if (__DEV__) console.warn('[apiBaseUrl] Invalid URL:', trimmed);
+    return null;
+  }
+
+  if (parsed.protocol !== 'https:') {
+    // Allow http only in development (localhost / emulator)
+    if (!__DEV__ || parsed.protocol !== 'http:') {
+      if (__DEV__) console.warn('[apiBaseUrl] Rejected non-HTTPS URL:', trimmed);
+      return null;
+    }
+  }
+
+  return parsed.origin + parsed.pathname.replace(/\/+$/, '');
 }
 
 /**

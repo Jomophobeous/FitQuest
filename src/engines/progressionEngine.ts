@@ -1,11 +1,11 @@
 /**
  * ENGINE 2 — Progression Engine
- * 
+ *
  * Enforces Improvement: Double progression, volume tracking, intensity decisions
- * 
+ *
  * Consumes: session_exercises (completed), progress_records
  * Produces: next-session volume/intensity decisions
- * 
+ *
  * Core Principle: APPEND-ONLY. Never rewrite history.
  */
 
@@ -23,19 +23,19 @@ import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService'
 const PROGRESSION_CONFIG = {
   // Success = completed >= this % of prescribed
   success_threshold: 0.9,
-  
+
   // Consecutive successes needed to progress
   successes_to_progress: 2,
-  
+
   // Consecutive failures to regress
   failures_to_regress: 2,
-  
+
   // Rep increase per progression
   rep_increment: 1,
-  
+
   // Set increase (only after rep ceiling hit)
   set_increment: 1,
-  
+
   // Rep ceilings by goal
   rep_ceilings: {
     strength: 8,
@@ -43,7 +43,7 @@ const PROGRESSION_CONFIG = {
     endurance: 20,
     default: 15,
   },
-  
+
   // Minimum reps before regression
   rep_floors: {
     strength: 3,
@@ -96,7 +96,7 @@ interface ProgressionState {
 export async function analyzeExerciseProgression(
   userId: string,
   exerciseId: string,
-  lookbackDays = 30
+  lookbackDays = 30,
 ): Promise<ProgressionState> {
   const history = await getProgressHistory(userId, exerciseId, 10);
 
@@ -163,7 +163,7 @@ export async function calculateProgression(
   exerciseId: string,
   currentSets: number,
   currentReps: string,
-  goalType: 'strength' | 'hypertrophy' | 'endurance' | 'default' = 'default'
+  goalType: 'strength' | 'hypertrophy' | 'endurance' | 'default' = 'default',
 ): Promise<ProgressionDecision> {
   const state = await analyzeExerciseProgression(userId, exerciseId);
   const adaptive = await getAdaptiveTrainingProfile(userId);
@@ -173,19 +173,16 @@ export async function calculateProgression(
   const currentRepTarget = parseRepRange(currentReps).max;
   const successesToProgress = Math.max(
     1,
-    Math.round(
-      PROGRESSION_CONFIG.successes_to_progress / adaptive.progressionAggressiveness
-    )
+    Math.round(PROGRESSION_CONFIG.successes_to_progress / adaptive.progressionAggressiveness),
   );
   const failuresToRegress = Math.max(
     1,
-    Math.round(
-      PROGRESSION_CONFIG.failures_to_regress / adaptive.fatigueSensitivity
-    )
+    Math.round(PROGRESSION_CONFIG.failures_to_regress / adaptive.fatigueSensitivity),
   );
-  const repIncrement = adaptive.progressionAggressiveness >= 1.15
-    ? PROGRESSION_CONFIG.rep_increment + 1
-    : PROGRESSION_CONFIG.rep_increment;
+  const repIncrement =
+    adaptive.progressionAggressiveness >= 1.15
+      ? PROGRESSION_CONFIG.rep_increment + 1
+      : PROGRESSION_CONFIG.rep_increment;
 
   // Decision logic
   let action: 'progress' | 'maintain' | 'regress' = 'maintain';
@@ -254,10 +251,7 @@ export async function calculateProgression(
 /**
  * Record completed exercise performance
  */
-export async function recordExercisePerformance(
-  userId: string,
-  performance: ExercisePerformance
-): Promise<void> {
+export async function recordExercisePerformance(userId: string, performance: ExercisePerformance): Promise<void> {
   const record: ProgressRecord = {
     id: await generateSecureId('progress'),
     user_id: userId,
@@ -278,7 +272,7 @@ export async function recordExercisePerformance(
 export async function recordSessionPerformance(
   userId: string,
   sessionId: string,
-  performances: ExercisePerformance[]
+  performances: ExercisePerformance[],
 ): Promise<ProgressionDecision[]> {
   const decisions: ProgressionDecision[] = [];
 
@@ -287,12 +281,7 @@ export async function recordSessionPerformance(
     await recordExercisePerformance(userId, perf);
 
     // Calculate next-time progression
-    const decision = await calculateProgression(
-      userId,
-      perf.exercise_id,
-      perf.prescribed_sets,
-      perf.prescribed_reps
-    );
+    const decision = await calculateProgression(userId, perf.exercise_id, perf.prescribed_sets, perf.prescribed_reps);
 
     decisions.push(decision);
   }
@@ -303,9 +292,7 @@ export async function recordSessionPerformance(
 /**
  * Get progression summary for all exercises user has done
  */
-export async function getProgressionSummary(
-  userId: string
-): Promise<Map<string, ProgressionState>> {
+export async function getProgressionSummary(userId: string): Promise<Map<string, ProgressionState>> {
   const exercises = await getProgressExerciseIds(userId);
 
   const summary = new Map<string, ProgressionState>();
@@ -322,9 +309,4 @@ export async function getProgressionSummary(
 // EXPORTS
 // ============================================
 
-export {
-  PROGRESSION_CONFIG,
-  parseReps,
-  parseRepRange,
-  formatRepRange,
-};
+export { PROGRESSION_CONFIG, parseReps, parseRepRange, formatRepRange };

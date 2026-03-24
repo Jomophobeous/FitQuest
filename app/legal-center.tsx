@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import ThemedText from '../src/components/ThemedText';
@@ -88,14 +82,21 @@ export default function LegalCenterScreen() {
     void loadConsent();
   }, [dbReady, loadConsent]);
 
-  const openUrl = useCallback(async (url: string) => {
-    const canOpen = await Linking.canOpenURL(url);
-    if (!canOpen) {
-      Alert.alert(t('common.error'), t('legal.cannotOpenLink'));
-      return;
-    }
-    await Linking.openURL(url);
-  }, [t]);
+  const openUrl = useCallback(
+    async (url: string) => {
+      try {
+        const canOpen = await Linking.canOpenURL(url);
+        if (!canOpen) {
+          Alert.alert(t('common.error'), t('legal.cannotOpenLink'));
+          return;
+        }
+        await Linking.openURL(url);
+      } catch {
+        Alert.alert(t('common.error'), t('legal.cannotOpenLink'));
+      }
+    },
+    [t],
+  );
 
   const handleAccept = useCallback(async () => {
     setSaving(true);
@@ -128,120 +129,152 @@ export default function LegalCenterScreen() {
     : t('legal.notAcceptedYet');
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}> 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
-          >
-            <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
-          </TouchableOpacity>
-          <ThemedText style={[styles.title, { color: theme.colors.text }]}>{t('legal.title')}</ThemedText>
-          <View style={styles.spacer} />
-        </View>
-
-        <GlassCard style={styles.summaryCard}>
-          <View style={styles.summaryRow}>
-            <MaterialCommunityIcons name="shield-check-outline" size={20} color={theme.colors.success} />
-            <ThemedText variant="body" color="primary">{t('legal.consentStatus')}</ThemedText>
+    <ScreenErrorBoundary screenName="LegalCenter" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.headerRow}>
+            <TouchableOpacity
+              style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
+              onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+            >
+              <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
+            </TouchableOpacity>
+            <ThemedText style={[styles.title, { color: theme.colors.text }]}>{t('legal.title')}</ThemedText>
+            <View style={styles.spacer} />
           </View>
-          <ThemedText style={[styles.statusText, { color: theme.colors.textSecondary }]}>{consentStatus}</ThemedText>
-          <ThemedText style={[styles.statusText, { color: theme.colors.textMuted }]}>
-            {t('legal.currentPolicyVersion')} {LEGAL_POLICY_VERSION}
-          </ThemedText>
-        </GlassCard>
 
-        <SectionHeader title={t('legal.documents')} delay={100} />
-        <View style={styles.linksSection}>
-          <TouchableOpacity
-            style={[styles.linkCard, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => router.push('/privacy-policy')}
-          >
-            <View style={styles.linkLeft}>
-              <MaterialCommunityIcons name="file-document-outline" size={18} color={theme.colors.accent} />
-              <View>
-                <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>{t('legal.privacyPolicy')}</ThemedText>
-                <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>{t('legal.readInApp')}</ThemedText>
-              </View>
+          <GlassCard style={styles.summaryCard}>
+            <View style={styles.summaryRow}>
+              <MaterialCommunityIcons name="shield-check-outline" size={20} color={theme.colors.success} />
+              <ThemedText variant="body" color="primary">
+                {t('legal.consentStatus')}
+              </ThemedText>
             </View>
-            <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
-          </TouchableOpacity>
+            <ThemedText style={[styles.statusText, { color: theme.colors.textSecondary }]}>{consentStatus}</ThemedText>
+            <ThemedText style={[styles.statusText, { color: theme.colors.textMuted }]}>
+              {t('legal.currentPolicyVersion')} {LEGAL_POLICY_VERSION}
+            </ThemedText>
+          </GlassCard>
 
-          <TouchableOpacity
-            style={[styles.linkCard, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => router.push('/terms-of-service')}
-          >
-            <View style={styles.linkLeft}>
-              <MaterialCommunityIcons name="scale-balance" size={18} color={theme.colors.warning} />
-              <View>
-                <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>{t('legal.termsOfService')}</ThemedText>
-                <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>{t('legal.readInApp')}</ThemedText>
+          <SectionHeader title={t('legal.documents')} delay={100} />
+          <View style={styles.linksSection}>
+            <TouchableOpacity
+              style={[
+                styles.linkCard,
+                { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant },
+              ]}
+              onPress={() => router.push('/privacy-policy')}
+            >
+              <View style={styles.linkLeft}>
+                <MaterialCommunityIcons name="file-document-outline" size={18} color={theme.colors.accent} />
+                <View>
+                  <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>
+                    {t('legal.privacyPolicy')}
+                  </ThemedText>
+                  <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
+                    {t('legal.readInApp')}
+                  </ThemedText>
+                </View>
               </View>
-            </View>
-            <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
-          </TouchableOpacity>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.linkCard, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => openUrl(links.privacyPolicyUrl)}
-          >
-            <View style={styles.linkLeft}>
-              <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
-              <View>
-                <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>{t('legal.privacyPolicyExternal')}</ThemedText>
-                <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>{links.privacyPolicyUrl}</ThemedText>
+            <TouchableOpacity
+              style={[
+                styles.linkCard,
+                { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant },
+              ]}
+              onPress={() => router.push('/terms-of-service')}
+            >
+              <View style={styles.linkLeft}>
+                <MaterialCommunityIcons name="scale-balance" size={18} color={theme.colors.warning} />
+                <View>
+                  <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>
+                    {t('legal.termsOfService')}
+                  </ThemedText>
+                  <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
+                    {t('legal.readInApp')}
+                  </ThemedText>
+                </View>
               </View>
-            </View>
-            <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
-          </TouchableOpacity>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.linkCard, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant }]}
-            onPress={() => openUrl(links.termsOfServiceUrl)}
-          >
-            <View style={styles.linkLeft}>
-              <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
-              <View>
-                <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>{t('legal.termsOfServiceExternal')}</ThemedText>
-                <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>{links.termsOfServiceUrl}</ThemedText>
+            <TouchableOpacity
+              style={[
+                styles.linkCard,
+                { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant },
+              ]}
+              onPress={() => openUrl(links.privacyPolicyUrl)}
+            >
+              <View style={styles.linkLeft}>
+                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
+                <View>
+                  <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>
+                    {t('legal.privacyPolicyExternal')}
+                  </ThemedText>
+                  <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
+                    {links.privacyPolicyUrl}
+                  </ThemedText>
+                </View>
               </View>
-            </View>
-            <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
-          </TouchableOpacity>
-        </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
+            </TouchableOpacity>
 
-        <SectionHeader title={t('legal.actions')} delay={150} />
-        <View style={styles.actionsSection}>
-          <GradientButton
-            title={saving ? t('common.loading') : t('legal.acceptPolicies')}
-            icon="check-decagram"
-            onPress={() => {
-              if (!saving) {
-                void handleAccept();
-              }
-            }}
-            variant="success"
-          />
-          <GradientButton
-            title={t('legal.withdrawConsent')}
-            icon="shield-off-outline"
-            onPress={() => {
-              void handleWithdraw();
-            }}
-            variant="warning"
-          />
-        </View>
+            <TouchableOpacity
+              style={[
+                styles.linkCard,
+                { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant },
+              ]}
+              onPress={() => openUrl(links.termsOfServiceUrl)}
+            >
+              <View style={styles.linkLeft}>
+                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
+                <View>
+                  <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>
+                    {t('legal.termsOfServiceExternal')}
+                  </ThemedText>
+                  <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
+                    {links.termsOfServiceUrl}
+                  </ThemedText>
+                </View>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textMuted} />
+            </TouchableOpacity>
+          </View>
 
-        <GlassCard style={styles.noteCard}>
-          <ThemedText style={[styles.noteText, { color: theme.colors.textSecondary }]}>
-            {t('legal.noteMedical')}
-          </ThemedText>
-          <ThemedText style={[styles.noteText, { color: theme.colors.textMuted }]}>
-            {t('legal.noteCounsel')}
-          </ThemedText>
-        </GlassCard>
-      </ScrollView>
-    </SafeAreaView>
+          <SectionHeader title={t('legal.actions')} delay={150} />
+          <View style={styles.actionsSection}>
+            <GradientButton
+              title={saving ? t('common.loading') : t('legal.acceptPolicies')}
+              icon="check-decagram"
+              onPress={() => {
+                if (!saving) {
+                  void handleAccept();
+                }
+              }}
+              variant="success"
+            />
+            <GradientButton
+              title={t('legal.withdrawConsent')}
+              icon="shield-off-outline"
+              onPress={() => {
+                void handleWithdraw();
+              }}
+              variant="warning"
+            />
+          </View>
+
+          <GlassCard style={styles.noteCard}>
+            <ThemedText style={[styles.noteText, { color: theme.colors.textSecondary }]}>
+              {t('legal.noteMedical')}
+            </ThemedText>
+            <ThemedText style={[styles.noteText, { color: theme.colors.textMuted }]}>
+              {t('legal.noteCounsel')}
+            </ThemedText>
+          </GlassCard>
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }

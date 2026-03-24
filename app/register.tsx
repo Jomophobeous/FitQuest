@@ -1,6 +1,6 @@
 /**
  * FitQuest Register Screen
- * 
+ *
  * Premium themed registration matching the login aesthetic.
  * Dark/light aware with GlassUI components.
  */
@@ -33,6 +33,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useAuth } from '../src/context/AuthContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { GradientButton } from '../src/components/ui/GlassUI';
@@ -71,7 +72,7 @@ export default function RegisterScreen() {
       withTiming(12, { duration: 50 }),
       withTiming(-8, { duration: 50 }),
       withTiming(8, { duration: 50 }),
-      withTiming(0, { duration: 50 })
+      withTiming(0, { duration: 50 }),
     );
   };
 
@@ -123,7 +124,12 @@ export default function RegisterScreen() {
   const getPasswordStrength = (): { label: string; color: string; width: string } => {
     if (password.length === 0) return { label: '', color: 'transparent', width: '0%' };
     const pw = validatePassword(password);
-    const labels = [t('register.strength.weak'), t('register.strength.fair'), t('register.strength.good'), t('register.strength.strong')];
+    const labels = [
+      t('register.strength.weak'),
+      t('register.strength.fair'),
+      t('register.strength.good'),
+      t('register.strength.strong'),
+    ];
     const colors = [theme.colors.error, theme.colors.warning, theme.colors.accent, theme.colors.success];
     const widths = ['25%', '50%', '75%', '100%'];
     const idx = Math.min(pw.score, 3);
@@ -136,184 +142,184 @@ export default function RegisterScreen() {
   const inputBorder = theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Background gradient */}
-          <LinearGradient
-            colors={theme.isDark
-              ? [theme.colors.accent + '10', 'transparent']
-              : [theme.colors.accent + '06', 'transparent']
-            }
-            style={styles.bgGradient}
-          />
-
-          {/* Logo + Header */}
-          <Animated.View entering={ZoomIn.delay(100).duration(300)} style={styles.logoSection}>
+    <ScreenErrorBoundary screenName="Register" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Background gradient */}
             <LinearGradient
-              colors={[theme.colors.accent + '25', theme.colors.accent + '08']}
-              style={styles.logoCircle}
-            >
-              <MaterialCommunityIcons name="dumbbell" size={36} color={theme.colors.accent} />
-            </LinearGradient>
-          </Animated.View>
+              colors={
+                theme.isDark ? [theme.colors.accent + '10', 'transparent'] : [theme.colors.accent + '06', 'transparent']
+              }
+              style={styles.bgGradient}
+            />
 
-          <Animated.View entering={FadeInDown.delay(200).duration(200)}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>{t('register.title')}</Text>
-            <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
-              {t('register.subtitle')}
-            </Text>
-          </Animated.View>
-
-          {/* Error message */}
-          {errorMsg ? (
-            <Animated.View entering={FadeIn.duration(150)}>
-             <Animated.View style={shakeStyle}>
-              <View style={[styles.errorBanner, { backgroundColor: theme.colors.error + '15' }]}>
-                <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
-                <Text style={[styles.errorText, { color: theme.colors.error }]}>{errorMsg}</Text>
-              </View>
-             </Animated.View>
+            {/* Logo + Header */}
+            <Animated.View entering={ZoomIn.delay(100).duration(300)} style={styles.logoSection}>
+              <LinearGradient
+                colors={[theme.colors.accent + '25', theme.colors.accent + '08']}
+                style={styles.logoCircle}
+              >
+                <MaterialCommunityIcons name="dumbbell" size={36} color={theme.colors.accent} />
+              </LinearGradient>
             </Animated.View>
-          ) : null}
 
-          {/* Form */}
-          <Animated.View entering={FadeInUp.delay(300).duration(200)} style={styles.form}>
-            {/* Name */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.fullName')}</Text>
-              <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
-                <MaterialCommunityIcons name="account-outline" size={18} color={theme.colors.textMuted} />
-                <TextInput
-                  style={[styles.input, { color: theme.colors.text }]}
-                  placeholder={t('register.namePlaceholder')}
-                  placeholderTextColor={theme.colors.textMuted}
-                  value={name}
-                  onChangeText={setName}
-                  autoCapitalize="words"
-                  maxLength={100}
-                  editable={!isLoading}
-                  returnKeyType="next"
-                  onSubmitEditing={() => emailRef.current?.focus()}
-                />
-              </View>
-            </View>
+            <Animated.View entering={FadeInDown.delay(200).duration(200)}>
+              <Text style={[styles.title, { color: theme.colors.text }]}>{t('register.title')}</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>{t('register.subtitle')}</Text>
+            </Animated.View>
 
-            {/* Email */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.email')}</Text>
-              <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
-                <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                <TextInput
-                  ref={emailRef}
-                  style={[styles.input, { color: theme.colors.text }]}
-                  placeholder={t('register.emailPlaceholder')}
-                  placeholderTextColor={theme.colors.textMuted}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  maxLength={254}
-                  editable={!isLoading}
-                  returnKeyType="next"
-                  onSubmitEditing={() => passwordRef.current?.focus()}
-                />
-              </View>
-            </View>
-
-            {/* Password */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.password')}</Text>
-              <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
-                <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
-                <TextInput
-                  ref={passwordRef}
-                  style={[styles.input, { color: theme.colors.text }]}
-                  placeholder={t('register.passwordPlaceholder')}
-                  placeholderTextColor={theme.colors.textMuted}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  editable={!isLoading}
-                  returnKeyType="next"
-                  onSubmitEditing={() => confirmRef.current?.focus()}
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                  <MaterialCommunityIcons
-                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                    size={18}
-                    color={theme.colors.textMuted}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* Strength bar */}
-              {password.length > 0 && (
-                <Animated.View entering={FadeIn.duration(150)} style={styles.strengthWrap}>
-                  <View style={[styles.strengthTrack, { backgroundColor: theme.colors.border }]}>
-                    <View style={[styles.strengthFill, { backgroundColor: strength.color, width: strength.width as any }]} />
+            {/* Error message */}
+            {errorMsg ? (
+              <Animated.View entering={FadeIn.duration(150)}>
+                <Animated.View style={shakeStyle}>
+                  <View style={[styles.errorBanner, { backgroundColor: theme.colors.error + '15' }]}>
+                    <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
+                    <Text style={[styles.errorText, { color: theme.colors.error }]}>{errorMsg}</Text>
                   </View>
-                  <Text style={[styles.strengthLabel, { color: strength.color }]}>{strength.label}</Text>
                 </Animated.View>
-              )}
-            </View>
+              </Animated.View>
+            ) : null}
 
-            {/* Confirm Password */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.confirmPassword')}</Text>
-              <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
-                <MaterialCommunityIcons name="lock-check-outline" size={18} color={theme.colors.textMuted} />
-                <TextInput
-                  ref={confirmRef}
-                  style={[styles.input, { color: theme.colors.text }]}
-                  placeholder={t('register.confirmPlaceholder')}
-                  placeholderTextColor={theme.colors.textMuted}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  editable={!isLoading}
-                  returnKeyType="done"
-                  onSubmitEditing={handleRegister}
-                />
-                {confirmPassword.length > 0 && password === confirmPassword && (
-                  <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.success} />
+            {/* Form */}
+            <Animated.View entering={FadeInUp.delay(300).duration(200)} style={styles.form}>
+              {/* Name */}
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.fullName')}</Text>
+                <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
+                  <MaterialCommunityIcons name="account-outline" size={18} color={theme.colors.textMuted} />
+                  <TextInput
+                    style={[styles.input, { color: theme.colors.text }]}
+                    placeholder={t('register.namePlaceholder')}
+                    placeholderTextColor={theme.colors.textMuted}
+                    value={name}
+                    onChangeText={setName}
+                    autoCapitalize="words"
+                    maxLength={100}
+                    editable={!isLoading}
+                    returnKeyType="next"
+                    onSubmitEditing={() => emailRef.current?.focus()}
+                  />
+                </View>
+              </View>
+
+              {/* Email */}
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.email')}</Text>
+                <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
+                  <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
+                  <TextInput
+                    ref={emailRef}
+                    style={[styles.input, { color: theme.colors.text }]}
+                    placeholder={t('register.emailPlaceholder')}
+                    placeholderTextColor={theme.colors.textMuted}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    maxLength={254}
+                    editable={!isLoading}
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                  />
+                </View>
+              </View>
+
+              {/* Password */}
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.password')}</Text>
+                <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
+                  <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
+                  <TextInput
+                    ref={passwordRef}
+                    style={[styles.input, { color: theme.colors.text }]}
+                    placeholder={t('register.passwordPlaceholder')}
+                    placeholderTextColor={theme.colors.textMuted}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                    editable={!isLoading}
+                    returnKeyType="next"
+                    onSubmitEditing={() => confirmRef.current?.focus()}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    <MaterialCommunityIcons
+                      name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                      size={18}
+                      color={theme.colors.textMuted}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Strength bar */}
+                {password.length > 0 && (
+                  <Animated.View entering={FadeIn.duration(150)} style={styles.strengthWrap}>
+                    <View style={[styles.strengthTrack, { backgroundColor: theme.colors.border }]}>
+                      <View
+                        style={[styles.strengthFill, { backgroundColor: strength.color, width: strength.width as any }]}
+                      />
+                    </View>
+                    <Text style={[styles.strengthLabel, { color: strength.color }]}>{strength.label}</Text>
+                  </Animated.View>
                 )}
               </View>
-            </View>
 
-            {/* Submit */}
-            <View style={styles.submitWrap}>
-              <GradientButton
-                title={isLoading ? t('register.creating') : t('register.signUp')}
-                onPress={handleRegister}
-                variant="primary"
-              />
-            </View>
-          </Animated.View>
+              {/* Confirm Password */}
+              <View style={styles.inputGroup}>
+                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+                  {t('register.confirmPassword')}
+                </Text>
+                <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
+                  <MaterialCommunityIcons name="lock-check-outline" size={18} color={theme.colors.textMuted} />
+                  <TextInput
+                    ref={confirmRef}
+                    style={[styles.input, { color: theme.colors.text }]}
+                    placeholder={t('register.confirmPlaceholder')}
+                    placeholderTextColor={theme.colors.textMuted}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                    editable={!isLoading}
+                    returnKeyType="done"
+                    onSubmitEditing={handleRegister}
+                  />
+                  {confirmPassword.length > 0 && password === confirmPassword && (
+                    <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.success} />
+                  )}
+                </View>
+              </View>
 
-          {/* Footer */}
-          <Animated.View entering={FadeInUp.delay(400).duration(200)} style={styles.footer}>
-            <Text style={[styles.footerText, { color: theme.colors.textMuted }]}>
-              {t('register.alreadyHaveAccount')}{' '}
-            </Text>
-            <Link href="/login" asChild>
-              <TouchableOpacity>
-                <Text style={[styles.footerLink, { color: theme.colors.accent }]}>{t('register.signIn')}</Text>
-              </TouchableOpacity>
-            </Link>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+              {/* Submit */}
+              <View style={styles.submitWrap}>
+                <GradientButton
+                  title={isLoading ? t('register.creating') : t('register.signUp')}
+                  onPress={handleRegister}
+                  variant="primary"
+                />
+              </View>
+            </Animated.View>
+
+            {/* Footer */}
+            <Animated.View entering={FadeInUp.delay(400).duration(200)} style={styles.footer}>
+              <Text style={[styles.footerText, { color: theme.colors.textMuted }]}>
+                {t('register.alreadyHaveAccount')}{' '}
+              </Text>
+              <Link href="/login" asChild>
+                <TouchableOpacity>
+                  <Text style={[styles.footerLink, { color: theme.colors.accent }]}>{t('register.signIn')}</Text>
+                </TouchableOpacity>
+              </Link>
+            </Animated.View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
 

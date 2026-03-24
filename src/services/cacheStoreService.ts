@@ -35,7 +35,10 @@ function parseEnvelope<T>(raw: string | null): CacheEnvelope<T> | null {
   }
 }
 
-export async function getCached<T>(domain: CacheDomain, cacheId: string): Promise<{ value: T | null; source: CacheHitSource }> {
+export async function getCached<T>(
+  domain: CacheDomain,
+  cacheId: string,
+): Promise<{ value: T | null; source: CacheHitSource }> {
   const key = buildCacheKey(domain, cacheId);
   const now = Date.now();
   const inMemory = memoryCache.get(key) as CacheEnvelope<T> | undefined;

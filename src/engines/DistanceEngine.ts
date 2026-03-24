@@ -1,9 +1,9 @@
 /**
  * GPS Distance Engine
- * 
+ *
  * Real-time GPS tracking for jog sessions with distance, pace, and elevation.
  * Uses expo-location for high-accuracy positioning.
- * 
+ *
  * Features:
  * - Haversine distance calculation
  * - GPS jitter filtering
@@ -11,7 +11,7 @@
  * - Elevation gain tracking
  * - Split times per kilometer
  * - Route point collection for mapping
- * 
+ *
  * Usage:
  * ```tsx
  * import { distanceEngine } from '../engines/DistanceEngine';
@@ -28,10 +28,26 @@ import * as Location from 'expo-location';
 type EventListener = (...args: any[]) => void;
 class EventEmitter {
   private _listeners: Record<string, EventListener[]> = {};
-  on(event: string, fn: EventListener): this { (this._listeners[event] ??= []).push(fn); return this; }
-  off(event: string, fn: EventListener): this { const l = this._listeners[event]; if (l) this._listeners[event] = l.filter(f => f !== fn); return this; }
-  emit(event: string, ...args: unknown[]): boolean { const l = this._listeners[event]; if (!l?.length) return false; for (const f of l) f(...args); return true; }
-  removeAllListeners(event?: string): this { if (event) delete this._listeners[event]; else this._listeners = {}; return this; }
+  on(event: string, fn: EventListener): this {
+    (this._listeners[event] ??= []).push(fn);
+    return this;
+  }
+  off(event: string, fn: EventListener): this {
+    const l = this._listeners[event];
+    if (l) this._listeners[event] = l.filter((f) => f !== fn);
+    return this;
+  }
+  emit(event: string, ...args: unknown[]): boolean {
+    const l = this._listeners[event];
+    if (!l?.length) return false;
+    for (const f of l) f(...args);
+    return true;
+  }
+  removeAllListeners(event?: string): this {
+    if (event) delete this._listeners[event];
+    else this._listeners = {};
+    return this;
+  }
 }
 
 // ============================================
@@ -69,10 +85,10 @@ export interface DistanceStats {
 }
 
 export interface DistanceEngineConfig {
-  accuracyThreshold: number;    // Ignore points with accuracy worse than this (meters)
-  minDistanceInterval: number;  // Minimum distance between updates (meters)
-  timeInterval: number;         // Time between updates (ms)
-  paceWindowSize: number;       // Number of points for current pace calculation
+  accuracyThreshold: number; // Ignore points with accuracy worse than this (meters)
+  minDistanceInterval: number; // Minimum distance between updates (meters)
+  timeInterval: number; // Time between updates (ms)
+  paceWindowSize: number; // Number of points for current pace calculation
 }
 
 type DistanceEventType = 'distance' | 'pace' | 'split' | 'location' | 'error';
@@ -82,10 +98,10 @@ type DistanceEventType = 'distance' | 'pace' | 'split' | 'location' | 'error';
 // ============================================
 
 const DEFAULT_CONFIG: DistanceEngineConfig = {
-  accuracyThreshold: 20,      // 20 meters max GPS error
-  minDistanceInterval: 5,     // Update every 5 meters
-  timeInterval: 1000,         // Or every second
-  paceWindowSize: 10,         // Last 10 points for pace calc
+  accuracyThreshold: 20, // 20 meters max GPS error
+  minDistanceInterval: 5, // Update every 5 meters
+  timeInterval: 1000, // Or every second
+  paceWindowSize: 10, // Last 10 points for pace calc
 };
 
 // ============================================
@@ -94,7 +110,7 @@ const DEFAULT_CONFIG: DistanceEngineConfig = {
 
 class DistanceEngine extends EventEmitter {
   private static instance: DistanceEngine;
-  
+
   private config: DistanceEngineConfig;
   private points: GeoPoint[] = [];
   private totalDistance = 0;
@@ -160,7 +176,7 @@ class DistanceEngine extends EventEmitter {
           distanceInterval: this.config.minDistanceInterval,
           timeInterval: this.config.timeInterval,
         },
-        (location) => this.handleLocationUpdate(location)
+        (location) => this.handleLocationUpdate(location),
       );
 
       if (__DEV__) console.log('[DistanceEngine] Tracking started');
@@ -192,9 +208,7 @@ class DistanceEngine extends EventEmitter {
    * Get current tracking statistics
    */
   getStats(): DistanceStats {
-    const elapsedSeconds = this.startTime 
-      ? (Date.now() - this.startTime) / 1000 
-      : 0;
+    const elapsedSeconds = this.startTime ? (Date.now() - this.startTime) / 1000 : 0;
 
     return {
       totalDistanceMeters: this.totalDistance,
@@ -203,14 +217,10 @@ class DistanceEngine extends EventEmitter {
       bestPaceSecondsPerKm: this.bestPace,
       elevationGainMeters: this.elevationGain,
       elevationLossMeters: this.elevationLoss,
-      currentAltitude: this.points.length > 0 
-        ? this.points[this.points.length - 1]!.altitude 
-        : null,
+      currentAltitude: this.points.length > 0 ? this.points[this.points.length - 1]!.altitude : null,
       elapsedSeconds,
       splits: [...this.splits],
-      currentSpeedMps: this.points.length > 0 
-        ? this.points[this.points.length - 1]!.speed 
-        : null,
+      currentSpeedMps: this.points.length > 0 ? this.points[this.points.length - 1]!.speed : null,
       routePoints: [...this.points],
     };
   }
@@ -226,7 +236,7 @@ class DistanceEngine extends EventEmitter {
    * Get route as array of [lat, lng] pairs for mapping
    */
   getRoute(): [number, number][] {
-    return this.points.map(p => [p.lat, p.lng]);
+    return this.points.map((p) => [p.lat, p.lng]);
   }
 
   // ============================================
@@ -329,10 +339,8 @@ class DistanceEngine extends EventEmitter {
 
   private calculateSplitElevation(lastKm: number): number {
     // Calculate elevation gain for the last kilometer of points
-    const splitStartIdx = this.points.findIndex(
-      (_, idx) => this.calculateDistanceToPoint(idx) >= lastKm * 1000
-    );
-    
+    const splitStartIdx = this.points.findIndex((_, idx) => this.calculateDistanceToPoint(idx) >= lastKm * 1000);
+
     if (splitStartIdx < 0) return 0;
 
     let gain = 0;
@@ -409,9 +417,7 @@ class DistanceEngine extends EventEmitter {
     const Δφ = ((p2.lat - p1.lat) * Math.PI) / 180;
     const Δλ = ((p2.lng - p1.lng) * Math.PI) / 180;
 
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;

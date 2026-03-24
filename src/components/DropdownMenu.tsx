@@ -72,44 +72,12 @@ const MENU_ITEMS: MenuItem[] = [
     category: 'movement',
   },
   {
-    id: 'coach',
-    label: 'AI Coach (Beta)',
-    icon: 'robot-happy',
-    route: '/coach',
-    category: 'knowledge',
-    color: 'purple',
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    icon: 'chart-bar',
-    route: '/analytics',
-    category: 'knowledge',
-    color: 'skyBlue',
-  },
-  {
     id: 'nutrition-calc',
     label: 'Nutrition Calculator',
     icon: 'calculator-variant',
     route: '/nutrition-calculator',
     category: 'knowledge',
     color: 'orange',
-  },
-  {
-    id: 'meal-prep',
-    label: 'Meal Prep',
-    icon: 'food-variant',
-    route: '/meal-prep',
-    category: 'knowledge',
-    color: 'accent',
-  },
-  {
-    id: 'health-dashboard',
-    label: 'Health Dashboard',
-    icon: 'heart-pulse',
-    route: '/health-dashboard',
-    category: 'knowledge',
-    color: 'error',
   },
   {
     id: 'craft-my-body',
@@ -127,13 +95,36 @@ const MENU_ITEMS: MenuItem[] = [
     category: 'movement',
   },
   {
-    id: 'subscription',
-    label: 'Subscription',
-    icon: 'crown',
-    route: '/paywall',
-    category: 'system',
-    color: '#F4A427',
+    id: 'coach',
+    label: 'Coach',
+    icon: 'robot-outline',
+    route: '/coach',
+    category: 'knowledge',
   },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: 'chart-line',
+    route: '/analytics',
+    category: 'knowledge',
+  },
+  {
+    id: 'meal-prep',
+    label: 'Meal Prep',
+    icon: 'food-apple-outline',
+    route: '/meal-prep',
+    category: 'knowledge',
+    color: 'orange',
+  },
+  {
+    id: 'health-dashboard',
+    label: 'Health Dashboard',
+    icon: 'heart-pulse',
+    route: '/health-dashboard',
+    category: 'knowledge',
+    color: 'pink',
+  },
+
   {
     id: 'backups',
     label: 'Backup & Restore',
@@ -176,16 +167,16 @@ export function DropdownTrigger({ onPress }: DropdownTriggerProps) {
     <Animated.View style={animStyle}>
       <TouchableOpacity
         onPress={onPress}
-        onPressIn={() => { scale.value = withTiming(0.92, { duration: 120 }); }}
-        onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
+        onPressIn={() => {
+          scale.value = withTiming(0.92, { duration: 120 });
+        }}
+        onPressOut={() => {
+          scale.value = withTiming(1, { duration: 120 });
+        }}
         style={styles.trigger}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <MaterialCommunityIcons
-          name="dots-vertical"
-          size={24}
-          color={theme.colors.text}
-        />
+        <MaterialCommunityIcons name="dots-vertical" size={24} color={theme.colors.text} />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -213,41 +204,35 @@ function AnimatedMenuItem({
   const { theme } = useTheme();
   const isWorkoutActive = timerService.isActive();
   const scale = useSharedValue(1);
-  const iconColor = item.color ? (theme.colors as any)[item.color] || theme.colors.accent : (isDisabled ? theme.colors.textMuted : theme.colors.accent);
+  const iconColor = item.color
+    ? (theme.colors as any)[item.color] || theme.colors.accent
+    : isDisabled
+      ? theme.colors.textMuted
+      : theme.colors.accent;
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
   return (
-    <Animated.View
-      entering={FadeInDown.delay(index * 30).duration(150)}
-    >
+    <Animated.View entering={FadeInDown.delay(index * 30).duration(150)}>
       <Animated.View style={animStyle}>
         <TouchableOpacity
-          style={[
-            styles.menuItem,
-            isDisabled && styles.menuItemDisabled,
-          ]}
-          onPressIn={() => { scale.value = withTiming(0.97, { duration: 120 }); }}
-          onPressOut={() => { scale.value = withTiming(1, { duration: 120 }); }}
+          style={[styles.menuItem, isDisabled && styles.menuItemDisabled]}
+          onPressIn={() => {
+            scale.value = withTiming(0.97, { duration: 120 });
+          }}
+          onPressOut={() => {
+            scale.value = withTiming(1, { duration: 120 });
+          }}
           onPress={() => !isDisabled && onPress()}
           disabled={isDisabled}
           activeOpacity={0.8}
         >
           <View style={[styles.menuItemIcon, { backgroundColor: iconColor + '14' }]}>
-            <MaterialCommunityIcons
-              name={item.icon}
-              size={18}
-              color={iconColor}
-            />
+            <MaterialCommunityIcons name={item.icon} size={18} color={iconColor} />
           </View>
-          <Text
-            style={[
-              styles.menuItemLabel,
-              { color: isDisabled ? theme.colors.textMuted : theme.colors.text },
-            ]}
-          >
+          <Text style={[styles.menuItemLabel, { color: isDisabled ? theme.colors.textMuted : theme.colors.text }]}>
             {item.label}
           </Text>
           {isWorkoutActive && item.category !== 'system' && (
@@ -261,9 +246,7 @@ function AnimatedMenuItem({
           />
         </TouchableOpacity>
       </Animated.View>
-      {!!showDivider && (
-        <View style={[styles.separator, { backgroundColor: theme.colors.border }]} />
-      )}
+      {!!showDivider && <View style={[styles.separator, { backgroundColor: theme.colors.border }]} />}
     </Animated.View>
   );
 }
@@ -287,17 +270,25 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
 
   const isWorkoutActive = timerService.isActive();
 
-  const handleOpen = useCallback(() => { setVisible(true); }, []);
-  const handleClose = useCallback(() => { setVisible(false); onClose?.(); }, [onClose]);
+  const handleOpen = useCallback(() => {
+    setVisible(true);
+  }, []);
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    onClose?.();
+  }, [onClose]);
 
-  const handleItemPress = useCallback((item: MenuItem) => {
-    handleClose();
-    if (timeoutRef.current) clearTimeout(timeoutRef.current); // Clear any pending action
-    timeoutRef.current = setTimeout(() => {
-      if (item.action) item.action();
-      else if (item.route) router.push(item.route as any);
-    }, 200);
-  }, [router, handleClose]);
+  const handleItemPress = useCallback(
+    (item: MenuItem) => {
+      handleClose();
+      if (timeoutRef.current) clearTimeout(timeoutRef.current); // Clear any pending action
+      timeoutRef.current = setTimeout(() => {
+        if (item.action) item.action();
+        else if (item.route) router.push(item.route as any);
+      }, 200);
+    },
+    [router, handleClose],
+  );
 
   return (
     <>
@@ -319,9 +310,8 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
           >
             {/* Header */}
             <LinearGradient
-              colors={theme.isDark
-                ? [theme.colors.accent + '15', 'transparent']
-                : [theme.colors.accent + '08', 'transparent']
+              colors={
+                theme.isDark ? [theme.colors.accent + '15', 'transparent'] : [theme.colors.accent + '08', 'transparent']
               }
               style={[styles.menuHeader, { borderBottomColor: theme.colors.border }]}
             >
@@ -343,8 +333,7 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
             >
               {MENU_ITEMS.map((item, index, array) => {
                 const isDisabled = item.disabled || (isWorkoutActive && item.category !== 'system');
-                const isLastInCategory =
-                  index === array.length - 1 || array[index + 1]?.category !== item.category;
+                const isLastInCategory = index === array.length - 1 || array[index + 1]?.category !== item.category;
 
                 return (
                   <AnimatedMenuItem

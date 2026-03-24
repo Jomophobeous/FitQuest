@@ -1,17 +1,17 @@
 /**
  * FitQuest State Reset Doctrine
- * 
+ *
  * Defines EXACTLY what happens when user modifies their profile.
  * Ambiguity causes silent corruption. This prevents it.
- * 
+ *
  * RULES:
  * 1. Immutable data NEVER changes (exercises, completed sessions)
  * 2. Profile changes trigger explicit state transitions
  * 3. History is preserved but may be "archived" (not invalidated)
  */
 
-import { 
-  getUserProfile, 
+import {
+  getUserProfile,
   updateUserProfile,
   getRecentSessions,
   getProgressHistory,
@@ -30,32 +30,32 @@ import type { UserProfile, Category, Difficulty } from '../database/types';
 export const STATE_LIFECYCLE = {
   // IMMUTABLE: Never changes after creation
   immutable: [
-    'exercise_catalogue',      // Core exercise database
-    'completed_sessions',      // Historical workout records
-    'progress_records',        // Append-only progression log
-    'subscription_receipts',   // Payment history
+    'exercise_catalogue', // Core exercise database
+    'completed_sessions', // Historical workout records
+    'progress_records', // Append-only progression log
+    'subscription_receipts', // Payment history
   ],
 
   // PROFILE_BOUND: Resets or archives when profile changes significantly
   profile_bound: [
-    'muscle_fatigue_map',      // Current fatigue state
-    'workout_streak',          // Consecutive workout count
-    'current_week_counter',    // Deload cycle position
-    'deload_state',            // Active deload flag
+    'muscle_fatigue_map', // Current fatigue state
+    'workout_streak', // Consecutive workout count
+    'current_week_counter', // Deload cycle position
+    'deload_state', // Active deload flag
   ],
 
   // PREFERENCE_BOUND: Updates with profile but preserves history
   preference_bound: [
-    'user_equipment',          // Available equipment list
-    'user_injuries',           // Active injury constraints
-    'time_preference',         // Session duration preference
+    'user_equipment', // Available equipment list
+    'user_injuries', // Active injury constraints
+    'time_preference', // Session duration preference
   ],
 
   // TRANSIENT: Can be safely cleared anytime
   transient: [
-    'cached_workout',          // Uncommitted workout plan
-    'ui_state',                // Screen position, filters
-    'notification_queue',      // Pending reminders
+    'cached_workout', // Uncommitted workout plan
+    'ui_state', // Screen position, filters
+    'notification_queue', // Pending reminders
   ],
 } as const;
 
@@ -63,51 +63,55 @@ export const STATE_LIFECYCLE = {
 // RESET TRIGGERS
 // ============================================
 
-export type ProfileChangeType = 
-  | 'goal_change'           // User changes primary goal (e.g., body_control → strength)
-  | 'experience_change'     // User changes experience level
-  | 'equipment_change'      // User adds/removes equipment
-  | 'injury_change'         // User adds/removes injury
-  | 'time_change'           // User changes session duration
-  | 'profile_unlock';       // User unlocks profile for editing
+export type ProfileChangeType =
+  | 'goal_change' // User changes primary goal (e.g., body_control → strength)
+  | 'experience_change' // User changes experience level
+  | 'equipment_change' // User adds/removes equipment
+  | 'injury_change' // User adds/removes injury
+  | 'time_change' // User changes session duration
+  | 'profile_unlock'; // User unlocks profile for editing
 
 /**
  * Maps profile changes to their consequences
  */
-export const RESET_CONSEQUENCES: Record<ProfileChangeType, {
-  description: string;
-  resets: string[];
-  preserves: string[];
-  archives: string[];
-  user_warning: string;
-}> = {
+export const RESET_CONSEQUENCES: Record<
+  ProfileChangeType,
+  {
+    description: string;
+    resets: string[];
+    preserves: string[];
+    archives: string[];
+    user_warning: string;
+  }
+> = {
   goal_change: {
     description: 'Changing your fitness goal',
     resets: [
-      'muscle_fatigue_map',     // Different muscles matter now
-      'current_week_counter',   // Deload cycle restarts
-      'workout_streak',         // New journey begins
+      'muscle_fatigue_map', // Different muscles matter now
+      'current_week_counter', // Deload cycle restarts
+      'workout_streak', // New journey begins
     ],
     preserves: [
-      'completed_sessions',     // History stays
-      'progress_records',       // All progress kept
-      'user_equipment',         // Equipment unchanged
+      'completed_sessions', // History stays
+      'progress_records', // All progress kept
+      'user_equipment', // Equipment unchanged
     ],
     archives: [
-      'progression_targets',    // Old targets archived, new ones created
+      'progression_targets', // Old targets archived, new ones created
     ],
-    user_warning: 'Changing your goal will reset your current streak and fatigue tracking. Your workout history will be preserved.',
+    user_warning:
+      'Changing your goal will reset your current streak and fatigue tracking. Your workout history will be preserved.',
   },
 
   experience_change: {
     description: 'Updating your experience level',
     resets: [
-      'current_week_counter',   // Deload timing may differ
+      'current_week_counter', // Deload timing may differ
     ],
     preserves: [
-      'muscle_fatigue_map',     // Fatigue is physical, not skill
-      'workout_streak',         // Effort counts
-      'progress_records',       // All history kept
+      'muscle_fatigue_map', // Fatigue is physical, not skill
+      'workout_streak', // Effort counts
+      'progress_records', // All history kept
     ],
     archives: [],
     user_warning: 'Your workout intensity will adjust to match your new experience level.',
@@ -116,12 +120,7 @@ export const RESET_CONSEQUENCES: Record<ProfileChangeType, {
   equipment_change: {
     description: 'Modifying available equipment',
     resets: [],
-    preserves: [
-      'muscle_fatigue_map',
-      'workout_streak',
-      'progress_records',
-      'current_week_counter',
-    ],
+    preserves: ['muscle_fatigue_map', 'workout_streak', 'progress_records', 'current_week_counter'],
     archives: [],
     user_warning: 'Exercise selection will update based on your equipment. Progress is preserved.',
   },
@@ -129,11 +128,7 @@ export const RESET_CONSEQUENCES: Record<ProfileChangeType, {
   injury_change: {
     description: 'Updating injury constraints',
     resets: [],
-    preserves: [
-      'workout_streak',
-      'progress_records',
-      'current_week_counter',
-    ],
+    preserves: ['workout_streak', 'progress_records', 'current_week_counter'],
     archives: [],
     user_warning: 'Exercises targeting injured areas will be filtered out. Your progress remains intact.',
   },
@@ -141,12 +136,7 @@ export const RESET_CONSEQUENCES: Record<ProfileChangeType, {
   time_change: {
     description: 'Changing session duration preference',
     resets: [],
-    preserves: [
-      'muscle_fatigue_map',
-      'workout_streak',
-      'progress_records',
-      'current_week_counter',
-    ],
+    preserves: ['muscle_fatigue_map', 'workout_streak', 'progress_records', 'current_week_counter'],
     archives: [],
     user_warning: 'Workout volume will adjust to fit your available time.',
   },
@@ -154,12 +144,7 @@ export const RESET_CONSEQUENCES: Record<ProfileChangeType, {
   profile_unlock: {
     description: 'Unlocking profile for editing',
     resets: [],
-    preserves: [
-      'muscle_fatigue_map',
-      'workout_streak',
-      'progress_records',
-      'current_week_counter',
-    ],
+    preserves: ['muscle_fatigue_map', 'workout_streak', 'progress_records', 'current_week_counter'],
     archives: [],
     user_warning: 'You can now edit your profile. Changes will take effect after re-locking.',
   },
@@ -181,7 +166,7 @@ function userKey(userId: string, key: string): string {
  */
 export async function executeStateReset(
   userId: string,
-  changeType: ProfileChangeType
+  changeType: ProfileChangeType,
 ): Promise<{
   success: boolean;
   changes_made: string[];
@@ -217,11 +202,14 @@ export async function executeStateReset(
   }
 
   // Log the reset event
-  await setAppState(userKey(userId, 'last_profile_change'), JSON.stringify({
-    type: changeType,
-    timestamp: new Date().toISOString(),
-    resets: consequence.resets,
-  }));
+  await setAppState(
+    userKey(userId, 'last_profile_change'),
+    JSON.stringify({
+      type: changeType,
+      timestamp: new Date().toISOString(),
+      resets: consequence.resets,
+    }),
+  );
 
   return {
     success: true,
@@ -236,12 +224,30 @@ export async function executeStateReset(
 async function resetMuscleFatigue(userId: string): Promise<void> {
   // Import dynamically to avoid circular dependency
   const { updateMuscleFatigue } = await import('../database/service');
-  
+
   const muscles = [
-    'chest', 'upper_back', 'lats', 'lower_back', 'front_delts', 'side_delts',
-    'rear_delts', 'biceps', 'triceps', 'forearms', 'abs', 'obliques',
-    'hip_flexors', 'quads', 'hamstrings', 'glutes', 'adductors', 'abductors',
-    'calves', 'tibialis', 'neck', 'traps',
+    'chest',
+    'upper_back',
+    'lats',
+    'lower_back',
+    'front_delts',
+    'side_delts',
+    'rear_delts',
+    'biceps',
+    'triceps',
+    'forearms',
+    'abs',
+    'obliques',
+    'hip_flexors',
+    'quads',
+    'hamstrings',
+    'glutes',
+    'adductors',
+    'abductors',
+    'calves',
+    'tibialis',
+    'neck',
+    'traps',
   ] as const;
 
   for (const muscle of muscles) {
@@ -258,7 +264,7 @@ async function resetMuscleFatigue(userId: string): Promise<void> {
  */
 export function validateProfileChange(
   currentProfile: UserProfile,
-  proposedChanges: Partial<UserProfile>
+  proposedChanges: Partial<UserProfile>,
 ): {
   safe: boolean;
   change_type: ProfileChangeType | null;
@@ -283,7 +289,10 @@ export function validateProfileChange(
   }
 
   // Time change
-  if (proposedChanges.time_per_session_minutes && proposedChanges.time_per_session_minutes !== currentProfile.time_per_session_minutes) {
+  if (
+    proposedChanges.time_per_session_minutes &&
+    proposedChanges.time_per_session_minutes !== currentProfile.time_per_session_minutes
+  ) {
     change_type = change_type || 'time_change';
     warnings.push(RESET_CONSEQUENCES.time_change.user_warning);
   }
@@ -342,7 +351,7 @@ function formatFieldName(field: string): string {
 export async function archiveProgressionForGoalChange(
   userId: string,
   oldGoal: Category,
-  newGoal: Category
+  newGoal: Category,
 ): Promise<void> {
   const archive = {
     archived_at: new Date().toISOString(),
@@ -355,10 +364,14 @@ export async function archiveProgressionForGoalChange(
   const existingArchives = await getAppState(userKey(userId, 'progression_archives'));
   let archives: any[] = [];
   if (existingArchives) {
-    try { archives = JSON.parse(existingArchives); } catch { /* corrupted, reset */ }
+    try {
+      archives = JSON.parse(existingArchives);
+    } catch {
+      /* corrupted, reset */
+    }
   }
   archives.push(archive);
-  
+
   await setAppState(userKey(userId, 'progression_archives'), JSON.stringify(archives));
 }
 
@@ -368,7 +381,11 @@ export async function archiveProgressionForGoalChange(
 export async function hasArchivedData(userId: string): Promise<boolean> {
   const archives = await getAppState(userKey(userId, 'progression_archives'));
   if (!archives) return false;
-  try { return JSON.parse(archives).length > 0; } catch { return false; }
+  try {
+    return JSON.parse(archives).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 // ============================================

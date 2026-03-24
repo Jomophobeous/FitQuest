@@ -1,6 +1,6 @@
 /**
  * Workout Trend Chart
- * 
+ *
  * Line chart showing workout duration over time.
  * Uses Victory-native when available, falls back to simple bar visualization.
  */
@@ -8,18 +8,8 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
-import {
-  ThemedChartWrapper,
-  useChartTheme,
-  MiniStat,
-  ChartLegend,
-} from './ThemedChart';
-import type {
-  WorkoutTrendChartProps,
-  WorkoutDataPoint,
-  ChartConfig,
-  DEFAULT_CHART_CONFIG,
-} from './types';
+import { ThemedChartWrapper, useChartTheme, MiniStat, ChartLegend } from './ThemedChart';
+import type { WorkoutTrendChartProps, WorkoutDataPoint, ChartConfig, DEFAULT_CHART_CONFIG } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -39,19 +29,16 @@ function calculateStats(data: WorkoutDataPoint[]) {
 
   const totalMinutes = data.reduce((sum, d) => sum + d.durationMinutes, 0);
   const avgDuration = Math.round(totalMinutes / data.length);
-  
+
   // Calculate trend (compare first half to second half)
   const midpoint = Math.floor(data.length / 2);
   const firstHalf = data.slice(0, midpoint);
   const secondHalf = data.slice(midpoint);
-  
-  const firstAvg = firstHalf.length > 0
-    ? firstHalf.reduce((s, d) => s + d.durationMinutes, 0) / firstHalf.length
-    : 0;
-  const secondAvg = secondHalf.length > 0
-    ? secondHalf.reduce((s, d) => s + d.durationMinutes, 0) / secondHalf.length
-    : 0;
-  
+
+  const firstAvg = firstHalf.length > 0 ? firstHalf.reduce((s, d) => s + d.durationMinutes, 0) / firstHalf.length : 0;
+  const secondAvg =
+    secondHalf.length > 0 ? secondHalf.reduce((s, d) => s + d.durationMinutes, 0) / secondHalf.length : 0;
+
   const trend = firstAvg > 0 ? Math.round(((secondAvg - firstAvg) / firstAvg) * 100) : 0;
 
   return {
@@ -75,15 +62,8 @@ interface SimpleBarChartProps {
   mutedColor: string;
 }
 
-function SimpleBarChart({
-  data,
-  height,
-  primaryColor,
-  secondaryColor,
-  textColor,
-  mutedColor,
-}: SimpleBarChartProps) {
-  const maxValue = Math.max(...data.map(d => d.durationMinutes), 1);
+function SimpleBarChart({ data, height, primaryColor, secondaryColor, textColor, mutedColor }: SimpleBarChartProps) {
+  const maxValue = Math.max(...data.map((d) => d.durationMinutes), 1);
   const barWidth = Math.max(8, Math.min(24, (SCREEN_WIDTH - 80) / data.length - 4));
 
   return (
@@ -92,7 +72,7 @@ function SimpleBarChart({
         {data.map((point, index) => {
           const barHeight = (point.durationMinutes / maxValue) * (height - 40);
           const isDeload = point.isDeload ?? false;
-          
+
           return (
             <View key={point.date} style={styles.barColumn}>
               <View
@@ -107,10 +87,7 @@ function SimpleBarChart({
                 ]}
               />
               {data.length <= 14 && (
-                <Text
-                  style={[styles.barLabel, { color: mutedColor }]}
-                  numberOfLines={1}
-                >
+                <Text style={[styles.barLabel, { color: mutedColor }]} numberOfLines={1}>
                   {formatDate(parseISO(point.date), data.length <= 7 ? 'EEE' : 'd')}
                 </Text>
               )}
@@ -118,7 +95,7 @@ function SimpleBarChart({
           );
         })}
       </View>
-      
+
       {/* Y-axis labels */}
       <View style={styles.yAxisLabels}>
         <Text style={[styles.yLabel, { color: mutedColor }]}>{maxValue}m</Text>
@@ -142,11 +119,11 @@ export function WorkoutTrendChart({
 }: WorkoutTrendChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 200;
-  
+
   const stats = useMemo(() => calculateStats(data), [data]);
-  
+
   const isEmpty = data.length === 0;
-  
+
   return (
     <ThemedChartWrapper
       title="Workout Duration"
@@ -157,21 +134,9 @@ export function WorkoutTrendChart({
     >
       {/* Stats Row */}
       <View style={styles.statsRow}>
-        <MiniStat
-          label="Total Time"
-          value={stats.totalMinutes}
-          unit="min"
-        />
-        <MiniStat
-          label="Avg Duration"
-          value={stats.avgDuration}
-          unit="min"
-          delta={stats.trend}
-        />
-        <MiniStat
-          label="Workouts"
-          value={stats.totalWorkouts}
-        />
+        <MiniStat label="Total Time" value={stats.totalMinutes} unit="min" />
+        <MiniStat label="Avg Duration" value={stats.avgDuration} unit="min" delta={stats.trend} />
+        <MiniStat label="Workouts" value={stats.totalWorkouts} />
       </View>
 
       {/* Chart */}
@@ -185,7 +150,7 @@ export function WorkoutTrendChart({
       />
 
       {/* Legend for deload workouts */}
-      {data.some(d => d.isDeload) && (
+      {data.some((d) => d.isDeload) && (
         <ChartLegend
           items={[
             { label: 'Regular', color: chartTheme.primary },

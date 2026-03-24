@@ -17,29 +17,33 @@ import { getAppState, setAppState } from '../database/service';
 
 export const FEATURE_FLAGS = {
   // Phase 4: Visualization experiments
-  SKIA_HEALTH_CARD: 'ff_skia_health_card',           // Skia-based health card pilot
-  VICTORY_CHARTS: 'ff_victory_charts',              // Victory-native chart library
-  ENHANCED_ANIMATIONS: 'ff_enhanced_animations',     // Advanced Reanimated animations
+  SKIA_HEALTH_CARD: 'ff_skia_health_card', // Skia-based health card pilot
+  VICTORY_CHARTS: 'ff_victory_charts', // Victory-native chart library
+  ENHANCED_ANIMATIONS: 'ff_enhanced_animations', // Advanced Reanimated animations
 
   // Phase 5: Platform consistency
-  STRICT_THEME_ENFORCEMENT: 'ff_strict_theme',       // Runtime theme violation warnings
+  STRICT_THEME_ENFORCEMENT: 'ff_strict_theme', // Runtime theme violation warnings
 
   // Phase 6: Quality gates
-  VERBOSE_TELEMETRY: 'ff_verbose_telemetry',         // Extra debug telemetry
-  SMOKE_TEST_MODE: 'ff_smoke_test_mode',             // Enables automated smoke test hooks
+  VERBOSE_TELEMETRY: 'ff_verbose_telemetry', // Extra debug telemetry
+  SMOKE_TEST_MODE: 'ff_smoke_test_mode', // Enables automated smoke test hooks
+
+  // Deferred features (disabled until next version)
+  HEALTH_SYNC: 'ff_health_sync', // Health Connect / HealthKit data sync
 } as const;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAGS;
-export type FeatureFlagId = typeof FEATURE_FLAGS[FeatureFlagKey];
+export type FeatureFlagId = (typeof FEATURE_FLAGS)[FeatureFlagKey];
 
 // Default values for flags (false = disabled by default for safety)
 const DEFAULT_FLAGS: Record<FeatureFlagId, boolean> = {
   [FEATURE_FLAGS.SKIA_HEALTH_CARD]: false,
   [FEATURE_FLAGS.VICTORY_CHARTS]: false,
-  [FEATURE_FLAGS.ENHANCED_ANIMATIONS]: true,  // Safe: just uses existing Reanimated
+  [FEATURE_FLAGS.ENHANCED_ANIMATIONS]: true, // Safe: just uses existing Reanimated
   [FEATURE_FLAGS.STRICT_THEME_ENFORCEMENT]: false,
   [FEATURE_FLAGS.VERBOSE_TELEMETRY]: false,
   [FEATURE_FLAGS.SMOKE_TEST_MODE]: false,
+  [FEATURE_FLAGS.HEALTH_SYNC]: false, // Deferred: HC crashes app, re-enable in v3
 };
 
 const FLAGS_STORAGE_KEY = 'feature_flags_v1';
@@ -91,9 +95,10 @@ class FeatureFlagsService {
    * Check if a feature is enabled
    */
   isEnabled(flag: FeatureFlagKey | FeatureFlagId): boolean {
-    const flagId = typeof flag === 'string' && flag in FEATURE_FLAGS
-      ? FEATURE_FLAGS[flag as FeatureFlagKey]
-      : flag as FeatureFlagId;
+    const flagId =
+      typeof flag === 'string' && flag in FEATURE_FLAGS
+        ? FEATURE_FLAGS[flag as FeatureFlagKey]
+        : (flag as FeatureFlagId);
 
     return this.flags.get(flagId) ?? DEFAULT_FLAGS[flagId] ?? false;
   }
@@ -102,9 +107,10 @@ class FeatureFlagsService {
    * Enable a feature flag
    */
   async enable(flag: FeatureFlagKey | FeatureFlagId): Promise<void> {
-    const flagId = typeof flag === 'string' && flag in FEATURE_FLAGS
-      ? FEATURE_FLAGS[flag as FeatureFlagKey]
-      : flag as FeatureFlagId;
+    const flagId =
+      typeof flag === 'string' && flag in FEATURE_FLAGS
+        ? FEATURE_FLAGS[flag as FeatureFlagKey]
+        : (flag as FeatureFlagId);
 
     this.flags.set(flagId, true);
     await this.persist();
@@ -114,9 +120,10 @@ class FeatureFlagsService {
    * Disable a feature flag
    */
   async disable(flag: FeatureFlagKey | FeatureFlagId): Promise<void> {
-    const flagId = typeof flag === 'string' && flag in FEATURE_FLAGS
-      ? FEATURE_FLAGS[flag as FeatureFlagKey]
-      : flag as FeatureFlagId;
+    const flagId =
+      typeof flag === 'string' && flag in FEATURE_FLAGS
+        ? FEATURE_FLAGS[flag as FeatureFlagKey]
+        : (flag as FeatureFlagId);
 
     this.flags.set(flagId, false);
     await this.persist();

@@ -46,6 +46,16 @@ export interface PersonalRecord {
   icon: string;
 }
 
+export interface DaySession {
+  id: string;
+  started_at: string;
+  duration_minutes: number;
+  total_exercises: number;
+  completed_exercises: number;
+  success: boolean;
+  exercises: string[];
+}
+
 export interface StreakData {
   currentStreak: number;
   longestStreak: number;
@@ -118,7 +128,7 @@ export async function fetchWorkoutBars(range: 'weekly' | 'monthly'): Promise<Bar
       const r = await db.getFirstAsync<{ cnt: number }>(
         `SELECT COUNT(*) as cnt FROM workout_sessions 
          WHERE user_id = ? AND date(started_at) = ? AND completed_at IS NOT NULL`,
-        [USER_ID, date]
+        [USER_ID, date],
       );
       bars.push({ day: DAY_NAMES[dayOfWeek === 0 ? 6 : dayOfWeek - 1]!, count: r?.cnt ?? 0 });
     }
@@ -131,7 +141,7 @@ export async function fetchWorkoutBars(range: 'weekly' | 'monthly'): Promise<Bar
       const r = await db.getFirstAsync<{ cnt: number }>(
         `SELECT COUNT(*) as cnt FROM workout_sessions 
          WHERE user_id = ? AND date(started_at) BETWEEN ? AND ? AND completed_at IS NOT NULL`,
-        [USER_ID, start, end]
+        [USER_ID, start, end],
       );
       bars.push({ day: `W${4 - w}`, count: r?.cnt ?? 0 });
     }
@@ -145,7 +155,7 @@ export async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]
   // Get current streak for streak bonus component
   const streak = await db.getFirstAsync<{ current_streak: number }>(
     `SELECT current_streak FROM workout_streaks WHERE user_id = ?`,
-    [USER_ID]
+    [USER_ID],
   );
   const streakDays = streak?.current_streak ?? 0;
 
@@ -158,13 +168,13 @@ export async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]
                 COALESCE(SUM(total_exercises), 0) as total_exercises
          FROM workout_sessions 
          WHERE user_id = ? AND date(started_at) = ? AND completed_at IS NOT NULL`,
-        [USER_ID, date]
+        [USER_ID, date],
       );
       const workouts = r?.cnt ?? 0;
       const exercises = r?.exercises ?? 0;
       const totalEx = r?.total_exercises ?? 0;
       // Match xpService formula: 100 base + 20/exercise + 50 completion bonus + 10*streak
-      const completionBonus = (exercises >= totalEx && totalEx > 0) ? 50 * workouts : 0;
+      const completionBonus = exercises >= totalEx && totalEx > 0 ? 50 * workouts : 0;
       const streakBonus = workouts > 0 ? streakDays * 10 : 0;
       xp.push(workouts * 100 + exercises * 20 + completionBonus + streakBonus);
     }
@@ -179,12 +189,12 @@ export async function fetchXPData(range: 'weekly' | 'monthly'): Promise<number[]
                 COALESCE(SUM(total_exercises), 0) as total_exercises
          FROM workout_sessions 
          WHERE user_id = ? AND date(started_at) BETWEEN ? AND ? AND completed_at IS NOT NULL`,
-        [USER_ID, start, end]
+        [USER_ID, start, end],
       );
       const workouts = r?.cnt ?? 0;
       const exercises = r?.exercises ?? 0;
       const totalEx = r?.total_exercises ?? 0;
-      const completionBonus = (exercises >= totalEx && totalEx > 0) ? 50 * workouts : 0;
+      const completionBonus = exercises >= totalEx && totalEx > 0 ? 50 * workouts : 0;
       const streakBonus = workouts > 0 ? streakDays * 10 : 0;
       xp.push(workouts * 100 + exercises * 20 + completionBonus + streakBonus);
     }
@@ -204,20 +214,22 @@ export async function fetchMuscleGroups(): Promise<MuscleGroupData[]> {
        AND em.is_primary = 1
      GROUP BY em.muscle
      ORDER BY cnt DESC`,
-    [USER_ID, since]
+    [USER_ID, since],
   );
 
   if (rows.length === 0) {
-    return ['CHEST', 'BACK', 'QUADRICEPS', 'SHOULDERS', 'BICEPS', 'CORE', 'GLUTES', 'HAMSTRINGS']
-      .map(name => ({
-        name: name.charAt(0) + name.slice(1).toLowerCase(),
-        sessions: 0,
-        icon: MUSCLE_ICONS[name] || 'dumbbell',
-      }));
+    return ['CHEST', 'BACK', 'QUADRICEPS', 'SHOULDERS', 'BICEPS', 'CORE', 'GLUTES', 'HAMSTRINGS'].map((name) => ({
+      name: name.charAt(0) + name.slice(1).toLowerCase(),
+      sessions: 0,
+      icon: MUSCLE_ICONS[name] || 'dumbbell',
+    }));
   }
 
-  return rows.map(r => ({
-    name: r.muscle.charAt(0) + r.muscle.slice(1).toLowerCase(),
+  return rows.map((r) => ({
+    name: r.muscle
+      .split('_')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' '),
     sessions: r.cnt,
     icon: MUSCLE_ICONS[r.muscle.toUpperCase()] || 'dumbbell',
   }));
@@ -237,7 +249,7 @@ export async function fetchStepStats(range: 'weekly' | 'monthly'): Promise<StepS
             COUNT(*) as day_count
      FROM daily_steps 
      WHERE user_id = ? AND date >= ?`,
-    [USER_ID, since]
+    [USER_ID, since],
   );
 
   const totalSteps = r?.total_steps ?? 0;
@@ -261,7 +273,7 @@ export async function fetchJogStats(range: 'weekly' | 'monthly'): Promise<JogSta
     `SELECT distance_meters, avg_pace_per_km
      FROM jog_sessions 
      WHERE user_id = ? AND date(start_time) >= ? AND end_time IS NOT NULL`,
-    [USER_ID, since]
+    [USER_ID, since],
   );
 
   if (rows.length === 0) {
@@ -269,11 +281,9 @@ export async function fetchJogStats(range: 'weekly' | 'monthly'): Promise<JogSta
   }
 
   const totalDistance = rows.reduce((s, r) => s + r.distance_meters, 0);
-  const longestRun = Math.max(...rows.map(r => r.distance_meters));
-  const paces = rows.filter(r => r.avg_pace_per_km && r.avg_pace_per_km > 0);
-  const avgPace = paces.length > 0
-    ? paces.reduce((s, r) => s + (r.avg_pace_per_km ?? 0), 0) / paces.length
-    : 0;
+  const longestRun = Math.max(...rows.map((r) => r.distance_meters));
+  const paces = rows.filter((r) => r.avg_pace_per_km && r.avg_pace_per_km > 0);
+  const avgPace = paces.length > 0 ? paces.reduce((s, r) => s + (r.avg_pace_per_km ?? 0), 0) / paces.length : 0;
 
   return {
     runs: rows.length,
@@ -296,10 +306,10 @@ export async function fetchActiveDays(): Promise<number[]> {
      SELECT DISTINCT CAST(strftime('%d', date) AS INTEGER) as d
      FROM daily_steps
      WHERE user_id = ? AND strftime('%Y-%m', date) = ? AND steps > 0`,
-    [USER_ID, yearMonth, USER_ID, yearMonth]
+    [USER_ID, yearMonth, USER_ID, yearMonth],
   );
 
-  return rows.map(r => r.d);
+  return rows.map((r) => r.d);
 }
 
 export async function fetchPersonalRecords(): Promise<PersonalRecord[]> {
@@ -319,7 +329,7 @@ export async function fetchPersonalRecords(): Promise<PersonalRecord[]> {
      WHERE pr.user_id = ?
      ORDER BY pr.sets_completed DESC, pr.date DESC
      LIMIT 5`,
-    [USER_ID]
+    [USER_ID],
   );
 
   if (rows.length === 0) return [];
@@ -333,7 +343,7 @@ export async function fetchPersonalRecords(): Promise<PersonalRecord[]> {
     strength: 'dumbbell',
   };
 
-  return rows.map(r => ({
+  return rows.map((r) => ({
     exercise: r.exercise_name,
     value: `${r.best_sets} × ${r.best_reps}`,
     date: new Date(r.best_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
@@ -347,10 +357,7 @@ export async function fetchStreakData(): Promise<StreakData> {
   const streak = await db.getFirstAsync<{
     current_streak: number;
     longest_streak: number;
-  }>(
-    `SELECT current_streak, longest_streak FROM workout_streaks WHERE user_id = ?`,
-    [USER_ID]
-  );
+  }>(`SELECT current_streak, longest_streak FROM workout_streaks WHERE user_id = ?`, [USER_ID]);
 
   const weekStart = getStartOfWeek();
   const monthStart = getStartOfMonth();
@@ -358,18 +365,18 @@ export async function fetchStreakData(): Promise<StreakData> {
   const weekCount = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM workout_sessions 
      WHERE user_id = ? AND date(started_at) >= ? AND completed_at IS NOT NULL`,
-    [USER_ID, weekStart]
+    [USER_ID, weekStart],
   );
 
   const monthCount = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM workout_sessions 
      WHERE user_id = ? AND date(started_at) >= ? AND completed_at IS NOT NULL`,
-    [USER_ID, monthStart]
+    [USER_ID, monthStart],
   );
 
   const totalCount = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM workout_sessions WHERE user_id = ? AND completed_at IS NOT NULL`,
-    [USER_ID]
+    [USER_ID],
   );
 
   const now = new Date();
@@ -378,7 +385,7 @@ export async function fetchStreakData(): Promise<StreakData> {
   // Read user's actual training days target from profile
   const profile = await db.getFirstAsync<{ training_days_per_week: number }>(
     `SELECT training_days_per_week FROM user_profile WHERE id = ?`,
-    [USER_ID]
+    [USER_ID],
   );
   const targetDaysPerWeek = profile?.training_days_per_week ?? 3;
   const expectedTrainingDays = Math.max(1, Math.round((daysElapsed / 7) * targetDaysPerWeek));
@@ -386,7 +393,7 @@ export async function fetchStreakData(): Promise<StreakData> {
     `SELECT COUNT(DISTINCT date(started_at)) as cnt 
      FROM workout_sessions 
      WHERE user_id = ? AND strftime('%Y-%m', started_at) = ? AND completed_at IS NOT NULL`,
-    [USER_ID, `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`]
+    [USER_ID, `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`],
   );
   const consistencyPct = Math.min(100, Math.round(((activeDaysMonth?.cnt ?? 0) / expectedTrainingDays) * 100));
 
@@ -398,4 +405,48 @@ export async function fetchStreakData(): Promise<StreakData> {
     thisWeek: weekCount?.cnt ?? 0,
     thisMonth: monthCount?.cnt ?? 0,
   };
+}
+
+/**
+ * Fetch completed workout sessions for a specific date.
+ * Returns session metadata + exercise names for the detail modal.
+ */
+export async function fetchDaySessions(dateStr: string): Promise<DaySession[]> {
+  const db = await getDatabase();
+
+  const sessions = await db.getAllAsync<{
+    id: string;
+    started_at: string;
+    duration_minutes: number;
+    total_exercises: number;
+    completed_exercises: number;
+    success: number;
+  }>(
+    `SELECT id, started_at, duration_minutes, total_exercises, completed_exercises, success
+     FROM workout_sessions
+     WHERE user_id = ? AND date(started_at) = ? AND completed_at IS NOT NULL
+     ORDER BY started_at ASC`,
+    [USER_ID, dateStr],
+  );
+
+  const result: DaySession[] = [];
+  for (const s of sessions) {
+    const exRows = await db.getAllAsync<{ name: string }>(
+      `SELECT e.name FROM session_exercises se
+       JOIN exercises e ON se.exercise_id = e.id
+       WHERE se.session_id = ?
+       ORDER BY se.order_in_session ASC`,
+      [s.id],
+    );
+    result.push({
+      id: s.id,
+      started_at: s.started_at,
+      duration_minutes: s.duration_minutes,
+      total_exercises: s.total_exercises,
+      completed_exercises: s.completed_exercises,
+      success: !!s.success,
+      exercises: exRows.map((r) => r.name),
+    });
+  }
+  return result;
 }

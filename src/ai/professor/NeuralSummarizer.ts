@@ -42,11 +42,11 @@ export interface ScoredSentence {
 }
 
 export interface SummarizationConfig {
-  maxSentences?: number;         // max sentences in summary
-  compressionRatio?: number;     // target length ratio (0-1), default 0.3
-  minSentenceLength?: number;    // minimum words per sentence
-  preserveOrder?: boolean;       // keep original order in summary
-  focusQuery?: string;           // optional query-focused summarization
+  maxSentences?: number; // max sentences in summary
+  compressionRatio?: number; // target length ratio (0-1), default 0.3
+  minSentenceLength?: number; // minimum words per sentence
+  preserveOrder?: boolean; // keep original order in summary
+  focusQuery?: string; // optional query-focused summarization
 }
 
 interface SentenceEncoderModel {
@@ -96,7 +96,7 @@ export class NeuralSummarizer {
       // Try v3 model first (bundled ~12MB), then document directory fallback
       const modelData = await loadBundledModelWithFallback<SentenceEncoderModel>(
         safeRequire(() => require('../../../assets/models/summarizer_v3.model')),
-        'summarizer_v3.model'
+        'summarizer_v3.model',
       );
       if (!modelData) {
         if (__DEV__) console.log('[NeuralSummarizer] Model not found — using TF-IDF fallback');
@@ -108,9 +108,9 @@ export class NeuralSummarizer {
       const version = (this.model as any).version ?? '3.0.0';
       if (__DEV__) {
         console.log(
-        `[NeuralSummarizer] v${version}: ${this.model.numLayers} layers, ` +
-        `hidden=${this.model.hiddenSize}, ` +
-        `sentence_dim=${this.model.sentenceSize}`
+          `[NeuralSummarizer] v${version}: ${this.model.numLayers} layers, ` +
+            `hidden=${this.model.hiddenSize}, ` +
+            `sentence_dim=${this.model.sentenceSize}`,
         );
       }
       return true;
@@ -123,10 +123,7 @@ export class NeuralSummarizer {
   /**
    * Summarize a document (extractive).
    */
-  async summarize(
-    text: string,
-    config: SummarizationConfig = {}
-  ): Promise<SummaryResult> {
+  async summarize(text: string, config: SummarizationConfig = {}): Promise<SummaryResult> {
     const startTime = performance.now();
 
     const {
@@ -138,8 +135,7 @@ export class NeuralSummarizer {
     } = config;
 
     // Split into sentences
-    const sentences = this.splitSentences(text)
-      .filter(s => this.wordCount(s) >= minSentenceLength);
+    const sentences = this.splitSentences(text).filter((s) => this.wordCount(s) >= minSentenceLength);
 
     if (sentences.length === 0) {
       return {
@@ -152,10 +148,7 @@ export class NeuralSummarizer {
     }
 
     // Target number of sentences
-    const targetCount = Math.min(
-      maxSentences,
-      Math.max(1, Math.round(sentences.length * compressionRatio))
-    );
+    const targetCount = Math.min(maxSentences, Math.max(1, Math.round(sentences.length * compressionRatio)));
 
     let scoredSentences: ScoredSentence[];
 
@@ -167,9 +160,7 @@ export class NeuralSummarizer {
 
     // Select top sentences
     const ranked = [...scoredSentences].sort((a, b) => b.score - a.score);
-    const selectedIndices = new Set(
-      ranked.slice(0, targetCount).map(s => s.position)
-    );
+    const selectedIndices = new Set(ranked.slice(0, targetCount).map((s) => s.position));
 
     for (const s of scoredSentences) {
       s.isSelected = selectedIndices.has(s.position);
@@ -178,12 +169,12 @@ export class NeuralSummarizer {
     // Build summary
     let selectedSentences: ScoredSentence[];
     if (preserveOrder) {
-      selectedSentences = scoredSentences.filter(s => s.isSelected);
+      selectedSentences = scoredSentences.filter((s) => s.isSelected);
     } else {
       selectedSentences = ranked.slice(0, targetCount);
     }
 
-    const summary = selectedSentences.map(s => s.text).join(' ');
+    const summary = selectedSentences.map((s) => s.text).join(' ');
 
     return {
       summary,
@@ -198,12 +189,9 @@ export class NeuralSummarizer {
   // NEURAL SCORING (transformer-based)
   // ============================================
 
-  private neuralScore(
-    sentences: string[],
-    focusQuery?: string
-  ): ScoredSentence[] {
+  private neuralScore(sentences: string[], focusQuery?: string): ScoredSentence[] {
     // Encode all sentences
-    const embeddings = sentences.map(s => this.encodeSentence(s));
+    const embeddings = sentences.map((s) => this.encodeSentence(s));
 
     // Compute document centroid
     const dim = embeddings[0]!.length;
@@ -300,10 +288,7 @@ export class NeuralSummarizer {
     return sentence;
   }
 
-  private transformerLayer(
-    input: Float64Array[],
-    layer: TransformerLayer
-  ): Float64Array[] {
+  private transformerLayer(input: Float64Array[], layer: TransformerLayer): Float64Array[] {
     return sharedTransformerLayer(input, layer, {
       hiddenSize: this.model!.hiddenSize,
       numHeads: this.model!.numHeads,
@@ -314,15 +299,12 @@ export class NeuralSummarizer {
   // TF-IDF FALLBACK
   // ============================================
 
-  private tfidfScore(
-    sentences: string[],
-    focusQuery?: string
-  ): ScoredSentence[] {
+  private tfidfScore(sentences: string[], focusQuery?: string): ScoredSentence[] {
     // Build vocabulary and compute TF-IDF
     const allWords = new Set<string>();
-    const sentenceWords = sentences.map(s => {
+    const sentenceWords = sentences.map((s) => {
       const words = this.getWords(s);
-      words.forEach(w => allWords.add(w));
+      words.forEach((w) => allWords.add(w));
       return words;
     });
 
@@ -342,7 +324,7 @@ export class NeuralSummarizer {
     }
 
     // TF-IDF vectors
-    const tfidfVectors = sentenceWords.map(words => {
+    const tfidfVectors = sentenceWords.map((words) => {
       const tf: Record<string, number> = {};
       for (const w of words) {
         tf[w] = (tf[w] ?? 0) + 1;
@@ -407,8 +389,8 @@ export class NeuralSummarizer {
     return text
       .replace(/([.!?])\s+/g, '$1\n')
       .split('\n')
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
   }
 
   private getWords(text: string): string[] {
@@ -416,17 +398,17 @@ export class NeuralSummarizer {
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
       .split(/\s+/)
-      .filter(w => w.length > 1);
+      .filter((w) => w.length > 1);
   }
 
   private wordCount(text: string): number {
-    return text.split(/\s+/).filter(w => w.length > 0).length;
+    return text.split(/\s+/).filter((w) => w.length > 0).length;
   }
 
   private tokenize(text: string): number[] {
     if (!this.model) return [];
     const words = text.toLowerCase().split(/\s+/).slice(0, this.model.maxLength);
-    return words.map(w => this.model!.vocabulary[w] ?? 0); // 0 = UNK
+    return words.map((w) => this.model!.vocabulary[w] ?? 0); // 0 = UNK
   }
 
   // ============================================
@@ -437,11 +419,10 @@ export class NeuralSummarizer {
     return cosineSimilarityF64(a, b);
   }
 
-  private cosineSimSparse(
-    a: Record<string, number>,
-    b: Record<string, number>
-  ): number {
-    let dot = 0, normA = 0, normB = 0;
+  private cosineSimSparse(a: Record<string, number>, b: Record<string, number>): number {
+    let dot = 0,
+      normA = 0,
+      normB = 0;
     for (const [w, v] of Object.entries(a)) {
       dot += v * (b[w] ?? 0);
       normA += v * v;
@@ -461,12 +442,14 @@ export class NeuralSummarizer {
   // PUBLIC API
   // ============================================
 
-  get loaded(): boolean { return this.isLoaded; }
+  get loaded(): boolean {
+    return this.isLoaded;
+  }
 
   getModelInfo() {
     return {
       loaded: this.isLoaded,
-      modelType: this.isLoaded ? 'neural' as const : 'tfidf' as const,
+      modelType: this.isLoaded ? ('neural' as const) : ('tfidf' as const),
       numLayers: this.model?.numLayers ?? 0,
       hiddenSize: this.model?.hiddenSize ?? 0,
       sentenceSize: this.model?.sentenceSize ?? 0,

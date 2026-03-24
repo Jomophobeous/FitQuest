@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import {
   deleteEncryptedBackup,
@@ -184,7 +185,7 @@ export default function BackupsScreen() {
 
       Alert.alert(
         t('backup.created') || 'Backup created',
-        `${t('backup.helperText')?.slice(0, 30) || 'Saved encrypted backup'} (${formatBytes(result.bytes)}).`
+        `${t('backup.helperText')?.slice(0, 30) || 'Saved encrypted backup'} (${formatBytes(result.bytes)}).`,
       );
     } catch (e: any) {
       Alert.alert(t('backup.failed') || 'Backup failed', e?.message ?? 'Unknown error');
@@ -220,35 +221,39 @@ export default function BackupsScreen() {
               }
             },
           },
-        ]
+        ],
       );
     },
-    [busy, passphrase, router]
+    [busy, passphrase, router],
   );
 
   const handleDelete = useCallback(
     (item: BackupListItem) => {
       if (busy) return;
-      Alert.alert(t('backup.deleteConfirm') || 'Delete backup?', t('backup.deleteWarning') || 'This cannot be undone.', [
-        { text: t('common.cancel') || 'Cancel', style: 'cancel' },
-        {
-          text: t('common.delete') || 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            setBusy(true);
-            try {
-              await deleteEncryptedBackup(item.uri);
-              await refresh();
-            } catch (e: any) {
-              Alert.alert(t('backup.deleteFailed') || 'Delete failed', e?.message ?? 'Unknown error');
-            } finally {
-              setBusy(false);
-            }
+      Alert.alert(
+        t('backup.deleteConfirm') || 'Delete backup?',
+        t('backup.deleteWarning') || 'This cannot be undone.',
+        [
+          { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+          {
+            text: t('common.delete') || 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              setBusy(true);
+              try {
+                await deleteEncryptedBackup(item.uri);
+                await refresh();
+              } catch (e: any) {
+                Alert.alert(t('backup.deleteFailed') || 'Delete failed', e?.message ?? 'Unknown error');
+              } finally {
+                setBusy(false);
+              }
+            },
           },
-        },
-      ]);
+        ],
+      );
     },
-    [busy, refresh]
+    [busy, refresh],
   );
 
   const handleUploadCloud = useCallback(async () => {
@@ -297,209 +302,212 @@ export default function BackupsScreen() {
               }
             },
           },
-        ]
+        ],
       );
     },
-    [busy, cloudEnabled, passphrase, router]
+    [busy, cloudEnabled, passphrase, router],
   );
 
   const handleDeleteCloud = useCallback(
     (item: CloudBackupListItem) => {
       if (!cloudEnabled || busy) return;
-      Alert.alert(t('backup.deleteConfirm') || 'Delete cloud backup?', t('backup.deleteWarning') || 'This cannot be undone.', [
-        { text: t('common.cancel') || 'Cancel', style: 'cancel' },
-        {
-          text: t('common.delete') || 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            setBusy(true);
-            try {
-              await deleteCloudBackup(item.id);
-              await refreshCloud();
-            } catch (e: any) {
-              Alert.alert(t('backup.deleteFailed') || 'Delete failed', e?.message ?? 'Unknown error');
-            } finally {
-              setBusy(false);
-            }
+      Alert.alert(
+        t('backup.deleteConfirm') || 'Delete cloud backup?',
+        t('backup.deleteWarning') || 'This cannot be undone.',
+        [
+          { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+          {
+            text: t('common.delete') || 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              setBusy(true);
+              try {
+                await deleteCloudBackup(item.id);
+                await refreshCloud();
+              } catch (e: any) {
+                Alert.alert(t('backup.deleteFailed') || 'Delete failed', e?.message ?? 'Unknown error');
+              } finally {
+                setBusy(false);
+              }
+            },
           },
-        },
-      ]);
+        ],
+      );
     },
-    [busy, cloudEnabled, refreshCloud]
+    [busy, cloudEnabled, refreshCloud],
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/profile')} style={styles.iconBtn}>
-          <MaterialCommunityIcons name="arrow-left" size={18} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('backup.title') || 'Backup & Restore'}</Text>
-        <View style={{ width: theme.spacing[8] }} />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <GlassCard>
-          <View style={{ gap: theme.spacing[3] }}>
-            <Text style={styles.helperText}>
-              {t('backup.helperText') || 'Creates an encrypted backup file of your local database. If you set a passphrase, you must use the same passphrase to restore.'}
-            </Text>
-
-            <TextInput
-              value={passphrase}
-              onChangeText={setPassphrase}
-              placeholder={t('backup.optionalPassphrase') || 'Optional passphrase'}
-              placeholderTextColor={theme.colors.textMuted}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={styles.input}
-              editable={!busy}
-            />
-
-            <GradientButton
-              title={busy ? (t('backup.working') || 'Working…') : (t('backup.createBackup') || 'Create Backup')}
-              variant="success"
-              size="lg"
-              style={busy ? { opacity: 0.7 } : undefined}
-              onPress={() => {
-                void handleCreateBackup();
-              }}
-            />
-          </View>
-        </GlassCard>
-
-        <View style={styles.sectionGap}>
-          <SectionHeader title={t('backup.availableBackups') || 'Available Backups'} />
+    <ScreenErrorBoundary screenName="Backups" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
+            style={styles.iconBtn}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={18} color={theme.colors.text} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{t('backup.title') || 'Backup & Restore'}</Text>
+          <View style={{ width: theme.spacing[8] }} />
         </View>
 
-        {loading ? (
-          <View style={styles.empty}>
-            <ActivityIndicator color={theme.colors.accent} />
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+          <GlassCard>
+            <View style={{ gap: theme.spacing[3] }}>
+              <Text style={styles.helperText}>
+                {t('backup.helperText') ||
+                  'Creates an encrypted backup file of your local database. If you set a passphrase, you must use the same passphrase to restore.'}
+              </Text>
+
+              <TextInput
+                value={passphrase}
+                onChangeText={setPassphrase}
+                placeholder={t('backup.optionalPassphrase') || 'Optional passphrase'}
+                placeholderTextColor={theme.colors.textMuted}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                style={styles.input}
+                editable={!busy}
+              />
+
+              <GradientButton
+                title={busy ? t('backup.working') || 'Working…' : t('backup.createBackup') || 'Create Backup'}
+                variant="success"
+                size="lg"
+                style={busy ? { opacity: 0.7 } : undefined}
+                onPress={() => {
+                  void handleCreateBackup();
+                }}
+              />
+            </View>
+          </GlassCard>
+
+          <View style={styles.sectionGap}>
+            <SectionHeader title={t('backup.availableBackups') || 'Available Backups'} />
           </View>
-        ) : items.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>{t('backup.noBackups') || 'No backups yet.'}</Text>
-          </View>
-        ) : (
-          <View style={{ gap: theme.spacing[3] }}>
-            {items.map((item) => (
-              <GlassCard key={item.uri}>
-                <View style={styles.backupRow}>
-                  <View style={styles.backupMeta}>
-                    <Text style={styles.backupName} numberOfLines={1}>
-                      {item.filename}
-                    </Text>
-                    <Text style={styles.backupSub}>
-                      {formatDateTime(item.modified_at)} • {formatBytes(item.bytes)}
-                    </Text>
+
+          {loading ? (
+            <View style={styles.empty}>
+              <ActivityIndicator color={theme.colors.accent} />
+            </View>
+          ) : items.length === 0 ? (
+            <View style={styles.empty}>
+              <Text style={styles.emptyText}>{t('backup.noBackups') || 'No backups yet.'}</Text>
+            </View>
+          ) : (
+            <View style={{ gap: theme.spacing[3] }}>
+              {items.map((item) => (
+                <GlassCard key={item.uri}>
+                  <View style={styles.backupRow}>
+                    <View style={styles.backupMeta}>
+                      <Text style={styles.backupName} numberOfLines={1}>
+                        {item.filename}
+                      </Text>
+                      <Text style={styles.backupSub}>
+                        {formatDateTime(item.modified_at)} • {formatBytes(item.bytes)}
+                      </Text>
+                    </View>
+
+                    <TouchableOpacity style={styles.iconBtn} onPress={() => handleRestore(item)} disabled={busy}>
+                      <MaterialCommunityIcons name="backup-restore" size={18} color={theme.colors.accent} />
+                    </TouchableOpacity>
+
+                    <View style={{ width: theme.spacing[2] }} />
+
+                    <TouchableOpacity style={styles.iconBtn} onPress={() => handleDelete(item)} disabled={busy}>
+                      <MaterialCommunityIcons name="delete-outline" size={18} color={theme.colors.error} />
+                    </TouchableOpacity>
                   </View>
+                </GlassCard>
+              ))}
+            </View>
+          )}
 
-                  <TouchableOpacity
-                    style={styles.iconBtn}
-                    onPress={() => handleRestore(item)}
-                    disabled={busy}
-                  >
-                    <MaterialCommunityIcons name="backup-restore" size={18} color={theme.colors.accent} />
-                  </TouchableOpacity>
+          {!!cloudEnabled && (
+            <>
+              <View style={styles.sectionGap}>
+                <SectionHeader title={t('backup.cloudBackups') || 'Cloud Backups'} />
+              </View>
 
-                  <View style={{ width: theme.spacing[2] }} />
+              <GlassCard>
+                <View style={{ gap: theme.spacing[3] }}>
+                  <Text style={styles.helperText}>
+                    {t('backup.cloudHelper') ||
+                      'Stores the encrypted backup blob on your backend. The server cannot decrypt your data.'}
+                  </Text>
 
-                  <TouchableOpacity
-                    style={styles.iconBtn}
-                    onPress={() => handleDelete(item)}
-                    disabled={busy}
-                  >
-                    <MaterialCommunityIcons name="delete-outline" size={18} color={theme.colors.error} />
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', gap: theme.spacing[3] }}>
+                    <View style={{ flex: 1 }}>
+                      <GradientButton
+                        title={busy ? t('backup.working') || 'Working…' : t('backup.uploadBackup') || 'Upload Backup'}
+                        variant="primary"
+                        size="md"
+                        style={busy ? { opacity: 0.7 } : undefined}
+                        onPress={() => {
+                          void handleUploadCloud();
+                        }}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      style={styles.iconBtn}
+                      disabled={busy || cloudLoading}
+                      onPress={() => {
+                        void refreshCloud();
+                      }}
+                    >
+                      {cloudLoading ? (
+                        <ActivityIndicator color={theme.colors.accent} />
+                      ) : (
+                        <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.text} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </GlassCard>
-            ))}
-          </View>
-        )}
 
-        {!!cloudEnabled && (
-          <>
-            <View style={styles.sectionGap}>
-              <SectionHeader title={t('backup.cloudBackups') || 'Cloud Backups'} />
-            </View>
-
-            <GlassCard>
-              <View style={{ gap: theme.spacing[3] }}>
-                <Text style={styles.helperText}>
-                  {t('backup.cloudHelper') || 'Stores the encrypted backup blob on your backend. The server cannot decrypt your data.'}
-                </Text>
-
-                <View style={{ flexDirection: 'row', gap: theme.spacing[3] }}>
-                  <View style={{ flex: 1 }}>
-                    <GradientButton
-                      title={busy ? (t('backup.working') || 'Working…') : (t('backup.uploadBackup') || 'Upload Backup')}
-                      variant="primary"
-                      size="md"
-                      style={busy ? { opacity: 0.7 } : undefined}
-                      onPress={() => {
-                        void handleUploadCloud();
-                      }}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={styles.iconBtn}
-                    disabled={busy || cloudLoading}
-                    onPress={() => {
-                      void refreshCloud();
-                    }}
-                  >
-                    {cloudLoading ? (
-                      <ActivityIndicator color={theme.colors.accent} />
-                    ) : (
-                      <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.text} />
-                    )}
-                  </TouchableOpacity>
+              {cloudItems.length === 0 ? (
+                <View style={styles.empty}>
+                  <Text style={styles.emptyText}>{t('backup.noCloudBackups') || 'No cloud backups yet.'}</Text>
                 </View>
-              </View>
-            </GlassCard>
+              ) : (
+                <View style={{ gap: theme.spacing[3] }}>
+                  {cloudItems.map((item) => (
+                    <GlassCard key={item.id}>
+                      <View style={styles.backupRow}>
+                        <View style={styles.backupMeta}>
+                          <Text style={styles.backupName} numberOfLines={1}>
+                            {item.id}
+                          </Text>
+                          <Text style={styles.backupSub}>{formatDateTime(item.createdAt)}</Text>
+                        </View>
 
-            {cloudItems.length === 0 ? (
-              <View style={styles.empty}>
-                <Text style={styles.emptyText}>{t('backup.noCloudBackups') || 'No cloud backups yet.'}</Text>
-              </View>
-            ) : (
-              <View style={{ gap: theme.spacing[3] }}>
-                {cloudItems.map((item) => (
-                  <GlassCard key={item.id}>
-                    <View style={styles.backupRow}>
-                      <View style={styles.backupMeta}>
-                        <Text style={styles.backupName} numberOfLines={1}>
-                          {item.id}
-                        </Text>
-                        <Text style={styles.backupSub}>{formatDateTime(item.createdAt)}</Text>
+                        <TouchableOpacity
+                          style={styles.iconBtn}
+                          onPress={() => handleRestoreCloud(item)}
+                          disabled={busy}
+                        >
+                          <MaterialCommunityIcons name="backup-restore" size={18} color={theme.colors.accent} />
+                        </TouchableOpacity>
+
+                        <View style={{ width: theme.spacing[2] }} />
+
+                        <TouchableOpacity
+                          style={styles.iconBtn}
+                          onPress={() => handleDeleteCloud(item)}
+                          disabled={busy}
+                        >
+                          <MaterialCommunityIcons name="delete-outline" size={18} color={theme.colors.error} />
+                        </TouchableOpacity>
                       </View>
-
-                      <TouchableOpacity
-                        style={styles.iconBtn}
-                        onPress={() => handleRestoreCloud(item)}
-                        disabled={busy}
-                      >
-                        <MaterialCommunityIcons name="backup-restore" size={18} color={theme.colors.accent} />
-                      </TouchableOpacity>
-
-                      <View style={{ width: theme.spacing[2] }} />
-
-                      <TouchableOpacity
-                        style={styles.iconBtn}
-                        onPress={() => handleDeleteCloud(item)}
-                        disabled={busy}
-                      >
-                        <MaterialCommunityIcons name="delete-outline" size={18} color={theme.colors.error} />
-                      </TouchableOpacity>
-                    </View>
-                  </GlassCard>
-                ))}
-              </View>
-            )}
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+                    </GlassCard>
+                  ))}
+                </View>
+              )}
+            </>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }

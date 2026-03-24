@@ -7,13 +7,7 @@
  * Activities: STATIONARY, WALKING, JOGGING, RUNNING, CYCLING, EXERCISE
  */
 
-export type ActivityType =
-  | 'STATIONARY'
-  | 'WALKING'
-  | 'JOGGING'
-  | 'RUNNING'
-  | 'CYCLING'
-  | 'EXERCISE';
+export type ActivityType = 'STATIONARY' | 'WALKING' | 'JOGGING' | 'RUNNING' | 'CYCLING' | 'EXERCISE';
 
 export interface SensorReading {
   accel: { x: number; y: number; z: number };
@@ -43,7 +37,7 @@ interface ActivityModelData {
 
 /**
  * Threshold-based classifier enhanced with trained feature importance.
- * 
+ *
  * On-device: uses statistical feature extraction from sensor windows
  * and applies learned thresholds for classification.
  */
@@ -69,7 +63,10 @@ export class TrainedActivityClassifier {
       const modelJson = require('../../assets/models/activity_model.json');
       this.model = modelJson as ActivityModelData;
       this.isLoaded = true;
-      if (__DEV__) console.log(`[TrainedActivityClassifier] Model loaded: ${this.model.labels.length} activities, ${this.model.n_features} features`);
+      if (__DEV__)
+        console.log(
+          `[TrainedActivityClassifier] Model loaded: ${this.model.labels.length} activities, ${this.model.n_features} features`,
+        );
       return true;
     } catch (error) {
       if (__DEV__) console.warn('[TrainedActivityClassifier] Model not loaded, using heuristic fallback');
@@ -129,12 +126,12 @@ export class TrainedActivityClassifier {
 
     // Extract 6 channels
     const channels = [
-      window.map(r => r.accel.x),
-      window.map(r => r.accel.y),
-      window.map(r => r.accel.z),
-      window.map(r => r.gyro.x),
-      window.map(r => r.gyro.y),
-      window.map(r => r.gyro.z),
+      window.map((r) => r.accel.x),
+      window.map((r) => r.accel.y),
+      window.map((r) => r.accel.z),
+      window.map((r) => r.gyro.x),
+      window.map((r) => r.gyro.y),
+      window.map((r) => r.gyro.z),
     ];
 
     // Per-channel statistics
@@ -152,12 +149,8 @@ export class TrainedActivityClassifier {
     }
 
     // Cross-channel features
-    const accelMag = window.map(r =>
-      Math.sqrt(r.accel.x ** 2 + r.accel.y ** 2 + r.accel.z ** 2)
-    );
-    const gyroMag = window.map(r =>
-      Math.sqrt(r.gyro.x ** 2 + r.gyro.y ** 2 + r.gyro.z ** 2)
-    );
+    const accelMag = window.map((r) => Math.sqrt(r.accel.x ** 2 + r.accel.y ** 2 + r.accel.z ** 2));
+    const gyroMag = window.map((r) => Math.sqrt(r.gyro.x ** 2 + r.gyro.y ** 2 + r.gyro.z ** 2));
 
     features.push(
       this.mean(accelMag),
@@ -345,7 +338,9 @@ export class TrainedActivityClassifier {
     const n = Math.min(a.length, b.length);
     const meanA = this.mean(a);
     const meanB = this.mean(b);
-    let cov = 0, varA = 0, varB = 0;
+    let cov = 0,
+      varA = 0,
+      varB = 0;
 
     for (let i = 0; i < n; i++) {
       const da = a[i]! - meanA;

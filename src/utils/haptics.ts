@@ -24,9 +24,7 @@ const PATTERNS = {
   /** Rest over — firm tap */
   restOver: Platform.OS === 'android' ? [0, 60] : [0, 60],
   /** Workout complete — celebration pattern */
-  workoutComplete: Platform.OS === 'android'
-    ? [0, 50, 60, 50, 100, 80, 60, 80]
-    : [0, 50, 60, 50, 100, 80],
+  workoutComplete: Platform.OS === 'android' ? [0, 50, 60, 50, 100, 80, 60, 80] : [0, 50, 60, 50, 100, 80],
   /** Button press — micro tap */
   buttonPress: Platform.OS === 'android' ? [0, 15] : [0, 15],
   /** Error/warning */

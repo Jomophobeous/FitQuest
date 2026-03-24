@@ -1,6 +1,6 @@
 /**
  * FitQuest Paywall Screen
- * 
+ *
  * Premium subscription paywall with Figma-inspired dark aesthetic.
  * Shows feature highlights, plan selection (monthly vs annual),
  * and handles purchase flow.
@@ -15,18 +15,15 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
+  Alert,
 } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  ZoomIn,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useSubscription } from '../src/purchases/SubscriptionContext';
 import { getRegionalPricing } from '../src/utils/regionalPricing';
@@ -36,10 +33,26 @@ const { width: SCREEN_W } = Dimensions.get('window');
 
 // ── Feature list (built inside component to use t()) ──
 const getFeatures = (t: (key: string) => string) => [
-  { icon: 'lightning-bolt' as const, title: t('paywall.features.aiWorkouts'), desc: t('paywall.features.aiWorkoutsSub') },
-  { icon: 'book-open-variant' as const, title: t('paywall.features.fitmindLibrary'), desc: t('paywall.features.fitmindLibrarySub') },
-  { icon: 'heart-pulse' as const, title: t('paywall.features.healthMonitoring'), desc: t('paywall.features.healthMonitoringSub') },
-  { icon: 'chart-areaspline' as const, title: t('paywall.features.analytics'), desc: t('paywall.features.analyticsSub') },
+  {
+    icon: 'lightning-bolt' as const,
+    title: t('paywall.features.aiWorkouts'),
+    desc: t('paywall.features.aiWorkoutsSub'),
+  },
+  {
+    icon: 'book-open-variant' as const,
+    title: t('paywall.features.fitmindLibrary'),
+    desc: t('paywall.features.fitmindLibrarySub'),
+  },
+  {
+    icon: 'heart-pulse' as const,
+    title: t('paywall.features.healthMonitoring'),
+    desc: t('paywall.features.healthMonitoringSub'),
+  },
+  {
+    icon: 'chart-areaspline' as const,
+    title: t('paywall.features.analytics'),
+    desc: t('paywall.features.analyticsSub'),
+  },
   { icon: 'shield-lock' as const, title: t('paywall.features.encrypted'), desc: t('paywall.features.encryptedSub') },
   { icon: 'sync' as const, title: t('paywall.features.cloudBackup'), desc: t('paywall.features.cloudBackupSub') },
 ];
@@ -219,25 +232,13 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
   });
 };
 
-const getPlanCardStyle = (
-  theme: ReturnType<typeof useTheme>['theme'],
-  accentColor: string,
-  selected: boolean
-) => ({
-  backgroundColor: theme.isDark
-    ? withAlpha(theme.colors.text, 0.04)
-    : theme.colors.surface,
-  borderColor: selected
-    ? accentColor
-    : withAlpha(theme.colors.text, theme.isDark ? 0.08 : 0.1),
+const getPlanCardStyle = (theme: ReturnType<typeof useTheme>['theme'], accentColor: string, selected: boolean) => ({
+  backgroundColor: theme.isDark ? withAlpha(theme.colors.text, 0.04) : theme.colors.surface,
+  borderColor: selected ? accentColor : withAlpha(theme.colors.text, theme.isDark ? 0.08 : 0.1),
   borderWidth: selected ? 2 : 1,
 });
 
-const getRadioStyle = (
-  theme: ReturnType<typeof useTheme>['theme'],
-  accentColor: string,
-  selected: boolean
-) => ({
+const getRadioStyle = (theme: ReturnType<typeof useTheme>['theme'], accentColor: string, selected: boolean) => ({
   borderColor: selected ? accentColor : theme.colors.textMuted,
 });
 
@@ -245,9 +246,9 @@ export default function PaywallScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
-  const { 
+  const {
     state: subscriptionState,
-    trialDaysRemaining, 
+    trialDaysRemaining,
     offerings,
     purchaseMonthly,
     purchaseAnnual,
@@ -258,27 +259,30 @@ export default function PaywallScreen() {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [purchasing, setPurchasing] = useState(false);
 
-  useEffect(() => { void logEvent('paywall_viewed'); }, []);
+  useEffect(() => {
+    void logEvent('paywall_viewed');
+  }, []);
   const regionalPricing = useMemo(() => getRegionalPricing(), []);
 
-  // Only redirect if user is a PAID subscriber (not trial)
+  // Redirect if user already has full access (paid subscriber)
   useEffect(() => {
-    if (accessState === 'FULL' && subscriptionState.status === 'ACTIVE') {
+    if (accessState === 'SUBSCRIBED') {
       router.replace('/dashboard');
     }
-  }, [accessState, subscriptionState.status, router]);
+  }, [accessState]);
 
   const handleSubscribe = async () => {
     setPurchasing(true);
     try {
-      const success = selectedPlan === 'monthly'
-        ? await purchaseMonthly()
-        : await purchaseAnnual();
-      
+      const success = selectedPlan === 'monthly' ? await purchaseMonthly() : await purchaseAnnual();
+
       if (success) {
         void logEvent('subscription_purchased', { plan: selectedPlan });
         router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
+    } catch (error) {
+      Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
+      if (__DEV__) console.error('[Paywall] Purchase error:', error);
     } finally {
       setPurchasing(false);
     }
@@ -291,6 +295,9 @@ export default function PaywallScreen() {
       if (state.status === 'ACTIVE' || state.status === 'TRIAL') {
         router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
+    } catch (error) {
+      Alert.alert('Restore Failed', 'Could not restore purchases. Please try again.');
+      if (__DEV__) console.error('[Paywall] Restore error:', error);
     } finally {
       setPurchasing(false);
     }
@@ -300,195 +307,182 @@ export default function PaywallScreen() {
   const styles = useMemo(() => createStyles(theme, accentColor), [theme, accentColor]);
   const planCardAnnualStyle = useMemo(
     () => getPlanCardStyle(theme, accentColor, selectedPlan === 'annual'),
-    [theme, accentColor, selectedPlan]
+    [theme, accentColor, selectedPlan],
   );
   const planCardMonthlyStyle = useMemo(
     () => getPlanCardStyle(theme, accentColor, selectedPlan === 'monthly'),
-    [theme, accentColor, selectedPlan]
+    [theme, accentColor, selectedPlan],
   );
   const annualRadioStyle = useMemo(
     () => getRadioStyle(theme, accentColor, selectedPlan === 'annual'),
-    [theme, accentColor, selectedPlan]
+    [theme, accentColor, selectedPlan],
   );
   const monthlyRadioStyle = useMemo(
     () => getRadioStyle(theme, accentColor, selectedPlan === 'monthly'),
-    [theme, accentColor, selectedPlan]
+    [theme, accentColor, selectedPlan],
   );
   const radioInnerStyle = useMemo(() => ({ backgroundColor: accentColor }), [accentColor]);
   const features = useMemo(() => getFeatures(t), [t]);
-  const heroGlowColors = useMemo(
-    () => [withAlpha(accentColor, 0.12), 'transparent'] as const,
-    [accentColor]
-  );
+  const heroGlowColors = useMemo(() => [withAlpha(accentColor, 0.12), 'transparent'] as const, [accentColor]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ── Close Button ── */}
-        <Animated.View entering={FadeIn.duration(150)}>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')} accessibilityRole="button" accessibilityLabel="Close paywall">
-            <MaterialCommunityIcons name="close" size={20} color={theme.colors.textMuted} />
-          </TouchableOpacity>
-        </Animated.View>
+    <ScreenErrorBoundary screenName="Paywall" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* ── Close Button (hidden when expired — user must subscribe) ── */}
+          {accessState !== 'EXPIRED' && (
+            <Animated.View entering={FadeIn.duration(150)}>
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+                accessibilityRole="button"
+                accessibilityLabel="Close paywall"
+              >
+                <MaterialCommunityIcons name="close" size={20} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+            </Animated.View>
+          )}
 
-        {/* ── Hero Header ── */}
+          {/* ── Hero Header ── */}
           <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.hero}>
             <LinearGradient colors={heroGlowColors} style={styles.heroGlow} />
             <View style={styles.logoWrap}>
               <MaterialCommunityIcons name="lightning-bolt" size={40} color={accentColor} />
             </View>
-            <Text style={styles.heroTitle}>
-            {t('paywall.unlockTitle')}
-          </Text>
+            <Text style={styles.heroTitle}>{t('paywall.unlockTitle')}</Text>
             <Text style={styles.heroSub}>
-            {trialDaysRemaining > 0
-              ? `${trialDaysRemaining} ${t('paywall.trialDaysLeft')}`
-              : t('paywall.trialEnded')}
-          </Text>
-        </Animated.View>
-
-        {/* ── Features Grid ── */}
-        <Animated.View entering={FadeInDown.delay(200).duration(150)}>
-          <View style={styles.featureGrid}>
-            {features.map((feat, i) => (
-              <Animated.View
-                key={feat.title}
-                entering={FadeInUp.delay(250 + i * 60).duration(150)}
-                style={styles.featureItem}
-              >
-                <View style={styles.featureIcon}>
-                  <MaterialCommunityIcons name={feat.icon} size={20} color={accentColor} />
-                </View>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureTitle}>
-                    {feat.title}
-                  </Text>
-                  <Text style={styles.featureDesc} numberOfLines={1}>
-                    {feat.desc}
-                  </Text>
-                </View>
-              </Animated.View>
-            ))}
-          </View>
-        </Animated.View>
-
-        {/* ── Plan Selection ── */}
-        <Animated.View entering={FadeInDown.delay(500).duration(150)} style={styles.planSection}>
-          <Text style={styles.planSectionTitle}>
-            {t('paywall.choosePlan')}
-          </Text>
-
-          {/* Annual Plan */}
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => setSelectedPlan('annual')}
-            style={[
-              styles.planCard,
-              planCardAnnualStyle,
-            ]}
-            accessibilityRole="radio"
-            accessibilityLabel="Annual plan"
-            accessibilityState={{ selected: selectedPlan === 'annual' }}
-          >
-            {/* Best Value badge */}
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{t('paywall.bestValue')}</Text>
-            </View>
-
-            <View style={styles.planRow}>
-              <View style={styles.planInfo}>
-                <Text style={styles.planName}>{t('paywall.annual')}</Text>
-                <Text style={styles.planDetail}>
-                  {offerings.annual?.pricePerMonth ?? regionalPricing.monthlyPerMonth}/month
-                </Text>
-              </View>
-              <View style={styles.planPriceWrap}>
-                <Text style={styles.planPrice}>
-                  {offerings.annual?.price ?? regionalPricing.annual}
-                </Text>
-                <Text style={styles.planPeriod}>{t('paywall.perYear')}</Text>
-              </View>
-              <View style={[styles.radio, annualRadioStyle]}>
-                {selectedPlan === 'annual' && (
-                  <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, radioInnerStyle]} />
-                )}
-              </View>
-            </View>
-
-            <View style={styles.saveBadge}>
-              <Text style={styles.saveText}>{t('paywall.save33')}</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* Monthly Plan */}
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => setSelectedPlan('monthly')}
-            style={[
-              styles.planCard,
-              planCardMonthlyStyle,
-            ]}
-            accessibilityRole="radio"
-            accessibilityLabel="Monthly plan"
-            accessibilityState={{ selected: selectedPlan === 'monthly' }}
-          >
-            <View style={styles.planRow}>
-              <View style={styles.planInfo}>
-                <Text style={styles.planName}>{t('paywall.monthly')}</Text>
-                <Text style={styles.planDetail}>
-                  {t('paywall.flexibleBilling')}
-                </Text>
-              </View>
-              <View style={styles.planPriceWrap}>
-                <Text style={styles.planPrice}>
-                  {offerings.monthly?.price ?? regionalPricing.monthly}
-                </Text>
-                <Text style={styles.planPeriod}>{t('paywall.perMonth')}</Text>
-              </View>
-              <View style={[styles.radio, monthlyRadioStyle]}>
-                {selectedPlan === 'monthly' && (
-                  <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, radioInnerStyle]} />
-                )}
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* ── CTA Button ── */}
-        <Animated.View entering={FadeInDown.delay(600).duration(150)} style={styles.ctaSection}>
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={handleSubscribe}
-            disabled={purchasing}
-            style={[styles.ctaBtn, purchasing && { opacity: 0.6 }]}
-            accessibilityRole="button"
-            accessibilityLabel="Subscribe"
-          >
-            {purchasing ? (
-              <ActivityIndicator color={theme.colors.background} />
-            ) : (
-              <Text style={styles.ctaText}>
-                {trialDaysRemaining > 0 ? t('paywall.startSubscription') : t('paywall.continueAccess')}
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          <Text style={styles.terms}>
-            {t('paywall.cancelAnytime')}
-          </Text>
-
-          {/* Restore Purchases */}
-          <TouchableOpacity onPress={handleRestore} style={styles.restoreBtn} accessibilityRole="button" accessibilityLabel="Restore purchases">
-            <Text style={styles.restoreText}>
-              {t('paywall.restorePurchases')}
+              {accessState === 'TRIAL_ACTIVE'
+                ? `${trialDaysRemaining} ${t('paywall.trialDaysLeft')}`
+                : accessState === 'SUBSCRIBED'
+                  ? ''
+                  : t('paywall.trialEnded')}
             </Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </ScrollView>
-    </SafeAreaView>
+          </Animated.View>
+
+          {/* ── Features Grid ── */}
+          <Animated.View entering={FadeInDown.delay(200).duration(150)}>
+            <View style={styles.featureGrid}>
+              {features.map((feat, i) => (
+                <Animated.View
+                  key={feat.title}
+                  entering={FadeInUp.delay(250 + i * 60).duration(150)}
+                  style={styles.featureItem}
+                >
+                  <View style={styles.featureIcon}>
+                    <MaterialCommunityIcons name={feat.icon} size={20} color={accentColor} />
+                  </View>
+                  <View style={styles.featureText}>
+                    <Text style={styles.featureTitle}>{feat.title}</Text>
+                    <Text style={styles.featureDesc} numberOfLines={1}>
+                      {feat.desc}
+                    </Text>
+                  </View>
+                </Animated.View>
+              ))}
+            </View>
+          </Animated.View>
+
+          {/* ── Plan Selection ── */}
+          <Animated.View entering={FadeInDown.delay(500).duration(150)} style={styles.planSection}>
+            <Text style={styles.planSectionTitle}>{t('paywall.choosePlan')}</Text>
+
+            {/* Annual Plan */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => setSelectedPlan('annual')}
+              style={[styles.planCard, planCardAnnualStyle]}
+              accessibilityRole="radio"
+              accessibilityLabel="Annual plan"
+              accessibilityState={{ selected: selectedPlan === 'annual' }}
+            >
+              {/* Best Value badge */}
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{t('paywall.bestValue')}</Text>
+              </View>
+
+              <View style={styles.planRow}>
+                <View style={styles.planInfo}>
+                  <Text style={styles.planName}>{t('paywall.annual')}</Text>
+                  <Text style={styles.planDetail}>
+                    {offerings.annual?.pricePerMonth ?? regionalPricing.monthlyPerMonth}/month
+                  </Text>
+                </View>
+                <View style={styles.planPriceWrap}>
+                  <Text style={styles.planPrice}>{offerings.annual?.price ?? regionalPricing.annual}</Text>
+                  <Text style={styles.planPeriod}>{t('paywall.perYear')}</Text>
+                </View>
+                <View style={[styles.radio, annualRadioStyle]}>
+                  {selectedPlan === 'annual' && (
+                    <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, radioInnerStyle]} />
+                  )}
+                </View>
+              </View>
+
+              <View style={styles.saveBadge}>
+                <Text style={styles.saveText}>{t('paywall.save33')}</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Monthly Plan */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => setSelectedPlan('monthly')}
+              style={[styles.planCard, planCardMonthlyStyle]}
+              accessibilityRole="radio"
+              accessibilityLabel="Monthly plan"
+              accessibilityState={{ selected: selectedPlan === 'monthly' }}
+            >
+              <View style={styles.planRow}>
+                <View style={styles.planInfo}>
+                  <Text style={styles.planName}>{t('paywall.monthly')}</Text>
+                  <Text style={styles.planDetail}>{t('paywall.flexibleBilling')}</Text>
+                </View>
+                <View style={styles.planPriceWrap}>
+                  <Text style={styles.planPrice}>{offerings.monthly?.price ?? regionalPricing.monthly}</Text>
+                  <Text style={styles.planPeriod}>{t('paywall.perMonth')}</Text>
+                </View>
+                <View style={[styles.radio, monthlyRadioStyle]}>
+                  {selectedPlan === 'monthly' && (
+                    <Animated.View entering={ZoomIn.duration(150)} style={[styles.radioInner, radioInnerStyle]} />
+                  )}
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* ── CTA Button ── */}
+          <Animated.View entering={FadeInDown.delay(600).duration(150)} style={styles.ctaSection}>
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={handleSubscribe}
+              disabled={purchasing}
+              style={[styles.ctaBtn, purchasing && { opacity: 0.6 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Subscribe"
+            >
+              {purchasing ? (
+                <ActivityIndicator color={theme.colors.background} />
+              ) : (
+                <Text style={styles.ctaText}>
+                  {trialDaysRemaining > 0 ? t('paywall.startSubscription') : t('paywall.continueAccess')}
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <Text style={styles.terms}>{t('paywall.cancelAnytime')}</Text>
+
+            {/* Restore Purchases */}
+            <TouchableOpacity
+              onPress={handleRestore}
+              style={styles.restoreBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Restore purchases"
+            >
+              <Text style={styles.restoreText}>{t('paywall.restorePurchases')}</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenErrorBoundary>
   );
 }
-

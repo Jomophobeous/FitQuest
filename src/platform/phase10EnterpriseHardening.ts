@@ -24,7 +24,7 @@ function clamp(value: number, min: number, max: number): number {
 export function computeRiskScore(
   controlsCoveragePercent: number,
   incidentCount30d: number,
-  slaBreaches30d: number
+  slaBreaches30d: number,
 ): number {
   const controlsPenalty = 100 - clamp(controlsCoveragePercent, 0, 100);
   const incidentPenalty = clamp(incidentCount30d * 7, 0, 100);

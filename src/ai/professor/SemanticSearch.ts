@@ -36,9 +36,9 @@ export interface SearchResult {
 }
 
 export interface SearchConfig {
-  topK?: number;           // default 5
-  minScore?: number;       // minimum similarity threshold (0-1)
-  rerank?: boolean;        // apply cross-encoder re-ranking
+  topK?: number; // default 5
+  minScore?: number; // minimum similarity threshold (0-1)
+  rerank?: boolean; // apply cross-encoder re-ranking
   documentFilter?: string[]; // restrict to document IDs
 }
 
@@ -138,7 +138,7 @@ class HNSWIndex {
             neighbor.connections[lev] = this.selectNeighbors(
               this.vectors[neighborId]!,
               neighbor.connections[lev]!,
-              this.M
+              this.M,
             );
           }
         }
@@ -174,7 +174,7 @@ class HNSWIndex {
 
     // Return top-k sorted by distance
     return candidates
-      .map(id => ({
+      .map((id) => ({
         id,
         distance: this.cosineDistance(query, this.vectors[id]!),
       }))
@@ -203,12 +203,7 @@ class HNSWIndex {
     return current;
   }
 
-  private searchLevel(
-    query: Float32Array,
-    startNode: number,
-    ef: number,
-    level: number
-  ): number[] {
+  private searchLevel(query: Float32Array, startNode: number, ef: number, level: number): number[] {
     const visited = new Set<number>([startNode]);
     const candidates: Array<{ id: number; dist: number }> = [
       { id: startNode, dist: this.cosineDistance(query, this.vectors[startNode]!) },
@@ -240,21 +235,17 @@ class HNSWIndex {
       }
     }
 
-    return results.map(r => r.id);
+    return results.map((r) => r.id);
   }
 
-  private selectNeighbors(
-    query: Float32Array,
-    candidateIds: number[],
-    maxNeighbors: number
-  ): number[] {
+  private selectNeighbors(query: Float32Array, candidateIds: number[], maxNeighbors: number): number[] {
     if (candidateIds.length <= maxNeighbors) return candidateIds;
 
     return candidateIds
-      .map(id => ({ id, dist: this.cosineDistance(query, this.vectors[id]!) }))
+      .map((id) => ({ id, dist: this.cosineDistance(query, this.vectors[id]!) }))
       .sort((a, b) => a.dist - b.dist)
       .slice(0, maxNeighbors)
-      .map(c => c.id);
+      .map((c) => c.id);
   }
 
   private randomLevel(): number {
@@ -264,7 +255,9 @@ class HNSWIndex {
   }
 
   private cosineDistance(a: Float32Array, b: Float32Array): number {
-    let dot = 0, normA = 0, normB = 0;
+    let dot = 0,
+      normA = 0,
+      normB = 0;
     for (let i = 0; i < a.length; i++) {
       dot += a[i]! * b[i]!;
       normA += a[i]! * a[i]!;
@@ -274,7 +267,9 @@ class HNSWIndex {
     return denom > 0 ? 1 - dot / denom : 1; // cosine distance
   }
 
-  get size(): number { return this.nodes.length; }
+  get size(): number {
+    return this.nodes.length;
+  }
 }
 
 // ============================================
@@ -309,7 +304,7 @@ export class SemanticSearch {
       // Try v3 model (bundled ~20MB MiniLM), then document directory fallback
       const modelData = await loadBundledModelWithFallback<SentenceEncoderModel>(
         safeRequire(() => require('../../../assets/models/search_v3.model')),
-        'search_v3.model'
+        'search_v3.model',
       );
       if (!modelData) {
         if (__DEV__) console.log('[SemanticSearch] Encoder not found — using TF-IDF fallback');
@@ -321,8 +316,7 @@ export class SemanticSearch {
       const version = (this.model as any).version ?? '3.0.0';
       if (__DEV__) {
         console.log(
-        `[SemanticSearch] v${version}: ${this.model.numLayers} layers, ` +
-        `dim=${this.model.sentenceSize}`
+          `[SemanticSearch] v${version}: ${this.model.numLayers} layers, ` + `dim=${this.model.sentenceSize}`,
         );
       }
       return true;
@@ -339,12 +333,7 @@ export class SemanticSearch {
   /**
    * Add a document to the search index (splits into chunks).
    */
-  async indexDocument(
-    documentId: string,
-    text: string,
-    chunkSize = 200,
-    overlap = 50
-  ): Promise<number> {
+  async indexDocument(documentId: string, text: string, chunkSize = 200, overlap = 50): Promise<number> {
     const textChunks = this.chunkText(text, chunkSize, overlap);
     let indexed = 0;
 
@@ -391,7 +380,7 @@ export class SemanticSearch {
    * Remove a document from the index.
    */
   removeDocument(documentId: string): void {
-    this.chunks = this.chunks.filter(c => c.documentId !== documentId);
+    this.chunks = this.chunks.filter((c) => c.documentId !== documentId);
     // Note: HNSW doesn't support deletion well — rebuild index
     this.rebuildIndex();
   }
@@ -414,15 +403,8 @@ export class SemanticSearch {
   /**
    * Search for relevant document chunks.
    */
-  async search(
-    query: string,
-    config: SearchConfig = {}
-  ): Promise<SearchResult[]> {
-    const {
-      topK = 5,
-      minScore = 0.1,
-      documentFilter,
-    } = config;
+  async search(query: string, config: SearchConfig = {}): Promise<SearchResult[]> {
+    const { topK = 5, minScore = 0.1, documentFilter } = config;
 
     if (this.chunks.length === 0) return [];
 
@@ -436,14 +418,14 @@ export class SemanticSearch {
 
     // Filter by document
     if (documentFilter && documentFilter.length > 0) {
-      results = results.filter(r => documentFilter.includes(r.documentId));
+      results = results.filter((r) => documentFilter.includes(r.documentId));
     }
 
     // Filter by min score
-    results = results.filter(r => r.score >= minScore);
+    results = results.filter((r) => r.score >= minScore);
 
     // Add highlights
-    results = results.map(r => ({
+    results = results.map((r) => ({
       ...r,
       highlight: this.highlightMatch(r.text, query),
     }));
@@ -555,9 +537,7 @@ export class SemanticSearch {
     return out;
   }
 
-  private transformerLayer(
-    input: Float64Array[], layer: TransformerLayer
-  ): Float64Array[] {
+  private transformerLayer(input: Float64Array[], layer: TransformerLayer): Float64Array[] {
     return sharedTransformerLayer(input, layer, {
       hiddenSize: this.model!.hiddenSize,
       numHeads: this.model!.numHeads,
@@ -570,9 +550,11 @@ export class SemanticSearch {
 
   private tokenize(text: string): number[] {
     if (!this.model) return [];
-    return text.toLowerCase().split(/\s+/)
+    return text
+      .toLowerCase()
+      .split(/\s+/)
       .slice(0, this.model.maxLength)
-      .map(w => this.model!.vocabulary[w] ?? 0);
+      .map((w) => this.model!.vocabulary[w] ?? 0);
   }
 
   private chunkText(text: string, chunkSize: number, overlap: number): string[] {
@@ -587,8 +569,11 @@ export class SemanticSearch {
   }
 
   private getWords(text: string): string[] {
-    return text.toLowerCase().replace(/[^a-z0-9\s]/g, '')
-      .split(/\s+/).filter(w => w.length > 1);
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter((w) => w.length > 1);
   }
 
   private rebuildIDF(): void {
@@ -610,14 +595,19 @@ export class SemanticSearch {
 
   private highlightMatch(text: string, query: string): string {
     const queryWords = new Set(this.getWords(query));
-    return text.split(/\s+/).map(word => {
-      const clean = word.toLowerCase().replace(/[^a-z0-9]/g, '');
-      return queryWords.has(clean) ? `**${word}**` : word;
-    }).join(' ');
+    return text
+      .split(/\s+/)
+      .map((word) => {
+        const clean = word.toLowerCase().replace(/[^a-z0-9]/g, '');
+        return queryWords.has(clean) ? `**${word}**` : word;
+      })
+      .join(' ');
   }
 
   private cosineSimSparse(a: Record<string, number>, b: Record<string, number>): number {
-    let dot = 0, normA = 0, normB = 0;
+    let dot = 0,
+      normA = 0,
+      normB = 0;
     for (const [w, v] of Object.entries(a)) {
       dot += v * (b[w] ?? 0);
       normA += v * v;
@@ -637,13 +627,17 @@ export class SemanticSearch {
   // PUBLIC API
   // ============================================
 
-  get loaded(): boolean { return this.isLoaded; }
-  get indexSize(): number { return this.chunks.length; }
+  get loaded(): boolean {
+    return this.isLoaded;
+  }
+  get indexSize(): number {
+    return this.chunks.length;
+  }
 
   getModelInfo() {
     return {
       loaded: this.isLoaded,
-      modelType: this.isLoaded ? 'neural' as const : 'tfidf' as const,
+      modelType: this.isLoaded ? ('neural' as const) : ('tfidf' as const),
       indexSize: this.chunks.length,
       hnswNodes: this.index.size,
       embeddingDim: this.model?.sentenceSize ?? 0,

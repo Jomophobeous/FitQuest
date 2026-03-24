@@ -15,9 +15,16 @@
 // ============================================
 
 export type EntityType =
-  | 'CONCEPT' | 'PERSON' | 'EXERCISE' | 'MUSCLE'
-  | 'NUTRIENT' | 'METRIC' | 'TECHNIQUE' | 'EQUIPMENT'
-  | 'TERM' | 'OTHER';
+  | 'CONCEPT'
+  | 'PERSON'
+  | 'EXERCISE'
+  | 'MUSCLE'
+  | 'NUTRIENT'
+  | 'METRIC'
+  | 'TECHNIQUE'
+  | 'EQUIPMENT'
+  | 'TERM'
+  | 'OTHER';
 
 export interface Entity {
   id: string;
@@ -33,15 +40,23 @@ export interface Relationship {
   sourceId: string;
   targetId: string;
   type: RelationType;
-  weight: number;        // 0-1 strength
-  evidence: string[];    // source sentences
+  weight: number; // 0-1 strength
+  evidence: string[]; // source sentences
   documentId: string;
 }
 
 export type RelationType =
-  | 'RELATED_TO' | 'IS_A' | 'PART_OF' | 'USED_IN'
-  | 'TARGETS' | 'REQUIRES' | 'SIMILAR_TO' | 'CO_OCCURS'
-  | 'DEFINED_AS' | 'CAUSES' | 'PREVENTS';
+  | 'RELATED_TO'
+  | 'IS_A'
+  | 'PART_OF'
+  | 'USED_IN'
+  | 'TARGETS'
+  | 'REQUIRES'
+  | 'SIMILAR_TO'
+  | 'CO_OCCURS'
+  | 'DEFINED_AS'
+  | 'CAUSES'
+  | 'PREVENTS';
 
 export interface GraphQueryResult {
   entities: Entity[];
@@ -61,37 +76,118 @@ export interface EntityCluster {
 // ============================================
 
 const EXERCISE_TERMS = new Set([
-  'push-up', 'pushup', 'pull-up', 'pullup', 'squat', 'deadlift',
-  'bench press', 'lunge', 'plank', 'burpee', 'row', 'curl',
-  'press', 'fly', 'extension', 'crunch', 'sit-up', 'dip',
-  'shrug', 'raise', 'kickback', 'hip thrust', 'clean', 'snatch',
-  'thruster', 'muscle-up', 'box jump', 'jump squat',
+  'push-up',
+  'pushup',
+  'pull-up',
+  'pullup',
+  'squat',
+  'deadlift',
+  'bench press',
+  'lunge',
+  'plank',
+  'burpee',
+  'row',
+  'curl',
+  'press',
+  'fly',
+  'extension',
+  'crunch',
+  'sit-up',
+  'dip',
+  'shrug',
+  'raise',
+  'kickback',
+  'hip thrust',
+  'clean',
+  'snatch',
+  'thruster',
+  'muscle-up',
+  'box jump',
+  'jump squat',
 ]);
 
 const MUSCLE_TERMS = new Set([
-  'chest', 'pectorals', 'back', 'lats', 'latissimus', 'trapezius',
-  'shoulders', 'deltoids', 'biceps', 'triceps', 'forearms',
-  'quadriceps', 'quads', 'hamstrings', 'glutes', 'gluteus',
-  'calves', 'abs', 'abdominals', 'core', 'obliques',
-  'hip flexors', 'rotator cuff', 'rhomboids', 'erector spinae',
+  'chest',
+  'pectorals',
+  'back',
+  'lats',
+  'latissimus',
+  'trapezius',
+  'shoulders',
+  'deltoids',
+  'biceps',
+  'triceps',
+  'forearms',
+  'quadriceps',
+  'quads',
+  'hamstrings',
+  'glutes',
+  'gluteus',
+  'calves',
+  'abs',
+  'abdominals',
+  'core',
+  'obliques',
+  'hip flexors',
+  'rotator cuff',
+  'rhomboids',
+  'erector spinae',
 ]);
 
 const NUTRIENT_TERMS = new Set([
-  'protein', 'carbohydrate', 'carbs', 'fat', 'fiber', 'vitamin',
-  'mineral', 'calcium', 'iron', 'zinc', 'magnesium', 'potassium',
-  'sodium', 'omega-3', 'creatine', 'bcaa', 'caffeine', 'collagen',
+  'protein',
+  'carbohydrate',
+  'carbs',
+  'fat',
+  'fiber',
+  'vitamin',
+  'mineral',
+  'calcium',
+  'iron',
+  'zinc',
+  'magnesium',
+  'potassium',
+  'sodium',
+  'omega-3',
+  'creatine',
+  'bcaa',
+  'caffeine',
+  'collagen',
 ]);
 
 const EQUIPMENT_TERMS = new Set([
-  'barbell', 'dumbbell', 'kettlebell', 'resistance band', 'pull-up bar',
-  'bench', 'cable machine', 'smith machine', 'foam roller',
-  'medicine ball', 'battle rope', 'trx', 'suspension trainer',
+  'barbell',
+  'dumbbell',
+  'kettlebell',
+  'resistance band',
+  'pull-up bar',
+  'bench',
+  'cable machine',
+  'smith machine',
+  'foam roller',
+  'medicine ball',
+  'battle rope',
+  'trx',
+  'suspension trainer',
 ]);
 
 const METRIC_TERMS = new Set([
-  'heart rate', 'bpm', 'vo2 max', 'rpe', 'one rep max', '1rm',
-  'bmi', 'body fat', 'resting heart rate', 'calories', 'steps',
-  'cadence', 'pace', 'mets', 'recovery score', 'sleep score',
+  'heart rate',
+  'bpm',
+  'vo2 max',
+  'rpe',
+  'one rep max',
+  '1rm',
+  'bmi',
+  'body fat',
+  'resting heart rate',
+  'calories',
+  'steps',
+  'cadence',
+  'pace',
+  'mets',
+  'recovery score',
+  'sleep score',
 ]);
 
 const RELATION_PATTERNS: Array<{
@@ -135,7 +231,10 @@ export class KnowledgeGraph {
   /**
    * Extract entities and relationships from document text.
    */
-  processDocument(documentId: string, text: string): {
+  processDocument(
+    documentId: string,
+    text: string,
+  ): {
     entitiesFound: number;
     relationsFound: number;
   } {
@@ -205,9 +304,7 @@ export class KnowledgeGraph {
     }
 
     // Extract capitalized noun phrases (potential concepts/people)
-    const nounPhrases = sentence.match(
-      /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}\b/g
-    ) ?? [];
+    const nounPhrases = sentence.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}\b/g) ?? [];
     for (const np of nounPhrases) {
       const npLower = np.toLowerCase();
       if (npLower.length > 2 && !this.isStopWord(npLower)) {
@@ -221,9 +318,7 @@ export class KnowledgeGraph {
   /**
    * Extract relationships from a sentence using pattern matching.
    */
-  private extractRelationships(
-    sentence: string, documentId: string
-  ): Relationship[] {
+  private extractRelationships(sentence: string, documentId: string): Relationship[] {
     const found: Relationship[] = [];
 
     for (const { pattern, type } of RELATION_PATTERNS) {
@@ -256,9 +351,7 @@ export class KnowledgeGraph {
   /**
    * Detect co-occurrence relationships within document.
    */
-  private detectCoOccurrences(
-    sentences: string[], documentId: string
-  ): number {
+  private detectCoOccurrences(sentences: string[], documentId: string): number {
     let count = 0;
     const window = 3; // sentence window for co-occurrence
 
@@ -276,9 +369,9 @@ export class KnowledgeGraph {
         for (let b = a + 1; b < unique.length; b++) {
           // Check if relationship already exists
           const existing = this.relationships.find(
-            r =>
+            (r) =>
               (r.sourceId === unique[a] && r.targetId === unique[b]) ||
-              (r.sourceId === unique[b] && r.targetId === unique[a])
+              (r.sourceId === unique[b] && r.targetId === unique[a]),
           );
 
           if (existing) {
@@ -305,9 +398,7 @@ export class KnowledgeGraph {
   // ENTITY MANAGEMENT
   // ============================================
 
-  private upsertEntity(
-    name: string, type: EntityType, documentId: string
-  ): Entity {
+  private upsertEntity(name: string, type: EntityType, documentId: string): Entity {
     const id = this.entityId(name);
     const existing = this.entities.get(id);
 
@@ -352,7 +443,10 @@ export class KnowledgeGraph {
   }
 
   private normalizeEntityName(text: string): string {
-    return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim();
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim();
   }
 
   private addRelationship(rel: Relationship): void {
@@ -401,9 +495,9 @@ export class KnowledgeGraph {
 
           // Collect relationships
           const rels = this.relationships.filter(
-            r =>
+            (r) =>
               (r.sourceId === nodeId && r.targetId === neighborId) ||
-              (r.sourceId === neighborId && r.targetId === nodeId)
+              (r.sourceId === neighborId && r.targetId === nodeId),
           );
           resultRelationships.push(...rels);
         }
@@ -441,9 +535,7 @@ export class KnowledgeGraph {
       const current = path[path.length - 1]!;
 
       if (current === toId) {
-        return path
-          .map(id => this.entities.get(id))
-          .filter((e): e is Entity => e !== undefined);
+        return path.map((id) => this.entities.get(id)).filter((e): e is Entity => e !== undefined);
       }
 
       const neighbors = this.adjacency.get(current) ?? new Set();
@@ -493,8 +585,7 @@ export class KnowledgeGraph {
             typeCounts[entity.type] = (typeCounts[entity.type] ?? 0) + 1;
           }
         }
-        const label = Object.entries(typeCounts)
-          .sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'MIXED';
+        const label = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'MIXED';
 
         clusters.push({
           id: clusterId++,
@@ -567,13 +658,12 @@ export class KnowledgeGraph {
     const m = a.length;
     const n = b.length;
     const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
-      Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+      Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
     );
     for (let i = 1; i <= m; i++) {
       for (let j = 1; j <= n; j++) {
-        dp[i]![j] = a[i - 1] === b[j - 1]
-          ? dp[i - 1]![j - 1]!
-          : 1 + Math.min(dp[i - 1]![j]!, dp[i]![j - 1]!, dp[i - 1]![j - 1]!);
+        dp[i]![j] =
+          a[i - 1] === b[j - 1] ? dp[i - 1]![j - 1]! : 1 + Math.min(dp[i - 1]![j]!, dp[i]![j - 1]!, dp[i - 1]![j - 1]!);
       }
     }
     return dp[m]![n]!;
@@ -581,15 +671,76 @@ export class KnowledgeGraph {
 
   private isStopWord(word: string): boolean {
     const stops = new Set([
-      'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
-      'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-      'would', 'could', 'should', 'may', 'might', 'can', 'shall',
-      'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she',
-      'it', 'we', 'they', 'my', 'your', 'his', 'her', 'its',
-      'our', 'their', 'what', 'which', 'who', 'whom', 'when',
-      'where', 'why', 'how', 'not', 'no', 'but', 'or', 'and',
-      'if', 'then', 'else', 'for', 'from', 'to', 'in', 'on',
-      'at', 'by', 'with', 'about', 'between', 'through', 'of',
+      'the',
+      'a',
+      'an',
+      'is',
+      'are',
+      'was',
+      'were',
+      'be',
+      'been',
+      'being',
+      'have',
+      'has',
+      'had',
+      'do',
+      'does',
+      'did',
+      'will',
+      'would',
+      'could',
+      'should',
+      'may',
+      'might',
+      'can',
+      'shall',
+      'this',
+      'that',
+      'these',
+      'those',
+      'i',
+      'you',
+      'he',
+      'she',
+      'it',
+      'we',
+      'they',
+      'my',
+      'your',
+      'his',
+      'her',
+      'its',
+      'our',
+      'their',
+      'what',
+      'which',
+      'who',
+      'whom',
+      'when',
+      'where',
+      'why',
+      'how',
+      'not',
+      'no',
+      'but',
+      'or',
+      'and',
+      'if',
+      'then',
+      'else',
+      'for',
+      'from',
+      'to',
+      'in',
+      'on',
+      'at',
+      'by',
+      'with',
+      'about',
+      'between',
+      'through',
+      'of',
     ]);
     return stops.has(word);
   }
@@ -598,8 +749,8 @@ export class KnowledgeGraph {
     return text
       .replace(/([.!?])\s+/g, '$1\n')
       .split('\n')
-      .map(s => s.trim())
-      .filter(s => s.length > 10);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 10);
   }
 
   // ============================================
@@ -613,10 +764,7 @@ export class KnowledgeGraph {
     };
   }
 
-  importGraph(data: {
-    entities: Entity[];
-    relationships: Relationship[];
-  }): void {
+  importGraph(data: { entities: Entity[]; relationships: Relationship[] }): void {
     this.entities.clear();
     this.relationships = [];
     this.adjacency.clear();
@@ -639,8 +787,12 @@ export class KnowledgeGraph {
   // PUBLIC API
   // ============================================
 
-  get entityCount(): number { return this.entities.size; }
-  get relationshipCount(): number { return this.relationships.length; }
+  get entityCount(): number {
+    return this.entities.size;
+  }
+  get relationshipCount(): number {
+    return this.relationships.length;
+  }
 
   getEntity(name: string): Entity | null {
     return this.findEntity(name);

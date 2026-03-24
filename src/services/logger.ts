@@ -69,18 +69,15 @@ export function safeWarn(message: string, data?: Record<string, unknown>): void 
   if (__DEV__) console.warn(message);
 }
 
-export async function safeError(
-  message: string,
-  error?: unknown,
-  data?: Record<string, unknown>
-): Promise<void> {
+export async function safeError(message: string, error?: unknown, data?: Record<string, unknown>): Promise<void> {
   const payload = {
     ...(data || {}),
-    error: error instanceof Error
-      ? { name: error.name, message: error.message }
-      : typeof error === 'string'
-        ? { message: error }
-        : undefined,
+    error:
+      error instanceof Error
+        ? { name: error.name, message: error.message }
+        : typeof error === 'string'
+          ? { message: error }
+          : undefined,
   };
 
   if (__DEV__) console.error(message, redactForLog(payload));

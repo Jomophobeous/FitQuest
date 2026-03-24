@@ -1,16 +1,13 @@
 /**
  * Health Adapters Module
- * 
+ *
  * Unified health data integration for FitQuest.
  * Supports Health Connect (Android), HealthKit (iOS), and future providers.
  */
 
 import { Platform } from 'react-native';
-import type { 
-  IHealthAdapter, 
-  HealthProvider, 
-  HealthAdapterFactory,
-} from './types';
+import type { IHealthAdapter, HealthProvider, HealthAdapterFactory } from './types';
+import { featureFlags, FEATURE_FLAGS } from '../featureFlags';
 
 // Re-export types
 export * from './types';
@@ -50,6 +47,11 @@ class HealthAdapterFactoryImpl implements HealthAdapterFactory {
    * Get the best available adapter for the current platform
    */
   async getAdapter(): Promise<IHealthAdapter | null> {
+    // Health Sync is deferred — feature-flagged off until next version
+    if (!featureFlags.isEnabled(FEATURE_FLAGS.HEALTH_SYNC)) {
+      return null;
+    }
+
     if (this.cacheChecked && this.cachedAdapter) {
       return this.cachedAdapter;
     }
@@ -82,6 +84,7 @@ class HealthAdapterFactoryImpl implements HealthAdapterFactory {
    * Get a specific adapter by provider type
    */
   async getAdapterByProvider(provider: HealthProvider): Promise<IHealthAdapter | null> {
+    if (!featureFlags.isEnabled(FEATURE_FLAGS.HEALTH_SYNC)) return null;
     try {
       if (provider === 'health_connect') return await getHealthConnectAdapter();
       if (provider === 'healthkit') return await getHealthKitAdapter();
@@ -95,6 +98,7 @@ class HealthAdapterFactoryImpl implements HealthAdapterFactory {
    * Get all available adapters on this platform
    */
   async getAvailableAdapters(): Promise<IHealthAdapter[]> {
+    if (!featureFlags.isEnabled(FEATURE_FLAGS.HEALTH_SYNC)) return [];
     const available: IHealthAdapter[] = [];
 
     try {
@@ -155,7 +159,7 @@ export async function initializeHealthIntegration(): Promise<{
 }> {
   try {
     const adapter = await healthAdapterFactory.getAdapter();
-    
+
     if (!adapter) {
       return {
         success: false,
@@ -165,7 +169,7 @@ export async function initializeHealthIntegration(): Promise<{
     }
 
     const initialized = await adapter.initialize();
-    
+
     if (!initialized) {
       return {
         success: false,
@@ -184,7 +188,7 @@ export async function initializeHealthIntegration(): Promise<{
       'active_minutes',
     ]);
 
-    const hasReadPerms = permissions.some(p => p.read);
+    const hasReadPerms = permissions.some((p) => p.read);
 
     return {
       success: hasReadPerms,
@@ -208,7 +212,7 @@ export async function syncHealthData(options?: {
   categories?: ('steps' | 'calories' | 'heart_rate' | 'sleep' | 'workout')[];
 }): Promise<{ synced: number; errors: number; provider: HealthProvider | null }> {
   const adapter = await healthAdapterFactory.getAdapter();
-  
+
   if (!adapter) {
     return { synced: 0, errors: 0, provider: null };
   }

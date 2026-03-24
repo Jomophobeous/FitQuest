@@ -1,6 +1,6 @@
 /**
  * Workout Templates
- * 
+ *
  * Pre-defined workout structures for different training styles.
  */
 
@@ -21,10 +21,10 @@ export const FULL_BODY_TEMPLATE: WorkoutTemplate = {
   description: 'Balanced workout targeting all major muscle groups',
   targetGoals: ['body_control', 'strength', 'speed'],
   muscleGroups: [
-    ['chest_mid', 'triceps', 'deltoids_front'],    // Push
-    ['lats', 'biceps', 'rhomboids'],               // Pull
-    ['quads', 'glutes_max', 'hamstrings'],         // Legs
-    ['abs', 'core_deep'],                          // Core
+    ['chest_mid', 'triceps', 'deltoids_front'], // Push
+    ['lats', 'biceps', 'rhomboids'], // Pull
+    ['quads', 'glutes_max', 'hamstrings'], // Legs
+    ['abs', 'core_deep'], // Core
   ],
   sessionsPerWeek: 3,
   estimatedDuration: 45,
@@ -39,11 +39,7 @@ export const PUSH_TEMPLATE: WorkoutTemplate = {
   name: 'Push Day',
   description: 'Focus on pushing movements and chest/shoulder/tricep',
   targetGoals: ['strength', 'body_control'],
-  muscleGroups: [
-    ['chest_mid', 'chest_upper', 'chest_lower'],
-    ['deltoids_front', 'shoulders'],
-    ['triceps'],
-  ],
+  muscleGroups: [['chest_mid', 'chest_upper', 'chest_lower'], ['deltoids_front', 'shoulders'], ['triceps']],
   sessionsPerWeek: 1,
   estimatedDuration: 40,
   volumeMultiplier: 1.2,
@@ -142,12 +138,7 @@ export const CORE_TEMPLATE: WorkoutTemplate = {
   name: 'Core Strength',
   description: 'Intensive core training',
   targetGoals: ['body_control', 'focus'],
-  muscleGroups: [
-    ['abs'],
-    ['obliques'],
-    ['core_deep', 'lower_back'],
-    ['hip_flexors'],
-  ],
+  muscleGroups: [['abs'], ['obliques'], ['core_deep', 'lower_back'], ['hip_flexors']],
   sessionsPerWeek: 2,
   estimatedDuration: 25,
   volumeMultiplier: 1.0,
@@ -172,14 +163,14 @@ export const ALL_TEMPLATES: WorkoutTemplate[] = [
  * Get template by ID
  */
 export function getTemplateById(id: string): WorkoutTemplate | undefined {
-  return ALL_TEMPLATES.find(t => t.id === id);
+  return ALL_TEMPLATES.find((t) => t.id === id);
 }
 
 /**
  * Get templates suitable for a goal
  */
 export function getTemplatesForGoal(goal: Category): WorkoutTemplate[] {
-  return ALL_TEMPLATES.filter(t => t.targetGoals.includes(goal));
+  return ALL_TEMPLATES.filter((t) => t.targetGoals.includes(goal));
 }
 
 /**
@@ -214,26 +205,26 @@ export function suggestTemplate(
   goal: Category,
   sessionsPerWeek: number,
   dayInWeek: number,
-  preferredDuration?: number
+  preferredDuration?: number,
 ): WorkoutTemplate {
   const suitableTemplates = getTemplatesForGoal(goal);
-  
+
   // For low frequency, prefer full body
   if (sessionsPerWeek <= 2) {
     return FULL_BODY_TEMPLATE;
   }
-  
+
   // For 3 sessions, rotate through PPL
   if (sessionsPerWeek === 3) {
     const rotation = [PUSH_TEMPLATE, PULL_TEMPLATE, LEGS_TEMPLATE];
     return rotation[dayInWeek % 3]!;
   }
-  
+
   // For 4+ sessions, use upper/lower split
   if (sessionsPerWeek >= 4) {
     const rotation = [UPPER_TEMPLATE, LOWER_TEMPLATE, UPPER_TEMPLATE, LOWER_TEMPLATE, FULL_BODY_TEMPLATE];
     return rotation[dayInWeek % rotation.length]!;
   }
-  
+
   return suitableTemplates[0] || FULL_BODY_TEMPLATE;
 }

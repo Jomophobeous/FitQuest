@@ -1,6 +1,6 @@
 /**
  * FitQuest Trial Onboarding
- * 
+ *
  * Manages the 14-day trial experience with scheduled engagement
  * notifications at key moments: Day 0, 3, 7, 12, 14.
  */
@@ -149,7 +149,7 @@ export class TrialOnboarding {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: '📊 Your Week 1 Progress',
-          body: 'Check your analytics to see how far you\'ve come!',
+          body: "Check your analytics to see how far you've come!",
           data: { type: 'PROGRESS_CHECKIN' },
         },
         trigger: { seconds: 7 * 24 * 60 * 60, type: 'timeInterval' as any },

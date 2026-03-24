@@ -4,27 +4,18 @@
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { getAppState } from '../src/database/service';
 import { getCached, setCached } from '../src/services/cacheStoreService';
-import {
-  GlassCard,
-  SectionHeader,
-} from '../src/components/ui/GlassUI';
+import { GlassCard, SectionHeader } from '../src/components/ui/GlassUI';
 import {
   getCurrentLocation,
   getFoodsByLocation,
@@ -38,7 +29,10 @@ import PremiumGate from '../src/components/PremiumGate';
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack';
 type MealRegionOverride = 'AUTO' | 'ZA' | 'US' | 'GB' | 'IN' | 'BR' | 'AU';
 
-const REGION_OVERRIDE_LOCATION: Record<Exclude<MealRegionOverride, 'AUTO'>, Pick<UserLocation, 'country' | 'isoCountryCode' | 'city' | 'region'>> = {
+const REGION_OVERRIDE_LOCATION: Record<
+  Exclude<MealRegionOverride, 'AUTO'>,
+  Pick<UserLocation, 'country' | 'isoCountryCode' | 'city' | 'region'>
+> = {
   ZA: { country: 'South Africa', isoCountryCode: 'ZA', city: 'Unknown', region: undefined },
   US: { country: 'United States', isoCountryCode: 'US', city: 'Unknown', region: undefined },
   GB: { country: 'United Kingdom', isoCountryCode: 'GB', city: 'Unknown', region: undefined },
@@ -81,7 +75,11 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.colors.background },
     scrollContent: { paddingBottom: theme.spacing[8] },
-    headerGradient: { paddingHorizontal: theme.spacing[5], paddingTop: theme.spacing[3], paddingBottom: theme.spacing[3] },
+    headerGradient: {
+      paddingHorizontal: theme.spacing[5],
+      paddingTop: theme.spacing[3],
+      paddingBottom: theme.spacing[3],
+    },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     headerTitle: { fontSize: 24, fontWeight: '800', color: theme.colors.text },
     headerSpacer: { width: theme.spacing[6] },
@@ -97,7 +95,12 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       alignSelf: 'flex-start',
     },
     locationText: { fontSize: 12, fontWeight: '500', color: theme.colors.textSecondary },
-    mealTabs: { flexGrow: 0, paddingHorizontal: theme.spacing[4], paddingTop: theme.spacing[2], paddingBottom: theme.spacing[3] },
+    mealTabs: {
+      flexGrow: 0,
+      paddingHorizontal: theme.spacing[4],
+      paddingTop: theme.spacing[2],
+      paddingBottom: theme.spacing[3],
+    },
     mealTab: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -113,7 +116,13 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
     tipRow: { flexDirection: 'row', alignItems: 'flex-start', gap: theme.spacing[3] },
     tipText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 19, color: theme.colors.text },
     emptyCard: { marginHorizontal: theme.spacing[4], padding: theme.spacing[6], alignItems: 'center' },
-    emptyText: { textAlign: 'center', fontSize: 13, marginTop: theme.spacing[3], lineHeight: 20, color: theme.colors.textMuted },
+    emptyText: {
+      textAlign: 'center',
+      fontSize: 13,
+      marginTop: theme.spacing[3],
+      lineHeight: 20,
+      color: theme.colors.textMuted,
+    },
     foodCard: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -184,20 +193,17 @@ export default function MealPrepScreen() {
   // Derive meal suggestions for the ACTIVE tab only (not all 6 tabs)
   const currentMealSuggestions = useMemo(
     () => getMealSuggestionsFromFoods(selectedMeal, allFoods),
-    [selectedMeal, allFoods]
+    [selectedMeal, allFoods],
   );
 
   // Limit meal suggestion display to 15 initially
   const visibleMealFoods = useMemo(
-    () => showMoreMeal ? currentMealSuggestions.foods : currentMealSuggestions.foods.slice(0, 15),
-    [currentMealSuggestions.foods, showMoreMeal]
+    () => (showMoreMeal ? currentMealSuggestions.foods : currentMealSuggestions.foods.slice(0, 15)),
+    [currentMealSuggestions.foods, showMoreMeal],
   );
 
   // Limit "all foods" list to 30 items until user expands
-  const visibleFoods = useMemo(
-    () => showAllFoods ? allFoods : allFoods.slice(0, 30),
-    [allFoods, showAllFoods]
-  );
+  const visibleFoods = useMemo(() => (showAllFoods ? allFoods : allFoods.slice(0, 30)), [allFoods, showAllFoods]);
 
   useEffect(() => {
     loadLocation();
@@ -284,7 +290,7 @@ export default function MealPrepScreen() {
       dinner: theme.colors.accent2,
       snack: theme.colors.textSecondary,
     }),
-    [theme]
+    [theme],
   );
 
   const categoryColors = useMemo(
@@ -297,7 +303,7 @@ export default function MealPrepScreen() {
       snack: theme.colors.textSecondary,
       meal: theme.colors.accent2,
     }),
-    [theme]
+    [theme],
   );
 
   const mealTabLabelByType: Record<MealType, string> = {
@@ -330,39 +336,49 @@ export default function MealPrepScreen() {
   const selectedTabColor = mealTabColors[selectedMeal];
 
   const dynamicStyles = useMemo(() => {
-    const mealTabStyle = MEAL_TABS.reduce((acc, tab) => {
-      const isActive = selectedMeal === tab.key;
-      const color = mealTabColors[tab.key];
-      acc[tab.key] = {
-        backgroundColor: isActive
-          ? withAlpha(color, 0.2)
-          : withAlpha(theme.colors.text, theme.isDark ? 0.04 : 0.03),
-        borderColor: isActive ? withAlpha(color, 0.5) : theme.colors.border,
-      };
-      return acc;
-    }, {} as Record<MealType, { backgroundColor: string; borderColor: string }>);
+    const mealTabStyle = MEAL_TABS.reduce(
+      (acc, tab) => {
+        const isActive = selectedMeal === tab.key;
+        const color = mealTabColors[tab.key];
+        acc[tab.key] = {
+          backgroundColor: isActive ? withAlpha(color, 0.2) : withAlpha(theme.colors.text, theme.isDark ? 0.04 : 0.03),
+          borderColor: isActive ? withAlpha(color, 0.5) : theme.colors.border,
+        };
+        return acc;
+      },
+      {} as Record<MealType, { backgroundColor: string; borderColor: string }>,
+    );
 
-    const mealTabText = MEAL_TABS.reduce((acc, tab) => {
-      const isActive = selectedMeal === tab.key;
-      const color = mealTabColors[tab.key];
-      acc[tab.key] = {
-        color: isActive ? color : theme.colors.textMuted,
-        fontWeight: isActive ? '700' : '500',
-      };
-      return acc;
-    }, {} as Record<MealType, { color: string; fontWeight: '700' | '500' }>);
+    const mealTabText = MEAL_TABS.reduce(
+      (acc, tab) => {
+        const isActive = selectedMeal === tab.key;
+        const color = mealTabColors[tab.key];
+        acc[tab.key] = {
+          color: isActive ? color : theme.colors.textMuted,
+          fontWeight: isActive ? '700' : '500',
+        };
+        return acc;
+      },
+      {} as Record<MealType, { color: string; fontWeight: '700' | '500' }>,
+    );
 
-    const categoryIcon = Object.keys(categoryColors).reduce((acc, key) => {
-      const category = key as FoodItem['category'];
-      acc[category] = { backgroundColor: withAlpha(categoryColors[category], 0.18) };
-      return acc;
-    }, {} as Record<FoodItem['category'], { backgroundColor: string }>);
+    const categoryIcon = Object.keys(categoryColors).reduce(
+      (acc, key) => {
+        const category = key as FoodItem['category'];
+        acc[category] = { backgroundColor: withAlpha(categoryColors[category], 0.18) };
+        return acc;
+      },
+      {} as Record<FoodItem['category'], { backgroundColor: string }>,
+    );
 
-    const categoryDot = Object.keys(categoryColors).reduce((acc, key) => {
-      const category = key as FoodItem['category'];
-      acc[category] = { backgroundColor: categoryColors[category] };
-      return acc;
-    }, {} as Record<FoodItem['category'], { backgroundColor: string }>);
+    const categoryDot = Object.keys(categoryColors).reduce(
+      (acc, key) => {
+        const category = key as FoodItem['category'];
+        acc[category] = { backgroundColor: categoryColors[category] };
+        return acc;
+      },
+      {} as Record<FoodItem['category'], { backgroundColor: string }>,
+    );
 
     return {
       headerGradientColors: theme.isDark
@@ -375,15 +391,11 @@ export default function MealPrepScreen() {
       mealTabStyle,
       mealTabText,
       foodCard: {
-        backgroundColor: theme.isDark
-          ? withAlpha(theme.colors.text, 0.04)
-          : withAlpha(theme.colors.surface, 0.9),
+        backgroundColor: theme.isDark ? withAlpha(theme.colors.text, 0.04) : withAlpha(theme.colors.surface, 0.9),
         borderColor: withAlpha(theme.colors.text, theme.isDark ? 0.06 : 0.04),
       },
       compactFoodRow: {
-        backgroundColor: theme.isDark
-          ? withAlpha(theme.colors.text, 0.03)
-          : withAlpha(theme.colors.surface, 0.8),
+        backgroundColor: theme.isDark ? withAlpha(theme.colors.text, 0.03) : withAlpha(theme.colors.surface, 0.8),
         borderColor: withAlpha(theme.colors.text, theme.isDark ? 0.05 : 0.03),
       },
       categoryIcon,
@@ -400,206 +412,203 @@ export default function MealPrepScreen() {
     : t('meal.location.yourArea').toLowerCase();
 
   return (
-    <PremiumGate featureName="Meal Planning">
-    <SafeAreaView style={styles.container}>
-      <ScreenTutorial
-        screenKey="meal-prep"
-        icon="food-apple"
-        title="Meal Prep"
-        description="Get AI-powered meal suggestions based on your location and fitness goals. Switch between meal types and discover region-specific foods."
-      />
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Animated.View entering={FadeIn.duration(150)}>
-          <LinearGradient
-            colors={dynamicStyles.headerGradientColors}
-            style={styles.headerGradient}
-          >
-            <View style={styles.headerRow}>
-              <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}>
-                <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
-              </TouchableOpacity>
-              <Text style={styles.headerTitle}>{t('meal.title')}</Text>
-              <View style={styles.headerSpacer} />
-            </View>
+    <ScreenErrorBoundary screenName="MealPrep" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <PremiumGate featureName="Meal Planning">
+        <SafeAreaView style={styles.container}>
+          <ScreenTutorial
+            screenKey="meal-prep"
+            icon="food-apple"
+            title="Meal Prep"
+            description="Get AI-powered meal suggestions based on your location and fitness goals. Switch between meal types and discover region-specific foods."
+          />
+          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <Animated.View entering={FadeIn.duration(150)}>
+              <LinearGradient colors={dynamicStyles.headerGradientColors} style={styles.headerGradient}>
+                <View style={styles.headerRow}>
+                  <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}>
+                    <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
+                  </TouchableOpacity>
+                  <Text style={styles.headerTitle}>{t('meal.title')}</Text>
+                  <View style={styles.headerSpacer} />
+                </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
-            <TouchableOpacity
-              onPress={loadLocation}
-              style={[styles.locationBadge, dynamicStyles.locationBadge]}
-            >
-              <MaterialCommunityIcons
-                name={location ? 'map-marker-check' : 'map-marker-question'}
-                size={14}
-                color={location ? theme.colors.success : theme.colors.textMuted}
-              />
-              {isLoadingLocation ? (
-                <ActivityIndicator size="small" color={theme.colors.accent} />
-              ) : (
-                <Text style={styles.locationText}>
-                  {location
-                    ? (location.city && location.city !== 'Unknown'
-                        ? `${location.city}${location.country && location.country !== 'Global' ? `, ${location.country}` : ''}`
-                        : location.country && location.country !== 'Global'
-                          ? location.country
-                          : t('meal.location.yourArea'))
-                    : t('meal.location.tapEnable')}
-                  {manualRegionOverride !== 'AUTO' ? ` · ${t('meal.location.manual')}` : ''}
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                // Force-refresh: clear cache then reload
-                void setCached('meal', 'auto_location', null, 0);
-                loadLocation();
-              }}
-              style={{
-                padding: theme.spacing[2],
-                borderRadius: theme.borderRadius.full,
-                backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-              }}
-            >
-              <MaterialCommunityIcons name="refresh" size={16} color={theme.colors.textSecondary} />
-            </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.delay(100).duration(150)}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealTabs}>
-            {MEAL_TABS.map((tab) => {
-              const isActive = selectedMeal === tab.key;
-              const tabColor = mealTabColors[tab.key];
-              return (
-                <TouchableOpacity
-                  key={tab.key}
-                  onPress={() => handleMealChange(tab.key)}
-                  style={[styles.mealTab, dynamicStyles.mealTabStyle[tab.key]]}
-                >
-                  <MaterialCommunityIcons
-                    name={tab.icon as any}
-                    size={18}
-                    color={isActive ? tabColor : theme.colors.textMuted}
-                  />
-                  <Text style={[styles.mealTabText, dynamicStyles.mealTabText[tab.key]]}>
-                    {mealTabLabelByType[tab.key]}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </Animated.View>
-
-        <GlassCard style={styles.tipCard} delay={200} glowColor={selectedTabColor}>
-          <View style={styles.tipRow}>
-            <MaterialCommunityIcons name="lightbulb-outline" size={20} color={selectedTabColor} />
-            <Text style={styles.tipText}>{mealTipByType[selectedMeal] || currentMealSuggestions.tip}</Text>
-          </View>
-        </GlassCard>
-
-        <SectionHeader title={mealHeaderByType[selectedMeal] || currentMealSuggestions.title} delay={250} />
-
-        {currentMealSuggestions.foods.length === 0 ? (
-          <GlassCard style={styles.emptyCard}>
-            <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
-            <Text style={styles.emptyText}>
-              {t('meal.empty.noFoods')}{'\n'}{t('meal.empty.tryAnother')}
-            </Text>
-          </GlassCard>
-        ) : (
-          visibleMealFoods.map((food, idx) => {
-            const hasLocalName = food.local_name != null && String(food.local_name).trim().length > 0;
-
-            return (
-              <View key={`${food.name}-${idx}`} style={styles.foodItemSpacing}>
-                <View style={[styles.foodCard, dynamicStyles.foodCard]}>
-                  <View style={[styles.foodIcon, dynamicStyles.categoryIcon[food.category]]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
+                  <TouchableOpacity onPress={loadLocation} style={[styles.locationBadge, dynamicStyles.locationBadge]}>
                     <MaterialCommunityIcons
-                      name={CATEGORY_ICONS[food.category] as any}
-                      size={20}
-                      color={categoryColors[food.category]}
+                      name={location ? 'map-marker-check' : 'map-marker-question'}
+                      size={14}
+                      color={location ? theme.colors.success : theme.colors.textMuted}
                     />
-                  </View>
-                  <View style={styles.foodInfo}>
-                    <Text style={styles.foodName}>{food.name}</Text>
-                    <Text style={styles.foodDesc}>{food.description}</Text>
-                    {hasLocalName ? (
-                      <Text style={styles.foodLocal}>
-                        {t('meal.localPrefix')}: {String(food.local_name)}
+                    {isLoadingLocation ? (
+                      <ActivityIndicator size="small" color={theme.colors.accent} />
+                    ) : (
+                      <Text style={styles.locationText}>
+                        {location
+                          ? location.city && location.city !== 'Unknown'
+                            ? `${location.city}${location.country && location.country !== 'Global' ? `, ${location.country}` : ''}`
+                            : location.country && location.country !== 'Global'
+                              ? location.country
+                              : t('meal.location.yourArea')
+                          : t('meal.location.tapEnable')}
+                        {manualRegionOverride !== 'AUTO' ? ` · ${t('meal.location.manual')}` : ''}
                       </Text>
-                    ) : null}
-                  </View>
-                  <View style={styles.foodNutrition}>
-                    {food.calories_per_serving != null ? (
-                      <Text style={styles.foodCal}>
-                        {food.calories_per_serving} {t('meal.unit.cal')}
+                    )}
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      // Force-refresh: clear cache then reload
+                      void setCached('meal', 'auto_location', null, 0);
+                      loadLocation();
+                    }}
+                    style={{
+                      padding: theme.spacing[2],
+                      borderRadius: theme.borderRadius.full,
+                      backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    <MaterialCommunityIcons name="refresh" size={16} color={theme.colors.textSecondary} />
+                  </TouchableOpacity>
+                </View>
+              </LinearGradient>
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(100).duration(150)}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mealTabs}>
+                {MEAL_TABS.map((tab) => {
+                  const isActive = selectedMeal === tab.key;
+                  const tabColor = mealTabColors[tab.key];
+                  return (
+                    <TouchableOpacity
+                      key={tab.key}
+                      onPress={() => handleMealChange(tab.key)}
+                      style={[styles.mealTab, dynamicStyles.mealTabStyle[tab.key]]}
+                    >
+                      <MaterialCommunityIcons
+                        name={tab.icon as any}
+                        size={18}
+                        color={isActive ? tabColor : theme.colors.textMuted}
+                      />
+                      <Text style={[styles.mealTabText, dynamicStyles.mealTabText[tab.key]]}>
+                        {mealTabLabelByType[tab.key]}
                       </Text>
-                    ) : null}
-                    {food.protein_g != null ? (
-                      <Text style={styles.foodProtein}>
-                        {food.protein_g}g {t('meal.unit.protein')}
-                      </Text>
-                    ) : null}
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </Animated.View>
+
+            <GlassCard style={styles.tipCard} delay={200} glowColor={selectedTabColor}>
+              <View style={styles.tipRow}>
+                <MaterialCommunityIcons name="lightbulb-outline" size={20} color={selectedTabColor} />
+                <Text style={styles.tipText}>{mealTipByType[selectedMeal] || currentMealSuggestions.tip}</Text>
+              </View>
+            </GlassCard>
+
+            <SectionHeader title={mealHeaderByType[selectedMeal] || currentMealSuggestions.title} delay={250} />
+
+            {currentMealSuggestions.foods.length === 0 ? (
+              <GlassCard style={styles.emptyCard}>
+                <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
+                <Text style={styles.emptyText}>
+                  {t('meal.empty.noFoods')}
+                  {'\n'}
+                  {t('meal.empty.tryAnother')}
+                </Text>
+              </GlassCard>
+            ) : (
+              visibleMealFoods.map((food, idx) => {
+                const hasLocalName = food.local_name != null && String(food.local_name).trim().length > 0;
+
+                return (
+                  <View key={`${food.name}-${idx}`} style={styles.foodItemSpacing}>
+                    <View style={[styles.foodCard, dynamicStyles.foodCard]}>
+                      <View style={[styles.foodIcon, dynamicStyles.categoryIcon[food.category]]}>
+                        <MaterialCommunityIcons
+                          name={CATEGORY_ICONS[food.category] as any}
+                          size={20}
+                          color={categoryColors[food.category]}
+                        />
+                      </View>
+                      <View style={styles.foodInfo}>
+                        <Text style={styles.foodName}>{food.name}</Text>
+                        <Text style={styles.foodDesc}>{food.description}</Text>
+                        {hasLocalName ? (
+                          <Text style={styles.foodLocal}>
+                            {t('meal.localPrefix')}: {String(food.local_name)}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View style={styles.foodNutrition}>
+                        {food.calories_per_serving != null ? (
+                          <Text style={styles.foodCal}>
+                            {food.calories_per_serving} {t('meal.unit.cal')}
+                          </Text>
+                        ) : null}
+                        {food.protein_g != null ? (
+                          <Text style={styles.foodProtein}>
+                            {food.protein_g}g {t('meal.unit.protein')}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </View>
                   </View>
+                );
+              })
+            )}
+
+            {!showMoreMeal && currentMealSuggestions.foods.length > 15 && (
+              <TouchableOpacity
+                onPress={() => setShowMoreMeal(true)}
+                style={{ alignItems: 'center', paddingVertical: theme.spacing[3] }}
+              >
+                <Text style={{ color: selectedTabColor, fontWeight: '600', fontSize: 13 }}>
+                  {`Show all ${currentMealSuggestions.foods.length} ${selectedMeal} foods`}
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <SectionHeader title={t('meal.section.fullFoodList')} delay={400} />
+
+            {visibleFoods.map((food, idx) => (
+              <View key={`all-${food.name}-${idx}`} style={styles.compactItemSpacing}>
+                <View style={[styles.compactFoodRow, dynamicStyles.compactFoodRow]}>
+                  <View style={[styles.categoryDot, dynamicStyles.categoryDot[food.category]]} />
+                  <Text style={styles.compactFoodName}>{food.name}</Text>
+                  <Text style={styles.compactFoodCategory}>{food.category}</Text>
+                  {food.calories_per_serving != null ? (
+                    <Text style={styles.compactFoodCal}>
+                      {food.calories_per_serving} {t('meal.unit.cal')}
+                    </Text>
+                  ) : null}
                 </View>
               </View>
-            );
-          })
-        )}
+            ))}
 
-        {!showMoreMeal && currentMealSuggestions.foods.length > 15 && (
-          <TouchableOpacity
-            onPress={() => setShowMoreMeal(true)}
-            style={{ alignItems: 'center', paddingVertical: theme.spacing[3] }}
-          >
-            <Text style={{ color: selectedTabColor, fontWeight: '600', fontSize: 13 }}>
-              {`Show all ${currentMealSuggestions.foods.length} ${selectedMeal} foods`}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        <SectionHeader title={t('meal.section.fullFoodList')} delay={400} />
-
-        {visibleFoods.map((food, idx) => (
-          <View key={`all-${food.name}-${idx}`} style={styles.compactItemSpacing}>
-            <View style={[styles.compactFoodRow, dynamicStyles.compactFoodRow]}>
-              <View style={[styles.categoryDot, dynamicStyles.categoryDot[food.category]]} />
-              <Text style={styles.compactFoodName}>{food.name}</Text>
-              <Text style={styles.compactFoodCategory}>{food.category}</Text>
-              {food.calories_per_serving != null ? (
-                <Text style={styles.compactFoodCal}>
-                  {food.calories_per_serving} {t('meal.unit.cal')}
+            {!showAllFoods && allFoods.length > 30 && (
+              <TouchableOpacity
+                onPress={() => setShowAllFoods(true)}
+                style={{ alignItems: 'center', paddingVertical: theme.spacing[4] }}
+              >
+                <Text style={{ color: theme.colors.accent, fontWeight: '600', fontSize: 14 }}>
+                  {t('meal.showMore') || `Show all ${allFoods.length} foods`}
                 </Text>
-              ) : null}
-            </View>
-          </View>
-        ))}
+              </TouchableOpacity>
+            )}
 
-        {!showAllFoods && allFoods.length > 30 && (
-          <TouchableOpacity
-            onPress={() => setShowAllFoods(true)}
-            style={{ alignItems: 'center', paddingVertical: theme.spacing[4] }}
-          >
-            <Text style={{ color: theme.colors.accent, fontWeight: '600', fontSize: 14 }}>
-              {t('meal.showMore') || `Show all ${allFoods.length} foods`}
-            </Text>
-          </TouchableOpacity>
-        )}
+            <GlassCard style={styles.locationInfo} delay={500}>
+              <MaterialCommunityIcons name="information-outline" size={16} color={theme.colors.accent} />
+              <Text style={styles.locationInfoText}>
+                {location
+                  ? `${t('meal.location.infoPrefix')} ${areaName}${t('meal.location.infoSuffix')}`
+                  : t('meal.location.infoNoLocation')}
+              </Text>
+            </GlassCard>
 
-        <GlassCard style={styles.locationInfo} delay={500}>
-          <MaterialCommunityIcons name="information-outline" size={16} color={theme.colors.accent} />
-          <Text style={styles.locationInfoText}>
-            {location
-              ? `${t('meal.location.infoPrefix')} ${areaName}${t('meal.location.infoSuffix')}`
-              : t('meal.location.infoNoLocation')}
-          </Text>
-        </GlassCard>
-
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
-    </SafeAreaView>
-    </PremiumGate>
+            <View style={styles.bottomSpacer} />
+          </ScrollView>
+        </SafeAreaView>
+      </PremiumGate>
+    </ScreenErrorBoundary>
   );
 }
-

@@ -1,0 +1,87 @@
+[
+  {
+    "id": "cal_001",
+    "name": "Wall Push-up",
+    "category": "body_control",
+    "instructions": [
+      "Stand arm-length from a wall, feet together.",
+      "Place palms on wall at shoulder height, hands just wider than shoulders.",
+      "Body straight from head to heels (core tight).",
+      "Inhale, bend elbows until chest nearly touches wall (2-3 s).",
+      "Exhale, push back to start (1-2 s).",
+      "Keep heels down whole time."
+    ],
+    "audio_intro": "Wall Push-up is a moderate body control exercise. It primarily targets your multiple muscles.",
+    "audio_setup": "Stand arm-length from a wall, feet together. Place palms on wall at shoulder height, hands just wider than shoulders.",
+    "audio_execution": "Body straight from head to heels (core tight). Inhale, bend elbows until chest nearly touches wall (2-3 s).",
+    "audio_transition": ""
+  },
+  {
+    "id": "cal_002",
+    "name": "Incline Push-up",
+    "category": "body_control",
+    "instructions": [
+      "Hands on edge of counter, wrists under shoulders.",
+      "Walk feet back so body is straight line head-to-heels.",
+      "Core tight, glutes squeezed.",
+      "Lower chest to counter (elbows 45\u00b0 from body).",
+      "Press back up fully locked.",
+      "Easier = higher surface; harder = lower table."
+    ],
+    "audio_intro": "Incline Push-up is a moderate body control exercise. It primarily targets your multiple muscles.",
+    "audio_setup": "Hands on edge of counter, wrists under shoulders. Walk feet back so body is straight line head-to-heels.",
+    "audio_execution": "Core tight, glutes squeezed. Lower chest to counter (elbows 45\u00b0 from body).",
+    "audio_transition": ""
+  },
+  {
+    "id": "cal_003",
+    "name": "Knee Push-up",
+    "category": "body_control",
+    "instructions": [
+      "Start on all-fours, hands slightly wider than shoulders.",
+      "Walk knees back so body makes straight line from head to knees.",
+      "Tuck toes (or keep shoelaces flat if floor hurts).",
+      "Lower chest until 5 cm above floor.",
+      "Push back to straight arms.",
+      "Keep hips in line with shoulders\u2014no \"snake\" up."
+    ],
+    "audio_intro": "Knee Push-up is a moderate body control exercise. It primarily targets your multiple muscles.",
+    "audio_setup": "Start on all-fours, hands slightly wider than shoulders. Walk knees back so body makes straight line from head to knees.",
+    "audio_execution": "Tuck toes (or keep shoelaces flat if floor hurts). Lower chest until 5 cm above floor.",
+    "audio_transition": ""
+  },
+  {
+    "id": "cal_004",
+    "name": "Hip Hinge Drill (Good Morning)",
+    "category": "body_control",
+    "instructions": [
+      "Stand feet hip-width, hands on hips.",
+      "Soft knees, chest proud.",
+      "Push hips backward (imagine closing car door).",
+      "Feel hamstrings stretch; stop when torso is near parallel to floor.",
+      "Drive hips forward to stand tall\u2014do NOT round back.",
+      "Movement comes from hips, not waist bend."
+    ],
+    "audio_intro": "Hip Hinge Drill (Good Morning) is a moderate body control exercise. It primarily targets your multiple muscles.",
+    "audio_setup": "Stand feet hip-width, hands on hips. Soft knees, chest proud.",
+    "audio_execution": "Push hips backward (imagine closing car door). Feel hamstrings stretch; stop when torso is near parallel to floor.",
+    "audio_transition": ""
+  },
+  {
+    "id": "cal_005",
+    "name": "Glute Bridge",
+    "category": "body_control",
+    "instructions": [
+      "Lie on back, knees bent 90\u00b0, feet hip-width.",
+      "Arms palms-up at 45\u00b0 for stability.",
+      "Tilt pelvis slightly (flatten low-back into floor).",
+      "Squeeze glutes, lift hips until straight line knees-shoulders.",
+      "Hold 1 s at top\u2014knees stay in line (no flop-out).",
+      "Lower under control; lightly touch floor and go again."
+    ],
+    "audio_intro": "Glute Bridge is a moderate body control exercise. It primarily targets your multiple muscles.",
+    "audio_setup": "Lie on back, knees bent 90\u00b0, feet hip-width. Arms palms-up at 45\u00b0 for stability.",
+    "audio_execution": "Tilt pelvis slightly (flatten low-back into floor). Squeeze glutes, lift hips until straight line knees-shoulders.",
+    "audio_transition": ""
+  }
+]

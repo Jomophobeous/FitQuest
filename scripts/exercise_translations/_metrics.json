@@ -1,0 +1,142 @@
+{
+  "es": {
+    "language": "es",
+    "total_exercises": 3312,
+    "total_steps": 12873,
+    "translated_steps": 12871,
+    "cache_hits": 16970,
+    "fallback_leaks": 32,
+    "weak_translations": 5,
+    "errors": 2
+  },
+  "af": {
+    "language": "af",
+    "total_exercises": 3312,
+    "total_steps": 250,
+    "translated_steps": 250,
+    "cache_hits": 94,
+    "fallback_leaks": 8,
+    "weak_translations": 0,
+    "errors": 0
+  },
+  "zu": {
+    "language": "zu",
+    "total_exercises": 3312,
+    "total_steps": 1994,
+    "translated_steps": 1994,
+    "fallback_leaks": 3,
+    "weak_translations": 0,
+    "errors": 0,
+    "cache_hits": 3842
+  },
+  "xh": {
+    "language": "xh",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 29,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26777
+  },
+  "st": {
+    "language": "st",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 116,
+    "weak_translations": 1,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "fr": {
+    "language": "fr",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 4,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "de": {
+    "language": "de",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 13,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "pt": {
+    "language": "pt",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 2,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "ko": {
+    "language": "ko",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 0,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "zh": {
+    "language": "zh",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 0,
+    "weak_translations": 17,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "ar": {
+    "language": "ar",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 6,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "ja": {
+    "language": "ja",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 0,
+    "weak_translations": 0,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "hi": {
+    "language": "hi",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13534,
+    "fallback_leaks": 0,
+    "weak_translations": 1,
+    "errors": 2,
+    "cache_hits": 26782
+  },
+  "sw": {
+    "language": "sw",
+    "total_exercises": 3312,
+    "total_steps": 13536,
+    "translated_steps": 13527,
+    "fallback_leaks": 24,
+    "weak_translations": 0,
+    "errors": 9,
+    "cache_hits": 26770
+  }
+}

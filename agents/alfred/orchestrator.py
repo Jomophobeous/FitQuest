@@ -9,6 +9,7 @@ from typing import Dict, List
 
 from executor import Executor, ExecutionResult
 from memory import MemoryStore
+from modes import ModeController
 from planner import Planner
 from scanner import RepositoryScanner
 from task_queue import TaskQueue
@@ -22,6 +23,8 @@ class AlfredOrchestrator:
         self.memory = MemoryStore(repo_root / "agents" / "alfred")
         self.planner = Planner()
         self.executor = Executor(repo_root, dry_run=config.get("dry_run", True))
+        self.mode = ModeController(config.get("mode", "full_autonomous"))
+        self.executor.mode = self.mode.active.value
 
     def cycle(self, cycle_index: int) -> Dict:
         # ── 1. State Scan ─────────────────────────────────────────────
@@ -53,10 +56,15 @@ class AlfredOrchestrator:
         self.memory.add_weaknesses(objective.get("known_weaknesses", []))
         self.memory.set_task_queue_snapshot(queue.dump())
 
+        # ── Mode recommendation ────────────────────────────────────
+        mode_recommendation = self.mode.recommend(scan)
+
         # ── Result Assembly ──────────────────────────────────────────
         result = {
             "cycle": cycle_index,
             "timestamp": datetime.now(timezone.utc).isoformat(),
+            "mode": self.mode.active.value,
+            "mode_recommendation": mode_recommendation,
             "objective": objective,
             "scan_summary": {
                 "file_count": scan.get("file_count", 0),
@@ -222,6 +230,7 @@ def main() -> None:
     parser.add_argument("--repo-root", default=".", help="Repository root path")
     parser.add_argument("--cycles", type=int, default=None, help="Override number of cycles")
     parser.add_argument("--dry-run", action="store_true", help="Force dry-run mode")
+    parser.add_argument("--mode", default=None, help="Operational mode override")
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
@@ -232,6 +241,8 @@ def main() -> None:
         config["max_cycles"] = args.cycles
     if args.dry_run:
         config["dry_run"] = True
+    if args.mode:
+        config["mode"] = args.mode
 
     orchestrator = AlfredOrchestrator(repo_root, config)
 

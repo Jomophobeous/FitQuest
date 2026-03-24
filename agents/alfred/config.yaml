@@ -3,6 +3,14 @@ max_cycles: 3
 
 dry_run: true
 
+# Operational mode — determines scan scope, fix strategy, response format.
+# Options: full_autonomous, failure_simulation, race_condition_hunt,
+#   render_stabilization, performance_optimization, boot_sequence_control,
+#   access_control_lockdown, async_control, layout_keyboard_stabilization,
+#   architecture_map, validation, aggressive_cleanup, continuous_hardening,
+#   critical_failure_response, self_audit
+mode: full_autonomous
+
 # Reserved for future maturity phases
 planner_mode: roi_first
 safety_mode: strict

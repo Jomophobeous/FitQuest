@@ -12,7 +12,7 @@ vi.mock('../src/security/EncryptedDatabase', () => ({
   },
 }));
 
-import { dualAI } from '../src/fitmind/DualAIEngine';
+import { dualAI } from '../src/engines/DualAIEngine';
 
 describe('DualAIEngine Professor model routing', () => {
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe('DualAIEngine Professor model routing', () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        output_text: 'Cloud response for analysis.',
+        choices: [{ message: { content: 'Cloud response for analysis.' } }],
         usage: { total_tokens: 123 },
       }),
     });

@@ -92,13 +92,8 @@ describe('Core module imports', () => {
   });
 
   it('DualAIEngine exports singleton', async () => {
-    const mod = await import('../src/fitmind/DualAIEngine');
+    const mod = await import('../src/engines/DualAIEngine');
     expect(mod.dualAI).toBeDefined();
-  });
-
-  it('FitMindService exports class', async () => {
-    const mod = await import('../src/fitmind/schema');
-    expect(mod.FitMindService).toBeDefined();
   });
 
   it('theme-system exports themes without throwing', async () => {

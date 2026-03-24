@@ -29,6 +29,16 @@ vi.mock('../src/services/telemetry', () => ({
   logPerf: vi.fn().mockResolvedValue(undefined),
 }));
 
+// Mock WAL service (uses getDatabase internally)
+vi.mock('../src/services/WriteAheadLogService', () => ({
+  walService: {
+    logIntent: vi.fn().mockResolvedValue('mock_wal_id'),
+    commit: vi.fn().mockResolvedValue(undefined),
+    markFailed: vi.fn().mockResolvedValue(undefined),
+    initialize: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 import {
   getXPData,
   awardWorkoutXP,

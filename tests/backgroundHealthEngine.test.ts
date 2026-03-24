@@ -104,6 +104,7 @@ vi.mock('../src/database/service', () => ({
 }));
 
 import { BackgroundHealthEngine } from '../src/engines/BackgroundHealthEngine';
+import { systemGuard } from '../src/services/SystemGuard';
 
 // ============================================
 // HELPERS
@@ -118,6 +119,7 @@ function freshInstance(): BackgroundHealthEngine {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.useFakeTimers({ shouldAdvanceTime: false });
+  systemGuard.markReady();
 });
 
 // ============================================

@@ -237,16 +237,9 @@ describe('Screen module smoke tests', () => {
     });
   });
 
-  describe('FitMind modules', () => {
-    it('FitMindService exports CRUD class', async () => {
-      const { FitMindService } = await import('../src/fitmind/schema');
-      expect(FitMindService).toBeDefined();
-      expect(FitMindService.addDocument).toBeTypeOf('function');
-      expect(FitMindService.getDocuments).toBeTypeOf('function');
-    });
-
+  describe('AI modules', () => {
     it('DualAIEngine exports singleton', async () => {
-      const { dualAI } = await import('../src/fitmind/DualAIEngine');
+      const { dualAI } = await import('../src/engines/DualAIEngine');
       expect(dualAI).toBeDefined();
       expect(dualAI.query).toBeTypeOf('function');
     });

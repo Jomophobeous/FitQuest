@@ -22,6 +22,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from memory import MemoryStore
+
 # ── Fix result ────────────────────────────────────────────────────────
 
 @dataclass
@@ -81,10 +83,11 @@ class AutoFixer:
     def __init__(self, repo_root: Path, dry_run: bool = True) -> None:
         self.repo_root = repo_root
         self.dry_run = dry_run
+        self.memory = MemoryStore(repo_root / "agents" / "alfred")
 
     # ── Public API ────────────────────────────────────────────────────
 
-    def fix_rn_crash_risks(self, files: Optional[List[Path]] = None) -> FixResult:
+    def fix_rn_crash_risks(self, files: Optional[List[Path]] = None, log_event: bool = True) -> FixResult:
         """Fix ``{val && (<JSX>)}`` → ``{!!val && (<JSX>)}`` in .tsx files."""
         result = FixResult(fix_class="rn_crash_risk", files_scanned=0, fixes_applied=0)
         targets = files or self._tsx_files()
@@ -120,9 +123,11 @@ class AutoFixer:
                 if not self.dry_run:
                     path.write_text("".join(new_lines), encoding="utf-8")
 
+        if log_event:
+            self._log_fix_result("autofix::rn_crash_risks", result)
         return result
 
-    def fix_theme_colors(self, files: Optional[List[Path]] = None) -> FixResult:
+    def fix_theme_colors(self, files: Optional[List[Path]] = None, log_event: bool = True) -> FixResult:
         """Replace known hardcoded hex colors with theme.colors.* tokens."""
         result = FixResult(fix_class="theme_color", files_scanned=0, fixes_applied=0)
         targets = files or self._tsx_files()
@@ -164,14 +169,19 @@ class AutoFixer:
                 if not self.dry_run:
                     path.write_text("".join(new_lines), encoding="utf-8")
 
+        if log_event:
+            self._log_fix_result("autofix::theme_colors", result)
         return result
 
-    def run_all(self) -> Dict[str, FixResult]:
+    def run_all(self, log_event: bool = True) -> Dict[str, FixResult]:
         """Run all registered fixers and return results keyed by fix_class."""
-        return {
-            "rn_crash_risk": self.fix_rn_crash_risks(),
-            "theme_color": self.fix_theme_colors(),
+        results = {
+            "rn_crash_risk": self.fix_rn_crash_risks(log_event=False),
+            "theme_color": self.fix_theme_colors(log_event=False),
         }
+        if log_event:
+            self._log_fix_run(results)
+        return results
 
     # ── Summary helpers ───────────────────────────────────────────────
 
@@ -218,6 +228,57 @@ class AutoFixer:
                     if p.name not in _SKIP
                 )
         return sorted(targets)
+
+    def _log_fix_result(self, task_id: str, result: FixResult) -> None:
+        changed_files = sorted({patch.file for patch in result.patches})
+        mode = "preview" if self.dry_run else "applied"
+        self.memory.log_change({
+            "event_type": "autofix",
+            "task_id": task_id,
+            "fix_class": result.fix_class,
+            "dry_run": self.dry_run,
+            "status": "logged",
+            "summary": (
+                f"Auto-fix {mode}: {result.fixes_applied} fixes in "
+                f"{len(changed_files)} files for {result.fix_class}."
+            ),
+            "changed_files": changed_files,
+            "patches": [
+                {
+                    "file": patch.file,
+                    "line": patch.line,
+                    "before": patch.before[:160],
+                    "after": patch.after[:160],
+                }
+                for patch in result.patches[:50]
+            ],
+            "errors": result.errors[:20],
+            "files_scanned": result.files_scanned,
+            "fixes_applied": result.fixes_applied,
+        })
+
+    def _log_fix_run(self, results: Dict[str, FixResult]) -> None:
+        changed_files = sorted({
+            patch.file
+            for result in results.values()
+            for patch in result.patches
+        })
+        summary = AutoFixer.summarize(results)
+        mode = "preview" if self.dry_run else "applied"
+        self.memory.log_change({
+            "event_type": "autofix",
+            "task_id": "autofix::all",
+            "dry_run": self.dry_run,
+            "status": "logged",
+            "summary": (
+                f"Auto-fix sweep {mode}: {summary['total_fixes']} fixes across "
+                f"{len(changed_files)} files."
+            ),
+            "changed_files": changed_files,
+            "details": summary["details"],
+            "total_fixes": summary["total_fixes"],
+            "total_errors": summary["total_errors"],
+        })
 
     @staticmethod
     def _fix_rn_line(line: str) -> str:

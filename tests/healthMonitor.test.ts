@@ -29,6 +29,7 @@ vi.mock('../src/engines/SensorFusionEngine', () => ({
 import { HealthMonitorService } from '../src/engines/HealthMonitor';
 import { encryptedDB } from '../src/security/EncryptedDatabase';
 import { getAppState, setAppState } from '../src/database/service';
+import { systemGuard } from '../src/services/SystemGuard';
 
 // ============================================
 // HELPERS
@@ -42,6 +43,7 @@ function freshInstance(): HealthMonitorService {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  systemGuard.markReady();
 });
 
 // ============================================

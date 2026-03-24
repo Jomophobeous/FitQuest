@@ -109,7 +109,7 @@ Session replay lets you watch real recordings of how users interact with your ap
 3. **Verify** it matches what's in your `.env` file:
 
 ```
-EXPO_PUBLIC_POSTHOG_API_KEY="phc_nZZ4P3nVyrye6S5x0y1ZTOmpXlGRy4hPY6ybCqkflyw"
+EXPO_PUBLIC_POSTHOG_API_KEY="phc_YOUR_PROJECT_API_KEY_HERE"
 ```
 
 If it doesn't match, update the `.env` file with the correct key.

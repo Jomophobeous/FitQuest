@@ -40,16 +40,16 @@
             <span class="lang-trigger__chevron">▼</span>
           </button>
           <div class="lang-dropdown">
-            <div class="lang-dropdown__label">Available in App</div>
+            <div class="lang-dropdown__label">App Language</div>
             <div class="lang-option active" data-code="EN"><span class="lang-option__flag">🇬🇧</span><span class="lang-option__name">English</span></div>
-            <div class="lang-option" data-code="ST"><span class="lang-option__flag">🇱🇸</span><span class="lang-option__name">Sesotho</span></div>
             <div class="lang-option" data-code="AF"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">Afrikaans</span></div>
             <div class="lang-option" data-code="ZU"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiZulu</span></div>
             <div class="lang-option" data-code="XH"><span class="lang-option__flag">🇿🇦</span><span class="lang-option__name">isiXhosa</span></div>
+            <div class="lang-option" data-code="ST"><span class="lang-option__flag">🇱🇸</span><span class="lang-option__name">Sesotho</span></div>
             <div class="lang-option" data-code="ES"><span class="lang-option__flag">🇪🇸</span><span class="lang-option__name">Español</span></div>
             <div class="lang-option" data-code="FR"><span class="lang-option__flag">🇫🇷</span><span class="lang-option__name">Français</span></div>
             <div class="lang-option" data-code="DE"><span class="lang-option__flag">🇩🇪</span><span class="lang-option__name">Deutsch</span></div>
-            <div class="lang-option" data-code="PT"><span class="lang-option__flag">🇧🇷</span><span class="lang-option__name">Português</span></div>
+            <div class="lang-option" data-code="PT"><span class="lang-option__flag">🇵🇹</span><span class="lang-option__name">Português</span></div>
             <div class="lang-option" data-code="ZH"><span class="lang-option__flag">🇨🇳</span><span class="lang-option__name">中文</span></div>
             <div class="lang-option" data-code="JA"><span class="lang-option__flag">🇯🇵</span><span class="lang-option__name">日本語</span></div>
             <div class="lang-option" data-code="KO"><span class="lang-option__flag">🇰🇷</span><span class="lang-option__name">한국어</span></div>
@@ -78,7 +78,7 @@
       <div class="section-header reveal">
         <div class="section-header__label">Legal</div>
         <h1 class="section-header__title">Privacy <span class="text-gradient">Policy</span></h1>
-        <p class="section-header__desc">Last updated: January 2026 &middot; Effective: January 2026</p>
+        <p class="section-header__desc">Last updated: March 2026 &middot; Effective: March 2026</p>
       </div>
     </div>
   </section>
@@ -171,12 +171,13 @@
 
       <div class="legal-section reveal">
         <h2>6. AI Assistants</h2>
-        <p>FitQuest includes two on-device AI assistants (Coach &amp; Professor):</p>
+        <p>FitQuest includes two AI assistants (Coach &amp; Professor):</p>
         <ul>
-          <li>AI responses are generated using <strong>template-based response generation</strong> with context injection — no external API calls.</li>
-          <li>All conversation history is encrypted with AES-256-GCM and stored locally.</li>
+          <li>When online, AI responses are generated via third-party LLM providers (<strong>Groq</strong> and <strong>OpenRouter</strong> as fallback). Only your typed text prompts are sent — no health data, workout records, or personal information is transmitted.</li>
+          <li>When offline, template-based response generation provides guidance without any external calls.</li>
+          <li>All conversation history is encrypted with AES-256-GCM and stored locally on your device.</li>
           <li>The AI does not learn from or retain your data between sessions beyond what you explicitly see in your conversation history.</li>
-          <li>No conversation data is transmitted to any external server or AI provider.</li>
+          <li>You can review Groq's privacy policy at groq.com and OpenRouter's at openrouter.ai.</li>
         </ul>
       </div>
 
@@ -189,10 +190,14 @@
           <tbody>
             <tr><td>RevenueCat</td><td>Subscription verification</td><td>Anonymous subscriber ID only</td></tr>
             <tr><td>Google Play / App Store</td><td>Payment processing</td><td>Handled by platform, not by FitQuest</td></tr>
-            <tr><td>Expo Updates</td><td>App updates</td><td>Device platform &amp; app version (anon)</td></tr>
+            <tr><td>Expo Updates</td><td>App updates (OTA)</td><td>Device platform &amp; app version (anonymous)</td></tr>
+            <tr><td>Sentry</td><td>Crash reporting &amp; stability monitoring</td><td>Crash logs, stack traces, device info (anonymous). No health or personal data included.</td></tr>
+            <tr><td>PostHog</td><td>Usage analytics &amp; session replay</td><td>Screen views, feature usage, device info. All text inputs and images are masked. 50% sampling. Respects consent withdrawal.</td></tr>
+            <tr><td>Groq</td><td>AI Coach &amp; Professor responses</td><td>User-typed text prompts only. No health metrics, workout data, or personal information is sent.</td></tr>
+            <tr><td>OpenRouter</td><td>AI fallback provider</td><td>User-typed text prompts only (same as Groq, used as fallback).</td></tr>
           </tbody>
         </table>
-        <p style="margin-top: 12px;">We do <strong>not</strong> use any analytics SDKs (no Google Analytics, no Firebase Analytics, no Mixpanel, no Amplitude).</p>
+        <p style="margin-top: 12px;">We do <strong>not</strong> use Google Analytics, Firebase Analytics, Mixpanel, or Amplitude. Analytics (PostHog) can be fully disabled by withdrawing consent in the app's Legal Center.</p>
       </div>
 
       <div class="legal-section reveal">

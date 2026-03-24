@@ -55,9 +55,9 @@ describe('IntentRouter', () => {
       expect(result.category).toBe('COACH');
     });
 
-    it('classifies reading queries as PROFESSOR', () => {
+    it('classifies reading queries as COACH (PROFESSOR removed)', () => {
       const result = classify('Summarize this book chapter for me');
-      expect(result.category).toBe('PROFESSOR');
+      expect(result.category).toBe('COACH');
     });
 
     it('classifies health queries as HEALTH', () => {
@@ -214,9 +214,9 @@ describe('IntentRouter', () => {
       expect(result.category).toBe('COACH');
     });
 
-    it('classifies flashcard queries as PROFESSOR', () => {
+    it('classifies flashcard queries as COACH (PROFESSOR removed)', () => {
       const result = classify('Review my flashcards and quiz me');
-      expect(result.category).toBe('PROFESSOR');
+      expect(result.category).toBe('COACH');
     });
 
     it('classifies heart rate queries as HEALTH', () => {

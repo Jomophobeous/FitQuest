@@ -1,0 +1,29 @@
+
+> fitquest-mobile@1.0.0 verify:quality:110:self-test
+> FITQUEST_QUALITY_GATE_SELF_TEST=1 node scripts/quality-110-gate.mjs
+
+FitQuest Quality 110 Gate
+========================
+
+→ Self-test core step A
+self-test step A
+✓ Self-test core step A
+
+→ Self-test core step B
+self-test step B
+✓ Self-test core step B
+
+→ Self-test core step C
+self-test step C
+✓ Self-test core step C
+
+Quality Breakdown
+-----------------
+Core score: 100/100
+Stretch score: 10/10
+Total quality score: 110/110
+Simulation report found: yes
+Simulation overall PASS marker: yes
+Static contracts 8/8 marker: yes
+
+✅ Quality 110 gate passed

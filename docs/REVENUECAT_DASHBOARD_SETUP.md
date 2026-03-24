@@ -45,7 +45,7 @@ Before starting, you need:
 
 | Key Type | Value | Use |
 |----------|-------|-----|
-| RevenueCat Secret | `sk_NuDQEoVbdvabRpSiUFVLIDQFInKxv` | Server-side only, webhooks, API calls. **NEVER** in the app. |
+| RevenueCat Secret | `sk_REDACTED_ROTATE_IN_DASHBOARD` | Server-side only, webhooks, API calls. **NEVER** in the app. |
 | RevenueCat Test | `test_DYcyZTNVVNpVqhswVWLUBvVMaeP` | In-app during development (already in `.env`) |
 
 ---
@@ -819,7 +819,7 @@ These must match **exactly** between Google Play Console, RevenueCat Dashboard, 
 | Secret API key | `sk_` | Server-side only, RevenueCat REST API, webhooks | Only you |
 | Public API key | `goog_` / `appl_` / `test_` | In the app `.env` file | The app (client-side, safe to embed) |
 
-> ⚠️ The `sk_NuDQEoVbdvabRpSiUFVLIDQFInKxv` key is your **SECRET** key. It must **NEVER** go in the app — only use it for server-side API calls or webhook verification.
+> ⚠️ Your `sk_` secret key must **NEVER** go in the app or source code — only use it for server-side API calls or webhook verification. Rotate it in the RevenueCat dashboard if it was ever committed to version control.
 
 ---
 

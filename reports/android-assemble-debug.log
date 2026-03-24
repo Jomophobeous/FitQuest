@@ -1,0 +1,562 @@
+nohup: ignoring input
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:processResources NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:jar UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-settings-plugin:jar UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-updates-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-module-gradle-plugin:processResources UP-TO-DATE
+> Task :expo-updates-gradle-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:compileKotlin UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:processResources UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:classes UP-TO-DATE
+> Task :expo-gradle-plugin:expo-autolinking-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+> Task :expo-module-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :expo-module-gradle-plugin:compileJava NO-SOURCE
+> Task :expo-module-gradle-plugin:classes UP-TO-DATE
+> Task :expo-module-gradle-plugin:jar UP-TO-DATE
+> Task :expo-updates-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :expo-updates-gradle-plugin:compileJava NO-SOURCE
+> Task :expo-updates-gradle-plugin:classes UP-TO-DATE
+> Task :expo-updates-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :
+[32m[ExpoRootProject][0m Using the following versions:
+  - buildTools:  [32m36.0.0[0m
+  - minSdk:      [32m24[0m
+  - compileSdk:  [32m36[0m
+  - targetSdk:   [32m36[0m
+  - ndk:         [32m27.1.12297006[0m
+  - kotlin:      [32m2.1.20[0m
+  - ksp:         [32m2.1.20-2.0.1[0m
+
+> Configure project :app
+ ℹ️  [33mApplying gradle plugin[0m '[32mexpo-updates-gradle-plugin[0m'
+
+> Configure project :expo
+
+Using expo modules
+  - [32mexpo-constants[0m (18.0.13)
+  - [32mexpo-eas-client[0m (1.0.8)
+  - [32mexpo-json-utils[0m (0.15.0)
+  - [32mexpo-manifests[0m (1.0.10)
+  - [32mexpo-modules-core[0m (3.0.29)
+  - [32mexpo-structured-headers[0m (5.0.0)
+  - [32mexpo-updates[0m (29.0.16)
+  - [32mexpo-updates-interface[0m (2.0.0)
+  - [33m[📦][0m [32mexpo-application[0m (7.0.8)
+  - [33m[📦][0m [32mexpo-asset[0m (12.0.12)
+  - [33m[📦][0m [32mexpo-battery[0m (10.0.8)
+  - [33m[📦][0m [32mexpo-blur[0m (15.0.8)
+  - [33m[📦][0m [32mexpo-crypto[0m (15.0.8)
+  - [33m[📦][0m [32mexpo-document-picker[0m (14.0.8)
+  - [33m[📦][0m [32mexpo-file-system[0m (19.0.21)
+  - [33m[📦][0m [32mexpo-font[0m (14.0.11)
+  - [33m[📦][0m [32mexpo-image-loader[0m (6.0.0)
+  - [33m[📦][0m [32mexpo-image-picker[0m (17.0.10)
+  - [33m[📦][0m [32mexpo-keep-awake[0m (15.0.8)
+  - [33m[📦][0m [32mexpo-linear-gradient[0m (15.0.8)
+  - [33m[📦][0m [32mexpo-linking[0m (8.0.11)
+  - [33m[📦][0m [32mexpo-local-authentication[0m (17.0.8)
+  - [33m[📦][0m [32mexpo-location[0m (19.0.8)
+  - [33m[📦][0m [32mexpo-notifications[0m (0.32.16)
+  - [33m[📦][0m [32mexpo-secure-store[0m (15.0.8)
+  - [33m[📦][0m [32mexpo-sensors[0m (15.0.8)
+  - [33m[📦][0m [32mexpo-speech[0m (14.0.8)
+  - [33m[📦][0m [32mexpo-sqlite[0m (16.0.10)
+  - [33m[📦][0m [32mexpo-web-browser[0m (15.0.10)
+
+Checking the license for package Android SDK Build-Tools 35 in /home/kheleli/Android/Sdk/licenses
+License for package Android SDK Build-Tools 35 accepted.
+Preparing "Install Android SDK Build-Tools 35 v.35.0.0".
+"Install Android SDK Build-Tools 35 v.35.0.0" ready.
+Installing Android SDK Build-Tools 35 in /home/kheleli/Android/Sdk/build-tools/35.0.0
+"Install Android SDK Build-Tools 35 v.35.0.0" complete.
+"Install Android SDK Build-Tools 35 v.35.0.0" finished.
+[=========                              ] 25%                                   [=========                              ] 25% Fetch remote repository...        [=======================================] 100% Fetch remote repository...       
+
+> Task :expo-eas-client:preBuild UP-TO-DATE
+> Task :expo-json-utils:preBuild UP-TO-DATE
+> Task :expo-manifests:preBuild UP-TO-DATE
+> Task :expo-modules-core:preBuild UP-TO-DATE
+> Task :expo-structured-headers:preBuild UP-TO-DATE
+> Task :expo-updates:preBuild UP-TO-DATE
+> Task :expo-updates-interface:preBuild UP-TO-DATE
+> Task :app:generateAutolinkingNewArchitectureFiles
+> Task :app:generateAutolinkingPackageList
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:generateReactNativeEntryPoint
+> Task :react-native-community_masked-view:preBuild UP-TO-DATE
+> Task :react-native-blob-util:generateCodegenSchemaFromJavaScript
+> Task :react-native-gesture-handler:generateCodegenSchemaFromJavaScript
+
+> Task :expo-constants:createExpoConfig
+The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set. Using only .env.local and .env
+env: load .env.local .env
+env: export EXPO_PUBLIC_USE_MOCK_API EXPO_PUBLIC_REVENUECAT_API_KEY EXPO_PUBLIC_ENV EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+
+> Task :expo-constants:preBuild
+> Task :expo:generatePackagesList
+> Task :expo:preBuild
+> Task :react-native-gesture-handler:generateCodegenArtifactsFromSchema
+> Task :react-native-gesture-handler:preBuild
+> Task :react-native-blob-util:generateCodegenArtifactsFromSchema
+> Task :react-native-blob-util:preBuild
+> Task :react-native-health-connect:generateCodegenSchemaFromJavaScript
+> Task :react-native-reanimated:assertMinimalReactNativeVersionTask
+> Task :react-native-reanimated:assertNewArchitectureEnabledTask SKIPPED
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript
+> Task :react-native-pdf:generateCodegenSchemaFromJavaScript
+> Task :react-native-reanimated:assertWorkletsVersionTask
+> Task :react-native-health-connect:generateCodegenArtifactsFromSchema
+> Task :react-native-health-connect:preBuild
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema
+> Task :react-native-safe-area-context:preBuild
+> Task :react-native-reanimated:generateCodegenSchemaFromJavaScript
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript
+> Task :react-native-pdf:generateCodegenArtifactsFromSchema
+> Task :react-native-pdf:preBuild
+> Task :react-native-reanimated:generateCodegenArtifactsFromSchema
+> Task :react-native-screens:generateCodegenArtifactsFromSchema
+> Task :react-native-screens:preBuild
+> Task :react-native-reanimated:prepareReanimatedHeadersForPrefabs
+> Task :react-native-reanimated:preBuild
+> Task :react-native-svg:generateCodegenSchemaFromJavaScript
+> Task :react-native-worklets:assertMinimalReactNativeVersionTask
+> Task :react-native-worklets:assertNewArchitectureEnabledTask SKIPPED
+> Task :react-native-webview:generateCodegenSchemaFromJavaScript
+> Task :sentry_react-native:generateCodegenSchemaFromJavaScript
+> Task :react-native-webview:generateCodegenArtifactsFromSchema
+> Task :react-native-webview:preBuild
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo:preDebugBuild
+> Task :react-native-worklets:generateCodegenSchemaFromJavaScript
+> Task :react-native-svg:generateCodegenArtifactsFromSchema
+> Task :react-native-svg:preBuild
+> Task :expo-constants:preDebugBuild
+> Task :expo:writeDebugAarMetadata
+> Task :expo-eas-client:preDebugBuild UP-TO-DATE
+> Task :expo-constants:writeDebugAarMetadata
+> Task :expo-json-utils:preDebugBuild UP-TO-DATE
+> Task :expo-eas-client:writeDebugAarMetadata
+> Task :expo-manifests:preDebugBuild UP-TO-DATE
+> Task :expo-json-utils:writeDebugAarMetadata
+> Task :expo-modules-core:preDebugBuild UP-TO-DATE
+> Task :expo-manifests:writeDebugAarMetadata
+> Task :expo-modules-core:writeDebugAarMetadata
+> Task :expo-structured-headers:preDebugBuild UP-TO-DATE
+> Task :expo-updates:preDebugBuild UP-TO-DATE
+> Task :expo-structured-headers:writeDebugAarMetadata
+> Task :expo-updates:writeDebugAarMetadata
+> Task :expo-updates-interface:preDebugBuild UP-TO-DATE
+> Task :react-native-blob-util:preDebugBuild
+> Task :expo-updates-interface:writeDebugAarMetadata
+> Task :react-native-community_masked-view:preDebugBuild UP-TO-DATE
+> Task :react-native-blob-util:writeDebugAarMetadata
+> Task :react-native-gesture-handler:preDebugBuild
+> Task :react-native-community_masked-view:writeDebugAarMetadata
+> Task :react-native-health-connect:preDebugBuild
+> Task :react-native-gesture-handler:writeDebugAarMetadata
+> Task :react-native-pdf:preDebugBuild
+> Task :react-native-health-connect:writeDebugAarMetadata
+> Task :react-native-reanimated:preDebugBuild
+> Task :react-native-pdf:writeDebugAarMetadata
+> Task :react-native-safe-area-context:preDebugBuild
+> Task :sentry_react-native:generateCodegenArtifactsFromSchema
+> Task :sentry_react-native:preBuild
+> Task :react-native-reanimated:writeDebugAarMetadata
+> Task :react-native-svg:preDebugBuild
+> Task :react-native-screens:preDebugBuild
+> Task :react-native-safe-area-context:writeDebugAarMetadata
+> Task :react-native-webview:preDebugBuild
+> Task :react-native-svg:writeDebugAarMetadata
+> Task :sentry_react-native:preDebugBuild
+> Task :react-native-screens:writeDebugAarMetadata
+> Task :react-native-webview:writeDebugAarMetadata
+> Task :expo:generateDebugResValues
+> Task :expo-constants:generateDebugResValues
+> Task :sentry_react-native:writeDebugAarMetadata
+> Task :expo-eas-client:generateDebugResValues
+> Task :expo-constants:generateDebugResources
+> Task :expo:generateDebugResources
+> Task :expo-eas-client:generateDebugResources
+> Task :react-native-worklets:generateCodegenArtifactsFromSchema
+> Task :react-native-worklets:prepareWorkletsHeadersForPrefabs
+> Task :react-native-worklets:preBuild
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :expo:packageDebugResources
+> Task :expo-eas-client:packageDebugResources
+> Task :react-native-worklets:preDebugBuild
+> Task :expo-constants:packageDebugResources
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :expo-json-utils:generateDebugResValues
+> Task :expo-manifests:generateDebugResValues
+> Task :react-native-worklets:writeDebugAarMetadata
+> Task :expo-manifests:generateDebugResources
+> Task :expo-json-utils:generateDebugResources
+> Task :expo-modules-core:generateDebugResValues
+> Task :expo-modules-core:generateDebugResources
+> Task :expo-manifests:packageDebugResources
+> Task :expo-structured-headers:generateDebugResValues
+> Task :expo-json-utils:packageDebugResources
+> Task :app:generateDebugBuildConfig
+> Task :expo-modules-core:packageDebugResources
+> Task :expo-updates:generateDebugResValues
+> Task :expo-structured-headers:generateDebugResources
+> Task :expo-updates-interface:generateDebugResValues
+> Task :expo-updates:generateDebugResources
+> Task :expo-updates-interface:generateDebugResources
+> Task :expo-structured-headers:packageDebugResources
+> Task :expo-updates-interface:packageDebugResources
+> Task :expo-updates:packageDebugResources
+> Task :react-native-blob-util:generateDebugResValues
+> Task :react-native-community_masked-view:generateDebugResValues
+> Task :react-native-gesture-handler:generateDebugResValues
+> Task :react-native-blob-util:generateDebugResources
+> Task :react-native-community_masked-view:generateDebugResources
+> Task :react-native-gesture-handler:generateDebugResources
+> Task :react-native-community_masked-view:packageDebugResources
+> Task :react-native-health-connect:generateDebugResValues
+> Task :react-native-gesture-handler:packageDebugResources
+> Task :react-native-pdf:generateDebugResValues
+> Task :react-native-health-connect:generateDebugResources
+> Task :react-native-pdf:generateDebugResources
+> Task :react-native-health-connect:packageDebugResources
+> Task :react-native-reanimated:generateDebugResValues
+> Task :react-native-reanimated:generateDebugResources
+> Task :react-native-pdf:packageDebugResources
+> Task :react-native-safe-area-context:generateDebugResValues
+> Task :react-native-safe-area-context:generateDebugResources
+> Task :react-native-reanimated:packageDebugResources
+> Task :react-native-screens:generateDebugResValues
+> Task :react-native-safe-area-context:packageDebugResources
+> Task :react-native-svg:generateDebugResValues
+> Task :react-native-svg:generateDebugResources
+> Task :react-native-screens:generateDebugResources
+> Task :react-native-blob-util:packageDebugResources
+> Task :react-native-svg:packageDebugResources
+> Task :react-native-worklets:generateDebugResValues
+> Task :react-native-webview:generateDebugResValues
+> Task :react-native-worklets:generateDebugResources
+> Task :react-native-webview:generateDebugResources
+> Task :react-native-worklets:packageDebugResources
+> Task :react-native-webview:packageDebugResources
+> Task :sentry_react-native:generateDebugResValues
+> Task :expo:extractDeepLinksDebug
+> Task :sentry_react-native:generateDebugResources
+> Task :sentry_react-native:packageDebugResources
+> Task :react-native-screens:packageDebugResources
+> Task :expo-constants:extractDeepLinksDebug
+> Task :expo-eas-client:extractDeepLinksDebug
+> Task :expo-eas-client:processDebugManifest
+> Task :expo-json-utils:extractDeepLinksDebug
+> Task :expo-constants:processDebugManifest
+> Task :expo-manifests:extractDeepLinksDebug
+> Task :expo-json-utils:processDebugManifest
+> Task :expo-modules-core:extractDeepLinksDebug
+> Task :expo:processDebugManifest
+> Task :expo-structured-headers:extractDeepLinksDebug
+> Task :expo-manifests:processDebugManifest
+> Task :expo-updates:extractDeepLinksDebug
+> Task :expo-structured-headers:processDebugManifest
+> Task :expo-updates-interface:extractDeepLinksDebug
+> Task :expo-updates-interface:processDebugManifest
+> Task :react-native-blob-util:extractDeepLinksDebug
+
+> Task :expo-modules-core:processDebugManifest
+/home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/AndroidManifest.xml:8:9-11:45 Warning:
+	meta-data#com.facebook.soloader.enabled@android:value was tagged at AndroidManifest.xml:8 to replace other declarations but no other declaration present
+
+> Task :react-native-community_masked-view:extractDeepLinksDebug
+
+> Task :react-native-blob-util:processDebugManifest
+package="com.ReactNativeBlobUtil" found in source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-blob-util/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.ReactNativeBlobUtil" from the source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-blob-util/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-gesture-handler:extractDeepLinksDebug
+> Task :react-native-gesture-handler:processDebugManifest
+> Task :react-native-health-connect:extractDeepLinksDebug
+> Task :expo-updates:processDebugManifest
+> Task :react-native-pdf:extractDeepLinksDebug
+
+> Task :react-native-health-connect:processDebugManifest
+package="dev.matinzd.healthconnect" found in source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="dev.matinzd.healthconnect" from the source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-reanimated:extractDeepLinksDebug
+> Task :react-native-pdf:processDebugManifest
+> Task :react-native-safe-area-context:extractDeepLinksDebug
+
+> Task :react-native-community_masked-view:processDebugManifest
+package="org.reactnative.maskedview" found in source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/@react-native-community/masked-view/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="org.reactnative.maskedview" from the source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/@react-native-community/masked-view/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-screens:extractDeepLinksDebug
+
+> Task :react-native-safe-area-context:processDebugManifest
+package="com.th3rdwave.safeareacontext" found in source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.th3rdwave.safeareacontext" from the source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+
+> Task :react-native-svg:extractDeepLinksDebug
+> Task :react-native-reanimated:processDebugManifest
+> Task :react-native-webview:extractDeepLinksDebug
+> Task :react-native-screens:processDebugManifest
+> Task :react-native-worklets:extractDeepLinksDebug
+> Task :react-native-webview:processDebugManifest
+> Task :sentry_react-native:extractDeepLinksDebug
+> Task :react-native-svg:processDebugManifest
+
+> Task :sentry_react-native:processDebugManifest
+package="io.sentry.react" found in source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/@sentry/react-native/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="io.sentry.react" from the source AndroidManifest.xml: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/@sentry/react-native/android/src/main/AndroidManifest.xml.
+
+> Task :expo:compileDebugLibraryResources
+> Task :react-native-worklets:processDebugManifest
+> Task :expo-constants:compileDebugLibraryResources
+> Task :expo:parseDebugLocalResources
+> Task :expo-eas-client:compileDebugLibraryResources
+> Task :expo-constants:parseDebugLocalResources
+> Task :expo:generateDebugRFile
+> Task :expo-constants:generateDebugRFile
+> Task :expo-json-utils:compileDebugLibraryResources
+> Task :expo-json-utils:parseDebugLocalResources
+> Task :expo-manifests:compileDebugLibraryResources
+> Task :expo-json-utils:generateDebugRFile
+> Task :expo-modules-core:compileDebugLibraryResources
+> Task :expo-eas-client:parseDebugLocalResources
+> Task :expo-manifests:parseDebugLocalResources
+> Task :expo-modules-core:parseDebugLocalResources
+> Task :expo-manifests:generateDebugRFile
+> Task :expo-modules-core:generateDebugRFile
+> Task :expo-structured-headers:parseDebugLocalResources
+> Task :expo-eas-client:generateDebugRFile
+> Task :expo-structured-headers:compileDebugLibraryResources
+> Task :expo-structured-headers:generateDebugRFile
+> Task :expo-updates:compileDebugLibraryResources
+> Task :expo-updates-interface:compileDebugLibraryResources
+> Task :expo-updates:parseDebugLocalResources
+> Task :expo-updates-interface:parseDebugLocalResources
+> Task :expo-updates:generateDebugRFile
+> Task :expo-updates-interface:generateDebugRFile
+> Task :react-native-blob-util:parseDebugLocalResources
+> Task :react-native-blob-util:generateDebugRFile
+> Task :react-native-community_masked-view:compileDebugLibraryResources
+> Task :react-native-gesture-handler:compileDebugLibraryResources
+> Task :react-native-community_masked-view:parseDebugLocalResources
+> Task :react-native-blob-util:compileDebugLibraryResources
+> Task :react-native-gesture-handler:parseDebugLocalResources
+> Task :react-native-health-connect:compileDebugLibraryResources
+> Task :react-native-gesture-handler:generateDebugRFile
+> Task :react-native-community_masked-view:generateDebugRFile
+> Task :react-native-reanimated:compileDebugLibraryResources
+> Task :react-native-health-connect:parseDebugLocalResources
+> Task :react-native-pdf:compileDebugLibraryResources
+> Task :react-native-pdf:parseDebugLocalResources
+> Task :react-native-reanimated:parseDebugLocalResources
+> Task :react-native-health-connect:generateDebugRFile
+> Task :react-native-pdf:generateDebugRFile
+> Task :react-native-reanimated:generateDebugRFile
+> Task :react-native-safe-area-context:compileDebugLibraryResources
+> Task :react-native-safe-area-context:parseDebugLocalResources
+> Task :react-native-safe-area-context:generateDebugRFile
+> Task :react-native-screens:parseDebugLocalResources
+> Task :react-native-screens:generateDebugRFile
+> Task :react-native-svg:compileDebugLibraryResources
+> Task :react-native-screens:compileDebugLibraryResources
+> Task :react-native-webview:parseDebugLocalResources
+> Task :react-native-svg:parseDebugLocalResources
+> Task :react-native-webview:compileDebugLibraryResources
+> Task :react-native-svg:generateDebugRFile
+> Task :react-native-worklets:compileDebugLibraryResources
+> Task :react-native-webview:generateDebugRFile
+> Task :react-native-worklets:parseDebugLocalResources
+> Task :sentry_react-native:parseDebugLocalResources
+> Task :react-native-worklets:generateDebugRFile
+> Task :expo:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo:generateDebugBuildConfig
+> Task :expo-constants:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-constants:generateDebugBuildConfig
+> Task :expo-modules-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-modules-core:generateDebugBuildConfig
+> Task :app:checkDebugAarMetadata
+> Task :sentry_react-native:compileDebugLibraryResources
+> Task :sentry_react-native:generateDebugRFile
+> Task :expo-modules-core:compileDebugKotlin
+> Task :expo-constants:javaPreCompileDebug
+> Task :expo-eas-client:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-eas-client:generateDebugBuildConfig
+> Task :expo-eas-client:javaPreCompileDebug
+> Task :expo-json-utils:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-json-utils:generateDebugBuildConfig
+> Task :expo-manifests:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-manifests:generateDebugBuildConfig
+> Task :expo-json-utils:javaPreCompileDebug
+> Task :expo-structured-headers:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-structured-headers:generateDebugBuildConfig
+> Task :expo-structured-headers:javaPreCompileDebug
+> Task :expo-updates:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-updates:generateDebugBuildConfig
+> Task :expo-updates-interface:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-updates-interface:generateDebugBuildConfig
+> Task :expo-updates-interface:javaPreCompileDebug
+> Task :expo-manifests:javaPreCompileDebug
+> Task :expo:javaPreCompileDebug
+> Task :react-native-blob-util:generateDebugBuildConfig
+> Task :react-native-blob-util:javaPreCompileDebug
+> Task :expo-updates:javaPreCompileDebug
+> Task :expo-modules-core:javaPreCompileDebug
+> Task :react-native-community_masked-view:generateDebugBuildConfig
+> Task :react-native-community_masked-view:javaPreCompileDebug
+> Task :react-native-blob-util:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-community_masked-view:compileDebugJavaWithJavac
+Note: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/@react-native-community/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedViewPackage.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:generateDebugResValues
+> Task :react-native-community_masked-view:bundleLibCompileToJarDebug
+> Task :react-native-gesture-handler:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-gesture-handler:generateDebugBuildConfig
+> Task :react-native-reanimated:generateDebugBuildConfig
+> Task :react-native-blob-util:bundleLibCompileToJarDebug
+> Task :react-native-worklets:generateDebugBuildConfig
+> Task :react-native-worklets:javaPreCompileDebug
+> Task :react-native-reanimated:javaPreCompileDebug
+> Task :react-native-svg:generateDebugBuildConfig
+> Task :react-native-svg:javaPreCompileDebug
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+
+> Task :react-native-worklets:compileDebugJavaWithJavac
+Note: /home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-worklets/android/src/main/java/com/swmansion/worklets/WorkletsPackage.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :react-native-worklets:bundleLibCompileToJarDebug
+
+> Task :react-native-reanimated:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :react-native-reanimated:bundleLibCompileToJarDebug
+> Task :react-native-gesture-handler:javaPreCompileDebug
+> Task :react-native-health-connect:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-health-connect:generateDebugBuildConfig
+
+> Task :react-native-svg:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :app:packageDebugResources
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :react-native-svg:bundleLibCompileToJarDebug
+> Task :app:processDebugMainManifest FAILED
+> Task :react-native-health-connect:compileDebugKotlin
+> Task :react-native-gesture-handler:compileDebugKotlin
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt:41:43 The corresponding parameter in the supertype 'ReactViewGroup' is named 'ev'. This may cause problems when calling this function with named arguments.
+
+> Task :react-native-health-connect:compileDebugKotlin
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectPackage.kt:3:8 'class TurboReactPackage : BaseReactPackage' is deprecated. Use BaseReactPackage instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectPackage.kt:10:30 'class TurboReactPackage : BaseReactPackage' is deprecated. Use BaseReactPackage instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/HealthConnectPackage.kt:23:47 'constructor(name: String, className: String, canOverrideExistingModule: Boolean, needsEagerInit: Boolean, hasConstants: Boolean, isCxxModule: Boolean, isTurboModule: Boolean): ReactModuleInfo' is deprecated. This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)].
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:34:26 'fun newInstance(): CapturedType(out ReactHealthRecordImpl<*>)!' is deprecated. Deprecated in Java.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:34:40 Unchecked cast of 'ReactHealthRecordImpl<*>?' to 'ReactHealthRecordImpl<T (of fun <T : Record> createReactHealthRecordInstance)>'.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:43:26 'fun newInstance(): CapturedType(out ReactHealthRecordImpl<out Record>)!' is deprecated. Deprecated in Java.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/react-native-health-connect/android/src/main/java/dev/matinzd/healthconnect/records/ReactHealthRecord.kt:43:40 Unchecked cast of 'ReactHealthRecordImpl<out Record>?' to 'ReactHealthRecordImpl<T (of fun <T : Record> createReactHealthRecordInstance)>'.
+
+> Task :expo-modules-core:compileDebugKotlin
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/adapters/react/apploader/RNHeadlessAppLoader.kt:48:87 'val reactNativeHost: ReactNativeHost' is deprecated. You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/adapters/react/apploader/RNHeadlessAppLoader.kt:91:85 'val reactNativeHost: ReactNativeHost' is deprecated. You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/adapters/react/apploader/RNHeadlessAppLoader.kt:120:83 'val reactNativeHost: ReactNativeHost' is deprecated. You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/apploader/AppLoaderProvider.kt:34:52 Unchecked cast of 'Class<*>!' to 'Class<out HeadlessAppLoader>'.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:30:8 'typealias ErrorManagerModule = JSLoggerModule' is deprecated. Use JSLoggerModule instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:253:21 'typealias ErrorManagerModule = JSLoggerModule' is deprecated. Use JSLoggerModule instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt:343:21 'val DEFAULT: Int' is deprecated. UIManagerType.DEFAULT will be deleted in the next release of React Native. Use [LEGACY] instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt:16:5 'fun Constants(legacyConstantsProvider: () -> Map<String, Any?>): Unit' is deprecated. Use `Constant` or `Property` instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt:65:51 'val errorManager: JSLoggerModule?' is deprecated. Use AppContext.jsLogger instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt:69:22 'fun reportExceptionToLogBox(codedException: CodedException): Unit' is deprecated. Use appContext.jsLogger.error(...) instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt:464:16 'val errorManager: JSLoggerModule?' is deprecated. Use AppContext.jsLogger instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt:464:30 'fun reportExceptionToLogBox(codedException: CodedException): Unit' is deprecated. Use appContext.jsLogger.error(...) instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt:41:16 'val errorManager: JSLoggerModule?' is deprecated. Use AppContext.jsLogger instead.
+w: file:///home/kheleli/dev/backend/projects/mobile_without_server/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt:41:30 'fun reportExceptionToLogBox(codedException: CodedException): Unit' is deprecated. Use appContext.jsLogger.error(...) instead.
+
+[Incubating] Problems report is available at: file:///home/kheleli/dev/backend/projects/mobile_without_server/android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+A problem was found with the configuration of task ':app:processDebugMainManifest' (type 'ProcessApplicationManifest').
+  - In plugin 'com.android.internal.version-check' type 'com.android.build.gradle.tasks.ProcessApplicationManifest' property 'mainManifest' specifies file '/home/kheleli/dev/backend/projects/mobile_without_server/android/app/src/main/AndroidManifest.xml' which doesn't exist.
+    
+    Reason: An input file was expected to be present but it doesn't exist.
+    
+    Possible solutions:
+      1. Make sure the file exists before the task is called.
+      2. Make sure that the task which produces the file is declared as an input.
+    
+    For more information, please refer to https://docs.gradle.org/8.14.3/userguide/validation_problems.html#input_file_does_not_exist in the Gradle documentation.
+
+* Try:
+> Make sure the file exists before the task is called
+> Make sure that the task which produces the file is declared as an input
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 7m 21s
+304 actionable tasks: 276 executed, 28 up-to-date

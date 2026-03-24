@@ -15,6 +15,10 @@ class MemoryPaths:
     def state_file(self) -> Path:
         return self.root / "state" / "memory.json"
 
+    @property
+    def change_log_file(self) -> Path:
+        return self.root / "state" / "change-log.jsonl"
+
 
 class MemoryStore:
     def __init__(self, root: Path) -> None:
@@ -57,6 +61,14 @@ class MemoryStore:
         state["updated_at"] = self._now()
         with self.paths.state_file.open("w", encoding="utf-8") as f:
             json.dump(state, f, indent=2, ensure_ascii=False)
+
+    def log_change(self, payload: Dict[str, Any]) -> None:
+        event = {
+            "timestamp": self._now(),
+            **payload,
+        }
+        with self.paths.change_log_file.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(event, ensure_ascii=False) + "\n")
 
     @staticmethod
     def _now() -> str:

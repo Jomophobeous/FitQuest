@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from auto_fixer import AutoFixer
+from memory import MemoryStore
 from task_queue import Task
 
 
@@ -47,10 +48,12 @@ MAX_TIMEOUT_SECONDS = 120
 
 
 class Executor:
-    def __init__(self, repo_root: Path, dry_run: bool = True) -> None:
+    def __init__(self, repo_root: Path, dry_run: bool = True, mode: str = "full_autonomous") -> None:
         self.repo_root = repo_root
         self.dry_run = dry_run
+        self.mode = mode
         self.auto_fixer = AutoFixer(repo_root, dry_run=dry_run)
+        self.memory = MemoryStore(repo_root / "agents" / "alfred")
 
     def execute(self, task: Task) -> ExecutionResult:
         # ── Auto-fix tasks ────────────────────────────────────────────
@@ -60,21 +63,34 @@ class Executor:
         if self.dry_run:
             matched = self._find_command(task.id)
             cmd_desc = f" (would run: {' '.join(matched)})" if matched else ""
-            return ExecutionResult(
+            result = ExecutionResult(
                 task_id=task.id,
                 status="simulated",
                 details=f"Dry-run: {task.title} — {task.description}{cmd_desc}",
             )
+            self._log_task_execution(task, result, command=matched, changed_files=[])
+            return result
 
         command = self._find_command(task.id)
         if command:
-            return self._run_command(task, command)
+            before = self._git_status_snapshot()
+            result = self._run_command(task, command)
+            after = self._git_status_snapshot()
+            self._log_task_execution(
+                task,
+                result,
+                command=command,
+                changed_files=self._git_status_delta(before, after),
+            )
+            return result
 
-        return ExecutionResult(
+        result = ExecutionResult(
             task_id=task.id,
             status="blocked",
             details="No executor mapping. Requires supervised implementation.",
         )
+        self._log_task_execution(task, result, command=None, changed_files=[])
+        return result
 
     # ── Auto-fix execution ────────────────────────────────────────────
 
@@ -197,6 +213,54 @@ class Executor:
                 status="failed",
                 details=str(exc),
             )
+
+    def _log_task_execution(self, task: Task, result: ExecutionResult, command: Optional[List[str]], changed_files: List[str]) -> None:
+        self.memory.log_change({
+            "event_type": "task_execution",
+            "task_id": task.id,
+            "title": task.title,
+            "mode": self.mode,
+            "dry_run": self.dry_run,
+            "status": result.status,
+            "summary": result.details[:500],
+            "command": command,
+            "changed_files": changed_files,
+            "exit_code": result.exit_code,
+        })
+
+    def _git_status_snapshot(self) -> Dict[str, str]:
+        try:
+            proc = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=self.repo_root,
+                check=False,
+                text=True,
+                capture_output=True,
+                timeout=15,
+            )
+            if proc.returncode != 0:
+                return {}
+
+            snapshot: Dict[str, str] = {}
+            for line in proc.stdout.splitlines():
+                if len(line) < 4:
+                    continue
+                status = line[:2]
+                path = line[3:]
+                if " -> " in path:
+                    path = path.split(" -> ", 1)[1]
+                snapshot[path] = status
+            return snapshot
+        except Exception:
+            return {}
+
+    @staticmethod
+    def _git_status_delta(before: Dict[str, str], after: Dict[str, str]) -> List[str]:
+        changed = []
+        for path, status in after.items():
+            if path not in before or before[path] != status:
+                changed.append(path)
+        return sorted(changed)
 
 
 def _compact_json(obj: object) -> str:

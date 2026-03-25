@@ -152,7 +152,7 @@ function classifySeverity(percentage: number): CoverageSeverity {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ============================================
@@ -240,7 +240,7 @@ class BatchedTranslationEngine {
       // 3. Determine language execution order
       const allLanguages = this.getRegisteredLanguages();
       const completedLanguages = new Set(this.checkpoint?.completedLanguages ?? []);
-      const pendingLanguages = allLanguages.filter(l => !completedLanguages.has(l));
+      const pendingLanguages = allLanguages.filter((l) => !completedLanguages.has(l));
 
       if (pendingLanguages.length === 0) {
         if (__DEV__) console.log('[TranslationEngine] All languages already completed');
@@ -306,7 +306,7 @@ class BatchedTranslationEngine {
     await this.loadTranslationIndex(lang);
 
     // Get exercise IDs in priority order that have translation data
-    const exerciseIds = this.priorityOrder.filter(id => langData.has(id));
+    const exerciseIds = this.priorityOrder.filter((id) => langData.has(id));
     if (exerciseIds.length === 0) return;
 
     // Resume from checkpoint offset if applicable
@@ -331,7 +331,7 @@ class BatchedTranslationEngine {
       const batchIds = exerciseIds.slice(offset, offset + batchSize);
 
       // Deduplication: in-memory index lookup (zero DB hits)
-      const newIds = batchIds.filter(id => !this.translationIndex.has(`${id}_${lang}`));
+      const newIds = batchIds.filter((id) => !this.translationIndex.has(`${id}_${lang}`));
       const skipped = batchIds.length - newIds.length;
       this.totalSkipped += skipped;
 
@@ -477,21 +477,19 @@ class BatchedTranslationEngine {
     }
 
     // Get all exercises with category
-    const allRows = await db.getAllAsync<{ id: string; category: string }>(
-      `SELECT id, category FROM exercises`,
-    );
+    const allRows = await db.getAllAsync<{ id: string; category: string }>(`SELECT id, category FROM exercises`);
 
     // Compute hybrid priority score
-    const scored = allRows.map(row => {
+    const scored = allRows.map((row) => {
       const normalizedUsage = (usageMap.get(row.id) ?? 0) / maxUsage;
       const categoryWeight = CATEGORY_PRIORITY_WEIGHT[row.category] ?? 0.5;
-      const score = (normalizedUsage * 0.7) + (categoryWeight * 0.3);
+      const score = normalizedUsage * 0.7 + categoryWeight * 0.3;
       return { id: row.id, score };
     });
 
     // Sort descending by score
     scored.sort((a, b) => b.score - a.score);
-    this.priorityOrder = scored.map(s => s.id);
+    this.priorityOrder = scored.map((s) => s.id);
   }
 
   // ============================================
@@ -500,10 +498,9 @@ class BatchedTranslationEngine {
 
   private async loadCheckpoint(): Promise<void> {
     const db = await getDatabase();
-    const row = await db.getFirstAsync<{ value: string }>(
-      `SELECT value FROM app_state WHERE key = ?`,
-      [CHECKPOINT_KEY],
-    );
+    const row = await db.getFirstAsync<{ value: string }>(`SELECT value FROM app_state WHERE key = ?`, [
+      CHECKPOINT_KEY,
+    ]);
 
     if (row?.value) {
       try {
@@ -521,10 +518,10 @@ class BatchedTranslationEngine {
     this.checkpoint.totalInserted = this.totalInserted;
     this.checkpoint.updatedAt = Date.now();
 
-    await db.runAsync(
-      `INSERT OR REPLACE INTO app_state (key, value, updated_at) VALUES (?, ?, datetime('now'))`,
-      [CHECKPOINT_KEY, JSON.stringify(this.checkpoint)],
-    );
+    await db.runAsync(`INSERT OR REPLACE INTO app_state (key, value, updated_at) VALUES (?, ?, datetime('now'))`, [
+      CHECKPOINT_KEY,
+      JSON.stringify(this.checkpoint),
+    ]);
   }
 
   private async clearCheckpoint(): Promise<void> {
@@ -561,14 +558,16 @@ class BatchedTranslationEngine {
       const row = await db.getFirstAsync<{
         name: string;
         instructions: string;
-      }>(
-        `SELECT name, instructions FROM exercise_translations WHERE exercise_id = ? AND language = ?`,
-        [exerciseId, lang],
-      );
+      }>(`SELECT name, instructions FROM exercise_translations WHERE exercise_id = ? AND language = ?`, [
+        exerciseId,
+        lang,
+      ]);
 
       if (!row) {
         this.validationWarnings.push({
-          exerciseId, language: lang, type: 'EMPTY_NAME',
+          exerciseId,
+          language: lang,
+          type: 'EMPTY_NAME',
           detail: 'Translation not found after insert',
         });
         continue;
@@ -577,7 +576,9 @@ class BatchedTranslationEngine {
       // Check name is non-empty
       if (!row.name || row.name.trim().length < MIN_TRANSLATION_LENGTH) {
         this.validationWarnings.push({
-          exerciseId, language: lang, type: 'WEAK_TRANSLATION',
+          exerciseId,
+          language: lang,
+          type: 'WEAK_TRANSLATION',
           detail: `Name too short: "${row.name}"`,
         });
       }
@@ -588,7 +589,9 @@ class BatchedTranslationEngine {
         const parsed = JSON.parse(row.instructions);
         if (!Array.isArray(parsed) || parsed.length === 0) {
           this.validationWarnings.push({
-            exerciseId, language: lang, type: 'BAD_INSTRUCTIONS',
+            exerciseId,
+            language: lang,
+            type: 'BAD_INSTRUCTIONS',
             detail: 'Instructions empty or not an array',
           });
         } else {
@@ -596,7 +599,9 @@ class BatchedTranslationEngine {
         }
       } catch {
         this.validationWarnings.push({
-          exerciseId, language: lang, type: 'BAD_INSTRUCTIONS',
+          exerciseId,
+          language: lang,
+          type: 'BAD_INSTRUCTIONS',
           detail: 'Instructions not valid JSON',
         });
       }
@@ -609,7 +614,9 @@ class BatchedTranslationEngine {
       if (english) {
         if (row.name === english.name) {
           this.validationWarnings.push({
-            exerciseId, language: lang, type: 'FALLBACK_LEAK',
+            exerciseId,
+            language: lang,
+            type: 'FALLBACK_LEAK',
             detail: `Name identical to English: "${row.name}"`,
           });
         }
@@ -617,13 +624,20 @@ class BatchedTranslationEngine {
         if (parsedInstructions.length > 0) {
           try {
             const enInstructions = JSON.parse(english.instructions);
-            if (Array.isArray(enInstructions) && JSON.stringify(parsedInstructions) === JSON.stringify(enInstructions)) {
+            if (
+              Array.isArray(enInstructions) &&
+              JSON.stringify(parsedInstructions) === JSON.stringify(enInstructions)
+            ) {
               this.validationWarnings.push({
-                exerciseId, language: lang, type: 'FALLBACK_LEAK',
+                exerciseId,
+                language: lang,
+                type: 'FALLBACK_LEAK',
                 detail: 'Instructions identical to English source',
               });
             }
-          } catch { /* English instructions may not be JSON — skip */ }
+          } catch {
+            /* English instructions may not be JSON — skip */
+          }
         }
       }
     }
@@ -640,9 +654,7 @@ class BatchedTranslationEngine {
   async getCoverageReport(): Promise<CoverageReport> {
     const db = await getDatabase();
 
-    const totalRow = await db.getFirstAsync<{ count: number }>(
-      `SELECT COUNT(*) as count FROM exercises`,
-    );
+    const totalRow = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM exercises`);
     const totalExercises = totalRow?.count ?? 0;
 
     const langRows = await db.getAllAsync<{ language: string; count: number }>(
@@ -667,9 +679,7 @@ class BatchedTranslationEngine {
     }
 
     const totalPossible = totalExercises * this.getRegisteredLanguages().length;
-    const overallPercentage = totalPossible > 0
-      ? Math.round((totalTranslated / totalPossible) * 100 * 10) / 10
-      : 0;
+    const overallPercentage = totalPossible > 0 ? Math.round((totalTranslated / totalPossible) * 100 * 10) / 10 : 0;
 
     return {
       totalExercises,
@@ -695,9 +705,7 @@ class BatchedTranslationEngine {
    */
   async getGapReport(): Promise<GapReport> {
     const db = await getDatabase();
-    const totalRow = await db.getFirstAsync<{ count: number }>(
-      `SELECT COUNT(*) as count FROM exercises`,
-    );
+    const totalRow = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM exercises`);
     const totalExercises = totalRow?.count ?? 0;
     const entries: GapReportEntry[] = [];
 
@@ -711,15 +719,13 @@ class BatchedTranslationEngine {
       );
 
       const translated = totalExercises - rows.length;
-      const coverage = totalExercises > 0
-        ? Math.round((translated / totalExercises) * 100 * 10) / 10
-        : 0;
+      const coverage = totalExercises > 0 ? Math.round((translated / totalExercises) * 100 * 10) / 10 : 0;
 
       entries.push({
         language: lang,
         coverage,
         missing: rows.length,
-        missingIds: rows.map(r => r.id),
+        missingIds: rows.map((r) => r.id),
         severity: classifySeverity(coverage),
       });
     }
@@ -737,12 +743,9 @@ class BatchedTranslationEngine {
 
   private buildPerformanceReport(startTime: number): PerformanceReport {
     const totalTime = Date.now() - startTime;
-    const avgBatch = this.batchTimes.length > 0
-      ? Math.round(this.batchTimes.reduce((a, b) => a + b, 0) / this.batchTimes.length)
-      : 0;
-    const peakBatch = this.batchTimes.length > 0
-      ? Math.max(...this.batchTimes)
-      : 0;
+    const avgBatch =
+      this.batchTimes.length > 0 ? Math.round(this.batchTimes.reduce((a, b) => a + b, 0) / this.batchTimes.length) : 0;
+    const peakBatch = this.batchTimes.length > 0 ? Math.max(...this.batchTimes) : 0;
 
     return {
       totalBatches: this.batchTimes.length,

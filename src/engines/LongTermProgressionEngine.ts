@@ -37,15 +37,15 @@ import { parseReps } from './progressionParsing';
 
 /** Movement pattern categories (exercises map to these) */
 export type MovementPattern =
-  | 'push_horizontal'   // bench, push-up
-  | 'push_vertical'     // overhead press, pike push-up
-  | 'pull_horizontal'   // row
-  | 'pull_vertical'     // pull-up, lat pulldown
-  | 'squat'             // squat, lunge
-  | 'hinge'             // deadlift, hip thrust
-  | 'carry'             // farmer walk
-  | 'core'              // plank, crunch, rotation
-  | 'mobility'          // stretching, yoga
+  | 'push_horizontal' // bench, push-up
+  | 'push_vertical' // overhead press, pike push-up
+  | 'pull_horizontal' // row
+  | 'pull_vertical' // pull-up, lat pulldown
+  | 'squat' // squat, lunge
+  | 'hinge' // deadlift, hip thrust
+  | 'carry' // farmer walk
+  | 'core' // plank, crunch, rotation
+  | 'mobility' // stretching, yoga
   | 'unknown';
 
 /** Per-pattern strength trend over time */
@@ -124,7 +124,7 @@ const PREVIOUS_WINDOW_DAYS = 28;
 /** Minimum data points to form a trend */
 const MIN_DATA_POINTS = 3;
 /** Maximum volume increase multiplier per cycle */
-const MAX_OVERLOAD_MULTIPLIER = 1.10;
+const MAX_OVERLOAD_MULTIPLIER = 1.1;
 /** Minimum volume floor (never go below) */
 const MIN_OVERLOAD_MULTIPLIER = 0.85;
 /** Fatigue level that penalizes overload */
@@ -186,14 +186,17 @@ export async function getNextLoad(
   const overloadFactor = recentSuccessRate >= 0.8 ? 0.05 : recentSuccessRate >= 0.6 ? 0.02 : 0;
 
   // Fatigue penalty: based on average fatigue level
-  const avgFatigue = fatigueData.length > 0
-    ? fatigueData.reduce((sum, f) => sum + f.fatigue_level, 0) / fatigueData.length
-    : 0;
-  const fatiguePenalty = avgFatigue > FATIGUE_PENALTY_THRESHOLD
-    ? (avgFatigue - FATIGUE_PENALTY_THRESHOLD) / 200  // 0 to 0.25 range
-    : 0;
+  const avgFatigue =
+    fatigueData.length > 0 ? fatigueData.reduce((sum, f) => sum + f.fatigue_level, 0) / fatigueData.length : 0;
+  const fatiguePenalty =
+    avgFatigue > FATIGUE_PENALTY_THRESHOLD
+      ? (avgFatigue - FATIGUE_PENALTY_THRESHOLD) / 200 // 0 to 0.25 range
+      : 0;
 
-  const multiplier = Math.max(MIN_OVERLOAD_MULTIPLIER, Math.min(MAX_OVERLOAD_MULTIPLIER, 1 + overloadFactor - fatiguePenalty));
+  const multiplier = Math.max(
+    MIN_OVERLOAD_MULTIPLIER,
+    Math.min(MAX_OVERLOAD_MULTIPLIER, 1 + overloadFactor - fatiguePenalty),
+  );
 
   // Apply multiplier to reps first, then sets if rep ceiling hit
   const REP_CEILING = 15;
@@ -207,11 +210,12 @@ export async function getNextLoad(
   nextReps = Math.max(1, nextReps);
   nextSets = Math.max(1, nextSets);
 
-  const reason = fatiguePenalty > 0
-    ? `Overload +${(overloadFactor * 100).toFixed(0)}%, fatigue penalty -${(fatiguePenalty * 100).toFixed(0)}%`
-    : overloadFactor > 0
-      ? `Progressive overload: +${(overloadFactor * 100).toFixed(0)}%`
-      : 'Maintaining current load.';
+  const reason =
+    fatiguePenalty > 0
+      ? `Overload +${(overloadFactor * 100).toFixed(0)}%, fatigue penalty -${(fatiguePenalty * 100).toFixed(0)}%`
+      : overloadFactor > 0
+        ? `Progressive overload: +${(overloadFactor * 100).toFixed(0)}%`
+        : 'Maintaining current load.';
 
   return { sets: nextSets, reps: nextReps, multiplier, reason };
 }
@@ -240,8 +244,8 @@ function computeStrengthTrends(records: ProgressRecord[]): StrengthTrend[] {
   for (const [, exerciseRecords] of byExercise) {
     if (exerciseRecords.length < MIN_DATA_POINTS) continue;
 
-    const recent = exerciseRecords.filter(r => new Date(r.date).getTime() >= recentCutoff);
-    const previous = exerciseRecords.filter(r => {
+    const recent = exerciseRecords.filter((r) => new Date(r.date).getTime() >= recentCutoff);
+    const previous = exerciseRecords.filter((r) => {
       const t = new Date(r.date).getTime();
       return t >= previousCutoff && t < recentCutoff;
     });
@@ -270,26 +274,31 @@ function computeStrengthTrends(records: ProgressRecord[]): StrengthTrend[] {
 }
 
 function computeVolumeTolerance(sessions: WorkoutSession[]): VolumeTolerance {
-  const completed = sessions.filter(s => s.completed_at);
+  const completed = sessions.filter((s) => s.completed_at);
   if (completed.length === 0) {
     return { avgSetsPerSession: 0, canIncreaseVolume: false, volumeCompletionRate: 0, trend: 'stable' };
   }
 
   const avgSetsPerSession = completed.reduce((sum, s) => sum + s.total_exercises, 0) / completed.length;
-  const volumeCompletionRate = completed.reduce((sum, s) =>
-    sum + (s.total_exercises > 0 ? s.completed_exercises / s.total_exercises : 0), 0) / completed.length;
+  const volumeCompletionRate =
+    completed.reduce((sum, s) => sum + (s.total_exercises > 0 ? s.completed_exercises / s.total_exercises : 0), 0) /
+    completed.length;
 
   // Check trend: compare first half vs second half
   const mid = Math.floor(completed.length / 2);
   const firstHalf = completed.slice(mid); // older (sessions are newest-first)
   const secondHalf = completed.slice(0, mid); // newer
 
-  const firstRate = firstHalf.length > 0
-    ? firstHalf.reduce((s, c) => s + (c.total_exercises > 0 ? c.completed_exercises / c.total_exercises : 0), 0) / firstHalf.length
-    : 0;
-  const secondRate = secondHalf.length > 0
-    ? secondHalf.reduce((s, c) => s + (c.total_exercises > 0 ? c.completed_exercises / c.total_exercises : 0), 0) / secondHalf.length
-    : 0;
+  const firstRate =
+    firstHalf.length > 0
+      ? firstHalf.reduce((s, c) => s + (c.total_exercises > 0 ? c.completed_exercises / c.total_exercises : 0), 0) /
+        firstHalf.length
+      : 0;
+  const secondRate =
+    secondHalf.length > 0
+      ? secondHalf.reduce((s, c) => s + (c.total_exercises > 0 ? c.completed_exercises / c.total_exercises : 0), 0) /
+        secondHalf.length
+      : 0;
 
   let trend: VolumeTolerance['trend'] = 'stable';
   if (secondRate > firstRate + 0.05) trend = 'expanding';
@@ -301,13 +310,12 @@ function computeVolumeTolerance(sessions: WorkoutSession[]): VolumeTolerance {
 }
 
 function computeRecoveryRate(sessions: WorkoutSession[], fatigueData: MuscleFatigue[]): RecoveryRate {
-  const completed = sessions.filter(s => s.completed_at).sort((a, b) =>
-    new Date(a.started_at).getTime() - new Date(b.started_at).getTime(),
-  );
+  const completed = sessions
+    .filter((s) => s.completed_at)
+    .sort((a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime());
 
-  const avgFatigue = fatigueData.length > 0
-    ? fatigueData.reduce((sum, f) => sum + f.fatigue_level, 0) / fatigueData.length
-    : 0;
+  const avgFatigue =
+    fatigueData.length > 0 ? fatigueData.reduce((sum, f) => sum + f.fatigue_level, 0) / fatigueData.length : 0;
 
   // Average days between sessions
   let avgDays = 2;
@@ -335,9 +343,8 @@ function computeOverload(
   recovery: RecoveryRate,
   fatigueData: MuscleFatigue[],
 ): OverloadRecommendation {
-  const avgFatigue = fatigueData.length > 0
-    ? fatigueData.reduce((sum, f) => sum + f.fatigue_level, 0) / fatigueData.length
-    : 0;
+  const avgFatigue =
+    fatigueData.length > 0 ? fatigueData.reduce((sum, f) => sum + f.fatigue_level, 0) / fatigueData.length : 0;
 
   // Base multiplier: neutral
   let multiplier = 1.0;
@@ -359,10 +366,10 @@ function computeOverload(
 
   multiplier = Math.max(MIN_OVERLOAD_MULTIPLIER, Math.min(MAX_OVERLOAD_MULTIPLIER, multiplier));
 
-  const progressPatterns = trends.filter(t => t.direction === 'increasing' || t.direction === 'stable')
-    .map(t => t.pattern);
-  const maintainPatterns = trends.filter(t => t.direction === 'decreasing')
-    .map(t => t.pattern);
+  const progressPatterns = trends
+    .filter((t) => t.direction === 'increasing' || t.direction === 'stable')
+    .map((t) => t.pattern);
+  const maintainPatterns = trends.filter((t) => t.direction === 'decreasing').map((t) => t.pattern);
 
   let summary: string;
   if (multiplier > 1.02) {
@@ -387,6 +394,6 @@ function avgVolume(records: ProgressRecord[]): number {
 
 function computeRecentSuccessRate(records: ProgressRecord[]): number {
   if (records.length === 0) return 0;
-  const successes = records.filter(r => !r.difficulty_rating || r.difficulty_rating <= 7).length;
+  const successes = records.filter((r) => !r.difficulty_rating || r.difficulty_rating <= 7).length;
   return successes / records.length;
 }

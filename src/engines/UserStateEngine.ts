@@ -20,7 +20,13 @@
 import { classifyConsistency, type ConsistencyProfile, type BehavioralMode } from './ConsistencyClassifier';
 import { getProgressionProfile, type ProgressionProfile } from './LongTermProgressionEngine';
 import { getFailurePattern, type FailurePattern } from './FailureAnalysisEngine';
-import { getFatigueSnapshot, getAverageFatigue, checkDeloadStatus, type FatigueSnapshot, type DeloadStatus } from './recoveryEngine';
+import {
+  getFatigueSnapshot,
+  getAverageFatigue,
+  checkDeloadStatus,
+  type FatigueSnapshot,
+  type DeloadStatus,
+} from './recoveryEngine';
 import { getTrialSnapshot, type TrialPhase, type TrialSnapshot } from './TrialProgressionEngine';
 import { getDailySignal, type BehavioralSignal } from './BehavioralSignalEngine';
 
@@ -77,11 +83,7 @@ const CACHE_TTL_MS = 2 * 60 * 1000;
  * @param isSubscribed - Whether user has active subscription (for trial gating)
  * @param forceRefresh - Skip cache and recompute
  */
-export async function getUserState(
-  userId: string,
-  isSubscribed = false,
-  forceRefresh = false,
-): Promise<UserState> {
+export async function getUserState(userId: string, isSubscribed = false, forceRefresh = false): Promise<UserState> {
   // Return cache if valid
   if (
     !forceRefresh &&
@@ -181,7 +183,12 @@ function defaultProgression(): ProgressionProfile {
     strengthTrends: [],
     volumeTolerance: { avgSetsPerSession: 0, canIncreaseVolume: false, volumeCompletionRate: 0, trend: 'stable' },
     recoveryRate: { avgPreSessionFatigue: 0, avgDaysBetweenSessions: 2, recoveryAdequate: true, speed: 'normal' },
-    overloadRecommendation: { volumeMultiplier: 1.0, progressPatterns: [], maintainPatterns: [], summary: 'No data yet.' },
+    overloadRecommendation: {
+      volumeMultiplier: 1.0,
+      progressPatterns: [],
+      maintainPatterns: [],
+      summary: 'No data yet.',
+    },
     computedAt: Date.now(),
   };
 }

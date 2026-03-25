@@ -77,9 +77,8 @@ export async function classifyConsistency(userId: string): Promise<ConsistencyPr
   const sessionsCompleted = recentSessions.filter((s) => s.completed_at).length;
 
   // Completion ratio (capped at 1.0)
-  const completionRatio = sessionsExpected > 0
-    ? Math.min(1, sessionsCompleted / sessionsExpected)
-    : sessionsCompleted > 0 ? 1 : 0;
+  const completionRatio =
+    sessionsExpected > 0 ? Math.min(1, sessionsCompleted / sessionsExpected) : sessionsCompleted > 0 ? 1 : 0;
 
   // Average exercise completion rate within sessions
   const avgCompletionRate = calculateAvgCompletionRate(recentSessions);
@@ -96,11 +95,7 @@ export async function classifyConsistency(userId: string): Promise<ConsistencyPr
   const mode: BehavioralMode = consistencyScore >= MODE_THRESHOLD ? 'DISCIPLINED' : 'INCONSISTENT';
 
   // Transition detection: check if recent trajectory differs from overall
-  const { transitionDetected, transitionDirection } = detectTransition(
-    recentSessions,
-    sessionsExpected,
-    mode,
-  );
+  const { transitionDetected, transitionDirection } = detectTransition(recentSessions, sessionsExpected, mode);
 
   // Status line — precise, honest, non-coercive
   const statusLine = buildStatusLine(mode, consistencyScore, transitionDetected, transitionDirection);

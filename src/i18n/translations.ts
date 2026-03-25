@@ -947,7 +947,8 @@ const en = {
   'onboarding.consent.item.health': 'Health metrics (heart rate, sleep, steps) are encrypted on-device',
   'onboarding.consent.item.location': 'Location data is used only during active jog tracking',
   'onboarding.consent.item.storage': 'All data is protected with AES-256 encryption',
-  'onboarding.consent.item.noShare': 'Your health data is never sold. Analytics & crash data are shared anonymously (see Policy)',
+  'onboarding.consent.item.noShare':
+    'Your health data is never sold. Analytics & crash data are shared anonymously (see Policy)',
   'onboarding.consent.accept':
     'I consent to the collection and processing of my data as described above and in the Privacy Policy',
   'onboarding.consent.readPolicy': 'Read our Privacy Policy',
@@ -1345,7 +1346,8 @@ const en = {
   'memory.noHistory.trendStatement': 'No data yet. Your first workout sets the baseline.',
   'memory.lastSession.headline.crushed': 'Last session: {{completed}} exercises crushed in {{duration}}min.',
   'memory.lastSession.headline.adjusted': 'Last session: {{completed}}/{{total}} completed. System adjusted.',
-  'memory.lastSession.headline.tough': 'Last session was tough. {{completed}}/{{total}} completed. Recovery prioritized.',
+  'memory.lastSession.headline.tough':
+    'Last session was tough. {{completed}}/{{total}} completed. Recovery prioritized.',
 
   // Trend statements
   'memory.trend.improving': 'Performance trending up. System is increasing challenge.',
@@ -1396,9 +1398,11 @@ const en = {
   'trial.fullIntelligence.headline': 'Full intelligence active.',
   'trial.fullIntelligence.subtext': 'Day {{day}}. System adapting to your patterns and capacity.',
   'trial.transitionClear.headline': '{{days}} day{{plural}} remaining on full access.',
-  'trial.transitionClear.subtext': 'After trial, core features stay available. Intelligence layers require subscription.',
+  'trial.transitionClear.subtext':
+    'After trial, core features stay available. Intelligence layers require subscription.',
   'trial.transitionSoft.headline': '{{days}} days remaining.',
-  'trial.transitionSoft.subtext': 'Your workout data and progress are always yours. Subscription continues intelligence features.',
+  'trial.transitionSoft.subtext':
+    'Your workout data and progress are always yours. Subscription continues intelligence features.',
   'trial.viewPlans': 'View plans',
 
   // ============================================
@@ -1444,7 +1448,8 @@ const en = {
   // ============================================
 
   'trial.expired.headline': 'Trial complete.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} workouts logged. Core features remain available. Subscribe to restore intelligence layers.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} workouts logged. Core features remain available. Subscribe to restore intelligence layers.',
   'trial.expired.subtext.noWorkouts': 'Core features remain available. Subscribe to unlock intelligence layers.',
 
   // ============================================
@@ -2688,7 +2693,8 @@ const af: Record<string, string> = {
   'memory.noHistory.trendStatement': 'Nog geen data nie. Jou eerste oefensessie stel die basislyne.',
   'memory.lastSession.headline.crushed': 'Laaste sessie: {{completed}} oefeninge verpletter in {{duration}}min.',
   'memory.lastSession.headline.adjusted': 'Laaste sessie: {{completed}}/{{total}} voltooi. Stelsel aangepas.',
-  'memory.lastSession.headline.tough': 'Laaste sessie was taai. {{completed}}/{{total}} voltooi. Herstel geprioritiseer.',
+  'memory.lastSession.headline.tough':
+    'Laaste sessie was taai. {{completed}}/{{total}} voltooi. Herstel geprioritiseer.',
   'memory.trend.improving': 'Prestasie neig opwaarts. Stelsel verhoog uitdaging.',
   'memory.trend.declining': 'Onlangse sessies moeiliker. Stelsel aangepas om momentum te herbou.',
   'memory.trend.steady.data': 'Konsekwente uitset. Naby aan volgende vorderingshek.',
@@ -2733,7 +2739,8 @@ const af: Record<string, string> = {
   'trial.transitionSoft.subtext': 'Jou oefendata en vordering is altyd joune. Intekening stel intelligensie voort.',
   'trial.viewPlans': 'Bekyk planne',
   'trial.expired.headline': 'Proeftydperk voltooi.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} oefensessies aangeteken. Kernfunksies bly beskikbaar. Teken in om intelligensielae te herstel.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} oefensessies aangeteken. Kernfunksies bly beskikbaar. Teken in om intelligensielae te herstel.',
   'trial.expired.subtext.noWorkouts': 'Kernfunksies bly beskikbaar. Teken in om intelligensielae te ontsluit.',
 
   // ============================================
@@ -2762,7 +2769,8 @@ const af: Record<string, string> = {
   'failure.pattern.noData': 'Nog geen sessiedata nie.',
   'failure.pattern.noFailures': 'Alle onlangse sessies suksesvol voltooi. Toestande ondersteun vordering.',
   'failure.pattern.occasional': 'Af en toe onvolledige sessies. Huidige volume lyk volhoubaar.',
-  'failure.pattern.earlyDropoffs': 'Gereelde vroe afvalle. Vermindering van sessielengte of oefeningtelling word aanbeveel.',
+  'failure.pattern.earlyDropoffs':
+    'Gereelde vroe afvalle. Vermindering van sessielengte of oefeningtelling word aanbeveel.',
   'failure.pattern.highSkips': 'Hoe oorslaankoers. Oefeningkeuse moet moontlik aangepas word.',
   'failure.pattern.worsening': 'Mislukkingskoers styg. Oorweeg volume-vermindering of herstelfokus.',
   'failure.pattern.general': '{{rate}}% mislukkingskoers. Sessie-moeilikheidsgraad word aangepas.',
@@ -3996,10 +4004,12 @@ const zu: Record<string, string> = {
   'signal.momentum.subtext.streak': 'Iphethini yezinsuku ezingu-{{streak}}. Uhlelo lucwengisa uhlelo lwakho.',
   'signal.momentum.subtext.default': 'Ukululama kuqala. Iseshini elandelayo izolungiswa ngokufanele.',
   'signal.comeback.headline.inconsistent': '{{days}} izinsuku ziphume. Iseshini enomthwalo ophansi iyatholakala.',
-  'signal.comeback.headline.disciplined': '{{days}} izinsuku kusukela eseshini yokugcina. Ukushisa kukalibhrethiwe kabusha.',
+  'signal.comeback.headline.disciplined':
+    '{{days}} izinsuku kusukela eseshini yokugcina. Ukushisa kukalibhrethiwe kabusha.',
   'signal.comeback.subtext.inconsistent': 'Uhlelo lulungisiwe ukuze kubelula ukubuya.',
   'signal.comeback.subtext.disciplined': 'Umthwalo ulungisiwe ukuze uhambisane nesimo sokululama samanje.',
-  'signal.recoveryReady.headline.disciplined': 'Ukulungela kusezingeni eliphezulu. Izimo zokuqhubekela phambili zifinyelelwe.',
+  'signal.recoveryReady.headline.disciplined':
+    'Ukulungela kusezingeni eliphezulu. Izimo zokuqhubekela phambili zifinyelelwe.',
   'signal.recoveryReady.headline.inconsistent': 'Ukululama kuphelile. Izimo ezinhle zeseshini.',
   'signal.recoveryReady.subtext': 'Ukulungela ku-{{readiness}}%.',
   'signal.streakBuilding.headline': '{{streak}} izinsuku zilandelana. Uhlelo luzilungisa kumjikelezo wakho.',
@@ -4015,9 +4025,11 @@ const zu: Record<string, string> = {
   // ============================================
   'memory.noHistory.headline': 'Iseshini yokuqala izayo. Uhlelo lufunda kuyo yonke i-rep.',
   'memory.noHistory.trendStatement': 'Ayikho idatha okwamanje. Iseshini yakho yokuqala ibeka isisekelo.',
-  'memory.lastSession.headline.crushed': 'Iseshini yokugcina: {{completed}} izivivinyo zigcinwe ngemizuzu engu-{{duration}}.',
+  'memory.lastSession.headline.crushed':
+    'Iseshini yokugcina: {{completed}} izivivinyo zigcinwe ngemizuzu engu-{{duration}}.',
   'memory.lastSession.headline.adjusted': 'Iseshini yokugcina: {{completed}}/{{total}} kuphelile. Uhlelo lulungisiwe.',
-  'memory.lastSession.headline.tough': 'Iseshini yokugcina ibinzima. {{completed}}/{{total}} kuphelile. Ukululama kunikezwe isiqalo.',
+  'memory.lastSession.headline.tough':
+    'Iseshini yokugcina ibinzima. {{completed}}/{{total}} kuphelile. Ukululama kunikezwe isiqalo.',
   'memory.trend.improving': 'Ukusebenza kunyuka. Uhlelo lwandisa inselelo.',
   'memory.trend.declining': 'Izeshini zakamuva zinzima kakhulu. Uhlelo lulungisiwe ukwakha kabusha umfutho.',
   'memory.trend.steady.data': 'Imiphumela eqhubekayo. Seduze nesango lokuqhubekela phambili elilandelayo.',
@@ -4030,7 +4042,8 @@ const zu: Record<string, string> = {
   'memory.progression.firstTime': 'Okokuqala. Uhlelo luzokalibhretha kusuka kulesi seshini.',
   'memory.progression.improving': '{{wins}} ukunqoba ngokulandelana. Uyaqhubeka.',
   'memory.progression.declining': 'Ukwehla kwakamuva kubonwe. Umthwalo ulungisiwe.',
-  'memory.progression.nearGate': '{{successes}} iseshini{{plural}} eziqinile. Eyodwa engaphezulu ukuvula ukuqhubekela phambili.',
+  'memory.progression.nearGate':
+    '{{successes}} iseshini{{plural}} eziqinile. Eyodwa engaphezulu ukuvula ukuqhubekela phambili.',
   'memory.progression.steady': 'Umi endaweni. Ukuqina yisu.',
   'memory.reason.retained': 'Kuhambisana nendlela yakho yokuqhubekela phambili.',
   'memory.reason.addedBalance': 'Ifakwe ukuze kulinganiswe ukululama kwemisipha.',
@@ -4057,13 +4070,17 @@ const zu: Record<string, string> = {
   'trial.fullIntelligence.headline': 'Ubuhlakani obugcwele busebenza.',
   'trial.fullIntelligence.subtext': 'Usuku {{day}}. Uhlelo luzilungisa kumaphethini akho namandla.',
   'trial.transitionClear.headline': '{{days}} usuku{{plural}} olusele ekufinyeleleni okugcwele.',
-  'trial.transitionClear.subtext': 'Ngemuva kokuzama, izici eziyinhloko zihlala zitholakala. Izingxenye zobuhlakani zidinga ukubhalisela.',
+  'trial.transitionClear.subtext':
+    'Ngemuva kokuzama, izici eziyinhloko zihlala zitholakala. Izingxenye zobuhlakani zidinga ukubhalisela.',
   'trial.transitionSoft.headline': '{{days}} izinsuku zisele.',
-  'trial.transitionSoft.subtext': 'Idatha yakho yeseshini nokuqhubekela phambili kuyakho njalo. Ukubhalisela kuqhubeka nezici zobuhlakani.',
+  'trial.transitionSoft.subtext':
+    'Idatha yakho yeseshini nokuqhubekela phambili kuyakho njalo. Ukubhalisela kuqhubeka nezici zobuhlakani.',
   'trial.viewPlans': 'Buka izinhlelo',
   'trial.expired.headline': 'Isikhathi sokuzama siphelile.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} izeshini zirekhwodwe. Izici eziyinhloko zihlala zitholakala. Bhalisela ukubuyisela izingxenye zobuhlakani.',
-  'trial.expired.subtext.noWorkouts': 'Izici eziyinhloko zihlala zitholakala. Bhalisela ukuvula izingxenye zobuhlakani.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} izeshini zirekhwodwe. Izici eziyinhloko zihlala zitholakala. Bhalisela ukubuyisela izingxenye zobuhlakani.',
+  'trial.expired.subtext.noWorkouts':
+    'Izici eziyinhloko zihlala zitholakala. Bhalisela ukuvula izingxenye zobuhlakani.',
 
   // ============================================
   // ENGINE — Failure Analysis
@@ -4075,10 +4092,12 @@ const zu: Record<string, string> = {
   'failure.lateDropout': 'Ukuwa kwamandla okuqina. Izivivinyo ezilula zibekwe ngasekugcineni.',
   'failure.noFailure': 'Iseshini iphumelele.',
   'failure.insight.none': 'Iseshini iphelile nge-{{percent}}%. Azikho izilungiso ezidingekayo.',
-  'failure.insight.earlyDropout': 'Ukuwa kwenzeke esivivinyweni {{index}} ({{name}}) — umthwalo uyancishiswa iseshini elandelayo.',
+  'failure.insight.earlyDropout':
+    'Ukuwa kwenzeke esivivinyweni {{index}} ({{name}}) — umthwalo uyancishiswa iseshini elandelayo.',
   'failure.insight.midDropout': 'Ukuwa eselini {{index}} ({{name}}) — inombolo yezivivinyo iyalungiswa.',
   'failure.insight.lateDropout': 'Cishe kuphelile ({{percent}}%). Ukulungiswa okuncane kusetshenzisiwe.',
-  'failure.insight.skipHeavy': 'Iseshini iphelile kodwa {{percent}}% yezivivinyo iqwelwe. Ukukhetha izivivinyo kuyabuyekezwa.',
+  'failure.insight.skipHeavy':
+    'Iseshini iphelile kodwa {{percent}}% yezivivinyo iqwelwe. Ukukhetha izivivinyo kuyabuyekezwa.',
   'failure.insight.lowVolume': 'Umthwalo ophansi wokuqedwa ({{percent}}%). Imikhombandlela yesethi iyancishiswa.',
   'failure.insight.empty': 'Azikho izivivinyo ezifeziwe. Uhlelo lwehla ubunzima beseshini elandelayo.',
   'failure.adjustment.none': 'Akukho ukulungiswa okudingekayo.',
@@ -4091,7 +4110,8 @@ const zu: Record<string, string> = {
   'failure.pattern.noData': 'Ayikho idatha yeseshini okwamanje.',
   'failure.pattern.noFailures': 'Zonke izeshini zakamuva ziphumelele. Izimo zisekela ukuqhubekela phambili.',
   'failure.pattern.occasional': 'Ngezikhathi ezithile izeshini ezingaphelanga. Umthwalo wamanje ubukeka uyabambelela.',
-  'failure.pattern.earlyDropoffs': 'Ukuwa ekuqaleni okuvame. Ukuncishiswa kobude beseshini noma inombolo yezivivinyo kunconywa.',
+  'failure.pattern.earlyDropoffs':
+    'Ukuwa ekuqaleni okuvame. Ukuncishiswa kobude beseshini noma inombolo yezivivinyo kunconywa.',
   'failure.pattern.highSkips': 'Izinga eliphezulu lokweqa. Ukukhetha izivivinyo kungadinga ukulungiswa.',
   'failure.pattern.worsening': 'Izinga lokuhluleka liyanda. Cabanga ngokunciphisa umthwalo noma ukugxila ekululameni.',
   'failure.pattern.general': '{{rate}}% izinga lokuhluleka. Ubunzima beseshini buyalungiswa.',
@@ -5324,10 +5344,12 @@ const xh: Record<string, string> = {
   'signal.momentum.subtext.streak': 'Ipateni yeentsuku eziyi-{{streak}}. Inkqubo icwengisa inkqubo yakho.',
   'signal.momentum.subtext.default': 'Ukuphila kuqala. Iseshini elandelayo izolungiswa ngokufanelekileyo.',
   'signal.comeback.headline.inconsistent': '{{days}} iintsuku uphume. Iseshini enomthwalo ophantsi iyafumaneka.',
-  'signal.comeback.headline.disciplined': '{{days}} iintsuku ukusuka kwiseshini yokugqibela. Ukushisa kukalibhrethiwe ngokutsha.',
+  'signal.comeback.headline.disciplined':
+    '{{days}} iintsuku ukusuka kwiseshini yokugqibela. Ukushisa kukalibhrethiwe ngokutsha.',
   'signal.comeback.subtext.inconsistent': 'Inkqubo ilungisiwe ukuze kubelula ukubuya.',
   'signal.comeback.subtext.disciplined': 'Umthwalo ulungisiwe ukuze uhambelane nesimo sokuphila sangoku.',
-  'signal.recoveryReady.headline.disciplined': 'Ukulungela kusezingeni eliphezulu. Iimfuno zokuqhubela phambili zifinyelelwe.',
+  'signal.recoveryReady.headline.disciplined':
+    'Ukulungela kusezingeni eliphezulu. Iimfuno zokuqhubela phambili zifinyelelwe.',
   'signal.recoveryReady.headline.inconsistent': 'Ukuphila kugqityiwe. Iimeko ezilungileyo zeseshini.',
   'signal.recoveryReady.subtext': 'Ukulungela ku-{{readiness}}%.',
   'signal.streakBuilding.headline': '{{streak}} iintsuku zilandelelana. Inkqubo izilungisa kumjikelo wakho.',
@@ -5343,9 +5365,12 @@ const xh: Record<string, string> = {
   // ============================================
   'memory.noHistory.headline': 'Iseshini yokuqala iyeza. Inkqubo ifunda kwi-rep nganye.',
   'memory.noHistory.trendStatement': 'Akukho datha okwangoku. Iseshini yakho yokuqala ibeka isiseko.',
-  'memory.lastSession.headline.crushed': 'Iseshini yokugqibela: {{completed}} izivivinyo zigqityiwe ngemizuzu eyi-{{duration}}.',
-  'memory.lastSession.headline.adjusted': 'Iseshini yokugqibela: {{completed}}/{{total}} igqityiwe. Inkqubo ilungisiwe.',
-  'memory.lastSession.headline.tough': 'Iseshini yokugqibela ibinzima. {{completed}}/{{total}} igqityiwe. Ukuphila kunikezwe isiqalo.',
+  'memory.lastSession.headline.crushed':
+    'Iseshini yokugqibela: {{completed}} izivivinyo zigqityiwe ngemizuzu eyi-{{duration}}.',
+  'memory.lastSession.headline.adjusted':
+    'Iseshini yokugqibela: {{completed}}/{{total}} igqityiwe. Inkqubo ilungisiwe.',
+  'memory.lastSession.headline.tough':
+    'Iseshini yokugqibela ibinzima. {{completed}}/{{total}} igqityiwe. Ukuphila kunikezwe isiqalo.',
   'memory.trend.improving': 'Ukusebenza kunyuka. Inkqubo iyandisa inselelo.',
   'memory.trend.declining': 'Izeshini zakutshanje zinzima. Inkqubo ilungisiwe ukwakha kwakhona umfutho.',
   'memory.trend.steady.data': 'Imiphumela eqhubekayo. Kufutshane nesango lokuqhubela phambili.',
@@ -5358,7 +5383,8 @@ const xh: Record<string, string> = {
   'memory.progression.firstTime': 'Okokuqala. Inkqubo iza kukalibhretha kule seshini.',
   'memory.progression.improving': '{{wins}} uloyiso ngokulandelelana. Uyaqhubela phambili.',
   'memory.progression.declining': 'Ukwehla kwakutshanje kubonwe. Umthwalo ulungisiwe.',
-  'memory.progression.nearGate': '{{successes}} iseshini{{plural}} ezomeleleyo. Enye engaphezulu ukuvula ukuqhubela phambili.',
+  'memory.progression.nearGate':
+    '{{successes}} iseshini{{plural}} ezomeleleyo. Enye engaphezulu ukuvula ukuqhubela phambili.',
   'memory.progression.steady': 'Umi endaweni. Ukuqina lisu.',
   'memory.reason.retained': 'Kuhambelana nendlela yakho yokuqhubela phambili.',
   'memory.reason.addedBalance': 'Ingenisiwe ukulinganisa ukuphila kwemisipha.',
@@ -5385,12 +5411,15 @@ const xh: Record<string, string> = {
   'trial.fullIntelligence.headline': 'Ubulumko obupheleleyo busebenza.',
   'trial.fullIntelligence.subtext': 'Usuku {{day}}. Inkqubo izilungisa kwiindlela zakho namandla.',
   'trial.transitionClear.headline': '{{days}} usuku{{plural}} oluseleyo ekufikeleleni okugcweleyo.',
-  'trial.transitionClear.subtext': 'Emva kwesithuba sokuzama, iimpawu eziyintloko zihlala zikho. Amanqanaba obulumko adinga ukubhalisela.',
+  'trial.transitionClear.subtext':
+    'Emva kwesithuba sokuzama, iimpawu eziyintloko zihlala zikho. Amanqanaba obulumko adinga ukubhalisela.',
   'trial.transitionSoft.headline': '{{days}} iintsuku zisele.',
-  'trial.transitionSoft.subtext': 'Idatha yakho yeseshini nokuqhubela phambili yeyakho ngalo naliphi ixesha. Ukubhalisela kuqhubeka neempawu zobulumko.',
+  'trial.transitionSoft.subtext':
+    'Idatha yakho yeseshini nokuqhubela phambili yeyakho ngalo naliphi ixesha. Ukubhalisela kuqhubeka neempawu zobulumko.',
   'trial.viewPlans': 'Jonga izicwangciso',
   'trial.expired.headline': 'Ixesha lokuzama liphelile.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} izeshini zibhaliwe. Iimpawu eziyintloko zihlala zikho. Bhalisela ukubuyisela amanqanaba obulumko.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} izeshini zibhaliwe. Iimpawu eziyintloko zihlala zikho. Bhalisela ukubuyisela amanqanaba obulumko.',
   'trial.expired.subtext.noWorkouts': 'Iimpawu eziyintloko zihlala zikho. Bhalisela ukuvula amanqanaba obulumko.',
 
   // ============================================
@@ -5403,10 +5432,12 @@ const xh: Record<string, string> = {
   'failure.lateDropout': 'Ukuwa kwamandla okunyamezela. Izivivinyo ezilula zibekwe ngasekupheleni.',
   'failure.noFailure': 'Iseshini iphumelele.',
   'failure.insight.none': 'Iseshini igqityiwe nge-{{percent}}%. Akukho zilungiso zidingekayo.',
-  'failure.insight.earlyDropout': 'Ukuwa kwenzeke kwisivivinyo {{index}} ({{name}}) — umthwalo uyancitshiswa iseshini elandelayo.',
+  'failure.insight.earlyDropout':
+    'Ukuwa kwenzeke kwisivivinyo {{index}} ({{name}}) — umthwalo uyancitshiswa iseshini elandelayo.',
   'failure.insight.midDropout': 'Ukuwa kwisethi {{index}} ({{name}}) — inani lezivivinyo liyalungiswa.',
   'failure.insight.lateDropout': 'Phantse igqityiwe ({{percent}}%). Ukulungiswa okuncinci kusetyenzisiwe.',
-  'failure.insight.skipHeavy': 'Iseshini igqityiwe kodwa {{percent}}% yezivivinyo itsityiwe. Ukukhetha izivivinyo kuyahlolwa.',
+  'failure.insight.skipHeavy':
+    'Iseshini igqityiwe kodwa {{percent}}% yezivivinyo itsityiwe. Ukukhetha izivivinyo kuyahlolwa.',
   'failure.insight.lowVolume': 'Umthwalo ophantsi wokugqiba ({{percent}}%). Imiyalelo yesethi iyancitshiswa.',
   'failure.insight.empty': 'Akukho zivivinyo zigqityiweyo. Inkqubo iyanciphisa ubunzima beseshini elandelayo.',
   'failure.adjustment.none': 'Akukho kulungiswa kudingekayo.',
@@ -5419,7 +5450,8 @@ const xh: Record<string, string> = {
   'failure.pattern.noData': 'Akukho datha yeseshini okwangoku.',
   'failure.pattern.noFailures': 'Zonke izeshini zakutshanje ziphumelele. Iimeko zixhasa ukuqhubela phambili.',
   'failure.pattern.occasional': 'Ngamaxesha athile izeshini ezingagqitywanga. Umthwalo wangoku ubonakala uyabambelela.',
-  'failure.pattern.earlyDropoffs': 'Ukuwa ekuqaleni okuvamileyo. Ukuncitshiswa kobude beseshini okanye inani lezivivinyo kunconywa.',
+  'failure.pattern.earlyDropoffs':
+    'Ukuwa ekuqaleni okuvamileyo. Ukuncitshiswa kobude beseshini okanye inani lezivivinyo kunconywa.',
   'failure.pattern.highSkips': 'Izinga eliphezulu lokutsiba. Ukukhetha izivivinyo kungadinga ukulungiswa.',
   'failure.pattern.worsening': 'Izinga lokusilela liyanda. Cinga ngokunciphisa umthwalo okanye ukugxila ekuphileni.',
   'failure.pattern.general': '{{rate}}% izinga lokusilela. Ubunzima beseshini buyalungiswa.',
@@ -6656,7 +6688,8 @@ const st: Record<string, string> = {
   'signal.momentum.subtext.streak': 'Mokhoa oa matsatsi a {{streak}}. Tsamaiso e ntlafatsa lenaneo la hau.',
   'signal.momentum.subtext.default': 'Ho phela ho qala. Seshene e latelang e tla lokisoa ka mokhoa o nepahetseng.',
   'signal.comeback.headline.inconsistent': '{{days}} matsatsi a sieo. Seshene e bobebe e fumaneha.',
-  'signal.comeback.headline.disciplined': '{{days}} matsatsi ho tloha sesheneng ea ho qetela. Matla a lokisitsoe bocha.',
+  'signal.comeback.headline.disciplined':
+    '{{days}} matsatsi ho tloha sesheneng ea ho qetela. Matla a lokisitsoe bocha.',
   'signal.comeback.subtext.inconsistent': 'Tsamaiso e lokisitsoe bakeng sa ho khutla ha bonolo.',
   'signal.comeback.subtext.disciplined': 'Moroalo o lokisitsoe ho tsamaisana le boemo ba ho phela ba hajoale.',
   'signal.recoveryReady.headline.disciplined': 'Ho itokisetsa ho phakeme. Maemo a tsoelo-pele a fihletsoe.',
@@ -6675,9 +6708,12 @@ const st: Record<string, string> = {
   // ============================================
   'memory.noHistory.headline': 'Seshene ea pele e tla. Tsamaiso e ithuta ho rep e ngoe le e ngoe.',
   'memory.noHistory.trendStatement': 'Ha ho lintlha hajoale. Seshene ea hau ea pele e beha motheo.',
-  'memory.lastSession.headline.crushed': 'Seshene ea ho qetela: lipapali tse {{completed}} li phethiloe ka metsotso e {{duration}}.',
-  'memory.lastSession.headline.adjusted': 'Seshene ea ho qetela: {{completed}}/{{total}} e phethiloe. Tsamaiso e lokisitsoe.',
-  'memory.lastSession.headline.tough': 'Seshene ea ho qetela e ne e le thata. {{completed}}/{{total}} e phethiloe. Ho phela ho fuoe pele.',
+  'memory.lastSession.headline.crushed':
+    'Seshene ea ho qetela: lipapali tse {{completed}} li phethiloe ka metsotso e {{duration}}.',
+  'memory.lastSession.headline.adjusted':
+    'Seshene ea ho qetela: {{completed}}/{{total}} e phethiloe. Tsamaiso e lokisitsoe.',
+  'memory.lastSession.headline.tough':
+    'Seshene ea ho qetela e ne e le thata. {{completed}}/{{total}} e phethiloe. Ho phela ho fuoe pele.',
   'memory.trend.improving': 'Tshebetso e ntse e nyoloha. Tsamaiso e eketsa phephetso.',
   'memory.trend.declining': 'Liseshene tsa morao tjena li thata. Tsamaiso e lokisitsoe ho haha mafutho bocha.',
   'memory.trend.steady.data': 'Liphetho tse tsitsitseng. Haufi le khoro e latelang ea tsoelo-pele.',
@@ -6711,34 +6747,40 @@ const st: Record<string, string> = {
   'trial.readyForFirst.headline': 'Letsatsi {{day}}. Tsamaiso e lokile bakeng sa seshene ea hau ea pele.',
   'trial.readyForFirst.subtext': 'Qala seshene ho qala ho lokisa.',
   'trial.improvementShown.headline': 'Papiso ea liseshene e se e fumaneha.',
-  'trial.improvementShown.subtext': 'Tsamaiso e se e khona ho bonts\'a se fetohileng le hore na hobaneng.',
+  'trial.improvementShown.subtext': "Tsamaiso e se e khona ho bonts'a se fetohileng le hore na hobaneng.",
   'trial.memoryIntro.headline': 'Bohlale ba seshene bo atolosoa.',
   'trial.memoryIntro.subtext': 'Letsatsi {{day}}. Liseshene tse ngata = tlhahlobo e bohale.',
   'trial.fullIntelligence.headline': 'Bohlale bo feletseng bo sebetsa.',
   'trial.fullIntelligence.subtext': 'Letsatsi {{day}}. Tsamaiso e ikamahanya le mekhoa ea hau le bokhoni.',
   'trial.transitionClear.headline': '{{days}} letsatsi{{plural}} le setseng phihlellong e feletseng.',
-  'trial.transitionClear.subtext': 'Ka mor\'a nako ea teko, likarolo tsa mantlha li lula li le teng. Maemo a bohlale a hloka tekanyo.',
+  'trial.transitionClear.subtext':
+    "Ka mor'a nako ea teko, likarolo tsa mantlha li lula li le teng. Maemo a bohlale a hloka tekanyo.",
   'trial.transitionSoft.headline': '{{days}} matsatsi a setseng.',
-  'trial.transitionSoft.subtext': 'Lintlha tsa hau tsa seshene le tsoelo-pele ke tsa hau ka ho sa feleng. Tekanyo e tswela pele le likarolo tsa bohlale.',
+  'trial.transitionSoft.subtext':
+    'Lintlha tsa hau tsa seshene le tsoelo-pele ke tsa hau ka ho sa feleng. Tekanyo e tswela pele le likarolo tsa bohlale.',
   'trial.viewPlans': 'Sheba meralo',
   'trial.expired.headline': 'Nako ea teko e phethiloe.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} liseshene li ngotsoe. Likarolo tsa mantlha li lula li le teng. Ngolisa ho khutlisa maemo a bohlale.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} liseshene li ngotsoe. Likarolo tsa mantlha li lula li le teng. Ngolisa ho khutlisa maemo a bohlale.',
   'trial.expired.subtext.noWorkouts': 'Likarolo tsa mantlha li lula li le teng. Ngolisa ho bula maemo a bohlale.',
 
   // ============================================
   // ENGINE — Failure Analysis
   // ============================================
   'failure.dropOff': 'Ho oa ho etsahetse papalong {{index}} ({{name}}) — moroalo o fokotseha sesheneng e latelang.',
-  'failure.skipHeavy': 'Sekhahla se phahameng sa ho tlola se bonoe. Lipapali li ka e-ba ha li tsamaisane le bokhoni ba hajoale.',
+  'failure.skipHeavy':
+    'Sekhahla se phahameng sa ho tlola se bonoe. Lipapali li ka e-ba ha li tsamaisane le bokhoni ba hajoale.',
   'failure.lowVolume': 'Moroalo o tlase oa ho phetha. Seshene e ka ba e le thata haholo.',
   'failure.earlyDropout': 'Mokhoa oa ho oa kapele. Bolelele ba seshene bo fokotseha.',
   'failure.lateDropout': 'Ho oa ha mamello. Lipapali tse bobebe li behiloe qetellong.',
   'failure.noFailure': 'Seshene e atlehile.',
   'failure.insight.none': 'Seshene e phethiloe ka {{percent}}%. Ha ho litokiso tse hlokahalang.',
-  'failure.insight.earlyDropout': 'Ho oa ho etsahetse papalong {{index}} ({{name}}) — moroalo o fokotseha sesheneng e latelang.',
+  'failure.insight.earlyDropout':
+    'Ho oa ho etsahetse papalong {{index}} ({{name}}) — moroalo o fokotseha sesheneng e latelang.',
   'failure.insight.midDropout': 'Ho oa setelong {{index}} ({{name}}) — palo ea lipapali e lokisoa.',
   'failure.insight.lateDropout': 'E batla e phethile ({{percent}}%). Tokiso e nyenyane e entsoe.',
-  'failure.insight.skipHeavy': 'Seshene e phethiloe empa {{percent}}% ea lipapali e tlotsoeng. Khetho ea lipapali e hlahlojoa.',
+  'failure.insight.skipHeavy':
+    'Seshene e phethiloe empa {{percent}}% ea lipapali e tlotsoeng. Khetho ea lipapali e hlahlojoa.',
   'failure.insight.lowVolume': 'Moroalo o tlase oa ho phetha ({{percent}}%). Litaelo tsa sete li fokotseha.',
   'failure.insight.empty': 'Ha ho lipapali tse phethiloeng. Tsamaiso e fokotsa bothata ba seshene e latelang.',
   'failure.adjustment.none': 'Ha ho tokiso e hlokahalang.',
@@ -6750,10 +6792,13 @@ const st: Record<string, string> = {
   'failure.adjustment.empty': 'Seshene e se nang letho. Phokotso e kholo e entsoe.',
   'failure.pattern.noData': 'Ha ho lintlha tsa seshene hajoale.',
   'failure.pattern.noFailures': 'Liseshene tsohle tsa morao tjena li atlehile. Maemo a tšehetsa tsoelo-pele.',
-  'failure.pattern.occasional': 'Ka linako tse ling liseshene tse sa phethisoang. Moroalo oa hajoale o bonahala o ka tiiselleha.',
-  'failure.pattern.earlyDropoffs': 'Ho oa kapele ho atileng. Phokotso ea bolelele ba seshene kapa palo ea lipapali e khothaletsoa.',
+  'failure.pattern.occasional':
+    'Ka linako tse ling liseshene tse sa phethisoang. Moroalo oa hajoale o bonahala o ka tiiselleha.',
+  'failure.pattern.earlyDropoffs':
+    'Ho oa kapele ho atileng. Phokotso ea bolelele ba seshene kapa palo ea lipapali e khothaletsoa.',
   'failure.pattern.highSkips': 'Sekhahla se phahameng sa ho tlola. Khetho ea lipapali e ka hloka ho lokisoa.',
-  'failure.pattern.worsening': 'Sekhahla sa ho hloleha se eketseha. Nahana ka ho fokotsa moroalo kapa ho tsepamisa maikutlo ho ho phela.',
+  'failure.pattern.worsening':
+    'Sekhahla sa ho hloleha se eketseha. Nahana ka ho fokotsa moroalo kapa ho tsepamisa maikutlo ho ho phela.',
   'failure.pattern.general': '{{rate}}% sekhahla sa ho hloleha. Bothata ba seshene bo lokisoa.',
 
   // ============================================
@@ -8007,7 +8052,8 @@ const es: Record<string, string> = {
   'memory.noHistory.trendStatement': 'Sin datos aún. Tu primera sesión establece la línea base.',
   'memory.lastSession.headline.crushed': 'Última sesión: {{completed}} ejercicios completados en {{duration}}min.',
   'memory.lastSession.headline.adjusted': 'Última sesión: {{completed}}/{{total}} completado. Sistema ajustado.',
-  'memory.lastSession.headline.tough': 'La última sesión fue dura. {{completed}}/{{total}} completado. Recuperación priorizada.',
+  'memory.lastSession.headline.tough':
+    'La última sesión fue dura. {{completed}}/{{total}} completado. Recuperación priorizada.',
   'memory.trend.improving': 'Rendimiento al alza. El sistema aumenta el desafío.',
   'memory.trend.declining': 'Sesiones recientes más difíciles. Sistema ajustado para reconstruir impulso.',
   'memory.trend.steady.data': 'Resultados consistentes. Cerca de la siguiente puerta de progresión.',
@@ -8047,13 +8093,17 @@ const es: Record<string, string> = {
   'trial.fullIntelligence.headline': 'Inteligencia completa activa.',
   'trial.fullIntelligence.subtext': 'Día {{day}}. El sistema se adapta a tus patrones y capacidad.',
   'trial.transitionClear.headline': '{{days}} día{{plural}} restante en acceso completo.',
-  'trial.transitionClear.subtext': 'Después del periodo de prueba, las funciones básicas permanecen. Las capas de inteligencia requieren suscripción.',
+  'trial.transitionClear.subtext':
+    'Después del periodo de prueba, las funciones básicas permanecen. Las capas de inteligencia requieren suscripción.',
   'trial.transitionSoft.headline': '{{days}} días restantes.',
-  'trial.transitionSoft.subtext': 'Tus datos y progreso siempre son tuyos. La suscripción continúa las funciones de inteligencia.',
+  'trial.transitionSoft.subtext':
+    'Tus datos y progreso siempre son tuyos. La suscripción continúa las funciones de inteligencia.',
   'trial.viewPlans': 'Ver planes',
   'trial.expired.headline': 'Prueba completada.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} sesiones registradas. Las funciones básicas permanecen. Suscríbete para restaurar capas de inteligencia.',
-  'trial.expired.subtext.noWorkouts': 'Las funciones básicas permanecen. Suscríbete para desbloquear capas de inteligencia.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} sesiones registradas. Las funciones básicas permanecen. Suscríbete para restaurar capas de inteligencia.',
+  'trial.expired.subtext.noWorkouts':
+    'Las funciones básicas permanecen. Suscríbete para desbloquear capas de inteligencia.',
 
   // ============================================
   // ENGINE — Failure Analysis
@@ -8065,7 +8115,8 @@ const es: Record<string, string> = {
   'failure.lateDropout': 'Abandono por resistencia. Ejercicios más ligeros al final.',
   'failure.noFailure': 'Sesión completada exitosamente.',
   'failure.insight.none': 'Sesión completada al {{percent}}%. Sin ajustes necesarios.',
-  'failure.insight.earlyDropout': 'Abandono en el ejercicio {{index}} ({{name}}) — volumen reducido en la próxima sesión.',
+  'failure.insight.earlyDropout':
+    'Abandono en el ejercicio {{index}} ({{name}}) — volumen reducido en la próxima sesión.',
   'failure.insight.midDropout': 'Abandono en la serie {{index}} ({{name}}) — ajustando conteo de ejercicios.',
   'failure.insight.lateDropout': 'Casi completada ({{percent}}%). Ajuste menor aplicado.',
   'failure.insight.skipHeavy': 'Sesión completada pero {{percent}}% de ejercicios omitidos. Revisando selección.',
@@ -8079,9 +8130,11 @@ const es: Record<string, string> = {
   'failure.adjustment.lowVolume': 'Bajo volumen completado. Reduciendo conteo de series.',
   'failure.adjustment.empty': 'Sesión vacía. Reducción significativa aplicada.',
   'failure.pattern.noData': 'Sin datos de sesión aún.',
-  'failure.pattern.noFailures': 'Todas las sesiones recientes completadas exitosamente. Las condiciones apoyan la progresión.',
+  'failure.pattern.noFailures':
+    'Todas las sesiones recientes completadas exitosamente. Las condiciones apoyan la progresión.',
   'failure.pattern.occasional': 'Sesiones incompletas ocasionales. El volumen actual parece sostenible.',
-  'failure.pattern.earlyDropoffs': 'Abandonos tempranos frecuentes. Se recomienda reducir duración o conteo de ejercicios.',
+  'failure.pattern.earlyDropoffs':
+    'Abandonos tempranos frecuentes. Se recomienda reducir duración o conteo de ejercicios.',
   'failure.pattern.highSkips': 'Alta tasa de omisión. La selección de ejercicios puede necesitar ajuste.',
   'failure.pattern.worsening': 'Tasa de fallo aumentando. Considera reducir volumen o enfocarte en recuperación.',
   'failure.pattern.general': '{{rate}}% tasa de fallo. Ajustando dificultad de la sesión.',
@@ -9311,30 +9364,30 @@ const fr: Record<string, string> = {
   // ============================================
   // ENGINE — Behavioral Signals
   // ============================================
-  'signal.transition.advancing.subtext': 'Logique de progression activée selon l\'activité récente.',
+  'signal.transition.advancing.subtext': "Logique de progression activée selon l'activité récente.",
   'signal.transition.regressing.subtext': 'Charge de séance réduite pour correspondre au rythme actuel.',
   'signal.firstSession.headline': 'Système prêt. Commencez votre première séance.',
   'signal.firstSession.subtext': 'Chaque séance calibre le système à votre capacité.',
-  'signal.streakAtRisk.headline': '{{streak}} jours consécutifs. Continuez aujourd\'hui pour renforcer.',
+  'signal.streakAtRisk.headline': "{{streak}} jours consécutifs. Continuez aujourd'hui pour renforcer.",
   'signal.streakAtRisk.subtext.disciplined': 'La régularité guide la précision de la progression.',
   'signal.streakAtRisk.subtext.inconsistent': 'Une courte séance suffit pour maintenir le rythme.',
   'signal.restAdvised.headline': 'Récupération recommandée selon la fatigue.',
-  'signal.restAdvised.subtext.fatigue': 'Fatigue à {{fatigue}}%. Le repos accélère l\'adaptation.',
+  'signal.restAdvised.subtext.fatigue': "Fatigue à {{fatigue}}%. Le repos accélère l'adaptation.",
   'signal.restAdvised.subtext.readiness': 'Préparation à {{readiness}}%. Récupération en cours.',
   'signal.momentum.headline': 'Séance terminée. Données enregistrées.',
   'signal.momentum.subtext.streak': 'Schéma de {{streak}} jours. Le système affine votre programme.',
   'signal.momentum.subtext.default': 'La récupération commence. La prochaine séance sera ajustée en conséquence.',
-  'signal.comeback.headline.inconsistent': '{{days}} jours d\'absence. Séance à faible résistance disponible.',
+  'signal.comeback.headline.inconsistent': "{{days}} jours d'absence. Séance à faible résistance disponible.",
   'signal.comeback.headline.disciplined': '{{days}} jours depuis la dernière séance. Intensité recalibrée.',
   'signal.comeback.subtext.inconsistent': 'Système ajusté pour un retour plus facile.',
-  'signal.comeback.subtext.disciplined': 'Volume ajusté pour correspondre à l\'état de récupération actuel.',
+  'signal.comeback.subtext.disciplined': "Volume ajusté pour correspondre à l'état de récupération actuel.",
   'signal.recoveryReady.headline.disciplined': 'Préparation optimale. Conditions de progression atteintes.',
   'signal.recoveryReady.headline.inconsistent': 'Récupération terminée. Bonnes conditions pour une séance.',
   'signal.recoveryReady.subtext': 'Préparation à {{readiness}}%.',
-  'signal.streakBuilding.headline': '{{streak}} jours consécutifs. Le système s\'adapte à votre rythme.',
+  'signal.streakBuilding.headline': "{{streak}} jours consécutifs. Le système s'adapte à votre rythme.",
   'signal.streakBuilding.subtext.disciplined': 'Volume et intensité en hausse selon la performance.',
   'signal.streakBuilding.subtext.inconsistent': 'Régularité en construction. Le défi augmente progressivement.',
-  'signal.expectToday.headline.disciplined': 'Créneau d\'entraînement ouvert. Système prêt.',
+  'signal.expectToday.headline.disciplined': "Créneau d'entraînement ouvert. Système prêt.",
   'signal.expectToday.headline.inconsistent': 'Séance disponible quand vous êtes prêt.',
   'signal.expectToday.subtext.good': 'Préparation {{readiness}}%. Bonnes conditions.',
   'signal.expectToday.subtext.moderate': 'Préparation modérée. Séance légère recommandée.',
@@ -9346,9 +9399,10 @@ const fr: Record<string, string> = {
   'memory.noHistory.trendStatement': 'Pas encore de données. Votre première séance établit la référence.',
   'memory.lastSession.headline.crushed': 'Dernière séance: {{completed}} exercices complétés en {{duration}}min.',
   'memory.lastSession.headline.adjusted': 'Dernière séance: {{completed}}/{{total}} terminé. Système ajusté.',
-  'memory.lastSession.headline.tough': 'La dernière séance était difficile. {{completed}}/{{total}} terminé. Récupération priorisée.',
+  'memory.lastSession.headline.tough':
+    'La dernière séance était difficile. {{completed}}/{{total}} terminé. Récupération priorisée.',
   'memory.trend.improving': 'Performance en hausse. Le système augmente le défi.',
-  'memory.trend.declining': 'Séances récentes plus difficiles. Système ajusté pour reconstruire l\'élan.',
+  'memory.trend.declining': "Séances récentes plus difficiles. Système ajusté pour reconstruire l'élan.",
   'memory.trend.steady.data': 'Résultats réguliers. Proche du prochain seuil de progression.',
   'memory.trend.steady.building': 'Construction de la base. Continuez à venir.',
   'memory.delta.firstWorkout': 'Première séance. Le système se calibre à votre corps.',
@@ -9362,9 +9416,9 @@ const fr: Record<string, string> = {
   'memory.progression.nearGate': '{{successes}} séance{{plural}} solide. Encore une pour débloquer la progression.',
   'memory.progression.steady': 'Reste stable. La régularité est la stratégie.',
   'memory.reason.retained': 'Cohérent avec votre parcours de progression.',
-  'memory.reason.addedBalance': 'Intégré pour l\'équilibre de la récupération musculaire.',
+  'memory.reason.addedBalance': "Intégré pour l'équilibre de la récupération musculaire.",
   'memory.reason.removedFatigue': 'Retiré en raison de la fatigue accumulée.',
-  'memory.reason.removedVariety': 'Échangé pour l\'équilibre musculaire et la variété.',
+  'memory.reason.removedVariety': "Échangé pour l'équilibre musculaire et la variété.",
   'memory.timeSince.minutes': 'Il y a {{minutes}}m',
   'memory.timeSince.hours': 'Il y a {{hours}}h',
   'memory.timeSince.yesterday': 'Hier',
@@ -9376,54 +9430,62 @@ const fr: Record<string, string> = {
   'trial.welcome.headline': 'Accès complet au système activé.',
   'trial.welcome.subtext': '14 jours pour explorer chaque fonctionnalité. Sans restrictions.',
   'trial.firstWin.headline': '{{workouts}} séance{{plural}} terminée. Le système apprend vos habitudes.',
-  'trial.firstWin.subtext': 'Chaque séance améliore la précision de l\'entraînement.',
+  'trial.firstWin.subtext': "Chaque séance améliore la précision de l'entraînement.",
   'trial.readyForFirst.headline': 'Jour {{day}}. Système prêt pour votre première séance.',
   'trial.readyForFirst.subtext': 'Commencez un entraînement pour lancer la calibration.',
   'trial.improvementShown.headline': 'Comparaison de séances maintenant disponible.',
   'trial.improvementShown.subtext': 'Le système peut maintenant montrer ce qui a changé et pourquoi.',
-  'trial.memoryIntro.headline': 'Intelligence d\'entraînement en expansion.',
+  'trial.memoryIntro.headline': "Intelligence d'entraînement en expansion.",
   'trial.memoryIntro.subtext': 'Jour {{day}}. Plus de séances = analyse plus fine.',
   'trial.fullIntelligence.headline': 'Intelligence complète active.',
-  'trial.fullIntelligence.subtext': 'Jour {{day}}. Le système s\'adapte à vos habitudes et capacités.',
+  'trial.fullIntelligence.subtext': "Jour {{day}}. Le système s'adapte à vos habitudes et capacités.",
   'trial.transitionClear.headline': '{{days}} jour{{plural}} restant en accès complet.',
-  'trial.transitionClear.subtext': 'Après l\'essai les fonctions de base restent disponibles. Les couches d\'intelligence nécessitent un abonnement.',
+  'trial.transitionClear.subtext':
+    "Après l'essai les fonctions de base restent disponibles. Les couches d'intelligence nécessitent un abonnement.",
   'trial.transitionSoft.headline': '{{days}} jours restants.',
-  'trial.transitionSoft.subtext': 'Vos données et progrès vous appartiennent toujours. L\'abonnement continue les fonctions d\'intelligence.',
+  'trial.transitionSoft.subtext':
+    "Vos données et progrès vous appartiennent toujours. L'abonnement continue les fonctions d'intelligence.",
   'trial.viewPlans': 'Voir les plans',
   'trial.expired.headline': 'Essai terminé.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} séances enregistrées. Les fonctions de base restent disponibles. Abonnez-vous pour restaurer les couches d\'intelligence.',
-  'trial.expired.subtext.noWorkouts': 'Les fonctions de base restent disponibles. Abonnez-vous pour débloquer les couches d\'intelligence.',
+  'trial.expired.subtext.withWorkouts':
+    "{{workouts}} séances enregistrées. Les fonctions de base restent disponibles. Abonnez-vous pour restaurer les couches d'intelligence.",
+  'trial.expired.subtext.noWorkouts':
+    "Les fonctions de base restent disponibles. Abonnez-vous pour débloquer les couches d'intelligence.",
 
   // ============================================
   // ENGINE — Failure Analysis
   // ============================================
-  'failure.dropOff': 'Abandon à l\'exercice {{index}} ({{name}}) — volume réduit à la prochaine séance.',
-  'failure.skipHeavy': 'Taux d\'omission élevé détecté. Les exercices peuvent ne pas correspondre à la capacité actuelle.',
+  'failure.dropOff': "Abandon à l'exercice {{index}} ({{name}}) — volume réduit à la prochaine séance.",
+  'failure.skipHeavy':
+    "Taux d'omission élevé détecté. Les exercices peuvent ne pas correspondre à la capacité actuelle.",
   'failure.lowVolume': 'Faible volume complété. La séance est peut-être trop exigeante.',
-  'failure.earlyDropout': 'Schéma d\'abandon précoce. La durée de séance est réduite.',
-  'failure.lateDropout': 'Abandon d\'endurance. Exercices plus légers placés en fin.',
+  'failure.earlyDropout': "Schéma d'abandon précoce. La durée de séance est réduite.",
+  'failure.lateDropout': "Abandon d'endurance. Exercices plus légers placés en fin.",
   'failure.noFailure': 'Séance complétée avec succès.',
   'failure.insight.none': 'Séance complétée à {{percent}}%. Aucun ajustement nécessaire.',
-  'failure.insight.earlyDropout': 'Abandon à l\'exercice {{index}} ({{name}}) — volume réduit à la prochaine séance.',
-  'failure.insight.midDropout': 'Abandon à la série {{index}} ({{name}}) — ajustement du nombre d\'exercices.',
+  'failure.insight.earlyDropout': "Abandon à l'exercice {{index}} ({{name}}) — volume réduit à la prochaine séance.",
+  'failure.insight.midDropout': "Abandon à la série {{index}} ({{name}}) — ajustement du nombre d'exercices.",
   'failure.insight.lateDropout': 'Presque terminée ({{percent}}%). Ajustement mineur appliqué.',
   'failure.insight.skipHeavy': 'Séance complétée mais {{percent}}% des exercices omis. Révision de la sélection.',
   'failure.insight.lowVolume': 'Faible volume complété ({{percent}}%). Réduction des prescriptions de séries.',
   'failure.insight.empty': 'Aucun exercice complété. Le système réduit la difficulté de la prochaine séance.',
   'failure.adjustment.none': 'Aucun ajustement nécessaire.',
   'failure.adjustment.earlyDropout': 'Abandon précoce détecté. Réduction du volume et de la durée.',
-  'failure.adjustment.midDropout': 'Abandon à l\'exercice {{index}}. Réduction du nombre d\'exercices.',
+  'failure.adjustment.midDropout': "Abandon à l'exercice {{index}}. Réduction du nombre d'exercices.",
   'failure.adjustment.lateDropout': 'Séance presque terminée. Légère réduction du volume.',
-  'failure.adjustment.skipHeavy': 'Taux d\'omission élevé. La sélection d\'exercices doit être révisée.',
+  'failure.adjustment.skipHeavy': "Taux d'omission élevé. La sélection d'exercices doit être révisée.",
   'failure.adjustment.lowVolume': 'Faible volume complété. Réduction du nombre de séries.',
   'failure.adjustment.empty': 'Séance vide. Réduction significative appliquée.',
   'failure.pattern.noData': 'Pas encore de données de séance.',
-  'failure.pattern.noFailures': 'Toutes les séances récentes complétées avec succès. Les conditions supportent la progression.',
+  'failure.pattern.noFailures':
+    'Toutes les séances récentes complétées avec succès. Les conditions supportent la progression.',
   'failure.pattern.occasional': 'Séances incomplètes occasionnelles. Le volume actuel semble soutenable.',
-  'failure.pattern.earlyDropoffs': 'Abandons précoces fréquents. Réduction de la durée ou du nombre d\'exercices recommandée.',
-  'failure.pattern.highSkips': 'Taux d\'omission élevé. La sélection d\'exercices peut nécessiter un ajustement.',
-  'failure.pattern.worsening': 'Taux d\'échec en hausse. Envisagez une réduction du volume ou un focus sur la récupération.',
-  'failure.pattern.general': '{{rate}}% taux d\'échec. Ajustement de la difficulté de la séance.',
+  'failure.pattern.earlyDropoffs':
+    "Abandons précoces fréquents. Réduction de la durée ou du nombre d'exercices recommandée.",
+  'failure.pattern.highSkips': "Taux d'omission élevé. La sélection d'exercices peut nécessiter un ajustement.",
+  'failure.pattern.worsening':
+    "Taux d'échec en hausse. Envisagez une réduction du volume ou un focus sur la récupération.",
+  'failure.pattern.general': "{{rate}}% taux d'échec. Ajustement de la difficulté de la séance.",
 
   // ============================================
   // ENGINE — State Simulation
@@ -9443,7 +9505,7 @@ const fr: Record<string, string> = {
   // ============================================
   // ENGINE — Gating
   // ============================================
-  'gating.previewMessage': 'L\'intelligence avancée nécessite un abonnement.',
+  'gating.previewMessage': "L'intelligence avancée nécessite un abonnement.",
 };
 
 const de: Record<string, string> = {
@@ -10675,7 +10737,8 @@ const de: Record<string, string> = {
   'memory.noHistory.trendStatement': 'Noch keine Daten. Deine erste Einheit setzt die Basislinie.',
   'memory.lastSession.headline.crushed': 'Letzte Einheit: {{completed}} Übungen gemeistert in {{duration}}min.',
   'memory.lastSession.headline.adjusted': 'Letzte Einheit: {{completed}}/{{total}} abgeschlossen. System angepasst.',
-  'memory.lastSession.headline.tough': 'Letzte Einheit war hart. {{completed}}/{{total}} abgeschlossen. Erholung priorisiert.',
+  'memory.lastSession.headline.tough':
+    'Letzte Einheit war hart. {{completed}}/{{total}} abgeschlossen. Erholung priorisiert.',
   'memory.trend.improving': 'Leistung steigt. System erhöht die Herausforderung.',
   'memory.trend.declining': 'Jüngste Einheiten schwieriger. System angepasst um Schwung aufzubauen.',
   'memory.trend.steady.data': 'Konstante Ergebnisse. Nahe der nächsten Progressionsstufe.',
@@ -10715,13 +10778,17 @@ const de: Record<string, string> = {
   'trial.fullIntelligence.headline': 'Volle Intelligenz aktiv.',
   'trial.fullIntelligence.subtext': 'Tag {{day}}. System passt sich deinen Mustern und Kapazität an.',
   'trial.transitionClear.headline': '{{days}} Tag{{plural}} Vollzugriff verbleibend.',
-  'trial.transitionClear.subtext': 'Nach der Testphase bleiben Kernfunktionen verfügbar. Intelligenzebenen erfordern ein Abonnement.',
+  'trial.transitionClear.subtext':
+    'Nach der Testphase bleiben Kernfunktionen verfügbar. Intelligenzebenen erfordern ein Abonnement.',
   'trial.transitionSoft.headline': '{{days}} Tage verbleibend.',
-  'trial.transitionSoft.subtext': 'Deine Trainingsdaten und Fortschritte gehören immer dir. Abonnement setzt Intelligenzfunktionen fort.',
+  'trial.transitionSoft.subtext':
+    'Deine Trainingsdaten und Fortschritte gehören immer dir. Abonnement setzt Intelligenzfunktionen fort.',
   'trial.viewPlans': 'Pläne ansehen',
   'trial.expired.headline': 'Testphase abgeschlossen.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} Einheiten aufgezeichnet. Kernfunktionen bleiben verfügbar. Abonniere um Intelligenzebenen wiederherzustellen.',
-  'trial.expired.subtext.noWorkouts': 'Kernfunktionen bleiben verfügbar. Abonniere um Intelligenzebenen freizuschalten.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} Einheiten aufgezeichnet. Kernfunktionen bleiben verfügbar. Abonniere um Intelligenzebenen wiederherzustellen.',
+  'trial.expired.subtext.noWorkouts':
+    'Kernfunktionen bleiben verfügbar. Abonniere um Intelligenzebenen freizuschalten.',
 
   // ============================================
   // ENGINE — Failure Analysis
@@ -10736,7 +10803,8 @@ const de: Record<string, string> = {
   'failure.insight.earlyDropout': 'Abbruch bei Übung {{index}} ({{name}}) — Volumen in nächster Einheit reduziert.',
   'failure.insight.midDropout': 'Abbruch bei Satz {{index}} ({{name}}) — Übungsanzahl wird angepasst.',
   'failure.insight.lateDropout': 'Fast abgeschlossen ({{percent}}%). Geringe Anpassung vorgenommen.',
-  'failure.insight.skipHeavy': 'Einheit abgeschlossen aber {{percent}}% der Übungen übersprungen. Auswahl wird überprüft.',
+  'failure.insight.skipHeavy':
+    'Einheit abgeschlossen aber {{percent}}% der Übungen übersprungen. Auswahl wird überprüft.',
   'failure.insight.lowVolume': 'Niedriges abgeschlossenes Volumen ({{percent}}%). Satzvorgaben werden reduziert.',
   'failure.insight.empty': 'Keine Übungen abgeschlossen. System reduziert Schwierigkeit der nächsten Einheit.',
   'failure.adjustment.none': 'Keine Anpassung nötig.',
@@ -10747,7 +10815,8 @@ const de: Record<string, string> = {
   'failure.adjustment.lowVolume': 'Niedriges abgeschlossenes Volumen. Satzanzahl wird reduziert.',
   'failure.adjustment.empty': 'Leere Einheit. Erhebliche Reduzierung vorgenommen.',
   'failure.pattern.noData': 'Noch keine Einheitsdaten.',
-  'failure.pattern.noFailures': 'Alle jüngsten Einheiten erfolgreich abgeschlossen. Bedingungen unterstützen Progression.',
+  'failure.pattern.noFailures':
+    'Alle jüngsten Einheiten erfolgreich abgeschlossen. Bedingungen unterstützen Progression.',
   'failure.pattern.occasional': 'Gelegentlich unvollständige Einheiten. Aktuelles Volumen scheint tragbar.',
   'failure.pattern.earlyDropoffs': 'Häufige frühe Abbrüche. Reduzierung der Einheitslänge oder Übungsanzahl empfohlen.',
   'failure.pattern.highSkips': 'Hohe Überspringrate. Übungsauswahl benötigt möglicherweise Anpassung.',
@@ -12002,7 +12071,8 @@ const pt: Record<string, string> = {
   'memory.noHistory.trendStatement': 'Sem dados ainda. A sua primeira sessão define a linha de base.',
   'memory.lastSession.headline.crushed': 'Última sessão: {{completed}} exercícios concluídos em {{duration}}min.',
   'memory.lastSession.headline.adjusted': 'Última sessão: {{completed}}/{{total}} concluído. Sistema ajustado.',
-  'memory.lastSession.headline.tough': 'A última sessão foi dura. {{completed}}/{{total}} concluído. Recuperação priorizada.',
+  'memory.lastSession.headline.tough':
+    'A última sessão foi dura. {{completed}}/{{total}} concluído. Recuperação priorizada.',
   'memory.trend.improving': 'Desempenho em alta. O sistema aumenta o desafio.',
   'memory.trend.declining': 'Sessões recentes mais difíceis. Sistema ajustado para reconstruir impulso.',
   'memory.trend.steady.data': 'Resultados consistentes. Perto do próximo limiar de progressão.',
@@ -12042,12 +12112,15 @@ const pt: Record<string, string> = {
   'trial.fullIntelligence.headline': 'Inteligência completa ativa.',
   'trial.fullIntelligence.subtext': 'Dia {{day}}. O sistema adapta-se aos seus padrões e capacidade.',
   'trial.transitionClear.headline': '{{days}} dia{{plural}} restante em acesso completo.',
-  'trial.transitionClear.subtext': 'Após o período experimental as funções básicas permanecem. Camadas de inteligência requerem subscrição.',
+  'trial.transitionClear.subtext':
+    'Após o período experimental as funções básicas permanecem. Camadas de inteligência requerem subscrição.',
   'trial.transitionSoft.headline': '{{days}} dias restantes.',
-  'trial.transitionSoft.subtext': 'Os seus dados e progresso são sempre seus. A subscrição continua as funções de inteligência.',
+  'trial.transitionSoft.subtext':
+    'Os seus dados e progresso são sempre seus. A subscrição continua as funções de inteligência.',
   'trial.viewPlans': 'Ver planos',
   'trial.expired.headline': 'Período experimental concluído.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} sessões registadas. Funções básicas permanecem. Subscreva para restaurar camadas de inteligência.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} sessões registadas. Funções básicas permanecem. Subscreva para restaurar camadas de inteligência.',
   'trial.expired.subtext.noWorkouts': 'Funções básicas permanecem. Subscreva para desbloquear camadas de inteligência.',
 
   // ============================================
@@ -12076,7 +12149,8 @@ const pt: Record<string, string> = {
   'failure.pattern.noData': 'Sem dados de sessão ainda.',
   'failure.pattern.noFailures': 'Todas as sessões recentes concluídas com sucesso. Condições suportam progressão.',
   'failure.pattern.occasional': 'Sessões incompletas ocasionais. O volume atual parece sustentável.',
-  'failure.pattern.earlyDropoffs': 'Abandonos precoces frequentes. Redução da duração ou contagem de exercícios recomendada.',
+  'failure.pattern.earlyDropoffs':
+    'Abandonos precoces frequentes. Redução da duração ou contagem de exercícios recomendada.',
   'failure.pattern.highSkips': 'Alta taxa de omissão. A seleção de exercícios pode precisar de ajuste.',
   'failure.pattern.worsening': 'Taxa de falha a aumentar. Considere redução de volume ou foco na recuperação.',
   'failure.pattern.general': '{{rate}}% taxa de falha. A ajustar dificuldade da sessão.',
@@ -14663,12 +14737,15 @@ const ja: Record<string, string> = {
   'trial.fullIntelligence.headline': 'フルインテリジェンス有効。',
   'trial.fullIntelligence.subtext': '{{day}}日目。システムがあなたのパターンと能力に適応します。',
   'trial.transitionClear.headline': 'フルアクセス残り {{days}} 日{{plural}}。',
-  'trial.transitionClear.subtext': 'トライアル後もコア機能は利用可能。インテリジェンス層にはサブスクリプションが必要です。',
+  'trial.transitionClear.subtext':
+    'トライアル後もコア機能は利用可能。インテリジェンス層にはサブスクリプションが必要です。',
   'trial.transitionSoft.headline': '残り {{days}} 日。',
-  'trial.transitionSoft.subtext': 'トレーニングデータと進歩は常にあなたのものです。サブスクリプションでインテリジェンス機能を継続。',
+  'trial.transitionSoft.subtext':
+    'トレーニングデータと進歩は常にあなたのものです。サブスクリプションでインテリジェンス機能を継続。',
   'trial.viewPlans': 'プランを見る',
   'trial.expired.headline': 'トライアル期間終了。',
-  'trial.expired.subtext.withWorkouts': '{{workouts}}回のセッション記録済み。コア機能は利用可能。インテリジェンス層を復元するにはサブスクリプション。',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}}回のセッション記録済み。コア機能は利用可能。インテリジェンス層を復元するにはサブスクリプション。',
   'trial.expired.subtext.noWorkouts': 'コア機能は利用可能。インテリジェンス層を解除するにはサブスクリプション。',
 
   // ============================================
@@ -15973,10 +16050,12 @@ const ko: Record<string, string> = {
   'trial.transitionClear.headline': '전체 액세스 {{days}}일{{plural}} 남음.',
   'trial.transitionClear.subtext': '트라이얼 후 핵심 기능은 유지됩니다. 인텔리전스 계층은 구독이 필요합니다.',
   'trial.transitionSoft.headline': '{{days}}일 남음.',
-  'trial.transitionSoft.subtext': '트레이닝 데이터와 진행 상황은 항상 당신의 것입니다. 구독으로 인텔리전스 기능을 계속하세요.',
+  'trial.transitionSoft.subtext':
+    '트레이닝 데이터와 진행 상황은 항상 당신의 것입니다. 구독으로 인텔리전스 기능을 계속하세요.',
   'trial.viewPlans': '플랜 보기',
   'trial.expired.headline': '트라이얼 종료.',
-  'trial.expired.subtext.withWorkouts': '{{workouts}}회 세션 기록됨. 핵심 기능 유지. 인텔리전스 계층을 복원하려면 구독하세요.',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}}회 세션 기록됨. 핵심 기능 유지. 인텔리전스 계층을 복원하려면 구독하세요.',
   'trial.expired.subtext.noWorkouts': '핵심 기능 유지. 인텔리전스 계층을 해제하려면 구독하세요.',
 
   // ============================================
@@ -18607,10 +18686,12 @@ const hi: Record<string, string> = {
   'trial.transitionClear.headline': 'पूर्ण एक्सेस में {{days}} दिन{{plural}} शेष।',
   'trial.transitionClear.subtext': 'ट्रायल के बाद मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तरों के लिए सदस्यता आवश्यक।',
   'trial.transitionSoft.headline': '{{days}} दिन शेष।',
-  'trial.transitionSoft.subtext': 'आपका प्रशिक्षण डेटा और प्रगति हमेशा आपकी है। सदस्यता बुद्धिमत्ता सुविधाओं को जारी रखती है।',
+  'trial.transitionSoft.subtext':
+    'आपका प्रशिक्षण डेटा और प्रगति हमेशा आपकी है। सदस्यता बुद्धिमत्ता सुविधाओं को जारी रखती है।',
   'trial.viewPlans': 'योजनाएं देखें',
   'trial.expired.headline': 'ट्रायल समाप्त।',
-  'trial.expired.subtext.withWorkouts': '{{workouts}} सत्र रिकॉर्ड। मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तर बहाल करने के लिए सदस्यता लें।',
+  'trial.expired.subtext.withWorkouts':
+    '{{workouts}} सत्र रिकॉर्ड। मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तर बहाल करने के लिए सदस्यता लें।',
   'trial.expired.subtext.noWorkouts': 'मूल सुविधाएं रहती हैं। बुद्धिमत्ता स्तर अनलॉक करने के लिए सदस्यता लें।',
 
   // ============================================
@@ -19887,9 +19968,11 @@ const sw: Record<string, string> = {
   // ============================================
   'memory.noHistory.headline': 'Kikao cha kwanza kinakuja. Mfumo unajifunza kutoka kila marudio.',
   'memory.noHistory.trendStatement': 'Hakuna data bado. Kikao chako cha kwanza kitaweka msingi.',
-  'memory.lastSession.headline.crushed': 'Kikao cha mwisho: mazoezi {{completed}} yakakamilika katika dakika {{duration}}.',
+  'memory.lastSession.headline.crushed':
+    'Kikao cha mwisho: mazoezi {{completed}} yakakamilika katika dakika {{duration}}.',
   'memory.lastSession.headline.adjusted': 'Kikao cha mwisho: {{completed}}/{{total}} kukamilika. Mfumo umerekebishwa.',
-  'memory.lastSession.headline.tough': 'Kikao cha mwisho kilikuwa kigumu. {{completed}}/{{total}} kukamilika. Kupona kunapewa kipaumbele.',
+  'memory.lastSession.headline.tough':
+    'Kikao cha mwisho kilikuwa kigumu. {{completed}}/{{total}} kukamilika. Kupona kunapewa kipaumbele.',
   'memory.trend.improving': 'Utendaji unapanda. Mfumo unaongeza changamoto.',
   'memory.trend.declining': 'Vikao vya hivi karibuni vigumu zaidi. Mfumo umerekebishwa kujenga kasi.',
   'memory.trend.steady.data': 'Matokeo thabiti. Karibu na kiwango kifuatacho cha maendeleo.',
@@ -19929,12 +20012,15 @@ const sw: Record<string, string> = {
   'trial.fullIntelligence.headline': 'Akili kamili imewashwa.',
   'trial.fullIntelligence.subtext': 'Siku {{day}}. Mfumo unakubaliana na mifumo na uwezo wako.',
   'trial.transitionClear.headline': 'Siku {{days}}{{plural}} za ufikiaji kamili zimebaki.',
-  'trial.transitionClear.subtext': 'Baada ya jaribio vipengele vya msingi vinabaki. Tabaka za akili zinahitaji usajili.',
+  'trial.transitionClear.subtext':
+    'Baada ya jaribio vipengele vya msingi vinabaki. Tabaka za akili zinahitaji usajili.',
   'trial.transitionSoft.headline': 'Siku {{days}} zimebaki.',
-  'trial.transitionSoft.subtext': 'Data yako ya mafunzo na maendeleo ni yako daima. Usajili unaendeleza vipengele vya akili.',
+  'trial.transitionSoft.subtext':
+    'Data yako ya mafunzo na maendeleo ni yako daima. Usajili unaendeleza vipengele vya akili.',
   'trial.viewPlans': 'Tazama mipango',
   'trial.expired.headline': 'Jaribio limekamilika.',
-  'trial.expired.subtext.withWorkouts': 'Vikao {{workouts}} vimerekodiwa. Vipengele vya msingi vinabaki. Sajili kurejesha tabaka za akili.',
+  'trial.expired.subtext.withWorkouts':
+    'Vikao {{workouts}} vimerekodiwa. Vipengele vya msingi vinabaki. Sajili kurejesha tabaka za akili.',
   'trial.expired.subtext.noWorkouts': 'Vipengele vya msingi vinabaki. Sajili kufungua tabaka za akili.',
 
   // ============================================
@@ -19947,7 +20033,8 @@ const sw: Record<string, string> = {
   'failure.lateDropout': 'Kusimama kwa uvumilivu. Mazoezi nyepesi yamewekwa mwishoni.',
   'failure.noFailure': 'Kikao kimekamilika kwa mafanikio.',
   'failure.insight.none': 'Kikao kimekamilika kwa {{percent}}%. Hakuna marekebisho yanayohitajika.',
-  'failure.insight.earlyDropout': 'Kusimama kwenye zoezi {{index}} ({{name}}) — kiasi kimepunguzwa katika kikao kifuatacho.',
+  'failure.insight.earlyDropout':
+    'Kusimama kwenye zoezi {{index}} ({{name}}) — kiasi kimepunguzwa katika kikao kifuatacho.',
   'failure.insight.midDropout': 'Kusimama kwenye seti {{index}} ({{name}}) — idadi ya mazoezi inarekebishwa.',
   'failure.insight.lateDropout': 'Karibu kukamilika ({{percent}}%). Marekebisho madogo yamefanywa.',
   'failure.insight.skipHeavy': 'Kikao kimekamilika lakini {{percent}}% ya mazoezi yamerukwa. Uchaguzi unakaguliwa.',
@@ -19961,7 +20048,8 @@ const sw: Record<string, string> = {
   'failure.adjustment.lowVolume': 'Kiasi kilichokamilika ni kidogo. Idadi ya seti inapunguzwa.',
   'failure.adjustment.empty': 'Kikao tupu. Upunguzaji mkubwa umefanywa.',
   'failure.pattern.noData': 'Hakuna data ya vikao bado.',
-  'failure.pattern.noFailures': 'Vikao vyote vya hivi karibuni vimekamilika kwa mafanikio. Hali inaunga mkono maendeleo.',
+  'failure.pattern.noFailures':
+    'Vikao vyote vya hivi karibuni vimekamilika kwa mafanikio. Hali inaunga mkono maendeleo.',
   'failure.pattern.occasional': 'Vikao visivyokamilika mara kwa mara. Kiasi cha sasa kinaonekana endelevu.',
   'failure.pattern.earlyDropoffs': 'Kusimama mapema mara kwa mara. Kupunguza muda au idadi ya mazoezi kunashauriwa.',
   'failure.pattern.highSkips': 'Kiwango cha juu cha kuruka. Uchaguzi wa mazoezi unaweza kuhitaji marekebisho.',

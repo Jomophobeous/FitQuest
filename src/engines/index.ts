@@ -81,19 +81,10 @@ export {
 } from './AdaptiveMemoryEngine';
 
 // BEHAVIORAL SIGNAL ENGINE
-export {
-  getDailySignal,
-  type BehavioralSignal,
-  type SignalType,
-  type SignalUrgency,
-} from './BehavioralSignalEngine';
+export { getDailySignal, type BehavioralSignal, type SignalType, type SignalUrgency } from './BehavioralSignalEngine';
 
 // CONSISTENCY CLASSIFIER
-export {
-  classifyConsistency,
-  type ConsistencyProfile,
-  type BehavioralMode,
-} from './ConsistencyClassifier';
+export { classifyConsistency, type ConsistencyProfile, type BehavioralMode } from './ConsistencyClassifier';
 
 // TRIAL PROGRESSION ENGINE
 export {
@@ -130,12 +121,7 @@ export {
 } from './FailureAnalysisEngine';
 
 // USER STATE ENGINE (single source of truth)
-export {
-  getUserState,
-  invalidateUserState,
-  getCachedUserState,
-  type UserState,
-} from './UserStateEngine';
+export { getUserState, invalidateUserState, getCachedUserState, type UserState } from './UserStateEngine';
 
 // STATE SIMULATION ENGINE
 export {

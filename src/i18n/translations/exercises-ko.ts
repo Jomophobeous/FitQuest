@@ -69,12 +69,7 @@ registerLanguageTranslations('ko', {
   },
   body_005: {
     name: '와이드 푸쉬업',
-    instructions: [
-      '어깨보다 넓은 손.',
-      '가슴 스트레칭으로 낮추세요.',
-      '코어를 단단히 유지하십시오.',
-      '밀어 올리세요.',
-    ],
+    instructions: ['어깨보다 넓은 손.', '가슴 스트레칭으로 낮추세요.', '코어를 단단히 유지하십시오.', '밀어 올리세요.'],
     audio: {
       intro: '와이드 푸쉬업은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨보다 넓은 손. 가슴 스트레칭으로 낮추세요.',
@@ -144,12 +139,7 @@ registerLanguageTranslations('ko', {
   },
   body_010: {
     name: '박수 푸시업',
-    instructions: [
-      '표준 푸쉬업 자세.',
-      '폭발적인 푸시 오프 바닥.',
-      '공중에서 손뼉을 치세요.',
-      '부드럽게 착지하세요.',
-    ],
+    instructions: ['표준 푸쉬업 자세.', '폭발적인 푸시 오프 바닥.', '공중에서 손뼉을 치세요.', '부드럽게 착지하세요.'],
     audio: {
       intro: '클랩 푸쉬업(Clap Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '표준 푸쉬업 자세. 폭발적인 푸시 오프 바닥.',
@@ -159,12 +149,7 @@ registerLanguageTranslations('ko', {
   },
   body_011: {
     name: '한 팔 푸쉬업',
-    instructions: [
-      '한 손은 등 뒤로.',
-      '균형을 위한 넓은 발 자세.',
-      '천천히 내립니다.',
-      '한쪽 팔로 밀어 올리세요.',
-    ],
+    instructions: ['한 손은 등 뒤로.', '균형을 위한 넓은 발 자세.', '천천히 내립니다.', '한쪽 팔로 밀어 올리세요.'],
     audio: {
       intro: '원암 푸시업(One-Arm Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손은 등 뒤로. 균형을 위한 넓은 발 자세.',
@@ -196,7 +181,8 @@ registerLanguageTranslations('ko', {
       '다시 밀어 올리세요.',
     ],
     audio: {
-      intro: '의사 플란체 푸쉬업(Pseudo Planche Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '의사 플란체 푸쉬업(Pseudo Planche Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손은 엉덩이에 위치합니다. 앞으로 크게 기울입니다.',
       execution: '가슴을 손쪽으로 내립니다. 다시 밀어 올리세요.',
       transition: '',
@@ -369,12 +355,7 @@ registerLanguageTranslations('ko', {
   },
   body_025: {
     name: '아처 풀업',
-    instructions: [
-      '바의 넓은 그립.',
-      '한 손으로 당기고 다른 손은 뻗습니다.',
-      '대체 측면.',
-      '고급 일방적 작업.',
-    ],
+    instructions: ['바의 넓은 그립.', '한 손으로 당기고 다른 손은 뻗습니다.', '대체 측면.', '고급 일방적 작업.'],
     audio: {
       intro: '아처 풀업(Archer Pull-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바의 넓은 그립. 한 손으로 당기고 다른 손은 뻗습니다.',
@@ -399,12 +380,7 @@ registerLanguageTranslations('ko', {
   },
   body_027: {
     name: '머슬업',
-    instructions: [
-      '폭발적인 풀업.',
-      '바를 통한 전환.',
-      '바 위에서 팔을 곧게 펴려면 누르세요.',
-      '더 낮은 통제.',
-    ],
+    instructions: ['폭발적인 풀업.', '바를 통한 전환.', '바 위에서 팔을 곧게 펴려면 누르세요.', '더 낮은 통제.'],
     audio: {
       intro: '머슬업은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '폭발적인 풀업. 바를 통한 전환.',
@@ -459,12 +435,7 @@ registerLanguageTranslations('ko', {
   },
   body_031: {
     name: '종아리 키우기',
-    instructions: [
-      '평평한 땅에 서십시오.',
-      '발의 공 위로 올라갑니다.',
-      '상단을 꽉 쥐십시오.',
-      '천천히 내립니다.',
-    ],
+    instructions: ['평평한 땅에 서십시오.', '발의 공 위로 올라갑니다.', '상단을 꽉 쥐십시오.', '천천히 내립니다.'],
     audio: {
       intro: '송아지 올리기는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '평평한 땅에 서십시오. 발의 공 위로 올라갑니다.',
@@ -699,12 +670,7 @@ registerLanguageTranslations('ko', {
   },
   body_047: {
     name: '새 개',
-    instructions: [
-      '손과 무릎에.',
-      '반대쪽 팔과 다리를 쭉 뻗습니다.',
-      '엉덩이 수준을 유지하십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['손과 무릎에.', '반대쪽 팔과 다리를 쭉 뻗습니다.', '엉덩이 수준을 유지하십시오.', '반환 및 교체.'],
     audio: {
       intro: 'Bird Dog는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 반대쪽 팔과 다리를 쭉 뻗습니다.',
@@ -954,14 +920,10 @@ registerLanguageTranslations('ko', {
   },
   body_064: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -1021,7 +983,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -1066,7 +1029,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -1081,7 +1045,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -1096,7 +1061,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -1314,12 +1280,7 @@ registerLanguageTranslations('ko', {
   },
   body_088: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -1396,7 +1357,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -1576,7 +1538,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -1599,12 +1562,7 @@ registerLanguageTranslations('ko', {
   },
   body_107: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -1681,7 +1639,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -1719,12 +1678,7 @@ registerLanguageTranslations('ko', {
   },
   body_115: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -1756,7 +1710,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -1801,7 +1756,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -1824,12 +1780,7 @@ registerLanguageTranslations('ko', {
   },
   body_122: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -1891,7 +1842,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -1906,7 +1858,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -2011,7 +1964,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -2028,7 +1982,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -2057,7 +2012,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -2132,7 +2088,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -2148,7 +2105,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -2379,12 +2337,7 @@ registerLanguageTranslations('ko', {
   },
   body_159: {
     name: '아처 풀업',
-    instructions: [
-      '바의 넓은 그립.',
-      '한 손으로 당기고 다른 손은 뻗습니다.',
-      '대체 측면.',
-      '고급 일방적 작업.',
-    ],
+    instructions: ['바의 넓은 그립.', '한 손으로 당기고 다른 손은 뻗습니다.', '대체 측면.', '고급 일방적 작업.'],
     audio: {
       intro: '아처 풀업(Archer Pull-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바의 넓은 그립. 한 손으로 당기고 다른 손은 뻗습니다.',
@@ -2409,12 +2362,7 @@ registerLanguageTranslations('ko', {
   },
   body_161: {
     name: '머슬업',
-    instructions: [
-      '폭발적인 풀업.',
-      '바를 통한 전환.',
-      '바 위에서 팔을 곧게 펴려면 누르세요.',
-      '더 낮은 통제.',
-    ],
+    instructions: ['폭발적인 풀업.', '바를 통한 전환.', '바 위에서 팔을 곧게 펴려면 누르세요.', '더 낮은 통제.'],
     audio: {
       intro: '머슬업은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '폭발적인 풀업. 바를 통한 전환.',
@@ -2469,12 +2417,7 @@ registerLanguageTranslations('ko', {
   },
   body_165: {
     name: '종아리 키우기',
-    instructions: [
-      '평평한 땅에 서십시오.',
-      '발의 공 위로 올라갑니다.',
-      '상단을 꽉 쥐십시오.',
-      '천천히 내립니다.',
-    ],
+    instructions: ['평평한 땅에 서십시오.', '발의 공 위로 올라갑니다.', '상단을 꽉 쥐십시오.', '천천히 내립니다.'],
     audio: {
       intro: '송아지 올리기는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '평평한 땅에 서십시오. 발의 공 위로 올라갑니다.',
@@ -2709,12 +2652,7 @@ registerLanguageTranslations('ko', {
   },
   body_181: {
     name: '새 개',
-    instructions: [
-      '손과 무릎에.',
-      '반대쪽 팔과 다리를 쭉 뻗습니다.',
-      '엉덩이 수준을 유지하십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['손과 무릎에.', '반대쪽 팔과 다리를 쭉 뻗습니다.', '엉덩이 수준을 유지하십시오.', '반환 및 교체.'],
     audio: {
       intro: 'Bird Dog는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 반대쪽 팔과 다리를 쭉 뻗습니다.',
@@ -2964,14 +2902,10 @@ registerLanguageTranslations('ko', {
   },
   body_198: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -3031,7 +2965,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -3076,7 +3011,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -3091,7 +3027,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -3106,7 +3043,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -3324,12 +3262,7 @@ registerLanguageTranslations('ko', {
   },
   body_222: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -3406,7 +3339,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -3586,7 +3520,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -3609,12 +3544,7 @@ registerLanguageTranslations('ko', {
   },
   body_241: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -3691,7 +3621,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -3729,12 +3660,7 @@ registerLanguageTranslations('ko', {
   },
   body_249: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -3766,7 +3692,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -3811,7 +3738,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -3834,12 +3762,7 @@ registerLanguageTranslations('ko', {
   },
   body_256: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -3901,7 +3824,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -3916,7 +3840,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -4021,7 +3946,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -4038,7 +3964,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -4067,7 +3994,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -4142,7 +4070,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -4158,7 +4087,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -4269,12 +4199,7 @@ registerLanguageTranslations('ko', {
   },
   body_285: {
     name: '새 개',
-    instructions: [
-      '손과 무릎에.',
-      '반대쪽 팔과 다리를 쭉 뻗습니다.',
-      '엉덩이 수준을 유지하십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['손과 무릎에.', '반대쪽 팔과 다리를 쭉 뻗습니다.', '엉덩이 수준을 유지하십시오.', '반환 및 교체.'],
     audio: {
       intro: 'Bird Dog는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 반대쪽 팔과 다리를 쭉 뻗습니다.',
@@ -4524,14 +4449,10 @@ registerLanguageTranslations('ko', {
   },
   body_302: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -4591,7 +4512,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -4636,7 +4558,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -4651,7 +4574,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -4666,7 +4590,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -4884,12 +4809,7 @@ registerLanguageTranslations('ko', {
   },
   body_326: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -4966,7 +4886,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -5146,7 +5067,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -5169,12 +5091,7 @@ registerLanguageTranslations('ko', {
   },
   body_345: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -5251,7 +5168,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -5289,12 +5207,7 @@ registerLanguageTranslations('ko', {
   },
   body_353: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -5326,7 +5239,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -5371,7 +5285,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -5394,12 +5309,7 @@ registerLanguageTranslations('ko', {
   },
   body_360: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -5461,7 +5371,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -5476,7 +5387,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -5581,7 +5493,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -5598,7 +5511,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -5627,7 +5541,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -5702,7 +5617,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -5718,7 +5634,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -5829,14 +5746,10 @@ registerLanguageTranslations('ko', {
   },
   body_389: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -5896,7 +5809,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -5941,7 +5855,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -5956,7 +5871,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -5971,7 +5887,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -6189,12 +6106,7 @@ registerLanguageTranslations('ko', {
   },
   body_413: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -6271,7 +6183,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -6451,7 +6364,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -6474,12 +6388,7 @@ registerLanguageTranslations('ko', {
   },
   body_432: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -6556,7 +6465,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -6594,12 +6504,7 @@ registerLanguageTranslations('ko', {
   },
   body_440: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -6631,7 +6536,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -6676,7 +6582,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -6699,12 +6606,7 @@ registerLanguageTranslations('ko', {
   },
   body_447: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -6766,7 +6668,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -6781,7 +6684,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -6886,7 +6790,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -6903,7 +6808,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -6932,7 +6838,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -7007,7 +6914,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -7023,7 +6931,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -7134,14 +7043,10 @@ registerLanguageTranslations('ko', {
   },
   body_476: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -7201,7 +7106,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -7246,7 +7152,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -7261,7 +7168,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -7276,7 +7184,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -7494,12 +7403,7 @@ registerLanguageTranslations('ko', {
   },
   body_500: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -7576,7 +7480,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -7756,7 +7661,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -7779,12 +7685,7 @@ registerLanguageTranslations('ko', {
   },
   body_519: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -7861,7 +7762,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -7899,12 +7801,7 @@ registerLanguageTranslations('ko', {
   },
   body_527: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -7936,7 +7833,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -7981,7 +7879,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -8004,12 +7903,7 @@ registerLanguageTranslations('ko', {
   },
   body_534: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -8071,7 +7965,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -8086,7 +7981,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -8191,7 +8087,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -8208,7 +8105,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -8237,7 +8135,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -8312,7 +8211,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -8328,7 +8228,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -8439,14 +8340,10 @@ registerLanguageTranslations('ko', {
   },
   body_563: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -8506,7 +8403,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -8551,7 +8449,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -8566,7 +8465,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -8581,7 +8481,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -8799,12 +8700,7 @@ registerLanguageTranslations('ko', {
   },
   body_587: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -8881,7 +8777,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -9061,7 +8958,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -9084,12 +8982,7 @@ registerLanguageTranslations('ko', {
   },
   body_606: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -9166,7 +9059,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -9204,12 +9098,7 @@ registerLanguageTranslations('ko', {
   },
   body_614: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -9241,7 +9130,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -9286,7 +9176,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -9309,12 +9200,7 @@ registerLanguageTranslations('ko', {
   },
   body_621: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -9376,7 +9262,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -9391,7 +9278,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -9496,7 +9384,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -9513,7 +9402,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -9542,7 +9432,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -9617,7 +9508,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -9633,7 +9525,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -9744,14 +9637,10 @@ registerLanguageTranslations('ko', {
   },
   body_650: {
     name: '한쪽 다리 스탠드 눈을 감고',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '시력이 없어도 균형을 유지하세요.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '시력이 없어도 균형을 유지하세요.', '측면을 전환하십시오.'],
     audio: {
-      intro: '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스탠드 아이즈 클로즈(Single Leg Stand Eyes Closed)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
       execution: '시력이 없어도 균형을 유지하세요. 측면을 전환하십시오.',
       transition: '',
@@ -9811,7 +9700,8 @@ registerLanguageTranslations('ko', {
       '다시 서십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트 밸런스(Single Leg Deadlift Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 엉덩이를 앞으로 기울이세요.',
       execution: '뒷다리는 뒤로 뻗어있습니다. 다시 서십시오.',
       transition: '',
@@ -9856,7 +9746,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 스쿼트 투 체어(Single Leg Squat to Chair)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 앞에 한쪽 다리로 서십시오. 가장자리에 앉으려면 낮추십시오.',
       execution: '같은 다리로 다시 일어서세요. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -9871,7 +9762,8 @@ registerLanguageTranslations('ko', {
       '꾸준한 컨트롤에 집중하세요.',
     ],
     audio: {
-      intro: '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '발뒤꿈치부터 발끝까지 걷기(Heel to Toe Walk)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '직선으로 걸어보세요. 뒤꿈치를 발가락 바로 앞에 놓습니다.',
       execution: '균형을 위해 팔을 뻗습니다. 꾸준한 컨트롤에 집중하세요.',
       transition: '',
@@ -9886,7 +9778,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 카프 레이즈 밸런스(Single Leg Calf raise Balance)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 발가락으로 천천히 일어나세요.',
       execution: '컨트롤을 사용하여 낮추십시오. 전체적으로 균형을 유지하십시오.',
       transition: '',
@@ -10104,12 +9997,7 @@ registerLanguageTranslations('ko', {
   },
   body_674: {
     name: '측면 스텝업',
-    instructions: [
-      '계단 옆에 서세요.',
-      '옆으로 올라가세요.',
-      '발판에 완전히 서십시오.',
-      '아래로 내려와 반복하세요.',
-    ],
+    instructions: ['계단 옆에 서세요.', '옆으로 올라가세요.', '발판에 완전히 서십시오.', '아래로 내려와 반복하세요.'],
     audio: {
       intro: '레터럴 스텝업(Lateral Step-Up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '계단 옆에 서세요. 옆으로 올라가세요.',
@@ -10186,7 +10074,8 @@ registerLanguageTranslations('ko', {
       '낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 힙 스러스트(Single Leg Hip Thrust)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벤치 가장자리에 등을 대고. 한 발은 바닥에, 다른 발은 올려 놓았습니다.',
       execution: '엉덩이를 위로 올리세요. 낮추고 반복하십시오.',
       transition: '',
@@ -10366,7 +10255,8 @@ registerLanguageTranslations('ko', {
       '돌아가서 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 루마니안 데드리프트 리치(Single Leg Romanian Deadlift Reach)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 힌지.',
       execution: '반대쪽 모서리에 도달하십시오. 돌아가서 측면을 전환하십시오.',
       transition: '',
@@ -10389,12 +10279,7 @@ registerLanguageTranslations('ko', {
   },
   body_693: {
     name: '눈을 감고 균형',
-    instructions: [
-      '한 발로 서십시오.',
-      '눈을 감으세요.',
-      '비전 없이 균형을 유지하십시오.',
-      '발을 바꾸세요.',
-    ],
+    instructions: ['한 발로 서십시오.', '눈을 감으세요.', '비전 없이 균형을 유지하십시오.', '발을 바꾸세요.'],
     audio: {
       intro: 'Eyes Closed Balance는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발로 서십시오. 눈을 감으세요.',
@@ -10471,7 +10356,8 @@ registerLanguageTranslations('ko', {
       '측면을 전환하십시오.',
     ],
     audio: {
-      intro: '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '수트케이스 데드리프트(Suitcase Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽에 무게가 쏠립니다. 여행가방처럼 힌지와 리프트를 사용하세요.',
       execution: '엉덩이를 정사각형으로 유지하십시오. 측면을 전환하십시오.',
       transition: '',
@@ -10509,12 +10395,7 @@ registerLanguageTranslations('ko', {
   },
   body_701: {
     name: '리버스 런지 패턴',
-    instructions: [
-      '다시 런지 자세로 들어갑니다.',
-      '바닥을 향해 무릎을 내립니다.',
-      '다시 서서 서십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['다시 런지 자세로 들어갑니다.', '바닥을 향해 무릎을 내립니다.', '다시 서서 서십시오.', '대체 다리.'],
     audio: {
       intro: '리버스 런지 패턴(Reverse Lunge Pattern)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 런지 자세로 들어갑니다. 바닥을 향해 무릎을 내립니다.',
@@ -10546,7 +10427,8 @@ registerLanguageTranslations('ko', {
       '상단에서 삼두근을 조입니다.',
     ],
     audio: {
-      intro: '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이아몬드 커터 푸쉬업(Diamond Cutter Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 아래 다이아몬드 손 위치. 가슴을 손으로 낮추십시오.',
       execution: '폭발적으로 누르세요. 상단에서 삼두근을 조입니다.',
       transition: '',
@@ -10591,7 +10473,8 @@ registerLanguageTranslations('ko', {
       '각 담당자마다 다리를 번갈아 가며 수행하십시오.',
     ],
     audio: {
-      intro: '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 트위스트(Reverse Lunge Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 몸통을 앞다리 방향으로 비틀어줍니다.',
       execution: '다시 서십시오. 각 담당자마다 다리를 번갈아 가며 수행하십시오.',
       transition: '',
@@ -10614,12 +10497,7 @@ registerLanguageTranslations('ko', {
   },
   body_708: {
     name: '당나귀 킥',
-    instructions: [
-      '네 발로 시작하세요.',
-      '한쪽 다리를 뒤로 걷어차세요.',
-      '상단에 둔부를 짜내십시오.',
-      '반환 및 교체.',
-    ],
+    instructions: ['네 발로 시작하세요.', '한쪽 다리를 뒤로 걷어차세요.', '상단에 둔부를 짜내십시오.', '반환 및 교체.'],
     audio: {
       intro: '동키킥(Donkey Kick)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '네 발로 시작하세요. 한쪽 다리를 뒤로 걷어차세요.',
@@ -10681,7 +10559,8 @@ registerLanguageTranslations('ko', {
       '엉덩이를 전체적으로 수평으로 유지하십시오.',
     ],
     audio: {
-      intro: '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '무릎에서 팔꿈치까지 플랭크(Knee to Elbow Plank)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하이 플랭크 자세를 유지하세요. 무릎을 같은 쪽 팔꿈치로 가져옵니다.',
       execution: '반환 및 대체 측면. 엉덩이를 전체적으로 수평으로 유지하십시오.',
       transition: '',
@@ -10696,7 +10575,8 @@ registerLanguageTranslations('ko', {
       '전체적으로 코어를 단단히 유지하십시오.',
     ],
     audio: {
-      intro: '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '마운틴 클라이머 트위스트(Mountain Climber Twist)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '높은 판자 위치. 무릎을 반대쪽 팔꿈치 쪽으로 가져옵니다.',
       execution: '반환하고 빠르게 교대하십시오. 전체적으로 코어를 단단히 유지하십시오.',
       transition: '',
@@ -10801,7 +10681,8 @@ registerLanguageTranslations('ko', {
       '서서 반복하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 데드리프트(Single Leg Deadlift)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 다른 쪽 다리를 뒤로 뻗으면서 앞으로 뻗으세요.',
       execution: '손을 바닥쪽으로 뻗으세요. 서서 반복하십시오.',
       transition: '',
@@ -10818,7 +10699,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Warrior I Pose는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 발 뒤로 물러서서 45도 각도로 기울입니다. 앞쪽 무릎을 발목 위로 90도 구부립니다.',
-      execution: '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
+      execution:
+        '손바닥이 마주보게 하여 팔을 머리 위로 들어 올리세요. 엉덩이를 앞으로 정사각형으로 유지하고 측면을 전환합니다.',
       transition: '',
     },
   },
@@ -10847,7 +10729,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '확장된 측면 각도 포즈는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
+      setup:
+        'Warrior II의 경우 몸통이 앞쪽 허벅지 위로 기울어져 있습니다. 팔뚝을 허벅지 앞쪽에 놓거나 손을 바닥에 놓습니다.',
       execution: '위쪽 팔을 귀 위로 앞쪽 벽을 향해 뻗습니다. 뒷발부터 손끝까지 하나의 긴 라인을 만듭니다.',
       transition: '',
     },
@@ -10922,7 +10805,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위로 활(바퀴) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
+      setup:
+        '등을 대고 누워 양손을 귀 옆에 놓고 손가락이 어깨를 향하게 합니다. 손과 발을 눌러 몸 전체를 바닥에서 들어올립니다.',
       execution: '팔과 다리를 곧게 펴고 등을 완전히 아치형으로 만듭니다. 누르고 숨을 쉬며 조절하면서 낮추십시오.',
       transition: '',
     },
@@ -10938,7 +10822,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '두루미(까마귀) 자세는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비로 손을 바닥에 짚고 쪼그리고 앉으십시오. 무릎을 팔 위쪽 뒤쪽에 놓습니다.',
-      execution: '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
+      execution:
+        '체중을 손으로 앞으로 옮기고 발을 들어 올리십시오. 등 윗부분을 둥글게 하고 앞을 바라보며 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -11045,7 +10930,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '월 푸쉬업(Wall Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벽에서 팔 길이만큼 떨어져서 발을 모으세요. 손바닥을 어깨 높이로 벽에 대고 손은 어깨보다 약간 넓습니다.',
-      execution: '몸은 머리부터 발뒤꿈치까지 직선입니다(코어 타이트). 숨을 들이마시며 가슴이 벽에 거의 닿을 때까지 팔꿈치를 구부립니다(2~3초).',
+      execution:
+        '몸은 머리부터 발뒤꿈치까지 직선입니다(코어 타이트). 숨을 들이마시며 가슴이 벽에 거의 닿을 때까지 팔꿈치를 구부립니다(2~3초).',
       transition: '',
     },
   },
@@ -11061,7 +10947,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 푸쉬업(Incline Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손은 카운터 가장자리에 있고 손목은 어깨 아래에 있습니다. 발을 뒤로 걸어 몸이 머리부터 발뒤꿈치까지 일직선이 되도록 합니다.',
+      setup:
+        '손은 카운터 가장자리에 있고 손목은 어깨 아래에 있습니다. 발을 뒤로 걸어 몸이 머리부터 발뒤꿈치까지 일직선이 되도록 합니다.',
       execution: '코어는 단단하고 둔근은 압박됩니다. 가슴을 카운터 쪽으로 내립니다(팔꿈치를 몸에서 45° 각도로 유지).',
       transition: '',
     },
@@ -11078,8 +10965,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '니 푸쉬업(Knee Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '네 발로 시작하고 손은 어깨보다 약간 넓습니다. 무릎을 뒤로 걸어 몸이 머리부터 무릎까지 일직선이 되도록 합니다.',
-      execution: '발가락을 집어 넣습니다(또는 바닥이 아프면 신발끈을 평평하게 유지하십시오). 바닥에서 5cm 높이까지 가슴을 내립니다.',
+      setup:
+        '네 발로 시작하고 손은 어깨보다 약간 넓습니다. 무릎을 뒤로 걸어 몸이 머리부터 무릎까지 일직선이 되도록 합니다.',
+      execution:
+        '발가락을 집어 넣습니다(또는 바닥이 아프면 신발끈을 평평하게 유지하십시오). 바닥에서 5cm 높이까지 가슴을 내립니다.',
       transition: '',
     },
   },
@@ -11096,7 +10985,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '힙힌지 드릴(굿모닝)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이 너비로 벌리고 손을 엉덩이에 얹습니다. 부드러운 무릎, 자랑스러운 가슴.',
-      execution: '엉덩이를 뒤로 밉니다(자동차 문을 닫는다고 상상해 보세요). 햄스트링이 늘어나는 것을 느껴보세요. 몸통이 바닥과 거의 평행할 때 멈춥니다.',
+      execution:
+        '엉덩이를 뒤로 밉니다(자동차 문을 닫는다고 상상해 보세요). 햄스트링이 늘어나는 것을 느껴보세요. 몸통이 바닥과 거의 평행할 때 멈춥니다.',
       transition: '',
     },
   },
@@ -11112,8 +11002,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '글루트 브릿지는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 무릎을 90° 구부리고 발은 엉덩이 너비로 벌립니다. 안정성을 위해 팔을 45°로 손바닥을 위로 올립니다.',
-      execution: '골반을 약간 기울입니다(허리가 바닥에 닿도록 편평하게 만듭니다). 둔근을 조이고 무릎과 어깨가 일직선이 될 때까지 엉덩이를 들어 올립니다.',
+      setup:
+        '등을 대고 누워 무릎을 90° 구부리고 발은 엉덩이 너비로 벌립니다. 안정성을 위해 팔을 45°로 손바닥을 위로 올립니다.',
+      execution:
+        '골반을 약간 기울입니다(허리가 바닥에 닿도록 편평하게 만듭니다). 둔근을 조이고 무릎과 어깨가 일직선이 될 때까지 엉덩이를 들어 올립니다.',
       transition: '',
     },
   },
@@ -11127,9 +11019,11 @@ registerLanguageTranslations('ko', {
       '너무 흔들리나요? 대신 들어 올린 다리를 90°로 구부리세요.',
     ],
     audio: {
-      intro: '단일 다리 둔근 다리(Single-leg Glute Bridge)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '단일 다리 둔근 다리(Single-leg Glute Bridge)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '동일한 설정이지만 한쪽 다리를 천장을 향해 곧게 펴십시오. 접지된 발의 뒤꿈치를 밀어 넣으세요.',
-      execution: '엉덩이를 고르게 들어 올리십시오. 골반이 다리가 없는 쪽으로 떨어지지 않도록 하십시오. 8~12회 반복한 다음 전환합니다.',
+      execution:
+        '엉덩이를 고르게 들어 올리십시오. 골반이 다리가 없는 쪽으로 떨어지지 않도록 하십시오. 8~12회 반복한 다음 전환합니다.',
       transition: '',
     },
   },
@@ -11145,8 +11039,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '월싯(Wall Sit)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 벽에 대고 발을 앞으로 30~40cm 벌립니다. 무릎이 90°가 될 때까지 아래로 밀어내립니다(허벅지가 바닥과 평행).',
-      execution: '발목은 무릎 바로 아래, 발은 어깨 너비입니다. 허벅지에 손을 얹거나 가슴에 교차하십시오. 팔로 밀지 마십시오.',
+      setup:
+        '등을 벽에 대고 발을 앞으로 30~40cm 벌립니다. 무릎이 90°가 될 때까지 아래로 밀어내립니다(허벅지가 바닥과 평행).',
+      execution:
+        '발목은 무릎 바로 아래, 발은 어깨 너비입니다. 허벅지에 손을 얹거나 가슴에 교차하십시오. 팔로 밀지 마십시오.',
       transition: '',
     },
   },
@@ -11162,8 +11058,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스태틱 런지 홀드는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '앞으로 나아가라, 큰 보폭으로; 뒷발 뒤꿈치가 바닥에서 떨어져 있습니다. 양쪽 무릎이 약 90°가 될 때까지 뒤쪽 무릎을 똑바로 아래로 내립니다.',
-      execution: '몸통은 똑바로, 코어는 단단합니다. 가만히 있어라. 긴장을 유지하기 위해 앞쪽 발 뒤꿈치를 바닥에 누르십시오.',
+      setup:
+        '앞으로 나아가라, 큰 보폭으로; 뒷발 뒤꿈치가 바닥에서 떨어져 있습니다. 양쪽 무릎이 약 90°가 될 때까지 뒤쪽 무릎을 똑바로 아래로 내립니다.',
+      execution:
+        '몸통은 똑바로, 코어는 단단합니다. 가만히 있어라. 긴장을 유지하기 위해 앞쪽 발 뒤꿈치를 바닥에 누르십시오.',
       transition: '',
     },
   },
@@ -11178,7 +11076,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '송아지 올리기는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 서서 발은 엉덩이 너비로 벌리고 손은 벽에 가볍게 닿아 균형을 유지합니다. 가능한 한 높이 발 볼 위로 올라갑니다(쥐어짜기).',
+      setup:
+        '바닥에 서서 발은 엉덩이 너비로 벌리고 손은 벽에 가볍게 닿아 균형을 유지합니다. 가능한 한 높이 발 볼 위로 올라갑니다(쥐어짜기).',
       execution: '상단에서 1초 동안 일시 중지합니다. 발뒤꿈치가 바닥에 닿을 때까지 2~3초 천천히 내립니다.',
       transition: '',
     },
@@ -11195,7 +11094,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '한쪽 다리 종아리 들기는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '같은 자세이지만 자유로운 발을 발목 뒤로 교차시킵니다. 체중을 서있는 다리로 옮깁니다.',
-      execution: '벽을 당기는 것이 아니라 균형을 잡기 위해서만 두 손가락을 사용하십시오. 전체 범위: 가능하면 바닥보다 낮은 힐, 그 다음에는 더 높이 올라갑니다.',
+      execution:
+        '벽을 당기는 것이 아니라 균형을 잡기 위해서만 두 손가락을 사용하십시오. 전체 범위: 가능하면 바닥보다 낮은 힐, 그 다음에는 더 높이 올라갑니다.',
       transition: '',
     },
   },
@@ -11210,8 +11110,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '데드버그(Dead Bug)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 팔을 천장을 향해 곧게 펴고 무릎을 엉덩이 위에 위치시킵니다(90-90 위치). 허리를 바닥에 편평하게 펴십시오(벌레를 짓밟는다고 상상해 보십시오).',
-      execution: '발뒤꿈치가 바닥에 거의 닿을 때까지 오른쪽 팔을 머리 위로 천천히 내리고 왼쪽 다리를 바깥쪽으로 내립니다. 등을 붙인 상태로 유지하십시오. 아치 모양이 되면 범위가 짧아집니다.',
+      setup:
+        '등을 대고 누워 팔을 천장을 향해 곧게 펴고 무릎을 엉덩이 위에 위치시킵니다(90-90 위치). 허리를 바닥에 편평하게 펴십시오(벌레를 짓밟는다고 상상해 보십시오).',
+      execution:
+        '발뒤꿈치가 바닥에 거의 닿을 때까지 오른쪽 팔을 머리 위로 천천히 내리고 왼쪽 다리를 바깥쪽으로 내립니다. 등을 붙인 상태로 유지하십시오. 아치 모양이 되면 범위가 짧아집니다.',
       transition: '',
     },
   },
@@ -11225,7 +11127,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 플랭크 힙 딥은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '옆으로 누워서 팔꿈치를 어깨 아래로 두고, 다리를 곧게 펴고, 균형을 위해 위쪽 발이 아래쪽 앞에 오게 합니다. 엉덩이를 들어 올려 몸이 머리부터 발뒤꿈치까지 일직선이 되도록 합니다.',
+      setup:
+        '옆으로 누워서 팔꿈치를 어깨 아래로 두고, 다리를 곧게 펴고, 균형을 위해 위쪽 발이 아래쪽 앞에 오게 합니다. 엉덩이를 들어 올려 몸이 머리부터 발뒤꿈치까지 일직선이 되도록 합니다.',
       execution: '만지지 마세요) 그런 다음 다시 들어올리세요.",\n       ,',
       transition: '',
     },
@@ -11242,7 +11145,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스탠다드 푸쉬업(Standard Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손, 어깨 아래 손목, 발로 플랭크를 시작합니다. 몸 직선 귀-발목; 둔근, 버팀대 코어를 짜내십시오.',
-      execution: '팔꿈치는 몸통에서 45°, 아래쪽 가슴은 바닥 위 5cm까지(2-3초). 팔이 곧게 펴질 때까지 다시 위로 누르십시오. 엉덩이를 일직선으로 유지하세요. 처짐이 없습니다.',
+      execution:
+        '팔꿈치는 몸통에서 45°, 아래쪽 가슴은 바닥 위 5cm까지(2-3초). 팔이 곧게 펴질 때까지 다시 위로 누르십시오. 엉덩이를 일직선으로 유지하세요. 처짐이 없습니다.',
       transition: '',
     },
   },
@@ -11258,7 +11162,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '클로즈 스탠스 스쿼트는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발은 엉덩이 너비로 벌리고 발가락은 약간 바깥쪽으로 벌립니다. 엉덩이에 손을 얹거나 가슴에 손을 얹습니다.',
-      execution: '먼저 엉덩이를 부러뜨린 다음 무릎을 부러뜨립니다. 허벅지가 바닥과 평행이 될 때까지 앉으세요. 무릎은 두 번째 발가락 위를 따라갑니다. 가슴이 자랑스럽습니다.',
+      execution:
+        '먼저 엉덩이를 부러뜨린 다음 무릎을 부러뜨립니다. 허벅지가 바닥과 평행이 될 때까지 앉으세요. 무릎은 두 번째 발가락 위를 따라갑니다. 가슴이 자랑스럽습니다.',
       transition: '',
     },
   },
@@ -11274,7 +11179,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '워킹 런지는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '앞으로 긴 보폭을 내딛으세요. 양쪽 무릎이 약 90°가 될 때까지 뒤쪽 무릎을 똑바로 아래로 내립니다.',
-      execution: '앞쪽 발뒤꿈치를 밀어서 뒷발을 다음 단계로 가져옵니다. 몸통을 똑바로 세우고 코어를 단단히 유지하십시오.',
+      execution:
+        '앞쪽 발뒤꿈치를 밀어서 뒷발을 다음 단계로 가져옵니다. 몸통을 똑바로 세우고 코어를 단단히 유지하십시오.',
       transition: '',
     },
   },
@@ -11289,7 +11195,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '점프 스쿼트는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '스쿼트 자세(허벅지가 평행)에서 시작합니다. 팔을 뒤로 휘둘러 폭발한 다음 팔을 머리 위로 올리세요.',
-      execution: '발 중앙으로 부드럽게 착지한 후 즉시 다시 스쿼트 자세로 가라앉습니다(조용한 착지). 양식이 깨지면 재설정하세요. 무릎이 안쪽으로 움푹 들어간 경우 중지하십시오.',
+      execution:
+        '발 중앙으로 부드럽게 착지한 후 즉시 다시 스쿼트 자세로 가라앉습니다(조용한 착지). 양식이 깨지면 재설정하세요. 무릎이 안쪽으로 움푹 들어간 경우 중지하십시오.',
       transition: '',
     },
   },
@@ -11304,7 +11211,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스타 점프는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '키가 크고, 발은 모으고, 팔은 옆에 둡니다. 쿼터 스쿼트 자세를 취하고 팔을 뒤로 휘두르세요.',
-      execution: '폭발하여 다리를 어깨보다 넓게 벌리고 팔을 들어 공중에서 "X" 모양을 만듭니다. 발을 부드럽게 모으고 팔을 옆으로 뒤로 젖히십시오.',
+      execution:
+        '폭발하여 다리를 어깨보다 넓게 벌리고 팔을 들어 공중에서 "X" 모양을 만듭니다. 발을 부드럽게 모으고 팔을 옆으로 뒤로 젖히십시오.',
       transition: '',
     },
   },
@@ -11319,8 +11227,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '마운틴 클라이머(빠르게)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랭크 자세로 시작하고 손목은 어깨 아래에 두고 몸은 곧게 편다. 한쪽 무릎을 가슴쪽으로 움직입니다. 발을 바닥에서 떼세요.',
-      execution: '수평으로 달리는 것처럼 한 번의 부드러운 동작으로 빠르게 다리를 전환합니다. 엉덩이를 수평으로 유지하십시오. 파이크나 처짐이 없습니다.',
+      setup:
+        '플랭크 자세로 시작하고 손목은 어깨 아래에 두고 몸은 곧게 편다. 한쪽 무릎을 가슴쪽으로 움직입니다. 발을 바닥에서 떼세요.',
+      execution:
+        '수평으로 달리는 것처럼 한 번의 부드러운 동작으로 빠르게 다리를 전환합니다. 엉덩이를 수평으로 유지하십시오. 파이크나 처짐이 없습니다.',
       transition: '',
     },
   },
@@ -11334,7 +11244,8 @@ registerLanguageTranslations('ko', {
       '눈은 앞으로, 핵심은 꽉 조여져 있습니다.',
     ],
     audio: {
-      intro: '하이니 스프린트 온 스팟(High-knee Sprint on Spot)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '하이니 스프린트 온 스팟(High-knee Sprint on Spot)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '똑바로 서서 팔꿈치를 90°로 만듭니다. 무릎을 엉덩이 높이(허벅지가 바닥과 평행)까지 올리세요.',
       execution: '반대쪽 팔이 앞으로 움직입니다. 발바닥에 머물러 라. 부드럽게 착지하세요. 최소한의 접지 접촉.',
       transition: '',
@@ -11350,8 +11261,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '엉덩이 차기 스프린트(Butt-kick Sprint)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '하이니 스프린트와 같은 자세. 발뒤꿈치가 둔부 쪽으로 튀어 올라갑니다. 무릎은 낮게 유지되어 아래를 향하게 합니다.',
-      execution: '팔은 여전히 ​​강하게 움직입니다. 바닥을 뒤로 당긴다고 상상해 보세요. 빠르고 가벼운 발걸음 - 소음이 조용해야 합니다.',
+      setup:
+        '하이니 스프린트와 같은 자세. 발뒤꿈치가 둔부 쪽으로 튀어 올라갑니다. 무릎은 낮게 유지되어 아래를 향하게 합니다.',
+      execution:
+        '팔은 여전히 ​​강하게 움직입니다. 바닥을 뒤로 당긴다고 상상해 보세요. 빠르고 가벼운 발걸음 - 소음이 조용해야 합니다.',
       transition: '',
     },
   },
@@ -11382,7 +11295,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'V-up은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '편평하게 누워 팔을 머리 위로 올리고 다리를 곧게 편다. 몸통과 다리를 동시에 들어 올려 손을 발 쪽으로 뻗습니다.',
+      setup:
+        '편평하게 누워 팔을 머리 위로 올리고 다리를 곧게 편다. 몸통과 다리를 동시에 들어 올려 손을 발 쪽으로 뻗습니다.',
       execution: '상단에 "V" 모양을 만드세요. 꼬리뼈의 균형. 바닥 바로 위의 발뒤꿈치와 견갑골까지 제어하면서 내립니다.',
       transition: '',
     },
@@ -11398,8 +11312,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '할로우바디락(Hollow-body Rock)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 팔을 머리 위로 올리고 다리를 곧게 펴고 LOW BACK을 바닥에 밀착시킵니다. 어깨와 발을 5~10cm 들어올립니다(바나나 모양).',
-      execution: '흔들의자처럼 앞뒤로 부드럽게 흔들어 모양을 유지합니다. 바위는 엉덩이를 흔드는 것이 아니라 발목/어깨에서 나옵니다.',
+      setup:
+        '등을 대고 누워 팔을 머리 위로 올리고 다리를 곧게 펴고 LOW BACK을 바닥에 밀착시킵니다. 어깨와 발을 5~10cm 들어올립니다(바나나 모양).',
+      execution:
+        '흔들의자처럼 앞뒤로 부드럽게 흔들어 모양을 유지합니다. 바위는 엉덩이를 흔드는 것이 아니라 발목/어깨에서 나옵니다.',
       transition: '',
     },
   },
@@ -11429,7 +11345,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '아처 푸시업(Archer Push-up)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 넓게 시작하고(어깨 너비의 1.5배), 균형을 위해 발을 넓게 시작합니다. 오른손을 향해 낮추어 왼팔이 곧게 펴지고 약간 바깥쪽으로 미끄러지도록 합니다.',
+      setup:
+        '손을 넓게 시작하고(어깨 너비의 1.5배), 균형을 위해 발을 넓게 시작합니다. 오른손을 향해 낮추어 왼팔이 곧게 펴지고 약간 바깥쪽으로 미끄러지도록 합니다.',
       execution: '가슴은 거의 오른손에 닿습니다. 몸을 똑바로 유지하십시오. 중앙으로 다시 누르십시오. 왼쪽 반복 = 1회',
       transition: '',
     },
@@ -11444,8 +11361,10 @@ registerLanguageTranslations('ko', {
       '소정의 시간을 유지해 나가려면 발을 아래로 걸어보세요.',
     ],
     audio: {
-      intro: '물구나무서기 벽 홀드(Handstand Wall Hold)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벽을 마주하고 양손을 15~20cm 간격으로 어깨 너비로 벌립니다. 발뒤꿈치가 벽에 가볍게 닿을 때까지 한쪽 다리를 걷어차고 다른 쪽 다리를 차세요.',
+      intro:
+        '물구나무서기 벽 홀드(Handstand Wall Hold)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '벽을 마주하고 양손을 15~20cm 간격으로 어깨 너비로 벌립니다. 발뒤꿈치가 벽에 가볍게 닿을 때까지 한쪽 다리를 걷어차고 다른 쪽 다리를 차세요.',
       execution: '몸은 곧게 편다(손목-엉덩이-발목 한 줄). 손 사이를 살짝 바라보며 숨을 쉬세요.',
       transition: '',
     },
@@ -11462,7 +11381,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '행잉 레그 레이즈(구부리기)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바에 매달고 어깨 너비만큼 그립을 잡고 어깨를 활성화합니다(풀다운). 무릎을 90° 구부리고 함께 누르세요.',
-      execution: '골반을 뒤로 기울입니다(둥근 허리). 허벅지가 바닥과 평행하거나 약간 지나갈 때까지 무릎을 가슴쪽으로 들어 올리십시오.',
+      execution:
+        '골반을 뒤로 기울입니다(둥근 허리). 허벅지가 바닥과 평행하거나 약간 지나갈 때까지 무릎을 가슴쪽으로 들어 올리십시오.',
       transition: '',
     },
   },
@@ -11476,7 +11396,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '토즈 투 바(Toes-to-bar)는 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '위와 같이 매달아주세요. 후방 경사 + 고관절 굴곡근을 사용하여 발가락이 손 사이의 바에 닿을 때까지 직선 다리를 끝까지 들어 올리십시오.',
+      setup:
+        '위와 같이 매달아주세요. 후방 경사 + 고관절 굴곡근을 사용하여 발가락이 손 사이의 바에 닿을 때까지 직선 다리를 끝까지 들어 올리십시오.',
       execution: '조절 장치를 사용하여 속이 빈 위치로 내립니다(다리는 앞쪽, 뒤쪽은 느슨하지 않음). 가능하다면\\',
       transition: '',
     },
@@ -11492,7 +11413,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'L-sit(Parallettes)은 적당한 신체 조절 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '평행선, 그립 핸들, 직선 팔 사이에 앉으십시오. 어깨를 아래로 누릅니다(견갑골을 내림).',
-      execution: '다리를 바닥과 평행이 될 때까지 똑바로 들어올립니다("L" 모양). 규정된 대기 시간; 턱은 중립으로 유지하고 코어는 단단하게 유지하세요.',
+      execution:
+        '다리를 바닥과 평행이 될 때까지 똑바로 들어올립니다("L" 모양). 규정된 대기 시간; 턱은 중립으로 유지하고 코어는 단단하게 유지하세요.',
       transition: '',
     },
   },
@@ -11507,8 +11429,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '3/4 Sit-Up은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 누워서 발을 고정하세요. 다리는 무릎에서 구부러져야 합니다. 손을 머리 뒤나 옆에 놓으십시오. 당신은...',
-      execution: '엉덩이와 척추를 구부려 몸통을 무릎 쪽으로 들어 올리세요. 수축이 최고조에 달할 때 몸통은 지면과 수직이 되어야 합니다. 목사님...',
+      setup:
+        '바닥에 누워서 발을 고정하세요. 다리는 무릎에서 구부러져야 합니다. 손을 머리 뒤나 옆에 놓으십시오. 당신은...',
+      execution:
+        '엉덩이와 척추를 구부려 몸통을 무릎 쪽으로 들어 올리세요. 수축이 최고조에 달할 때 몸통은 지면과 수직이 되어야 합니다. 목사님...',
       transition: '',
     },
   },
@@ -11522,8 +11446,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '90/90 햄스트링은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 한쪽 다리를 곧게 뻗습니다. 반대쪽 다리로 엉덩이와 무릎을 90도 각도로 구부립니다. 한 손으로 다리를 받쳐도 됩니다...',
-      execution: '다리를 공중으로 곧게 펴고 최고점에서 잠시 멈춥니다. 다리를 시작 위치로 되돌립니다. 10~20회 반복한 다음...',
+      setup:
+        '등을 대고 누워 한쪽 다리를 곧게 뻗습니다. 반대쪽 다리로 엉덩이와 무릎을 90도 각도로 구부립니다. 한 손으로 다리를 받쳐도 됩니다...',
+      execution:
+        '다리를 공중으로 곧게 펴고 최고점에서 잠시 멈춥니다. 다리를 시작 위치로 되돌립니다. 10~20회 반복한 다음...',
       transition: '',
     },
   },
@@ -11538,7 +11464,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Ab Crunch Machine은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가벼운 저항을 선택하고 ab 머신에 앉아 제공된 패드 아래에 발을 놓고 상단 핸들을 잡으세요. 팔은...',
-      execution: '두 번째 멈춘 후 숨을 들이쉬면서 천천히 시작 위치로 돌아옵니다. 정해진 반복 횟수만큼 동작을 반복합니다.',
+      execution:
+        '두 번째 멈춘 후 숨을 들이쉬면서 천천히 시작 위치로 돌아옵니다. 정해진 반복 횟수만큼 동작을 반복합니다.',
       transition: '',
     },
   },
@@ -11553,7 +11480,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Ab Roller는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손으로 Ab 롤러를 잡고 바닥에 무릎을 꿇습니다. 이제 복근 롤러를 앞 바닥에 놓고 두 손을 모두 잡고...',
-      execution: '천천히 ab 롤러를 앞으로 똑바로 굴려 몸을 곧은 자세로 쭉 펴세요. 팁: 바닥에 닿지 않고 최대한 멀리 내려가세요...',
+      execution:
+        '천천히 ab 롤러를 앞으로 똑바로 굴려 몸을 곧은 자세로 쭉 펴세요. 팁: 바닥에 닿지 않고 최대한 멀리 내려가세요...',
       transition: '',
     },
   },
@@ -11566,8 +11494,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '내전근은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 폼 롤 위에 올리고 엎드려 눕습니다. 폼롤이 허벅지 안쪽에 닿도록 다리를 회전시킵니다. 최대한 많은 무게를 초점으로 이동하세요...',
-      execution: '허벅지 안쪽의 근육을 이완시키려고 노력하면서 엉덩이와 무릎 사이의 폼을 굴려 10~30초 동안 긴장 지점을 유지합니다. 다시...',
+      setup:
+        '한쪽 다리를 폼 롤 위에 올리고 엎드려 눕습니다. 폼롤이 허벅지 안쪽에 닿도록 다리를 회전시킵니다. 최대한 많은 무게를 초점으로 이동하세요...',
+      execution:
+        '허벅지 안쪽의 근육을 이완시키려고 노력하면서 엉덩이와 무릎 사이의 폼을 굴려 10~30초 동안 긴장 지점을 유지합니다. 다시...',
       transition: '',
     },
   },
@@ -11581,8 +11511,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '내전근/사타구니는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 천장쪽으로 올린 채 등을 대고 눕습니다. 파트너에게 발이나 발목을 잡도록 하십시오. 다리를 최대한 멀리 외전하세요. 이것은...',
-      execution: '파트너가 방해하는 동안 10초 이상 다리를 함께 쥐어짜십시오. 이제 다음과 같이 다리 근육을 이완하세요...',
+      setup:
+        '발을 천장쪽으로 올린 채 등을 대고 눕습니다. 파트너에게 발이나 발목을 잡도록 하십시오. 다리를 최대한 멀리 외전하세요. 이것은...',
+      execution:
+        '파트너가 방해하는 동안 10초 이상 다리를 함께 쥐어짜십시오. 이제 다음과 같이 다리 근육을 이완하세요...',
       transition: '',
     },
   },
@@ -11595,8 +11527,10 @@ registerLanguageTranslations('ko', {
       '잠시 멈췄다가 반대 동작을 시작 위치로 되돌립니다.',
     ],
     audio: {
-      intro: '고급 케틀벨 윈드밀(Advanced Kettlebell Windmill)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 팔로 머리 위로 케틀벨을 클린하고 프레스합니다. 케틀벨을 항상 잠긴 상태에서 엉덩이를 잠금 방향으로 밀어내세요...',
+      intro:
+        '고급 케틀벨 윈드밀(Advanced Kettlebell Windmill)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 팔로 머리 위로 케틀벨을 클린하고 프레스합니다. 케틀벨을 항상 잠긴 상태에서 엉덩이를 잠금 방향으로 밀어내세요...',
       execution: '가능한 한 몸을 낮추십시오. 잠시 멈췄다가 반대 동작을 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -11613,8 +11547,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '에어바이크는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '허리를 바닥에 대고 바닥에 편평하게 눕습니다. 이 운동을 하려면 손을 머리 옆에 놓아야 합니다. 조심하세요...',
-      execution: '이제 동시에 오른쪽 다리를 앞으로 차고 왼쪽 다리의 무릎을 끌어당기는 사이클 페달 동작을 천천히 진행합니다. 당신의...',
+      setup:
+        '허리를 바닥에 대고 바닥에 편평하게 눕습니다. 이 운동을 하려면 손을 머리 옆에 놓아야 합니다. 조심하세요...',
+      execution:
+        '이제 동시에 오른쪽 다리를 앞으로 차고 왼쪽 다리의 무릎을 끌어당기는 사이클 페달 동작을 천천히 진행합니다. 당신의...',
       transition: '',
     },
   },
@@ -11627,7 +11563,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'All Fours Quad Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손과 무릎으로 시작한 다음 다리를 바닥에서 들어 올리고 손으로 발을 잡습니다. 손으로 발이나 발목을 잡고 계속...',
+      setup:
+        '손과 무릎으로 시작한 다음 다리를 바닥에서 들어 올리고 손으로 발을 잡습니다. 손으로 발이나 발목을 잡고 계속...',
       execution: '엉덩이를 펴고 바닥을 향해 밀어내는 데 집중하세요. 10~20초 동안 유지한 후 방향을 전환합니다.',
       transition: '',
     },
@@ -11644,7 +11581,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '얼터네이트 해머 컬(Alternate Hammer Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '상체를 똑바로 세우고 양손에 덤벨을 팔 길이만큼 잡고 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥...',
+      setup:
+        '상체를 똑바로 세우고 양손에 덤벨을 팔 길이만큼 잡고 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥...',
       execution: '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 올바른 중량을 앞으로 컬링합니다. ...',
       transition: '',
     },
@@ -11660,8 +11598,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Alternate Heel Touchers는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 바닥에 18-24인치 정도 벌린 채 바닥에 눕습니다. 팔은 옆으로 뻗어야 합니다. 이것은 당신이 될 것입니다...',
-      execution: '이제 숨을 들이쉬면서 천천히 시작 위치로 돌아갑니다. 이제 상체를 앞으로 숙이고 왼쪽으로 약 3-4인치 정도 위쪽으로 y를 터치하세요...',
+      setup:
+        '무릎을 구부리고 발을 바닥에 18-24인치 정도 벌린 채 바닥에 눕습니다. 팔은 옆으로 뻗어야 합니다. 이것은 당신이 될 것입니다...',
+      execution:
+        '이제 숨을 들이쉬면서 천천히 시작 위치로 돌아갑니다. 이제 상체를 앞으로 숙이고 왼쪽으로 약 3-4인치 정도 위쪽으로 y를 터치하세요...',
       transition: '',
     },
   },
@@ -11676,8 +11616,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Alternate Incline Dumbbell Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 팔 길이를 유지한 채 경사 벤치에 앉습니다. 팁: 팔꿈치를 몸통 가까이에 유지하세요. 이것이 당신의 별이 될 것입니다...',
-      execution: '숨을 들이쉬면서 천천히 덤벨을 시작 위치로 되돌립니다. 왼손으로 동작을 반복합니다. 이는 1회 반복과 같습니다.',
+      setup:
+        '양손에 덤벨을 들고 팔 길이를 유지한 채 경사 벤치에 앉습니다. 팁: 팔꿈치를 몸통 가까이에 유지하세요. 이것이 당신의 별이 될 것입니다...',
+      execution:
+        '숨을 들이쉬면서 천천히 덤벨을 시작 위치로 되돌립니다. 왼손으로 동작을 반복합니다. 이는 1회 반복과 같습니다.',
       transition: '',
     },
   },
@@ -11691,8 +11633,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Alternate Leg Diagonal Bound는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 발을 다른 발보다 약간 앞에 두고 편안한 자세를 취합니다. 앞다리로 밀면서 시작하고 반대쪽 무릎을 앞으로 밀어냅니다...',
-      execution: '바닥에 선을 긋고 좌우 거리를 측정하는 것이 도움이 될 수 있습니다. 다른 쪽 다리로 이 순서를 반복하세요.',
+      setup:
+        '한 발을 다른 발보다 약간 앞에 두고 편안한 자세를 취합니다. 앞다리로 밀면서 시작하고 반대쪽 무릎을 앞으로 밀어냅니다...',
+      execution:
+        '바닥에 선을 긋고 좌우 거리를 측정하는 것이 도움이 될 수 있습니다. 다른 쪽 다리로 이 순서를 반복하세요.',
       transition: '',
     },
   },
@@ -11706,8 +11650,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '교대 케이블 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케이블을 타워 하단으로 이동하고 적절한 무게를 선택합니다. 케이블을 잡고 손바닥이 앞쪽을 향하도록 어깨 높이로 잡습니다...',
-      execution: '머리와 가슴을 위로 유지한 채 팔꿈치를 확장하여 한쪽을 머리 바로 위로 누르십시오. 정상에서 잠시 멈춘 후 시작위치로 돌아간다...',
+      setup:
+        '케이블을 타워 하단으로 이동하고 적절한 무게를 선택합니다. 케이블을 잡고 손바닥이 앞쪽을 향하도록 어깨 높이로 잡습니다...',
+      execution:
+        '머리와 가슴을 위로 유지한 채 팔꿈치를 확장하여 한쪽을 머리 바로 위로 누르십시오. 정상에서 잠시 멈춘 후 시작위치로 돌아간다...',
       transition: '',
     },
   },
@@ -11722,8 +11668,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '교대 삼각근 올리기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '선 자세에서 덤벨 한 쌍을 옆구리에 잡습니다. 팔꿈치를 약간 구부린 상태에서 웨이트를 바로 앞쪽으로 들어 올리면...',
-      execution: '무게를 옆으로 되돌립니다. 다음 반복에서는 웨이트를 옆으로 들어올려 어깨 높이까지 옆으로 들어 올립니다.',
+      setup:
+        '선 자세에서 덤벨 한 쌍을 옆구리에 잡습니다. 팔꿈치를 약간 구부린 상태에서 웨이트를 바로 앞쪽으로 들어 올리면...',
+      execution:
+        '무게를 옆으로 되돌립니다. 다음 반복에서는 웨이트를 옆으로 들어올려 어깨 높이까지 옆으로 들어 올립니다.',
       transition: '',
     },
   },
@@ -11738,7 +11686,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Alternating Floor Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '케틀벨 두 개를 어깨 옆에 두고 바닥에 눕습니다. 하나는 가슴에 놓고 다른 하나는 케틀벨을 잡고...',
-      execution: '두 팔을 뻗어 케틀벨이 가슴 위에 오도록 하세요. 케틀벨 하나를 내려 가슴까지 가져오고 손목을 돌립니다...',
+      execution:
+        '두 팔을 뻗어 케틀벨이 가슴 위에 오도록 하세요. 케틀벨 하나를 내려 가슴까지 가져오고 손목을 돌립니다...',
       transition: '',
     },
   },
@@ -11751,7 +11700,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Alternative Hang Clean은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨 하나를 청소하세요...',
+      setup:
+        '두 개의 케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨 하나를 청소하세요...',
       execution: '청소한 케틀벨을 매달린 위치로 낮추고 대체 케틀벨을 청소합니다. 반복하다.',
       transition: '',
     },
@@ -11765,7 +11715,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Alternating Kettlebell Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 당기면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      setup:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 당기면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
       execution: '누른 케틀벨을 시작 위치로 낮추고 즉시 다른 팔로 누릅니다.',
       transition: '',
     },
@@ -11779,7 +11730,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 로우 교대 운동은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨 두 개를 발 앞에 놓습니다. 무릎을 살짝 구부리고 엉덩이를 최대한 밖으로 밀어냅니다. 몸을 굽히면서 ...',
+      setup:
+        '케틀벨 두 개를 발 앞에 놓습니다. 무릎을 살짝 구부리고 엉덩이를 최대한 밖으로 밀어냅니다. 몸을 굽히면서 ...',
       execution: '작업하는 팔의 케틀벨을 낮추고 다른 팔로 반복하세요.',
       transition: '',
     },
@@ -11792,8 +11744,10 @@ registerLanguageTranslations('ko', {
       '그런 다음 케틀벨을 바닥으로 내리고 반대쪽 손으로 케틀벨을 시작합니다. 여러 번 반복합니다.',
     ],
     audio: {
-      intro: '교대 레니게이드 로우(Alternate Renegade Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨 두 개를 어깨 너비만큼 벌려 바닥에 놓습니다. 마치 팔굽혀펴기를 하는 것처럼 발가락과 손을 대고 자세를 취하세요.',
+      intro:
+        '교대 레니게이드 로우(Alternate Renegade Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨 두 개를 어깨 너비만큼 벌려 바닥에 놓습니다. 마치 팔굽혀펴기를 하는 것처럼 발가락과 손을 대고 자세를 취하세요.',
       execution: '그런 다음 케틀벨을 바닥으로 내리고 반대쪽 손으로 케틀벨을 시작합니다. 여러 번 반복합니다.',
       transition: '',
     },
@@ -11807,7 +11761,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '발목 서클(Ankle Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스쿼트 랙과 같은 견고한 물체를 사용하여 몸을 고정하십시오. 오른쪽 다리를 공중으로 들어 올리고(바닥에서 약 2인치 정도) 원을 그리는 동작을 수행합니다...',
+      setup:
+        '스쿼트 랙과 같은 견고한 물체를 사용하여 몸을 고정하십시오. 오른쪽 다리를 공중으로 들어 올리고(바닥에서 약 2인치 정도) 원을 그리는 동작을 수행합니다...',
       execution: '오른발이 끝나면 왼쪽 다리로 반복하십시오.',
       transition: '',
     },
@@ -11822,7 +11777,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Ankle On The Knee는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '누운 자세에서 무릎을 구부리고 발을 바닥에 붙입니다. 한쪽 발의 발목을 반대쪽 무릎 위에 올려 놓습니다.',
-      execution: '아래쪽 다리의 허벅지나 무릎을 잡고 두 다리를 가슴쪽으로 당깁니다. 목과 어깨의 긴장을 풀어주세요. 10~20초 동안 유지한 후...',
+      execution:
+        '아래쪽 다리의 허벅지나 무릎을 잡고 두 다리를 가슴쪽으로 당깁니다. 목과 어깨의 긴장을 풀어주세요. 10~20초 동안 유지한 후...',
       transition: '',
     },
   },
@@ -11834,8 +11790,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '전경골근-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 구부리고 발을 바닥에 대고 바닥에 앉기 시작합니다. 근육 롤러나 밀대를 사용하여 근육에 압력을 가하세요...',
-      execution: '근육 롤러나 밀대를 사용하여 정강이 바깥쪽 근육에 압력을 가합니다. 무릎 바로 아래부터 발목 위까지 운동하세요...',
+      setup:
+        '다리를 구부리고 발을 바닥에 대고 바닥에 앉기 시작합니다. 근육 롤러나 밀대를 사용하여 근육에 압력을 가하세요...',
+      execution:
+        '근육 롤러나 밀대를 사용하여 정강이 바깥쪽 근육에 압력을 가합니다. 무릎 바로 아래부터 발목 위까지 운동하세요...',
       transition: '',
     },
   },
@@ -11849,8 +11807,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '반중력 프레스(Anti-Gravity Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '경사 벤치 머리 뒤의 바닥에 바를 놓습니다. 벤치에 엎드려 눕습니다. 회내 그립으로 바닥에서 바벨을 들어올립니다...',
-      execution: '시작하려면 팔꿈치를 펴서 머리 앞쪽으로 바벨을 누르세요. 동작 내내 팔을 지면과 평행하게 유지하세요. 레투...',
+      setup:
+        '경사 벤치 머리 뒤의 바닥에 바를 놓습니다. 벤치에 엎드려 눕습니다. 회내 그립으로 바닥에서 바벨을 들어올립니다...',
+      execution:
+        '시작하려면 팔꿈치를 펴서 머리 앞쪽으로 바벨을 누르세요. 동작 내내 팔을 지면과 평행하게 유지하세요. 레투...',
       transition: '',
     },
   },
@@ -11864,7 +11824,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '암서클은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '일어서서 팔을 옆으로 쭉 뻗으세요. 팔은 바닥과 평행해야 하며 몸통과 수직(90도 각도)이어야 합니다...',
-      execution: '약 10초 동안 팔을 쭉 뻗은 채로 원형 동작을 계속합니다. 그런 다음 반대 방향으로 이동하여 반대 방향으로 이동합니다.',
+      execution:
+        '약 10초 동안 팔을 쭉 뻗은 채로 원형 동작을 계속합니다. 그런 다음 반대 방향으로 이동하여 반대 방향으로 이동합니다.',
       transition: '',
     },
   },
@@ -11880,7 +11841,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Arnold Dumbbell Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등받이가 있는 운동 벤치에 앉아 손바닥이 몸을 향하게 하고 2개의 덤벨을 가슴 위쪽 높이에 들고...',
-      execution: '팔이 곧은 팔 위치에서 위로 뻗어질 때까지 덤벨을 계속 들어 올리세요. 이 동작을 수행하면서 숨을 내쉬세요...',
+      execution:
+        '팔이 곧은 팔 위치에서 위로 뻗어질 때까지 덤벨을 계속 들어 올리세요. 이 동작을 수행하면서 숨을 내쉬세요...',
       transition: '',
     },
   },
@@ -11908,8 +11870,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Atlas Stone Trainer는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 트레이너는 스톤을 사용할 수 없는 사람들을 위한 아틀라스 스톤의 근력을 키우는 데 효과적이며 일반적으로 바 엔드나 스톤으로 만들어집니다...',
-      execution: '무릎을 지나 엉덩이까지 뻗어 웨이트를 당기는 것으로 시작하세요. 무게가 무릎에 닿지 않도록 t에 올려서 랩핑할 수 있습니다...',
+      setup:
+        '이 트레이너는 스톤을 사용할 수 없는 사람들을 위한 아틀라스 스톤의 근력을 키우는 데 효과적이며 일반적으로 바 엔드나 스톤으로 만들어집니다...',
+      execution:
+        '무릎을 지나 엉덩이까지 뻗어 웨이트를 당기는 것으로 시작하세요. 무게가 무릎에 닿지 않도록 t에 올려서 랩핑할 수 있습니다...',
       transition: '',
     },
   },
@@ -11923,8 +11887,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '아틀라스 스톤즈(Atlas Stones)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 사이에 있는 아틀라스 스톤부터 시작하세요. 엉덩이를 구부려 아틀라스 스톤 주위에 팔을 수직으로 감싸고 손가락을 잡으려고 시도합니다...',
-      execution: '돌이 무릎을 지나갈 때 뒤로 앉아서 돌을 허벅지 위로 끌어당겨 랩을 하세요. 낮게 앉아 돌을 가슴 위로 높이 올리세요...',
+      setup:
+        '발 사이에 있는 아틀라스 스톤부터 시작하세요. 엉덩이를 구부려 아틀라스 스톤 주위에 팔을 수직으로 감싸고 손가락을 잡으려고 시도합니다...',
+      execution:
+        '돌이 무릎을 지나갈 때 뒤로 앉아서 돌을 허벅지 위로 끌어당겨 랩을 하세요. 낮게 앉아 돌을 가슴 위로 높이 올리세요...',
       transition: '',
     },
   },
@@ -11938,8 +11904,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '액슬 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바가 발 중앙에 오도록 바에 접근하세요. 발은 엉덩이 너비 정도 떨어져 있어야 합니다. 엉덩이를 구부려 어깨 너비로 바를 잡습니다...',
-      execution: '바가 무릎을 통과한 후 바를 공격적으로 뒤로 당기고 엉덩이를 바 쪽으로 밀어 넣으면서 견갑골을 함께 당깁니다. ...',
+      setup:
+        '바가 발 중앙에 오도록 바에 접근하세요. 발은 엉덩이 너비 정도 떨어져 있어야 합니다. 엉덩이를 구부려 어깨 너비로 바를 잡습니다...',
+      execution:
+        '바가 무릎을 통과한 후 바를 공격적으로 뒤로 당기고 엉덩이를 바 쪽으로 밀어 넣으면서 견갑골을 함께 당깁니다. ...',
       transition: '',
     },
   },
@@ -11955,8 +11923,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '백 플라이즈(Back Flyes) - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스쿼트 랙처럼 고정된 기둥 주위에 밴드를 달립니다. 밴드의 손잡이를 잡고 뒤로 물러서서 밴드의 장력을 높이세요.',
-      execution: '팔을 앞으로 쭉 뻗고 들어 올리세요. 팁: 팔은 몸통과 수직을 이루는 동시에 바닥과 평행해야 합니다. 네...',
+      setup:
+        '스쿼트 랙처럼 고정된 기둥 주위에 밴드를 달립니다. 밴드의 손잡이를 잡고 뒤로 물러서서 밴드의 장력을 높이세요.',
+      execution:
+        '팔을 앞으로 쭉 뻗고 들어 올리세요. 팁: 팔은 몸통과 수직을 이루는 동시에 바닥과 평행해야 합니다. 네...',
       transition: '',
     },
   },
@@ -11968,8 +11938,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '백워드 드래그(Backward Drag)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 무게의 썰매를 싣고, 붙잡을 수 있는 밧줄이나 끈을 썰매에 연결하세요. 한 차례 뒤로 이동하여 운동을 시작합니다...',
-      execution: '주어진 거리만큼 뒤로 이동하여 운동을 시작합니다. 뒤로 기대어 다리를 뻗어 짧은 걸음으로 최대한 빠르게 움직일 수 있습니다.',
+      setup:
+        '원하는 무게의 썰매를 싣고, 붙잡을 수 있는 밧줄이나 끈을 썰매에 연결하세요. 한 차례 뒤로 이동하여 운동을 시작합니다...',
+      execution:
+        '주어진 거리만큼 뒤로 이동하여 운동을 시작합니다. 뒤로 기대어 다리를 뻗어 짧은 걸음으로 최대한 빠르게 움직일 수 있습니다.',
       transition: '',
     },
   },
@@ -11982,9 +11954,12 @@ registerLanguageTranslations('ko', {
       '그러면 파트너가 공을 다시 당신에게 굴릴 수 있습니다. 원하는 반복 횟수만큼 반복합니다.',
     ],
     audio: {
-      intro: '뒤로 메디신볼 던지기(Backward Medicine Ball Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 파트너와 함께 하는 것이 가장 좋습니다. 파트너가 없으면 공을 던지고 회수하거나 벽에 던질 수 있습니다. 서서 시작하세요...',
-      execution: '스쿼트 자세를 취한 다음 강제로 방향을 바꾸어 완전히 뻗은 다음 공을 머리 위로 파트너에게 던집니다. 당신의 파트너는 할 수 없습니다...',
+      intro:
+        '뒤로 메디신볼 던지기(Backward Medicine Ball Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 운동은 파트너와 함께 하는 것이 가장 좋습니다. 파트너가 없으면 공을 던지고 회수하거나 벽에 던질 수 있습니다. 서서 시작하세요...',
+      execution:
+        '스쿼트 자세를 취한 다음 강제로 방향을 바꾸어 완전히 뻗은 다음 공을 머리 위로 파트너에게 던집니다. 당신의 파트너는 할 수 없습니다...',
       transition: '',
     },
   },
@@ -12013,8 +11988,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '볼 레그 컬(Ball Leg Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '공 위에 발을 올려놓고 바닥에 등을 대고 누워 시작하세요. 다리를 펼쳤을 때 발목이 바닥에 닿도록 공을 배치하세요.',
-      execution: '어깨 뼈와 발에 체중을 유지하면서 엉덩이를 땅에서 들어 올리십시오. 무릎을 구부리고 공을 당신 가까이로 당기세요...',
+      setup:
+        '공 위에 발을 올려놓고 바닥에 등을 대고 누워 시작하세요. 다리를 펼쳤을 때 발목이 바닥에 닿도록 공을 배치하세요.',
+      execution:
+        '어깨 뼈와 발에 체중을 유지하면서 엉덩이를 땅에서 들어 올리십시오. 무릎을 구부리고 공을 당신 가까이로 당기세요...',
       transition: '',
     },
   },
@@ -12028,8 +12005,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드 어시스트 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '풀업 바 중앙 주위에 밴드를 조입니다. 다양한 밴드를 사용하여 다양한 수준의 지원을 제공할 수 있습니다. 밴드 끝을 당겨 d...',
-      execution: '팔꿈치를 구부리면서 광배근을 수축하여 몸을 위쪽으로 당깁니다. 팔꿈치는 옆쪽으로 움직여야 합니다. 앞으로 당겨서 Y를 얻으려고 시도합니다...',
+      setup:
+        '풀업 바 중앙 주위에 밴드를 조입니다. 다양한 밴드를 사용하여 다양한 수준의 지원을 제공할 수 있습니다. 밴드 끝을 당겨 d...',
+      execution:
+        '팔꿈치를 구부리면서 광배근을 수축하여 몸을 위쪽으로 당깁니다. 팔꿈치는 옆쪽으로 움직여야 합니다. 앞으로 당겨서 Y를 얻으려고 시도합니다...',
       transition: '',
     },
   },
@@ -12042,7 +12021,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드 굿모닝은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '41인치 밴드를 사용하여 한쪽 끝으로 서서 발을 살짝 벌립니다. 엉덩이를 구부려 목 뒤에 밴드 끝을 고리 모양으로 만드세요. 이것은...',
+      setup:
+        '41인치 밴드를 사용하여 한쪽 끝으로 서서 발을 살짝 벌립니다. 엉덩이를 구부려 목 뒤에 밴드 끝을 고리 모양으로 만드세요. 이것은...',
       execution: '시작 위치로 내려갈 때 등이 굽지 않도록 주의하세요.',
       transition: '',
     },
@@ -12056,7 +12036,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드 굿모닝(풀 스루)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '기둥 주위에 밴드를 감습니다. 조금 떨어진 곳에 서서 반대쪽 끝을 목에 감습니다. 손을 사용하면 밴드를 제자리에 고정하는 데 도움이 됩니다. 부탁해...',
+      setup:
+        '기둥 주위에 밴드를 감습니다. 조금 떨어진 곳에 서서 반대쪽 끝을 목에 감습니다. 손을 사용하면 밴드를 제자리에 고정하는 데 도움이 됩니다. 부탁해...',
       execution: '엉덩이를 사용하여 시작 위치로 돌아가 서 있는 위치로 돌아옵니다.',
       transition: '',
     },
@@ -12073,8 +12054,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드 엉덩이 내전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '단단한 기둥이나 기타 물체 주위에 밴드를 고정합니다. 왼쪽을 포스트에 대고 서서 오른발을 밴드에 통과시키면서...',
-      execution: '필요한 경우 똑바로 서서 기둥을 잡으십시오. 이것이 당신의 시작 위치가 될 것입니다. 무릎을 곧게 펴고 오른쪽 다리를 위로 들어 올리세요...',
+      setup:
+        '단단한 기둥이나 기타 물체 주위에 밴드를 고정합니다. 왼쪽을 포스트에 대고 서서 오른발을 밴드에 통과시키면서...',
+      execution:
+        '필요한 경우 똑바로 서서 기둥을 잡으십시오. 이것이 당신의 시작 위치가 될 것입니다. 무릎을 곧게 펴고 오른쪽 다리를 위로 들어 올리세요...',
       transition: '',
     },
   },
@@ -12088,8 +12071,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드 풀 어파트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 밴드를 잡고 팔을 앞으로 쭉 뻗은 상태에서 시작하세요. 리버스 플라이 모트를 수행하여 이동을 시작합니다...',
-      execution: '동작을 수행하는 동안 팔꿈치를 펴고 밴드를 가슴까지 가져옵니다. 운동 중에는 어깨를 뒤로 젖히도록 하세요...',
+      setup:
+        '양손으로 밴드를 잡고 팔을 앞으로 쭉 뻗은 상태에서 시작하세요. 리버스 플라이 모트를 수행하여 이동을 시작합니다...',
+      execution:
+        '동작을 수행하는 동안 팔꿈치를 펴고 밴드를 가슴까지 가져옵니다. 운동 중에는 어깨를 뒤로 젖히도록 하세요...',
       transition: '',
     },
   },
@@ -12102,8 +12087,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드 스컬 크러셔(Band Skull Crusher)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밴드를 랙이나 벤치 바닥에 고정합니다. 밴드가 머리와 일직선이 되도록 벤치에 눕습니다. 밴드를 잡고 몸을 높이...',
-      execution: '팔꿈치를 확장하여 팔을 곧게 펴고 팔 윗부분을 제자리에 유지합니다. 동작의 최고 지점에서 잠시 멈췄다가 시작 위치로 돌아갑니다.',
+      setup:
+        '밴드를 랙이나 벤치 바닥에 고정합니다. 밴드가 머리와 일직선이 되도록 벤치에 눕습니다. 밴드를 잡고 몸을 높이...',
+      execution:
+        '팔꿈치를 확장하여 팔을 곧게 펴고 팔 윗부분을 제자리에 유지합니다. 동작의 최고 지점에서 잠시 멈췄다가 시작 위치로 돌아갑니다.',
       transition: '',
     },
   },
@@ -12118,7 +12105,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Barbell Ab Rollout은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '이 운동을 하려면 팔굽혀펴기 자세를 취해야 하지만 손을 바닥에 대는 대신 올림픽에 도전하게 될 것입니다...',
-      execution: '최고점에서 두 번째 수축을 한 후, 숨을 들이쉬면서 바벨을 천천히 시작 위치로 다시 굴리기 시작합니다. 추천을 위해 반복하세요...',
+      execution:
+        '최고점에서 두 번째 수축을 한 후, 숨을 들이쉬면서 바벨을 천천히 시작 위치로 다시 굴리기 시작합니다. 추천을 위해 반복하세요...',
       transition: '',
     },
   },
@@ -12131,7 +12119,8 @@ registerLanguageTranslations('ko', {
       '스트레칭 자세에서 두 번째 멈춘 후 숨을 내쉬면서 몸을 당겨 시작 위치로 돌아갑니다. 팁: 천천히 진행하고 항상 복근을 조이세요.',
     ],
     audio: {
-      intro: '바벨 복부 롤아웃(Barbell Ab Rollout) - 무릎 위 운동은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '바벨 복부 롤아웃(Barbell Ab Rollout) - 무릎 위 운동은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '각 측면에 5-10파운드의 올림픽 바벨을 들고 바닥에 무릎을 꿇습니다. 이제 바벨을 앞쪽 바닥에 놓아서...',
       execution: '천천히 바벨을 앞으로 똑바로 굴려 몸을 곧게 펴십시오. 팁: 바닥에 닿지 않고 최대한 멀리 내려가세요...',
       transition: '',
@@ -12148,8 +12137,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 벤치 프레스 - 미디엄 그립은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치에 누워보세요. 중간 너비의 그립(팔뚝과 몸통 ​​사이의 움직임 중간에 90도 각도를 만드는 그립)을 사용합니다.',
-      execution: '잠시 멈춘 후 숨을 내쉬면서 바를 다시 시작 위치로 밀어냅니다. 가슴 근육을 사용하여 바를 미는 데 집중합니다. 팔을 고정합니다...',
+      setup:
+        '평평한 벤치에 누워보세요. 중간 너비의 그립(팔뚝과 몸통 ​​사이의 움직임 중간에 90도 각도를 만드는 그립)을 사용합니다.',
+      execution:
+        '잠시 멈춘 후 숨을 내쉬면서 바를 다시 시작 위치로 밀어냅니다. 가슴 근육을 사용하여 바를 미는 데 집중합니다. 팔을 고정합니다...',
       transition: '',
     },
   },
@@ -12165,7 +12156,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바벨을 어깨너비로 잡고 상체를 곧게 펴고 일어선다. 손바닥이 앞을 향하고 팔꿈치는...',
-      execution: '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
+      execution:
+        '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
       transition: '',
     },
   },
@@ -12179,8 +12171,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '경사면에 누워 바벨 컬(Barbell Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '경사 벤치에 누워 팔로 바벨을 잡고 수평으로 늘어뜨립니다. 이것이 당신의 시작 위치가 될 것입니다. 그러는 동안...',
-      execution: '두 번째 수축 후 숨을 들이마시면서 천천히 시작 위치로 돌아갑니다. 팁: 끝까지 내려가는지 확인하세요. R에 대해서도 반복...',
+      setup:
+        '경사 벤치에 누워 팔로 바벨을 잡고 수평으로 늘어뜨립니다. 이것이 당신의 시작 위치가 될 것입니다. 그러는 동안...',
+      execution:
+        '두 번째 수축 후 숨을 들이마시면서 천천히 시작 위치로 돌아갑니다. 팁: 끝까지 내려가는지 확인하세요. R에 대해서도 반복...',
       transition: '',
     },
   },
@@ -12195,8 +12189,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로드된 바벨 앞에 서십시오. 등을 최대한 곧게 유지하면서 무릎을 구부리고 앞으로 구부려 미디엄을 이용해 바를 잡는다...',
-      execution: '바를 잡은 상태에서 다리로 밀어 리프트를 시작하는 동시에 숨을 내쉬면서 몸통을 바로 세우는 자세를 취합니다....',
+      setup:
+        '로드된 바벨 앞에 서십시오. 등을 최대한 곧게 유지하면서 무릎을 구부리고 앞으로 구부려 미디엄을 이용해 바를 잡는다...',
+      execution:
+        '바를 잡은 상태에서 다리로 밀어 리프트를 시작하는 동시에 숨을 내쉬면서 몸통을 바로 세우는 자세를 취합니다....',
       transition: '',
     },
   },
@@ -12212,8 +12208,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 풀 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 어깨 높이 바로 위의 랙에 바를 설치하세요. 일단 ...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 어깨 높이 바로 위의 랙에 바를 설치하세요. 일단 ...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -12226,7 +12224,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 글루트 브릿지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리 위에 바벨을 얹고 바닥에 앉기 시작합니다. 두꺼운 바를 사용하거나 바에 패드를 얹어 놓으면 불편함을 크게 줄일 수 있습니다...',
+      setup:
+        '다리 위에 바벨을 얹고 바닥에 앉기 시작합니다. 두꺼운 바를 사용하거나 바에 패드를 얹어 놓으면 불편함을 크게 줄일 수 있습니다...',
       execution: '최대한 멀리 확장한 다음 동작을 뒤집어 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -12241,9 +12240,11 @@ registerLanguageTranslations('ko', {
       '작업이 끝나면 바를 랙에 다시 놓습니다.',
     ],
     audio: {
-      intro: '바벨 길로틴 벤치 프레스(Barbell Guillotine Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '바벨 길로틴 벤치 프레스(Barbell Guillotine Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '중간폭 그립(팔뚝과 윗팔의 움직임 중간에 90도 각도를 만드는 그립)을 이용하여 B를 들어 올리는데...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
       transition: '',
     },
   },
@@ -12258,7 +12259,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 핵 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '팔 길이로 바벨을 잡고 발을 어깨 너비로 들고 똑바로 서십시오. 팁: 어깨 넓이 그립이 가장 좋습니다...',
-      execution: '발뒤꿈치를 중심으로 누르고 허벅지를 조이면서 숨을 내쉬면서 올라갑니다. 권장되는 반복 횟수만큼 반복하세요.',
+      execution:
+        '발뒤꿈치를 중심으로 누르고 허벅지를 조이면서 숨을 내쉬면서 올라갑니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
   },
@@ -12271,8 +12273,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 힙 스러스트(Barbell Hip Thrust)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바로 뒤에 벤치를 두고 바닥에 앉기 시작하세요. 다리 위에 바벨을 올려 놓으세요. 두꺼운 바를 사용하거나 바에 패드를 얹으면...',
-      execution: '발을 움직여 운동을 시작하고 바를 통해 엉덩이를 수직으로 확장하십시오. 체중은 어깨로 지탱되어야 합니다.',
+      setup:
+        '바로 뒤에 벤치를 두고 바닥에 앉기 시작하세요. 다리 위에 바벨을 올려 놓으세요. 두꺼운 바를 사용하거나 바에 패드를 얹으면...',
+      execution:
+        '발을 움직여 운동을 시작하고 바를 통해 엉덩이를 수직으로 확장하십시오. 체중은 어깨로 지탱되어야 합니다.',
       transition: '',
     },
   },
@@ -12288,7 +12292,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 인클라인 벤치 프레스 - 미디엄 그립은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '경사 벤치에 누워보세요. 중간 그립(팔뚝 사이의 움직임 중간에 90도 각도를 만드는 그립)을 사용하여...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
       transition: '',
     },
   },
@@ -12302,7 +12307,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 인클라인 숄더 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '인클라인 벤치에 누워보세요. 중간 너비 그립(어깨 너비보다 약간 넓은 그립)을 사용하여 랙에서 바를 들어 올려 잡습니다.',
+      setup:
+        '인클라인 벤치에 누워보세요. 중간 너비 그립(어깨 너비보다 약간 넓은 그립)을 사용하여 랙에서 바를 들어 올려 잡습니다.',
       execution: '숨을 들이쉬면서 바를 시작 위치로 되돌립니다. 권장되는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
@@ -12318,8 +12324,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 런지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 어깨 바로 아래 랙에 바를 설치하세요. 일단 ...',
-      execution: '랙에서 물러나 오른쪽 다리를 앞으로 내딛고 엉덩이를 아래로 쪼그려 앉은 상태에서 상체를 곧게 유지하고 균형을 유지합니다.',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 어깨 바로 아래 랙에 바를 설치하세요. 일단 ...',
+      execution:
+        '랙에서 물러나 오른쪽 다리를 앞으로 내딛고 엉덩이를 아래로 쪼그려 앉은 상태에서 상체를 곧게 유지하고 균형을 유지합니다.',
       transition: '',
     },
   },
@@ -12334,7 +12342,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 리어 델트 로우(Barbell Rear Delt Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은(어깨 너비보다 높은) 그립과 오버핸드(손바닥이 몸을 향하게 하는) 그립을 사용하여 바벨을 잡고 똑바로 선다. 무릎을 살짝 구부리고..',
+      setup:
+        '넓은(어깨 너비보다 높은) 그립과 오버핸드(손바닥이 몸을 향하게 하는) 그립을 사용하여 바벨을 잡고 똑바로 선다. 무릎을 살짝 구부리고..',
       execution: '윗팔을 몸통과 수직으로 유지하면서 뒤쪽 삼각근을 쥐고 숨을 쉬면서 바벨을 가슴 윗부분쪽으로 당깁니다.',
       transition: '',
     },
@@ -12347,8 +12356,10 @@ registerLanguageTranslations('ko', {
       '바가 최대한 앞으로 이동한 후 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '벤치에서 바벨 롤아웃(Barbell Rollout from Bench)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벤치 끝 근처 바닥에 로드된 바벨을 놓습니다. 벤치에 두 다리를 놓고 무릎을 꿇고 바벨을 중간에서 좁은 그립으로 잡습니다. ...',
+      intro:
+        '벤치에서 바벨 롤아웃(Barbell Rollout from Bench)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '벤치 끝 근처 바닥에 로드된 바벨을 놓습니다. 벤치에 두 다리를 놓고 무릎을 꿇고 바벨을 중간에서 좁은 그립으로 잡습니다. ...',
       execution: '바가 최대한 앞으로 이동한 후 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -12366,7 +12377,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 시트드 카프 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '평평한 벤치 앞쪽에 약 12인치 정도 블록을 놓습니다. 벤치에 앉아 발의 공을 블록 위에 놓습니다.',
-      execution: '누군가가 바벨을 무릎 위 3인치 정도 허벅지 위쪽에 놓고 그 자리에 고정하게 하세요. 이것이 당신의 시작 위치가 될 것입니다. 키워줘...',
+      execution:
+        '누군가가 바벨을 무릎 위 3인치 정도 허벅지 위쪽에 놓고 그 자리에 고정하게 하세요. 이것이 당신의 시작 위치가 될 것입니다. 키워줘...',
       transition: '',
     },
   },
@@ -12381,7 +12393,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스쿼트 랙에 등받이가 있는 벤치에 앉습니다. 머리 바로 위 높이에 바벨을 놓습니다. 내전된 그리로 바벨을 잡으세요.',
+      setup:
+        '스쿼트 랙에 등받이가 있는 벤치에 앉습니다. 머리 바로 위 높이에 바벨을 놓습니다. 내전된 그리로 바벨을 잡으세요.',
       execution: '숨을 들이쉬면서 천천히 바를 어깨까지 내립니다. 숨을 내쉬면서 바를 시작 위치로 다시 들어 올리십시오.',
       transition: '',
     },
@@ -12396,7 +12409,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 슈러그(Barbell Shrug)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양발을 어깨너비로 벌리고 똑바로 서서 양손으로 바벨을 잡고 프로네이티드 그립(손바닥이 몸을 향하도록)을 사용합니다.',
+      setup:
+        '양발을 어깨너비로 벌리고 똑바로 서서 양손으로 바벨을 잡고 프로네이티드 그립(손바닥이 몸을 향하도록)을 사용합니다.',
       execution: '숨을 들이쉬면서 천천히 시작 자세로 돌아옵니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -12411,7 +12425,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Barbell Shrug Behind The Back은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 똑바로 서서 양 손으로 등 뒤로 바벨을 쥐고 프로네티드 그립(손바닥이 뒤를 향하게)을 사용합니다.',
+      setup:
+        '발을 어깨 너비로 벌리고 똑바로 서서 양 손으로 등 뒤로 바벨을 쥐고 프로네티드 그립(손바닥이 뒤를 향하게)을 사용합니다.',
       execution: '숨을 들이쉬면서 천천히 시작 자세로 돌아옵니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -12427,7 +12442,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 사이드 벤드는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 뒤쪽(목 약간 아래)에 바벨을 놓고 똑바로 선다. 발은 어깨너비로 벌려야 합니다....',
-      execution: '이제 동작을 반복하되 대신 왼쪽으로 구부리세요. 잠시 기다렸다가 시작 위치로 돌아옵니다. 권장량만큼 반복하세요...',
+      execution:
+        '이제 동작을 반복하되 대신 왼쪽으로 구부리세요. 잠시 기다렸다가 시작 위치로 돌아옵니다. 권장량만큼 반복하세요...',
       transition: '',
     },
   },
@@ -12442,7 +12458,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 사이드 스플릿 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 뒤쪽(목 약간 아래)에 바벨을 놓고 똑바로 선다. 발은 넓게 벌려야 합니다...',
-      execution: '앞쪽 다리의 엉덩이와 무릎을 펴서 시작 위치로 돌아갑니다. 이 동작을 수행하면서 숨을 내쉬십시오. 추천을 수행한 후...',
+      execution:
+        '앞쪽 다리의 엉덩이와 무릎을 펴서 시작 위치로 돌아갑니다. 이 동작을 수행하면서 숨을 내쉬십시오. 추천을 수행한 후...',
       transition: '',
     },
   },
@@ -12458,8 +12475,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 랙의 바를 어깨 높이 바로 아래에 설정합니다. 일단...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 랙의 바를 어깨 높이 바로 아래에 설정합니다. 일단...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -12476,9 +12495,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '벤치에 바벨 스쿼트(Barbell Squat To A Bench)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 평평한 벤치나 상자를 뒤에 놓습니다. 플랫벤치는...',
-      execution: '그런 다음 키에 가장 잘 맞는 랙에 바를 설치하세요. 올바른 높이가 선택되고 바가 로드되면 바 아래로 들어가 바를 배치합니다...',
+      intro:
+        '벤치에 바벨 스쿼트(Barbell Squat To A Bench)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 평평한 벤치나 상자를 뒤에 놓습니다. 플랫벤치는...',
+      execution:
+        '그런 다음 키에 가장 잘 맞는 랙에 바를 설치하세요. 올바른 높이가 선택되고 바가 로드되면 바 아래로 들어가 바를 배치합니다...',
       transition: '',
     },
   },
@@ -12493,7 +12515,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '바벨 스텝업은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 뒤쪽(목 약간 아래)에 놓인 바벨을 잡고 똑바로 서서 높은 플랫폼 뒤에 똑바로 서세요...',
-      execution: '숨을 들이쉬면서 오른쪽 다리의 엉덩이와 무릎을 구부려 왼쪽 다리로 내려옵니다. 리그를 배치하여 원래의 선 자세로 돌아갑니다.',
+      execution:
+        '숨을 들이쉬면서 오른쪽 다리의 엉덩이와 무릎을 구부려 왼쪽 다리로 내려옵니다. 리그를 배치하여 원래의 선 자세로 돌아갑니다.',
       transition: '',
     },
   },
@@ -12507,8 +12530,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바벨 워킹 런지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 서서 바벨을 등 윗부분에 대고 서기 시작합니다. 한쪽 다리를 앞으로 내딛고 무릎을 구부려 몸을 아래로 내립니다.',
-      execution: '앞쪽 발의 뒤꿈치를 통해 주행하고 양쪽 무릎을 펴서 몸을 위로 올리십시오. 뒷발을 앞으로 내디디며 런지를 반복합니다.',
+      setup:
+        '발을 어깨 너비로 벌리고 서서 바벨을 등 윗부분에 대고 서기 시작합니다. 한쪽 다리를 앞으로 내딛고 무릎을 구부려 몸을 아래로 내립니다.',
+      execution:
+        '앞쪽 발의 뒤꿈치를 통해 주행하고 양쪽 무릎을 펴서 몸을 위로 올리십시오. 뒷발을 앞으로 내디디며 런지를 반복합니다.',
       transition: '',
     },
   },
@@ -12522,8 +12547,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '배틀링 로프(Battling Ropes)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 연습을 위해서는 15~20피트 떨어진 중앙에 고정된 무거운 로프가 필요합니다. 로프 앞에 서서 Y로 양손을 잡고...',
-      execution: '팔을 시작 위치로 떨어뜨리면서 반대쪽도 들어 올리세요. 계속해서 왼쪽 팔과 오른쪽 팔을 번갈아 가며 로프를 휘저으며...',
+      setup:
+        '이 연습을 위해서는 15~20피트 떨어진 중앙에 고정된 무거운 로프가 필요합니다. 로프 앞에 서서 Y로 양손을 잡고...',
+      execution:
+        '팔을 시작 위치로 떨어뜨리면서 반대쪽도 들어 올리세요. 계속해서 왼쪽 팔과 오른쪽 팔을 번갈아 가며 로프를 휘저으며...',
       transition: '',
     },
   },
@@ -12536,7 +12563,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Bear Crawl Sled Drags는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '하네스나 느슨한 웨이트 벨트를 착용하고 체인을 뒤쪽에 부착하여 썰매에서 멀어지도록 합니다. 몸을 굽혀서...',
-      execution: '왼쪽과 오른쪽을 번갈아 가며 다리로 운전하는 것으로 시작하십시오. 손을 사용하여 균형을 유지하고 당기는 데 도움을 줍니다. 움직일 때 등을 편 상태로 유지하세요...',
+      execution:
+        '왼쪽과 오른쪽을 번갈아 가며 다리로 운전하는 것으로 시작하십시오. 손을 사용하여 균형을 유지하고 당기는 데 도움을 줍니다. 움직일 때 등을 편 상태로 유지하세요...',
       transition: '',
     },
   },
@@ -12550,8 +12578,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '머리 뒤 가슴 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파트너와 함께 바닥에 똑바로 앉으십시오. 손을 손 뒤에 놓고 팔꿈치를 최대한 뒤로 밀어냅니다. 당신의 파트너...',
-      execution: '10초 이상 손을 머리 뒤에 둔 채 팔꿈치를 앞으로 부드럽게 당기십시오. 파트너는 팔꿈치가 굽어지는 것을 방지해야 합니다...',
+      setup:
+        '파트너와 함께 바닥에 똑바로 앉으십시오. 손을 손 뒤에 놓고 팔꿈치를 최대한 뒤로 밀어냅니다. 당신의 파트너...',
+      execution:
+        '10초 이상 손을 머리 뒤에 둔 채 팔꿈치를 앞으로 부드럽게 당기십시오. 파트너는 팔꿈치가 굽어지는 것을 방지해야 합니다...',
       transition: '',
     },
   },
@@ -12581,8 +12611,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤치 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '1~2피트 앞에 상자나 벤치를 두고 시작하세요. 발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 짧은 공연을 해보세요...',
-      execution: '이 자세에서 벗어나 엉덩이, 무릎, 발목까지 뻗어 최대한 높이 점프합니다. 팔을 앞뒤로 흔드세요. 뛰어넘어 ...',
+      setup:
+        '1~2피트 앞에 상자나 벤치를 두고 시작하세요. 발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 짧은 공연을 해보세요...',
+      execution:
+        '이 자세에서 벗어나 엉덩이, 무릎, 발목까지 뻗어 최대한 높이 점프합니다. 팔을 앞뒤로 흔드세요. 뛰어넘어 ...',
       transition: '',
     },
   },
@@ -12596,8 +12628,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤치프레스 - 파워리프팅은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '가능하면 벤치에 누워서 머리를 바 너머로 가져가십시오. 발을 아래로 집어넣고 등을 아치형으로 만드세요. 막대를 사용하여 도움을 주는 중...',
-      execution: '바를 가슴 아래쪽이나 배 위쪽으로 내립니다. 바, 손목, 팔꿈치는 항상 일직선을 유지해야 합니다. 바벨이 몸에 닿으면 잠시 멈춥니다...',
+      setup:
+        '가능하면 벤치에 누워서 머리를 바 너머로 가져가십시오. 발을 아래로 집어넣고 등을 아치형으로 만드세요. 막대를 사용하여 도움을 주는 중...',
+      execution:
+        '바를 가슴 아래쪽이나 배 위쪽으로 내립니다. 바, 손목, 팔꿈치는 항상 일직선을 유지해야 합니다. 바벨이 몸에 닿으면 잠시 멈춥니다...',
       transition: '',
     },
   },
@@ -12614,8 +12648,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤치 프레스 - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치를 사용하여 머리에 가장 가까운 벤치 다리 아래에 밴드를 고정합니다. 밴드가 고정되면 양쪽 손잡이를 잡고 눕습니다.',
-      execution: '팔을 뻗어서 어깨 너비로 밴드 손잡이를 앞쪽으로 잡습니다. 어깨 너비로 벌린 후 손목을 앞으로 회전시켜 ...',
+      setup:
+        '플랫 벤치를 사용하여 머리에 가장 가까운 벤치 다리 아래에 밴드를 고정합니다. 밴드가 고정되면 양쪽 손잡이를 잡고 눕습니다.',
+      execution:
+        '팔을 뻗어서 어깨 너비로 밴드 손잡이를 앞쪽으로 잡습니다. 어깨 너비로 벌린 후 손목을 앞으로 회전시켜 ...',
       transition: '',
     },
   },
@@ -12629,8 +12665,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인을 이용한 벤치프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '리더 체인을 조정하여 원하는 길이로 줄입니다. 체인을 바의 슬리브에 놓습니다. 벤치에 누워 머리를 뒤로 젖히세요...',
-      execution: '어깨를 펴지 않은 채 바를 랙 밖으로 당깁니다. 바를 쥐고 떼어내는 데 집중하세요. 바를 최저점으로 낮추세요..',
+      setup:
+        '리더 체인을 조정하여 원하는 길이로 줄입니다. 체인을 바의 슬리브에 놓습니다. 벤치에 누워 머리를 뒤로 젖히세요...',
+      execution:
+        '어깨를 펴지 않은 채 바를 랙 밖으로 당깁니다. 바를 쥐고 떼어내는 데 집중하세요. 바를 최저점으로 낮추세요..',
       transition: '',
     },
   },
@@ -12644,8 +12682,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤치 스프린트(Bench Sprint)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 발을 벤치나 상자 위에 놓고 발뒤꿈치를 가장자리에 가까이 대고 땅바닥에 서세요. 벤치 위에 발을 올려놓고 밀고 뻗어보세요...',
-      execution: '반대쪽 발을 박스 위에 착지하고 다른 발을 다시 시작 위치로 되돌립니다. 한 발에서 다른 발로 계속 번갈아 가며 ...',
+      setup:
+        '한쪽 발을 벤치나 상자 위에 놓고 발뒤꿈치를 가장자리에 가까이 대고 땅바닥에 서세요. 벤치 위에 발을 올려놓고 밀고 뻗어보세요...',
+      execution:
+        '반대쪽 발을 박스 위에 착지하고 다른 발을 다시 시작 위치로 되돌립니다. 한 발에서 다른 발로 계속 번갈아 가며 ...',
       transition: '',
     },
   },
@@ -12660,8 +12700,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤트암 바벨 풀오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 그립 너비로 바벨을 들고 플랫 벤치에 눕습니다. 팔을 구부린 상태에서 바를 가슴 위로 똑바로 잡습니다. 이것이 당신의 것이 될 것입니다...',
-      execution: '팔을 구부린 팔 자세를 유지한 채, 몸이 늘어나는 느낌이 들 때까지 숨을 들이쉬면서 머리 뒤로 원호를 그리며 천천히 무게를 내립니다.',
+      setup:
+        '어깨 그립 너비로 바벨을 들고 플랫 벤치에 눕습니다. 팔을 구부린 상태에서 바를 가슴 위로 똑바로 잡습니다. 이것이 당신의 것이 될 것입니다...',
+      execution:
+        '팔을 구부린 팔 자세를 유지한 채, 몸이 늘어나는 느낌이 들 때까지 숨을 들이쉬면서 머리 뒤로 원호를 그리며 천천히 무게를 내립니다.',
       transition: '',
     },
   },
@@ -12677,8 +12719,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤트암 덤벨 풀오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 덤벨을 세워 놓습니다. 덤벨이 벤치 상단에 단단히 고정되어 있는지 확인하고 벤치에 수직으로 눕습니다...',
-      execution: '양손으로 덤벨을 잡고 팔을 구부려 가슴 위로 수직으로 잡습니다. 두 손바닥이 밑면을 누르고 있어야 합니다...',
+      setup:
+        '플랫 벤치에 덤벨을 세워 놓습니다. 덤벨이 벤치 상단에 단단히 고정되어 있는지 확인하고 벤치에 수직으로 눕습니다...',
+      execution:
+        '양손으로 덤벨을 잡고 팔을 구부려 가슴 위로 수직으로 잡습니다. 두 손바닥이 밑면을 누르고 있어야 합니다...',
       transition: '',
     },
   },
@@ -12693,8 +12737,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '굽은 무릎 올리기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔을 옆구리 옆에 두고 바닥에 편평하게 눕습니다. 이제 무릎을 약 75도 각도로 구부리고 발을 바닥에서 대략 들어 올리세요...',
-      execution: '아래쪽 복근을 사용하여 다리를 75도 각도로 구부린 상태를 유지하면서 무릎을 몸쪽으로 가져옵니다. 들어올릴 때까지 이 동작을 계속하세요...',
+      setup:
+        '팔을 옆구리 옆에 두고 바닥에 편평하게 눕습니다. 이제 무릎을 약 75도 각도로 구부리고 발을 바닥에서 대략 들어 올리세요...',
+      execution:
+        '아래쪽 복근을 사용하여 다리를 75도 각도로 구부린 상태를 유지하면서 무릎을 몸쪽으로 가져옵니다. 들어올릴 때까지 이 동작을 계속하세요...',
       transition: '',
     },
   },
@@ -12708,8 +12754,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤트 오버 바벨 로우(Bent Over Barbell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '회내 그립(손바닥이 아래를 향함)으로 바벨을 잡고 무릎을 약간 구부린 다음 허리를 구부려 몸통을 앞으로 가져옵니다. k...',
-      execution: '그런 다음 숨을 들이마시며 천천히 바벨을 다시 시작 위치로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
+      setup:
+        '회내 그립(손바닥이 아래를 향함)으로 바벨을 잡고 무릎을 약간 구부린 다음 허리를 구부려 몸통을 앞으로 가져옵니다. k...',
+      execution:
+        '그런 다음 숨을 들이마시며 천천히 바벨을 다시 시작 위치로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
   },
@@ -12723,9 +12771,11 @@ registerLanguageTranslations('ko', {
       '권장 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '벤트 오버 덤벨 리어 델트 레이즈 위드 헤드 온 벤치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '벤트 오버 덤벨 리어 델트 레이즈 위드 헤드 온 벤치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 인클라인 벤치를 앞에 두고 똑바로 서세요. 등을 곧게 펴고 유지하면서...',
-      execution: '몸통을 앞쪽으로 움직이지 않게 유지하고 팔을 곧게 펴고 팔꿈치를 약간 구부린 다음 덤벨을 옆으로 곧게 들어올려...',
+      execution:
+        '몸통을 앞쪽으로 움직이지 않게 유지하고 팔을 곧게 펴고 팔꿈치를 약간 구부린 다음 덤벨을 옆으로 곧게 들어올려...',
       transition: '',
     },
   },
@@ -12740,8 +12790,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤트 오버 로우 풀리 사이드 레터럴은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '웨이트를 선택하고 오른손으로 로우 풀리 핸들을 잡습니다. 몸통이 바닥과 거의 평행이 될 때까지 허리를 구부립니다. 당신은...',
-      execution: '팔꿈치를 약간 구부린 오른쪽 팔을 팔이 바닥과 평행하고 오른쪽 귀와 일직선이 될 때까지 옆으로 들어 올립니다. 숨을 내쉬면서...',
+      setup:
+        '웨이트를 선택하고 오른손으로 로우 풀리 핸들을 잡습니다. 몸통이 바닥과 거의 평행이 될 때까지 허리를 구부립니다. 당신은...',
+      execution:
+        '팔꿈치를 약간 구부린 오른쪽 팔을 팔이 바닥과 평행하고 오른쪽 귀와 일직선이 될 때까지 옆으로 들어 올립니다. 숨을 내쉬면서...',
       transition: '',
     },
   },
@@ -12756,9 +12808,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하고 팔을 전환합니다.',
     ],
     audio: {
-      intro: '벤트 오버 원암 롱 바 로우(Bent Over One-Arm Long Bar Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '벤트 오버 원암 롱 바 로우(Bent Over One-Arm Long Bar Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '올림픽 바벨의 한쪽 끝에 무게를 싣습니다. 바벨의 다른 쪽 끝을 두 벽의 모서리에 놓으십시오. 아니면 푸...',
-      execution: '이제 무게가 실린 쪽의 플레이트 바로 뒤에 있는 한 팔로 바를 잡고 다른 손은 무릎 위에 놓습니다. 이것이 바로 당신이 될 것입니다...',
+      execution:
+        '이제 무게가 실린 쪽의 플레이트 바로 뒤에 있는 한 팔로 바를 잡고 다른 손은 무릎 위에 놓습니다. 이것이 바로 당신이 될 것입니다...',
       transition: '',
     },
   },
@@ -12773,9 +12827,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '벤트 오버 투 암 롱 바 로우(Bent Over Two-Arm Long Bar Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '벤트 오버 투 암 롱 바 로우(Bent Over Two-Arm Long Bar Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '올림픽 바벨의 한쪽 끝에 무게를 싣습니다. 바벨의 다른 쪽 끝을 두 벽의 모서리에 놓으십시오. 아니면 푸...',
-      execution: '이제 무게가 실린 쪽의 플레이트 바로 뒤에 있는 양팔로 바를 잡고 다른 손은 무릎 위에 놓습니다. 이것은 당신이 될 것입니다...',
+      execution:
+        '이제 무게가 실린 쪽의 플레이트 바로 뒤에 있는 양팔로 바를 잡고 다른 손은 무릎 위에 놓습니다. 이것은 당신이 될 것입니다...',
       transition: '',
     },
   },
@@ -12788,8 +12844,10 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '벤트 오버 투 덤벨 로우(Bent Over Two-Dumbbell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 쥐고(손바닥이 몸통을 향하도록) 무릎을 약간 구부리고 허리를 구부려 몸통을 앞으로 가져옵니다. 몸을 구부리면서 ...',
+      intro:
+        '벤트 오버 투 덤벨 로우(Bent Over Two-Dumbbell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '양손에 덤벨을 쥐고(손바닥이 몸통을 향하도록) 무릎을 약간 구부리고 허리를 구부려 몸통을 앞으로 가져옵니다. 몸을 구부리면서 ...',
       execution: '숨을 들이쉬면서 천천히 무게를 다시 시작 위치로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -12803,7 +12861,8 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '손바닥을 안쪽으로 한 벤트 오버 투 덤벨 로우는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '손바닥을 안쪽으로 한 벤트 오버 투 덤벨 로우는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 쥐고(손바닥이 서로 마주보게) 무릎을 살짝 구부리고 허리를 구부려 몸통을 앞으로 가져오세요.',
       execution: '숨을 들이쉬면서 천천히 무게를 다시 시작 위치로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
@@ -12818,16 +12877,16 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '벤트 프레스(Bent Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 들어올리면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 합니다...',
-      execution: '머리 위로 케틀벨을 들고 똑바로 선 자세로 돌아갑니다. 케틀벨을 어깨로 되돌리고 원하는 반복 횟수만큼 반복합니다...',
+      setup:
+        '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 들어올리면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 합니다...',
+      execution:
+        '머리 위로 케틀벨을 들고 똑바로 선 자세로 돌아갑니다. 케틀벨을 어깨로 되돌리고 원하는 반복 횟수만큼 반복합니다...',
       transition: '',
     },
   },
   fed_bicycling: {
     name: '자전거',
-    instructions: [
-      '시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요.',
-    ],
+    instructions: ['시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요.'],
     audio: {
       intro: '자전거 타기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요.',
@@ -12843,8 +12902,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '자전거 타기, 고정식은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요. 메뉴에서 원하는 옵션을 선택하세요. 페달을 밟아야 할 수도 있습니다...',
-      execution: '메뉴에서 원하는 옵션을 선택하세요. 전원을 켜려면 페달을 밟아야 할 수도 있습니다. 수동설정을 이용하셔도 되고, 프로그램을 선택하셔도 됩니다...',
+      setup:
+        '시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요. 메뉴에서 원하는 옵션을 선택하세요. 페달을 밟아야 할 수도 있습니다...',
+      execution:
+        '메뉴에서 원하는 옵션을 선택하세요. 전원을 켜려면 페달을 밟아야 할 수도 있습니다. 수동설정을 이용하셔도 되고, 프로그램을 선택하셔도 됩니다...',
       transition: '',
     },
   },
@@ -12858,8 +12919,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '보드 프레스(Board Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '가능하면 벤치에 누워서 머리를 바 너머로 가져가십시오. 2x6으로 구성된 1~5개의 보드를 함께 나사로 고정하여 고정할 수 있습니다.',
-      execution: '표준 벤치 그립이나 어깨 너비를 사용하여 삼두근에 집중할 수 있습니다. 어깨를 펴지 않은 채 바를 랙 밖으로 당깁니다. 그...',
+      setup:
+        '가능하면 벤치에 누워서 머리를 바 너머로 가져가십시오. 2x6으로 구성된 1~5개의 보드를 함께 나사로 고정하여 고정할 수 있습니다.',
+      execution:
+        '표준 벤치 그립이나 어깨 너비를 사용하여 삼두근에 집중할 수 있습니다. 어깨를 펴지 않은 채 바를 랙 밖으로 당깁니다. 그...',
       transition: '',
     },
   },
@@ -12874,8 +12937,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Body Tricep Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '랙에 바를 가슴 높이에 놓습니다. 서서 어깨 너비로 바를 잡고 뒤로 1~2야드 정도 발을 모으고 팔을 쭉 뻗습니다...',
-      execution: '팔꿈치를 구부리고 바쪽으로 몸을 낮추는 것으로 시작하십시오. 잠시 멈췄다가 팔꿈치를 펴서 동작을 반대로 하세요.',
+      setup:
+        '랙에 바를 가슴 높이에 놓습니다. 서서 어깨 너비로 바를 잡고 뒤로 1~2야드 정도 발을 모으고 팔을 쭉 뻗습니다...',
+      execution:
+        '팔꿈치를 구부리고 바쪽으로 몸을 낮추는 것으로 시작하십시오. 잠시 멈췄다가 팔꿈치를 펴서 동작을 반대로 하세요.',
       transition: '',
     },
   },
@@ -12889,7 +12954,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바디업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 플랭크 자세를 취하세요. 발가락과 팔뚝으로 체중을 지탱하고 몸통을 곧게 유지해야 합니다. 당신의 앞니...',
+      setup:
+        '바닥에 플랭크 자세를 취하세요. 발가락과 팔뚝으로 체중을 지탱하고 몸통을 곧게 유지해야 합니다. 당신의 앞니...',
       execution: '팔꿈치를 구부리면서 팔뚝을 다시 바닥으로 천천히 내립니다. 반복하다.',
       transition: '',
     },
@@ -12905,8 +12971,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Bodyweight Flyes는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '동일한 하중을 가한 두 개의 EZ 바를 지면에 나란히 배치합니다. 굴릴 수 있는지 확인하십시오. 바 위에서 푸시업 자세를 취하고 지지하세요...',
-      execution: '바에 손을 올려보세요. 이것이 당신의 시작 위치가 될 것입니다. 느리고 절제된 동작을 사용하여 손을 중앙선에서 멀리 이동합니다...',
+      setup:
+        '동일한 하중을 가한 두 개의 EZ 바를 지면에 나란히 배치합니다. 굴릴 수 있는지 확인하십시오. 바 위에서 푸시업 자세를 취하고 지지하세요...',
+      execution:
+        '바에 손을 올려보세요. 이것이 당신의 시작 위치가 될 것입니다. 느리고 절제된 동작을 사용하여 손을 중앙선에서 멀리 이동합니다...',
       transition: '',
     },
   },
@@ -12919,7 +12987,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Bodyweight Mid Row는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥이 바깥쪽을 향하게 하여 풀업 기구를 중간에서 넓은 그립으로 잡는 것으로 시작하십시오. 매달린 자세에서 무릎을 몸 쪽으로 끌어당기세요...',
+      setup:
+        '손바닥이 바깥쪽을 향하게 하여 풀업 기구를 중간에서 넓은 그립으로 잡는 것으로 시작하십시오. 매달린 자세에서 무릎을 몸 쪽으로 끌어당기세요...',
       execution: '잠시 멈춘 후 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -12933,8 +13002,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바디웨이트 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 서세요. 머리 뒤에 손을 놓을 수 있습니다. 이것이 당신의 시작 위치가 될 것입니다. fl로 움직임을 시작하세요...',
-      execution: '가능하다면 최대 깊이까지 계속 내려가고 시작 위치로 돌아올 때까지 동작을 빠르게 되돌리세요. 쪼그려 앉을 때 머리를 숙이세요...',
+      setup:
+        '발을 어깨 너비로 벌리고 서세요. 머리 뒤에 손을 놓을 수 있습니다. 이것이 당신의 시작 위치가 될 것입니다. fl로 움직임을 시작하세요...',
+      execution:
+        '가능하다면 최대 깊이까지 계속 내려가고 시작 위치로 돌아올 때까지 동작을 빠르게 되돌리세요. 쪼그려 앉을 때 머리를 숙이세요...',
       transition: '',
     },
   },
@@ -12948,8 +13019,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바디웨이트 워킹 런지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 손을 엉덩이에 얹고 서서 시작하세요. 한쪽 다리를 앞으로 내딛고 무릎을 구부려 엉덩이를 떨어뜨립니다. 데...',
-      execution: '앞쪽 발의 뒤꿈치를 통해 주행하고 양쪽 무릎을 펴서 몸을 위로 올리십시오. 뒷발을 앞으로 내디디며 런지를 반복합니다.',
+      setup:
+        '발을 어깨 너비로 벌리고 손을 엉덩이에 얹고 서서 시작하세요. 한쪽 다리를 앞으로 내딛고 무릎을 구부려 엉덩이를 떨어뜨립니다. 데...',
+      execution:
+        '앞쪽 발의 뒤꿈치를 통해 주행하고 양쪽 무릎을 펴서 몸을 위로 올리십시오. 뒷발을 앞으로 내디디며 런지를 반복합니다.',
       transition: '',
     },
   },
@@ -12968,9 +13041,12 @@ registerLanguageTranslations('ko', {
       '팔을 옆으로 내리세요. 똑바로 유지하십시오. 교대로 측면 굽힘을 시작하십시오. 발뒤꿈치를 잡으세요! 이 마무리 동작은 경사근에 초점을 맞춥니다.',
     ],
     audio: {
-      intro: '사이드 벤드를 사용한 보수 볼 케이블 크런치(Bosu Ball Cable Crunch With Side Bends)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케이블 기계의 각 암에 표준 핸들을 연결하고 가장 아래쪽 위치에 배치합니다. 보수볼을 잡고 앞쪽에 배치하세요...',
-      execution: '등의 작은 부분을 공 주위로 아치형으로 유지한 채 보수 공 위에 눕습니다. 뒤쪽 끝은 바닥에 닿지 않고 바닥에 가까워야 합니다. ...',
+      intro:
+        '사이드 벤드를 사용한 보수 볼 케이블 크런치(Bosu Ball Cable Crunch With Side Bends)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케이블 기계의 각 암에 표준 핸들을 연결하고 가장 아래쪽 위치에 배치합니다. 보수볼을 잡고 앞쪽에 배치하세요...',
+      execution:
+        '등의 작은 부분을 공 주위로 아치형으로 유지한 채 보수 공 위에 눕습니다. 뒤쪽 끝은 바닥에 닿지 않고 바닥에 가까워야 합니다. ...',
       transition: '',
     },
   },
@@ -12983,7 +13059,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바텀스업(Bottom Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 등을 대고 누워 시작하세요. 다리는 곧게 펴야 하고 팔은 몸 옆에 있어야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 수행하려면...',
+      setup:
+        '바닥에 등을 대고 누워 시작하세요. 다리는 곧게 펴야 하고 팔은 몸 옆에 있어야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 수행하려면...',
       execution: '잠시 멈춘 후 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -12996,8 +13073,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '행 포지션에서 상향식 클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손에 케틀벨을 들고 똑바로 서서 운동을 시작하세요. 케틀벨을 힘차게 뒤로 흔든 다음 동작을 힘차게 역방향으로 돌리세요...',
-      execution: '케틀벨을 힘차게 뒤로 흔든 다음 힘차게 동작을 반대로 바꾸세요. 케틀벨 손잡이를 최대한 세게 부숴 케틀베를 들어올려...',
+      setup:
+        '한 손에 케틀벨을 들고 똑바로 서서 운동을 시작하세요. 케틀벨을 힘차게 뒤로 흔든 다음 동작을 힘차게 역방향으로 돌리세요...',
+      execution:
+        '케틀벨을 힘차게 뒤로 흔든 다음 힘차게 동작을 반대로 바꾸세요. 케틀벨 손잡이를 최대한 세게 부숴 케틀베를 들어올려...',
       transition: '',
     },
   },
@@ -13010,7 +13089,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '박스 점프(다중 반응)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '대략 팔 길이만큼 떨어진 상자나 플랫폼을 바라보며 편안한 자세를 취합니다. 팔은 옆으로 내려야 하며 다리는 약간 구부려야 합니다. 우시...',
+      setup:
+        '대략 팔 길이만큼 떨어진 상자나 플랫폼을 바라보며 편안한 자세를 취합니다. 팔은 옆으로 내려야 하며 다리는 약간 구부려야 합니다. 우시...',
       execution: '즉시 원래 시작 위치로 떨어지거나 뛰어내립니다. 그런 다음 순서를 반복하십시오.',
       transition: '',
     },
@@ -13026,8 +13106,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Box Skip은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '약 8피트 간격으로 늘어선 여러 개의 상자가 필요합니다. 한쪽 다리를 다른 쪽 다리보다 약간 뒤에 두고 첫 번째 상자를 바라보기 시작합니다.',
-      execution: '가능한 한 엉덩이 높이를 높이려고 뒷다리를 떼어냅니다. 박스에 착지하자마자 반대쪽 다리를 앞으로 움직여...',
+      setup:
+        '약 8피트 간격으로 늘어선 여러 개의 상자가 필요합니다. 한쪽 다리를 다른 쪽 다리보다 약간 뒤에 두고 첫 번째 상자를 바라보기 시작합니다.',
+      execution:
+        '가능한 한 엉덩이 높이를 높이려고 뒷다리를 떼어냅니다. 박스에 착지하자마자 반대쪽 다리를 앞으로 움직여...',
       transition: '',
     },
   },
@@ -13041,8 +13123,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '박스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '박스 스쿼트를 하면 원하는 깊이까지 스쿼트할 수 있고 스쿼트 동작에서 폭발적인 근력을 키울 수 있습니다. 상단에 상자가 있는 파워 랙에서 시작하세요...',
-      execution: '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 자리에 앉을 때까지 엉덩이를 대고 앉으세요...',
+      setup:
+        '박스 스쿼트를 하면 원하는 깊이까지 스쿼트할 수 있고 스쿼트 동작에서 폭발적인 근력을 키울 수 있습니다. 상단에 상자가 있는 파워 랙에서 시작하세요...',
+      execution:
+        '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 자리에 앉을 때까지 엉덩이를 대고 앉으세요...',
       transition: '',
     },
   },
@@ -13056,8 +13140,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 박스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '뒤에 적절한 높이에 상자가 있는 파워 랙에서 시작하십시오. 밴드 페그, 랙 또는 d에 고정된 밴드를 소매에 설치합니다...',
-      execution: '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 자리에 앉을 때까지 엉덩이를 대고 앉으세요...',
+      setup:
+        '뒤에 적절한 높이에 상자가 있는 파워 랙에서 시작하십시오. 밴드 페그, 랙 또는 d에 고정된 밴드를 소매에 설치합니다...',
+      execution:
+        '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 자리에 앉을 때까지 엉덩이를 대고 앉으세요...',
       transition: '',
     },
   },
@@ -13072,8 +13158,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인을 이용한 박스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '뒤에 적절한 높이에 상자가 있는 파워 랙에서 시작하십시오. 일반적으로 평행 스쿼트에 도달할 수 있는 상자 높이를 목표로 합니다...',
-      execution: '바 아래로 들어가 어깨 뒤쪽에 위치시키는 것부터 시작하세요. 견갑골을 함께 쥐고 팔꿈치를 회전시키세요...',
+      setup:
+        '뒤에 적절한 높이에 상자가 있는 파워 랙에서 시작하십시오. 일반적으로 평행 스쿼트에 도달할 수 있는 상자 높이를 목표로 합니다...',
+      execution:
+        '바 아래로 들어가 어깨 뒤쪽에 위치시키는 것부터 시작하세요. 견갑골을 함께 쥐고 팔꿈치를 회전시키세요...',
       transition: '',
     },
   },
@@ -13085,8 +13173,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '상완근-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '옆으로 누워서 팔 위쪽을 폼 롤러에 대고 눕습니다. 윗팔은 신체와 어느 정도 정렬되어야 하며, 팔의 바깥쪽은...',
-      execution: '팔과 발로 체중을 지탱하면서 엉덩이를 바닥에서 들어 올리세요. 10~30초 동안 유지한 후 방향을 전환합니다.',
+      setup:
+        '옆으로 누워서 팔 위쪽을 폼 롤러에 대고 눕습니다. 윗팔은 신체와 어느 정도 정렬되어야 하며, 팔의 바깥쪽은...',
+      execution:
+        '팔과 발로 체중을 지탱하면서 엉덩이를 바닥에서 들어 올리세요. 10~30초 동안 유지한 후 방향을 전환합니다.',
       transition: '',
     },
   },
@@ -13102,8 +13192,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Bradford/Rocky Presses는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '내전 그립(손바닥이 앞을 향함)으로 어깨 높이에 바가 있는 밀리터리 프레스 벤치에 앉습니다. 팁: 그립은 어깨보다 넓어야 합니다...',
-      execution: '이제 숨을 들이쉬면서 천천히 바를 머리 뒤쪽으로 내립니다. 숨을 내쉬면서 바를 시작 위치로 다시 들어 올리십시오.',
+      setup:
+        '내전 그립(손바닥이 앞을 향함)으로 어깨 높이에 바가 있는 밀리터리 프레스 벤치에 앉습니다. 팁: 그립은 어깨보다 넓어야 합니다...',
+      execution:
+        '이제 숨을 들이쉬면서 천천히 바를 머리 뒤쪽으로 내립니다. 숨을 내쉬면서 바를 시작 위치로 다시 들어 올리십시오.',
       transition: '',
     },
   },
@@ -13116,7 +13208,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '엉덩이 들기(브릿지)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 옆에 두고 무릎을 구부린 채 등을 대고 바닥에 편평하게 눕습니다. 발은 어깨 너비만큼 위치해야 합니다. 이것은...',
+      setup:
+        '손을 옆에 두고 무릎을 구부린 채 등을 대고 바닥에 편평하게 눕습니다. 발은 어깨 너비만큼 위치해야 합니다. 이것은...',
       execution: '숨을 들이마시면서 천천히 시작자세로 돌아옵니다.',
       transition: '',
     },
@@ -13132,8 +13225,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '엉덩이 업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔굽혀펴기 자세를 시작하되 팔꿈치를 바닥에 대고 팔뚝에 얹습니다. 팔은 90도 각도로 구부려야 합니다. 아치형...',
-      execution: '둔근을 천장 쪽으로 올리고, 복근을 꽉 조여 흉곽과 엉덩이 사이의 거리를 좁힙니다. 최종 결과는 다음과 같습니다...',
+      setup:
+        '팔굽혀펴기 자세를 시작하되 팔꿈치를 바닥에 대고 팔뚝에 얹습니다. 팔은 90도 각도로 구부려야 합니다. 아치형...',
+      execution:
+        '둔근을 천장 쪽으로 올리고, 복근을 꽉 조여 흉곽과 엉덩이 사이의 거리를 좁힙니다. 최종 결과는 다음과 같습니다...',
       transition: '',
     },
   },
@@ -13148,8 +13243,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '버터플라이는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '패드 위에 등을 편평하게 대고 머신 위에 앉으세요. 손잡이를 잡으세요. 팁: 윗팔은 바닥과 평행하게 위치해야 합니다. 조정해...',
-      execution: '가슴 중앙을 조이면서 손잡이를 천천히 함께 밀어 넣으세요. 동작 중 이 부분에서 숨을 내쉬고 수축을 잠시 동안 유지하세요...',
+      setup:
+        '패드 위에 등을 편평하게 대고 머신 위에 앉으세요. 손잡이를 잡으세요. 팁: 윗팔은 바닥과 평행하게 위치해야 합니다. 조정해...',
+      execution:
+        '가슴 중앙을 조이면서 손잡이를 천천히 함께 밀어 넣으세요. 동작 중 이 부분에서 숨을 내쉬고 수축을 잠시 동안 유지하세요...',
       transition: '',
     },
   },
@@ -13164,7 +13261,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '케이블 체스트 프레스(Cable Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무게를 적당량 조절한 후 손잡이를 잡고 앉으세요. 윗팔은 몸과 약 45도 각도를 이루어야 하며, 허리는...',
-      execution: '완전히 뻗은 상태에서 잠시 멈춘 후 케이블에 장력을 유지하면서 시작 위치로 돌아갑니다. 등을 대고 이 동작을 실행할 수도 있습니다...',
+      execution:
+        '완전히 뻗은 상태에서 잠시 멈춘 후 케이블에 장력을 유지하면서 시작 위치로 돌아갑니다. 등을 대고 이 동작을 실행할 수도 있습니다...',
       transition: '',
     },
   },
@@ -13180,7 +13278,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '케이블 크로스오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작 위치로 들어가려면 도르래를 높은 위치(머리 위)에 놓고 사용할 저항을 선택한 다음 p를 잡습니다.',
-      execution: '이두근 힘줄의 스트레스를 방지하기 위해 팔꿈치를 약간 구부린 상태에서 팔을 옆으로(양쪽에서 직선으로) 뻗으십시오...',
+      execution:
+        '이두근 힘줄의 스트레스를 방지하기 위해 팔꿈치를 약간 구부린 상태에서 팔을 옆으로(양쪽에서 직선으로) 뻗으십시오...',
       transition: '',
     },
   },
@@ -13196,8 +13295,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프가 부착된 높은 도르래 아래에 무릎을 꿇어보세요. 케이블 로프 부착물을 잡고 손이 몸 옆에 놓일 때까지 로프를 내립니다.',
-      execution: '엉덩이를 약간 구부리고 체중이 허리를 과도하게 확장하도록 허용합니다. 이것이 당신의 시작 위치가 될 것입니다. 엉덩이를 고정한 상태에서 엉덩이를 구부리세요...',
+      setup:
+        '로프가 부착된 높은 도르래 아래에 무릎을 꿇어보세요. 케이블 로프 부착물을 잡고 손이 몸 옆에 놓일 때까지 로프를 내립니다.',
+      execution:
+        '엉덩이를 약간 구부리고 체중이 허리를 과도하게 확장하도록 허용합니다. 이것이 당신의 시작 위치가 될 것입니다. 엉덩이를 고정한 상태에서 엉덩이를 구부리세요...',
       transition: '',
     },
   },
@@ -13211,8 +13312,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케이블을 타워 바닥으로 이동하고 적절한 무게를 선택합니다. 기둥 사이에 직접 서십시오. 시작하려면 유연하게 쪼그리고 앉으세요...',
-      execution: '그것들을 파악한 후 상승을 시작하십시오. 발 뒤꿈치를 통해 운전하면 손을 옆에 매달린 상태에서 엉덩이와 무릎이 확장됩니다. 그 사람을 지키세요...',
+      setup:
+        '케이블을 타워 바닥으로 이동하고 적절한 무게를 선택합니다. 기둥 사이에 직접 서십시오. 시작하려면 유연하게 쪼그리고 앉으세요...',
+      execution:
+        '그것들을 파악한 후 상승을 시작하십시오. 발 뒤꿈치를 통해 운전하면 손을 옆에 매달린 상태에서 엉덩이와 무릎이 확장됩니다. 그 사람을 지키세요...',
       transition: '',
     },
   },
@@ -13228,8 +13331,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 해머 컬 - 로프 부착은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '낮은 도르래에 로프 부착물을 부착하고 기계로부터 약 12인치 떨어진 곳에 기계를 바라보고 서 있습니다. 중립(손바닥 안쪽) 그립으로 로프를 잡습니다...',
-      execution: '팔꿈치를 몸 옆에 두고 전체 동작 동안 고정된 상태를 유지하십시오. 팁: 팔뚝만 움직여야 합니다. 팔뚝이 아니라....',
+      setup:
+        '낮은 도르래에 로프 부착물을 부착하고 기계로부터 약 12인치 떨어진 곳에 기계를 바라보고 서 있습니다. 중립(손바닥 안쪽) 그립으로 로프를 잡습니다...',
+      execution:
+        '팔꿈치를 몸 옆에 두고 전체 동작 동안 고정된 상태를 유지하십시오. 팁: 팔뚝만 움직여야 합니다. 팔뚝이 아니라....',
       transition: '',
     },
   },
@@ -13246,7 +13351,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 고관절 내전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리는 도르래 옆에 두고 다른 쪽 다리는 멀리 두고 앞쪽을 향한 낮은 도르래 앞에 서 있습니다. 발목 커프를 케이블에 연결하고...',
+      setup:
+        '한쪽 다리는 도르래 옆에 두고 다른 쪽 다리는 멀리 두고 앞쪽을 향한 낮은 도르래 앞에 서 있습니다. 발목 커프를 케이블에 연결하고...',
       execution: '이제 넓은 자세로 스택에서 나와 도르래 시스템의 바를 잡으십시오. 발목 커프가 없는 발로 서세요...',
       transition: '',
     },
@@ -13261,9 +13367,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '케이블 인클라인 푸시다운(Cable Incline Pushdown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '직선 바가 부착된 하이 풀리 기계 반대쪽을 향한 벤치 경사면에 눕습니다. 머리 위로 직선 바 부착물을 잡습니다...',
-      execution: '팔 위쪽을 고정한 상태에서 바가 머리 위로 직선이 될 때까지 팔을 반원 모양으로 뒤로 들어 올리세요. 이 부분 동안 숨을 들이쉬세요...',
+      intro:
+        '케이블 인클라인 푸시다운(Cable Incline Pushdown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '직선 바가 부착된 하이 풀리 기계 반대쪽을 향한 벤치 경사면에 눕습니다. 머리 위로 직선 바 부착물을 잡습니다...',
+      execution:
+        '팔 위쪽을 고정한 상태에서 바가 머리 위로 직선이 될 때까지 팔을 반원 모양으로 뒤로 들어 올리세요. 이 부분 동안 숨을 들이쉬세요...',
       transition: '',
     },
   },
@@ -13277,9 +13386,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '케이블 인클라인 트라이셉스 익스텐션(Cable Incline Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '직선 바가 부착된 하이 풀리 기계 반대쪽을 향한 벤치 경사면에 눕습니다. 머리 위로 직선 바 부착물을 잡습니다...',
-      execution: '팔 위쪽을 고정한 상태에서 삼두근을 구부리면서 팔을 펴세요. 이 동작 동안 숨을 내쉬고 수축을 유지하세요...',
+      intro:
+        '케이블 인클라인 트라이셉스 익스텐션(Cable Incline Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '직선 바가 부착된 하이 풀리 기계 반대쪽을 향한 벤치 경사면에 눕습니다. 머리 위로 직선 바 부착물을 잡습니다...',
+      execution:
+        '팔 위쪽을 고정한 상태에서 삼두근을 구부리면서 팔을 펴세요. 이 동작 동안 숨을 내쉬고 수축을 유지하세요...',
       transition: '',
     },
   },
@@ -13294,8 +13406,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 내부 회전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '낮은 도르래 옆에 옆으로 앉아(다리를 앞으로 뻗거나 교차시킨 상태로) 가장 가까운 팔로 한 손으로 케이블 부착물을 잡으십시오...',
-      execution: '팔뚝이 복근을 가로지르게 될 때까지 어깨를 안쪽으로 회전시켜 한손 케이블 부착물을 몸쪽으로 당깁니다. 당신은 창조될 것이다...',
+      setup:
+        '낮은 도르래 옆에 옆으로 앉아(다리를 앞으로 뻗거나 교차시킨 상태로) 가장 가까운 팔로 한 손으로 케이블 부착물을 잡으십시오...',
+      execution:
+        '팔뚝이 복근을 가로지르게 될 때까지 어깨를 안쪽으로 회전시켜 한손 케이블 부착물을 몸쪽으로 당깁니다. 당신은 창조될 것이다...',
       transition: '',
     },
   },
@@ -13310,7 +13424,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 아이언 크로스(Cable Iron Cross)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '도르래를 높은 위치로 옮기는 것으로 시작하고 사용할 저항을 선택한 다음 양손에 손잡이를 잡습니다. 두 풀 사이에 직접 서세요...',
+      setup:
+        '도르래를 높은 위치로 옮기는 것으로 시작하고 사용할 저항을 선택한 다음 양손에 손잡이를 잡습니다. 두 풀 사이에 직접 서세요...',
       execution: '팔꿈치를 펴고 팔을 옆으로 똑바로 당깁니다. 최고점에서 잠시 멈춘 후 팔을 다시 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -13326,8 +13441,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 유도 플립(Cable Judo Flip)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프 부착물을 타워에 연결하고 케이블을 가장 낮은 도르래 위치로 이동합니다. 넓은 자세로 케이블 옆에 서서 G...',
-      execution: '앞으로 비틀고 크런치하면서 발 사이에 체중을 이동하고 케이블을 아래로 당깁니다. 시작 위치로 돌아가서 f...',
+      setup:
+        '로프 부착물을 타워에 연결하고 케이블을 가장 낮은 도르래 위치로 이동합니다. 넓은 자세로 케이블 옆에 서서 G...',
+      execution:
+        '앞으로 비틀고 크런치하면서 발 사이에 체중을 이동하고 케이블을 아래로 당깁니다. 시작 위치로 돌아가서 f...',
       transition: '',
     },
   },
@@ -13341,9 +13458,12 @@ registerLanguageTranslations('ko', {
       '수축된 자세에서 1초간 자세를 유지한 후 권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '케이블 라잉 트라이셉스 익스텐션(Cable Lying Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 누워 좁은 오버핸드 그립으로 로우 풀리의 직선 바 부착물을 잡습니다. 팁: 이를 수행하는 가장 쉬운 방법은...',
-      execution: '팔 윗부분을 고정하고 팔꿈치를 안쪽으로 유지하면서 팔꿈치를 구부려 바를 내립니다. 바가 이마에 가볍게 닿을 때까지 아래로 내립니다. ㄴ...',
+      intro:
+        '케이블 라잉 트라이셉스 익스텐션(Cable Lying Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '플랫 벤치에 누워 좁은 오버핸드 그립으로 로우 풀리의 직선 바 부착물을 잡습니다. 팁: 이를 수행하는 가장 쉬운 방법은...',
+      execution:
+        '팔 윗부분을 고정하고 팔꿈치를 안쪽으로 유지하면서 팔꿈치를 구부려 바를 내립니다. 바가 이마에 가볍게 닿을 때까지 아래로 내립니다. ㄴ...',
       transition: '',
     },
   },
@@ -13358,9 +13478,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복한 다음 반대쪽 팔로 동일한 동작을 수행합니다.',
     ],
     audio: {
-      intro: '케이블 원암 삼두근 확장(Cable One Arm Tricep Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른손으로 뒤집힌(손 아래, 손바닥이 위를 향함) 그립을 사용하여 하이 케이블 도르래에 부착된 핸들 하나를 잡습니다. 당신은 ...',
-      execution: '삼두근을 수축하면서 팔이 곧게 펴질 때까지 단일 핸들 부착물을 옆쪽으로 아래로 이동합니다. 이 동작을 수행하면서 숨을 내쉬세요...',
+      intro:
+        '케이블 원암 삼두근 확장(Cable One Arm Tricep Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '오른손으로 뒤집힌(손 아래, 손바닥이 위를 향함) 그립을 사용하여 하이 케이블 도르래에 부착된 핸들 하나를 잡습니다. 당신은 ...',
+      execution:
+        '삼두근을 수축하면서 팔이 곧게 펴질 때까지 단일 핸들 부착물을 옆쪽으로 아래로 이동합니다. 이 동작을 수행하면서 숨을 내쉬세요...',
       transition: '',
     },
   },
@@ -13378,7 +13501,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '케이블 프리처 컬(Cable Preacher Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '도르래 기계 앞 약 2피트에 설교자 벤치를 놓습니다. 로우 풀리에 직선 막대를 부착합니다.',
-      execution: '벤치 패드 위에 팔꿈치와 팔뚝을 단단히 올려 프리처 벤치에 앉고 누군가가 낮은 도르래에서 바를 건네주도록 합니다. 잡아...',
+      execution:
+        '벤치 패드 위에 팔꿈치와 팔뚝을 단단히 올려 프리처 벤치에 앉고 누군가가 낮은 도르래에서 바를 건네주도록 합니다. 잡아...',
       transition: '',
     },
   },
@@ -13391,9 +13515,12 @@ registerLanguageTranslations('ko', {
       '핸들을 시작 위치로 되돌리기 전에 동작이 끝나면 잠시 멈춥니다.',
     ],
     audio: {
-      intro: '케이블 리어 델트 플라이(Cable Rear Delt Fly)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '도르래를 적절한 높이로 조정하고 무게를 조정하십시오. 도르래는 머리 위에 있어야 합니다. 오른쪽 손으로 왼쪽 도르래를 잡으세요...',
-      execution: '팔을 앞뒤로 움직여 동작을 시작하고, 동작을 실행할 때 팔을 곧게 유지합니다. 동작이 끝나면 잠시 멈춥니다...',
+      intro:
+        '케이블 리어 델트 플라이(Cable Rear Delt Fly)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '도르래를 적절한 높이로 조정하고 무게를 조정하십시오. 도르래는 머리 위에 있어야 합니다. 오른쪽 손으로 왼쪽 도르래를 잡으세요...',
+      execution:
+        '팔을 앞뒤로 움직여 동작을 시작하고, 동작을 실행할 때 팔을 곧게 유지합니다. 동작이 끝나면 잠시 멈춥니다...',
       transition: '',
     },
   },
@@ -13409,8 +13536,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 리버스 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발목 스트랩 부착물을 로우 풀리 케이블에 연결하고 그 앞 바닥에 매트를 놓습니다. 도르래를 향해 발을 딛고 앉으세요...',
-      execution: '누워서 다리를 들어 올리고 무릎을 90도 각도로 구부립니다. 다리와 케이블이 정렬되어야 합니다. 그렇지 않다면 풀리를 위로 조정하거나...',
+      setup:
+        '발목 스트랩 부착물을 로우 풀리 케이블에 연결하고 그 앞 바닥에 매트를 놓습니다. 도르래를 향해 발을 딛고 앉으세요...',
+      execution:
+        '누워서 다리를 들어 올리고 무릎을 90도 각도로 구부립니다. 다리와 케이블이 정렬되어야 합니다. 그렇지 않다면 풀리를 위로 조정하거나...',
       transition: '',
     },
   },
@@ -13424,9 +13553,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '케이블 로프 오버헤드 삼두근 확장(Cable Rope Overhead Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '도르래 기계의 아래쪽 도르래에 로프를 연결합니다. 양손으로 로프를 잡고 양손을 머리 바로 위로 뻗어 팔을 쭉 뻗습니다...',
-      execution: '팔 위쪽을 고정한 상태에서 머리 뒤로 로프를 천천히 내립니다. 이 동작을 수행하면서 숨을 들이쉬고 삼두근이 이완되면 잠시 멈춥니다...',
+      intro:
+        '케이블 로프 오버헤드 삼두근 확장(Cable Rope Overhead Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '도르래 기계의 아래쪽 도르래에 로프를 연결합니다. 양손으로 로프를 잡고 양손을 머리 바로 위로 뻗어 팔을 쭉 뻗습니다...',
+      execution:
+        '팔 위쪽을 고정한 상태에서 머리 뒤로 로프를 천천히 내립니다. 이 동작을 수행하면서 숨을 들이쉬고 삼두근이 이완되면 잠시 멈춥니다...',
       transition: '',
     },
   },
@@ -13441,9 +13573,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '케이블 로프 리어-델트 로우(Cable Rope Rear-Delt Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등받이를 위해 시티드 케이블 로우를 할 때와 마찬가지로 로우 풀리 로우 스테이션에서도 같은 자세로 앉으십시오. 도르래에 로프를 연결하고...',
-      execution: '허리를 곧게 펴고 엉덩이를 뒤로 밀어 무릎이 약간 구부러지도록 합니다. 이것이 당신의 시작 위치가 될 것입니다. 케이블을 당겨보세요...',
+      intro:
+        '케이블 로프 리어-델트 로우(Cable Rope Rear-Delt Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '등받이를 위해 시티드 케이블 로우를 할 때와 마찬가지로 로우 풀리 로우 스테이션에서도 같은 자세로 앉으십시오. 도르래에 로프를 연결하고...',
+      execution:
+        '허리를 곧게 펴고 엉덩이를 뒤로 밀어 무릎이 약간 구부러지도록 합니다. 이것이 당신의 시작 위치가 될 것입니다. 케이블을 당겨보세요...',
       transition: '',
     },
   },
@@ -13460,8 +13595,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 러시안 트위스트(Cable Russian Twists)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '표준 핸들 부착물을 연결하고 케이블을 중간 풀리 위치에 놓습니다. 케이블과 직각을 이루는 안정성 공 위에 누워서 그립니다.',
-      execution: '양손으로 손잡이를 잡고 팔을 가슴 위로 완전히 뻗으세요. 손은 도르래와 일직선이 되어야 합니다. 그렇지 않다면 조정하세요.',
+      setup:
+        '표준 핸들 부착물을 연결하고 케이블을 중간 풀리 위치에 놓습니다. 케이블과 직각을 이루는 안정성 공 위에 누워서 그립니다.',
+      execution:
+        '양손으로 손잡이를 잡고 팔을 가슴 위로 완전히 뻗으세요. 손은 도르래와 일직선이 되어야 합니다. 그렇지 않다면 조정하세요.',
       transition: '',
     },
   },
@@ -13476,8 +13613,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 시티드 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등이 높은 도르래를 향한 상태로 플랫 벤치에 앉으십시오. 양손으로 케이블 로프 부착물을 잡습니다(손바닥이 서로 마주보게 하여 ...',
-      execution: '엉덩이가 고정된 상태에서 허리를 구부려 팔꿈치가 엉덩이 쪽으로 이동하도록 합니다. 이 단계를 수행하면서 숨을 내쉬십시오. 숨을 들이쉬면서 다시 제자리로 돌아가세요.',
+      setup:
+        '등이 높은 도르래를 향한 상태로 플랫 벤치에 앉으십시오. 양손으로 케이블 로프 부착물을 잡습니다(손바닥이 서로 마주보게 하여 ...',
+      execution:
+        '엉덩이가 고정된 상태에서 허리를 구부려 팔꿈치가 엉덩이 쪽으로 이동하도록 합니다. 이 단계를 수행하면서 숨을 내쉬십시오. 숨을 들이쉬면서 다시 제자리로 돌아가세요.',
       transition: '',
     },
   },
@@ -13495,7 +13634,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '케이블 시티드 레터럴 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서로 반대편에 있는 두 개의 낮은 도르래 중앙에 서서 바로 뒤에(수직 방향으로) 플랫 벤치를 놓습니다.',
-      execution: '등을 편평하게 유지하면서 앞으로 구부리고 몸통을 허벅지에 올려 놓습니다. 누군가에게 도르래에 부착된 손잡이 하나를 달라고 하세요. 잔디...',
+      execution:
+        '등을 편평하게 유지하면서 앞으로 구부리고 몸통을 허벅지에 올려 놓습니다. 누군가에게 도르래에 부착된 손잡이 하나를 달라고 하세요. 잔디...',
       transition: '',
     },
   },
@@ -13510,7 +13650,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '케이블 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '케이블을 타워 바닥으로 이동하고 적절한 무게를 선택합니다. 기둥 사이에 직접 서십시오. 케이블을 잡고...',
-      execution: '머리와 가슴을 위로 유지한 채 팔꿈치를 뻗어 핸들을 머리 바로 위로 누릅니다. 정상에서 잠시 멈춘 후 다시 시작점으로 돌아갑니다.',
+      execution:
+        '머리와 가슴을 위로 유지한 채 팔꿈치를 뻗어 핸들을 머리 바로 위로 누릅니다. 정상에서 잠시 멈춘 후 다시 시작점으로 돌아갑니다.',
       transition: '',
     },
   },
@@ -13525,8 +13666,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 슈러그(Cable Shrugs)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비 또는 약간 더 넓은 오버핸드(손바닥이 아래를 향함) 그립으로 낮은 도르래에 부착된 케이블 바 부착물을 잡습니다. 똑바로 서세요...',
-      execution: '숨을 내쉬면서 어깨를 최대한 높이 올려 바를 들어 올리세요. 잠시 동안 상단의 수축을 유지하십시오. 팁: 팔은 그대로 두어야 합니다...',
+      setup:
+        '어깨 너비 또는 약간 더 넓은 오버핸드(손바닥이 아래를 향함) 그립으로 낮은 도르래에 부착된 케이블 바 부착물을 잡습니다. 똑바로 서세요...',
+      execution:
+        '숨을 내쉬면서 어깨를 최대한 높이 올려 바를 들어 올리세요. 잠시 동안 상단의 수축을 유지하십시오. 팁: 팔은 그대로 두어야 합니다...',
       transition: '',
     },
   },
@@ -13542,8 +13685,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블 리스트 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '직선 바가 부착된 로우 풀리 케이블 앞에 플랫 벤치를 배치하여 시작하세요. 팔을 사용해 나르로 케이블 바를 잡으세요...',
-      execution: '손목을 위로 구부리고 숨을 내쉬면서 시작하세요. 잠시 동안 수축을 유지하십시오. 천천히 손목을 다시 시작 위치로 내립니다...',
+      setup:
+        '직선 바가 부착된 로우 풀리 케이블 앞에 플랫 벤치를 배치하여 시작하세요. 팔을 사용해 나르로 케이블 바를 잡으세요...',
+      execution:
+        '손목을 위로 구부리고 숨을 내쉬면서 시작하세요. 잠시 동안 수축을 유지하십시오. 천천히 손목을 다시 시작 위치로 내립니다...',
       transition: '',
     },
   },
@@ -13557,7 +13702,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '종아리-머신 숄더 슈러그는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 패드가 어깨 위에 오도록 종아리 기계에 몸을 올려 놓습니다. 몸통은 팔을 뻗은 상태에서 곧게 펴야 합니다...',
+      setup:
+        '어깨 패드가 어깨 위에 오도록 종아리 기계에 몸을 올려 놓습니다. 몸통은 팔을 뻗은 상태에서 곧게 펴야 합니다...',
       execution: '흡입하면서 천천히 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -13572,8 +13718,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '카프 프레스(Calf Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작 위치에서 다리가 약간만 구부러지도록 좌석을 조정하십시오. 발의 볼이 플랫폼에 단단히 고정되어 있어야 합니다. ...',
-      execution: '무릎을 펴서 다리를 곧게 펴고 스택에서 무게를 간신히 들어올립니다. 발목은 완전히 구부러져야 하며 발가락은 위를 향해야 합니다. 엑세...',
+      setup:
+        '시작 위치에서 다리가 약간만 구부러지도록 좌석을 조정하십시오. 발의 볼이 플랫폼에 단단히 고정되어 있어야 합니다. ...',
+      execution:
+        '무릎을 펴서 다리를 곧게 펴고 스택에서 무게를 간신히 들어올립니다. 발목은 완전히 구부러져야 하며 발가락은 위를 향해야 합니다. 엑세...',
       transition: '',
     },
   },
@@ -13587,8 +13735,10 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '레그 프레스 머신의 종아리 프레스(Calf Press On The Leg Press Machine)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '레그 프레스 머신을 사용하여 머신에 앉아 다리를 플랫폼 바로 앞에 중간(어깨 너비) 발 간격으로 올려 놓습니다.',
+      intro:
+        '레그 프레스 머신의 종아리 프레스(Calf Press On The Leg Press Machine)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '레그 프레스 머신을 사용하여 머신에 앉아 다리를 플랫폼 바로 앞에 중간(어깨 너비) 발 간격으로 올려 놓습니다.',
       execution: '발목을 최대한 높이 펴고 종아리를 구부려 숨을 내쉬면서 발뒤꿈치를 들어 플랫폼을 누르세요. ...',
       transition: '',
     },
@@ -13604,8 +13754,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨로 종아리 올리기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '균형을 잡기 위해 튼튼한 물체를 붙잡고 덤벨 손잡이 위에 서십시오. 가능한 한 둥근 판이 있는 손잡이 위에 서십시오. 이렇게 하면 굴러가게 됩니다...',
-      execution: '핸들 상단 위로 발을 굴리면서 종아리를 들어올려 완전히 펴세요. 이 동작을 수행하는 동안 숨을 내쉬십시오. 계속...',
+      setup:
+        '균형을 잡기 위해 튼튼한 물체를 붙잡고 덤벨 손잡이 위에 서십시오. 가능한 한 둥근 판이 있는 손잡이 위에 서십시오. 이렇게 하면 굴러가게 됩니다...',
+      execution:
+        '핸들 상단 위로 발을 굴리면서 종아리를 들어올려 완전히 펴세요. 이 동작을 수행하는 동안 숨을 내쉬십시오. 계속...',
       transition: '',
     },
   },
@@ -13620,8 +13772,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '종아리 들어올리기 - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동용 밴드를 잡고 발가락으로 그 위에 서서 발과 팔 사이의 밴드 길이가 양쪽 옆구리에서 동일한지 확인하세요...',
-      execution: '손을 어깨 옆에 두고 발가락으로 서서 숨을 내쉬며 동작 최고 지점에서 종아리를 세게 수축합니다. 1초 후에...',
+      setup:
+        '운동용 밴드를 잡고 발가락으로 그 위에 서서 발과 팔 사이의 밴드 길이가 양쪽 옆구리에서 동일한지 확인하세요...',
+      execution:
+        '손을 어깨 옆에 두고 발가락으로 서서 숨을 내쉬며 동작 최고 지점에서 종아리를 세게 수축합니다. 1초 후에...',
       transition: '',
     },
   },
@@ -13635,7 +13789,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '벽에 대항하는 종아리 스트레칭 팔꿈치는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '몇 피트 떨어진 곳에서 벽을 바라보고 서세요. 벽에 기대어 팔뚝에 체중을 싣습니다.',
-      execution: '발뒤꿈치를 땅에 붙이도록 노력하세요. 10-20초 동안 유지하세요. 벽에 더 가까이 다가가거나 더 멀리 이동할 수도 있습니다. 그러면 다소 어려워질 수 있습니다.',
+      execution:
+        '발뒤꿈치를 땅에 붙이도록 노력하세요. 10-20초 동안 유지하세요. 벽에 더 가까이 다가가거나 더 멀리 이동할 수도 있습니다. 그러면 다소 어려워질 수 있습니다.',
       transition: '',
     },
   },
@@ -13647,8 +13802,10 @@ registerLanguageTranslations('ko', {
       '발뒤꿈치를 땅에 붙이도록 노력하세요. 10~20초 동안 유지한 후 방향을 전환합니다.',
     ],
     audio: {
-      intro: '벽에 손을 대고 종아리 스트레칭(Calf Stretch Hands Against Wall)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '몇 피트 떨어진 곳에서 벽을 바라보고 서세요. 자세를 비틀어 한 발을 앞으로 내밀어 보세요. 앞으로 몸을 기울여 손을 벽에 얹고 유지하세요...',
+      intro:
+        '벽에 손을 대고 종아리 스트레칭(Calf Stretch Hands Against Wall)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '몇 피트 떨어진 곳에서 벽을 바라보고 서세요. 자세를 비틀어 한 발을 앞으로 내밀어 보세요. 앞으로 몸을 기울여 손을 벽에 얹고 유지하세요...',
       execution: '발뒤꿈치를 땅에 붙이도록 노력하세요. 10~20초 동안 유지한 후 방향을 전환합니다.',
       transition: '',
     },
@@ -13661,8 +13818,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Calves-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 앉아서 시작하세요. 다리 아래에 폼롤러를 놓습니다. 반대쪽 다리는 반대쪽으로 교차하거나 다른 다리에 놓을 수 있습니다.',
-      execution: '손을 옆이나 바로 뒤에 놓고 아래로 눌러 엉덩이를 바닥에서 들어 올리면서 체중의 대부분을 종아리에 싣습니다...',
+      setup:
+        '바닥에 앉아서 시작하세요. 다리 아래에 폼롤러를 놓습니다. 반대쪽 다리는 반대쪽으로 교차하거나 다른 다리에 놓을 수 있습니다.',
+      execution:
+        '손을 옆이나 바로 뒤에 놓고 아래로 눌러 엉덩이를 바닥에서 들어 올리면서 체중의 대부분을 종아리에 싣습니다...',
       transition: '',
     },
   },
@@ -13676,8 +13835,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '카 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 이벤트 장비에는 일반적으로 중립 그립 핸들이 있지만 일부에는 일반 데드리프트처럼 접근할 수 있는 직선 바가 있습니다. 장치는...',
-      execution: '머리를 기대고 가슴을 위로 하고 등을 아치형으로 유지한 다음 발뒤꿈치를 통해 체중을 위로 올리기 시작합니다. 무게만큼 ...',
+      setup:
+        '이 이벤트 장비에는 일반적으로 중립 그립 핸들이 있지만 일부에는 일반 데드리프트처럼 접근할 수 있는 직선 바가 있습니다. 장치는...',
+      execution:
+        '머리를 기대고 가슴을 위로 하고 등을 아치형으로 유지한 다음 발뒤꿈치를 통해 체중을 위로 올리기 시작합니다. 무게만큼 ...',
       transition: '',
     },
   },
@@ -13691,7 +13852,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '자동차 운전자는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '똑바로 선 상태에서 3시와 9시 위치에서 양손으로 바벨 플레이트를 잡습니다. 손바닥은 서로 마주보게 하고 팔은...',
+      setup:
+        '똑바로 선 상태에서 3시와 9시 위치에서 양손으로 바벨 플레이트를 잡습니다. 손바닥은 서로 마주보게 하고 팔은...',
       execution: '동작을 반대로 하여 반대쪽으로 완전히 돌립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -13705,8 +13867,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '카리오카 퀵스텝은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 몇 인치 벌리고 왼팔을 위로 올려 편안하고 운동적인 자세로 시작하세요. 오른발로 빠르게 뒤로 물러나서 ...',
-      execution: '오른쪽 무릎을 당길 때 팔을 다시 위로 올려 무릎이 똑바로 위아래로 움직이는지 확인하세요. 움직일 때 발을 돌리지 말고...',
+      setup:
+        '발을 몇 인치 벌리고 왼팔을 위로 올려 편안하고 운동적인 자세로 시작하세요. 오른발로 빠르게 뒤로 물러나서 ...',
+      execution:
+        '오른쪽 무릎을 당길 때 팔을 다시 위로 올려 무릎이 똑바로 위아래로 움직이는지 확인하세요. 움직일 때 발을 돌리지 말고...',
       transition: '',
     },
   },
@@ -13719,7 +13883,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '캣 스트레치(Cat Stretch)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 손과 무릎을 대고 자세를 취하세요. 배를 안으로 당기고 척추, 허리, 어깨, 목을 둥글게 만들고 머리를...',
+      setup:
+        '바닥에 손과 무릎을 대고 자세를 취하세요. 배를 안으로 당기고 척추, 허리, 어깨, 목을 둥글게 만들고 머리를...',
       execution: '15초 동안 유지하세요.',
       transition: '',
     },
@@ -13732,9 +13897,11 @@ registerLanguageTranslations('ko', {
       '스루 쓰루를 따라가면서 스로에서 리바운드를 받을 준비를 하십시오. 벽을 향해 던질 경우 리바운드를 받을 수 있을 만큼 벽에 충분히 가까이 서 있는지 확인하고 파트너와 함께 하는 것보다 조금 더 높게 목표를 설정하세요.',
     ],
     audio: {
-      intro: '캐치 앤 오버헤드 던지기(Catch and Overhead Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '캐치 앤 오버헤드 던지기(Catch and Overhead Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벽이나 파트너를 바라보며 서서 시작하세요. 양손을 사용하여 공을 머리 뒤로 놓고 최대한 펴고 힘차게...',
-      execution: '스루 쓰루를 따라가면서 스로에서 리바운드를 받을 준비를 하십시오. 벽에 던질 경우에는 다음을 확인하세요.',
+      execution:
+        '스루 쓰루를 따라가면서 스로에서 리바운드를 받을 준비를 하십시오. 벽에 던질 경우에는 다음을 확인하세요.',
       transition: '',
     },
   },
@@ -13747,7 +13914,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인 핸들 익스텐션은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 위해서는 케이블 핸들 부착 장치 2개와 플랫 벤치, 체인이 필요합니다. 체인의 중앙을 핸들에 끼우고...',
+      setup:
+        '이 운동을 위해서는 케이블 핸들 부착 장치 2개와 플랫 벤치, 체인이 필요합니다. 체인의 중앙을 핸들에 끼우고...',
       execution: '잠금 상태에서 잠시 멈추고 동작을 반대로 하여 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -13761,8 +13929,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '체인을 케이블 핸들 부착물에 연결하는 것부터 시작합니다. 덤벨 프레스와 같은 자세로 플랫 벤치에 앉으세요. 네...',
-      execution: '팔꿈치가 90도 각도를 형성할 때까지 계속한 다음 팔꿈치를 통해 잠금 상태로 확장하여 동작을 반대로 합니다.',
+      setup:
+        '체인을 케이블 핸들 부착물에 연결하는 것부터 시작합니다. 덤벨 프레스와 같은 자세로 플랫 벤치에 앉으세요. 네...',
+      execution:
+        '팔꿈치가 90도 각도를 형성할 때까지 계속한 다음 팔꿈치를 통해 잠금 상태로 확장하여 동작을 반대로 합니다.',
       transition: '',
     },
   },
@@ -13777,7 +13947,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '의자 다리 확장 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자에 똑바로 앉아서 좌석의 측면을 잡습니다. 한쪽 다리를 들어 무릎을 펴면서 발목을 구부립니다.',
-      execution: '천천히 다리를 최대한 멀리 바깥쪽으로 움직인 다음 다시 중앙으로 내려오세요. 다른 쪽 다리에도 반복하세요.',
+      execution:
+        '천천히 다리를 최대한 멀리 바깥쪽으로 움직인 다음 다시 중앙으로 내려오세요. 다른 쪽 다리에도 반복하세요.',
       transition: '',
     },
   },
@@ -13790,7 +13961,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '의자 허리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '의자에 똑바로 앉으십시오. 팔을 머리 위로 올려 한쪽으로 구부립니다. 자유로운 손으로 의자를 잡을 수 있습니다.',
+      setup:
+        '의자에 똑바로 앉으십시오. 팔을 머리 위로 올려 한쪽으로 구부립니다. 자유로운 손으로 의자를 잡을 수 있습니다.',
       execution: '10초간 유지하고 반대쪽도 반복하세요.',
       transition: '',
     },
@@ -13807,8 +13979,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체어 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 먼저 바를 자신의 키에 가장 잘 맞는 위치에 설정하세요. 바가 로드되면 그 아래로 가서 Y 뒤쪽에 위치시키세요...',
-      execution: '발을 바 앞쪽으로 약 18인치 앞으로 이동합니다. 발가락이 약간 뾰족한 상태에서 어깨 너비로 다리를 배치합니다. 맙소사...',
+      setup:
+        '시작하려면 먼저 바를 자신의 키에 가장 잘 맞는 위치에 설정하세요. 바가 로드되면 그 아래로 가서 Y 뒤쪽에 위치시키세요...',
+      execution:
+        '발을 바 앞쪽으로 약 18인치 앞으로 이동합니다. 발가락이 약간 뾰족한 상태에서 어깨 너비로 다리를 배치합니다. 맙소사...',
       transition: '',
     },
   },
@@ -13821,7 +13995,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '의자 상체 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '의자 가장자리에 앉아 등받이를 잡습니다. 팔을 곧게 펴고 등을 곧게 펴고 상체를 앞으로 당겨서...',
-      execution: '팔을 곧게 펴고, 등을 곧게 펴고, 스트레칭되는 느낌이 들도록 상체를 앞으로 당깁니다. 20-30초 동안 유지하세요.',
+      execution:
+        '팔을 곧게 펴고, 등을 곧게 펴고, 스트레칭되는 느낌이 들도록 상체를 앞으로 당깁니다. 20-30초 동안 유지하세요.',
       transition: '',
     },
   },
@@ -13848,7 +14023,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '3점 자세에서의 체스트 푸시(Chest Push)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '3점 자세로 시작하고, 등을 곧게 펴고 한 손을 땅에 대고 쪼그려 앉습니다. 메디신볼을 바로 앞에 놓으십시오. ...',
+      setup:
+        '3점 자세로 시작하고, 등을 곧게 펴고 한 손을 땅에 대고 쪼그려 앉습니다. 메디신볼을 바로 앞에 놓으십시오. ...',
       execution: '두 번째 단계를 실행하면서 최대한 세게 앞으로 공을 폭발적으로 방출합니다.',
       transition: '',
     },
@@ -13863,8 +14039,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '가슴 밀기(다중 반응)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벽을 바라보고 무릎을 꿇은 자세로 시작하거나 파트너를 활용하십시오. 양손으로 공을 가슴에 단단히 고정하십시오. 폭발시켜 패스를 실행합니다...',
-      execution: '앞으로 넘어지면서 손으로 몸을 잡으십시오. 즉시 똑바로 세운 자세로 돌아갑니다. 원하는 r 수만큼 반복합니다...',
+      setup:
+        '벽을 바라보고 무릎을 꿇은 자세로 시작하거나 파트너를 활용하십시오. 양손으로 공을 가슴에 단단히 고정하십시오. 폭발시켜 패스를 실행합니다...',
+      execution:
+        '앞으로 넘어지면서 손으로 몸을 잡으십시오. 즉시 똑바로 세운 자세로 돌아갑니다. 원하는 r 수만큼 반복합니다...',
       transition: '',
     },
   },
@@ -13877,7 +14055,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '가슴 밀기(단일 반응)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇은 자세로 메디신볼을 양손으로 가슴에 단단히 쥐고 시작합니다. 전방 및 후방으로 폭발하여 패스를 실행합니다...',
+      setup:
+        '무릎을 꿇은 자세로 메디신볼을 양손으로 가슴에 단단히 쥐고 시작합니다. 전방 및 후방으로 폭발하여 패스를 실행합니다...',
       execution: '앞으로 넘어지면서 손으로 몸을 잡으십시오.',
       transition: '',
     },
@@ -13890,9 +14069,12 @@ registerLanguageTranslations('ko', {
       '두 번째 단계를 밟을 때 공을 앞으로 폭발적으로 밀고 공을 놓은 후 즉시 10야드를 질주합니다. 정말 빠르면 나만의 패스를 잡을 수 있어요!',
     ],
     audio: {
-      intro: 'Run Release를 통한 가슴 밀기(Chest Push with Run Release)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고, 엉덩이를 뒤로 젖히고, 등을 편평하게 한 운동 자세로 시작하십시오. 다리 근처에 메디신 볼을 잡습니다. 이것이 당신의 시작 위치가 될 것입니다...',
-      execution: '두 번째 단계를 밟을 때 공을 앞으로 폭발적으로 밀고 공을 놓은 후 즉시 10야드를 질주합니다. 정말 빠르다면...',
+      intro:
+        'Run Release를 통한 가슴 밀기(Chest Push with Run Release)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '무릎을 구부리고, 엉덩이를 뒤로 젖히고, 등을 편평하게 한 운동 자세로 시작하십시오. 다리 근처에 메디신 볼을 잡습니다. 이것이 당신의 시작 위치가 될 것입니다...',
+      execution:
+        '두 번째 단계를 밟을 때 공을 앞으로 폭발적으로 밀고 공을 놓은 후 즉시 10야드를 질주합니다. 정말 빠르다면...',
       transition: '',
     },
   },
@@ -13905,8 +14087,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Stability Ball의 가슴 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동 공 옆에 손과 무릎을 꿇으십시오. 팔꿈치를 공 위에 놓고 팔을 옆으로 뻗으십시오. 이것이 당신의 일이 될 것입니다 ...',
-      execution: '팔꿈치를 공 위에 유지하면서 몸통을 바닥쪽으로 낮추십시오. 20~30초 동안 스트레칭을 유지하고, 반대쪽 팔로도 반복하세요.',
+      setup:
+        '운동 공 옆에 손과 무릎을 꿇으십시오. 팔꿈치를 공 위에 놓고 팔을 옆으로 뻗으십시오. 이것이 당신의 일이 될 것입니다 ...',
+      execution:
+        '팔꿈치를 공 위에 유지하면서 몸통을 바닥쪽으로 낮추십시오. 20~30초 동안 스트레칭을 유지하고, 반대쪽 팔로도 반복하세요.',
       transition: '',
     },
   },
@@ -13919,8 +14103,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '어린이 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손과 무릎을 꿇고 손을 앞으로 걸어보세요. 엉덩이를 낮추어 발뒤꿈치에 앉으세요. 팔을 바닥을 따라 끌면서 ...',
-      execution: '발 뒤꿈치에 자리를 잡은 후에는 손을 발 옆에 놓고 긴장을 푸십시오. 등으로 "숨을 쉬십시오". 이마를 바닥에 대십시오. 이것을 피하세요...',
+      setup:
+        '손과 무릎을 꿇고 손을 앞으로 걸어보세요. 엉덩이를 낮추어 발뒤꿈치에 앉으세요. 팔을 바닥을 따라 끌면서 ...',
+      execution:
+        '발 뒤꿈치에 자리를 잡은 후에는 손을 발 옆에 놓고 긴장을 푸십시오. 등으로 "숨을 쉬십시오". 이마를 바닥에 대십시오. 이것을 피하세요...',
       transition: '',
     },
   },
@@ -13932,8 +14118,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '턱에서 가슴까지 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 앉은 자세를 취하세요. 두 손을 머리 뒤쪽에 놓고 손가락을 맞물리고 엄지손가락은 아래를 향하고 팔꿈치는 S를 향하게 합니다...',
-      execution: '양손을 머리 뒤쪽에 놓고 손가락을 맞물리며 엄지손가락은 아래를 향하고 팔꿈치는 정면을 향하게 합니다. 천천히 머리를 아래로 당기세요...',
+      setup:
+        '바닥에 앉은 자세를 취하세요. 두 손을 머리 뒤쪽에 놓고 손가락을 맞물리고 엄지손가락은 아래를 향하고 팔꿈치는 S를 향하게 합니다...',
+      execution:
+        '양손을 머리 뒤쪽에 놓고 손가락을 맞물리며 엄지손가락은 아래를 향하고 팔꿈치는 정면을 향하게 합니다. 천천히 머리를 아래로 당기세요...',
       transition: '',
     },
   },
@@ -13948,8 +14136,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '턱업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥이 몸통을 향하게 하고 어깨 너비보다 더 가깝게 그립하여 풀업 바를 잡습니다. 두 팔을 앞으로 쭉 뻗은 채 홀...',
-      execution: '숨을 내쉬면서 머리가 풀업 바 높이에 올 때까지 몸통을 위로 당깁니다. 이두박근을 사용하는 데 집중하세요...',
+      setup:
+        '손바닥이 몸통을 향하게 하고 어깨 너비보다 더 가깝게 그립하여 풀업 바를 잡습니다. 두 팔을 앞으로 쭉 뻗은 채 홀...',
+      execution:
+        '숨을 내쉬면서 머리가 풀업 바 높이에 올 때까지 몸통을 위로 당깁니다. 이두박근을 사용하는 데 집중하세요...',
       transition: '',
     },
   },
@@ -13963,8 +14153,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서커스 벨은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '서커스 벨은 두꺼운 손잡이가 달린 특대형 덤벨입니다. 양발 사이에 덤벨을 놓고 시작하고 양손으로 핸들을 잡습니다. 깨끗해요...',
-      execution: '균형이 무너지지 않도록 덤벨 헤드 중 하나를 어깨 뒤에 두십시오. 머리 위로 올리려면 k를 구부려 담그세요...',
+      setup:
+        '서커스 벨은 두꺼운 손잡이가 달린 특대형 덤벨입니다. 양발 사이에 덤벨을 놓고 시작하고 양손으로 핸들을 잡습니다. 깨끗해요...',
+      execution:
+        '균형이 무너지지 않도록 덤벨 헤드 중 하나를 어깨 뒤에 두십시오. 머리 위로 올리려면 k를 구부려 담그세요...',
       transition: '',
     },
   },
@@ -13980,8 +14172,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클린(Clean)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '정강이 근처 바닥에 바벨을 놓고 다리 바로 바깥쪽을 오버핸드(또는 후크) 그립으로 잡습니다. t에 무게를 집중하여 엉덩이를 낮추세요...',
-      execution: '발뒤꿈치를 사용하여 무릎을 펴면서 첫 번째 당기기를 시작합니다. 등 각도는 동일하게 유지되어야 하며 팔은 쭉 편 상태를 유지해야 합니다...',
+      setup:
+        '정강이 근처 바닥에 바벨을 놓고 다리 바로 바깥쪽을 오버핸드(또는 후크) 그립으로 잡습니다. t에 무게를 집중하여 엉덩이를 낮추세요...',
+      execution:
+        '발뒤꿈치를 사용하여 무릎을 펴면서 첫 번째 당기기를 시작합니다. 등 각도는 동일하게 유지되어야 하며 팔은 쭉 편 상태를 유지해야 합니다...',
       transition: '',
     },
   },
@@ -13999,8 +14193,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클린 앤 저크(Clean and Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '정강이 근처 바닥에 바벨을 놓고 다리 바로 바깥쪽에 오버핸드 그립이나 후크 그립을 잡습니다. 체중을 몸에 집중시켜 엉덩이를 낮추세요...',
-      execution: '다음은 클린 가속의 주요 원인인 두 번째 당김입니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
+      setup:
+        '정강이 근처 바닥에 바벨을 놓고 다리 바로 바깥쪽에 오버핸드 그립이나 후크 그립을 잡습니다. 체중을 몸에 집중시켜 엉덩이를 낮추세요...',
+      execution:
+        '다음은 클린 가속의 주요 원인인 두 번째 당김입니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
       transition: '',
     },
   },
@@ -14017,8 +14213,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클린 앤 프레스(Clean and Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 팔 안쪽에 두고 어깨 너비로 자세를 취합니다. 이제 등을 편평하게 유지하면서 바를 잡을 수 있도록 무릎과 엉덩이를 구부리세요...',
-      execution: '바가 무릎을 지나갈 때 점프 동작과 비슷하게 발목, 무릎, 엉덩이를 힘차게 뻗습니다. 그렇게 하면서 계속해서 바를 안내하세요...',
+      setup:
+        '무릎을 팔 안쪽에 두고 어깨 너비로 자세를 취합니다. 이제 등을 편평하게 유지하면서 바를 잡을 수 있도록 무릎과 엉덩이를 구부리세요...',
+      execution:
+        '바가 무릎을 지나갈 때 점프 동작과 비슷하게 발목, 무릎, 엉덩이를 힘차게 뻗습니다. 그렇게 하면서 계속해서 바를 안내하세요...',
       transition: '',
     },
   },
@@ -14031,8 +14229,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클린 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '정강이 근처에 바벨을 들고 서서 시작하세요. 발은 엉덩이 바로 아래에 있어야 하며 발은 약간 바깥쪽으로 향해야 합니다. 바를 잡고...',
-      execution: '바가 무릎을 가로지른 후, 엉덩이와 무릎이 펴질 때까지 엉덩이를 바 안으로 밀어넣어 리프트를 완료합니다.',
+      setup:
+        '정강이 근처에 바벨을 들고 서서 시작하세요. 발은 엉덩이 바로 아래에 있어야 하며 발은 약간 바깥쪽으로 향해야 합니다. 바를 잡고...',
+      execution:
+        '바가 무릎을 가로지른 후, 엉덩이와 무릎이 펴질 때까지 엉덩이를 바 안으로 밀어넣어 리프트를 완료합니다.',
       transition: '',
     },
   },
@@ -14046,8 +14246,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Clean from Blocks는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 높이의 박스나 스탠드에 바벨을 놓고 다리 바로 바깥쪽에 오버핸드 그립이나 후크 그립을 잡습니다. 무게 중심으로 엉덩이를 낮추세요...',
-      execution: '완전한 신전이 이루어지면, 팔꿈치를 위쪽과 바깥쪽으로 공격적으로 으쓱하고 팔을 구부려 받는 자세로 전환합니다. 아...',
+      setup:
+        '원하는 높이의 박스나 스탠드에 바벨을 놓고 다리 바로 바깥쪽에 오버핸드 그립이나 후크 그립을 잡습니다. 무게 중심으로 엉덩이를 낮추세요...',
+      execution:
+        '완전한 신전이 이루어지면, 팔꿈치를 위쪽과 바깥쪽으로 공격적으로 으쓱하고 팔을 구부려 받는 자세로 전환합니다. 아...',
       transition: '',
     },
   },
@@ -14060,8 +14262,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클린 풀(Clean Pull)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '정강이 근처 바닥에 바벨을 놓고 다리 바로 바깥쪽에 오버핸드 그립이나 후크 그립을 잡습니다. 체중을 몸에 집중시켜 엉덩이를 낮추세요...',
-      execution: '다음은 클린 가속의 주요 원인인 두 번째 당김입니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
+      setup:
+        '정강이 근처 바닥에 바벨을 놓고 다리 바로 바깥쪽에 오버핸드 그립이나 후크 그립을 잡습니다. 체중을 몸에 집중시켜 엉덩이를 낮추세요...',
+      execution:
+        '다음은 클린 가속의 주요 원인인 두 번째 당김입니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
       transition: '',
     },
   },
@@ -14073,8 +14277,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클린 슈러그(Clean Shrug)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비, 더블 오버핸드 또는 후크 그립으로 시작하고 바를 허벅지 중간 위치에 걸어 놓습니다. 등은 곧고 기울어져야 합니다...',
-      execution: '어깨를 귀 쪽으로 으쓱해 보세요. 이 운동은 일반적으로 클린 운동보다 더 무거운 중량으로 수행할 수 있지만 지점까지 과부하를 주지 마십시오...',
+      setup:
+        '어깨 너비, 더블 오버핸드 또는 후크 그립으로 시작하고 바를 허벅지 중간 위치에 걸어 놓습니다. 등은 곧고 기울어져야 합니다...',
+      execution:
+        '어깨를 귀 쪽으로 으쓱해 보세요. 이 운동은 일반적으로 클린 운동보다 더 무거운 중량으로 수행할 수 있지만 지점까지 과부하를 주지 마십시오...',
       transition: '',
     },
   },
@@ -14090,8 +14296,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시계 푸쉬업(Clock Push-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손과 발가락으로 체중을 지탱하면서 바닥에 엎드린 자세로 이동합니다. 팔은 몸 주위의 손과 함께 완전히 뻗어야 합니다.',
-      execution: '팔꿈치를 구부려 가슴을 땅쪽으로 낮추면서 하강합니다. 하단에서 팔꿈치 바깥쪽으로 몸을 밀어 올려 동작을 반대로 합니다...',
+      setup:
+        '손과 발가락으로 체중을 지탱하면서 바닥에 엎드린 자세로 이동합니다. 팔은 몸 주위의 손과 함께 완전히 뻗어야 합니다.',
+      execution:
+        '팔꿈치를 구부려 가슴을 땅쪽으로 낮추면서 하강합니다. 하단에서 팔꿈치 바깥쪽으로 몸을 밀어 올려 동작을 반대로 합니다...',
       transition: '',
     },
   },
@@ -14106,8 +14314,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클로즈 그립 바벨 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치에 누워보세요. 가까운 그립(어깨 너비 정도)을 사용하여 랙에서 바를 들어 올리고 팔 고정 장치로 바를 몸 위로 똑바로 잡습니다...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 삼두근을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
+      setup:
+        '평평한 벤치에 누워보세요. 가까운 그립(어깨 너비 정도)을 사용하여 랙에서 바를 들어 올리고 팔 고정 장치로 바를 몸 위로 똑바로 잡습니다...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 삼두근을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
       transition: '',
     },
   },
@@ -14121,9 +14331,12 @@ registerLanguageTranslations('ko', {
       '팔꿈치를 펴서 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '클로즈 그립 덤벨 프레스(Close-Grip Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 덤벨을 세워 놓습니다. 덤벨이 벤치 상단에 단단히 고정되어 있는지 확인하고 벤치에 수직으로 눕습니다...',
-      execution: '양손으로 덤벨을 잡고 팔 길이만큼 가슴 위로 수직으로 잡습니다. 두 손바닥이 엉덩이 아래쪽을 누르고 있어야 합니다...',
+      intro:
+        '클로즈 그립 덤벨 프레스(Close-Grip Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '플랫 벤치에 덤벨을 세워 놓습니다. 덤벨이 벤치 상단에 단단히 고정되어 있는지 확인하고 벤치에 수직으로 눕습니다...',
+      execution:
+        '양손으로 덤벨을 잡고 팔 길이만큼 가슴 위로 수직으로 잡습니다. 두 손바닥이 엉덩이 아래쪽을 누르고 있어야 합니다...',
       transition: '',
     },
   },
@@ -14137,9 +14350,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '클로즈 그립 EZ 바 컬(Close-Grip EZ Bar Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '클로즈 그립 EZ 바 컬(Close-Grip EZ Bar Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '더 가까운 안쪽 손잡이에 있는 E-Z 컬 바를 잡고 상체를 똑바로 세우십시오. 손바닥이 앞을 향해야 하며...',
-      execution: '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
+      execution:
+        '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
       transition: '',
     },
   },
@@ -14154,8 +14369,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드가 포함된 클로즈 그립 EZ-바 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '막대의 양쪽 끝에 밴드를 부착합니다. 바를 잡고 밴드 중앙에 발을 올려 놓습니다. EZ를 좁고 뒤집은 그립으로 똑바로 세우세요...',
-      execution: '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
+      setup:
+        '막대의 양쪽 끝에 밴드를 부착합니다. 바를 잡고 밴드 중앙에 발을 올려 놓습니다. EZ를 좁고 뒤집은 그립으로 똑바로 세우세요...',
+      execution:
+        '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
       transition: '',
     },
   },
@@ -14170,8 +14387,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클로즈 그립 EZ-바 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'EZ 바를 적절한 무게로 싣고 플랫 벤치에 눕습니다. 좁은 그립을 사용하여 바를 들어 올리고 몸통 위로 똑바로 잡으세요...',
-      execution: '이제 숨을 들이쉬면서 바를 가슴 아래까지 내립니다. 이 동작을 수행하는 동안 팔꿈치를 유지하세요. 삼두근을 이용해 바를 밀어내는 동작..',
+      setup:
+        'EZ 바를 적절한 무게로 싣고 플랫 벤치에 눕습니다. 좁은 그립을 사용하여 바를 들어 올리고 몸통 위로 똑바로 잡으세요...',
+      execution:
+        '이제 숨을 들이쉬면서 바를 가슴 아래까지 내립니다. 이 동작을 수행하는 동안 팔꿈치를 유지하세요. 삼두근을 이용해 바를 밀어내는 동작..',
       transition: '',
     },
   },
@@ -14187,8 +14406,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클로즈 그립 프론트 랫 풀다운은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 반드시 키에 맞게 머신의 무릎 패드를 조절하세요...',
-      execution: '두 팔을 앞으로 쭉 뻗은 상태에서 선택한 그립 너비로 바를 잡은 상태에서 몸통을 약 30도 정도 뒤로 젖히면...',
+      setup:
+        '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 반드시 키에 맞게 머신의 무릎 패드를 조절하세요...',
+      execution:
+        '두 팔을 앞으로 쭉 뻗은 상태에서 선택한 그립 너비로 바를 잡은 상태에서 몸통을 약 30도 정도 뒤로 젖히면...',
       transition: '',
     },
   },
@@ -14202,8 +14423,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨을 이용한 클로즈 그립 푸시업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 누워서 수직으로 세운 덤벨 위에 손을 올려 놓습니다. 발가락과 손으로 체중을 지탱하고, 몸통을 단단하게 유지하고 팔꿈치를 유지하세요.',
-      execution: '팔꿈치를 펴서 몸을 밀어 시작 위치로 되돌립니다. 이 단계를 수행하면서 숨을 내쉬십시오. 수축된 위치에서 잠시 멈춘 후...',
+      setup:
+        '바닥에 누워서 수직으로 세운 덤벨 위에 손을 올려 놓습니다. 발가락과 손으로 체중을 지탱하고, 몸통을 단단하게 유지하고 팔꿈치를 유지하세요.',
+      execution:
+        '팔꿈치를 펴서 몸을 밀어 시작 위치로 되돌립니다. 이 단계를 수행하면서 숨을 내쉬십시오. 수축된 위치에서 잠시 멈춘 후...',
       transition: '',
     },
   },
@@ -14218,8 +14441,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '클로즈 그립 스탠딩 바벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 바벨을 잡고 손바닥을 위로 하고 몇 인치 간격을 유지합니다. 몸통을 똑바로 세우고 머리를 들어 올리십시오. 발은 어깨 정도여야 합니다...',
-      execution: '팔뚝이 팔뚝에 닿을 때까지 반원형으로 바를 위로 올리십시오. 이 동작을 수행하면서 숨을 내쉬고 수축하세요...',
+      setup:
+        '양손으로 바벨을 잡고 손바닥을 위로 하고 몇 인치 간격을 유지합니다. 몸통을 똑바로 세우고 머리를 들어 올리십시오. 발은 어깨 정도여야 합니다...',
+      execution:
+        '팔뚝이 팔뚝에 닿을 때까지 반원형으로 바를 위로 올리십시오. 이 동작을 수행하면서 숨을 내쉬고 수축하세요...',
       transition: '',
     },
   },
@@ -14232,7 +14457,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누에고치(Cocoons)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 등을 대고 누워 시작하세요. 다리는 곧게 펴고 팔은 머리 뒤로 뻗어야 합니다. 이것이 당신의 시작 위치가 될 것입니다...',
+      setup:
+        '바닥에 등을 대고 누워 시작하세요. 다리는 곧게 펴고 팔은 머리 뒤로 뻗어야 합니다. 이것이 당신의 시작 위치가 될 것입니다...',
       execution: '잠시 멈춘 후 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -14244,9 +14470,11 @@ registerLanguageTranslations('ko', {
       '땅에서 무게를 들어 올리는 것으로 시작하십시오. 걸을 때 단단하고 곧은 자세를 유지하고 짧고 빠른 걸음으로 걷는다. 원을 그리면서 위를 바라보세요. 행사 중에는 숨을 참지 마십시오. 하나 이상의 완전한 회전을 완료할 때까지 계속 걷습니다.',
     ],
     audio: {
-      intro: 'Conan\'s Wheel은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무게를 실은 상태에서 기계 끝 부분을 Zurcher로 잡으십시오. 바를 팔꿈치 안쪽에 놓고 손목을 잡습니다. 시도해 보세요...',
-      execution: '땅에서 무게를 들어 올리는 것으로 시작하십시오. 걸을 때 단단하고 곧은 자세를 유지하고 짧고 빠른 걸음으로 걷는다. 고개를 들어 멀리 바라보세요...',
+      intro: "Conan's Wheel은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.",
+      setup:
+        '무게를 실은 상태에서 기계 끝 부분을 Zurcher로 잡으십시오. 바를 팔꿈치 안쪽에 놓고 손목을 잡습니다. 시도해 보세요...',
+      execution:
+        '땅에서 무게를 들어 올리는 것으로 시작하십시오. 걸을 때 단단하고 곧은 자세를 유지하고 짧고 빠른 걸음으로 걷는다. 고개를 들어 멀리 바라보세요...',
       transition: '',
     },
   },
@@ -14261,8 +14489,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '컨센트레이션 컬(Concentration Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리 사이에 덤벨 하나를 앞에 두고 플랫 벤치에 앉으세요. 무릎을 구부리고 발을 바닥에 대고 다리를 벌려야 합니다...',
-      execution: '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 앞으로 컬링합니다. 팔뚝만 움직여야 합니다. 공동...',
+      setup:
+        '다리 사이에 덤벨 하나를 앞에 두고 플랫 벤치에 앉으세요. 무릎을 구부리고 발을 바닥에 대고 다리를 벌려야 합니다...',
+      execution:
+        '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 앞으로 컬링합니다. 팔뚝만 움직여야 합니다. 공동...',
       transition: '',
     },
   },
@@ -14277,8 +14507,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '크로스바디 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워서 무릎을 60도 정도 구부립니다. 발을 바닥에 평평하게 유지하고 손을 머리 뒤에 느슨하게 두십시오. 이것은...',
-      execution: '이제 몸을 구부려 오른쪽 팔꿈치와 어깨를 몸 전체에 걸쳐 가져오는 동시에 왼쪽 무릎을 왼쪽 어깨 쪽으로 가져옵니다. 반응해...',
+      setup:
+        '등을 대고 누워서 무릎을 60도 정도 구부립니다. 발을 바닥에 평평하게 유지하고 손을 머리 뒤에 느슨하게 두십시오. 이것은...',
+      execution:
+        '이제 몸을 구부려 오른쪽 팔꿈치와 어깨를 몸 전체에 걸쳐 가져오는 동시에 왼쪽 무릎을 왼쪽 어깨 쪽으로 가져옵니다. 반응해...',
       transition: '',
     },
   },
@@ -14291,9 +14523,12 @@ registerLanguageTranslations('ko', {
       '각 팔에 대해 권장되는 반복 횟수가 수행될 때까지 이러한 방식으로 계속 교대로 수행합니다.',
     ],
     audio: {
-      intro: '크로스 바디 해머 컬(Cross Body Hammer Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 똑바로 서세요. 손바닥이 안쪽을 향하도록 손을 옆으로 내려야 합니다. 손바닥이 앞쪽을 향하도록 유지하면서...',
-      execution: '숨을 들이마시면서 같은 방향으로 천천히 덤벨을 내린 후 왼쪽 팔에도 같은 동작을 반복하세요. 이 패션으로 계속 번갈아가며...',
+      intro:
+        '크로스 바디 해머 컬(Cross Body Hammer Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '양손에 덤벨을 들고 똑바로 서세요. 손바닥이 안쪽을 향하도록 손을 옆으로 내려야 합니다. 손바닥이 앞쪽을 향하도록 유지하면서...',
+      execution:
+        '숨을 들이마시면서 같은 방향으로 천천히 덤벨을 내린 후 왼쪽 팔에도 같은 동작을 반복하세요. 이 패션으로 계속 번갈아가며...',
       transition: '',
     },
   },
@@ -14310,7 +14545,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '크로스 오버 - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '고정된 기둥 주위에 운동 밴드를 고정합니다. 기둥을 등진 채 밴드 양쪽 손잡이를 잡고 앞으로 나아가세요...',
-      execution: '팔을 바닥과 평행하고 몸통과 수직이 되도록 옆으로 들어 올립니다(몸통과 팔은 문자 "T"와 유사해야 합니다).',
+      execution:
+        '팔을 바닥과 평행하고 몸통과 수직이 되도록 옆으로 들어 올립니다(몸통과 팔은 문자 "T"와 유사해야 합니다).',
       transition: '',
     },
   },
@@ -14323,7 +14559,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '크로스오버 리버스 런지는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 한 발을 뒤로 내딛고 발을 구부려 후방 런지를 수행합니다...',
+      setup:
+        '발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 한 발을 뒤로 내딛고 발을 구부려 후방 런지를 수행합니다...',
       execution: '잠시 멈춘 후 시작 위치로 돌아가 반대쪽도 번갈아 가며 반복합니다.',
       transition: '',
     },
@@ -14336,8 +14573,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '십자가상은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '십자가상에서는 시간 동안 무게추를 옆으로 고정적으로 유지합니다. 이 이벤트는 덤벨을 사용하여 연습할 수 있지만 재치 있게 연습하는 것이 가장 좋습니다...',
-      execution: '일어서기 시작하고, 도구를 잡고 팔을 옆으로 들어 올리십시오. 팔은 지면과 평행해야 합니다. 대회에서는 심사위원이나...',
+      setup:
+        '십자가상에서는 시간 동안 무게추를 옆으로 고정적으로 유지합니다. 이 이벤트는 덤벨을 사용하여 연습할 수 있지만 재치 있게 연습하는 것이 가장 좋습니다...',
+      execution:
+        '일어서기 시작하고, 도구를 잡고 팔을 옆으로 들어 올리십시오. 팔은 지면과 평행해야 합니다. 대회에서는 심사위원이나...',
       transition: '',
     },
   },
@@ -14351,9 +14590,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '크런치(Crunch) - 손 오버헤드(Hands Overhead)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 펴고 무릎을 구부린 채 바닥에 누워 햄스트링과 종아리 사이를 약 60도 각도로 만듭니다. 발을 바닥에 평평하게 유지하세요...',
-      execution: '상체를 앞으로 구부리고 견갑골을 바닥에서 살짝 떼세요. 항상 팔을 머리, 목, 어깨와 일직선으로 유지하세요...',
+      intro:
+        '크런치(Crunch) - 손 오버헤드(Hands Overhead)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '등을 펴고 무릎을 구부린 채 바닥에 누워 햄스트링과 종아리 사이를 약 60도 각도로 만듭니다. 발을 바닥에 평평하게 유지하세요...',
+      execution:
+        '상체를 앞으로 구부리고 견갑골을 바닥에서 살짝 떼세요. 항상 팔을 머리, 목, 어깨와 일직선으로 유지하세요...',
       transition: '',
     },
   },
@@ -14370,8 +14612,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '크런치 - 레그스 온 엑서사이즈 볼은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 운동 공 위에 놓고 무릎을 90도 각도로 구부린 채 등을 대고 누워 있습니다. 발을 3~4인치 정도 위치시키세요...',
-      execution: '팔꿈치를 안쪽으로 유지하면서 손을 머리 양쪽에 가볍게 놓으십시오. 팁: 손가락을 머리 뒤로 잠그지 마십시오. 당신의 작은 부분을 밀어보세요...',
+      setup:
+        '발을 운동 공 위에 놓고 무릎을 90도 각도로 구부린 채 등을 대고 누워 있습니다. 발을 3~4인치 정도 위치시키세요...',
+      execution:
+        '팔꿈치를 안쪽으로 유지하면서 손을 머리 양쪽에 가볍게 놓으십시오. 팁: 손가락을 머리 뒤로 잠그지 마십시오. 당신의 작은 부분을 밀어보세요...',
       transition: '',
     },
   },
@@ -14388,7 +14632,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 땅에 대고 등을 대고 눕거나 무릎을 90도 각도로 구부린 채 벤치에 누우세요. 쉬고 있다면...',
-      execution: '복부 근육을 더 잘 분리하기 위해 등의 작은 부분을 바닥으로 밀면서 어깨를 바닥에서 굴리기 시작하십시오. 계속...',
+      execution:
+        '복부 근육을 더 잘 분리하기 위해 등의 작은 부분을 바닥으로 밀면서 어깨를 바닥에서 굴리기 시작하십시오. 계속...',
       transition: '',
     },
   },
@@ -14404,7 +14649,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '큐반 프레스(Cuban Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '선 자세에서 회내 그립으로 양손에 덤벨을 잡습니다. 윗팔을 바닥과 평행이 되도록 올려서...',
-      execution: '이제 팔꿈치를 펴고 팔을 머리 위로 펴서 덤벨을 누르세요. 리버싱으로 숨을 들이쉬면서 시작자세로 돌아옵니다...',
+      execution:
+        '이제 팔꿈치를 펴고 팔을 머리 위로 펴서 덤벨을 누르세요. 리버싱으로 숨을 들이쉬면서 시작자세로 돌아옵니다...',
       transition: '',
     },
   },
@@ -14418,8 +14664,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '댄서 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 앉으세요. 무릎을 구부린 상태를 유지하면서 오른쪽 다리를 왼쪽 다리 위로 교차시킵니다. 왼쪽 다리는 곧게 펴져 바닥에 닿습니다.',
-      execution: '왼팔을 오른쪽 다리에 놓고 오른손을 바닥에 놓습니다. 상체를 오른쪽으로 회전한 후 10~20초간 유지합니다. 측면을 전환하십시오.',
+      setup:
+        '바닥에 앉으세요. 무릎을 구부린 상태를 유지하면서 오른쪽 다리를 왼쪽 다리 위로 교차시킵니다. 왼쪽 다리는 곧게 펴져 바닥에 닿습니다.',
+      execution:
+        '왼팔을 오른쪽 다리에 놓고 오른손을 바닥에 놓습니다. 상체를 오른쪽으로 회전한 후 10~20초간 유지합니다. 측면을 전환하십시오.',
       transition: '',
     },
   },
@@ -14437,7 +14685,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '데드버그(Dead Bug)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '천장을 향해 손을 위로 뻗은 채 등을 대고 누워 시작하세요. 발, 무릎, 엉덩이를 90도까지 올리세요.',
-      execution: '숨을 내쉬면서 흉곽을 아래로 내리고 등을 바닥에 편평하게 펴고 골반을 위로 회전시키며 둔근을 조입니다. 이 자세를 유지하세요...',
+      execution:
+        '숨을 내쉬면서 흉곽을 아래로 내리고 등을 바닥에 편평하게 펴고 골반을 위로 회전시키며 둔근을 조입니다. 이 자세를 유지하세요...',
       transition: '',
     },
   },
@@ -14450,7 +14699,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 데드리프트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '짧은 밴드를 사용하여 데드리프트를 하려면 시작하기 전에 밴드를 바 위에 걸고 그 안으로 들어가 설정을 하면 됩니다. 긴 밴드의 경우...',
+      setup:
+        '짧은 밴드를 사용하여 데드리프트를 하려면 시작하기 전에 밴드를 바 위에 걸고 그 안으로 들어가 설정을 하면 됩니다. 긴 밴드의 경우...',
       execution: '엉덩이를 구부려 바를 바닥으로 유도하여 바를 내립니다.',
       transition: '',
     },
@@ -14465,8 +14715,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인을 이용한 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '체인을 바의 슬리브에 부착하거나 바 중앙을 늘어뜨려 들어올릴 때 무게가 더 많이 증가하도록 할 수 있습니다. 대략...',
-      execution: '머리를 기대고 가슴을 위로 하고 등을 아치형으로 유지한 다음 발뒤꿈치를 통해 체중을 위로 올리기 시작합니다. 바 이후 ...',
+      setup:
+        '체인을 바의 슬리브에 부착하거나 바 중앙을 늘어뜨려 들어올릴 때 무게가 더 많이 증가하도록 할 수 있습니다. 대략...',
+      execution:
+        '머리를 기대고 가슴을 위로 하고 등을 아치형으로 유지한 다음 발뒤꿈치를 통해 체중을 위로 올리기 시작합니다. 바 이후 ...',
       transition: '',
     },
   },
@@ -14481,9 +14733,12 @@ registerLanguageTranslations('ko', {
       '작업이 끝나면 바를 랙에 다시 놓습니다.',
     ],
     audio: {
-      intro: '디클라인 바벨 벤치 프레스(Decline Barbell Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 중간폭 그립(90도 각도를 만들어 내는 그립)을 사용하여...',
-      execution: '숨을 들이쉬면서 가슴 아래쪽에 바가 닿는 느낌이 들 때까지 천천히 내려옵니다. 두 번째 멈춘 후 바를 다시 시작 위치로 가져옵니다.',
+      intro:
+        '디클라인 바벨 벤치 프레스(Decline Barbell Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 중간폭 그립(90도 각도를 만들어 내는 그립)을 사용하여...',
+      execution:
+        '숨을 들이쉬면서 가슴 아래쪽에 바가 닿는 느낌이 들 때까지 천천히 내려옵니다. 두 번째 멈춘 후 바를 다시 시작 위치로 가져옵니다.',
       transition: '',
     },
   },
@@ -14499,9 +14754,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수가 수행될 때까지 3~6단계를 반복합니다.',
     ],
     audio: {
-      intro: '스컬 크러셔로 클로즈 그립 벤치를 거부하는 것은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 클로즈 그립(어깨보다 약간 작은 그립)을 사용하여',
-      execution: '이제 숨을 들이쉬면서 바를 가슴 아래까지 내립니다. 이 동작을 수행하는 동안 팔꿈치를 유지하세요. 삼두근을 이용해 바를 밀어내는 동작..',
+      intro:
+        '스컬 크러셔로 클로즈 그립 벤치를 거부하는 것은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 클로즈 그립(어깨보다 약간 작은 그립)을 사용하여',
+      execution:
+        '이제 숨을 들이쉬면서 바를 가슴 아래까지 내립니다. 이 동작을 수행하는 동안 팔꿈치를 유지하세요. 삼두근을 이용해 바를 밀어내는 동작..',
       transition: '',
     },
   },
@@ -14517,8 +14775,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '디클라인 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝에 다리를 고정하고 누우세요. 이제 팔꿈치를 안쪽으로 유지하면서 머리 양쪽에 손을 가볍게 놓습니다. 팁...',
-      execution: '복부 근육을 더 잘 분리하기 위해 벤치에서 등의 작은 부분을 아래로 밀면서 어깨를 벤치에서 굴리기 시작하십시오. 계속해서...',
+      setup:
+        '디클라인 벤치 끝에 다리를 고정하고 누우세요. 이제 팔꿈치를 안쪽으로 유지하면서 머리 양쪽에 손을 가볍게 놓습니다. 팁...',
+      execution:
+        '복부 근육을 더 잘 분리하기 위해 벤치에서 등의 작은 부분을 아래로 밀면서 어깨를 벤치에서 굴리기 시작하십시오. 계속해서...',
       transition: '',
     },
   },
@@ -14534,8 +14794,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '디클라인 덤벨 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝에 다리를 고정하고 허벅지 위에 양손에 덤벨을 들고 누우세요. 당신의 손바닥이 아주 좋아질 것입니다...',
-      execution: '어깨 너비로 벌린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 이것이 당신의 시작 위치가 될 것입니다. ㄴ...',
+      setup:
+        '디클라인 벤치 끝에 다리를 고정하고 허벅지 위에 양손에 덤벨을 들고 누우세요. 당신의 손바닥이 아주 좋아질 것입니다...',
+      execution:
+        '어깨 너비로 벌린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 이것이 당신의 시작 위치가 될 것입니다. ㄴ...',
       transition: '',
     },
   },
@@ -14550,8 +14812,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Decline Dumbbell Flyes는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝에 다리를 고정하고 허벅지 위에 양손에 덤벨을 들고 누우세요. 당신의 손바닥이 아주 좋아질 것입니다...',
-      execution: '이두근 힘줄의 스트레스를 방지하기 위해 팔꿈치를 약간 구부린 상태에서 팔을 양쪽으로 넓게 호를 그리며 아래로 내립니다.',
+      setup:
+        '디클라인 벤치 끝에 다리를 고정하고 허벅지 위에 양손에 덤벨을 들고 누우세요. 당신의 손바닥이 아주 좋아질 것입니다...',
+      execution:
+        '이두근 힘줄의 스트레스를 방지하기 위해 팔꿈치를 약간 구부린 상태에서 팔을 양쪽으로 넓게 호를 그리며 아래로 내립니다.',
       transition: '',
     },
   },
@@ -14565,9 +14829,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '디클라인 덤벨 트라이셉스 익스텐션(Decline Dumbbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝에 다리를 고정하고 허벅지 위에 양손에 덤벨을 들고 누우세요. 당신의 손바닥이 아주 좋아질 것입니다...',
-      execution: '숨을 들이쉬면서 팔 윗부분을 고정한 상태로(그리고 팔꿈치도 안쪽으로) 팔뚝을 반원형으로 움직여 천천히 덤벨을 아래로 내립니다...',
+      intro:
+        '디클라인 덤벨 트라이셉스 익스텐션(Decline Dumbbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '디클라인 벤치 끝에 다리를 고정하고 허벅지 위에 양손에 덤벨을 들고 누우세요. 당신의 손바닥이 아주 좋아질 것입니다...',
+      execution:
+        '숨을 들이쉬면서 팔 윗부분을 고정한 상태로(그리고 팔꿈치도 안쪽으로) 팔뚝을 반원형으로 움직여 천천히 덤벨을 아래로 내립니다...',
       transition: '',
     },
   },
@@ -14582,8 +14849,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Decline EZ Bar Triceps Extension은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 클로즈 그립(어깨보다 약간 작은 그립)을 사용하여',
-      execution: '숨을 들이쉬면서 팔뚝을 고정한 상태로 팔뚝을 몸쪽으로 반원 모양으로 움직여 바를 천천히 아래로 내립니다.',
+      setup:
+        '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 클로즈 그립(어깨보다 약간 작은 그립)을 사용하여',
+      execution:
+        '숨을 들이쉬면서 팔뚝을 고정한 상태로 팔뚝을 몸쪽으로 반원 모양으로 움직여 바를 천천히 아래로 내립니다.',
       transition: '',
     },
   },
@@ -14599,8 +14868,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '디클라인 오블리크 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 몸통이 35cm 정도 될 때까지 벤치에서 상체를 들어 올리세요...',
-      execution: '한 손은 머리 옆에, 다른 한 손은 허벅지 위에 올려놓으세요. 이것이 당신의 시작 위치가 될 것입니다. 시작자세에서 천천히 상체를 들어 올리세요...',
+      setup:
+        '디클라인 벤치 끝부분에 다리를 고정하고 천천히 벤치에 누우세요. 몸통이 35cm 정도 될 때까지 벤치에서 상체를 들어 올리세요...',
+      execution:
+        '한 손은 머리 옆에, 다른 한 손은 허벅지 위에 올려놓으세요. 이것이 당신의 시작 위치가 될 것입니다. 시작자세에서 천천히 상체를 들어 올리세요...',
       transition: '',
     },
   },
@@ -14614,8 +14885,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '디클라인 푸쉬업(Decline Push-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워서 양손을 약 36인치 간격으로 벌리고 몸통을 팔 길이로 유지합니다. 상자나 벤 위로 발을 움직여보세요...',
-      execution: '이제 숨을 내쉬면서 가슴을 쥐어짜면서 상체를 다시 시작 위치로 밀어 올리세요. 상단 수축 위치에서 잠시 멈춘 후...',
+      setup:
+        '바닥에 엎드려 누워서 양손을 약 36인치 간격으로 벌리고 몸통을 팔 길이로 유지합니다. 상자나 벤 위로 발을 움직여보세요...',
+      execution:
+        '이제 숨을 내쉬면서 가슴을 쥐어짜면서 상체를 다시 시작 위치로 밀어 올리세요. 상단 수축 위치에서 잠시 멈춘 후...',
       transition: '',
     },
   },
@@ -14630,8 +14903,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '디클라인 리버스 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치에 등을 대고 누워 양손으로 벤치 상단을 잡습니다. 이 자세에서 몸이 미끄러지지 않도록 하세요. 잠깐만요...',
-      execution: '숨을 내쉬면서 다리를 몸통쪽으로 움직이면서 골반을 뒤로 굴리고 엉덩이를 벤치에서 들어 올립니다. 이 움직임이 끝나면...',
+      setup:
+        '디클라인 벤치에 등을 대고 누워 양손으로 벤치 상단을 잡습니다. 이 자세에서 몸이 미끄러지지 않도록 하세요. 잠깐만요...',
+      execution:
+        '숨을 내쉬면서 다리를 몸통쪽으로 움직이면서 골반을 뒤로 굴리고 엉덩이를 벤치에서 들어 올립니다. 이 움직임이 끝나면...',
       transition: '',
     },
   },
@@ -14645,9 +14920,12 @@ registerLanguageTranslations('ko', {
       '세트가 완료되면 바를 랙에 다시 고정합니다.',
     ],
     audio: {
-      intro: '디클라인 스미스 프레스(Decline Smith Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신 아래에 디클라인 벤치를 놓습니다. 이제 누웠을 때 손이 닿을 수 있고 팔이 거의 펴지는 높이에 바벨을 놓습니다...',
-      execution: '잠시 멈춘 후 숨을 내쉬면서 팔꿈치를 펴고 바를 시작 위치로 되돌립니다. prescr에 대한 동작을 반복합니다...',
+      intro:
+        '디클라인 스미스 프레스(Decline Smith Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '스미스 머신 아래에 디클라인 벤치를 놓습니다. 이제 누웠을 때 손이 닿을 수 있고 팔이 거의 펴지는 높이에 바벨을 놓습니다...',
+      execution:
+        '잠시 멈춘 후 숨을 내쉬면서 팔꿈치를 펴고 바를 시작 위치로 되돌립니다. prescr에 대한 동작을 반복합니다...',
       transition: '',
     },
   },
@@ -14660,7 +14938,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Deficit Deadlift는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '일반적으로 높이가 1~3인치인 플랫폼이나 추판을 준비하는 것부터 시작하세요. 바가 당신의 중앙에 오도록 바에 접근하세요...',
+      setup:
+        '일반적으로 높이가 1~3인치인 플랫폼이나 추판을 준비하는 것부터 시작하세요. 바가 당신의 중앙에 오도록 바에 접근하세요...',
       execution: '엉덩이를 구부려 바를 바닥으로 유도하여 바를 내립니다.',
       transition: '',
     },
@@ -14675,7 +14954,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '깊이 점프 도약(Depth Jump Leap)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련을 위해서는 두 개의 상자나 벤치가 필요합니다. 하나는 높이가 12~16인치이고 다른 하나는 높이가 22~26인치입니다. ...',
+      setup:
+        '이 훈련을 위해서는 두 개의 상자나 벤치가 필요합니다. 하나는 높이가 12~16인치이고 다른 하나는 높이가 22~26인치입니다. ...',
       execution: '첫 번째 상자를 내려놓고 착지한 후 두 발로 동시에 이륙하는 것으로 시작합니다. ...',
       transition: '',
     },
@@ -14691,8 +14971,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '딥 머신(Dip Machine)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '딥 머신에 안전하게 앉아 무게추를 선택하고 핸들을 단단히 잡으십시오. 이제 ...를 강조하기 위해 팔꿈치를 옆구리에 유지하세요.',
-      execution: '삼두근을 수축시키면서 숨을 내쉬면서 팔을 아래쪽으로 뻗으십시오. 팁: 동작의 마지막 부분에서 몸을 약간 구부리는 데 집중하세요...',
+      setup:
+        '딥 머신에 안전하게 앉아 무게추를 선택하고 핸들을 단단히 잡으십시오. 이제 ...를 강조하기 위해 팔꿈치를 옆구리에 유지하세요.',
+      execution:
+        '삼두근을 수축시키면서 숨을 내쉬면서 팔을 아래쪽으로 뻗으십시오. 팁: 동작의 마지막 부분에서 몸을 약간 구부리는 데 집중하세요...',
       transition: '',
     },
   },
@@ -14706,8 +14988,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '딥스 - 가슴 버전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 연습을 위해서는 평행봉에 접근해야 합니다. 시작 자세를 취하려면 몸을 팔 길이로 유지하세요(팔은 잠긴 상태).',
-      execution: '스트레칭이 느껴지면 숨을 내쉬면서 가슴을 이용해 몸을 시작 위치로 되돌립니다. 팁: 가슴을 꽉 쥐는 것을 잊지 마세요...',
+      setup:
+        '이 연습을 위해서는 평행봉에 접근해야 합니다. 시작 자세를 취하려면 몸을 팔 길이로 유지하세요(팔은 잠긴 상태).',
+      execution:
+        '스트레칭이 느껴지면 숨을 내쉬면서 가슴을 이용해 몸을 시작 위치로 되돌립니다. 팁: 가슴을 꽉 쥐는 것을 잊지 마세요...',
       transition: '',
     },
   },
@@ -14721,8 +15005,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '딥스 - 삼두근 버전은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작 위치로 들어가려면 팔을 바 위에 거의 고정한 상태에서 몸을 팔 길이로 유지하십시오. 이제 숨을 들이쉬며 천천히 몸을 낮추세요...',
-      execution: '그런 다음 숨을 내쉬고 삼두근을 사용하여 몸통을 뒤로 밀어 몸을 시작 위치로 되돌립니다. 처방을 위해 동작을 반복합니다...',
+      setup:
+        '시작 위치로 들어가려면 팔을 바 위에 거의 고정한 상태에서 몸을 팔 길이로 유지하십시오. 이제 숨을 들이쉬며 천천히 몸을 낮추세요...',
+      execution:
+        '그런 다음 숨을 내쉬고 삼두근을 사용하여 몸통을 뒤로 밀어 몸을 시작 위치로 되돌립니다. 처방을 위해 동작을 반복합니다...',
       transition: '',
     },
   },
@@ -14737,8 +15023,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '당나귀 송아지 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 하려면 당나귀 송아지 들어올리기 기계를 사용해야 합니다. 패딩 처리된 레버 아래에 허리와 엉덩이를 위치시키는 것부터 시작하세요...',
-      execution: '발목을 최대한 높이 펴고 종아리를 구부려 숨을 내쉬면서 발뒤꿈치를 들어 올리세요. 무릎이 고정된 상태로 유지되도록 하십시오.',
+      setup:
+        '이 운동을 하려면 당나귀 송아지 들어올리기 기계를 사용해야 합니다. 패딩 처리된 레버 아래에 허리와 엉덩이를 위치시키는 것부터 시작하세요...',
+      execution:
+        '발목을 최대한 높이 펴고 종아리를 구부려 숨을 내쉬면서 발뒤꿈치를 들어 올리세요. 무릎이 고정된 상태로 유지되도록 하십시오.',
       transition: '',
     },
   },
@@ -14751,7 +15039,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Double Kettlebell Alternating Hang Clean은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨 하나를 청소하세요...',
+      setup:
+        '두 개의 케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨 하나를 청소하세요...',
       execution: '부드러운 동작으로 위쪽 케틀벨을 낮추고 아래쪽 케틀벨을 위로 올립니다.',
       transition: '',
     },
@@ -14769,8 +15058,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '더블 케틀벨 저크(Double Kettlebell Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 케틀벨 손잡이를 잡습니다. 주전자를 당기면서 다리와 엉덩이까지 뻗어 케틀벨을 어깨까지 깨끗하게 만드세요...',
-      execution: '무릎을 구부려 몸을 담그고 몸통을 똑바로 유지하십시오. 즉시 방향을 바꿔 발뒤꿈치를 통해 주행하며 본질적으로 크레이지로 점프합니다.',
+      setup:
+        '양손에 케틀벨 손잡이를 잡습니다. 주전자를 당기면서 다리와 엉덩이까지 뻗어 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      execution:
+        '무릎을 구부려 몸을 담그고 몸통을 똑바로 유지하십시오. 즉시 방향을 바꿔 발뒤꿈치를 통해 주행하며 본질적으로 크레이지로 점프합니다.',
       transition: '',
     },
   },
@@ -14782,8 +15073,10 @@ registerLanguageTranslations('ko', {
       '케틀벨이 잠기면 케틀벨을 어깨까지 낮추고 반복하십시오.',
     ],
     audio: {
-      intro: '더블 케틀벨 푸시 프레스(Double Kettlebell Push Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 어깨에 대고 청소하세요. 몇 인치 정도 몸을 숙이고 빠르게 동작을 반대로 바꾸세요. 다리의 추진력을 이용해 주전자를 몰고...',
+      intro:
+        '더블 케틀벨 푸시 프레스(Double Kettlebell Push Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 몇 인치 정도 몸을 숙이고 빠르게 동작을 반대로 바꾸세요. 다리의 추진력을 이용해 주전자를 몰고...',
       execution: '케틀벨이 잠기면 케틀벨을 어깨까지 낮추고 반복하십시오.',
       transition: '',
     },
@@ -14797,7 +15090,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '더블 케틀벨 스내치는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨 두 개를 발 뒤에 놓습니다. 무릎을 구부리고 편안히 앉아 케틀벨을 들어 올리세요. 다리 사이에서 케틀벨을 힘차게 휘두르세요...',
+      setup:
+        '케틀벨 두 개를 발 뒤에 놓습니다. 무릎을 구부리고 편안히 앉아 케틀벨을 들어 올리세요. 다리 사이에서 케틀벨을 힘차게 휘두르세요...',
       execution: '엉덩이를 사용하여 한 번의 중단 없는 동작으로 케틀벨을 머리 위로 고정합니다.',
       transition: '',
     },
@@ -14811,9 +15105,12 @@ registerLanguageTranslations('ko', {
       '케틀벨을 바닥에서 들어올린 후 잠시 멈췄다가 반대 동작을 시작 위치로 되돌립니다.',
     ],
     audio: {
-      intro: '더블 케틀벨 윈드밀(Double Kettlebell Windmill)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 앞발 앞에 놓고 깨끗한 상태로 반대쪽 팔로 케틀벨을 머리 위로 누르세요. 케틀벨을 어깨까지 깨끗하게...',
-      execution: '엉덩이를 한쪽으로 구부리고 엉덩이를 내밀고 바닥에서 케틀벨을 꺼낼 수 있을 때까지 천천히 몸을 기울입니다. 케트를 주시하세요...',
+      intro:
+        '더블 케틀벨 윈드밀(Double Kettlebell Windmill)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨을 앞발 앞에 놓고 깨끗한 상태로 반대쪽 팔로 케틀벨을 머리 위로 누르세요. 케틀벨을 어깨까지 깨끗하게...',
+      execution:
+        '엉덩이를 한쪽으로 구부리고 엉덩이를 내밀고 바닥에서 케틀벨을 꺼낼 수 있을 때까지 천천히 몸을 기울입니다. 케트를 주시하세요...',
       transition: '',
     },
   },
@@ -14827,8 +15124,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Double Leg Butt Kick은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 약간 구부린 채 서서 시작하세요. 짧은 거리를 빠르게 스쿼트하고 엉덩이와 무릎을 구부린 후 즉시 뻗어 최대 점프를 합니다...',
-      execution: '올라갈 때 무릎을 구부려 발뒤꿈치를 집어넣고 엉덩이에 닿도록 하세요. 무릎을 부분적으로만 착지하여 동작을 마무리합니다...',
+      setup:
+        '무릎을 약간 구부린 채 서서 시작하세요. 짧은 거리를 빠르게 스쿼트하고 엉덩이와 무릎을 구부린 후 즉시 뻗어 최대 점프를 합니다...',
+      execution:
+        '올라갈 때 무릎을 구부려 발뒤꿈치를 집어넣고 엉덩이에 닿도록 하세요. 무릎을 부분적으로만 착지하여 동작을 마무리합니다...',
       transition: '',
     },
   },
@@ -14840,8 +15139,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '하향 균형(Downward Facing Balance)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동용 공 위에 엎드려 눕습니다. 공 위에 배를 대고 휴식을 취하면서 바닥을 따라 손을 앞으로 내밀고 다리를 들어 올리며 내선...',
-      execution: '공 위에 배를 대고 누워 있는 동안 손을 바닥을 따라 앞으로 걷고 다리를 들어올려 팔꿈치와 무릎을 쭉 뻗습니다.',
+      setup:
+        '운동용 공 위에 엎드려 눕습니다. 공 위에 배를 대고 휴식을 취하면서 바닥을 따라 손을 앞으로 내밀고 다리를 들어 올리며 내선...',
+      execution:
+        '공 위에 배를 대고 누워 있는 동안 손을 바닥을 따라 앞으로 걷고 다리를 들어올려 팔꿈치와 무릎을 쭉 뻗습니다.',
       transition: '',
     },
   },
@@ -14855,8 +15156,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '드래그 컬(Drag Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥이 앞쪽을 향하도록 하여 바벨을 잡고 팔꿈치를 몸통과 등에 가깝게 잡습니다. 이것이 당신의 시작 위치가 될 것입니다. ...',
-      execution: '바가 항상 몸통에 닿은 상태를 유지하면서 천천히 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요.',
+      setup:
+        '손바닥이 앞쪽을 향하도록 하여 바벨을 잡고 팔꿈치를 몸통과 등에 가깝게 잡습니다. 이것이 당신의 시작 위치가 될 것입니다. ...',
+      execution:
+        '바가 항상 몸통에 닿은 상태를 유지하면서 천천히 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
   },
@@ -14869,8 +15172,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '드롭 푸시(Drop Push)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '낮은 상자나 기타 플랫폼을 2~3피트 간격으로 배치합니다. 상자 위에 손을 올려 몸을 지탱하면서 그들 사이에 푸시업 자세로 이동합니다.',
-      execution: '좋은 자세로 플랫폼에서 내려오면서 양손을 어깨 너비로 벌리고 움직여 착지 시 충격을 흡수하여 충격을 흡수합니다.',
+      setup:
+        '낮은 상자나 기타 플랫폼을 2~3피트 간격으로 배치합니다. 상자 위에 손을 올려 몸을 지탱하면서 그들 사이에 푸시업 자세로 이동합니다.',
+      execution:
+        '좋은 자세로 플랫폼에서 내려오면서 양손을 어깨 너비로 벌리고 움직여 착지 시 충격을 흡수하여 충격을 흡수합니다.',
       transition: '',
     },
   },
@@ -14885,8 +15190,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dumbbell Alternate Bicep Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 팔 길이를 유지한 채(상체를 똑바로 세우고) 서세요. 팔꿈치는 몸통에 가까워야 하며 손바닥은 ...',
-      execution: '숨을 들이쉬면서 천천히 덤벨을 시작 위치로 가져오기 시작합니다. 팁: 손바닥을 시작 위치로 되돌리는 것을 잊지 마세요...',
+      setup:
+        '양손에 덤벨을 들고 팔 길이를 유지한 채(상체를 똑바로 세우고) 서세요. 팔꿈치는 몸통에 가까워야 하며 손바닥은 ...',
+      execution:
+        '숨을 들이쉬면서 천천히 덤벨을 시작 위치로 가져오기 시작합니다. 팁: 손바닥을 시작 위치로 되돌리는 것을 잊지 마세요...',
       transition: '',
     },
   },
@@ -14902,7 +15209,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 허벅지 위에 얹은 채 플랫 벤치에 눕습니다. 손바닥이 서로 마주보게 됩니다. 그런 다음...',
-      execution: '어깨 너비로 벌린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 덤벨은 몸에 딱 맞아야 합니다...',
+      execution:
+        '어깨 너비로 벌린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 덤벨은 몸에 딱 맞아야 합니다...',
       transition: '',
     },
   },
@@ -14916,8 +15224,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '중립 그립을 갖춘 덤벨 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 플랫 벤치에 누워주세요. 발은 바닥에 평평하게 닿아 있어야 하며 견갑골은 수축되어 있어야 합니다. 유지 중...',
-      execution: '팔꿈치를 구부리고 팔 윗부분을 옆으로 낮추면서 동작을 시작합니다. 덤벨이 몸통에 닿을 때까지 내려갑니다. 일시 중지한 다음 확장하세요...',
+      setup:
+        '양손에 덤벨을 들고 플랫 벤치에 누워주세요. 발은 바닥에 평평하게 닿아 있어야 하며 견갑골은 수축되어 있어야 합니다. 유지 중...',
+      execution:
+        '팔꿈치를 구부리고 팔 윗부분을 옆으로 낮추면서 동작을 시작합니다. 덤벨이 몸통에 닿을 때까지 내려갑니다. 일시 중지한 다음 확장하세요...',
       transition: '',
     },
   },
@@ -14932,7 +15242,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨 바이셉 컬(Dumbbell Bicep Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '팔 길이만큼 양손에 덤벨을 들고 똑바로 서세요. 팔꿈치를 몸통 가까이에 두고 손바닥을 회전시켜 ...',
-      execution: '그런 다음 숨을 들이마시며 천천히 덤벨을 낮추어 시작 위치로 돌아옵니다. 권장되는 반복 횟수만큼 반복하세요.',
+      execution:
+        '그런 다음 숨을 들이마시며 천천히 덤벨을 낮추어 시작 위치로 돌아옵니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
   },
@@ -14947,8 +15258,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 양손에 덤벨을 들고 서기 시작합니다. 엉덩이와 무릎을 구부려 웨이트를 바닥으로 내리세요.',
-      execution: '움직임을 시작하려면 엉덩이, 무릎, 발목을 펴서 힘차게 위로 점프하여 무게를 위로 올리세요. 중립을 유지하는 중...',
+      setup:
+        '발을 어깨 너비로 벌리고 양손에 덤벨을 들고 서기 시작합니다. 엉덩이와 무릎을 구부려 웨이트를 바닥으로 내리세요.',
+      execution:
+        '움직임을 시작하려면 엉덩이, 무릎, 발목을 펴서 힘차게 위로 점프하여 무게를 위로 올리세요. 중립을 유지하는 중...',
       transition: '',
     },
   },
@@ -14961,7 +15274,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 플로어 프레스(Dumbbell Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손에 덤벨을 들고 바닥에 눕습니다. 무릎이 구부러질 수 있습니다. 당신 위로 완전히 확장된 무게로 시작하십시오. ...',
+      setup:
+        '손에 덤벨을 들고 바닥에 눕습니다. 무릎이 구부러질 수 있습니다. 당신 위로 완전히 확장된 무게로 시작하십시오. ...',
       execution: '바닥에서 잠시 멈췄다가 팔꿈치를 뻗어 중량을 위쪽으로 모으세요.',
       transition: '',
     },
@@ -14977,8 +15291,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 플라이는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 허벅지 위에 얹은 채 플랫 벤치에 눕습니다. 손바닥이 서로 마주보게 됩니다. 그런 다음 y를 사용하여...',
-      execution: '이두근 힘줄의 스트레스를 방지하기 위해 팔꿈치를 약간 구부린 상태에서 팔을 양쪽으로 넓게 호를 그리며 아래로 내립니다.',
+      setup:
+        '양손에 덤벨을 들고 허벅지 위에 얹은 채 플랫 벤치에 눕습니다. 손바닥이 서로 마주보게 됩니다. 그런 다음 y를 사용하여...',
+      execution:
+        '이두근 힘줄의 스트레스를 방지하기 위해 팔꿈치를 약간 구부린 상태에서 팔을 양쪽으로 넓게 호를 그리며 아래로 내립니다.',
       transition: '',
     },
   },
@@ -14992,8 +15308,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 인클라인 로우(Dumbbell Incline Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '중립 그립을 사용하여 경사 벤치에 기대어 앉습니다. 팔을 곧게 편 상태에서 시작하여 중립 그립으로 양손에 덤벨을 잡습니다. 이것은...',
-      execution: '견갑골을 집어넣고 팔꿈치를 구부려 덤벨을 옆으로 눕힙니다. 동작의 최고점에서 잠시 멈췄다가 다시 처음으로 돌아가는데...',
+      setup:
+        '중립 그립을 사용하여 경사 벤치에 기대어 앉습니다. 팔을 곧게 편 상태에서 시작하여 중립 그립으로 양손에 덤벨을 잡습니다. 이것은...',
+      execution:
+        '견갑골을 집어넣고 팔꿈치를 구부려 덤벨을 옆으로 눕힙니다. 동작의 최고점에서 잠시 멈췄다가 다시 처음으로 돌아가는데...',
       transition: '',
     },
   },
@@ -15008,8 +15326,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 인클라인 숄더 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '인클라인 벤치에 앉아 양손에 덤벨을 잡고 허벅지 위에 올려주세요. 다리를 들어 올려 어깨와 레에 무게를 실어보세요...',
-      execution: '팔을 곧게 펴고 잠긴 상태에서 숨을 내쉬면서 벤치에서 어깨를 들어 올려 덤벨을 들어 올리세요. 덤벨을 다시 가져오세요...',
+      setup:
+        '인클라인 벤치에 앉아 양손에 덤벨을 잡고 허벅지 위에 올려주세요. 다리를 들어 올려 어깨와 레에 무게를 실어보세요...',
+      execution:
+        '팔을 곧게 펴고 잠긴 상태에서 숨을 내쉬면서 벤치에서 어깨를 들어 올려 덤벨을 들어 올리세요. 덤벨을 다시 가져오세요...',
       transition: '',
     },
   },
@@ -15023,8 +15343,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 런지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨 두 개를 들고 몸통을 똑바로 세우고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 오른쪽으로 앞으로 나아가세요...',
-      execution: '주로 발뒤꿈치를 이용하여 밀어올렸다가 숨을 내쉬면서 시작자세로 돌아옵니다. 권장 r량만큼 동작을 반복합니다...',
+      setup:
+        '양손에 덤벨 두 개를 들고 몸통을 똑바로 세우고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 오른쪽으로 앞으로 나아가세요...',
+      execution:
+        '주로 발뒤꿈치를 이용하여 밀어올렸다가 숨을 내쉬면서 시작자세로 돌아옵니다. 권장 r량만큼 동작을 반복합니다...',
       transition: '',
     },
   },
@@ -15039,8 +15361,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 라잉 원암 리어 레터럴 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손에 덤벨을 들고 약간 기울어진(바닥에서 측정했을 때 약 15도 정도) 조절 가능한 경사면에 가슴을 아래로 두고 눕습니다....',
-      execution: '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 덤벨을 들고 팔을 옆으로 들어 올리세요....',
+      setup:
+        '한 손에 덤벨을 들고 약간 기울어진(바닥에서 측정했을 때 약 15도 정도) 조절 가능한 경사면에 가슴을 아래로 두고 눕습니다....',
+      execution:
+        '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 덤벨을 들고 팔을 옆으로 들어 올리세요....',
       transition: '',
     },
   },
@@ -15072,8 +15396,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 라잉 리어 레터럴 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 쥐고 약간 기울어진(바닥에서 측정했을 때 약 15도 정도) 조절 가능한 각도에 가슴을 아래로 두고 눕습니다. ...',
-      execution: '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 팔을 옆으로 들어 올리십시오. 팁: 유지...',
+      setup:
+        '양손에 덤벨을 쥐고 약간 기울어진(바닥에서 측정했을 때 약 15도 정도) 조절 가능한 각도에 가슴을 아래로 두고 눕습니다. ...',
+      execution:
+        '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 팔을 옆으로 들어 올리십시오. 팁: 유지...',
       transition: '',
     },
   },
@@ -15089,8 +15415,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dumbbell Lying Supination은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 팔은 덤벨을 잡고 다른 손은 벤치 위에 머리를 기대어 놓을 수 있도록 편평한 벤치에 옆으로 누워 있습니다. ...',
-      execution: '이제 팔뚝이 바닥과 평행하고 몸통과 수직이 되도록 윗팔을 들어 올리세요. (팁: 팔뚝이 바로 앞에 오도록 합니다...',
+      setup:
+        '한쪽 팔은 덤벨을 잡고 다른 손은 벤치 위에 머리를 기대어 놓을 수 있도록 편평한 벤치에 옆으로 누워 있습니다. ...',
+      execution:
+        '이제 팔뚝이 바닥과 평행하고 몸통과 수직이 되도록 윗팔을 들어 올리세요. (팁: 팔뚝이 바로 앞에 오도록 합니다...',
       transition: '',
     },
   },
@@ -15107,7 +15435,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨 원암 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '덤벨을 잡고 군용 프레스 벤치나 등받이가 있는 유틸리티 벤치에 앉아 덤벨을 바로 위에 올려 놓습니다...',
-      execution: '손바닥이 앞을 향하도록 손목을 회전시킵니다. 이것이 당신의 시작 위치입니다. 숨을 내쉬면서 덤벨을 허리까지 밀어 올리세요...',
+      execution:
+        '손바닥이 앞을 향하도록 손목을 회전시킵니다. 이것이 당신의 시작 위치입니다. 숨을 내쉬면서 덤벨을 허리까지 밀어 올리세요...',
       transition: '',
     },
   },
@@ -15124,7 +15453,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Dumbbell One-Arm Triceps Extension은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '덤벨을 잡고 군용 프레스 벤치나 등받이가 있는 유틸리티 벤치에 앉아 덤벨을 바로 위에 올려 놓습니다...',
-      execution: '손바닥이 앞을 향하고 새끼손가락이 천장을 향하도록 손목을 돌립니다. 이것이 당신의 시작 위치가 될 것입니다. 천천히...',
+      execution:
+        '손바닥이 앞을 향하고 새끼손가락이 천장을 향하도록 손목을 돌립니다. 이것이 당신의 시작 위치가 될 것입니다. 천천히...',
       transition: '',
     },
   },
@@ -15140,7 +15470,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Dumbbell One-Arm Upright Row는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '덤벨을 잡고 팔을 앞으로 뻗은 채 팔꿈치를 약간 구부리고 등을 곧게 펴고 똑바로 서세요. 이것은...',
-      execution: '숨을 내쉬면서 옆 어깨를 이용해 덤벨을 들어 올리세요. 덤벨을 위로 올릴 때 몸에 가까워야 합니다. T가 될 때까지 계속 들어 올리세요...',
+      execution:
+        '숨을 내쉬면서 옆 어깨를 이용해 덤벨을 들어 올리세요. 덤벨을 위로 올릴 때 몸에 가까워야 합니다. T가 될 때까지 계속 들어 올리세요...',
       transition: '',
     },
   },
@@ -15157,7 +15488,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Dumbbell Prone Incline Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 경사 벤치에 엎드려 어깨를 경사 상단 근처에 놓습니다. 무릎은 좌석에 기대거나 ...',
-      execution: '이제 팔꿈치를 옆구리에 두고 손바닥이 앞을 향하게 하세요. 이것이 당신의 시작 위치가 될 것입니다. 이두근을 수축하여 덤벨을 들어 올리세요...',
+      execution:
+        '이제 팔꿈치를 옆구리에 두고 손바닥이 앞을 향하게 하세요. 이것이 당신의 시작 위치가 될 것입니다. 이두근을 수축하여 덤벨을 들어 올리세요...',
       transition: '',
     },
   },
@@ -15172,7 +15504,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양 팔에 덤벨을 쥐고 팔을 옆으로 뻗은 채 팔꿈치를 약간 구부리고 등을 곧게 펴고 똑바로 서세요. 그...',
-      execution: '덤벨을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장 금액만큼 반복하세요...',
+      execution:
+        '덤벨을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장 금액만큼 반복하세요...',
       transition: '',
     },
   },
@@ -15186,8 +15519,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 리어 런지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨 두 개를 들고 몸통을 똑바로 세우고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 오른쪽으로 뒤로 물러서세요...',
-      execution: '숨을 내쉬면서 밀어 올리고 시작 위치로 돌아갑니다. 팁: 대퇴사두근을 강조하려면 발의 공을 사용하여 밀어 넣으세요. 집중하려면...',
+      setup:
+        '양손에 덤벨 두 개를 들고 몸통을 똑바로 세우고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 오른쪽으로 뒤로 물러서세요...',
+      execution:
+        '숨을 내쉬면서 밀어 올리고 시작 위치로 돌아갑니다. 팁: 대퇴사두근을 강조하려면 발의 공을 사용하여 밀어 넣으세요. 집중하려면...',
       transition: '',
     },
   },
@@ -15200,7 +15535,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 스캡션(Dumbbell Scaption)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 교정 운동은 견갑골을 안정시키는 근육을 강화시킵니다. 양손에 가벼운 무게를 쥐고 옆구리에 매달아 놓습니다. 당신의 ...',
+      setup:
+        '이 교정 운동은 견갑골을 안정시키는 근육을 강화시킵니다. 양손에 가벼운 무게를 쥐고 옆구리에 매달아 놓습니다. 당신의 ...',
       execution: '팔이 지면과 평행이 될 때까지 계속한 다음 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -15215,7 +15551,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dumbbell Seated Box Jump는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벤치 옆으로 몇 피트 떨어진 곳에 상자를 놓습니다. 양손으로 덤벨을 가슴에 대고 박스를 바라보는 벤치에 앉습니다. ㅜㅜ...',
+      setup:
+        '벤치 옆으로 몇 피트 떨어진 곳에 상자를 놓습니다. 양손으로 덤벨을 가슴에 대고 박스를 바라보는 벤치에 앉습니다. ㅜㅜ...',
       execution: '두 발로 박스 위에 착지하고 엉덩이와 무릎을 구부려 충격을 흡수합니다. 내려와 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -15232,8 +15569,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dumbbell Seated One-Leg Calf Rachel은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치에서 약 12인치 떨어진 바닥에 블록을 놓습니다. 플랫 벤치에 앉아 덤벨을 왼쪽 허벅지 위쪽 약 3인치 위에 놓습니다.',
-      execution: '이제 왼발의 공을 블록 위에 놓습니다. 이것이 당신의 시작 위치가 될 것입니다. 숨을 내쉬면서 발가락을 최대한 높이 올리세요. 그러면 요...',
+      setup:
+        '평평한 벤치에서 약 12인치 떨어진 바닥에 블록을 놓습니다. 플랫 벤치에 앉아 덤벨을 왼쪽 허벅지 위쪽 약 3인치 위에 놓습니다.',
+      execution:
+        '이제 왼발의 공을 블록 위에 놓습니다. 이것이 당신의 시작 위치가 될 것입니다. 숨을 내쉬면서 발가락을 최대한 높이 올리세요. 그러면 요...',
       transition: '',
     },
   },
@@ -15250,7 +15589,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 등받이가 있는 밀리터리 프레스 벤치나 유틸리티 벤치에 앉습니다. 덤벨을 ...',
-      execution: '손바닥이 앞을 향하도록 손목을 회전시키세요. 이것이 당신의 시작 위치입니다. 이제 숨을 내쉬며 덤비를 밀어보세요...',
+      execution:
+        '손바닥이 앞을 향하도록 손목을 회전시키세요. 이것이 당신의 시작 위치입니다. 이제 숨을 내쉬며 덤비를 밀어보세요...',
       transition: '',
     },
   },
@@ -15264,7 +15604,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dumbbell Shrug는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고(손바닥이 몸통을 향하도록) 똑바로 서서 팔을 옆으로 뻗습니다. 어깨를 높이 들어 덤벨을 들어 올리세요...',
+      setup:
+        '양손에 덤벨을 들고(손바닥이 몸통을 향하도록) 똑바로 서서 팔을 옆으로 뻗습니다. 어깨를 높이 들어 덤벨을 들어 올리세요...',
       execution: '덤벨을 원래 위치로 다시 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -15280,7 +15621,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨 사이드 벤드는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '오른손으로 허리를 잡고 왼손(손바닥이 몸통을 향함)으로 덤벨을 잡고 똑바로 선다. 발은...',
-      execution: '이제 동작을 반복하되 대신 왼쪽으로 구부리세요. 잠시 기다렸다가 시작 위치로 돌아옵니다. 권장량만큼 반복하세요...',
+      execution:
+        '이제 동작을 반복하되 대신 왼쪽으로 구부리세요. 잠시 기다렸다가 시작 위치로 돌아옵니다. 권장량만큼 반복하세요...',
       transition: '',
     },
   },
@@ -15295,8 +15637,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 똑바로 서세요(손바닥이 다리 옆을 향하도록). 어깨 너비의 중간 스탠을 사용하여 다리 위치를 지정합니다...',
-      execution: '머리를 위로 들고 곧은 자세를 유지하면서 무릎을 구부려 천천히 상체를 낮추기 시작합니다. 허벅지가 마비될 때까지 계속 내려가세요...',
+      setup:
+        '양손에 덤벨을 들고 똑바로 서세요(손바닥이 다리 옆을 향하도록). 어깨 너비의 중간 스탠을 사용하여 다리 위치를 지정합니다...',
+      execution:
+        '머리를 위로 들고 곧은 자세를 유지하면서 무릎을 구부려 천천히 상체를 낮추기 시작합니다. 허벅지가 마비될 때까지 계속 내려가세요...',
       transition: '',
     },
   },
@@ -15310,9 +15654,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '벤치에 덤벨 스쿼트(Dumbbell Squat To A Bench)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고(손바닥이 다리 옆을 향하도록) 플랫 벤치를 뒤에 두고 똑바로 서세요. 다음을 사용하여 다리 위치를 지정하세요...',
-      execution: '머리를 위로 들고 곧은 자세를 유지하면서 무릎을 구부려 천천히 상체를 낮추기 시작합니다. T를 살짝 터치할 때까지 계속 아래로 내려가세요...',
+      intro:
+        '벤치에 덤벨 스쿼트(Dumbbell Squat To A Bench)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '양손에 덤벨을 들고(손바닥이 다리 옆을 향하도록) 플랫 벤치를 뒤에 두고 똑바로 서세요. 다음을 사용하여 다리 위치를 지정하세요...',
+      execution:
+        '머리를 위로 들고 곧은 자세를 유지하면서 무릎을 구부려 천천히 상체를 낮추기 시작합니다. T를 살짝 터치할 때까지 계속 아래로 내려가세요...',
       transition: '',
     },
   },
@@ -15326,8 +15673,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '덤벨 스텝업은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 똑바로 서세요(손바닥이 다리 옆을 향하도록). 높은 플랫폼에 오른발을 놓습니다. 한 단계 더...',
-      execution: '숨을 들이쉬면서 오른쪽 다리의 엉덩이와 무릎을 구부려 왼쪽 다리로 내려옵니다. 리그를 배치하여 원래의 선 자세로 돌아갑니다.',
+      setup:
+        '양손에 덤벨을 들고 똑바로 서세요(손바닥이 다리 옆을 향하도록). 높은 플랫폼에 오른발을 놓습니다. 한 단계 더...',
+      execution:
+        '숨을 들이쉬면서 오른쪽 다리의 엉덩이와 무릎을 구부려 왼쪽 다리로 내려옵니다. 리그를 배치하여 원래의 선 자세로 돌아갑니다.',
       transition: '',
     },
   },
@@ -15342,7 +15691,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Dumbbell Tricep Extension - Pronated Grip은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 바로 위에 덤벨 두 개를 들고 플랫 벤치에 누우세요. 팔은 완전히 뻗어서 90도 각도를 이루어야 합니다...',
-      execution: '이제 숨을 들이마시며 덤벨이 귀 근처에 올 때까지 천천히 내립니다. 팔 윗부분은 움직이지 않게 유지하고 팔꿈치는 안으로 집어넣으세요. 그...',
+      execution:
+        '이제 숨을 들이마시며 덤벨이 귀 근처에 올 때까지 천천히 내립니다. 팔 윗부분은 움직이지 않게 유지하고 팔꿈치는 안으로 집어넣으세요. 그...',
       transition: '',
     },
   },
@@ -15354,8 +15704,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '다이나믹 백 스트레치(Dynamic Back Stretch)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 팔을 쭉 편 상태로 앞으로 똑바로 휘두르세요 ...',
-      execution: '팔을 똑바로 유지한 채 앞으로 5~10회 수직으로 휘두르며 팔이 Y 위에 올 때까지 매번 동작 범위를 늘립니다...',
+      setup:
+        '발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 팔을 쭉 편 상태로 앞으로 똑바로 휘두르세요 ...',
+      execution:
+        '팔을 똑바로 유지한 채 앞으로 5~10회 수직으로 휘두르며 팔이 Y 위에 올 때까지 매번 동작 범위를 늘립니다...',
       transition: '',
     },
   },
@@ -15367,8 +15719,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '동적 가슴 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 손을 모으고 서서 팔을 바로 앞으로 뻗습니다. 이것이 당신의 시작 위치가 될 것입니다. 팔을 곧게 펴고 빠르게 이동...',
-      execution: '팔을 쭉 뻗은 상태에서 과장된 박수 동작과 유사하게 팔을 최대한 뒤로 빠르게 움직였다가 다시 안쪽으로 움직입니다. 5-1을 반복합니다...',
+      setup:
+        '두 손을 모으고 서서 팔을 바로 앞으로 뻗습니다. 이것이 당신의 시작 위치가 될 것입니다. 팔을 곧게 펴고 빠르게 이동...',
+      execution:
+        '팔을 쭉 뻗은 상태에서 과장된 박수 동작과 유사하게 팔을 최대한 뒤로 빠르게 움직였다가 다시 안쪽으로 움직입니다. 5-1을 반복합니다...',
       transition: '',
     },
   },
@@ -15395,7 +15749,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '팔꿈치부터 무릎까지는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 누워 오른쪽 다리를 구부린 왼쪽 무릎 위로 교차시킵니다. 양손을 머리 뒤로 깍지 끼고 견갑골부터 시작하여...',
+      setup:
+        '바닥에 누워 오른쪽 다리를 구부린 왼쪽 무릎 위로 교차시킵니다. 양손을 머리 뒤로 깍지 끼고 견갑골부터 시작하여...',
       execution: '시작 위치로 돌아가서 측면을 전환하기 전에 원하는 반복 횟수만큼 동작을 반복하십시오.',
       transition: '',
     },
@@ -15424,8 +15779,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Elevated Back Lunge는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 무게를 싣고 어깨 높이의 랙 위에 바를 놓습니다. 당신 뒤에 짧고 높은 플랫폼을 놓으십시오. 바를 위로 올리세요...',
-      execution: '한쪽 다리를 뒤로 젖히는 것부터 시작하세요. 무릎이 바닥에 닿을 때까지 엉덩이와 무릎을 구부려 하강합니다. 잠시 멈추고 h를 통해 확장하세요...',
+      setup:
+        '적절한 무게를 싣고 어깨 높이의 랙 위에 바를 놓습니다. 당신 뒤에 짧고 높은 플랫폼을 놓으십시오. 바를 위로 올리세요...',
+      execution:
+        '한쪽 다리를 뒤로 젖히는 것부터 시작하세요. 무릎이 바닥에 닿을 때까지 엉덩이와 무릎을 구부려 하강합니다. 잠시 멈추고 h를 통해 확장하세요...',
       transition: '',
     },
   },
@@ -15442,8 +15799,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Elevated Cable Rows는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높이가 약 4~6인치인 일종의 플랫폼(에어로빅이나 종아리 키우기 플랫폼일 수 있음)을 구하세요. 케이블 자리에 놓아두세요...',
-      execution: '기계에 앉아서 무릎이 약간 구부러지고 잠기지 않았는지 확인하면서 발을 전면 플랫폼이나 크로스바에 놓습니다...',
+      setup:
+        '높이가 약 4~6인치인 일종의 플랫폼(에어로빅이나 종아리 키우기 플랫폼일 수 있음)을 구하세요. 케이블 자리에 놓아두세요...',
+      execution:
+        '기계에 앉아서 무릎이 약간 구부러지고 잠기지 않았는지 확인하면서 발을 전면 플랫폼이나 크로스바에 놓습니다...',
       transition: '',
     },
   },
@@ -15455,7 +15814,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '일립티컬 트레이너(Elliptical Trainer)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 일립티컬에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 일립티컬에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
+      setup:
+        '시작하려면 일립티컬에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 일립티컬에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
       execution: '핸들을 사용하여 심박수를 모니터링하여 적절한 강도를 유지하는 데 도움을 받을 수 있습니다.',
       transition: '',
     },
@@ -15472,7 +15832,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '엑서사이즈 볼 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동용 공 위에 누워서 허리 곡률을 공의 구형 표면에 대고 누르십시오. 발은 무릎을 구부려야 하며 ...',
-      execution: '엉덩이를 고정한 상태에서 복부를 수축하여 허리를 구부리고, 수축이 잘 될 때까지 어깨와 몸통을 위쪽으로 말립니다...',
+      execution:
+        '엉덩이를 고정한 상태에서 복부를 수축하여 허리를 구부리고, 수축이 잘 될 때까지 어깨와 몸통을 위쪽으로 말립니다...',
       transition: '',
     },
   },
@@ -15488,7 +15849,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '엑서사이즈 볼 풀인은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '근처에 운동용 공을 놓고 그 앞에 바닥에 누워 양손을 어깨 너비로 벌리고 푸쉬업 자세를 취합니다. 이제...',
-      execution: '등을 완전히 곧게 펴고 상체를 고정한 상태에서 숨을 내쉬면서 무릎을 가슴 쪽으로 당겨 공이 닿도록 합니다...',
+      execution:
+        '등을 완전히 곧게 펴고 상체를 고정한 상태에서 숨을 내쉬면서 무릎을 가슴 쪽으로 당겨 공이 닿도록 합니다...',
       transition: '',
     },
   },
@@ -15517,8 +15879,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '외부 회전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 팔은 덤벨을 잡고 다른 손은 벤치 위에 머리를 기대어 놓을 수 있도록 편평한 벤치에 옆으로 누워 있습니다. ...',
-      execution: '이제 윗팔을 고정한 상태에서 팔꿈치를 구부립니다. 이런 방식으로 팔뚝은 바닥과 평행하고 몸통과 수직이 됩니다...',
+      setup:
+        '한쪽 팔은 덤벨을 잡고 다른 손은 벤치 위에 머리를 기대어 놓을 수 있도록 편평한 벤치에 옆으로 누워 있습니다. ...',
+      execution:
+        '이제 윗팔을 고정한 상태에서 팔꿈치를 구부립니다. 이런 방식으로 팔뚝은 바닥과 평행하고 몸통과 수직이 됩니다...',
       transition: '',
     },
   },
@@ -15533,8 +15897,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 외부 회전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '기둥 주위에 밴드를 질식시키십시오. 밴드는 팔꿈치 높이와 같아야 합니다. 밴드와 몇 피트 떨어진 곳에 왼쪽으로 서세요. 그래...',
-      execution: '윗팔이 제 위치에 있으면 팔꿈치가 90도 각도로 구부러지고 손이 몸통 앞쪽을 가로지르게 됩니다. 이것이 바로 당신이 될 것입니다...',
+      setup:
+        '기둥 주위에 밴드를 질식시키십시오. 밴드는 팔꿈치 높이와 같아야 합니다. 밴드와 몇 피트 떨어진 곳에 왼쪽으로 서세요. 그래...',
+      execution:
+        '윗팔이 제 위치에 있으면 팔꿈치가 90도 각도로 구부러지고 손이 몸통 앞쪽을 가로지르게 됩니다. 이것이 바로 당신이 될 것입니다...',
       transition: '',
     },
   },
@@ -15548,8 +15914,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케이블을 이용한 외부 회전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케이블을 팔꿈치와 같은 높이로 조정하십시오. 밴드와 몇 피트 떨어진 곳에 왼쪽으로 서세요. 오른쪽으로 손잡이를 잡으세요 하...',
-      execution: '윗팔이 제 위치에 있으면 팔꿈치가 90도 각도로 구부러지고 손이 몸통 앞쪽을 가로지르게 됩니다. 이것이 바로 당신이 될 것입니다...',
+      setup:
+        '케이블을 팔꿈치와 같은 높이로 조정하십시오. 밴드와 몇 피트 떨어진 곳에 왼쪽으로 서세요. 오른쪽으로 손잡이를 잡으세요 하...',
+      execution:
+        '윗팔이 제 위치에 있으면 팔꿈치가 90도 각도로 구부러지고 손이 몸통 앞쪽을 가로지르게 됩니다. 이것이 바로 당신이 될 것입니다...',
       transition: '',
     },
   },
@@ -15564,8 +15932,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'EZ-Bar Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 바깥쪽 손잡이에 EZ 컬 바를 잡고 똑바로 서세요. 손바닥은 앞쪽을 향하고 약간 안쪽으로 기울어져야 합니다...',
-      execution: '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 계속해서 중량을 올리세요. 잠시 최고 수축 자세를 유지하세요...',
+      setup:
+        '넓은 바깥쪽 손잡이에 EZ 컬 바를 잡고 똑바로 서세요. 손바닥은 앞쪽을 향하고 약간 안쪽으로 기울어져야 합니다...',
+      execution:
+        '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 계속해서 중량을 올리세요. 잠시 최고 수축 자세를 유지하세요...',
       transition: '',
     },
   },
@@ -15579,7 +15949,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'EZ-Bar 스컬크러셔는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '가까운 그립을 사용하여 EZ 바를 들어 올리고 벤치에 누워서 팔꿈치로 잡으십시오. 팔은 바닥과 수직이 되어야 합니다. 이것은...',
+      setup:
+        '가까운 그립을 사용하여 EZ 바를 들어 올리고 벤치에 누워서 팔꿈치로 잡으십시오. 팔은 바닥과 수직이 되어야 합니다. 이것은...',
       execution: '팔꿈치를 펴고 숨을 내쉬면서 바를 다시 시작 위치로 들어 올리십시오. 반복하다.',
       transition: '',
     },
@@ -15591,8 +15962,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '페이스 풀은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프 또는 이중 손잡이가 부착된 높은 도르래를 바라보면서 손을 벌리면서 무게를 얼굴 쪽으로 직접 당깁니다. 계속 ...',
-      execution: '로프 또는 이중 손잡이가 부착된 높은 도르래를 바라보면서 손을 벌리면서 무게를 얼굴 쪽으로 직접 당깁니다. 계속 ...',
+      setup:
+        '로프 또는 이중 손잡이가 부착된 높은 도르래를 바라보면서 손을 벌리면서 무게를 얼굴 쪽으로 직접 당깁니다. 계속 ...',
+      execution:
+        '로프 또는 이중 손잡이가 부착된 높은 도르래를 바라보면서 손을 벌리면서 무게를 얼굴 쪽으로 직접 당깁니다. 계속 ...',
       transition: '',
     },
   },
@@ -15604,9 +15977,11 @@ registerLanguageTranslations('ko', {
       '짧고 빠른 걸음으로 걷고, 숨쉬는 것도 잊지 마세요. 주어진 거리(보통 50~100피트)를 최대한 빠르게 이동합니다.',
     ],
     audio: {
-      intro: 'Farmer\'s Walk는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '농부 산책에 사용할 수 있는 다양한 도구가 있습니다. 이러한 동작이 구현된다면 무거운 덤벨이나 짧은 바를 사용하여 수행할 수도 있습니다...',
-      execution: '짧고 빠른 걸음으로 걷고, 숨쉬는 것도 잊지 마세요. 주어진 거리(보통 50~100피트)를 최대한 빠르게 이동합니다.',
+      intro: "Farmer's Walk는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.",
+      setup:
+        '농부 산책에 사용할 수 있는 다양한 도구가 있습니다. 이러한 동작이 구현된다면 무거운 덤벨이나 짧은 바를 사용하여 수행할 수도 있습니다...',
+      execution:
+        '짧고 빠른 걸음으로 걷고, 숨쉬는 것도 잊지 마세요. 주어진 거리(보통 50~100피트)를 최대한 빠르게 이동합니다.',
       transition: '',
     },
   },
@@ -15619,8 +15994,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '빠른 건너뛰기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 약간 앞으로 두고 편안한 자세로 시작하세요. 이것이 당신의 시작 위치가 될 것입니다. 오른쪽-오른쪽 스텝홉 패턴을 실행하여 건너뛰기...',
-      execution: '지면과의 긴밀한 접촉을 유지하여 빠른 건너뛰기를 수행하고 공중 시간을 줄이면서 최대한 빠르게 이동합니다.',
+      setup:
+        '한쪽 다리를 약간 앞으로 두고 편안한 자세로 시작하세요. 이것이 당신의 시작 위치가 될 것입니다. 오른쪽-오른쪽 스텝홉 패턴을 실행하여 건너뛰기...',
+      execution:
+        '지면과의 긴밀한 접촉을 유지하여 빠른 건너뛰기를 수행하고 공중 시간을 줄이면서 최대한 빠르게 이동합니다.',
       transition: '',
     },
   },
@@ -15634,8 +16011,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '핑거 컬(Finger Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 바벨을 잡고 손바닥이 위를 향하도록 하세요. 손은 어깨 너비만큼 벌립니다. 발을 바닥에 평평하게 놓고, 내가 볼 수 있는 거리를 두고...',
-      execution: '손가락을 펴서 바를 최대한 내립니다. 바가 손 아래로 굴러가도록 허용하고 손가락의 마지막 관절로 바를 잡습니다...',
+      setup:
+        '양손으로 바벨을 잡고 손바닥이 위를 향하도록 하세요. 손은 어깨 너비만큼 벌립니다. 발을 바닥에 평평하게 놓고, 내가 볼 수 있는 거리를 두고...',
+      execution:
+        '손가락을 펴서 바를 최대한 내립니다. 바가 손 아래로 굴러가도록 허용하고 손가락의 마지막 관절로 바를 잡습니다...',
       transition: '',
     },
   },
@@ -15652,8 +16031,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플랫 벤치 케이블 플라이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 낮은 도르래 사이에 플랫 벤치를 배치하여 그 위에 누웠을 때 가슴이 케이블 도르래와 일직선이 되도록 하세요. 똑바로 누워...',
-      execution: '누군가에게 각 손의 손잡이를 건네달라고 하십시오. 손바닥을 위로 향한 그립으로 각 단일 핸들 부착물을 잡습니다. 옆으로 팔을 뻗어 보세요...',
+      setup:
+        '두 개의 낮은 도르래 사이에 플랫 벤치를 배치하여 그 위에 누웠을 때 가슴이 케이블 도르래와 일직선이 되도록 하세요. 똑바로 누워...',
+      execution:
+        '누군가에게 각 손의 손잡이를 건네달라고 하십시오. 손바닥을 위로 향한 그립으로 각 단일 핸들 부착물을 잡습니다. 옆으로 팔을 뻗어 보세요...',
       transition: '',
     },
   },
@@ -15667,9 +16048,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '플랫 벤치 레그 풀인(Flat Bench Leg Pull-In)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동 매트나 플랫 벤치에 누워 다리 끝을 쭉 뻗습니다. 손바닥을 아래로 하여 둔근 아래에 놓거나 옆구리에 손을 놓으십시오...',
-      execution: '무릎을 구부리고 숨을 내쉬면서 허벅지 윗부분을 중앙부로 당깁니다. 무릎이 가슴 근처에 올 때까지 이 동작을 계속하세요. 호...',
+      intro:
+        '플랫 벤치 레그 풀인(Flat Bench Leg Pull-In)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '운동 매트나 플랫 벤치에 누워 다리 끝을 쭉 뻗습니다. 손바닥을 아래로 하여 둔근 아래에 놓거나 옆구리에 손을 놓으십시오...',
+      execution:
+        '무릎을 구부리고 숨을 내쉬면서 허벅지 윗부분을 중앙부로 당깁니다. 무릎이 가슴 근처에 올 때까지 이 동작을 계속하세요. 호...',
       transition: '',
     },
   },
@@ -15683,8 +16067,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플랫 벤치 라잉 레그 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벤치에 등을 편평하게 대고 누워서 다리를 끝에서 앞쪽으로 쭉 뻗으세요. 손바닥으로 둔근 아래에 손을 놓으십시오...',
-      execution: '다리를 쭉 뻗은 상태에서 무릎을 약간 구부린 채 고정한 상태에서 90도 각도가 될 때까지 다리를 들어 올리세요...',
+      setup:
+        '벤치에 등을 편평하게 대고 누워서 다리를 끝에서 앞쪽으로 쭉 뻗으세요. 손바닥으로 둔근 아래에 손을 놓으십시오...',
+      execution:
+        '다리를 쭉 뻗은 상태에서 무릎을 약간 구부린 채 고정한 상태에서 90도 각도가 될 때까지 다리를 들어 올리세요...',
       transition: '',
     },
   },
@@ -15699,9 +16085,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '굴곡 인클라인 덤벨 컬(Flexor Incline Dumbbell Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '덤벨을 몸에서 더 먼 쪽으로 잡아서 가장 가까운 쪽에 더 많은 무게를 싣도록 하세요. (이렇게 하면 좋은 효과를 얻을 수 있습니다...',
-      execution: '팔꿈치를 안쪽으로 두고 팔을 몸 옆에 늘어뜨리고, 엄지손가락이 몸 바깥쪽을 향하도록 손바닥을 앞으로 돌립니다. 티...',
+      intro:
+        '굴곡 인클라인 덤벨 컬(Flexor Incline Dumbbell Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '덤벨을 몸에서 더 먼 쪽으로 잡아서 가장 가까운 쪽에 더 많은 무게를 싣도록 하세요. (이렇게 하면 좋은 효과를 얻을 수 있습니다...',
+      execution:
+        '팔꿈치를 안쪽으로 두고 팔을 몸 옆에 늘어뜨리고, 엄지손가락이 몸 바깥쪽을 향하도록 손바닥을 앞으로 돌립니다. 티...',
       transition: '',
     },
   },
@@ -15715,8 +16104,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플로어 글루트-햄 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동에는 파트너를 사용하거나 안정된 물체 아래에 발을 지탱할 수 있습니다. 위쪽 다리와 몸통을 똑바로 세우고 무릎을 꿇고 시작하십시오. 만약 당신이...',
-      execution: '앞으로 나아갈 때 엉덩이가 구부러지지 않도록 주의하면서 무릎을 펴서 몸을 낮추십시오. 바닥에 닿을 때 손을 앞에 놓으십시오.',
+      setup:
+        '이 운동에는 파트너를 사용하거나 안정된 물체 아래에 발을 지탱할 수 있습니다. 위쪽 다리와 몸통을 똑바로 세우고 무릎을 꿇고 시작하십시오. 만약 당신이...',
+      execution:
+        '앞으로 나아갈 때 엉덩이가 구부러지지 않도록 주의하면서 무릎을 펴서 몸을 낮추십시오. 바닥에 닿을 때 손을 앞에 놓으십시오.',
       transition: '',
     },
   },
@@ -15729,7 +16120,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플로어 프레스(Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 걸기에 적절한 높이가 되도록 J-후크를 조정합니다. 파워 랙 끝 부분에 머리를 대고 바닥에 누워 시작하십시오. 키...',
+      setup:
+        '바를 걸기에 적절한 높이가 되도록 J-후크를 조정합니다. 파워 랙 끝 부분에 머리를 대고 바닥에 누워 시작하십시오. 키...',
       execution: '바, 손목, 팔꿈치를 일직선으로 유지하면서 바를 최대한 빨리 위로 누르십시오.',
       transition: '',
     },
@@ -15744,8 +16136,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인을 이용한 플로어 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 걸기에 적절한 높이가 되도록 J-후크를 조정합니다. 이 연습에서는 바 끝 바로 위에 체인을 걸고 시도해 보십시오.',
-      execution: '바를 가슴 아래쪽이나 배 위쪽으로 낮추고, 바를 꽉 쥐고 당겨서 분리해 보세요. 당신이 당신을 확인하십시오 ...',
+      setup:
+        '바를 걸기에 적절한 높이가 되도록 J-후크를 조정합니다. 이 연습에서는 바 끝 바로 위에 체인을 걸고 시도해 보십시오.',
+      execution:
+        '바를 가슴 아래쪽이나 배 위쪽으로 낮추고, 바를 꽉 쥐고 당겨서 분리해 보세요. 당신이 당신을 확인하십시오 ...',
       transition: '',
     },
   },
@@ -15760,8 +16154,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Flutter Kicks는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 엉덩이를 벤치 가장자리에 놓고 다리를 곧게 펴고 발가락이 바닥에서 높이 떨어지며 팔은 벤치 위에 놓이도록 눕습니다.',
-      execution: '왼쪽 다리를 오른쪽 다리보다 높게 들어 올려 동작을 시작하세요. 그런 다음 오른쪽 다리를 들어 올리면서 왼쪽 다리를 낮추십시오.',
+      setup:
+        '플랫 벤치에 엉덩이를 벤치 가장자리에 놓고 다리를 곧게 펴고 발가락이 바닥에서 높이 떨어지며 팔은 벤치 위에 놓이도록 눕습니다.',
+      execution:
+        '왼쪽 다리를 오른쪽 다리보다 높게 들어 올려 동작을 시작하세요. 그런 다음 오른쪽 다리를 들어 올리면서 왼쪽 다리를 낮추십시오.',
       transition: '',
     },
   },
@@ -15773,7 +16169,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Foot-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 발 근육의 근막을 늘려줍니다. 신발을 벗은 채 자리에 앉아 시작하세요. 풋 롤러나 이와 유사한 물체를 사용하여...',
+      setup:
+        '이 운동은 발 근육의 근막을 늘려줍니다. 신발을 벗은 채 자리에 앉아 시작하세요. 풋 롤러나 이와 유사한 물체를 사용하여...',
       execution: '발의 아치를 가로질러 굴리면서 단단히 누르십시오. 10~30초 동안 유지한 후 발을 바꿔보세요.',
       transition: '',
     },
@@ -15785,9 +16182,12 @@ registerLanguageTranslations('ko', {
       '한 걸음 앞으로 나아가는 동작을 시작합니다. 앞으로 기대어 다리와 엉덩이를 뻗어 움직이며, 각 단계마다 잠시 멈춰서 팔꿈치를 뻗어 손을 앞으로 밀어냅니다. 프레스할 준비가 된 시작 위치로 돌아갈 때까지 앞으로 나아갑니다.',
     ],
     audio: {
-      intro: '프레스를 이용한 포워드 드래그(Forward Drag with Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이중 손잡이 체인이나 로프 부착물을 썰매에 부착하세요. 양손에 손잡이를 잡고 썰매 반대쪽을 바라보고 있어야 합니다. 이동을 시작하세요...',
-      execution: '한 걸음 앞으로 나아가는 동작을 시작합니다. 앞으로 기대고, 다리와 엉덩이를 뻗어 움직이며, 각 단계마다 멈춰서 가슴을 뻗는다...',
+      intro:
+        '프레스를 이용한 포워드 드래그(Forward Drag with Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이중 손잡이 체인이나 로프 부착물을 썰매에 부착하세요. 양손에 손잡이를 잡고 썰매 반대쪽을 바라보고 있어야 합니다. 이동을 시작하세요...',
+      execution:
+        '한 걸음 앞으로 나아가는 동작을 시작합니다. 앞으로 기대고, 다리와 엉덩이를 뻗어 움직이며, 각 단계마다 멈춰서 가슴을 뻗는다...',
       transition: '',
     },
   },
@@ -15801,8 +16201,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프랑켄슈타인 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 클린 스쿼트와 프론트 스쿼트 동안 바와 몸의 올바른 위치를 가르쳐줍니다. 바벨을 몸 앞쪽에 놓으십시오...',
-      execution: '다리 사이에 앉아 무릎과 엉덩이를 구부려 스쿼트합니다. 몸통을 똑바로 세우고, 팔을 위로 올리고, 어깨를 앞으로 내밀고, 바를 들어 올리세요...',
+      setup:
+        '이 훈련은 클린 스쿼트와 프론트 스쿼트 동안 바와 몸의 올바른 위치를 가르쳐줍니다. 바벨을 몸 앞쪽에 놓으십시오...',
+      execution:
+        '다리 사이에 앉아 무릎과 엉덩이를 구부려 스쿼트합니다. 몸통을 똑바로 세우고, 팔을 위로 올리고, 어깨를 앞으로 내밀고, 바를 들어 올리세요...',
       transition: '',
     },
   },
@@ -15819,7 +16221,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '프리핸드 점프 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 위로 팔을 교차하십시오. 머리를 위로 하고 등을 곧게 펴고 발을 어깨 너비로 벌립니다.',
-      execution: '등을 곧게 펴고 가슴을 위로 유지한 채, 허벅지 윗부분이 바닥과 평행하거나 낮아질 때까지 숨을 들이쉬면서 쪼그려 앉습니다. 지금은 주로 누르는 중...',
+      execution:
+        '등을 곧게 펴고 가슴을 위로 유지한 채, 허벅지 윗부분이 바닥과 평행하거나 낮아질 때까지 숨을 들이쉬면서 쪼그려 앉습니다. 지금은 주로 누르는 중...',
       transition: '',
     },
   },
@@ -15831,8 +16234,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Frog Hops는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '머리 뒤에 손을 얹고 서서 상체를 곧게 펴고 머리를 위로 유지하면서 쪼그리고 앉으십시오. 이것이 당신의 시작 위치가 될 것입니다. 앞으로 점프...',
-      execution: '불필요하게 높은 점프를 피하면서 몇 피트 앞으로 점프하세요. 발이 땅에 닿으면서 충격을 다리로 흡수하고 다시 점프합니다...',
+      setup:
+        '머리 뒤에 손을 얹고 서서 상체를 곧게 펴고 머리를 위로 유지하면서 쪼그리고 앉으십시오. 이것이 당신의 시작 위치가 될 것입니다. 앞으로 점프...',
+      execution:
+        '불필요하게 높은 점프를 피하면서 몇 피트 앞으로 점프하세요. 발이 땅에 닿으면서 충격을 다리로 흡수하고 다시 점프합니다...',
       transition: '',
     },
   },
@@ -15849,8 +16254,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '개구리 윗몸일으키기는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 바닥(또는 운동 매트)에 편평하게 대고 누워 다리를 앞으로 뻗습니다. 이제 무릎을 구부리고 허벅지 바깥쪽을 옆으로 놓습니다.',
-      execution: '이제 허벅지 바깥쪽을 바닥에 유지하면서(또는 적어도 발에 닿을 뻔한 상태에서) 두 발바닥을 모두 밀어 가능한 한 몸 가까이로 올리십시오.',
+      setup:
+        '등을 바닥(또는 운동 매트)에 편평하게 대고 누워 다리를 앞으로 뻗습니다. 이제 무릎을 구부리고 허벅지 바깥쪽을 옆으로 놓습니다.',
+      execution:
+        '이제 허벅지 바깥쪽을 바닥에 유지하면서(또는 적어도 발에 닿을 뻔한 상태에서) 두 발바닥을 모두 밀어 가능한 한 몸 가까이로 올리십시오.',
       transition: '',
     },
   },
@@ -15866,8 +16273,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 바벨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -15882,9 +16291,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '프론트 바벨 스쿼트 투 A 벤치(Front Barbell Squat To A Bench)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 플랫 벤치를 뒤에 놓고 바를 랙에 놓으십시오.',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      intro:
+        '프론트 바벨 스쿼트 투 A 벤치(Front Barbell Squat To A Bench)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 플랫 벤치를 뒤에 놓고 바를 랙에 놓으십시오.',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -15898,8 +16310,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 박스 점프(Front Box Jump)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '1~2피트 앞에 적절한 높이의 상자를 두고 시작하세요. 발을 너비만큼 벌리고 서십시오. 이것이 당신의 시작 위치가 될 것입니다. 피...',
-      execution: '이 자세에서 벗어나 엉덩이, 무릎, 발목까지 뻗어 최대한 높이 점프합니다. 팔을 앞뒤로 흔드세요. 착륙하다...',
+      setup:
+        '1~2피트 앞에 적절한 높이의 상자를 두고 시작하세요. 발을 너비만큼 벌리고 서십시오. 이것이 당신의 시작 위치가 될 것입니다. 피...',
+      execution:
+        '이 자세에서 벗어나 엉덩이, 무릎, 발목까지 뻗어 최대한 높이 점프합니다. 팔을 앞뒤로 흔드세요. 착륙하다...',
       transition: '',
     },
   },
@@ -15915,7 +16329,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '프론트 케이블 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '로우 풀리 기계의 웨이트를 선택하고 왼손으로 로우 풀리에 부착된 한손 케이블 부착물을 잡습니다. 얼굴을...',
-      execution: '몸통을 고정된 상태로 유지하면서(흔들지 않음), 팔꿈치와 손바닥을 약간 구부리면서 왼쪽 팔을 앞쪽으로 들어올립니다.',
+      execution:
+        '몸통을 고정된 상태로 유지하면서(흔들지 않음), 팔꿈치와 손바닥을 약간 구부리면서 왼쪽 팔을 앞쪽으로 들어올립니다.',
       transition: '',
     },
   },
@@ -15930,8 +16345,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 콘 홉(또는 허들 홉)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '일련의 원뿔이나 기타 작은 장벽을 몇 피트 간격으로 설치하십시오. 두 발을 어깨 너비로 벌리고 첫 번째 원뿔 앞에 서세요....',
-      execution: '첫 번째 원뿔 위로 두 발로 점프하는 것으로 시작하고, 점프하면서 두 팔을 휘두릅니다. 무릎을 구부리고, 리바운드하여 착지 충격을 흡수...',
+      setup:
+        '일련의 원뿔이나 기타 작은 장벽을 몇 피트 간격으로 설치하십시오. 두 발을 어깨 너비로 벌리고 첫 번째 원뿔 앞에 서세요....',
+      execution:
+        '첫 번째 원뿔 위로 두 발로 점프하는 것으로 시작하고, 점프하면서 두 팔을 휘두릅니다. 무릎을 구부리고, 리바운드하여 착지 충격을 흡수...',
       transition: '',
     },
   },
@@ -15946,7 +16363,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '프론트 덤벨 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '덤벨 두 개를 골라 상체를 곧게 펴고 덤벨을 허벅지 앞에 놓고 손바닥을 마주보게 하여 팔 길이를 유지합니다.',
-      execution: '이제 오른쪽 덤벨을 동시에 들어올리면서 덤벨을 다시 천천히 시작 위치로 내립니다. 이 패션으로 계속 번갈아가며...',
+      execution:
+        '이제 오른쪽 덤벨을 동시에 들어올리면서 덤벨을 다시 천천히 시작 위치로 내립니다. 이 패션으로 계속 번갈아가며...',
       transition: '',
     },
   },
@@ -15962,7 +16380,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '프론트 인클라인 덤벨 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 30~60도 사이로 경사가 설정된 경사 벤치에 앉습니다. 팁: 다음을 변경할 수 있습니다...',
-      execution: '팔꿈치를 고정한 상태에서 덤벨이 어깨보다 약간 위에 올 때까지 천천히 수직으로 들어 올리세요. 상단을 잠시 누르세요...',
+      execution:
+        '팔꿈치를 고정한 상태에서 덤벨이 어깨보다 약간 위에 올 때까지 천천히 수직으로 들어 올리세요. 상단을 잠시 누르세요...',
       transition: '',
     },
   },
@@ -15974,8 +16393,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 레그 레이즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '의자나 기타 지지대 옆에 서서 한 손으로 붙잡습니다. 다리를 똑바로 유지하면서 다리를 앞으로 흔드십시오. 계속 하향스윙을 하다가...',
-      execution: '다리를 똑바로 유지하면서 다리를 앞으로 흔드십시오. 아래쪽 스윙을 ​​계속하면서 유연성이 허용하는 한 다리를 뒤로 가져옵니다. 5번을 반복하세요...',
+      setup:
+        '의자나 기타 지지대 옆에 서서 한 손으로 붙잡습니다. 다리를 똑바로 유지하면서 다리를 앞으로 흔드십시오. 계속 하향스윙을 하다가...',
+      execution:
+        '다리를 똑바로 유지하면서 다리를 앞으로 흔드십시오. 아래쪽 스윙을 ​​계속하면서 유연성이 허용하는 한 다리를 뒤로 가져옵니다. 5번을 반복하세요...',
       transition: '',
     },
   },
@@ -15989,7 +16410,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 플레이트 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '똑바로 선 상태에서 3시와 9시 위치에서 양손으로 바벨 플레이트를 잡습니다. 손바닥이 서로 마주보고 팔이 마주해야 합니다.',
+      setup:
+        '똑바로 선 상태에서 3시와 9시 위치에서 양손으로 바벨 플레이트를 잡습니다. 손바닥이 서로 마주보고 팔이 마주해야 합니다.',
       execution: '숨을 들이쉬면서 천천히 플레이트를 다시 시작 위치로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -16005,8 +16427,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 레이즈 앤 풀오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 누워 약 15인치 간격으로 손바닥을 아래로 한 그립을 사용하여 바벨을 잡습니다. 바를 허벅지 위쪽에 놓고, 몸을 펴세요...',
-      execution: '이제 반원형 동작을 사용하고 숨을 들이마시면서 팔을 곧게 펴면서 중량을 들어 올리세요. 바가 O 위에 올 때까지 동일한 동작을 계속합니다...',
+      setup:
+        '플랫 벤치에 누워 약 15인치 간격으로 손바닥을 아래로 한 그립을 사용하여 바벨을 잡습니다. 바를 허벅지 위쪽에 놓고, 몸을 펴세요...',
+      execution:
+        '이제 반원형 동작을 사용하고 숨을 들이마시면서 팔을 곧게 펴면서 중량을 들어 올리세요. 바가 O 위에 올 때까지 동일한 동작을 계속합니다...',
       transition: '',
     },
   },
@@ -16020,8 +16444,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 스쿼트(클린 그립)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 먼저 바를 어깨 높이보다 약간 아래에 있는 랙에 놓습니다. 바를 삼각근 위에 놓고 쇄골 안으로 밀어 넣은 다음 가볍게...',
-      execution: '무릎을 구부리고 다리 사이에 앉으세요. 햄스트링이 종아리에 닿을 때까지 계속 내려갑니다. 무릎을 발과 일직선으로 유지하세요...',
+      setup:
+        '시작하려면 먼저 바를 어깨 높이보다 약간 아래에 있는 랙에 놓습니다. 바를 삼각근 위에 놓고 쇄골 안으로 밀어 넣은 다음 가볍게...',
+      execution:
+        '무릎을 구부리고 다리 사이에 앉으세요. 햄스트링이 종아리에 닿을 때까지 계속 내려갑니다. 무릎을 발과 일직선으로 유지하세요...',
       transition: '',
     },
   },
@@ -16034,7 +16460,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '두 개의 케틀벨을 사용한 프론트 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 당기면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      setup:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 당기면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
       execution: '발 뒤꿈치를 밟아 다시 일어나 반복하십시오.',
       transition: '',
     },
@@ -16062,8 +16489,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '전체 가동 범위 랫 풀다운은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높은 벤치에 서거나 앉거나 높은 도르래에 연결된 두 개의 등자 케이블을 잡으세요. 반대쪽 손으로 잡아서 팔을...',
-      execution: '가슴을 위로 유지하고 허리에 약간의 아치를 유지한 상태에서 일반 풀다운을 하는 것처럼 핸들을 아래로 당깁니다. 범위...',
+      setup:
+        '높은 벤치에 서거나 앉거나 높은 도르래에 연결된 두 개의 등자 케이블을 잡으세요. 반대쪽 손으로 잡아서 팔을...',
+      execution:
+        '가슴을 위로 유지하고 허리에 약간의 아치를 유지한 상태에서 일반 풀다운을 하는 것처럼 핸들을 아래로 당깁니다. 범위...',
       transition: '',
     },
   },
@@ -16079,8 +16508,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Gironda Sternum Chins는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비의 언더핸드 그립으로 풀업 바를 잡습니다. 이제 팔을 완전히 뻗은 채 매달리고 가슴을 내밀고 뒤로 기대십시오. 팁: 당신은...',
-      execution: '동작 내내 척추를 아치형으로 만들고 머리를 바에서 가능한 한 멀리 뒤로 젖힌 채 바 쪽으로 몸을 당기기 시작하세요...',
+      setup:
+        '어깨 너비의 언더핸드 그립으로 풀업 바를 잡습니다. 이제 팔을 완전히 뻗은 채 매달리고 가슴을 내밀고 뒤로 기대십시오. 팁: 당신은...',
+      execution:
+        '동작 내내 척추를 아치형으로 만들고 머리를 바에서 가능한 한 멀리 뒤로 젖힌 채 바 쪽으로 몸을 당기기 시작하세요...',
       transition: '',
     },
   },
@@ -16093,7 +16524,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '글루트 햄 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '자신의 몸에 맞게 장비를 조정하는 것부터 시작하세요. 엎드린 자세로 롤러 사이의 발판에 발을 대십시오. 무릎이 쇼...',
+      setup:
+        '자신의 몸에 맞게 장비를 조정하는 것부터 시작하세요. 엎드린 자세로 롤러 사이의 발판에 발을 대십시오. 무릎이 쇼...',
       execution: '하강을 통제하면서 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -16109,7 +16541,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '둔부 반동(Glute Kickback)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥이나 운동 매트에 무릎을 꿇고 팔을 앞으로 뻗은 채(상체에 수직으로) 허리를 구부려 자세를 취하세요...',
-      execution: '숨을 들이쉬면서 처음 자세로 돌아간 다음 왼쪽 다리로 반복합니다. 권장되는 모든 반복이 완료될 때까지 다리를 번갈아 가며 계속합니다...',
+      execution:
+        '숨을 들이쉬면서 처음 자세로 돌아간 다음 왼쪽 다리로 반복합니다. 권장되는 모든 반복이 완료될 때까지 다리를 번갈아 가며 계속합니다...',
       transition: '',
     },
   },
@@ -16122,8 +16555,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '고블렛 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '가슴 가까이에 있는 뿔 옆에 가벼운 케틀벨을 들고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 햄이 닿을 때까지 다리 사이에 쪼그리고 앉으세요...',
-      execution: '가장 낮은 위치에서 잠시 멈추고 팔꿈치를 사용하여 무릎을 밀어냅니다. 시작 자세로 돌아가서 10~20회 반복하세요.',
+      setup:
+        '가슴 가까이에 있는 뿔 옆에 가벼운 케틀벨을 들고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 햄이 닿을 때까지 다리 사이에 쪼그리고 앉으세요...',
+      execution:
+        '가장 낮은 위치에서 잠시 멈추고 팔꿈치를 사용하여 무릎을 밀어냅니다. 시작 자세로 돌아가서 10~20회 반복하세요.',
       transition: '',
     },
   },
@@ -16136,8 +16571,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '굿모닝은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 높이의 랙에 바를 놓고 시작하세요. 파워 스쿼트를 할 때처럼 바를 어깨 뒤쪽에 걸쳐 놓으세요. 바를 너무 높이 올려 놓지 마세요...',
-      execution: '둔근과 햄스트링을 이용해 엉덩이를 확장하여 동작을 반대로 하세요. 시작 위치로 돌아올 때까지 계속하십시오.',
+      setup:
+        '어깨 높이의 랙에 바를 놓고 시작하세요. 파워 스쿼트를 할 때처럼 바를 어깨 뒤쪽에 걸쳐 놓으세요. 바를 너무 높이 올려 놓지 마세요...',
+      execution:
+        '둔근과 햄스트링을 이용해 엉덩이를 확장하여 동작을 반대로 하세요. 시작 위치로 돌아올 때까지 계속하십시오.',
       transition: '',
     },
   },
@@ -16149,8 +16586,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Good Morning off Pins는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '배와 거의 같은 높이의 랙에 바를 놓고 시작하세요. 바 아래로 몸을 구부리고 바를 어깨 뒤쪽에 걸쳐 놓으세요...',
-      execution: '둔근과 햄스트링을 사용하여 엉덩이를 확장하여 동작을 시작하면 무게를 지탱하고 서 있습니다. 천천히 무게를 낮추고..',
+      setup:
+        '배와 거의 같은 높이의 랙에 바를 놓고 시작하세요. 바 아래로 몸을 구부리고 바를 어깨 뒤쪽에 걸쳐 놓으세요...',
+      execution:
+        '둔근과 햄스트링을 사용하여 엉덩이를 확장하여 동작을 시작하면 무게를 지탱하고 서 있습니다. 천천히 무게를 낮추고..',
       transition: '',
     },
   },
@@ -16165,8 +16604,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '고릴라 친/크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비보다 약간 넓은 언더핸드 그립(손바닥이 자신을 향함)을 사용하여 턱업 바에 매달립니다. 이제 무릎을 90도 각도로 구부리세요...',
-      execution: '숨을 내쉬면서 무릎이 가슴 높이에 올 때까지 무릎을 구부리면서 몸을 위로 당깁니다. 곧 올라가는 것을 멈출 것입니다...',
+      setup:
+        '어깨 너비보다 약간 넓은 언더핸드 그립(손바닥이 자신을 향함)을 사용하여 턱업 바에 매달립니다. 이제 무릎을 90도 각도로 구부리세요...',
+      execution:
+        '숨을 내쉬면서 무릎이 가슴 높이에 올 때까지 무릎을 구부리면서 몸을 위로 당깁니다. 곧 올라가는 것을 멈출 것입니다...',
       transition: '',
     },
   },
@@ -16179,8 +16620,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사타구니 및 등 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 모으고 바닥에 앉으십시오. 머리 뒤로 손가락을 깍지 끼십시오. 이것이 당신의 시작 위치가 될 것입니다.',
-      execution: '팔꿈치를 허벅지 안쪽으로 가져가면서 아래쪽으로 몸을 구부립니다. 잠시 멈춘 후 머리를 위로 들고 시작 위치로 돌아가서 ...',
+      setup:
+        '무릎을 구부리고 발을 모으고 바닥에 앉으십시오. 머리 뒤로 손가락을 깍지 끼십시오. 이것이 당신의 시작 위치가 될 것입니다.',
+      execution:
+        '팔꿈치를 허벅지 안쪽으로 가져가면서 아래쪽으로 몸을 구부립니다. 잠시 멈춘 후 머리를 위로 들고 시작 위치로 돌아가서 ...',
       transition: '',
     },
   },
@@ -16193,7 +16636,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '그로이너스는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 푸시업 자세로 시작하세요. 이것이 당신의 시작 위치가 될 것입니다. 두 다리를 사용하여 발을 한 옆에 두고 앞으로 점프하며 착지합니다...',
+      setup:
+        '바닥에 푸시업 자세로 시작하세요. 이것이 당신의 시작 위치가 될 것입니다. 두 다리를 사용하여 발을 한 옆에 두고 앞으로 점프하며 착지합니다...',
       execution: '시작 위치로 돌아가 즉시 동작을 반복하며 10~20회 반복합니다.',
       transition: '',
     },
@@ -16212,7 +16656,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '핵 스쿼트(Hack Squat)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '몸통 뒤쪽을 머신의 뒤쪽 패드에 대고 제공된 어깨 패드 아래에 어깨를 걸으십시오. 다리를 위치에 놓으세요..',
-      execution: '팔을 기계의 측면 핸들에 놓고 안전 바를 분리합니다(대부분의 디자인에서는 측면 핸들을 F에서 움직여서 수행됩니다).',
+      execution:
+        '팔을 기계의 측면 핸들에 놓고 안전 바를 분리합니다(대부분의 디자인에서는 측면 핸들을 F에서 움직여서 수행됩니다).',
       transition: '',
     },
   },
@@ -16228,7 +16673,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '해머 컬(Hammer Curls)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '상체를 똑바로 세우고 양손에 덤벨을 팔 길이로 잡고 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥...',
-      execution: '이제 윗팔을 고정한 상태에서 숨을 내쉬며 이두근을 수축시키면서 웨이트를 앞으로 구부립니다. t가 될 때까지 계속 무게를 올리세요...',
+      execution:
+        '이제 윗팔을 고정한 상태에서 숨을 내쉬며 이두근을 수축시키면서 웨이트를 앞으로 구부립니다. t가 될 때까지 계속 무게를 올리세요...',
       transition: '',
     },
   },
@@ -16245,8 +16691,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '해머 그립 인클라인 DB 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '인클라인 벤치에 누워 양손에 덤벨을 들고 허벅지 위에 놓습니다. 손바닥이 서로 마주보게 됩니다. 당신의 일을 이용함으로써...',
-      execution: '어깨 너비로 벌린 후 손바닥을 중립 그립(손바닥이 서로 마주보게)으로 유지합니다. 팔꿈치를 위쪽 팔로 벌리세요...',
+      setup:
+        '인클라인 벤치에 누워 양손에 덤벨을 들고 허벅지 위에 놓습니다. 손바닥이 서로 마주보게 됩니다. 당신의 일을 이용함으로써...',
+      execution:
+        '어깨 너비로 벌린 후 손바닥을 중립 그립(손바닥이 서로 마주보게)으로 유지합니다. 팔꿈치를 위쪽 팔로 벌리세요...',
       transition: '',
     },
   },
@@ -16260,7 +16708,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '햄스트링-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '앉은 자세에서 폼 롤 위로 다리를 뻗어 폼 롤이 위쪽 다리 뒤쪽에 놓이도록 합니다. 손을 옆이나 뒤에 두세요..',
-      execution: '폼을 엉덩이 아래에서 무릎 뒤쪽 위로 굴리면서 긴장된 지점에서 10~30초 동안 멈춥니다. 다른 쪽 다리에도 반복하세요.',
+      execution:
+        '폼을 엉덩이 아래에서 무릎 뒤쪽 위로 굴리면서 긴장된 지점에서 10~30초 동안 멈춥니다. 다른 쪽 다리에도 반복하세요.',
       transition: '',
     },
   },
@@ -16273,8 +16722,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '햄스트링 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 위로 뻗고 엉덩이를 90도 각도로 하여 등을 대고 눕습니다. 다른 쪽 다리는 바닥에 편평하게 유지하세요. 벨트, 밴드 또는 로프를 고리로 묶으세요...',
-      execution: '벨트를 당겨서 종아리와 햄스트링에 긴장감을 조성하세요. 이 스트레칭을 10~30초 동안 유지하고 반대쪽 다리로 반복하세요.',
+      setup:
+        '한쪽 다리를 위로 뻗고 엉덩이를 90도 각도로 하여 등을 대고 눕습니다. 다른 쪽 다리는 바닥에 편평하게 유지하세요. 벨트, 밴드 또는 로프를 고리로 묶으세요...',
+      execution:
+        '벨트를 당겨서 종아리와 햄스트링에 긴장감을 조성하세요. 이 스트레칭을 10~30초 동안 유지하고 반대쪽 다리로 반복하세요.',
       transition: '',
     },
   },
@@ -16290,7 +16741,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '물구나무서기 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벽에 등을 대고 허리를 구부리고 양손을 어깨 너비로 바닥에 댑니다. 팔로 벽을 걷어차세요...',
-      execution: '머리가 바닥에 거의 닿을 때까지 숨을 들이쉬면서 천천히 몸을 낮추세요. 팁: 천천히 내려오는 것이 가장 중요합니다...',
+      execution:
+        '머리가 바닥에 거의 닿을 때까지 숨을 들이쉬면서 천천히 몸을 낮추세요. 팁: 천천히 내려오는 것이 가장 중요합니다...',
       transition: '',
     },
   },
@@ -16303,8 +16755,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Hang Clean은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비, 더블 오버핸드 또는 후크 그립으로 시작하고 바를 허벅지 중간 위치에 걸어 놓습니다. 등은 곧고 기울어져야 합니다...',
-      execution: '몸통을 똑바로 세우고 팔꿈치를 위로 유지하면서 발뒤꿈치를 통해 즉시 회복하십시오. 서 있는 자세로 일어날 때까지 계속하십시오.',
+      setup:
+        '어깨 너비, 더블 오버핸드 또는 후크 그립으로 시작하고 바를 허벅지 중간 위치에 걸어 놓습니다. 등은 곧고 기울어져야 합니다...',
+      execution:
+        '몸통을 똑바로 세우고 팔꿈치를 위로 유지하면서 발뒤꿈치를 통해 즉시 회복하십시오. 서 있는 자세로 일어날 때까지 계속하십시오.',
       transition: '',
     },
   },
@@ -16318,8 +16772,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Hang Clean - 무릎 아래는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비, 더블 오버핸드 또는 후크 그립으로 시작하고 바는 무릎 바로 아래에 늘어뜨립니다. 등은 곧고 기울어져야 합니다...',
-      execution: '최대 확장 단계에서는 적극적으로 몸을 아래로 당기면서 바 아래에서 팔꿈치를 회전시킵니다. 프런트 스쿼트 자세로 바를 받으면...',
+      setup:
+        '어깨 너비, 더블 오버핸드 또는 후크 그립으로 시작하고 바는 무릎 바로 아래에 늘어뜨립니다. 등은 곧고 기울어져야 합니다...',
+      execution:
+        '최대 확장 단계에서는 적극적으로 몸을 아래로 당기면서 바 아래에서 팔꿈치를 회전시킵니다. 프런트 스쿼트 자세로 바를 받으면...',
       transition: '',
     },
   },
@@ -16333,8 +16789,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '행 스내치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오버핸드 그립이나 후크 그립으로 바를 넓게 잡는 것으로 시작하십시오. 발은 발이 바깥쪽으로 향한 상태에서 엉덩이 바로 아래에 있어야 합니다. 무릎이...',
-      execution: '발을 받는 자세로 움직이면서 바를 머리 위로 올리면서 바 아래로 몸을 강제로 당깁니다. 바를 받아보세요...',
+      setup:
+        '오버핸드 그립이나 후크 그립으로 바를 넓게 잡는 것으로 시작하십시오. 발은 발이 바깥쪽으로 향한 상태에서 엉덩이 바로 아래에 있어야 합니다. 무릎이...',
+      execution:
+        '발을 받는 자세로 움직이면서 바를 머리 위로 올리면서 바 아래로 몸을 강제로 당깁니다. 바를 받아보세요...',
       transition: '',
     },
   },
@@ -16348,8 +16806,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '행 스내치 - 무릎 아래는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오버핸드 그립이나 후크 그립으로 바를 넓게 잡는 것으로 시작하십시오. 발은 발이 바깥쪽으로 향한 상태에서 엉덩이 바로 아래에 있어야 합니다. 무릎이...',
-      execution: '발을 받는 자세로 움직이면서 바를 머리 위로 올리면서 바 아래로 몸을 강제로 당깁니다. 바를 받아보세요...',
+      setup:
+        '오버핸드 그립이나 후크 그립으로 바를 넓게 잡는 것으로 시작하십시오. 발은 발이 바깥쪽으로 향한 상태에서 엉덩이 바로 아래에 있어야 합니다. 무릎이...',
+      execution:
+        '발을 받는 자세로 움직이면서 바를 머리 위로 올리면서 바 아래로 몸을 강제로 당깁니다. 바를 받아보세요...',
       transition: '',
     },
   },
@@ -16363,8 +16823,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '행잉바 굿모닝은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '배와 거의 같은 높이의 랙에 바를 놓고 시작하세요. 체인이나 서스펜션 스트랩을 사용하여 바를 매달아 놓습니다. 바 아래로 몸을 굽히세요...',
-      execution: '둔근과 햄스트링을 사용하여 엉덩이를 확장하여 동작을 시작하면 무게를 지탱하고 서 있습니다. 천천히 무게를 낮추고..',
+      setup:
+        '배와 거의 같은 높이의 랙에 바를 놓고 시작하세요. 체인이나 서스펜션 스트랩을 사용하여 바를 매달아 놓습니다. 바 아래로 몸을 굽히세요...',
+      execution:
+        '둔근과 햄스트링을 사용하여 엉덩이를 확장하여 동작을 시작하면 무게를 지탱하고 서 있습니다. 천천히 무게를 낮추고..',
       transition: '',
     },
   },
@@ -16378,7 +16840,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '행잉 레그 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 그립이나 중간 그립을 사용하여 두 팔을 팔 길이만큼 뻗은 상태에서 턱걸이 막대에 매달립니다. 다리는 곧아야 합니다...',
+      setup:
+        '넓은 그립이나 중간 그립을 사용하여 두 팔을 팔 길이만큼 뻗은 상태에서 턱걸이 막대에 매달립니다. 다리는 곧아야 합니다...',
       execution: '숨을 들이쉬면서 천천히 시작 자세로 돌아옵니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -16394,7 +16857,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '행잉 파이크(Hanging Pike)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비보다 약간 넓은 오버핸드 그립(손바닥이 자신의 반대쪽을 향함)을 사용하여 다리와 발을 모으고 턱걸이 막대에 매달립니다.',
+      setup:
+        '어깨 너비보다 약간 넓은 오버핸드 그립(손바닥이 자신의 반대쪽을 향함)을 사용하여 다리와 발을 모으고 턱걸이 막대에 매달립니다.',
       execution: '숨을 내쉬면서 바가 정강이에 거의 닿을 때까지 다리를 위로 당깁니다. 팁: 다리를 최대한 펴는 동안...',
       transition: '',
     },
@@ -16408,7 +16872,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '히빙 스내치 밸런스(Heaving Snatch Balance)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 스내치를 배우는 데 도움이 됩니다. 어깨 뒤쪽에 가벼운 무게를 싣는 것부터 시작하세요. 발은 안녕보다 약간 넓어야 합니다...',
+      setup:
+        '이 훈련은 스내치를 배우는 데 도움이 됩니다. 어깨 뒤쪽에 가벼운 무게를 싣는 것부터 시작하세요. 발은 안녕보다 약간 넓어야 합니다...',
       execution: '서있는 자세로 돌아갑니다.',
       transition: '',
     },
@@ -16422,7 +16887,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Heavy Bag Thrust는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동에는 무거운 가방을 활용하세요. 가방 옆에 똑바로 서서 발을 상당히 넓게 벌리고 비틀거리며 자세를 취합니다. 손을 올려보세요...',
+      setup:
+        '이 운동에는 무거운 가방을 활용하세요. 가방 옆에 똑바로 서서 발을 상당히 넓게 벌리고 비틀거리며 자세를 취합니다. 손을 올려보세요...',
       execution: '이 단계를 반대로 수행하여 가방이 뒤로 흔들리면서 가방을 받습니다.',
       transition: '',
     },
@@ -16451,7 +16917,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '힙 서클(엎드린 자세)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 손과 무릎을 대고 자세를 취하세요. 좋은 자세를 유지하면서, 구부린 한쪽 무릎을 바닥에서 들어 올리세요. 이것이 당신의 시작이 될 것입니다...',
+      setup:
+        '바닥에 손과 무릎을 대고 자세를 취하세요. 좋은 자세를 유지하면서, 구부린 한쪽 무릎을 바닥에서 들어 올리세요. 이것이 당신의 시작이 될 것입니다...',
       execution: '여러 번 반복하면서 천천히 수행하고 반대쪽도 반복합니다.',
       transition: '',
     },
@@ -16466,8 +16933,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 고관절 확장은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밴드의 한쪽 끝을 기둥 아래쪽에 고정하고 다른 쪽 끝을 한쪽 발목에 부착합니다. 밴드의 부착 지점을 바라보며 밴드를 잡습니다...',
-      execution: '머리와 가슴을 위로 유지하고 무릎을 곧게 유지하면서 저항받는 다리를 최대한 뒤로 이동합니다. 다리를 시작 지점으로 되돌립니다...',
+      setup:
+        '밴드의 한쪽 끝을 기둥 아래쪽에 고정하고 다른 쪽 끝을 한쪽 발목에 부착합니다. 밴드의 부착 지점을 바라보며 밴드를 잡습니다...',
+      execution:
+        '머리와 가슴을 위로 유지하고 무릎을 곧게 유지하면서 저항받는 다리를 최대한 뒤로 이동합니다. 다리를 시작 지점으로 되돌립니다...',
       transition: '',
     },
   },
@@ -16481,7 +16950,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 고관절 굴곡은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밴드의 한쪽 끝을 기둥 아래쪽에 고정하고 다른 쪽 끝을 한쪽 발목에 부착합니다. 밴드의 부착 지점 반대쪽을 향합니다.',
+      setup:
+        '밴드의 한쪽 끝을 기둥 아래쪽에 고정하고 다른 쪽 끝을 한쪽 발목에 부착합니다. 밴드의 부착 지점 반대쪽을 향합니다.',
       execution: '머리와 가슴을 위로 유지한 채 무릎을 90도까지 올린 후 잠시 멈춥니다. 다리를 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -16497,7 +16967,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '밴드를 이용한 엉덩이 리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '적합한 밴드를 선택한 후 밴드를 양쪽에 고정한 후 랙 중앙에 눕습니다. 랙에 못이 없으면...',
-      execution: '어깨를 바닥에 대고 발뒤꿈치를 통해 엉덩이를 들어 올리고 밴드를 최대한 높이 밀어 넣으세요. 상단에서 일시정지...',
+      execution:
+        '어깨를 바닥에 대고 발뒤꿈치를 통해 엉덩이를 들어 올리고 밴드를 최대한 높이 밀어 넣으세요. 상단에서 일시정지...',
       transition: '',
     },
   },
@@ -16511,7 +16982,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Hug A Ball은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥에 앉으세요. 두 다리 사이에 운동 공을 놓고 엉덩이를 바닥쪽으로 내립니다.',
-      execution: '공 주위에 팔을 껴안고 몸을 지탱하십시오. 발이 바닥에 평평하게 닿고 무릎이 발목 위에 일직선이 되도록 다리를 조정하세요.',
+      execution:
+        '공 주위에 팔을 껴안고 몸을 지탱하십시오. 발이 바닥에 평평하게 닿고 무릎이 발목 위에 일직선이 되도록 다리를 조정하세요.',
       transition: '',
     },
   },
@@ -16524,7 +16996,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '가슴에 무릎을 껴안는 것은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워서 양쪽 무릎을 가슴까지 당깁니다. 팔을 무릎 위가 아닌 무릎 아래로 잡습니다(그러면 무릎에 많은 압력이 가해질 수 있습니다...)',
+      setup:
+        '등을 대고 누워서 양쪽 무릎을 가슴까지 당깁니다. 팔을 무릎 위가 아닌 무릎 아래로 잡습니다(그러면 무릎에 많은 압력이 가해질 수 있습니다...)',
       execution: '천천히 무릎을 어깨쪽으로 당깁니다. 이것은 또한 엉덩이 근육을 스트레칭시킵니다.',
       transition: '',
     },
@@ -16539,8 +17012,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '허들 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '장애물이나 기타 작은 장벽을 몇 피트 간격으로 일렬로 설치하십시오. 두 발을 어깨 너비로 벌리고 첫 번째 장애물 앞에 서세요.',
-      execution: '두 발로 첫 번째 장애물을 뛰어 넘는 것으로 시작하고, 점프할 때 두 팔을 휘두르세요. 무릎을 구부려 착지 충격을 흡수하고 리바운드...',
+      setup:
+        '장애물이나 기타 작은 장벽을 몇 피트 간격으로 일렬로 설치하십시오. 두 발을 어깨 너비로 벌리고 첫 번째 장애물 앞에 서세요.',
+      execution:
+        '두 발로 첫 번째 장애물을 뛰어 넘는 것으로 시작하고, 점프할 때 두 팔을 휘두르세요. 무릎을 구부려 착지 충격을 흡수하고 리바운드...',
       transition: '',
     },
   },
@@ -16556,8 +17031,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '하이퍼익스텐션(백 익스텐션)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '하이퍼 익스텐션 벤치에 엎드려 누워 발목을 발 패드 아래에 단단히 집어 넣습니다. 가능하면 위쪽 허벅지가 눕도록 위쪽 패드를 조정하세요.',
-      execution: '몸을 곧게 편 상태에서 팔을 앞으로(제가 선호하는 방식) 또는 머리 뒤로 교차시키세요. 이것이 당신의 시작 위치가 될 것입니다. 팁: 다음을 수행할 수도 있습니다.',
+      setup:
+        '하이퍼 익스텐션 벤치에 엎드려 누워 발목을 발 패드 아래에 단단히 집어 넣습니다. 가능하면 위쪽 허벅지가 눕도록 위쪽 패드를 조정하세요.',
+      execution:
+        '몸을 곧게 편 상태에서 팔을 앞으로(제가 선호하는 방식) 또는 머리 뒤로 교차시키세요. 이것이 당신의 시작 위치가 될 것입니다. 팁: 다음을 수행할 수도 있습니다.',
       transition: '',
     },
   },
@@ -16572,8 +17049,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '과신전 없이 과신전 벤치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '누군가가 다리를 잡고 있는 상태에서 엉덩이가 벤치 끝에 매달릴 때까지 플랫 벤치의 가장자리까지 몸을 아래로 밀어내세요. 팁: 귀하의 전체...',
-      execution: '등을 편평하게 유지하면서 가능한 한 멀리 허리를 천천히 앞으로 구부리기 시작합니다. 이 동작을 수행하면서 숨을 들이쉬세요. 계속 전진하세요...',
+      setup:
+        '누군가가 다리를 잡고 있는 상태에서 엉덩이가 벤치 끝에 매달릴 때까지 플랫 벤치의 가장자리까지 몸을 아래로 밀어내세요. 팁: 귀하의 전체...',
+      execution:
+        '등을 편평하게 유지하면서 가능한 한 멀리 허리를 천천히 앞으로 구부리기 시작합니다. 이 동작을 수행하면서 숨을 들이쉬세요. 계속 전진하세요...',
       transition: '',
     },
   },
@@ -16586,8 +17065,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Iliotibial Tract-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '옆으로 누워 아래쪽 다리를 엉덩이와 무릎 사이의 폼롤러 위에 올려 놓습니다. 다른 쪽 다리는 앞으로 교차할 수 있습니다. 장소를...',
-      execution: '엉덩이부터 무릎까지 폼 위에 다리를 굴려 긴장 지점에서 10~30초 동안 멈춥니다. 반대쪽 다리로 반복하세요.',
+      setup:
+        '옆으로 누워 아래쪽 다리를 엉덩이와 무릎 사이의 폼롤러 위에 올려 놓습니다. 다른 쪽 다리는 앞으로 교차할 수 있습니다. 장소를...',
+      execution:
+        '엉덩이부터 무릎까지 폼 위에 다리를 굴려 긴장 지점에서 10~30초 동안 멈춥니다. 반대쪽 다리로 반복하세요.',
       transition: '',
     },
   },
@@ -16603,7 +17084,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '인치웜은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '두 발을 가까이 모으고 서세요. 다리를 똑바로 유지하고 아래로 뻗어 손을 바로 앞 바닥에 놓으십시오. 이건...',
-      execution: '푸시업 자세로 몸이 지면과 평행이 될 때까지 계속하세요. 이제 손을 제자리에 두고 천천히 발로 짧은 걸음을 내딛으세요...',
+      execution:
+        '푸시업 자세로 몸이 지면과 평행이 될 때까지 계속하세요. 이제 손을 제자리에 두고 천천히 발로 짧은 걸음을 내딛으세요...',
       transition: '',
     },
   },
@@ -16618,9 +17100,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '인클라인 바벨 트라이셉스 익스텐션(Incline Barbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비보다 조금 더 가깝게 오버핸드 그립(손바닥을 아래로)으로 바벨을 잡습니다. 어떤 각도로든 설정된 경사 벤치에 누워보세요...',
-      execution: '팔을 뻗고 팔꿈치를 안쪽으로 한 채 바를 머리 위로 가져옵니다. 팔은 머리 위의 몸통과 일직선이 되어야 합니다. 이것이 당신의 시작이 될 것입니다...',
+      intro:
+        '인클라인 바벨 트라이셉스 익스텐션(Incline Barbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '어깨 너비보다 조금 더 가깝게 오버핸드 그립(손바닥을 아래로)으로 바벨을 잡습니다. 어떤 각도로든 설정된 경사 벤치에 누워보세요...',
+      execution:
+        '팔을 뻗고 팔꿈치를 안쪽으로 한 채 바를 머리 위로 가져옵니다. 팔은 머리 위의 몸통과 일직선이 되어야 합니다. 이것이 당신의 시작이 될 것입니다...',
       transition: '',
     },
   },
@@ -16638,7 +17123,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '인클라인 벤치 풀(Incline Bench Pull)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 약 30도 경사로 설정된 경사 벤치에 엎드려 눕습니다. 팔을 늘어뜨려 보세요...',
-      execution: '손이 회내(손바닥을 아래로) 그립이 될 때까지 손목을 돌립니다. 이제 팔꿈치를 벌리세요. 이것이 당신의 시작 위치가 될 것입니다.',
+      execution:
+        '손이 회내(손바닥을 아래로) 그립이 될 때까지 손목을 돌립니다. 이제 팔꿈치를 벌리세요. 이것이 당신의 시작 위치가 될 것입니다.',
       transition: '',
     },
   },
@@ -16668,8 +17154,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 케이블 플라이는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작 위치로 들어가려면 도르래를 바닥 수준(상체 아래 기계에서 가능한 가장 낮은 수준)에 설정하십시오. 플라...',
-      execution: '양손에 손잡이를 잡고 인클라인 벤치에 누워 두 손을 얼굴 앞으로 모아 팔 길이만큼 벌립니다. 이것이 당신의 시작이 될 것입니다...',
+      setup:
+        '시작 위치로 들어가려면 도르래를 바닥 수준(상체 아래 기계에서 가능한 가장 낮은 수준)에 설정하십시오. 플라...',
+      execution:
+        '양손에 손잡이를 잡고 인클라인 벤치에 누워 두 손을 얼굴 앞으로 모아 팔 길이만큼 벌립니다. 이것이 당신의 시작이 될 것입니다...',
       transition: '',
     },
   },
@@ -16686,8 +17174,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '손바닥이 안쪽을 향한 인클라인 덤벨 벤치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '인클라인 벤치에 누워 양손에 덤벨을 들고 허벅지 위에 놓습니다. 손바닥이 서로 마주보게 됩니다. 당신의 일을 이용함으로써...',
-      execution: '어깨 너비로 벌린 후 손바닥을 중립 그립(손바닥이 서로 마주보게)으로 유지합니다. 팔꿈치를 위쪽 팔로 벌리세요...',
+      setup:
+        '인클라인 벤치에 누워 양손에 덤벨을 들고 허벅지 위에 놓습니다. 손바닥이 서로 마주보게 됩니다. 당신의 일을 이용함으로써...',
+      execution:
+        '어깨 너비로 벌린 후 손바닥을 중립 그립(손바닥이 서로 마주보게)으로 유지합니다. 팔꿈치를 위쪽 팔로 벌리세요...',
       transition: '',
     },
   },
@@ -16701,7 +17191,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 덤벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 팔 길이를 유지한 채 경사 벤치에 편안히 앉으세요. 팔꿈치를 몸통 가까이에 두고 손바닥을 회전시키세요...',
+      setup:
+        '양손에 덤벨을 들고 팔 길이를 유지한 채 경사 벤치에 편안히 앉으세요. 팔꿈치를 몸통 가까이에 두고 손바닥을 회전시키세요...',
       execution: '숨을 들이쉬면서 천천히 덤벨을 시작 위치로 가져오기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -16719,7 +17210,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '인클라인 덤벨 플라이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 경사 각도가 30도 이하로 설정된 경사 벤치에 눕습니다. 팔을 위로 뻗어 보세요...',
-      execution: '이제 손바닥이 자신을 향하도록 손목을 회전합니다. 팁: 새끼손가락은 서로 옆에 있어야 합니다. 이것이 당신의 시작이 될 것입니다...',
+      execution:
+        '이제 손바닥이 자신을 향하도록 손목을 회전합니다. 팁: 새끼손가락은 서로 옆에 있어야 합니다. 이것이 당신의 시작이 될 것입니다...',
       transition: '',
     },
   },
@@ -16734,9 +17226,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '인클라인 덤벨 플라이즈(Incline Dumbbell Flyes) - 트위스트 포함(With A Twist)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '인클라인 덤벨 플라이즈(Incline Dumbbell Flyes) - 트위스트 포함(With A Twist)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손에 덤벨을 들고 경사 각도가 30도 이하로 설정된 경사 벤치에 눕습니다. 팔을 위로 뻗어 보세요...',
-      execution: '이제 손바닥이 자신을 향하도록 손목을 회전합니다. 팁: 새끼손가락은 서로 옆에 있어야 합니다. 이것이 당신의 시작이 될 것입니다...',
+      execution:
+        '이제 손바닥이 자신을 향하도록 손목을 회전합니다. 팁: 새끼손가락은 서로 옆에 있어야 합니다. 이것이 당신의 시작이 될 것입니다...',
       transition: '',
     },
   },
@@ -16752,8 +17246,10 @@ registerLanguageTranslations('ko', {
       '운동이 끝나면 덤벨을 다시 허벅지 위에 놓고 바닥에 놓습니다. 이것이 덤벨을 푸는 가장 안전한 방법입니다.',
     ],
     audio: {
-      intro: '인클라인 덤벨 프레스(Incline Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '허벅지 위에 양손에 덤벨을 들고 경사 벤치에 누워 있습니다. 손바닥이 서로 마주보게 됩니다. 그럼, 당신의 티를 사용해서...',
+      intro:
+        '인클라인 덤벨 프레스(Incline Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '허벅지 위에 양손에 덤벨을 들고 경사 벤치에 누워 있습니다. 손바닥이 서로 마주보게 됩니다. 그럼, 당신의 티를 사용해서...',
       execution: '덤벨을 어깨 너비만큼 들어올린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 이것은...',
       transition: '',
     },
@@ -16767,7 +17263,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 해머 컬(Incline Hammer Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 인클라인 벤치에 앉으세요. 두 발을 모으고 그의 등을 단단히 눌러야 합니다. 멍청이를 허용하세요...',
+      setup:
+        '양손에 덤벨을 들고 인클라인 벤치에 앉으세요. 두 발을 모으고 그의 등을 단단히 눌러야 합니다. 멍청이를 허용하세요...',
       execution: '계속해서 동작의 최고 지점까지 올라갔다가 잠시 멈췄다가 천천히 시작 위치로 돌아옵니다.',
       transition: '',
     },
@@ -16782,9 +17279,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '인클라인 이두박근 컬(Incline Inner Biceps Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 인클라인 벤치에 누워주세요. 덤벨은 팔 길이만큼 몸 옆에 매달려 있어야 하며 손바닥은 ...',
-      execution: '이제 숨을 내쉬면서 팔뚝을 측면 삼각근과 일직선으로 유지하면서 무게를 바깥쪽으로 그리고 위로 말립니다. 덤벨이 나올 때까지 컬을 계속하세요...',
+      intro:
+        '인클라인 이두박근 컬(Incline Inner Biceps Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '양손에 덤벨을 들고 인클라인 벤치에 누워주세요. 덤벨은 팔 길이만큼 몸 옆에 매달려 있어야 하며 손바닥은 ...',
+      execution:
+        '이제 숨을 내쉬면서 팔뚝을 측면 삼각근과 일직선으로 유지하면서 무게를 바깥쪽으로 그리고 위로 말립니다. 덤벨이 나올 때까지 컬을 계속하세요...',
       transition: '',
     },
   },
@@ -16797,7 +17297,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벤치나 견고한 높은 플랫폼을 바라보고 서십시오. 어깨 너비보다 약간 넓게 벤치나 플랫폼 가장자리에 손을 얹습니다. 앞발 위치 백...',
+      setup:
+        '벤치나 견고한 높은 플랫폼을 바라보고 서십시오. 어깨 너비보다 약간 넓게 벤치나 플랫폼 가장자리에 손을 얹습니다. 앞발 위치 백...',
       execution: '팔이 펴질 때까지 몸을 위로 밀어 올립니다. 반복하다.',
       transition: '',
     },
@@ -16813,8 +17314,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 푸시업 클로즈 그립은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 바 위에 손을 서로 옆에 놓으십시오.',
-      execution: '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 몸을 곧게 유지하고, 가슴을 낮추세요...',
+      setup:
+        '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 바 위에 손을 서로 옆에 놓으십시오.',
+      execution:
+        '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 몸을 곧게 유지하고, 가슴을 낮추세요...',
       transition: '',
     },
   },
@@ -16828,8 +17331,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 푸쉬업 뎁스 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련을 위해서는 약 12인치 높이의 상자와 두 개의 두꺼운 매트 또는 에어로빅 계단이 필요합니다. 계단을 어깨 바로 바깥쪽에 놓고 ...',
-      execution: '팔꿈치를 구부려 몸을 낮추고, 빠르게 자세를 바꿔 몸을 땅에서 밀어냅니다. 땅을 떠날 때 움직여 보세요...',
+      setup:
+        '이 훈련을 위해서는 약 12인치 높이의 상자와 두 개의 두꺼운 매트 또는 에어로빅 계단이 필요합니다. 계단을 어깨 바로 바깥쪽에 놓고 ...',
+      execution:
+        '팔꿈치를 구부려 몸을 낮추고, 빠르게 자세를 바꿔 몸을 땅에서 밀어냅니다. 땅을 떠날 때 움직여 보세요...',
       transition: '',
     },
   },
@@ -16843,9 +17348,12 @@ registerLanguageTranslations('ko', {
       '팔꿈치를 펴고 몸을 위로 밀어 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '인클라인 푸쉬업 미디엄(Incline Push-Up Medium)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 손을 어깨에 대고 바 위에 손을 올려보세요...',
-      execution: '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 몸을 곧게 유지하고, 가슴을 낮추세요...',
+      intro:
+        '인클라인 푸쉬업 미디엄(Incline Push-Up Medium)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 손을 어깨에 대고 바 위에 손을 올려보세요...',
+      execution:
+        '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 몸을 곧게 유지하고, 가슴을 낮추세요...',
       transition: '',
     },
   },
@@ -16860,8 +17368,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 푸시업 리버스 그립은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 손바닥을 위로 바에 손을 올려 놓고 손을 대략 ...',
-      execution: '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 몸을 곧게 유지하고, 가슴을 낮추세요...',
+      setup:
+        '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 손바닥을 위로 바에 손을 올려 놓고 손을 대략 ...',
+      execution:
+        '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 몸을 곧게 유지하고, 가슴을 낮추세요...',
       transition: '',
     },
   },
@@ -16875,9 +17385,12 @@ registerLanguageTranslations('ko', {
       '팔꿈치를 펴고 몸을 위로 밀어 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '인클라인 푸쉬업 와이드(Incline Push-Up Wide)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 바 위에 손을 올려놓고 손을 쇼보다 넓게 벌리세요...',
-      execution: '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 팔은 몸과 수직이 되어야 합니다. 이것이 당신의 시작 위치가 될 것입니다...',
+      intro:
+        '인클라인 푸쉬업 와이드(Incline Push-Up Wide)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '적절한 높이에 Smith 머신 바 또는 견고하고 높은 플랫폼을 바라보고 서십시오. 바 위에 손을 올려놓고 손을 쇼보다 넓게 벌리세요...',
+      execution:
+        '팔과 몸을 곧게 펴고 발을 바에서 뒤로 위치시킵니다. 팔은 몸과 수직이 되어야 합니다. 이것이 당신의 시작 위치가 될 것입니다...',
       transition: '',
     },
   },
@@ -16889,8 +17402,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '중급 사타구니 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 쭉 뻗은 채 등을 대고 눕습니다. 발 중 하나에 벨트, 로프 또는 밴드를 감고 다리를 최대한 옆으로 흔드십시오. 이...',
-      execution: '벨트를 가볍게 당겨서 사타구니와 햄스트링 근육에 긴장을 조성하세요. 10~20초 동안 유지하고 반대쪽도 반복합니다.',
+      setup:
+        '다리를 쭉 뻗은 채 등을 대고 눕습니다. 발 중 하나에 벨트, 로프 또는 밴드를 감고 다리를 최대한 옆으로 흔드십시오. 이...',
+      execution:
+        '벨트를 가볍게 당겨서 사타구니와 햄스트링 근육에 긴장을 조성하세요. 10~20초 동안 유지하고 반대쪽도 반복합니다.',
       transition: '',
     },
   },
@@ -16902,8 +17417,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '중급 고관절 굴곡근 및 대퇴사두근 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프, 벨트 또는 밴드를 한쪽 발에 감고 바닥에 엎드려 눕습니다. b를 사용하여 무릎을 굽히고 스트레칭하려는 다리의 엉덩이를 확장합니다...',
-      execution: '무릎을 구부리고 스트레칭하려는 다리의 엉덩이를 펴고, 양손으로 벨트를 잡아당깁니다. 무릎과 엉덩이가 바닥에서 떨어져야 합니다...',
+      setup:
+        '로프, 벨트 또는 밴드를 한쪽 발에 감고 바닥에 엎드려 눕습니다. b를 사용하여 무릎을 굽히고 스트레칭하려는 다리의 엉덩이를 확장합니다...',
+      execution:
+        '무릎을 구부리고 스트레칭하려는 다리의 엉덩이를 펴고, 양손으로 벨트를 잡아당깁니다. 무릎과 엉덩이가 바닥에서 떨어져야 합니다...',
       transition: '',
     },
   },
@@ -16918,8 +17435,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 내부 회전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '기둥 주위에 밴드를 질식시키십시오. 밴드는 팔꿈치 높이와 같아야 합니다. 밴드에서 몇 피트 떨어진 곳에 오른쪽으로 서세요. 그...',
-      execution: '윗팔이 제 위치에 있으면 팔꿈치가 90도 각도로 구부러지고 손이 몸통에서 멀어져야 합니다. 이것이 당신의 시작이 될 것입니다...',
+      setup:
+        '기둥 주위에 밴드를 질식시키십시오. 밴드는 팔꿈치 높이와 같아야 합니다. 밴드에서 몇 피트 떨어진 곳에 오른쪽으로 서세요. 그...',
+      execution:
+        '윗팔이 제 위치에 있으면 팔꿈치가 90도 각도로 구부러지고 손이 몸통에서 멀어져야 합니다. 이것이 당신의 시작이 될 것입니다...',
       transition: '',
     },
   },
@@ -16934,8 +17453,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인버티드 로우(Inverted Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '랙에 바를 허리 높이 정도 위치시킵니다. 스미스 머신을 사용해도 됩니다. 어깨 너비보다 넓은 그립을 잡고 바를 잡고 자세를 취하세요...',
-      execution: '팔꿈치를 구부리고 가슴을 바쪽으로 당기는 것으로 시작하십시오. 동작을 수행하면서 견갑골을 수축시키세요. m의 꼭대기에서 잠시 멈춰라...',
+      setup:
+        '랙에 바를 허리 높이 정도 위치시킵니다. 스미스 머신을 사용해도 됩니다. 어깨 너비보다 넓은 그립을 잡고 바를 잡고 자세를 취하세요...',
+      execution:
+        '팔꿈치를 구부리고 가슴을 바쪽으로 당기는 것으로 시작하십시오. 동작을 수행하면서 견갑골을 수축시키세요. m의 꼭대기에서 잠시 멈춰라...',
       transition: '',
     },
   },
@@ -16948,8 +17469,10 @@ registerLanguageTranslations('ko', {
       '원하는 반복 횟수만큼 반복합니다.',
     ],
     audio: {
-      intro: '스트랩이 있는 인버티드 로우(Inverted Row with Straps)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '랙이나 기타 안정된 물체에 로프나 서스펜션 스트랩을 걸어 놓습니다. 끝부분을 잡고 밧줄에 매달린 채 반듯이 누운 자세를 취하세요...',
+      intro:
+        '스트랩이 있는 인버티드 로우(Inverted Row with Straps)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '랙이나 기타 안정된 물체에 로프나 서스펜션 스트랩을 걸어 놓습니다. 끝부분을 잡고 밧줄에 매달린 채 반듯이 누운 자세를 취하세요...',
       execution: '동작의 최고 지점에서 잠시 멈추고 시작 위치로 돌아갑니다. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
@@ -16963,7 +17486,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '아이언 크로스(스트레칭)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워 팔을 옆으로 뻗고 손바닥을 바닥에 댑니다. 이것이 당신의 시작 위치가 될 것입니다. 시작하려면 먼저...',
+      setup:
+        '바닥에 엎드려 누워 팔을 옆으로 뻗고 손바닥을 바닥에 댑니다. 이것이 당신의 시작 위치가 될 것입니다. 시작하려면 먼저...',
       execution: '즉시 다리를 시작 자세로 되돌리고, 다른 쪽 다리도 빠르게 반복합니다. 10~20회씩 교대로 계속하세요.',
       transition: '',
     },
@@ -16978,7 +17502,8 @@ registerLanguageTranslations('ko', {
       '권장 시간만큼 휴식을 취한 후 반복하세요.',
     ],
     audio: {
-      intro: '아이소메트릭 체스트 스퀴즈(Isometric Chest Squeezes)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '아이소메트릭 체스트 스퀴즈(Isometric Chest Squeezes)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '앉거나 서 있을 때 팔을 90도 각도로 구부리고 손바닥을 가슴 앞에 모아 놓습니다. 팁: 귀하의 ...',
       execution: '권장 시간(초) 동안 기다리세요. 이제 천천히 긴장을 풀어보세요.',
       transition: '',
@@ -17026,8 +17551,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '아이소메트릭 와이퍼는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔굽혀펴기 자세를 취하고 몸을 곧게 유지하면서 손과 발가락으로 체중을 지탱합니다. 손이 쇼 바깥쪽에 있어야 합니다.',
-      execution: '구부린 팔을 펴고 몸을 위로 밀고 반대쪽으로 떨어뜨려 동작을 반대로 하세요. 원하는 반복 횟수만큼 반복합니다.',
+      setup:
+        '팔굽혀펴기 자세를 취하고 몸을 곧게 유지하면서 손과 발가락으로 체중을 지탱합니다. 손이 쇼 바깥쪽에 있어야 합니다.',
+      execution:
+        '구부린 팔을 펴고 몸을 위로 밀고 반대쪽으로 떨어뜨려 동작을 반대로 하세요. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
   },
@@ -17039,8 +17566,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'IT 밴드 및 둔근 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 중 하나에 벨트, 로프 또는 밴드를 감고 그 다리를 몸을 가로질러 반대쪽으로 흔드는 동시에 누워 있는 동안 다리를 쭉 뻗은 상태를 유지합니다...',
-      execution: '발을 바닥에서 떼고 벨트를 당기면서 장력을 이용해 발가락을 위로 당깁니다. 10~20초 동안 유지하고 반대쪽도 반복합니다.',
+      setup:
+        '발 중 하나에 벨트, 로프 또는 밴드를 감고 그 다리를 몸을 가로질러 반대쪽으로 흔드는 동시에 누워 있는 동안 다리를 쭉 뻗은 상태를 유지합니다...',
+      execution:
+        '발을 바닥에서 떼고 벨트를 당기면서 장력을 이용해 발가락을 위로 당깁니다. 10~20초 동안 유지하고 반대쪽도 반복합니다.',
       transition: '',
     },
   },
@@ -17069,7 +17598,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '잔다 싯업(Janda Sit-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '기본 윗몸일으키기 자세로 바닥에 몸을 눕힙니다. 무릎을 90도 각도로 유지하고 발은 바닥에 편평하게 놓고 팔은 ov로 교차합니다.',
+      setup:
+        '기본 윗몸일으키기 자세로 바닥에 몸을 눕힙니다. 무릎을 90도 각도로 유지하고 발은 바닥에 편평하게 놓고 팔은 ov로 교차합니다.',
       execution: '숨을 들이쉬면서 천천히 통제된 방식으로 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -17088,7 +17618,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '제퍼슨 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바벨을 바닥에 놓습니다. 바 길이 방향으로 중앙에 서십시오.',
-      execution: '무릎을 구부리고 등을 곧게 펴고 몸을 굽힌 후 오른손으로 바 앞쪽을 잡습니다. 손바닥이 (중립) 위치에 있어야 합니다.',
+      execution:
+        '무릎을 구부리고 등을 곧게 펴고 몸을 굽힌 후 오른손으로 바 앞쪽을 잡습니다. 손바닥이 (중립) 위치에 있어야 합니다.',
       transition: '',
     },
   },
@@ -17101,8 +17632,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '저크 밸런스(Jerk Balance)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 저크 중에 자신을 충분히 낮추는 방법을 배우고 동작 중에 뒤로 움직이는 사람들을 교정하는 데 도움이 됩니다. 바부터 시작하세요..',
-      execution: '뒷발을 제자리에 유지하고 이를 사용하여 체중을 저크하면서 몸을 앞으로 완전히 분할하십시오. 무게로 일어서서 회복...',
+      setup:
+        '이 훈련은 저크 중에 자신을 충분히 낮추는 방법을 배우고 동작 중에 뒤로 움직이는 사람들을 교정하는 데 도움이 됩니다. 바부터 시작하세요..',
+      execution:
+        '뒷발을 제자리에 유지하고 이를 사용하여 체중을 저크하면서 몸을 앞으로 완전히 분할하십시오. 무게로 일어서서 회복...',
       transition: '',
     },
   },
@@ -17114,8 +17647,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '저크 딥 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 움직임은 저크의 딥 부분을 강화시킵니다. 바를 저크 포지션으로 랙에 걸고 어깨를 앞으로 내밀어 선반을 만드는 것부터 시작하세요...',
-      execution: '몸통을 수직으로 유지하면서 무릎을 구부려 딥을 하여 엉덩이를 뒤쪽으로 움직이지 않고 앞으로 이동할 수 있도록 합니다. 딥은...',
+      setup:
+        '이 움직임은 저크의 딥 부분을 강화시킵니다. 바를 저크 포지션으로 랙에 걸고 어깨를 앞으로 내밀어 선반을 만드는 것부터 시작하세요...',
+      execution:
+        '몸통을 수직으로 유지하면서 무릎을 구부려 딥을 하여 엉덩이를 뒤쪽으로 움직이지 않고 앞으로 이동할 수 있도록 합니다. 딥은...',
       transition: '',
     },
   },
@@ -17130,8 +17665,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'JM Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '클로즈 그립 벤치 프레스와 같은 방식으로 운동을 시작하세요. 팔 길이로 바벨을 잡고(완전히 뻗은 상태로) 플랫 벤치에 누워 있습니다.',
-      execution: '숨을 내쉬면서 삼두근을 사용하여 바를 뒤로 밀어 클로즈 그립 벤치 프레스를 수행합니다. 이제 시작 위치로 돌아가서 다시 시작하세요.',
+      setup:
+        '클로즈 그립 벤치 프레스와 같은 방식으로 운동을 시작하세요. 팔 길이로 바벨을 잡고(완전히 뻗은 상태로) 플랫 벤치에 누워 있습니다.',
+      execution:
+        '숨을 내쉬면서 삼두근을 사용하여 바를 뒤로 밀어 클로즈 그립 벤치 프레스를 수행합니다. 이제 시작 위치로 돌아가서 다시 시작하세요.',
       transition: '',
     },
   },
@@ -17143,8 +17680,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '조깅, 런닝머신은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 런닝머신에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 런닝머신에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
-      execution: '런닝머신은 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 조깅하는 것보다 충격이 적습니다. 150파운드의 사람은 거의 250칼로리를 소모합니다...',
+      setup:
+        '시작하려면 런닝머신에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 런닝머신에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
+      execution:
+        '런닝머신은 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 조깅하는 것보다 충격이 적습니다. 150파운드의 사람은 거의 250칼로리를 소모합니다...',
       transition: '',
     },
   },
@@ -17158,8 +17697,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케그 로드(Keg Load)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '통을 적재하려면 적재 플랫폼으로부터의 거리(일반적으로 30-50피트)에 원하는 숫자를 배치하십시오. 첫 번째 핸들의 닫기 핸들을 잡고 시작하세요...',
-      execution: '술통을 더 높게 배치할수록 플랫폼으로 더 빨리 이동할 수 있습니다. 어깨동무는 일반적으로 허용되지 않습니다. 확고한 태도를 유지하세요...',
+      setup:
+        '통을 적재하려면 적재 플랫폼으로부터의 거리(일반적으로 30-50피트)에 원하는 숫자를 배치하십시오. 첫 번째 핸들의 닫기 핸들을 잡고 시작하세요...',
+      execution:
+        '술통을 더 높게 배치할수록 플랫폼으로 더 빨리 이동할 수 있습니다. 어깨동무는 일반적으로 허용되지 않습니다. 확고한 태도를 유지하세요...',
       transition: '',
     },
   },
@@ -17172,7 +17713,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Kettlebell Arnold Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 위쪽으로 올리면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      setup:
+        '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 위쪽으로 올리면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
       execution: '손바닥이 안쪽을 향하도록 케틀벨을 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -17186,7 +17728,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 데드 클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨을 깨끗하게 닦아주세요...',
+      setup:
+        '케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨을 깨끗하게 닦아주세요...',
       execution: '등을 곧게 펴고 엉덩이를 밖으로 내밀어 햄스트링에 부하를 유지하면서 케틀벨을 낮추세요.',
       transition: '',
     },
@@ -17199,8 +17742,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 피규어 8은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리 사이에 케틀벨 하나를 놓고 어깨 너비보다 넓게 스탠스를 취합니다. 엉덩이를 바깥쪽으로 밀고 등을 편평하게 유지하여 몸을 구부립니다. ...',
-      execution: '케틀벨을 집어 다리 사이에 있는 다른 손으로 전달합니다. 받는 손은 다리 뒤에서 뻗어야 합니다. 앞뒤로 이동하여...',
+      setup:
+        '다리 사이에 케틀벨 하나를 놓고 어깨 너비보다 넓게 스탠스를 취합니다. 엉덩이를 바깥쪽으로 밀고 등을 편평하게 유지하여 몸을 구부립니다. ...',
+      execution:
+        '케틀벨을 집어 다리 사이에 있는 다른 손으로 전달합니다. 받는 손은 다리 뒤에서 뻗어야 합니다. 앞뒤로 이동하여...',
       transition: '',
     },
   },
@@ -17213,8 +17758,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 행 클린(Kettlebell Hang Clean)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨을 어깨까지 깨끗하게...',
-      execution: '햄스트링에 부하를 유지하면서 케틀벨을 다리 사이에 매달린 자세로 내립니다. 항상 머리를 위로 유지하십시오.',
+      setup:
+        '케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨을 어깨까지 깨끗하게...',
+      execution:
+        '햄스트링에 부하를 유지하면서 케틀벨을 다리 사이에 매달린 자세로 내립니다. 항상 머리를 위로 유지하십시오.',
       transition: '',
     },
   },
@@ -17226,8 +17773,10 @@ registerLanguageTranslations('ko', {
       '지면과 평행이 될 때까지 케틀벨을 계속 내린 다음 곧은 자세로 돌아옵니다.',
     ],
     audio: {
-      intro: '케틀벨 원 레그 데드리프트(Kettlebell One-Legged Deadlift)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손으로 케틀벨 손잡이를 잡습니다. 케틀벨을 잡는 쪽 다리로 서세요. 무릎을 약간 구부린 상태로 유지하세요...',
+      intro:
+        '케틀벨 원 레그 데드리프트(Kettlebell One-Legged Deadlift)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한 손으로 케틀벨 손잡이를 잡습니다. 케틀벨을 잡는 쪽 다리로 서세요. 무릎을 약간 구부린 상태로 유지하세요...',
       execution: '지면과 평행이 될 때까지 케틀벨을 계속 내린 다음 곧은 자세로 돌아옵니다.',
       transition: '',
     },
@@ -17240,8 +17789,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Kettlebell Pass Between The Legs는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리 사이에 케틀벨 하나를 놓고 편안한 자세를 취하세요. 엉덩이를 바깥쪽으로 밀고 등을 편평하게 유지하여 몸을 구부립니다. 케트를 집으세요...',
-      execution: '케틀벨을 집어 "W"자 형태로 다리 사이에 있는 다른 손에 전달합니다. 여러 번 반복하여 앞뒤로 이동하십시오.',
+      setup:
+        '다리 사이에 케틀벨 하나를 놓고 편안한 자세를 취하세요. 엉덩이를 바깥쪽으로 밀고 등을 편평하게 유지하여 몸을 구부립니다. 케트를 집으세요...',
+      execution:
+        '케틀벨을 집어 "W"자 형태로 다리 사이에 있는 다른 손에 전달합니다. 여러 번 반복하여 앞뒤로 이동하십시오.',
       transition: '',
     },
   },
@@ -17255,8 +17806,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 해적선은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 자세로 양손으로 케틀벨을 잡습니다. 팔을 쭉 뻗은 상태에서 허리 높이에 걸어두세요. 이것이 당신의 시작 위치가 될 것입니다...',
-      execution: '반대쪽으로 회전하면서 벨이 떨어지도록 하고 다시 케틀벨을 머리 높이까지 올립니다. 원하는 반복 횟수만큼 반복합니다.',
+      setup:
+        '넓은 자세로 양손으로 케틀벨을 잡습니다. 팔을 쭉 뻗은 상태에서 허리 높이에 걸어두세요. 이것이 당신의 시작 위치가 될 것입니다...',
+      execution:
+        '반대쪽으로 회전하면서 벨이 떨어지도록 하고 다시 케틀벨을 머리 높이까지 올립니다. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
   },
@@ -17271,7 +17824,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '케틀벨 피스톨 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '두 손으로 케틀벨을 들고 뿔을 잡습니다. 한쪽 다리를 바닥에서 떼고 다른 쪽 다리를 쪼그리고 앉으십시오. ...',
-      execution: '1초간 바닥 위치를 유지한 다음 동작을 반대로 하여 발뒤꿈치를 통과하고 머리와 가슴을 위로 유지합니다. 다시 몸을 낮추세요...',
+      execution:
+        '1초간 바닥 위치를 유지한 다음 동작을 반대로 하여 발뒤꿈치를 통과하고 머리와 가슴을 위로 유지합니다. 다시 몸을 낮추세요...',
       transition: '',
     },
   },
@@ -17283,7 +17837,8 @@ registerLanguageTranslations('ko', {
       '케틀벨이 머리 위에서 잠길 때까지 위쪽으로 누르세요. 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '케틀벨 시티드 프레스(Kettlebell Seated Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '케틀벨 시티드 프레스(Kettlebell Seated Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥에 앉아 편안하게 다리를 벌려보세요. 케틀벨 하나를 어깨에 대고 청소하십시오.',
       execution: '케틀벨이 머리 위에서 잠길 때까지 위쪽으로 누르세요. 시작 위치로 돌아갑니다.',
       transition: '',
@@ -17297,7 +17852,8 @@ registerLanguageTranslations('ko', {
       '케틀벨을 낮추고 즉시 다른 케틀벨을 누릅니다. 양쪽 모두 동일한 횟수로 반복하도록 하세요.',
     ],
     audio: {
-      intro: '케틀벨 시소 프레스(Kettlebell Seesaw Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '케틀벨 시소 프레스(Kettlebell Seesaw Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '두 개의 케틀벨을 어깨 두 개로 청소하세요. 케틀벨 하나를 누르세요.',
       execution: '케틀벨을 낮추고 즉시 다른 케틀벨을 누릅니다. 양쪽 모두 동일한 횟수로 반복하도록 하세요.',
       transition: '',
@@ -17310,9 +17866,12 @@ registerLanguageTranslations('ko', {
       '엉덩이와 무릎을 펴는 것으로 시작하고, 동시에 케틀벨을 어깨까지 당기면서 팔꿈치를 들어 올리세요. 시작 위치로 돌아가려면 동작을 반대로 하세요.',
     ],
     audio: {
-      intro: '케틀벨 스모 하이 풀(Kettlebell Sumo High Pull)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 사이의 바닥에 케틀벨을 놓습니다. 발을 넓게 벌리고 두 손으로 케틀벨을 잡습니다. 엉덩이를 안정시키세요...',
-      execution: '엉덩이와 무릎을 펴는 것으로 시작하고, 동시에 케틀벨을 어깨까지 당기면서 팔꿈치를 들어 올리세요. 동작을 반대로 하세요...',
+      intro:
+        '케틀벨 스모 하이 풀(Kettlebell Sumo High Pull)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '발 사이의 바닥에 케틀벨을 놓습니다. 발을 넓게 벌리고 두 손으로 케틀벨을 잡습니다. 엉덩이를 안정시키세요...',
+      execution:
+        '엉덩이와 무릎을 펴는 것으로 시작하고, 동시에 케틀벨을 어깨까지 당기면서 팔꿈치를 들어 올리세요. 동작을 반대로 하세요...',
       transition: '',
     },
   },
@@ -17326,8 +17885,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 쓰러스터(Kettlebell Thruster)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 당기면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
-      execution: '바닥에서 반대 방향으로 무릎과 엉덩이를 펴고 발뒤꿈치를 통과시켜 스쿼트합니다. 그렇게 하면서 두 케틀벨을 모두 누르세요...',
+      setup:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 당기면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      execution:
+        '바닥에서 반대 방향으로 무릎과 엉덩이를 펴고 발뒤꿈치를 통과시켜 스쿼트합니다. 그렇게 하면서 두 케틀벨을 모두 누르세요...',
       transition: '',
     },
   },
@@ -17340,7 +17901,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 터키쉬 겟업(런지 스타일)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 등을 대고 누워서 팔꿈치를 펴서 케틀벨을 최고 위치로 누르세요. 케틀벨과 같은 쪽 무릎을 구부립니다. ...',
+      setup:
+        '바닥에 등을 대고 누워서 팔꿈치를 펴서 케틀벨을 최고 위치로 누르세요. 케틀벨과 같은 쪽 무릎을 구부립니다. ...',
       execution: '케틀벨을 바라보며 천천히 일어납니다. 동작을 다시 시작 위치로 되돌리고 반복합니다.',
       transition: '',
     },
@@ -17354,8 +17916,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 터키쉬 겟업(스쿼트 스타일)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 등을 대고 누워서 팔꿈치를 펴서 케틀벨을 최고 위치로 누르세요. 케틀벨과 같은 쪽 무릎을 구부립니다. ...',
-      execution: '다른 손을 사용하여 앉은 자세로 몸을 민 다음 발로 나아갑니다. 케틀벨을 바라보며 천천히 일어납니다. 되돌려...',
+      setup:
+        '바닥에 등을 대고 누워서 팔꿈치를 펴서 케틀벨을 최고 위치로 누르세요. 케틀벨과 같은 쪽 무릎을 구부립니다. ...',
+      execution:
+        '다른 손을 사용하여 앉은 자세로 몸을 민 다음 발로 나아갑니다. 케틀벨을 바라보며 천천히 일어납니다. 되돌려...',
       transition: '',
     },
   },
@@ -17368,7 +17932,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '케틀벨 윈드밀은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 앞발 앞에 놓고 깨끗이 닦은 후 반대쪽 팔로 머리 위로 누릅니다. 케틀벨을 어깨까지 Exte로 청소하세요...',
+      setup:
+        '케틀벨을 앞발 앞에 놓고 깨끗이 닦은 후 반대쪽 팔로 머리 위로 누릅니다. 케틀벨을 어깨까지 Exte로 청소하세요...',
       execution: '땅에 닿은 후 잠시 멈췄다가 반대 동작을 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -17384,8 +17949,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '키핑 머슬 업(Kipping Muscle Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥 바닥이 링 위에 오도록 거짓 그립을 사용하여 링을 잡습니다. 다리를 약간 뒤로 흔드는 동작으로 시작합니다.',
-      execution: '다리를 앞뒤로 흔들고, 턱과 가슴을 뒤로 젖히고, 그렇게 하면서 두 팔로 몸을 위로 당겨 이러한 움직임에 대응하세요. 너처럼...',
+      setup:
+        '손바닥 바닥이 링 위에 오도록 거짓 그립을 사용하여 링을 잡습니다. 다리를 약간 뒤로 흔드는 동작으로 시작합니다.',
+      execution:
+        '다리를 앞뒤로 흔들고, 턱과 가슴을 뒤로 젖히고, 그렇게 하면서 두 팔로 몸을 위로 당겨 이러한 움직임에 대응하세요. 너처럼...',
       transition: '',
     },
   },
@@ -17397,8 +17964,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Knee Across The Body는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른쪽 다리를 곧게 펴고 바닥에 눕습니다. 왼쪽 다리를 구부려 몸을 가로질러 낮추고, Y로 무릎을 바닥 쪽으로 유지합니다...',
-      execution: '왼팔을 편안하게 몸 옆에 두고 머리를 왼쪽으로 돌립니다. 꼬리뼈에 체중이 묶여 있다고 상상해보십시오. 꼬리뼈가 떨어지도록 하세요...',
+      setup:
+        '오른쪽 다리를 곧게 펴고 바닥에 눕습니다. 왼쪽 다리를 구부려 몸을 가로질러 낮추고, Y로 무릎을 바닥 쪽으로 유지합니다...',
+      execution:
+        '왼팔을 편안하게 몸 옆에 두고 머리를 왼쪽으로 돌립니다. 꼬리뼈에 체중이 묶여 있다고 상상해보십시오. 꼬리뼈가 떨어지도록 하세요...',
       transition: '',
     },
   },
@@ -17428,7 +17997,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '평행봉에서 무릎/엉덩이 들어올리기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '팔뚝이 몸통 옆 패드 위에 놓이고 손잡이를 잡을 수 있도록 수직 다리 올리기 벤치에 몸을 위치시킵니다. 네...',
-      execution: '이제 숨을 내쉬면서 다리를 펴면서 들어 올리세요. 다리가 바닥과 대략 평행이 되어 수평이 될 때까지 이 동작을 계속하세요...',
+      execution:
+        '이제 숨을 내쉬면서 다리를 펴면서 들어 올리세요. 다리가 바닥과 대략 평행이 되어 수평이 될 때까지 이 동작을 계속하세요...',
       transition: '',
     },
   },
@@ -17441,8 +18011,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '니턱점프(Knee Tuck Jump)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 약간 구부린 채 편안하게 선 자세로 시작하세요. 손을 앞으로 잡고 손바닥을 아래로 향하게 하고 손가락 끝을 모아...',
-      execution: '최대한 높이 점프하고 무릎을 위로 올린 다음 다리를 다시 펴고 무릎을 사용하여 충격을 흡수하여 좋은 착지를 확보하세요...',
+      setup:
+        '무릎을 약간 구부린 채 편안하게 선 자세로 시작하세요. 손을 앞으로 잡고 손바닥을 아래로 향하게 하고 손가락 끝을 모아...',
+      execution:
+        '최대한 높이 점프하고 무릎을 위로 올린 다음 다리를 다시 펴고 무릎을 사용하여 충격을 흡수하여 좋은 착지를 확보하세요...',
       transition: '',
     },
   },
@@ -17456,8 +18028,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '닐링 ​​암 드릴(Kneeling Arm Drill)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 달리는 동안 팔의 효율성을 높이는 데 도움이 됩니다. 무릎을 꿇고 왼발을 앞에 두고 오른쪽 무릎을 아래로 내리세요. 앞쪽 발뒤꿈치를 통해 압력을 가하세요...',
-      execution: '손이 엉덩이를 지나자마자 전력 질주 동작 중에 손을 앞으로 가속하여 가능한 한 빨리 움직입니다. 무릎을 바꿔서 반복하세요.',
+      setup:
+        '이 훈련은 달리는 동안 팔의 효율성을 높이는 데 도움이 됩니다. 무릎을 꿇고 왼발을 앞에 두고 오른쪽 무릎을 아래로 내리세요. 앞쪽 발뒤꿈치를 통해 압력을 가하세요...',
+      execution:
+        '손이 엉덩이를 지나자마자 전력 질주 동작 중에 손을 앞으로 가속하여 가능한 한 빨리 움직입니다. 무릎을 바꿔서 반복하세요.',
       transition: '',
     },
   },
@@ -17475,9 +18049,12 @@ registerLanguageTranslations('ko', {
       '이 일련의 움직임을 실패로 계속하십시오.',
     ],
     audio: {
-      intro: '교대로 비스듬히 비틀면서 무릎을 꿇는 케이블 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프 부착물을 하이 풀리 케이블에 연결하고 그 앞 바닥에 매트를 놓습니다. 양손으로 밧줄을 잡고 무릎을 꿇는다...',
-      execution: '귀 옆에 손을 대고 머리 뒤에 로프를 놓습니다. 손은 같은 곳에 두고 복근을 수축한 후 로프를 아래쪽으로 당기세요...',
+      intro:
+        '교대로 비스듬히 비틀면서 무릎을 꿇는 케이블 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '로프 부착물을 하이 풀리 케이블에 연결하고 그 앞 바닥에 매트를 놓습니다. 양손으로 밧줄을 잡고 무릎을 꿇는다...',
+      execution:
+        '귀 옆에 손을 대고 머리 뒤에 로프를 놓습니다. 손은 같은 곳에 두고 복근을 수축한 후 로프를 아래쪽으로 당기세요...',
       transition: '',
     },
   },
@@ -17494,8 +18071,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Kneeling Cable Triceps Extension은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '하이 풀리 기계 앞에 벤치를 옆으로 놓으십시오. 머리 위로 직선 바 부착물을 손으로 약 6인치 간격으로 잡고 ...',
-      execution: '기계에서 등을 돌리고 무릎을 꿇습니다. 머리와 팔뚝 뒤쪽을 벤치 위에 놓습니다. 팔꿈치는 팔뚝으로 구부려야 합니다...',
+      setup:
+        '하이 풀리 기계 앞에 벤치를 옆으로 놓으십시오. 머리 위로 직선 바 부착물을 손으로 약 6인치 간격으로 잡고 ...',
+      execution:
+        '기계에서 등을 돌리고 무릎을 꿇습니다. 머리와 팔뚝 뒤쪽을 벤치 위에 놓습니다. 팔꿈치는 팔뚝으로 구부려야 합니다...',
       transition: '',
     },
   },
@@ -17507,8 +18086,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '무릎을 꿇고 팔뚝 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥을 편평하게 하고 손가락이 무릎을 향하도록 매트 위에 무릎을 꿇고 시작하세요. 손바닥을 바닥에 편평하게 유지하면서 천천히 몸을 뒤로 젖히세요...',
-      execution: '손목과 팔뚝이 늘어나는 느낌이 들 때까지 손바닥을 바닥에 편평하게 유지하면서 천천히 몸을 뒤로 젖히세요. 20-30초 동안 유지하세요.',
+      setup:
+        '손바닥을 편평하게 하고 손가락이 무릎을 향하도록 매트 위에 무릎을 꿇고 시작하세요. 손바닥을 바닥에 편평하게 유지하면서 천천히 몸을 뒤로 젖히세요...',
+      execution:
+        '손목과 팔뚝이 늘어나는 느낌이 들 때까지 손바닥을 바닥에 편평하게 유지하면서 천천히 몸을 뒤로 젖히세요. 20-30초 동안 유지하세요.',
       transition: '',
     },
   },
@@ -17520,8 +18101,10 @@ registerLanguageTranslations('ko', {
       '잠시 멈춘 후 천천히 시작 자세로 돌아옵니다.',
     ],
     audio: {
-      intro: '닐링 ​​하이 풀리 로우(Kneeling High Pulley Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '머리 위에 있는 도르래를 이용해 적절한 무게를 선택하세요. 케이블에 로프를 연결하고 몇 피트 떨어진 곳에 무릎을 꿇고 로프를 잡고 ...',
+      intro:
+        '닐링 ​​하이 풀리 로우(Kneeling High Pulley Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '머리 위에 있는 도르래를 이용해 적절한 무게를 선택하세요. 케이블에 로프를 연결하고 몇 피트 떨어진 곳에 무릎을 꿇고 로프를 잡고 ...',
       execution: '잠시 멈춘 후 천천히 시작 자세로 돌아옵니다.',
       transition: '',
     },
@@ -17534,7 +18117,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '무릎을 꿇는 고관절 굴곡근은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '매트 위에 무릎을 꿇고 오른쪽 무릎을 들어 발바닥이 바닥에 닿도록 하고 왼쪽 다리를 뒤로 뻗어 발등이 닿도록 합니다...',
+      setup:
+        '매트 위에 무릎을 꿇고 오른쪽 무릎을 들어 발바닥이 바닥에 닿도록 하고 왼쪽 다리를 뒤로 뻗어 발등이 닿도록 합니다...',
       execution: '엉덩이가 늘어나는 느낌이 들 때까지 체중을 앞으로 옮깁니다. 15초 동안 유지한 후 반대쪽도 반복하세요.',
       transition: '',
     },
@@ -17549,8 +18133,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '닐링 ​​점프 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 뒤쪽에 바벨을 걸고 바닥에 무릎을 꿇고 시작하거나 체중을 이용해 이 운동을 할 수도 있습니다. 이것은...',
-      execution: '엉덩이를 폭발시키면서 발이 바닥에 닿을 만큼 충분한 힘을 생성합니다. 발뒤꿈치를 사용하여 스쿼트를 계속하세요...',
+      setup:
+        '어깨 뒤쪽에 바벨을 걸고 바닥에 무릎을 꿇고 시작하거나 체중을 이용해 이 운동을 할 수도 있습니다. 이것은...',
+      execution:
+        '엉덩이를 폭발시키면서 발이 바닥에 닿을 만큼 충분한 힘을 생성합니다. 발뒤꿈치를 사용하여 스쿼트를 계속하세요...',
       transition: '',
     },
   },
@@ -17563,9 +18149,12 @@ registerLanguageTranslations('ko', {
       '잠시 멈춘 후 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '무릎을 꿇고 싱글 암 하이 풀리 로우(Kneeling Single-Arm High Pulley Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높은 도르래에 핸들 하나를 부착하고 무게를 선택하세요. 케이블타워 앞에 무릎을 꿇고 한손으로 케이블을 잡고...',
-      execution: '손바닥이 앞쪽을 향하도록 시작하여 팔꿈치를 구부려 웨이트를 몸통 아래로 당기고 견갑골을 수축시킵니다. 그렇게 하면서 회전...',
+      intro:
+        '무릎을 꿇고 싱글 암 하이 풀리 로우(Kneeling Single-Arm High Pulley Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '높은 도르래에 핸들 하나를 부착하고 무게를 선택하세요. 케이블타워 앞에 무릎을 꿇고 한손으로 케이블을 잡고...',
+      execution:
+        '손바닥이 앞쪽을 향하도록 시작하여 팔꿈치를 구부려 웨이트를 몸통 아래로 당기고 견갑골을 수축시킵니다. 그렇게 하면서 회전...',
       transition: '',
     },
   },
@@ -17578,7 +18167,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '닐링 ​​스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 파워 랙에 적절한 높이로 설정합니다. 바 뒤에 무릎을 꿇으십시오. 매트를 깔아 무릎을 보호하는 것이 도움이 될 수 있습니다. b 아래로 슬라이드하세요...',
+      setup:
+        '바를 파워 랙에 적절한 높이로 설정합니다. 바 뒤에 무릎을 꿇으십시오. 매트를 깔아 무릎을 보호하는 것이 도움이 될 수 있습니다. b 아래로 슬라이드하세요...',
       execution: '동작을 반대로 하여 몸통을 수직 위치로 되돌립니다.',
       transition: '',
     },
@@ -17593,9 +18183,11 @@ registerLanguageTranslations('ko', {
       '세트가 완료될 때까지 동작을 계속 교대로 수행합니다.',
     ],
     audio: {
-      intro: 'Landmine 180\'s는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '막대를 지뢰에 설치하거나 모서리에 단단히 고정하십시오. 바에 적절한 무게를 싣습니다. 바를 바닥에서 들어올려...',
-      execution: '웨이트를 한쪽으로 완전히 내리면서 몸통과 엉덩이를 회전시켜 동작을 수행합니다. 전 운동 내내 팔을 쭉 뻗으세요...',
+      intro: "Landmine 180's는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.",
+      setup:
+        '막대를 지뢰에 설치하거나 모서리에 단단히 고정하십시오. 바에 적절한 무게를 싣습니다. 바를 바닥에서 들어올려...',
+      execution:
+        '웨이트를 한쪽으로 완전히 내리면서 몸통과 엉덩이를 회전시켜 동작을 수행합니다. 전 운동 내내 팔을 쭉 뻗으세요...',
       transition: '',
     },
   },
@@ -17610,8 +18202,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Landmine Linear Jammer는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '막대를 지뢰에 설치하거나, ​​막대가 없으면 모서리에 단단히 고정하십시오. 바에 적절한 무게를 싣고 핸들 부착 위치를 지정하세요...',
-      execution: '운동 자세에서 엉덩이를 구부리고 엉덩이를 뒤로 젖힌 채 팔을 구부린 상태로 스쿼트합니다. 강력하게 늘려서 동작을 반대로 해보세요...',
+      setup:
+        '막대를 지뢰에 설치하거나, ​​막대가 없으면 모서리에 단단히 고정하십시오. 바에 적절한 무게를 싣고 핸들 부착 위치를 지정하세요...',
+      execution:
+        '운동 자세에서 엉덩이를 구부리고 엉덩이를 뒤로 젖힌 채 팔을 구부린 상태로 스쿼트합니다. 강력하게 늘려서 동작을 반대로 해보세요...',
       transition: '',
     },
   },
@@ -17626,7 +18220,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '측면 경계(Lateral Bound)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이동 방향에서 90도를 바라보며 하프 스쿼트 자세를 취합니다. 이것이 당신의 시작 위치가 될 것입니다. 앞다리로 카운트를 하도록 허용하세요...',
+      setup:
+        '이동 방향에서 90도를 바라보며 하프 스쿼트 자세를 취합니다. 이것이 당신의 시작 위치가 될 것입니다. 앞다리로 카운트를 하도록 허용하세요...',
       execution: '즉시 밀고 뻗어 최대한 측면으로 묶으려고 합니다. 착지하자마자 바로 반대방향으로 밀어내고...',
       transition: '',
     },
@@ -17642,8 +18237,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '측면 박스 점프(Lateral Box Jump)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '짧은 상자를 옆에 두고 편안하게 선 자세를 취하세요. 이것이 당신의 시작 위치가 될 것입니다. 빠르게 1/4제곱미터에 담그세요...',
-      execution: '발이 박스 위로 충분한 공간을 확보할 수 있도록 무릎을 충분히 높이 올리십시오. 다리를 이용해 충격을 흡수하면서 상자 중앙에 착지하세요...',
+      setup:
+        '짧은 상자를 옆에 두고 편안하게 선 자세를 취하세요. 이것이 당신의 시작 위치가 될 것입니다. 빠르게 1/4제곱미터에 담그세요...',
+      execution:
+        '발이 박스 위로 충분한 공간을 확보할 수 있도록 무릎을 충분히 높이 올리십시오. 다리를 이용해 충격을 흡수하면서 상자 중앙에 착지하세요...',
       transition: '',
     },
   },
@@ -17657,8 +18254,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '측면 콘 홉(Lateral Cone Hops)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '여러 개의 원뿔을 몇 피트 간격으로 일렬로 배치합니다. 원뿔 끝 옆에 서서 이동 방향을 90도 향하게 합니다. 이것은...',
-      execution: '스트레칭 반사를 시작하기 위해 무릎을 담그고 점프를 시작하고 즉시 방향을 바꾸어 땅을 밀고 점프하고 옆으로 눕습니다...',
+      setup:
+        '여러 개의 원뿔을 몇 피트 간격으로 일렬로 배치합니다. 원뿔 끝 옆에 서서 이동 방향을 90도 향하게 합니다. 이것은...',
+      execution:
+        '스트레칭 반사를 시작하기 위해 무릎을 담그고 점프를 시작하고 즉시 방향을 바꾸어 땅을 밀고 점프하고 옆으로 눕습니다...',
       transition: '',
     },
   },
@@ -17672,8 +18271,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '래터럴 레이즈 - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 팔 길이에서 긴장이 시작되도록 운동 밴드 위에 서십시오. 회내(손바닥이 허벅지를 향함) 그립을 사용하여 핸들을 잡습니다...',
-      execution: '핸들을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장량만큼 반복하세요...',
+      setup:
+        '시작하려면 팔 길이에서 긴장이 시작되도록 운동 밴드 위에 서십시오. 회내(손바닥이 허벅지를 향함) 그립을 사용하여 핸들을 잡습니다...',
+      execution:
+        '핸들을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장량만큼 반복하세요...',
       transition: '',
     },
   },
@@ -17685,7 +18286,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Latissimus Dorsi-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 누워서 폼 롤을 등 아래와 한쪽 겨드랑이 바로 뒤에 놓습니다. 이것이 당신의 시작 위치가 될 것입니다. 계속하세요...',
+      setup:
+        '바닥에 누워서 폼 롤을 등 아래와 한쪽 겨드랑이 바로 뒤에 놓습니다. 이것이 당신의 시작 위치가 될 것입니다. 계속하세요...',
       execution: '체중을 광배근으로 옮기면서 옆쪽 팔을 몸 뒤쪽과 옆쪽으로 쭉 뻗고 상체를 엉덩이에서 떼세요.',
       transition: '',
     },
@@ -17700,8 +18302,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '레그 익스텐션(Leg Extensions)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 위해서는 레그 익스텐션 머신을 사용해야 합니다. 먼저 체중을 선택하고 다리를 패드 아래에 두고 머신에 앉습니다(발 ...',
-      execution: '숨을 들이쉬면서 천천히 무게를 원래 위치로 낮추고 90도 각도 제한을 넘지 않도록 주의하세요. 녹음을 위해 반복하세요...',
+      setup:
+        '이 운동을 위해서는 레그 익스텐션 머신을 사용해야 합니다. 먼저 체중을 선택하고 다리를 패드 아래에 두고 머신에 앉습니다(발 ...',
+      execution:
+        '숨을 들이쉬면서 천천히 무게를 원래 위치로 낮추고 90도 각도 제한을 넘지 않도록 주의하세요. 녹음을 위해 반복하세요...',
       transition: '',
     },
   },
@@ -17716,7 +18320,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '레그 리프트(Leg Lift)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 발을 어깨 너비로 나란히 두고 똑바로 선 상태에서 스쿼트 랙이나 운동복의 측면과 같은 튼튼한 표면을 잡습니다.',
+      setup:
+        '두 발을 어깨 너비로 나란히 두고 똑바로 선 상태에서 스쿼트 랙이나 운동복의 측면과 같은 튼튼한 표면을 잡습니다.',
       execution: '숨을 들이쉬면서 천천히 들어올린 다리를 바닥으로 다시 가져옵니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -17729,9 +18334,12 @@ registerLanguageTranslations('ko', {
       '팔꿈치가 땅에 닿을 때까지 무게를 낮추고 케틀벨을 팔꿈치 위에 유지합니다. 원하는 반복 횟수만큼 반복합니다.',
     ],
     audio: {
-      intro: '레그 오버 플로어 프레스(Leg-Over Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨 하나를 가슴 위에 놓고 바닥에 누워 손잡이를 잡습니다. 작업하는 쪽의 다리를 작업하지 않는 쪽의 다리 위로 뻗으세요.당신의...',
-      execution: '팔꿈치가 땅에 닿을 때까지 무게를 낮추고 케틀벨을 팔꿈치 위에 유지합니다. 원하는 반복 횟수만큼 반복합니다.',
+      intro:
+        '레그 오버 플로어 프레스(Leg-Over Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨 하나를 가슴 위에 놓고 바닥에 누워 손잡이를 잡습니다. 작업하는 쪽의 다리를 작업하지 않는 쪽의 다리 위로 뻗으세요.당신의...',
+      execution:
+        '팔꿈치가 땅에 닿을 때까지 무게를 낮추고 케틀벨을 팔꿈치 위에 유지합니다. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
   },
@@ -17746,8 +18354,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '레그 프레스(Leg Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '레그 프레스 머신을 사용하여 머신에 앉아 다리를 플랫폼 바로 앞에 중간(어깨 너비) 발 간격으로 올려 놓습니다.',
-      execution: '숨을 들이쉬면서 위쪽 다리와 아래쪽 다리가 90도 각도를 이룰 때까지 플랫폼을 천천히 내립니다. 주로 발뒤꿈치와 US로 미는 중...',
+      setup:
+        '레그 프레스 머신을 사용하여 머신에 앉아 다리를 플랫폼 바로 앞에 중간(어깨 너비) 발 간격으로 올려 놓습니다.',
+      execution:
+        '숨을 들이쉬면서 위쪽 다리와 아래쪽 다리가 90도 각도를 이룰 때까지 플랫폼을 천천히 내립니다. 주로 발뒤꿈치와 US로 미는 중...',
       transition: '',
     },
   },
@@ -17761,7 +18371,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '레그 풀인(Leg Pull-In)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동 매트 위에 누워 다리를 쭉 뻗고 손을 손바닥이 아래를 향하게 하여 옆이나 둔근 아래로 눕습니다. 팁: 제가 선호하는 것은...',
+      setup:
+        '운동 매트 위에 누워 다리를 쭉 뻗고 손을 손바닥이 아래를 향하게 하여 옆이나 둔근 아래로 눕습니다. 팁: 제가 선호하는 것은...',
       execution: '흡입하면서 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -17775,7 +18386,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Leg-Up Hamstring Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워서 한쪽 무릎을 구부리고 발을 바닥에 평평하게 놓아 척추를 안정시키세요. 다른 쪽 다리를 공중으로 쭉 뻗으세요. 몸이 빡빡하다면...',
+      setup:
+        '등을 대고 누워서 한쪽 무릎을 구부리고 발을 바닥에 평평하게 놓아 척추를 안정시키세요. 다른 쪽 다리를 공중으로 쭉 뻗으세요. 몸이 빡빡하다면...',
       execution: '천천히 다리를 최대한 펴준 후 다리를 코쪽으로 당겨주세요. 측면을 전환하십시오.',
       transition: '',
     },
@@ -17789,9 +18401,12 @@ registerLanguageTranslations('ko', {
       '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 세트가 완료될 때까지 웨이트를 스톱 위치로 되돌리지 않음으로써 근육의 긴장을 유지합니다.',
     ],
     audio: {
-      intro: '레버리지 체스트 프레스(Leverage Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 손잡이는 가슴 근육의 아래쪽이나 중앙 근처에 있어야 합니다.',
-      execution: '팔꿈치를 통해 핸들을 앞으로 밀어냅니다. 최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 중량을 되돌리고 유지합니다.',
+      intro:
+        '레버리지 체스트 프레스(Leverage Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 손잡이는 가슴 근육의 아래쪽이나 중앙 근처에 있어야 합니다.',
+      execution:
+        '팔꿈치를 통해 핸들을 앞으로 밀어냅니다. 최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 중량을 되돌리고 유지합니다.',
       transition: '',
     },
   },
@@ -17816,9 +18431,12 @@ registerLanguageTranslations('ko', {
       '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 세트가 완료될 때까지 웨이트를 스톱 위치로 되돌리지 않음으로써 근육의 긴장을 유지합니다.',
     ],
     audio: {
-      intro: '레버리지 디클라인 체스트 프레스(Leverage Decline Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 손잡이는 처음부터 가슴 근육 바닥 근처에 있어야 합니다...',
-      execution: '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 웨이트를 시작 위치로 되돌리지 않고 근육의 긴장을 유지합니다.',
+      intro:
+        '레버리지 디클라인 체스트 프레스(Leverage Decline Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 손잡이는 처음부터 가슴 근육 바닥 근처에 있어야 합니다...',
+      execution:
+        '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 웨이트를 시작 위치로 되돌리지 않고 근육의 긴장을 유지합니다.',
       transition: '',
     },
   },
@@ -17832,8 +18450,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '레버리지 하이 로우(Leverage High Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀에 적절한 무게를 싣고, 핸들이 머리 위에 딱 닿을 정도로 높이를 조절하세요. 무릎 패드를 조정하여 k를 도우세요...',
-      execution: '동작의 가장 낮은 지점에서 잠시 멈췄다가 핸들을 천천히 시작 위치로 되돌립니다. 여러 번 반복하는 경우 완전히 복귀하지 마세요...',
+      setup:
+        '핀에 적절한 무게를 싣고, 핸들이 머리 위에 딱 닿을 정도로 높이를 조절하세요. 무릎 패드를 조정하여 k를 도우세요...',
+      execution:
+        '동작의 가장 낮은 지점에서 잠시 멈췄다가 핸들을 천천히 시작 위치로 되돌립니다. 여러 번 반복하는 경우 완전히 복귀하지 마세요...',
       transition: '',
     },
   },
@@ -17845,9 +18465,12 @@ registerLanguageTranslations('ko', {
       '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 세트가 완료될 때까지 웨이트를 스톱 위치로 되돌리지 않음으로써 근육의 긴장을 유지합니다.',
     ],
     audio: {
-      intro: '레버리지 인클라인 체스트 프레스(Leverage Incline Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 핸들은 처음부터 가슴 근육 상단 근처에 있어야 합니다 ...',
-      execution: '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 웨이트를 시작 위치로 되돌리지 않고 근육의 긴장을 유지합니다.',
+      intro:
+        '레버리지 인클라인 체스트 프레스(Leverage Incline Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 핸들은 처음부터 가슴 근육 상단 근처에 있어야 합니다 ...',
+      execution:
+        '최고 지점에서 잠시 멈춘 후 시작 위치 바로 위로 웨이트를 되돌리고 웨이트를 시작 위치로 되돌리지 않고 근육의 긴장을 유지합니다.',
       transition: '',
     },
   },
@@ -17861,7 +18484,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Iso Row 활용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '핀에 적절한 무게를 싣고 핸들이 가슴 높이에 오도록 시트 높이를 조정합니다. 중립 위치로 핸들을 잡습니다...',
-      execution: '동작의 가장 낮은 지점에서 잠시 멈췄다가 핸들을 천천히 시작 위치로 되돌립니다. 여러 번 반복하는 경우 완전히 복귀하지 마세요...',
+      execution:
+        '동작의 가장 낮은 지점에서 잠시 멈췄다가 핸들을 천천히 시작 위치로 되돌립니다. 여러 번 반복하는 경우 완전히 복귀하지 마세요...',
       transition: '',
     },
   },
@@ -17875,7 +18499,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '레버리지 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '핀에 적절한 무게를 싣고 키에 맞게 시트를 조절하세요. 처음에는 핸들이 어깨 상단 근처에 있어야 합니다...',
-      execution: '최고 지점에서 잠시 멈춘 후, 무게를 시작 위치 바로 위로 되돌리고 무게를 다시 시작 위치로 되돌리지 않고 근육의 긴장을 유지합니다...',
+      execution:
+        '최고 지점에서 잠시 멈춘 후, 무게를 시작 위치 바로 위로 되돌리고 무게를 다시 시작 위치로 되돌리지 않고 근육의 긴장을 유지합니다...',
       transition: '',
     },
   },
@@ -17890,8 +18515,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '레버리지 슈러그(Leverage Shrug)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀을 적절한 무게로 로드합니다. 핸들 사이에 직접 위치하십시오. 편안한 그립감으로 상단 손잡이를 잡은 다음...',
-      execution: '발뒤꿈치로 바닥을 질주하면서 엉덩이와 무릎을 펴고 서있는 자세로 일어납니다. m 전체에 걸쳐 팔을 곧게 유지하세요...',
+      setup:
+        '핀을 적절한 무게로 로드합니다. 핸들 사이에 직접 위치하십시오. 편안한 그립감으로 상단 손잡이를 잡은 다음...',
+      execution:
+        '발뒤꿈치로 바닥을 질주하면서 엉덩이와 무릎을 펴고 서있는 자세로 일어납니다. m 전체에 걸쳐 팔을 곧게 유지하세요...',
       transition: '',
     },
   },
@@ -17905,8 +18532,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '선형 3부분 시작 기법은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 정지 상태에서 스프린트로 최대한 빠르게 가속하는 데 도움이 됩니다. 줄을 사용하여 시작하는 것이 도움이 됩니다. 두 발을 딛고 시작하세요...',
-      execution: '머리를 엉덩이보다 낮추고 체중을 왼쪽 다리에 싣고 앞으로 몸을 기울이면서 쪼그려 앉으세요. 이것이 당신의 시작 위치가 될 것입니다. ...',
+      setup:
+        '이 훈련은 정지 상태에서 스프린트로 최대한 빠르게 가속하는 데 도움이 됩니다. 줄을 사용하여 시작하는 것이 도움이 됩니다. 두 발을 딛고 시작하세요...',
+      execution:
+        '머리를 엉덩이보다 낮추고 체중을 왼쪽 다리에 싣고 앞으로 몸을 기울이면서 쪼그려 앉으세요. 이것이 당신의 시작 위치가 될 것입니다. ...',
       transition: '',
     },
   },
@@ -17919,9 +18548,12 @@ registerLanguageTranslations('ko', {
       '오른쪽 다리로 한 번 더 반복하고, 오른발이 땅에 닿자마자 빠르게 왼쪽과 오른쪽을 번갈아 가며 빠르게 두드립니다.',
     ],
     audio: {
-      intro: '선형 가속 월 드릴(Linear Acceleration Wall Drill)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벽에 약 45도 정도 기대어 앉으세요. 발은 함께 있어야 하고 둔근은 수축되어야 합니다. 먼저 오른쪽 무릎을 빠르게 들어올리고 잠시 멈춘 다음...',
-      execution: '다리를 바꿔 반대쪽 무릎을 들어올린 후 바닥을 수직으로 공격합니다. 오른쪽 다리로 한 번 더 반복하고, 오른쪽 다리로 다시 반복하면...',
+      intro:
+        '선형 가속 월 드릴(Linear Acceleration Wall Drill)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '벽에 약 45도 정도 기대어 앉으세요. 발은 함께 있어야 하고 둔근은 수축되어야 합니다. 먼저 오른쪽 무릎을 빠르게 들어올리고 잠시 멈춘 다음...',
+      execution:
+        '다리를 바꿔 반대쪽 무릎을 들어올린 후 바닥을 수직으로 공격합니다. 오른쪽 다리로 한 번 더 반복하고, 오른쪽 다리로 다시 반복하면...',
       transition: '',
     },
   },
@@ -17935,8 +18567,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '선형 깊이 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '서로 몇 피트 떨어진 곳에 두 개의 상자 또는 벤치가 필요합니다. 다른 플랫폼을 향한 한 상자에 서서 시작하십시오. 시작하려면...',
-      execution: '폭발하여 엉덩이, 무릎, 발목을 확장하여 다른 플랫폼으로 점프하여 동작을 반대로 합니다. 충격을 흡수하면서 부드럽게 착지하세요...',
+      setup:
+        '서로 몇 피트 떨어진 곳에 두 개의 상자 또는 벤치가 필요합니다. 다른 플랫폼을 향한 한 상자에 서서 시작하십시오. 시작하려면...',
+      execution:
+        '폭발하여 엉덩이, 무릎, 발목을 확장하여 다른 플랫폼으로 점프하여 동작을 반대로 합니다. 충격을 흡수하면서 부드럽게 착지하세요...',
       transition: '',
     },
   },
@@ -17949,7 +18583,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '로그 리프트(Log Lift)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '통나무를 앞에 두고 서기 시작하세요. 손잡이를 잡고 통나무 청소를 시작합니다. 청소를 시작하기 위해 몸을 굽힌 상태에서...',
+      setup:
+        '통나무를 앞에 두고 서기 시작하세요. 손잡이를 잡고 통나무 청소를 시작합니다. 청소를 시작하기 위해 몸을 굽힌 상태에서...',
       execution: '가능한 한 여러 번 반복하십시오. 통나무가 땅으로 돌아갈 때 통나무의 하강을 제어하려고 시도하십시오.',
       transition: '',
     },
@@ -17964,8 +18599,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '런던 브리지(London Bridges)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '클라이밍 로프를 하이빔이나 크로스멤버에 부착합니다. 그 아래에서는 스미스 머신 바가 안전 장치로 제자리에 잠겨 있는지 확인하고 ...',
-      execution: '몸을 곧게 유지하고 뒤로 기대어 로프를 손으로 잡고 천천히 몸을 낮추십시오. 수직이 될 때까지 계속하세요...',
+      setup:
+        '클라이밍 로프를 하이빔이나 크로스멤버에 부착합니다. 그 아래에서는 스미스 머신 바가 안전 장치로 제자리에 잠겨 있는지 확인하고 ...',
+      execution:
+        '몸을 곧게 유지하고 뒤로 기대어 로프를 손으로 잡고 천천히 몸을 낮추십시오. 수직이 될 때까지 계속하세요...',
       transition: '',
     },
   },
@@ -17977,7 +18614,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Looking At 천장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 무릎을 꿇고 양손으로 발뒤꿈치를 잡습니다. 엉덩이를 앞으로 들어올리면서 머리를 뒤로 젖혀 천장을 바라보세요...',
+      setup:
+        '바닥에 무릎을 꿇고 양손으로 발뒤꿈치를 잡습니다. 엉덩이를 앞으로 들어올리면서 머리를 뒤로 젖혀 천장을 바라보세요...',
       execution: '머리를 뒤로 젖혀 천장을 바라보면서 엉덩이를 앞으로 들어 올려 등이 아치형이 되도록 합니다.',
       transition: '',
     },
@@ -17992,7 +18630,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '로우 케이블 크로스오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작 위치로 이동하려면 도르래를 낮은 위치에 놓고 사용할 저항을 선택한 다음 양손으로 핸들을 잡습니다. 단계 f...',
+      setup:
+        '시작 위치로 이동하려면 도르래를 낮은 위치에 놓고 사용할 저항을 선택한 다음 양손으로 핸들을 잡습니다. 단계 f...',
       execution: '팔을 약간 구부린 채 손을 몸의 중앙선을 향해 위쪽으로 당깁니다. 두 손은 가슴 앞으로 모아야 합니다...',
       transition: '',
     },
@@ -18008,9 +18647,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '로우 케이블 트라이셉스 익스텐션(Low Cable Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 무게를 선택하고 로프가 부착된 시티드 로우 머신의 벤치에 얼굴이 위로 향하게 눕습니다. 머리는 다음을 가리키고 있어야 합니다...',
-      execution: '팔꿈치가 90도 각도로 구부러지고 위쪽 팔이 몸통과 수직(90도 각도)이 되도록 위치를 지정합니다. 팁: 계속하세요...',
+      intro:
+        '로우 케이블 트라이셉스 익스텐션(Low Cable Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '원하는 무게를 선택하고 로프가 부착된 시티드 로우 머신의 벤치에 얼굴이 위로 향하게 눕습니다. 머리는 다음을 가리키고 있어야 합니다...',
+      execution:
+        '팔꿈치가 90도 각도로 구부러지고 위쪽 팔이 몸통과 수직(90도 각도)이 되도록 위치를 지정합니다. 팁: 계속하세요...',
       transition: '',
     },
   },
@@ -18024,9 +18666,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '로우 풀리 로우 투 넥(Row Pulley Row To Neck)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프가 부착된 낮은 풀리 로우 머신에 앉으세요. 손바닥이 아래로 향한 그립을 사용하여 로프의 끝을 잡고 등을 곧게 펴고 앉아 ...',
-      execution: '몸통을 고정한 상태에서 팔꿈치를 들어 올리고 숨을 내쉬면서 로프를 목쪽으로 당기면서 구부리기 시작합니다. 내내...',
+      intro:
+        '로우 풀리 로우 투 넥(Row Pulley Row To Neck)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '로프가 부착된 낮은 풀리 로우 머신에 앉으세요. 손바닥이 아래로 향한 그립을 사용하여 로프의 끝을 잡고 등을 곧게 펴고 앉아 ...',
+      execution:
+        '몸통을 고정한 상태에서 팔꿈치를 들어 올리고 숨을 내쉬면서 로프를 목쪽으로 당기면서 구부리기 시작합니다. 내내...',
       transition: '',
     },
   },
@@ -18038,8 +18683,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Lower Back Curl은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔을 옆으로 벌린 채 엎드려 눕습니다. 이것이 당신의 시작 위치가 될 것입니다. 허리 근육을 사용하여 척추 리프팅을 확장하세요...',
-      execution: '허리 근육을 사용하여 척추를 펴고 가슴을 땅에서 들어올리세요. 자신을 밀어 올리기 위해 팔을 사용하지 마십시오. 고개를 들어 ...',
+      setup:
+        '팔을 옆으로 벌린 채 엎드려 눕습니다. 이것이 당신의 시작 위치가 될 것입니다. 허리 근육을 사용하여 척추 리프팅을 확장하세요...',
+      execution:
+        '허리 근육을 사용하여 척추를 펴고 가슴을 땅에서 들어올리세요. 자신을 밀어 올리기 위해 팔을 사용하지 마십시오. 고개를 들어 ...',
       transition: '',
     },
   },
@@ -18051,8 +18698,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Lower Back-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '앉은 자세에서 허리 아래에 폼롤러를 놓습니다. 팔을 앞으로 교차시키고 어깨를 펴십시오. 이것이 당신의 시작이 될 것입니다...',
-      execution: '엉덩이를 바닥에서 들어 올리고 뒤로 몸을 기울여 체중을 허리에 싣습니다. 이제 체중을 한쪽으로 살짝 옮겨 몸의 자세를 유지하세요...',
+      setup:
+        '앉은 자세에서 허리 아래에 폼롤러를 놓습니다. 팔을 앞으로 교차시키고 어깨를 펴십시오. 이것이 당신의 시작이 될 것입니다...',
+      execution:
+        '엉덩이를 바닥에서 들어 올리고 뒤로 몸을 기울여 체중을 허리에 싣습니다. 이제 체중을 한쪽으로 살짝 옮겨 몸의 자세를 유지하세요...',
       transition: '',
     },
   },
@@ -18067,8 +18716,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '런지 패스 스루(Lunge Pass Through)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른손에 케틀벨을 잡고 상체를 똑바로 세우십시오. 이것이 당신의 시작 위치가 될 것입니다. 왼발을 앞으로 내밀어 보세요...',
-      execution: '런지하면서 앞다리 아래의 케틀벨을 반대쪽 손으로 전달하세요. 발 뒤꿈치를 누르면서 시작 위치로 돌아갑니다.',
+      setup:
+        '오른손에 케틀벨을 잡고 상체를 똑바로 세우십시오. 이것이 당신의 시작 위치가 될 것입니다. 왼발을 앞으로 내밀어 보세요...',
+      execution:
+        '런지하면서 앞다리 아래의 케틀벨을 반대쪽 손으로 전달하세요. 발 뒤꿈치를 누르면서 시작 위치로 돌아갑니다.',
       transition: '',
     },
   },
@@ -18082,8 +18733,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '런지 스프린트(Lunge Sprint)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신의 바를 적절한 높이로 조정합니다. 바 아래에 몸을 위치시켜 바를 어깨 뒤쪽에 걸쳐 놓으세요. 랙을 풀다...',
-      execution: '하강의 맨 아래에서 즉시 방향을 바꿉니다. 바의 가벼운 압력으로 앞발의 뒤꿈치를 폭발적으로 몰아넣습니다...',
+      setup:
+        '스미스 머신의 바를 적절한 높이로 조정합니다. 바 아래에 몸을 위치시켜 바를 어깨 뒤쪽에 걸쳐 놓으세요. 랙을 풀다...',
+      execution:
+        '하강의 맨 아래에서 즉시 방향을 바꿉니다. 바의 가벼운 압력으로 앞발의 뒤꿈치를 폭발적으로 몰아넣습니다...',
       transition: '',
     },
   },
@@ -18096,8 +18749,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누워서 구부러진 다리 사타구니는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발바닥을 함께 누른 채 등을 대고 눕습니다. 파트너가 무릎을 잡도록 하세요. 이것이 당신의 시작 위치가 될 것입니다...',
-      execution: '10~20초 후, 파트너가 무릎을 바닥 쪽으로 부드럽게 밀면서 근육을 이완하세요. 스트레칭을 할 때는 반드시 도우미에게 알리세요...',
+      setup:
+        '무릎을 구부리고 발바닥을 함께 누른 채 등을 대고 눕습니다. 파트너가 무릎을 잡도록 하세요. 이것이 당신의 시작 위치가 될 것입니다...',
+      execution:
+        '10~20초 후, 파트너가 무릎을 바닥 쪽으로 부드럽게 밀면서 근육을 이완하세요. 스트레칭을 할 때는 반드시 도우미에게 알리세요...',
       transition: '',
     },
   },
@@ -18113,8 +18768,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '라잉 케이블 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '언더핸드(손바닥이 위를 향하게)를 사용하여 어깨 너비 g를 사용하여 양손으로 로우 풀리에 부착된 직선 바 또는 E-Z 바 부착물을 잡습니다.',
-      execution: '팔을 쭉 뻗고 팔꿈치를 몸에 가까이 대고 팔을 살짝 구부립니다. 이것이 당신의 시작 위치가 될 것입니다. 상체를 유지하면서...',
+      setup:
+        '언더핸드(손바닥이 위를 향하게)를 사용하여 어깨 너비 g를 사용하여 양손으로 로우 풀리에 부착된 직선 바 또는 E-Z 바 부착물을 잡습니다.',
+      execution:
+        '팔을 쭉 뻗고 팔꿈치를 몸에 가까이 대고 팔을 살짝 구부립니다. 이것이 당신의 시작 위치가 될 것입니다. 상체를 유지하면서...',
       transition: '',
     },
   },
@@ -18127,9 +18784,12 @@ registerLanguageTranslations('ko', {
       '최고 지점에서 두 번째 정지한 후 숨을 들이쉬면서 천천히 시작 위치로 내려갑니다.',
     ],
     audio: {
-      intro: '라잉 캠버드 바벨 로우(Lying Cambered Barbell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동 벤치 아래에 둥근 막대를 놓습니다. 운동 벤치에 엎드려 누워 손바닥이 아래로 향하도록(회내 그립) 바를 잡습니다.',
-      execution: '숨을 내쉬면서 바를 위로 올리면서 팔꿈치를 가슴에 몸 가까이 유지하여 등 위쪽 중앙이나 스톰을 겨냥합니다...',
+      intro:
+        '라잉 캠버드 바벨 로우(Lying Cambered Barbell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '운동 벤치 아래에 둥근 막대를 놓습니다. 운동 벤치에 엎드려 누워 손바닥이 아래로 향하도록(회내 그립) 바를 잡습니다.',
+      execution:
+        '숨을 내쉬면서 바를 위로 올리면서 팔꿈치를 가슴에 몸 가까이 유지하여 등 위쪽 중앙이나 스톰을 겨냥합니다...',
       transition: '',
     },
   },
@@ -18146,7 +18806,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '하이 풀리에 클로즈 그립 바 컬을 얹은 자세는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '하이 풀리나 랫 풀다운 머신 앞에 플랫 벤치를 놓습니다. 언더핸드 그립(손바닥을 위로)을 사용하여 직선 바 부착물을 잡습니다.',
+      setup:
+        '하이 풀리나 랫 풀다운 머신 앞에 플랫 벤치를 놓습니다. 언더핸드 그립(손바닥을 위로)을 사용하여 직선 바 부착물을 잡습니다.',
       execution: '벤치 끝에 머리를 대고 등을 대고 눕습니다. 이제 팔을 어깨 위로 곧게 펴십시오. 몸통과 팔은...',
       transition: '',
     },
@@ -18161,9 +18822,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '머리 뒤에 클로즈 그립 바벨 삼두근 확장을 하는 것은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '프로네이티드 그립(손바닥이 앞을 향함)으로 바벨이나 EZ 컬 바를 잡은 상태에서 플랫 벤치에 등을 대고 누워서 머리를 머리 가까이에 둡니다...',
-      execution: '숨을 들이마시면서 팔꿈치를 구부려 바를 낮추고 팔 윗부분은 고정된 상태를 유지합니다. 팔뚝이 부드러워질 때까지 바를 계속 낮추세요...',
+      intro:
+        '머리 뒤에 클로즈 그립 바벨 삼두근 확장을 하는 것은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '프로네이티드 그립(손바닥이 앞을 향함)으로 바벨이나 EZ 컬 바를 잡은 상태에서 플랫 벤치에 등을 대고 누워서 머리를 머리 가까이에 둡니다...',
+      execution:
+        '숨을 들이마시면서 팔꿈치를 구부려 바를 낮추고 팔 윗부분은 고정된 상태를 유지합니다. 팔뚝이 부드러워질 때까지 바를 계속 낮추세요...',
       transition: '',
     },
   },
@@ -18177,9 +18841,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '클로즈 그립 바벨 삼두근 프레스 투 턱(Laying Close-Grip Barbell Triceps Press To Chin)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '회내 그립(손바닥이 앞을 향함)으로 바벨이나 EZ 컬 바를 잡은 상태에서 플랫 벤치에 등을 대고 누워 머리를 바 끝에서 떼어냅니다.',
-      execution: '숨을 들이마시면서 팔꿈치를 구부려 반원형 동작으로 바를 낮추고 팔 윗부분은 움직이지 않게 유지한 채 팔꿈치를 안쪽으로 유지하세요.',
+      intro:
+        '클로즈 그립 바벨 삼두근 프레스 투 턱(Laying Close-Grip Barbell Triceps Press To Chin)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '회내 그립(손바닥이 앞을 향함)으로 바벨이나 EZ 컬 바를 잡은 상태에서 플랫 벤치에 등을 대고 누워 머리를 바 끝에서 떼어냅니다.',
+      execution:
+        '숨을 들이마시면서 팔꿈치를 구부려 반원형 동작으로 바를 낮추고 팔 윗부분은 움직이지 않게 유지한 채 팔꿈치를 안쪽으로 유지하세요.',
       transition: '',
     },
   },
@@ -18193,8 +18860,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '라잉 크로스오버는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 쭉 뻗은 채 등을 대고 눕습니다. 무릎을 구부린 채 한쪽 다리를 몸 위로 교차시켜 무릎이 땅에 닿도록 합니다. 당신의 파트너...',
-      execution: '파트너가 실제 움직임을 방해하므로 구부러진 무릎을 땅에서 들어 올리십시오. 10~20초 후, 파트너와 함께 다리를 이완하세요...',
+      setup:
+        '다리를 쭉 뻗은 채 등을 대고 눕습니다. 무릎을 구부린 채 한쪽 다리를 몸 위로 교차시켜 무릎이 땅에 닿도록 합니다. 당신의 파트너...',
+      execution:
+        '파트너가 실제 움직임을 방해하므로 구부러진 무릎을 땅에서 들어 올리십시오. 10~20초 후, 파트너와 함께 다리를 이완하세요...',
       transition: '',
     },
   },
@@ -18209,7 +18878,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '라잉 덤벨 삼두근 확장은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '플랫 벤치에 누워 덤벨 두 개를 바로 앞에 잡습니다. 팔은 몸통에서 90도 각도로 완전히 뻗어야 합니다...',
-      execution: '그 시점에서 팔꿈치를 안쪽으로 유지하고 팔뚝을 고정한 상태에서 삼두근을 사용하여 무게를 Y자 모양의 시작 위치로 되돌립니다...',
+      execution:
+        '그 시점에서 팔꿈치를 안쪽으로 유지하고 팔뚝을 고정한 상태에서 삼두근을 사용하여 무게를 Y자 모양의 시작 위치로 되돌립니다...',
       transition: '',
     },
   },
@@ -18222,9 +18892,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '엎드려 누워서 플레이트 넥 저항(Plate Neck Resistance)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '머리 뒤로 웨이트 플레이트를 잡고 평평한 벤치에 몸 전체를 곧게 펴고 엎드려 눕습니다. 팁: 자신의 위치를 ​​정해야 합니다...',
-      execution: '숨을 내쉬면서 머리를 반원 모양으로 다시 시작 위치로 올립니다. 잠시 동안 수축을 유지하십시오. 다시 반복하세요...',
+      intro:
+        '엎드려 누워서 플레이트 넥 저항(Plate Neck Resistance)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '머리 뒤로 웨이트 플레이트를 잡고 평평한 벤치에 몸 전체를 곧게 펴고 엎드려 눕습니다. 팁: 자신의 위치를 ​​정해야 합니다...',
+      execution:
+        '숨을 내쉬면서 머리를 반원 모양으로 다시 시작 위치로 올립니다. 잠시 동안 수축을 유지하십시오. 다시 반복하세요...',
       transition: '',
     },
   },
@@ -18238,8 +18911,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누워서 하는 페이스 업 플레이트 넥 저항은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치에 몸 전체를 곧게 펴고 눕고 이마 위에 웨이트 플레이트를 얹습니다. 팁: 위치를 조정해야 합니다...',
-      execution: '숨을 내쉬면서 머리를 반원 모양으로 다시 시작 위치로 올립니다. 잠시 동안 수축을 유지하십시오. 다시 반복하세요...',
+      setup:
+        '평평한 벤치에 몸 전체를 곧게 펴고 눕고 이마 위에 웨이트 플레이트를 얹습니다. 팁: 위치를 조정해야 합니다...',
+      execution:
+        '숨을 내쉬면서 머리를 반원 모양으로 다시 시작 위치로 올립니다. 잠시 동안 수축을 유지하십시오. 다시 반복하세요...',
       transition: '',
     },
   },
@@ -18253,8 +18928,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '라잉 둔근은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파트너가 옆에 무릎을 꿇고 등을 대고 눕습니다. 한쪽 다리의 엉덩이를 구부려 바닥에서 들어올립니다. 발이 위에 오도록 다리를 회전시키세요...',
-      execution: '다리의 실제 움직임을 방해하고 있는 파트너 쪽으로 다리를 밀어 보십시오. 10~20초 후에 완전히 긴장을 풀고...',
+      setup:
+        '파트너가 옆에 무릎을 꿇고 등을 대고 눕습니다. 한쪽 다리의 엉덩이를 구부려 바닥에서 들어올립니다. 발이 위에 오도록 다리를 회전시키세요...',
+      execution:
+        '다리의 실제 움직임을 방해하고 있는 파트너 쪽으로 다리를 밀어 보십시오. 10~20초 후에 완전히 긴장을 풀고...',
       transition: '',
     },
   },
@@ -18267,8 +18944,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누워있는 햄스트링은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 쭉 뻗은 채 등을 대고 눕습니다. 파트너는 당신 옆에 무릎을 꿇고 있어야 합니다. 한쪽 다리를 천장을 향해 들어 올리고 파트너와 함께...',
-      execution: '그런 다음 다리의 긴장을 풀어 파트너가 다리를 머리쪽으로 부드럽게 밀도록 하십시오. 스트레칭이 적절할 때 도우미에게 알리십시오 ...',
+      setup:
+        '다리를 쭉 뻗은 채 등을 대고 눕습니다. 파트너는 당신 옆에 무릎을 꿇고 있어야 합니다. 한쪽 다리를 천장을 향해 들어 올리고 파트너와 함께...',
+      execution:
+        '그런 다음 다리의 긴장을 풀어 파트너가 다리를 머리쪽으로 부드럽게 밀도록 하십시오. 스트레칭이 적절할 때 도우미에게 알리십시오 ...',
       transition: '',
     },
   },
@@ -18282,8 +18961,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '라잉 하이벤치 바벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '키가 큰 플랫 벤치에 얼굴을 앞으로 대고 누워서 손바닥이 위를 향하게 하여 바벨을 잡습니다. 팁: 바벨을 들고 있다면 바벨을 잡으세요...',
-      execution: '숨을들이 마시면서 천천히 시작 위치로 돌아갑니다. 팁: 항상 무게를 완벽하게 제어하고 흔들리지 않도록 하세요. 기억해두세요...',
+      setup:
+        '키가 큰 플랫 벤치에 얼굴을 앞으로 대고 누워서 손바닥이 위를 향하게 하여 바벨을 잡습니다. 팁: 바벨을 들고 있다면 바벨을 잡으세요...',
+      execution:
+        '숨을들이 마시면서 천천히 시작 위치로 돌아갑니다. 팁: 항상 무게를 완벽하게 제어하고 흔들리지 않도록 하세요. 기억해두세요...',
       transition: '',
     },
   },
@@ -18298,7 +18979,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '라잉 레그 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '키에 맞게 머신 레버를 조정하고 레버 패드를 다리 뒤쪽에 대고 레그 컬 머신 위에 엎드려 눕습니다.',
-      execution: '숨을 내쉴 때 패드에서 위쪽 다리를 올리지 않고 다리를 최대한 위로 구부립니다. 완전히 수축된 자세에 도달한 후에는 잠시 기다리세요.',
+      execution:
+        '숨을 내쉴 때 패드에서 위쪽 다리를 올리지 않고 다리를 최대한 위로 구부립니다. 완전히 수축된 자세에 도달한 후에는 잠시 기다리세요.',
       transition: '',
     },
   },
@@ -18314,8 +18996,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '라잉 머신 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 허벅지가 평행하게 약간 아래에 있는 상태에서 내부에 들어갈 수 있는 높이로 다리 기계를 조정합니다. 일단 선택하면...',
-      execution: '손잡이 옆에 손을 놓고 발은 어깨 너비 위치에서 약간 바깥쪽을 향하도록 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 뭐...',
+      setup:
+        '무릎을 구부리고 허벅지가 평행하게 약간 아래에 있는 상태에서 내부에 들어갈 수 있는 높이로 다리 기계를 조정합니다. 일단 선택하면...',
+      execution:
+        '손잡이 옆에 손을 놓고 발은 어깨 너비 위치에서 약간 바깥쪽을 향하도록 위치시킵니다. 이것이 당신의 시작 위치가 될 것입니다. 뭐...',
       transition: '',
     },
   },
@@ -18330,8 +19014,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누워서 한쪽 팔을 옆으로 들어올리는 것은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손에 덤벨을 들고, 플랫 벤치에 가슴을 아래로 두고 눕습니다. 다른 손은 벤치 다리를 잡고 찌르는 데 사용할 수 있습니다.',
-      execution: '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 덤벨을 들고 팔을 옆으로 들어 올리세요....',
+      setup:
+        '한 손에 덤벨을 들고, 플랫 벤치에 가슴을 아래로 두고 눕습니다. 다른 손은 벤치 다리를 잡고 찌르는 데 사용할 수 있습니다.',
+      execution:
+        '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 덤벨을 들고 팔을 옆으로 들어 올리세요....',
       transition: '',
     },
   },
@@ -18345,8 +19031,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누워있는 엎드린 대퇴사두근은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파트너가 옆에 무릎을 꿇고 바닥에 엎드려 눕습니다. 한쪽 무릎을 구부리고 그 다리를 땅에서 들어올려 둔근에 닿으려고 합니다.',
-      execution: '10~20초 후, 파트너가 둔근 쪽으로 발을 부드럽게 밀고 대퇴사두근과 고관절 굴곡근을 더욱 스트레칭시키면서 근육을 이완시키세요.',
+      setup:
+        '파트너가 옆에 무릎을 꿇고 바닥에 엎드려 눕습니다. 한쪽 무릎을 구부리고 그 다리를 땅에서 들어올려 둔근에 닿으려고 합니다.',
+      execution:
+        '10~20초 후, 파트너가 둔근 쪽으로 발을 부드럽게 밀고 대퇴사두근과 고관절 굴곡근을 더욱 스트레칭시키면서 근육을 이완시키세요.',
       transition: '',
     },
   },
@@ -18361,8 +19049,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누워서 후방 삼각근 키우기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고, 플랫 벤치에 가슴을 아래로 두고 눕습니다. 손바닥을 중립 방향으로 위치시킵니다(손바닥이 반대 방향을 향함).',
-      execution: '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 팔을 옆으로 들어 올리십시오. 팁: 유지...',
+      setup:
+        '양손에 덤벨을 들고, 플랫 벤치에 가슴을 아래로 두고 눕습니다. 손바닥을 중립 방향으로 위치시킵니다(손바닥이 반대 방향을 향함).',
+      execution:
+        '이제 숨을 내쉴 때 팔꿈치가 어깨 높이에 도달하고 팔이 바닥과 거의 평행이 될 때까지 팔을 옆으로 들어 올리십시오. 팁: 유지...',
       transition: '',
     },
   },
@@ -18377,8 +19067,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '누운 자세로 누워 있는 덤벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 누워서 허벅지 위쪽의 양 팔에 덤벨을 잡습니다. 팔을 쭉 뻗은 상태에서 덤벨을 옆으로 가져옵니다.',
-      execution: '팔을 몸통 가까이에 유지하고 팔꿈치를 안쪽으로 유지하면서 팔을 천천히 내립니다(팔꿈치를 약간 구부린 상태에서 팔을 뻗은 상태로 유지).',
+      setup:
+        '플랫 벤치에 누워서 허벅지 위쪽의 양 팔에 덤벨을 잡습니다. 팔을 쭉 뻗은 상태에서 덤벨을 옆으로 가져옵니다.',
+      execution:
+        '팔을 몸통 가까이에 유지하고 팔꿈치를 안쪽으로 유지하면서 팔을 천천히 내립니다(팔꿈치를 약간 구부린 상태에서 팔을 뻗은 상태로 유지).',
       transition: '',
     },
   },
@@ -18394,8 +19086,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '라잉 T-바 로우는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'T바 로우 머신에 원하는 무게를 싣고, 가슴 윗부분이 패드 위에 오도록 다리 높이를 조절하세요. 팁: 일부 Mac에서는...',
-      execution: '바를 랙에서 들어 올리고 팔을 앞으로 뻗습니다. 이것이 당신의 시작 위치가 될 것입니다. 숨을 내쉬면서 천천히 웨이트를 위로 당기세요.',
+      setup:
+        'T바 로우 머신에 원하는 무게를 싣고, 가슴 윗부분이 패드 위에 오도록 다리 높이를 조절하세요. 팁: 일부 Mac에서는...',
+      execution:
+        '바를 랙에서 들어 올리고 팔을 앞으로 뻗습니다. 이것이 당신의 시작 위치가 될 것입니다. 숨을 내쉬면서 천천히 웨이트를 위로 당기세요.',
       transition: '',
     },
   },
@@ -18411,7 +19105,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '라잉 트라이셉스 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: 'E-Z 바(제가 선호하는 것)나 직선 바를 머리 뒤 바닥에 놓고 발은 바닥에 놓은 플랫 벤치에 눕습니다. 잡아 ...',
-      execution: '숨을 들이쉬면서 팔 윗부분과 팔꿈치를 고정한 상태에서 바가 이마에 살짝 닿을 때까지 천천히 무게를 내립니다. 그 순간...',
+      execution:
+        '숨을 들이쉬면서 팔 윗부분과 팔꿈치를 고정한 상태에서 바가 이마에 살짝 닿을 때까지 천천히 무게를 내립니다. 그 순간...',
       transition: '',
     },
   },
@@ -18428,8 +19123,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '머신 벤치 프레스(Machine Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '체스트 프레스 머신에 앉아서 웨이트를 선택하세요. 기계에 있는 레버를 밟으면 핸들을 가져오는 데 도움이 됩니다...',
-      execution: '손바닥이 아래로 향한 그립으로 손잡이를 잡고 팔꿈치를 들어 올려 윗팔이 몸통 측면에서 바닥과 평행이 되도록 합니다. 팁: 당신은...',
+      setup:
+        '체스트 프레스 머신에 앉아서 웨이트를 선택하세요. 기계에 있는 레버를 밟으면 핸들을 가져오는 데 도움이 됩니다...',
+      execution:
+        '손바닥이 아래로 향한 그립으로 손잡이를 잡고 팔꿈치를 들어 올려 윗팔이 몸통 측면에서 바닥과 평행이 되도록 합니다. 팁: 당신은...',
       transition: '',
     },
   },
@@ -18444,7 +19141,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '머신 바이셉 컬(Machine Bicep Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '좌석을 적절한 높이로 조정하고 체중을 선택하세요. 윗팔을 패드에 대고 핸들을 잡습니다. 이건...',
-      execution: '동작 최고 지점에서 잠시 멈췄다가 천천히 무게를 시작 위치로 되돌립니다. 웨이트를 정지점까지 되돌리지 마세요...',
+      execution:
+        '동작 최고 지점에서 잠시 멈췄다가 천천히 무게를 시작 위치로 되돌립니다. 웨이트를 정지점까지 되돌리지 마세요...',
       transition: '',
     },
   },
@@ -18460,7 +19158,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '머신 프리처 컬(Machine Preacher Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '프리처 컬 머신에 앉아서 웨이트를 선택하세요. 제공된 프리처 패드 위에 팔 뒤쪽(삼두근)을 올려 놓고...',
-      execution: '이제 숨을 내쉬면서 핸들을 들어올리고 이두근을 수축합니다. 최고 위치에서 잠시 동안 수축을 유지하십시오. 티...',
+      execution:
+        '이제 숨을 내쉬면서 핸들을 들어올리고 이두근을 수축합니다. 최고 위치에서 잠시 동안 수축을 유지하십시오. 티...',
       transition: '',
     },
   },
@@ -18475,8 +19174,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '머신 숄더(군용) 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '숄더 프레스 머신에 앉아서 웨이트를 선택하세요. 팔꿈치를 구부리고 몸통과 일직선을 유지하면서 핸들을 옆으로 잡으세요...',
-      execution: '이제 숨을 내쉬면서 핸들을 들어올리고 팔을 완전히 뻗습니다. 최고 위치에서 잠시 동안 수축을 유지하십시오. ...',
+      setup:
+        '숄더 프레스 머신에 앉아서 웨이트를 선택하세요. 팔꿈치를 구부리고 몸통과 일직선을 유지하면서 핸들을 옆으로 잡으세요...',
+      execution:
+        '이제 숨을 내쉬면서 핸들을 들어올리고 팔을 완전히 뻗습니다. 최고 위치에서 잠시 동안 수축을 유지하십시오. ...',
       transition: '',
     },
   },
@@ -18489,7 +19190,8 @@ registerLanguageTranslations('ko', {
       '운동 중인 근육의 긴장을 유지하기 위해 세트가 완료될 때까지 웨이트를 정지 지점까지 되돌리지 마십시오.',
     ],
     audio: {
-      intro: '머신 트라이셉스 익스텐션(Machine Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '머신 트라이셉스 익스텐션(Machine Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '좌석을 적절한 높이로 조정하고 체중을 선택하세요. 윗팔을 패드에 대고 핸들을 잡습니다. 이건...',
       execution: '동작이 끝나면 잠시 멈췄다가 천천히 무게를 시작 위치로 되돌립니다. 무게를 끝까지 되돌리지 마세요...',
       transition: '',
@@ -18506,8 +19208,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '메디신볼 체스트패스는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 연습에는 파트너가 필요합니다. 하나가 없으면 이 동작은 벽에 대고 수행할 수 있습니다. 약을 들고 있는 파트너와 대결을 시작하세요...',
-      execution: '공을 가슴 쪽으로 당기고 팔꿈치를 뻗어 동작을 반대로 하세요. 스포츠 용도의 경우 던지면서 한 걸음씩 나아갈 수 있습니다. 당신은...',
+      setup:
+        '이 연습에는 파트너가 필요합니다. 하나가 없으면 이 동작은 벽에 대고 수행할 수 있습니다. 약을 들고 있는 파트너와 대결을 시작하세요...',
+      execution:
+        '공을 가슴 쪽으로 당기고 팔꿈치를 뻗어 동작을 반대로 하세요. 스포츠 용도의 경우 던지면서 한 걸음씩 나아갈 수 있습니다. 당신은...',
       transition: '',
     },
   },
@@ -18520,9 +19224,12 @@ registerLanguageTranslations('ko', {
       '공을 파트너에게 전달하면 이제 두 사람 모두 반대 방향으로 비틀어 절차를 반복할 수 있습니다.',
     ],
     audio: {
-      intro: '메디신볼 풀 트위스트(Medicine Ball Full Twist)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 위해서는 메디신볼과 파트너가 필요합니다. 파트너와 등을 맞대고 2~3피트 간격을 두고 서세요. 이것이 당신의 시작이 될 것입니다...',
-      execution: '완전한 회전을 위해서는 귀하와 귀하의 파트너가 같은 방향, 즉 시계 반대 방향으로 비틀어야 합니다. 공을 파트너에게 전달하고 두 사람 모두 ...',
+      intro:
+        '메디신볼 풀 트위스트(Medicine Ball Full Twist)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 운동을 위해서는 메디신볼과 파트너가 필요합니다. 파트너와 등을 맞대고 2~3피트 간격을 두고 서세요. 이것이 당신의 시작이 될 것입니다...',
+      execution:
+        '완전한 회전을 위해서는 귀하와 귀하의 파트너가 같은 방향, 즉 시계 반대 방향으로 비틀어야 합니다. 공을 파트너에게 전달하고 두 사람 모두 ...',
       transition: '',
     },
   },
@@ -18534,9 +19241,12 @@ registerLanguageTranslations('ko', {
       '그렇게 하면서 팔을 머리 위로 위로 휘두르며 뻗은 상태를 유지하고 움직임이 최고조에 달할 때 공을 놓습니다. 목표는 공을 가장 멀리 뒤로 던지는 것입니다.',
     ],
     audio: {
-      intro: '메디슨 볼 스쿠프 던지기(Medicine Ball Scoop Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손에 메디신볼을 들고 세미스쿼트 자세를 취합니다. 공이 발 근처에 있도록 팔을 늘어뜨려야 합니다. 엉덩이를 앞으로 밀어내는 것으로 시작하세요...',
-      execution: '그렇게 하면서 팔을 머리 위로 위로 휘두르며 뻗은 상태를 유지하고 움직임이 최고조에 달할 때 공을 놓습니다. 목표는 ...',
+      intro:
+        '메디슨 볼 스쿠프 던지기(Medicine Ball Scoop Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '손에 메디신볼을 들고 세미스쿼트 자세를 취합니다. 공이 발 근처에 있도록 팔을 늘어뜨려야 합니다. 엉덩이를 앞으로 밀어내는 것으로 시작하세요...',
+      execution:
+        '그렇게 하면서 팔을 머리 위로 위로 휘두르며 뻗은 상태를 유지하고 움직임이 최고조에 달할 때 공을 놓습니다. 목표는 ...',
       transition: '',
     },
   },
@@ -18563,7 +19273,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '중간 등 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발은 어깨 너비로 벌리고 손은 엉덩이 위에 놓이도록 서세요. 스트레칭이 느껴질 때까지 허리를 비틀어 보세요. 10~15초 동안 유지하세요...',
+      setup:
+        '발은 어깨 너비로 벌리고 손은 엉덩이 위에 놓이도록 서세요. 스트레칭이 느껴질 때까지 허리를 비틀어 보세요. 10~15초 동안 유지하세요...',
       execution: '스트레칭이 느껴질 때까지 허리를 비틀어 보세요. 10~15초 동안 유지한 후 반대쪽으로 비틀어줍니다.',
       transition: '',
     },
@@ -18579,8 +19290,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '믹스그립친은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비보다 1인치 정도 더 넓은 간격으로 한 손의 손바닥이 앞을 향하고 손바닥이 마주한 상태로 풀업 바를 잡습니다.',
-      execution: '최고점에서 2차 수축을 한 후 숨을 들이쉬면서 천천히 내려오기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
+      setup:
+        '어깨 너비보다 1인치 정도 더 넓은 간격으로 한 손의 손바닥이 앞을 향하고 손바닥이 마주한 상태로 풀업 바를 잡습니다.',
+      execution:
+        '최고점에서 2차 수축을 한 후 숨을 들이쉬면서 천천히 내려오기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
   },
@@ -18593,7 +19306,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '몬스터 워크(Monster Walk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양쪽 발목 주위에 밴드를 배치하고 양쪽 무릎 주위에 다른 밴드를 배치합니다. 발이 어깨 넓이일 때 타이트해질 만큼 충분한 장력이 있어야 합니다...',
+      setup:
+        '양쪽 발목 주위에 밴드를 배치하고 양쪽 무릎 주위에 다른 밴드를 배치합니다. 발이 어깨 넓이일 때 타이트해질 만큼 충분한 장력이 있어야 합니다...',
       execution: '여러 단계를 거친 후 반대 방향으로 진행하여 시작한 곳으로 뒤로 걸어가세요.',
       transition: '',
     },
@@ -18606,8 +19320,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '마운틴 클라이머(Mountain Climbers)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손과 발가락으로 체중을 지탱하는 푸시업 자세로 시작하세요. 무릎과 엉덩이를 구부리고 무릎이 가까워질 때까지 한쪽 다리를 가져옵니다...',
-      execution: '다리의 위치를 ​​폭발적으로 바꾸면서 구부러진 다리를 다리가 곧게 펴고 발가락으로 지탱할 때까지 뻗은 다음 다른 쪽 다리를 가져옵니다...',
+      setup:
+        '손과 발가락으로 체중을 지탱하는 푸시업 자세로 시작하세요. 무릎과 엉덩이를 구부리고 무릎이 가까워질 때까지 한쪽 다리를 가져옵니다...',
+      execution:
+        '다리의 위치를 ​​폭발적으로 바꾸면서 구부러진 다리를 다리가 곧게 펴고 발가락으로 지탱할 때까지 뻗은 다음 다른 쪽 다리를 가져옵니다...',
       transition: '',
     },
   },
@@ -18620,7 +19336,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Moving Claw 시리즈는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 동작은 달리기 자세를 준비하여 단거리 달리기에 탁월한 데 도움이 됩니다. 달리면서 무릎을 구부리면서 둔근을 차는 것을 목표로 하세요...',
+      setup:
+        '이 동작은 달리기 자세를 준비하여 단거리 달리기에 탁월한 데 도움이 됩니다. 달리면서 무릎을 구부리면서 둔근을 차는 것을 목표로 하세요...',
       execution: '달릴 때 팔로 막고 빠른 1-2 동작으로 펀치를 날리도록 하세요.',
       transition: '',
     },
@@ -18634,7 +19351,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '머슬스내치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 그립으로 허벅지 중간 위치에 바벨을 들고 시작하세요. 발은 엉덩이 바로 아래에 있어야 하며 발은 밖으로 나와야 합니다...',
+      setup:
+        '넓은 그립으로 허벅지 중간 위치에 바벨을 들고 시작하세요. 발은 엉덩이 바로 아래에 있어야 하며 발은 밖으로 나와야 합니다...',
       execution: '무릎을 다시 구부리지 않은 채 계속해서 바를 머리 위 위치로 올리십시오.',
       transition: '',
     },
@@ -18649,7 +19367,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '머슬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥 바닥이 링 위에 오도록 거짓 그립을 사용하여 링을 잡습니다. 팔꿈치를 옆으로 당겨서 풀업을 시작하세요.',
+      setup:
+        '손바닥 바닥이 링 위에 오도록 거짓 그립을 사용하여 링을 잡습니다. 팔꿈치를 옆으로 당겨서 풀업을 시작하세요.',
       execution: '제어력과 안정성을 유지하면서 팔꿈치를 뻗어 동작을 완료합니다. 몸을 땅에 낮출 때 주의하십시오.',
       transition: '',
     },
@@ -18668,7 +19387,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Narrow Stance Hack Squats는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '몸통 뒤쪽을 머신의 뒤쪽 패드에 대고 제공된 어깨 패드 아래에 어깨를 걸으십시오. 다리를 위치에 놓으세요..',
-      execution: '팔을 기계의 측면 핸들에 놓고 안전 바를 분리합니다(대부분의 디자인에서는 측면 핸들을 F에서 움직여서 수행됩니다).',
+      execution:
+        '팔을 기계의 측면 핸들에 놓고 안전 바를 분리합니다(대부분의 디자인에서는 측면 핸들을 F에서 움직여서 수행됩니다).',
       transition: '',
     },
   },
@@ -18683,8 +19403,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Narrow Stance Leg Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '레그 프레스 머신을 사용하여 머신에 앉아 다리를 어깨 너비보다 좁은 너비로 바로 앞의 플랫폼 위에 올려 놓습니다.',
-      execution: '숨을 들이쉬면서 위쪽 다리와 아래쪽 다리가 90도 각도를 이룰 때까지 플랫폼을 천천히 내립니다. 주로 발뒤꿈치와 US로 미는 중...',
+      setup:
+        '레그 프레스 머신을 사용하여 머신에 앉아 다리를 어깨 너비보다 좁은 너비로 바로 앞의 플랫폼 위에 올려 놓습니다.',
+      execution:
+        '숨을 들이쉬면서 위쪽 다리와 아래쪽 다리가 90도 각도를 이룰 때까지 플랫폼을 천천히 내립니다. 주로 발뒤꿈치와 US로 미는 중...',
       transition: '',
     },
   },
@@ -18700,8 +19422,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '내로우 스탠스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
-      execution: '랙에서 한 발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비보다 좁은 좁은 자세로 다리를 배치합니다. 발은 납작해야 합니다...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      execution:
+        '랙에서 한 발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비보다 좁은 좁은 자세로 다리를 배치합니다. 발은 납작해야 합니다...',
       transition: '',
     },
   },
@@ -18715,8 +19439,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '내추럴 글루트 햄 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '랫 풀다운 머신의 레그 패드나 프리처 벤치를 사용하여 발목이 패드 아래에, 무릎이 시트 위에, 그리고 Y가 위치하도록 자세를 취하세요.',
-      execution: '통제력을 유지하면서 몸을 다시 시작 위치로 올리세요. 반복 횟수를 완료할 수 없는 경우 밴드나 파트너를 사용하거나 푸시오프를 이용하세요.',
+      setup:
+        '랫 풀다운 머신의 레그 패드나 프리처 벤치를 사용하여 발목이 패드 아래에, 무릎이 시트 위에, 그리고 Y가 위치하도록 자세를 취하세요.',
+      execution:
+        '통제력을 유지하면서 몸을 다시 시작 위치로 올리세요. 반복 횟수를 완료할 수 없는 경우 밴드나 파트너를 사용하거나 푸시오프를 이용하세요.',
       transition: '',
     },
   },
@@ -18731,8 +19457,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '넥 프레스(Neck Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치에 누워보세요. 중간폭 그립(팔뚝과 몸통 ​​사이의 움직임 중간에 90도 각도를 만드는 그립)을 사용하여...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
+      setup:
+        '평평한 벤치에 누워보세요. 중간폭 그립(팔뚝과 몸통 ​​사이의 움직임 중간에 90도 각도를 만드는 그립)을 사용하여...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
       transition: '',
     },
   },
@@ -18762,8 +19490,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '오블리크 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '허리를 바닥에 대고 바닥에 편평하게 눕습니다. 이 운동을 하려면 한 손은 머리 옆에 두고 다른 손은 머리 옆에 놓아야 합니다.',
-      execution: '이제 손이 머리에 닿고 있는 어깨를 들어 올리세요. 무릎에 닿을 때까지 어깨와 몸을 위로 올리면 됩니다. 예를 들어...',
+      setup:
+        '허리를 바닥에 대고 바닥에 편평하게 눕습니다. 이 운동을 하려면 한 손은 머리 옆에 두고 다른 손은 머리 옆에 놓아야 합니다.',
+      execution:
+        '이제 손이 머리에 닿고 있는 어깨를 들어 올리세요. 무릎에 닿을 때까지 어깨와 몸을 위로 올리면 됩니다. 예를 들어...',
       transition: '',
     },
   },
@@ -18777,9 +19507,12 @@ registerLanguageTranslations('ko', {
       '운동의 편심(내림) 부분에서는 숨을 들이쉬고 운동의 동심(올림) 부분에서는 숨을 내쉬는 것을 잊지 마십시오.',
     ],
     audio: {
-      intro: '오블리크 크런치 - 온 더 플로어(On The Floor)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 서로 포개고 오른쪽으로 누워서 시작하세요. 무릎이 약간 구부러져 있는지 확인하십시오. 왼손을 놓고...',
-      execution: '일단 이 세트 포지션에 도달했다면, 이번에는 주요 강조점에 중점을 두는 것을 제외하고 일반적인 크런치를 수행하는 것처럼 왼쪽 팔꿈치를 위로 움직여 시작하십시오.',
+      intro:
+        '오블리크 크런치 - 온 더 플로어(On The Floor)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '다리를 서로 포개고 오른쪽으로 누워서 시작하세요. 무릎이 약간 구부러져 있는지 확인하십시오. 왼손을 놓고...',
+      execution:
+        '일단 이 세트 포지션에 도달했다면, 이번에는 주요 강조점에 중점을 두는 것을 제외하고 일반적인 크런치를 수행하는 것처럼 왼쪽 팔꿈치를 위로 움직여 시작하십시오.',
       transition: '',
     },
   },
@@ -18792,7 +19525,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '올림픽 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '트랩 위에 바벨을 받치고 시작하세요. 가슴은 위를 향하고 머리는 정면을 향해야 합니다. 발을 엉덩이 너비로 벌린 자세를 취하세요...',
+      setup:
+        '트랩 위에 바벨을 받치고 시작하세요. 가슴은 위를 향하고 머리는 정면을 향해야 합니다. 발을 엉덩이 너비로 벌린 자세를 취하세요...',
       execution: '위쪽 다리가 아래쪽 다리에 닿는 순간 동작을 반대로 하여 무게를 위쪽으로 이동합니다.',
       transition: '',
     },
@@ -18807,8 +19541,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'On Your Back Quad Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치나 계단에 누워 한쪽 다리와 팔을 옆으로 걸어 놓습니다. 무릎을 구부리고 발등을 잡습니다. 이 작업을 수행할 때...',
-      execution: '중립을 유지하기 위해 배꼽을 척추쪽으로 당깁니다. 발을 아래로 누르고 손으로 누르십시오. 엉덩이 스트레칭을 추가하려면 다리의 엉덩이를 들어 올리세요...',
+      setup:
+        '평평한 벤치나 계단에 누워 한쪽 다리와 팔을 옆으로 걸어 놓습니다. 무릎을 구부리고 발등을 잡습니다. 이 작업을 수행할 때...',
+      execution:
+        '중립을 유지하기 위해 배꼽을 척추쪽으로 당깁니다. 발을 아래로 누르고 손으로 누르십시오. 엉덩이 스트레칭을 추가하려면 다리의 엉덩이를 들어 올리세요...',
       transition: '',
     },
   },
@@ -18820,8 +19556,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'On Your Side Quad Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른쪽으로 누워서 시작하세요. 오른쪽 무릎을 90도 각도로 구부려 앞쪽 바닥에 얹습니다. (이렇게 하면 토르가 안정됩니다...',
-      execution: '왼쪽 무릎을 뒤로 구부리고 왼손으로 왼발을 잡습니다. 고관절 굴곡근을 스트레칭하려면 왼쪽 엉덩이를 앞으로 밀면서 밀면 됩니다...',
+      setup:
+        '오른쪽으로 누워서 시작하세요. 오른쪽 무릎을 90도 각도로 구부려 앞쪽 바닥에 얹습니다. (이렇게 하면 토르가 안정됩니다...',
+      execution:
+        '왼쪽 무릎을 뒤로 구부리고 왼손으로 왼발을 잡습니다. 고관절 굴곡근을 스트레칭하려면 왼쪽 엉덩이를 앞으로 밀면서 밀면 됩니다...',
       transition: '',
     },
   },
@@ -18833,7 +19571,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'One Arm Against Wall은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '선 자세에서 구부린 팔을 벽이나 출입구에 대십시오. 광배근이 늘어나는 느낌이 들 때까지 천천히 팔을 향해 몸을 기울입니다.',
+      setup:
+        '선 자세에서 구부린 팔을 벽이나 출입구에 대십시오. 광배근이 늘어나는 느낌이 들 때까지 천천히 팔을 향해 몸을 기울입니다.',
       execution: '광배근이 늘어나는 느낌이 들 때까지 천천히 팔을 향해 몸을 기울입니다.',
       transition: '',
     },
@@ -18851,7 +19590,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원 암 친업(One Arm Chin-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 하려면 턱걸이 막대 주위에 수건을 두는 것부터 시작하세요. 손바닥이 자신을 향하게 하여 턱걸이 바를 잡습니다. 한 손으로는...',
+      setup:
+        '이 운동을 하려면 턱걸이 막대 주위에 수건을 두는 것부터 시작하세요. 손바닥이 자신을 향하게 하여 턱걸이 바를 잡습니다. 한 손으로는...',
       execution: '허리에 곡선을 만들고 가슴을 내밀면서 몸통을 30도 정도 뒤로 젖히십시오. 이것이 시작 위치입니다...',
       transition: '',
     },
@@ -18868,9 +19608,12 @@ registerLanguageTranslations('ko', {
       '팔을 바꿔서 동작을 반복하세요.',
     ],
     audio: {
-      intro: '원 암 덤벨 벤치 프레스(One Arm Dumbbell Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 누워서 한 손에 덤벨을 허벅지 위에 올려 놓습니다. 허벅지를 사용하여 덤벨을 들어올리면 덤벨을 청소할 수 있습니다...',
-      execution: '어깨 너비로 벌린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 이것이 당신의 시작 위치가 될 것입니다. 가져와...',
+      intro:
+        '원 암 덤벨 벤치 프레스(One Arm Dumbbell Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '플랫 벤치에 누워서 한 손에 덤벨을 허벅지 위에 올려 놓습니다. 허벅지를 사용하여 덤벨을 들어올리면 덤벨을 청소할 수 있습니다...',
+      execution:
+        '어깨 너비로 벌린 후 손바닥이 바깥쪽을 향하도록 손목을 앞으로 회전합니다. 이것이 당신의 시작 위치가 될 것입니다. 가져와...',
       transition: '',
     },
   },
@@ -18884,9 +19627,12 @@ registerLanguageTranslations('ko', {
       '팔을 바꿔서 동작을 반복하세요.',
     ],
     audio: {
-      intro: '원 암 덤벨 프리처 컬(One Arm Dumbbell Preacher Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른팔로 덤벨을 잡고 윗팔을 프리처 벤치나 인클라인 벤치 위에 놓습니다. 덤벨은 적당한 위치에 있어야 합니다...',
-      execution: '숨을 내쉴 때 이두근이 완전히 수축되고 덤벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 올리십시오. 다시 한 번 기억하세요...',
+      intro:
+        '원 암 덤벨 프리처 컬(One Arm Dumbbell Preacher Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '오른팔로 덤벨을 잡고 윗팔을 프리처 벤치나 인클라인 벤치 위에 놓습니다. 덤벨은 적당한 위치에 있어야 합니다...',
+      execution:
+        '숨을 내쉴 때 이두근이 완전히 수축되고 덤벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 올리십시오. 다시 한 번 기억하세요...',
       transition: '',
     },
   },
@@ -18903,8 +19649,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'One-Arm Dumbbell Row is a moderate strength exercise. It primarily targets your multiple muscles.',
-      setup: 'Choose a flat bench and place a dumbbell on each side of it. Place the right leg on top of the end of the bench, bend your torso forward from the w...',
-      execution: 'Use the left hand to pick up the dumbbell on the floor and hold the weight while keeping 허리는 곧게 펴야 합니다...',
+      setup:
+        'Choose a flat bench and place a dumbbell on each side of it. Place the right leg on top of the end of the bench, bend your torso forward from the w...',
+      execution:
+        'Use the left hand to pick up the dumbbell on the floor and hold the weight while keeping 허리는 곧게 펴야 합니다...',
       transition: '',
     },
   },
@@ -18920,8 +19668,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원암 플랫 벤치 덤벨 플라이는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 누워서 한 손에 덤벨을 허벅지 위에 올려 놓습니다. 덤벨을 쥔 손바닥이 중립 위치에 있어야 합니다...',
-      execution: '팔뚝 힘줄에 스트레스가 가해지지 않도록 체중을 실은 팔은 팔꿈치에 약간 구부러져 있어야 합니다. 팔을 내리면서 시작하세요...',
+      setup:
+        '플랫 벤치에 누워서 한 손에 덤벨을 허벅지 위에 올려 놓습니다. 덤벨을 쥔 손바닥이 중립 위치에 있어야 합니다...',
+      execution:
+        '팔뚝 힘줄에 스트레스가 가해지지 않도록 체중을 실은 팔은 팔꿈치에 약간 구부러져 있어야 합니다. 팔을 내리면서 시작하세요...',
       transition: '',
     },
   },
@@ -18938,8 +19688,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원 암 플로어 프레스(One Arm Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥이나 운동 매트에 등을 대고 평평한 표면에 눕습니다. 무릎이 구부러져 있는지 확인하십시오. 파트너에게...',
-      execution: '무게를 들어 올리는 데 사용하지 않는 손이 옆에 있는지 확인하십시오. 팔꿈치가 닿을 때까지 바벨을 낮추면서 운동을 시작하세요...',
+      setup:
+        '바닥이나 운동 매트에 등을 대고 평평한 표면에 눕습니다. 무릎이 구부러져 있는지 확인하십시오. 파트너에게...',
+      execution:
+        '무게를 들어 올리는 데 사용하지 않는 손이 옆에 있는지 확인하십시오. 팔꿈치가 닿을 때까지 바벨을 낮추면서 운동을 시작하세요...',
       transition: '',
     },
   },
@@ -18956,9 +19708,12 @@ registerLanguageTranslations('ko', {
       '그런 다음 반대편에서도 동일한 일련의 동작을 재배치하고 반복합니다.',
     ],
     audio: {
-      intro: '원암 하이 풀리 케이블 사이드 벤드(One-Arm High-Pulley Cable Side Bends)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '표준 핸들을 타워에 연결합니다. 케이블을 가장 높은 풀리 위치로 이동합니다. 측면을 케이블에 연결하여 서십시오. 한 손으로 위로 뻗어 손잡이를 잡습니다...',
-      execution: '팔꿈치가 옆구리에 닿고 핸들이 어깨 옆에 올 때까지 케이블을 아래로 당깁니다. 발을 엉덩이 너비로 벌리세요. 가우를 돕기 위해 엉덩이에 자유로운 손을 얹으세요...',
+      intro:
+        '원암 하이 풀리 케이블 사이드 벤드(One-Arm High-Pulley Cable Side Bends)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '표준 핸들을 타워에 연결합니다. 케이블을 가장 높은 풀리 위치로 이동합니다. 측면을 케이블에 연결하여 서십시오. 한 손으로 위로 뻗어 손잡이를 잡습니다...',
+      execution:
+        '팔꿈치가 옆구리에 닿고 핸들이 어깨 옆에 올 때까지 케이블을 아래로 당깁니다. 발을 엉덩이 너비로 벌리세요. 가우를 돕기 위해 엉덩이에 자유로운 손을 얹으세요...',
       transition: '',
     },
   },
@@ -18974,8 +19729,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원암 인클라인 레터럴 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손에 덤벨을 들고 인클라인 벤치 프레스에 옆으로 누워 있습니다. 어깨가 인클라인 벤치와 팔에 닿아 있는지 확인하세요...',
-      execution: '덤벨을 항상 바닥과 평행하게 유지하면서 측면 들어올리기를 수행합니다. 팔은 ...을 가리킬 때까지 똑바로 위로 움직여야 합니다.',
+      setup:
+        '손에 덤벨을 들고 인클라인 벤치 프레스에 옆으로 누워 있습니다. 어깨가 인클라인 벤치와 팔에 닿아 있는지 확인하세요...',
+      execution:
+        '덤벨을 항상 바닥과 평행하게 유지하면서 측면 들어올리기를 수행합니다. 팔은 ...을 가리킬 때까지 똑바로 위로 움직여야 합니다.',
       transition: '',
     },
   },
@@ -18988,7 +19745,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원암 케틀벨 클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 사이에 케틀벨을 놓습니다. 케틀벨을 잡기 위해 몸을 구부릴 때 엉덩이를 뒤로 밀고 시선은 계속해서 앞을 바라보세요. 케를 청소하세요...',
+      setup:
+        '발 사이에 케틀벨을 놓습니다. 케틀벨을 잡기 위해 몸을 구부릴 때 엉덩이를 뒤로 밀고 시선은 계속해서 앞을 바라보세요. 케를 청소하세요...',
       execution: '무게를 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -19004,9 +19762,12 @@ registerLanguageTranslations('ko', {
       '무게를 머리 위로 유지한 채 선 자세로 돌아갑니다. 다음 반복을 수행하려면 무게를 바닥으로 낮추십시오.',
     ],
     audio: {
-      intro: '원암 케틀벨 클린 앤 저크(One-Arm Kettlebell Clean and Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
-      execution: '무릎을 구부려 몸을 담그고 몸통을 똑바로 유지하십시오. 즉시 방향을 바꿔 발뒤꿈치를 통해 주행하며 본질적으로 크레이지로 점프합니다.',
+      intro:
+        '원암 케틀벨 클린 앤 저크(One-Arm Kettlebell Clean and Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      execution:
+        '무릎을 구부려 몸을 담그고 몸통을 똑바로 유지하십시오. 즉시 방향을 바꿔 발뒤꿈치를 통해 주행하며 본질적으로 크레이지로 점프합니다.',
       transition: '',
     },
   },
@@ -19018,8 +19779,10 @@ registerLanguageTranslations('ko', {
       '케틀벨을 다시 시작 위치로 낮추고 반복하세요.',
     ],
     audio: {
-      intro: '원암 케틀벨 플로어 프레스(One-Arm Kettlebell Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손으로 케틀벨을 들고 바닥에 누워서 윗팔을 바닥에 지지합니다. 손바닥이 안쪽을 향해야 합니다. 케틀벨을 누르세요...',
+      intro:
+        '원암 케틀벨 플로어 프레스(One-Arm Kettlebell Floor Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한 손으로 케틀벨을 들고 바닥에 누워서 윗팔을 바닥에 지지합니다. 손바닥이 안쪽을 향해야 합니다. 케틀벨을 누르세요...',
       execution: '케틀벨을 다시 시작 위치로 낮추고 반복하세요.',
       transition: '',
     },
@@ -19034,8 +19797,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원암 케틀벨 저크(One-Arm Kettlebell Jerk)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
-      execution: '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 머리 위로 케틀벨을 눌러 위치를 잡으세요.',
+      setup:
+        '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      execution:
+        '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 머리 위로 케틀벨을 눌러 위치를 잡으세요.',
       transition: '',
     },
   },
@@ -19047,8 +19812,10 @@ registerLanguageTranslations('ko', {
       '케틀벨을 다시 어깨 쪽으로 낮추고 반복하세요. 안정성과 힘을 더하려면 위, 엉덩이, 배를 강하게 수축하세요.',
     ],
     audio: {
-      intro: '한쪽 팔 케틀벨 밀리터리 프레스 투 더 사이드(One-Arm Kettlebell Military Press To The Side)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      intro:
+        '한쪽 팔 케틀벨 밀리터리 프레스 투 더 사이드(One-Arm Kettlebell Military Press To The Side)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
       execution: '케틀벨을 다시 어깨 쪽으로 낮추고 반복하세요. 안정성을 높이려면 위, 엉덩이, 배를 강하게 수축하세요...',
       transition: '',
     },
@@ -19061,8 +19828,10 @@ registerLanguageTranslations('ko', {
       '케틀벨을 다시 어깨 쪽으로 낮추고 반복하세요. 안정성과 힘을 더하려면 위, 엉덩이, 배를 강하게 수축하세요.',
     ],
     audio: {
-      intro: '원암 케틀벨 파라 프레스(One-Arm Kettlebell Para Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      intro:
+        '원암 케틀벨 파라 프레스(One-Arm Kettlebell Para Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨을 어깨에 대고 청소하세요. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
       execution: '케틀벨을 다시 어깨 쪽으로 낮추고 반복하세요. 안정성을 높이려면 위, 엉덩이, 배를 강하게 수축하세요...',
       transition: '',
     },
@@ -19075,9 +19844,12 @@ registerLanguageTranslations('ko', {
       '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 몸의 운동량을 이용해 무게를 이동하면서 팔을 뻗어 케틀벨을 머리 위로 밀면서 잠금 상태를 유지하세요. 다음 반복을 수행하려면 무게를 낮추십시오.',
     ],
     audio: {
-      intro: '원암 케틀벨 푸시 프레스(One-Arm Kettlebell Push Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
-      execution: '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 머리 위로 케틀벨을 눌러 위치를 잡으세요.',
+      intro:
+        '원암 케틀벨 푸시 프레스(One-Arm Kettlebell Push Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      execution:
+        '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 머리 위로 케틀벨을 눌러 위치를 잡으세요.',
       transition: '',
     },
   },
@@ -19102,8 +19874,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원암 케틀벨 스내치는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 사이에 케틀벨을 놓습니다. 무릎을 구부리고 엉덩이를 뒤로 밀어 올바른 시작 위치를 잡습니다. 똑바로 보고 휘둘러라...',
-      execution: '즉시 방향을 바꾸고 엉덩이와 무릎을 사용하여 케틀벨을 위쪽으로 가속합니다. 케틀벨이 몸 위로 올라갈 때...',
+      setup:
+        '발 사이에 케틀벨을 놓습니다. 무릎을 구부리고 엉덩이를 뒤로 밀어 올바른 시작 위치를 잡습니다. 똑바로 보고 휘둘러라...',
+      execution:
+        '즉시 방향을 바꾸고 엉덩이와 무릎을 사용하여 케틀벨을 위쪽으로 가속합니다. 케틀벨이 몸 위로 올라갈 때...',
       transition: '',
     },
   },
@@ -19117,9 +19891,12 @@ registerLanguageTranslations('ko', {
       '무게를 머리 위로 유지하고 선 자세로 돌아가서 발을 모으십시오. 다음 반복을 수행하려면 무게를 낮추십시오.',
     ],
     audio: {
-      intro: '원암 케틀벨 스플릿 저크(One-Arm Kettlebell Split Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
-      execution: '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 머리 위로 케틀벨을 눌러 위치를 잡으세요.',
+      intro:
+        '원암 케틀벨 스플릿 저크(One-Arm Kettlebell Split Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '케틀벨의 손잡이를 잡습니다. 케틀벨을 몸쪽으로 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      execution:
+        '즉시 방향을 바꾸어 발뒤꿈치를 통해 주행하며 본질적으로 점프하여 추진력을 생성합니다. 그렇게 하면서 머리 위로 케틀벨을 눌러 위치를 잡으세요.',
       transition: '',
     },
   },
@@ -19132,9 +19909,12 @@ registerLanguageTranslations('ko', {
       '머리 위로 무게를 들고 선 자세로 돌아가서 발을 모으십시오. 시작 위치로 돌아가려면 무게를 낮추십시오.',
     ],
     audio: {
-      intro: '원암 케틀벨 스플릿 스내치(One-Arm Kettlebell Split Snatch)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손으로 케틀벨 손잡이를 잡습니다. 바닥을 향해 스쿼트한 다음 동작을 반대로 하여 엉덩이, 무릎, 마지막으로 발목을 펴세요...',
-      execution: '몸을 완전히 뻗은 후 한쪽 다리는 앞으로, 한쪽 다리는 뒤로 머리 위로 웨이트를 받기 위해 런지 자세로 내려갑니다. 꼭 운전하세요...',
+      intro:
+        '원암 케틀벨 스플릿 스내치(One-Arm Kettlebell Split Snatch)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한 손으로 케틀벨 손잡이를 잡습니다. 바닥을 향해 스쿼트한 다음 동작을 반대로 하여 엉덩이, 무릎, 마지막으로 발목을 펴세요...',
+      execution:
+        '몸을 완전히 뻗은 후 한쪽 다리는 앞으로, 한쪽 다리는 뒤로 머리 위로 웨이트를 받기 위해 런지 자세로 내려갑니다. 꼭 운전하세요...',
       transition: '',
     },
   },
@@ -19148,8 +19928,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원 암 랫 풀다운(One Arm Lat Pulldown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 무게를 선택하고 무릎 패드를 조정하여 자세를 낮추십시오. 회내형 그립으로 핸들을 잡습니다. 이것이 당신의 시작 위치가 될 것입니다...',
-      execution: '동작의 가장 낮은 지점에서 잠시 멈췄다가 핸들을 천천히 시작 위치로 되돌립니다. 여러 번 반복하는 경우 완전히 반환하지 마세요...',
+      setup:
+        '적절한 무게를 선택하고 무릎 패드를 조정하여 자세를 낮추십시오. 회내형 그립으로 핸들을 잡습니다. 이것이 당신의 시작 위치가 될 것입니다...',
+      execution:
+        '동작의 가장 낮은 지점에서 잠시 멈췄다가 핸들을 천천히 시작 위치로 되돌립니다. 여러 번 반복하는 경우 완전히 반환하지 마세요...',
       transition: '',
     },
   },
@@ -19165,7 +19947,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '원암 롱바 로우(One-Arm Long Bar Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바가 움직이지 않도록 지뢰나 구석에 바를 위치시키세요. 끝에 적절한 무게를 실으세요. 바 옆에 서서 한잔...',
-      execution: '엉덩이를 뒤로 젖히고 가슴을 위로 한 채 무릎을 구부린 자세를 취합니다. 팔을 뻗어야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 무게를 당겨 ...',
+      execution:
+        '엉덩이를 뒤로 젖히고 가슴을 위로 한 채 무릎을 구부린 자세를 취합니다. 팔을 뻗어야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 무게를 당겨 ...',
       transition: '',
     },
   },
@@ -19178,9 +19961,12 @@ registerLanguageTranslations('ko', {
       '바운스된 공을 잡고 원하는 반복 횟수만큼 계속합니다.',
     ],
     audio: {
-      intro: '원암 메디신 볼 슬램(One-Arm Medicine Ball Slam)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엇갈린 운동 자세로 서있는 자세로 시작하십시오. 한 손으로 뒷다리와 같은 쪽 메디신볼을 잡습니다. 이것은 당신이 될 것입니다...',
-      execution: '최대 확장 시 어깨, 척추, 엉덩이를 구부려 공을 바로 앞에 있는 땅에 세게 던집니다. 바운스된 공을 잡아보세요...',
+      intro:
+        '원암 메디신 볼 슬램(One-Arm Medicine Ball Slam)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '엇갈린 운동 자세로 서있는 자세로 시작하십시오. 한 손으로 뒷다리와 같은 쪽 메디신볼을 잡습니다. 이것은 당신이 될 것입니다...',
+      execution:
+        '최대 확장 시 어깨, 척추, 엉덩이를 구부려 공을 바로 앞에 있는 땅에 세게 던집니다. 바운스된 공을 잡아보세요...',
       transition: '',
     },
   },
@@ -19194,8 +19980,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'One-Arm Open Palm Kettlebell Clean은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 사이에 케틀벨 하나를 놓습니다. 한 손으로 손잡이를 잡고 케틀벨을 빠르게 들어올려 케틀벨의 공이 흔들리도록 뒤집어주세요...',
-      execution: '케틀벨을 앞으로 던지고 한 손으로 손잡이를 잡습니다. 케틀벨을 바닥으로 가져가서 반복하세요. 두 팔을 모두 사용하십시오.',
+      setup:
+        '발 사이에 케틀벨 하나를 놓습니다. 한 손으로 손잡이를 잡고 케틀벨을 빠르게 들어올려 케틀벨의 공이 흔들리도록 뒤집어주세요...',
+      execution:
+        '케틀벨을 앞으로 던지고 한 손으로 손잡이를 잡습니다. 케틀벨을 바닥으로 가져가서 반복하세요. 두 팔을 모두 사용하십시오.',
       transition: '',
     },
   },
@@ -19208,7 +19996,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원암 오버헤드 케틀벨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 팔로 케틀벨을 클린하고 프레스합니다. 케틀벨을 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
+      setup:
+        '한쪽 팔로 케틀벨을 클린하고 프레스합니다. 케틀벨을 당기면서 다리와 엉덩이를 통해 케틀벨을 어깨까지 뻗어줍니다...',
       execution: '맨 아래 위치에서 잠시 멈춘 후 다시 위로 올라오면서 발뒤꿈치를 통해 주행합니다.',
       transition: '',
     },
@@ -19225,8 +20014,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'One Arm Pronated Dumbbell Triceps Extension은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔 길이로 덤벨을 들고 벤치에 편평하게 누워 있습니다. 팔은 몸과 수직이 되어야 합니다. 손바닥이 향해야 합니다...',
-      execution: '숨을 들이쉬면서 천천히 덤벨을 아래로 내리세요. 그런 다음 삼두근을 수축시키면서 덤벨을 위로 들어 올리세요. 숨 쉬는 것을 잊지 마세요...',
+      setup:
+        '팔 길이로 덤벨을 들고 벤치에 편평하게 누워 있습니다. 팔은 몸과 수직이 되어야 합니다. 손바닥이 향해야 합니다...',
+      execution:
+        '숨을 들이쉬면서 천천히 덤벨을 아래로 내리세요. 그런 다음 삼두근을 수축시키면서 덤벨을 위로 들어 올리세요. 숨 쉬는 것을 잊지 마세요...',
       transition: '',
     },
   },
@@ -19243,7 +20034,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '원암 사이드 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바벨 중앙 옆에 서십시오. 무릎을 구부리고 바벨에 닿을 수 있을 때까지 몸을 낮추세요. 마치...',
-      execution: '숨을 내쉬면서 다리를 사용하여 바벨을 들어 올리세요. 팔은 완전히 뻗어서 선 자세가 될 때까지 바벨을 들어 올려야 합니다...',
+      execution:
+        '숨을 내쉬면서 다리를 사용하여 바벨을 들어 올리세요. 팔은 완전히 뻗어서 선 자세가 될 때까지 바벨을 들어 올려야 합니다...',
       transition: '',
     },
   },
@@ -19259,8 +20051,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '한쪽 팔 측면 측면 운동은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '덤벨을 골라 한 손에 쥐어보세요. 인클라인 벤치 프레스와 같은 안정된 물체를 잡을 때는 들어올리지 않는 손을 사용해야 합니다. 르...',
-      execution: '몸통을 고정된 상태로 유지하면서(흔들지 않음), 팔꿈치를 약간 구부리고 손을 약간 기울여 덤벨을 옆으로 들어 올립니다.',
+      setup:
+        '덤벨을 골라 한 손에 쥐어보세요. 인클라인 벤치 프레스와 같은 안정된 물체를 잡을 때는 들어올리지 않는 손을 사용해야 합니다. 르...',
+      execution:
+        '몸통을 고정된 상태로 유지하면서(흔들지 않음), 팔꿈치를 약간 구부리고 손을 약간 기울여 덤벨을 옆으로 들어 올립니다.',
       transition: '',
     },
   },
@@ -19277,8 +20071,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'One Arm Supinated Dumbbell Triceps Extension은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔 길이로 덤벨을 들고 벤치에 편평하게 누워 있습니다. 팔은 몸과 수직이 되어야 합니다. 손바닥이 향해야 합니다...',
-      execution: '숨을 들이쉬면서 천천히 덤벨을 아래로 내리세요. 그런 다음 삼두근을 수축시키면서 덤벨을 위로 들어 올리세요. 숨 쉬는 것을 잊지 마세요...',
+      setup:
+        '팔 길이로 덤벨을 들고 벤치에 편평하게 누워 있습니다. 팔은 몸과 수직이 되어야 합니다. 손바닥이 향해야 합니다...',
+      execution:
+        '숨을 들이쉬면서 천천히 덤벨을 아래로 내리세요. 그런 다음 삼두근을 수축시키면서 덤벨을 위로 들어 올리세요. 숨 쉬는 것을 잊지 마세요...',
       transition: '',
     },
   },
@@ -19293,7 +20089,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'One Half Locust는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥에 엎드려 눕습니다. 왼손을 왼쪽 엉덩이뼈 아래에 넣어 엉덩이뼈와 치골뼈를 받쳐주세요.',
-      execution: '오른쪽 무릎을 구부려 오른손으로 발을 잡을 수 있습니다. 발을 공중으로 들어올리면서 동시에 어깨를 바닥에서 들어 올리세요. 그...',
+      execution:
+        '오른쪽 무릎을 구부려 오른손으로 발을 잡을 수 있습니다. 발을 공중으로 들어올리면서 동시에 어깨를 바닥에서 들어 올리세요. 그...',
       transition: '',
     },
   },
@@ -19305,7 +20102,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'One Handed Hang은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '회내 그립을 사용하여 한 손으로 친업 바를 잡습니다. 발을 바닥이나 계단에 대십시오. 체중의 대부분을 ...',
-      execution: '회내 그립을 사용하여 한 손으로 친업 바를 잡습니다. 발을 바닥이나 계단에 대십시오. 체중의 대부분을 ...',
+      execution:
+        '회내 그립을 사용하여 한 손으로 친업 바를 잡습니다. 발을 바닥이나 계단에 대십시오. 체중의 대부분을 ...',
       transition: '',
     },
   },
@@ -19319,8 +20117,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '한쪽 무릎부터 가슴까지(One Knee to Chest)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 누워서 시작하세요. 한쪽 다리를 곧게 펴고 반대쪽 무릎을 가슴 쪽으로 당깁니다. 슬개골을 보호하기 위해 무릎 관절 아래를 잡습니다.',
-      execution: '무릎을 코쪽으로 부드럽게 잡아당깁니다. 측면을 전환하십시오. 이는 구부린 다리의 엉덩이와 허리, 곧은 다리의 고관절 굴곡근을 스트레칭합니다...',
+      setup:
+        '바닥에 누워서 시작하세요. 한쪽 다리를 곧게 펴고 반대쪽 무릎을 가슴 쪽으로 당깁니다. 슬개골을 보호하기 위해 무릎 관절 아래를 잡습니다.',
+      execution:
+        '무릎을 코쪽으로 부드럽게 잡아당깁니다. 측면을 전환하십시오. 이는 구부린 다리의 엉덩이와 허리, 곧은 다리의 고관절 굴곡근을 스트레칭합니다...',
       transition: '',
     },
   },
@@ -19337,8 +20137,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '원 레그 바벨 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등이 벤치를 향한 상태에서 플랫 벤치 앞에 약 2~3피트 정도 서서 시작하세요. 바닥에 바벨을 앞에 두십시오. 팁: 당신은...',
-      execution: '그런 다음 바벨을 머리 위로 들어 올려 목 아래에 놓습니다. 발가락이 플랫 벤치에 놓이도록 한 발을 뒤로 이동합니다. 당신의...',
+      setup:
+        '등이 벤치를 향한 상태에서 플랫 벤치 앞에 약 2~3피트 정도 서서 시작하세요. 바닥에 바벨을 앞에 두십시오. 팁: 당신은...',
+      execution:
+        '그런 다음 바벨을 머리 위로 들어 올려 목 아래에 놓습니다. 발가락이 플랫 벤치에 놓이도록 한 발을 뒤로 이동합니다. 당신의...',
       transition: '',
     },
   },
@@ -19354,8 +20156,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '한쪽 다리 케이블 킥백은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '가죽 발목 커프를 낮은 케이블 도르래에 걸고 커프를 발목에 연결합니다. 약 2피트 거리에서 추 더미를 바라보세요. gr...',
-      execution: '무릎과 엉덩이를 약간 구부리고 복근을 단단하게 유지하면서 둔근을 수축하여 작업하는 다리를 반원형으로 천천히 뒤로 "차세요"...',
+      setup:
+        '가죽 발목 커프를 낮은 케이블 도르래에 걸고 커프를 발목에 연결합니다. 약 2피트 거리에서 추 더미를 바라보세요. gr...',
+      execution:
+        '무릎과 엉덩이를 약간 구부리고 복근을 단단하게 유지하면서 둔근을 수축하여 작업하는 다리를 반원형으로 천천히 뒤로 "차세요"...',
       transition: '',
     },
   },
@@ -19368,7 +20172,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Open Palm Kettlebell Clean은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발 사이에 케틀벨 하나를 놓습니다. 케틀벨을 몸쪽으로 들어올리면서 다리와 엉덩이를 확장하여 케틀벨을 청소하세요...',
+      setup:
+        '발 사이에 케틀벨 하나를 놓습니다. 케틀벨을 몸쪽으로 들어올리면서 다리와 엉덩이를 확장하여 케틀벨을 청소하세요...',
       execution: '케틀벨을 앞으로 내밀고 양손으로 손잡이를 잡습니다. 케틀벨을 시작 위치로 낮추고 반복하세요.',
       transition: '',
     },
@@ -19383,8 +20188,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '오티스업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 고정하고 바닥에 눕습니다. 무릎은 굽혀져야 합니다. 양손으로 가슴에 웨이트를 잡습니다. 이것이 당신의 시작 위치가 될 것입니다...',
-      execution: '위로 올라갈 때, 무게추를 위로 밀어서 움직임의 최고 지점에서 머리 위로 오도록 하세요. 시를 뒤집으면서 무게를 가슴으로 되돌리세요...',
+      setup:
+        '발을 고정하고 바닥에 눕습니다. 무릎은 굽혀져야 합니다. 양손으로 가슴에 웨이트를 잡습니다. 이것이 당신의 시작 위치가 될 것입니다...',
+      execution:
+        '위로 올라갈 때, 무게추를 위로 밀어서 움직임의 최고 지점에서 머리 위로 오도록 하세요. 시를 뒤집으면서 무게를 가슴으로 되돌리세요...',
       transition: '',
     },
   },
@@ -19400,8 +20207,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '오버헤드 케이블 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 도르래 기계의 양쪽에 편안한 무게를 설정하십시오. 참고: 선택한 무게의 양이 각 제품마다 동일한지 확인하세요.',
-      execution: '양쪽 중앙에 서서 언더핸드 그립(손바닥이 천장을 향함)으로 각 손잡이를 잡습니다. 팔은 완전히 펴야 합니다...',
+      setup:
+        '시작하려면 도르래 기계의 양쪽에 편안한 무게를 설정하십시오. 참고: 선택한 무게의 양이 각 제품마다 동일한지 확인하세요.',
+      execution:
+        '양쪽 중앙에 서서 언더핸드 그립(손바닥이 천장을 향함)으로 각 손잡이를 잡습니다. 팔은 완전히 펴야 합니다...',
       transition: '',
     },
   },
@@ -19414,8 +20223,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Overhead Lat는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파트너와 함께 바닥에 똑바로 앉으십시오. 한쪽 팔을 곧게 펴고 팔꿈치를 구부려 손으로 등을 만져보세요. 네...',
-      execution: '10~20초 후 팔의 긴장을 풀고 파트너가 삼두근에 가벼운 압력을 가하여 광배근을 더 늘릴 수 있도록 합니다. 10~20초 동안 기다리세요...',
+      setup:
+        '파트너와 함께 바닥에 똑바로 앉으십시오. 한쪽 팔을 곧게 펴고 팔꿈치를 구부려 손으로 등을 만져보세요. 네...',
+      execution:
+        '10~20초 후 팔의 긴장을 풀고 파트너가 삼두근에 가벼운 압력을 가하여 광배근을 더 늘릴 수 있도록 합니다. 10~20초 동안 기다리세요...',
       transition: '',
     },
   },
@@ -19429,8 +20240,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '오버헤드 슬램(Overhead Slam)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 메디네볼을 잡고 발을 어깨너비로 벌리고 선다. 이것이 당신의 시작 위치가 될 것입니다. 반격을 시작하려면...',
-      execution: '동작을 반대로 하여 가능한 한 세게 공을 바로 앞에 있는 땅에 내리칩니다. 바운스할 때 양손으로 공을 받습니다...',
+      setup:
+        '양손으로 메디네볼을 잡고 발을 어깨너비로 벌리고 선다. 이것이 당신의 시작 위치가 될 것입니다. 반격을 시작하려면...',
+      execution:
+        '동작을 반대로 하여 가능한 한 세게 공을 바로 앞에 있는 땅에 내리칩니다. 바운스할 때 양손으로 공을 받습니다...',
       transition: '',
     },
   },
@@ -19459,8 +20272,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '오버헤드 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '똑바로 서서 손가락을 모으고 손바닥을 천장을 향해 펼칩니다. 팔을 위로 뻗으면서 어깨를 아래로 유지하세요. 생성하려면...',
-      execution: '몸통을 완전히 늘리려면 꼬리뼈를 아래로 당기고 몸통을 안정시키세요. 앞면과 뒷면의 근육을 스트레칭하세요...',
+      setup:
+        '똑바로 서서 손가락을 모으고 손바닥을 천장을 향해 펼칩니다. 팔을 위로 뻗으면서 어깨를 아래로 유지하세요. 생성하려면...',
+      execution:
+        '몸통을 완전히 늘리려면 꼬리뼈를 아래로 당기고 몸통을 안정시키세요. 앞면과 뒷면의 근육을 스트레칭하세요...',
       transition: '',
     },
   },
@@ -19473,8 +20288,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '오버헤드 삼두근은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파트너와 함께 바닥에 똑바로 앉으십시오. 한쪽 팔을 곧게 펴고 팔꿈치를 구부려 손으로 등을 만져보세요. 네...',
-      execution: '10~20초 후 팔의 긴장을 풀고 파트너가 손목에 가볍게 압력을 가하여 삼두근을 더 늘릴 수 있도록 합니다. 10~20초 동안 기다리세요...',
+      setup:
+        '파트너와 함께 바닥에 똑바로 앉으십시오. 한쪽 팔을 곧게 펴고 팔꿈치를 구부려 손으로 등을 만져보세요. 네...',
+      execution:
+        '10~20초 후 팔의 긴장을 풀고 파트너가 손목에 가볍게 압력을 가하여 삼두근을 더 늘릴 수 있도록 합니다. 10~20초 동안 기다리세요...',
       transition: '',
     },
   },
@@ -19490,8 +20307,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '팔로프 프레스(Pallof Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '표준 핸들을 타워에 연결하고 가능하면 케이블을 어깨 높이에 배치합니다. 그렇지 않은 경우 낮은 풀리로 충분합니다. 당신과 함께...',
-      execution: '발을 엉덩이 너비로 벌리고 무릎을 약간 구부린 상태에서 케이블을 가슴 중앙에 잡습니다. 이것이 당신의 시작 위치가 될 것입니다....',
+      setup:
+        '표준 핸들을 타워에 연결하고 가능하면 케이블을 어깨 높이에 배치합니다. 그렇지 않은 경우 낮은 풀리로 충분합니다. 당신과 함께...',
+      execution:
+        '발을 엉덩이 너비로 벌리고 무릎을 약간 구부린 상태에서 케이블을 가슴 중앙에 잡습니다. 이것이 당신의 시작 위치가 될 것입니다....',
       transition: '',
     },
   },
@@ -19510,8 +20329,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Pallof Press With Rotation은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '표준 핸들을 타워에 연결하고 케이블을 어깨 높이에 배치합니다. 케이블을 옆으로 두고 한 손으로 손잡이를 잡고...',
-      execution: '발을 엉덩이 너비로 벌리고 케이블을 가슴쪽으로 당기고 다른 손으로 핸들을 잡습니다. 두 손은 한 손에 있어야 합니다...',
+      setup:
+        '표준 핸들을 타워에 연결하고 케이블을 어깨 높이에 배치합니다. 케이블을 옆으로 두고 한 손으로 손잡이를 잡고...',
+      execution:
+        '발을 엉덩이 너비로 벌리고 케이블을 가슴쪽으로 당기고 다른 손으로 핸들을 잡습니다. 두 손은 한 손에 있어야 합니다...',
       transition: '',
     },
   },
@@ -19527,9 +20348,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '팜스다운 덤벨 리스트 컬 오버 벤치(Palms-Down Dumbbell 손목 컬 오버 A 벤치)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '팜스다운 덤벨 리스트 컬 오버 벤치(Palms-Down Dumbbell 손목 컬 오버 A 벤치)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '플랫 벤치 한쪽에 2개의 덤벨을 놓고 시작하세요. 몸이 플랫 벤치를 향하도록 두 무릎을 꿇고 무릎을 꿇습니다.',
-      execution: '팔을 사용하여 회내 그립(손바닥이 아래를 향함)으로 두 덤벨을 잡고 팔뚝이 덤벨에 닿도록 들어 올리세요...',
+      execution:
+        '팔을 사용하여 회내 그립(손바닥이 아래를 향함)으로 두 덤벨을 잡고 팔뚝이 덤벨에 닿도록 들어 올리세요...',
       transition: '',
     },
   },
@@ -19545,9 +20368,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '벤치 위에서 팜스다운 리스트 컬(Palms-Down 손목 컬 오버 A 벤치)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '벤치 위에서 팜스다운 리스트 컬(Palms-Down 손목 컬 오버 A 벤치)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '플랫벤치 한쪽에 바벨을 놓고 시작하세요. 몸이 플랫 벤치를 향하도록 두 무릎을 꿇고 무릎을 꿇습니다.',
-      execution: '팔을 사용하여 회내 그립(손바닥이 아래로 향함)으로 바벨을 잡고 팔뚝이 플랫 벤치에 닿도록 바벨을 들어 올리십시오. 당신은...',
+      execution:
+        '팔을 사용하여 회내 그립(손바닥이 아래로 향함)으로 바벨을 잡고 팔뚝이 플랫 벤치에 닿도록 바벨을 들어 올리십시오. 당신은...',
       transition: '',
     },
   },
@@ -19597,7 +20422,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '평행봉 딥(Parallel Bar Dip)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평행봉 세트 사이에 서십시오. 각 바에 손을 얹은 다음 작은 점프를 하여 팔로 시작 위치를 잡는 데 도움을 받으세요.',
+      setup:
+        '평행봉 세트 사이에 서십시오. 각 바에 손을 얹은 다음 작은 점프를 하여 팔로 시작 위치를 잡는 데 도움을 받으세요.',
       execution: '팔꿈치를 펴고 동작을 반대로 하여 시작 위치로 몸을 밀어 올리세요. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
@@ -19611,7 +20437,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Pelvic Tilt Into Bridge는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 바닥에 대고 누워서 발 뒤꿈치를 무릎 바로 아래에 두십시오. 꼬리뼈만 천장으로 들어 올려 허리를 스트레칭하세요. (하지마...',
+      setup:
+        '발을 바닥에 대고 누워서 발 뒤꿈치를 무릎 바로 아래에 두십시오. 꼬리뼈만 천장으로 들어 올려 허리를 스트레칭하세요. (하지마...',
       execution: '브릿지에 들어가려면 목을 제외한 척추 전체를 들어 올리세요.',
       transition: '',
     },
@@ -19624,8 +20451,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Peroneals-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '옆으로 누워서 팔뚝과 다리 바깥쪽에 있는 폼 롤러로 체중을 지탱합니다. 위쪽 다리는 다음 중 하나일 수 있습니다.',
-      execution: '엉덩이를 땅에서 들어 올리고 무릎 아래에서 다리 옆의 발목 위로 구르기 시작하고 긴장 지점에서 잠시 멈춥니다.',
+      setup:
+        '옆으로 누워서 팔뚝과 다리 바깥쪽에 있는 폼 롤러로 체중을 지탱합니다. 위쪽 다리는 다음 중 하나일 수 있습니다.',
+      execution:
+        '엉덩이를 땅에서 들어 올리고 무릎 아래에서 다리 옆의 발목 위로 구르기 시작하고 긴장 지점에서 잠시 멈춥니다.',
       transition: '',
     },
   },
@@ -19637,8 +20466,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Peroneals Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '앉은 자세에서 한쪽 발에 벨트, 로프 또는 밴드를 감습니다. 이것이 당신의 시작 위치가 될 것입니다. 다리를 쭉 뻗고 발뒤꿈치를 떼고...',
-      execution: '다리를 펴고 뒤꿈치를 지면에서 떼어낸 상태에서 벨트를 당겨 발이 거꾸로 되도록 하고 발 안쪽을 앞으로 당깁니다.',
+      setup:
+        '앉은 자세에서 한쪽 발에 벨트, 로프 또는 밴드를 감습니다. 이것이 당신의 시작 위치가 될 것입니다. 다리를 쭉 뻗고 발뒤꿈치를 떼고...',
+      execution:
+        '다리를 펴고 뒤꿈치를 지면에서 떼어낸 상태에서 벨트를 당겨 발이 거꾸로 되도록 하고 발 안쪽을 앞으로 당깁니다.',
       transition: '',
     },
   },
@@ -19651,7 +20482,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '피지오볼 힙 브릿지는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엉덩이가 지지되지 않은 상태에서 등 위쪽이 공 위에 있도록 공 위에 눕습니다. 두 발은 바닥에 평평하게 닿아야 하며, 엉덩이 너비 이상으로 떨어져 있어야 합니다. 티...',
+      setup:
+        '엉덩이가 지지되지 않은 상태에서 등 위쪽이 공 위에 있도록 공 위에 눕습니다. 두 발은 바닥에 평평하게 닿아야 하며, 엉덩이 너비 이상으로 떨어져 있어야 합니다. 티...',
       execution: '동작의 최고 지점에서 잠시 멈추고 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -19668,8 +20500,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '핀 프레스(Pin Presses)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀 프레스는 벤치 프레스의 편심 단계를 제거하여 시작 강도를 향상시킵니다. 또한 원하는 동작 범위를 훈련할 수 있습니다. 그...',
-      execution: '일반 벤치에서 바를 접촉점 바로 위에 두고 벤치에 누워서 시작하세요. 발을 아래로 집어넣고 엉덩이를 아치형으로 만드세요...',
+      setup:
+        '핀 프레스는 벤치 프레스의 편심 단계를 제거하여 시작 강도를 향상시킵니다. 또한 원하는 동작 범위를 훈련할 수 있습니다. 그...',
+      execution:
+        '일반 벤치에서 바를 접촉점 바로 위에 두고 벤치에 누워서 시작하세요. 발을 아래로 집어넣고 엉덩이를 아치형으로 만드세요...',
       transition: '',
     },
   },
@@ -19681,8 +20515,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Piriformis-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '폼롤러 위에 엉덩이를 올려 앉으세요. 무릎을 구부린 다음 한쪽 다리를 교차시켜 발목이 무릎 위에 오도록 합니다. 이것이 당신의 시작이 될 것입니다...',
-      execution: '체중을 교차한 다리 쪽으로 옮기고, 상부 둔근에 긴장이 느껴질 때까지 엉덩이 위로 굴립니다. 스트레칭을 도와줄 수도 있습니다 ...',
+      setup:
+        '폼롤러 위에 엉덩이를 올려 앉으세요. 무릎을 구부린 다음 한쪽 다리를 교차시켜 발목이 무릎 위에 오도록 합니다. 이것이 당신의 시작이 될 것입니다...',
+      execution:
+        '체중을 교차한 다리 쪽으로 옮기고, 상부 둔근에 긴장이 느껴질 때까지 엉덩이 위로 굴립니다. 스트레칭을 도와줄 수도 있습니다 ...',
       transition: '',
     },
   },
@@ -19694,8 +20530,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플랭크는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발가락과 팔뚝으로 체중을 지탱하면서 바닥에 엎드린 자세를 취하세요. 팔은 구부러져 있으며 어깨 바로 아래에 있습니다. ...',
-      execution: '항상 몸을 곧게 유지하고, 가능한 한 오랫동안 이 자세를 유지하세요. 난이도를 높이려면 팔이나 다리를 올릴 수 있습니다.',
+      setup:
+        '발가락과 팔뚝으로 체중을 지탱하면서 바닥에 엎드린 자세를 취하세요. 팔은 구부러져 있으며 어깨 바로 아래에 있습니다. ...',
+      execution:
+        '항상 몸을 곧게 유지하고, 가능한 한 오랫동안 이 자세를 유지하세요. 난이도를 높이려면 팔이나 다리를 올릴 수 있습니다.',
       transition: '',
     },
   },
@@ -19710,8 +20548,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플레이트 핀치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '테두리가 넓은 접시 두 개를 잡고 부드러운 면이 바깥쪽을 향하도록 함께 놓습니다. 손가락으로 접시의 바깥 부분을 잡고 y...',
-      execution: '손가락과 엄지손가락으로 접시를 꽉 쥐세요. 가능한 한 오랫동안 이 자세를 유지하세요. y에 규정된 권장 세트 수만큼 반복합니다...',
+      setup:
+        '테두리가 넓은 접시 두 개를 잡고 부드러운 면이 바깥쪽을 향하도록 함께 놓습니다. 손가락으로 접시의 바깥 부분을 잡고 y...',
+      execution:
+        '손가락과 엄지손가락으로 접시를 꽉 쥐세요. 가능한 한 오랫동안 이 자세를 유지하세요. y에 규정된 권장 세트 수만큼 반복합니다...',
       transition: '',
     },
   },
@@ -19727,7 +20567,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '플레이트 트위스트(Plate Twist)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥이나 운동 매트에 누워서 다리를 완전히 펴고 상체를 곧게 편다. 양손을 뻗어 접시의 측면을 잡습니다...',
-      execution: '접시를 왼쪽으로 이동하여 바닥에 닿습니다. 해당 동작을 수행하면서 숨을 내쉬십시오. 시작 위치로 돌아와서...',
+      execution:
+        '접시를 왼쪽으로 이동하여 바닥에 닿습니다. 해당 동작을 수행하면서 숨을 내쉬십시오. 시작 위치로 돌아와서...',
       transition: '',
     },
   },
@@ -19740,9 +20581,12 @@ registerLanguageTranslations('ko', {
       '무릎을 완전히 굽힌 상태에서 동작을 반대로 하여 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '플랫폼 햄스트링 슬라이드(Platform Hamstring Slides)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 움직임을 위해서는 나무 바닥이나 이와 유사한 것이 필요합니다. 다리를 쭉 뻗은 채 등을 대고 눕습니다. 운동용 수건이나 가벼운 무게의 물건을 밑에 깔아주세요...',
-      execution: '계속해서 발뒤꿈치를 몸쪽으로 가져오면서 바닥에 밀어 넣으세요. 무릎을 완전히 굽힌 상태에서 동작을 반대로 하여 시작 위치로 돌아갑니다.',
+      intro:
+        '플랫폼 햄스트링 슬라이드(Platform Hamstring Slides)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 움직임을 위해서는 나무 바닥이나 이와 유사한 것이 필요합니다. 다리를 쭉 뻗은 채 등을 대고 눕습니다. 운동용 수건이나 가벼운 무게의 물건을 밑에 깔아주세요...',
+      execution:
+        '계속해서 발뒤꿈치를 몸쪽으로 가져오면서 바닥에 밀어 넣으세요. 무릎을 완전히 굽힌 상태에서 동작을 반대로 하여 시작 위치로 돌아갑니다.',
       transition: '',
     },
   },
@@ -19758,7 +20602,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '플리에 덤벨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손으로 덤벨의 베이스 부분을 잡고 똑바로 서세요. 다리를 어깨너비보다 넓게 벌려주세요...',
-      execution: '천천히 무릎을 구부리고 허벅지가 바닥과 평행이 될 때까지 다리를 내립니다. 이것은 exe의 특이한 부분이므로 반드시 흡입하세요...',
+      execution:
+        '천천히 무릎을 구부리고 허벅지가 바닥과 평행이 될 때까지 다리를 내립니다. 이것은 exe의 특이한 부분이므로 반드시 흡입하세요...',
       transition: '',
     },
   },
@@ -19770,8 +20615,10 @@ registerLanguageTranslations('ko', {
       '빠르고 강력하게 방향을 바꿔 케틀벨 반대쪽으로 몸을 밀어 올리면서 손을 바꿔보세요. 하강하고 앞뒤로 움직임을 반복하여 움직임을 계속하십시오.',
     ],
     audio: {
-      intro: '플라이오 케틀벨 푸쉬업(Plyo Kettlebell Pushups)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 케틀벨을 놓습니다. 한 손은 땅에 대고 한 손은 케틀벨을 잡고 발가락을 짚고 팔굽혀펴기 자세를 취하세요.',
+      intro:
+        '플라이오 케틀벨 푸쉬업(Plyo Kettlebell Pushups)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '바닥에 케틀벨을 놓습니다. 한 손은 땅에 대고 한 손은 케틀벨을 잡고 발가락을 짚고 팔굽혀펴기 자세를 취하세요.',
       execution: '빠르고 강력하게 방향을 바꿔 케틀벨 반대쪽으로 몸을 밀어 올리면서 손을 바꿔보세요. 계속 움직여...',
       transition: '',
     },
@@ -19788,8 +20635,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플라이오 푸쉬업(Plyo Push-up)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손과 발가락으로 체중을 지탱하면서 바닥에 엎드린 자세로 이동합니다. 팔은 몸 주위의 손과 함께 완전히 뻗어야 합니다.',
-      execution: '팔꿈치를 구부려 가슴을 땅쪽으로 낮추면서 하강합니다. 하단에서 팔꿈치 확장을 통해 몸을 밀어 올려 동작을 반대로 합니다...',
+      setup:
+        '손과 발가락으로 체중을 지탱하면서 바닥에 엎드린 자세로 이동합니다. 팔은 몸 주위의 손과 함께 완전히 뻗어야 합니다.',
+      execution:
+        '팔꿈치를 구부려 가슴을 땅쪽으로 낮추면서 하강합니다. 하단에서 팔꿈치 확장을 통해 몸을 밀어 올려 동작을 반대로 합니다...',
       transition: '',
     },
   },
@@ -19801,8 +20650,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '후방 경골근 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '앉은 자세에서 한쪽 발에 벨트, 로프 또는 밴드를 감습니다. 이것이 당신의 시작 위치가 될 것입니다. 다리를 쭉 뻗고 발뒤꿈치를 떼고...',
-      execution: '다리를 펴고 발뒤꿈치를 땅에서 떼어낸 상태에서 발의 바깥쪽을 앞으로 당기면서 발이 뒤집히도록 벨트를 당깁니다...',
+      setup:
+        '앉은 자세에서 한쪽 발에 벨트, 로프 또는 밴드를 감습니다. 이것이 당신의 시작 위치가 될 것입니다. 다리를 쭉 뻗고 발뒤꿈치를 떼고...',
+      execution:
+        '다리를 펴고 발뒤꿈치를 땅에서 떼어낸 상태에서 발의 바깥쪽을 앞으로 당기면서 발이 뒤집히도록 벨트를 당깁니다...',
       transition: '',
     },
   },
@@ -19836,8 +20687,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '파워클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비보다 약간 넓게 발을 벌리고 서서 발가락은 약간 바깥쪽을 향하게 합니다. 쪼그리고 앉아서 닫힌 회내 그립으로 바를 잡습니다.',
-      execution: '바를 정강이 앞 1인치 정도, 발 볼 위에 놓습니다. 등은 편평하거나 약간 아치형이어야 하며, 가슴은 펴야 합니다.',
+      setup:
+        '어깨 너비보다 약간 넓게 발을 벌리고 서서 발가락은 약간 바깥쪽을 향하게 합니다. 쪼그리고 앉아서 닫힌 회내 그립으로 바를 잡습니다.',
+      execution:
+        '바를 정강이 앞 1인치 정도, 발 볼 위에 놓습니다. 등은 편평하거나 약간 아치형이어야 하며, 가슴은 펴야 합니다.',
       transition: '',
     },
   },
@@ -19852,8 +20705,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '블록 파워 클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 높이의 상자에 바벨을 놓고 다리 바로 바깥 쪽을 잡습니다. 발뒤꿈치에 체중을 집중시켜 엉덩이를 낮추고 허리를 곧게 펴세요...',
-      execution: '점프 동작에서는 엉덩이, 무릎, 발목을 펴고 속도를 높여 바를 위쪽으로 움직여 가속합니다. 적극적으로 홍보할 필요는 없습니다...',
+      setup:
+        '원하는 높이의 상자에 바벨을 놓고 다리 바로 바깥 쪽을 잡습니다. 발뒤꿈치에 체중을 집중시켜 엉덩이를 낮추고 허리를 곧게 펴세요...',
+      execution:
+        '점프 동작에서는 엉덩이, 무릎, 발목을 펴고 속도를 높여 바를 위쪽으로 움직여 가속합니다. 적극적으로 홍보할 필요는 없습니다...',
       transition: '',
     },
   },
@@ -19869,7 +20724,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '파워 저크(Power Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무게를 어깨 앞쪽에 싣고 서서 딥부터 시작하세요. 발을 엉덩이 바로 아래에 놓고 무릎을 구부리세요....',
-      execution: '발이 바닥에서 떨어지는 이 순간, 발은 가능한 한 빨리 수신 위치에 있어야 합니다. 짧은 순간에 수수료가...',
+      execution:
+        '발이 바닥에서 떨어지는 이 순간, 발은 가능한 한 빨리 수신 위치에 있어야 합니다. 짧은 순간에 수수료가...',
       transition: '',
     },
   },
@@ -19885,7 +20741,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '파워 파셜(Power Partials)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '상체를 똑바로 세우고 양손에 덤벨을 팔 길이로 잡고 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥...',
-      execution: '팔을 곧게 펴고 몸통을 고정한 상태에서 숨을 내쉬면서 어깨 높이 정도가 될 때까지 웨이트를 옆으로 들어 올리세요. ...',
+      execution:
+        '팔을 곧게 펴고 몸통을 고정한 상태에서 숨을 내쉬면서 어깨 높이 정도가 될 때까지 웨이트를 옆으로 들어 올리세요. ...',
       transition: '',
     },
   },
@@ -19900,8 +20757,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '파워 스내치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 바벨을 얹고 시작하세요. 바는 정강이에 가깝거나 닿아야 하며 바를 넓은 그립으로 잡아야 합니다. 발이...',
-      execution: '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
+      setup:
+        '바닥에 바벨을 얹고 시작하세요. 바는 정강이에 가깝거나 닿아야 하며 바를 넓은 그립으로 잡아야 합니다. 발이...',
+      execution:
+        '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
       transition: '',
     },
   },
@@ -19915,9 +20774,12 @@ registerLanguageTranslations('ko', {
       '바를 발뒤꿈치 앞쪽에 정렬하고 머리와 가슴을 위로 유지한 다음 발뒤꿈치를 통과하여 서있는 자세로 이동합니다. 조심스럽게 무게를 상자에 되돌려 놓습니다.',
     ],
     audio: {
-      intro: '파워 스내치 프롬 블록(Power Snatch from Blocks)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 높이의 상자나 스탠드에 로드된 바벨로 시작하십시오. 바는 넓은 그립으로 잡아야 합니다. 발은 발 바로 아래에 있어야 합니다...',
-      execution: '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
+      intro:
+        '파워 스내치 프롬 블록(Power Snatch from Blocks)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '원하는 높이의 상자나 스탠드에 로드된 바벨로 시작하십시오. 바는 넓은 그립으로 잡아야 합니다. 발은 발 바로 아래에 있어야 합니다...',
+      execution:
+        '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
       transition: '',
     },
   },
@@ -19931,8 +20793,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '파워 계단은 중간 정도의 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '전동 계단에서는 도구가 계단 위로 이동됩니다. 훈련 목적으로 타이어나 상자를 사용하여 수행할 수 있습니다. 임프를 복용하는 것부터 시작하세요...',
-      execution: '몸을 뒤로 젖히면서 일반적으로 높이가 약 16~18인치인 계단 위로 웨이트를 흔들어 보세요. 다리를 사용하여 웨이트를 미는 데 도움이 될 수 있습니다.',
+      setup:
+        '전동 계단에서는 도구가 계단 위로 이동됩니다. 훈련 목적으로 타이어나 상자를 사용하여 수행할 수 있습니다. 임프를 복용하는 것부터 시작하세요...',
+      execution:
+        '몸을 뒤로 젖히면서 일반적으로 높이가 약 16~18인치인 계단 위로 웨이트를 흔들어 보세요. 다리를 사용하여 웨이트를 미는 데 도움이 될 수 있습니다.',
       transition: '',
     },
   },
@@ -19947,8 +20811,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프리처 컬(Preacher Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 동작을 수행하려면 설교자 벤치와 E-Z 바가 필요합니다. 가까운 내부 손잡이에 있는 E-Z 컬 바를 잡습니다(다른 사람이 손을 잡거나...',
-      execution: '숨을 들이쉬면서 윗팔이 펴지고 이두근이 완전히 펴질 때까지 천천히 바를 내립니다. 숨을 내쉴 때 이두박근을 사용하여 컬을 만드세요.',
+      setup:
+        '이 동작을 수행하려면 설교자 벤치와 E-Z 바가 필요합니다. 가까운 내부 손잡이에 있는 E-Z 컬 바를 잡습니다(다른 사람이 손을 잡거나...',
+      execution:
+        '숨을 들이쉬면서 윗팔이 펴지고 이두근이 완전히 펴질 때까지 천천히 바를 내립니다. 숨을 내쉴 때 이두박근을 사용하여 컬을 만드세요.',
       transition: '',
     },
   },
@@ -19961,9 +20827,11 @@ registerLanguageTranslations('ko', {
       '수축된 자세에서 이두근을 1초간 강하게 쥐고 권장 횟수만큼 반복합니다.',
     ],
     audio: {
-      intro: '프리처 해머 덤벨 컬(Preacher Hammer Dumbbell Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '프리처 해머 덤벨 컬(Preacher Hammer Dumbbell Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양손의 윗부분을 프리처 벤치 위에 놓고 손바닥이 서로 마주보게 하여 양손에 덤벨을 잡습니다(중립 그립)....',
-      execution: '숨을 내쉴 때 이두근이 완전히 수축되고 덤벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 올리십시오. 빅을 쥐어짜다...',
+      execution:
+        '숨을 내쉴 때 이두근이 완전히 수축되고 덤벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 올리십시오. 빅을 쥐어짜다...',
       transition: '',
     },
   },
@@ -19977,8 +20845,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프레스 싯업(Press Sit-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 벤치에 누워 바벨을 가슴 위에 올려 놓습니다. 복부 벤치의 연장선에 다리가 고정되도록 위치를 잡습니다. ...',
-      execution: '바벨을 몸통 아래로 가져오는 동안 상체를 다시 시작 위치로 내립니다. 내릴 때 숨을들이 쉬는 것을 잊지 마십시오 ...',
+      setup:
+        '시작하려면 벤치에 누워 바벨을 가슴 위에 올려 놓습니다. 복부 벤치의 연장선에 다리가 고정되도록 위치를 잡습니다. ...',
+      execution:
+        '바벨을 몸통 아래로 가져오는 동안 상체를 다시 시작 위치로 내립니다. 내릴 때 숨을들이 쉬는 것을 잊지 마십시오 ...',
       transition: '',
     },
   },
@@ -19990,8 +20860,10 @@ registerLanguageTranslations('ko', {
       '최고 지점에서 잠시 멈추고 파트너가 반대 방향으로 저항하는 동안 다리를 시작 위치로 되돌립니다.',
     ],
     audio: {
-      intro: '프론 매뉴얼 햄스트링(Prone Manual Hamstring)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 연습에는 파트너가 필요합니다. 다리를 곧게 펴고 엎드려 눕습니다. 당신의 조수가 당신의 발뒤꿈치에 손을 얹을 것입니다. 시작하려면 플렉스...',
+      intro:
+        '프론 매뉴얼 햄스트링(Prone Manual Hamstring)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 연습에는 파트너가 필요합니다. 다리를 곧게 펴고 엎드려 눕습니다. 당신의 조수가 당신의 발뒤꿈치에 손을 얹을 것입니다. 시작하려면 플렉스...',
       execution: '최고 지점에서 잠시 멈추고 파트너가 반대 방향으로 저항하는 동안 다리를 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -20005,7 +20877,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프라울러 스프린트(Prowler Sprint)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '썰매를 적절한 무게로 적재된 적절한 표면에 놓습니다. 썰매는 노력이 필요할 만큼 충분한 저항을 제공해야 하지만 그렇게 높지는 않습니다...',
+      setup:
+        '썰매를 적절한 무게로 적재된 적절한 표면에 놓습니다. 썰매는 노력이 필요할 만큼 충분한 저항을 제공해야 하지만 그렇게 높지는 않습니다...',
       execution: '좋은 자세로 짧은 발걸음을 번갈아 가며 땅을 주행합니다. 짧은 거리를 최대한 빠르게 이동하세요.',
       transition: '',
     },
@@ -20018,8 +20891,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '풀스루(Pull Through)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프나 손잡이가 부착된 낮은 도르래 앞에 몇 피트 서서 시작하십시오. 발로 케이블을 걸치고 기계 반대 방향으로 얼굴을 돌리세요...',
-      execution: '가능한 한 다리 사이로 손을 뻗고 엉덩이를 구부리면서 동작을 시작하세요. 무릎을 살짝 구부린 상태를 유지하세요. 팔을 곧게 펴고...',
+      setup:
+        '로프나 손잡이가 부착된 낮은 도르래 앞에 몇 피트 서서 시작하십시오. 발로 케이블을 걸치고 기계 반대 방향으로 얼굴을 돌리세요...',
+      execution:
+        '가능한 한 다리 사이로 손을 뻗고 엉덩이를 구부리면서 동작을 시작하세요. 무릎을 살짝 구부린 상태를 유지하세요. 팔을 곧게 펴고...',
       transition: '',
     },
   },
@@ -20034,8 +20909,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '규정된 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 그립에 대한 참고 사항: 넓은 그립을 위해서는 손을 일정한 간격으로 벌려야 합니다...',
-      execution: '어깨와 팔 윗부분을 아래쪽과 뒤로 당겨 바가 가슴 윗부분에 닿을 때까지 몸통을 위로 당깁니다. 이 동작을 수행하면서 숨을 내쉬세요...',
+      setup:
+        '규정된 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 그립에 대한 참고 사항: 넓은 그립을 위해서는 손을 일정한 간격으로 벌려야 합니다...',
+      execution:
+        '어깨와 팔 윗부분을 아래쪽과 뒤로 당겨 바가 가슴 윗부분에 닿을 때까지 몸통을 위로 당깁니다. 이 동작을 수행하면서 숨을 내쉬세요...',
       transition: '',
     },
   },
@@ -20047,8 +20924,10 @@ registerLanguageTranslations('ko', {
       '다리를 사용하여 충격을 흡수하면서 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '푸시 프레스 - 비하인드 더 넥(Behind the Neck)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 뒤쪽에 체중을 싣고 서서 딥부터 시작하세요. 발을 엉덩이 바로 아래에 두고, m 없이 무릎을 구부립니다...',
+      intro:
+        '푸시 프레스 - 비하인드 더 넥(Behind the Neck)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '어깨 뒤쪽에 체중을 싣고 서서 딥부터 시작하세요. 발을 엉덩이 바로 아래에 두고, m 없이 무릎을 구부립니다...',
       execution: '다리를 사용하여 충격을 흡수하면서 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -20063,9 +20942,12 @@ registerLanguageTranslations('ko', {
       '10회 이상 각 측면을 번갈아 가며 시리즈를 반복합니다.',
     ],
     audio: {
-      intro: '푸시업 투 사이드 플랭크(Push Up to Side Plank)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 어깨 너비 바로 바깥쪽에 두고 발가락으로 푸시업 자세를 취하세요. 팔꿈치를 구부리면서 푸시업을 수행합니다. 하강하면서...',
-      execution: '푸쉬업을 한 번 하고 올라오면서 몸무게를 몸의 왼쪽으로 옮기고, 오른쪽 팔을 허리 쪽으로 올리면서 옆으로 비틀어 보세요...',
+      intro:
+        '푸시업 투 사이드 플랭크(Push Up to Side Plank)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '손을 어깨 너비 바로 바깥쪽에 두고 발가락으로 푸시업 자세를 취하세요. 팔꿈치를 구부리면서 푸시업을 수행합니다. 하강하면서...',
+      execution:
+        '푸쉬업을 한 번 하고 올라오면서 몸무게를 몸의 왼쪽으로 옮기고, 오른쪽 팔을 허리 쪽으로 올리면서 옆으로 비틀어 보세요...',
       transition: '',
     },
   },
@@ -20079,8 +20961,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '푸쉬업 와이드(Push-Up Wide)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 손을 넓게 벌리고 발가락과 손으로 몸을 지탱한 플랭크 자세를 취하세요. 팔꿈치는 펴고 몸은 곧게 펴야 합니다. 하세요...',
-      execution: '가슴 근육을 사용하여 팔꿈치를 펴서 상체를 시작 위치로 되돌립니다. 이 단계를 수행하면서 숨을 내쉬십시오. 이후...',
+      setup:
+        '두 손을 넓게 벌리고 발가락과 손으로 몸을 지탱한 플랭크 자세를 취하세요. 팔꿈치는 펴고 몸은 곧게 펴야 합니다. 하세요...',
+      execution:
+        '가슴 근육을 사용하여 팔꿈치를 펴서 상체를 시작 위치로 되돌립니다. 이 단계를 수행하면서 숨을 내쉬십시오. 이후...',
       transition: '',
     },
   },
@@ -20094,8 +20978,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '팔굽혀펴기 - 삼두근 근접 자세는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워서 양손을 어깨너비보다 가깝게 위치시켜 손을 가까이 잡습니다. 몸통을 위로 들고 있는지 확인하세요...',
-      execution: '삼두근과 가슴 근육의 일부를 사용하여 상체를 다시 시작 위치로 누르고 가슴을 쥐어짜십시오. 숨을 내쉬세요...',
+      setup:
+        '바닥에 엎드려 누워서 양손을 어깨너비보다 가깝게 위치시켜 손을 가까이 잡습니다. 몸통을 위로 들고 있는지 확인하세요...',
+      execution:
+        '삼두근과 가슴 근육의 일부를 사용하여 상체를 다시 시작 위치로 누르고 가슴을 쥐어짜십시오. 숨을 내쉬세요...',
       transition: '',
     },
   },
@@ -20110,8 +20996,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '발을 올린 팔굽혀펴기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워서 손을 서로 약 36인치 간격으로 놓고 몸통을 팔 길이로 유지합니다. 발가락을 위에 올려주세요...',
-      execution: '숨을 들이마시면서 가슴이 바닥에 거의 닿을 때까지 몸을 낮추세요. 가슴 근육을 사용하여 상체를 처음부터 다시 누르세요 ...',
+      setup:
+        '바닥에 엎드려 누워서 손을 서로 약 36인치 간격으로 놓고 몸통을 팔 길이로 유지합니다. 발가락을 위에 올려주세요...',
+      execution:
+        '숨을 들이마시면서 가슴이 바닥에 거의 닿을 때까지 몸을 낮추세요. 가슴 근육을 사용하여 상체를 처음부터 다시 누르세요 ...',
       transition: '',
     },
   },
@@ -20125,9 +21013,12 @@ registerLanguageTranslations('ko', {
       '수축된 자세에서 두 번째 멈춘 후, 규정된 반복 횟수만큼 동작을 반복합니다.',
     ],
     audio: {
-      intro: '운동용 공 위에 발을 올려놓고 하는 팔굽혀펴기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워서 손을 서로 약 36인치 간격으로 놓고 몸통을 팔 길이로 유지합니다. 발가락을 위에 올려주세요...',
-      execution: '숨을 들이마시면서 가슴이 바닥에 거의 닿을 때까지 몸을 낮추세요. 가슴 근육을 사용하여 상체를 처음부터 다시 누르세요 ...',
+      intro:
+        '운동용 공 위에 발을 올려놓고 하는 팔굽혀펴기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '바닥에 엎드려 누워서 손을 서로 약 36인치 간격으로 놓고 몸통을 팔 길이로 유지합니다. 발가락을 위에 올려주세요...',
+      execution:
+        '숨을 들이마시면서 가슴이 바닥에 거의 닿을 때까지 몸을 낮추세요. 가슴 근육을 사용하여 상체를 처음부터 다시 누르세요 ...',
       transition: '',
     },
   },
@@ -20141,8 +21032,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '팔굽혀펴기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워서 양손을 약 36인치 간격으로 벌리고 몸통을 팔 길이로 유지합니다. 다음으로 몸을 아래쪽으로 낮추세요...',
-      execution: '이제 숨을 내쉬면서 가슴을 쥐어짜면서 상체를 다시 시작 위치로 밀어 올리세요. 상단 수축 위치에서 잠시 멈춘 후...',
+      setup:
+        '바닥에 엎드려 누워서 양손을 약 36인치 간격으로 벌리고 몸통을 팔 길이로 유지합니다. 다음으로 몸을 아래쪽으로 낮추세요...',
+      execution:
+        '이제 숨을 내쉬면서 가슴을 쥐어짜면서 상체를 다시 시작 위치로 밀어 올리세요. 상단 수축 위치에서 잠시 멈춘 후...',
       transition: '',
     },
   },
@@ -20156,8 +21049,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '팔굽혀펴기(손을 닫고 넓게 벌리는 자세)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워 몸을 곧게 펴고 발가락을 바닥에 대고 손을 어깨 너비보다 넓게 벌려 손을 넓게 벌리고 닫습니다...',
-      execution: '가슴 근육을 사용하여 상체를 다시 시작 위치로 밀고 가슴을 조입니다. 이 단계를 수행하면서 숨을 내쉬십시오. 아...',
+      setup:
+        '바닥에 엎드려 누워 몸을 곧게 펴고 발가락을 바닥에 대고 손을 어깨 너비보다 넓게 벌려 손을 넓게 벌리고 닫습니다...',
+      execution:
+        '가슴 근육을 사용하여 상체를 다시 시작 위치로 밀고 가슴을 조입니다. 이 단계를 수행하면서 숨을 내쉬십시오. 아...',
       transition: '',
     },
   },
@@ -20182,8 +21077,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '쿼드 스트레치는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '옆으로 눕습니다. 위쪽 발 주위에 벨트, 로프 또는 밴드를 감습니다. 무릎을 구부리고 엉덩이를 펴면서 발로 둔근을 건드리려고 합니다...',
-      execution: '벨트를 어깨 위로 또는 머리 위로 잡고 가볍게 당겨 대퇴사두근의 신축성을 높입니다. 10~20초 동안 유지한 후 휙휙...',
+      setup:
+        '옆으로 눕습니다. 위쪽 발 주위에 벨트, 로프 또는 밴드를 감습니다. 무릎을 구부리고 엉덩이를 펴면서 발로 둔근을 건드리려고 합니다...',
+      execution:
+        '벨트를 어깨 위로 또는 머리 위로 잡고 가볍게 당겨 대퇴사두근의 신축성을 높입니다. 10~20초 동안 유지한 후 휙휙...',
       transition: '',
     },
   },
@@ -20195,8 +21092,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Quadriceps-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손이나 팔뚝으로 체중을 지탱한 채 바닥에 엎드려 눕습니다. 대퇴사두근의 한쪽 다리 밑에 폼롤을 놓고 그 자세를 유지하세요...',
-      execution: '견딜 수 있는 만큼 스트레칭할 다리에 체중을 싣고 무릎 위에서 엉덩이 아래까지 폼을 굴려 테의 지점을 잡습니다...',
+      setup:
+        '손이나 팔뚝으로 체중을 지탱한 채 바닥에 엎드려 눕습니다. 대퇴사두근의 한쪽 다리 밑에 폼롤을 놓고 그 자세를 유지하세요...',
+      execution:
+        '견딜 수 있는 만큼 스트레칭할 다리에 체중을 싣고 무릎 위에서 엉덩이 아래까지 폼을 굴려 테의 지점을 잡습니다...',
       transition: '',
     },
   },
@@ -20211,7 +21110,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Quick Leap은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '이 연습을 위해서는 상자가 필요합니다. 가장자리에서 1~2피트 떨어진 상자를 바라보기 시작합니다.',
-      execution: '엉덩이를 활용하여 박스 위로 뛰어올라 양쪽 다리로 착지합니다. 다리를 구부리고 발을 편평하게 착지하십시오. 착륙하자마자...',
+      execution:
+        '엉덩이를 활용하여 박스 위로 뛰어올라 양쪽 다리로 착지합니다. 다리를 구부리고 발을 편평하게 착지하십시오. 착륙하자마자...',
       transition: '',
     },
   },
@@ -20225,7 +21125,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '랙 딜리버리(Rack Delivery)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '이 훈련은 바벨을 어깨의 랙 위치로 전달하는 방법을 가르칩니다. 허수아비 자세로 막대를 잡고 위쪽으로...',
-      execution: '바는 항상 몸에 가깝게 유지하는 것이 중요합니다. 무거운 하중을 가하면 거리가 멀어지면 원치 않는 충돌이 발생하기 때문입니다. ...',
+      execution:
+        '바는 항상 몸에 가깝게 유지하는 것이 중요합니다. 무거운 하중을 가하면 거리가 멀어지면 원치 않는 충돌이 발생하기 때문입니다. ...',
       transition: '',
     },
   },
@@ -20238,8 +21139,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 랙 풀(Rack Pull with Bands)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀에 막대가 있는 전원 랙에 설치합니다. 핀은 원하는 지점에 설정되어야 합니다. 무릎 바로 아래, 바로 위, 허벅지 중간...',
-      execution: '머리를 앞쪽으로 바라보고 엉덩이와 무릎을 뻗어 잠금이 해제될 때까지 웨이트를 위쪽과 뒤쪽으로 당깁니다. 어깨를 뒤로 젖히세요...',
+      setup:
+        '핀에 막대가 있는 전원 랙에 설치합니다. 핀은 원하는 지점에 설정되어야 합니다. 무릎 바로 아래, 바로 위, 허벅지 중간...',
+      execution:
+        '머리를 앞쪽으로 바라보고 엉덩이와 무릎을 뻗어 잠금이 해제될 때까지 웨이트를 위쪽과 뒤쪽으로 당깁니다. 어깨를 뒤로 젖히세요...',
       transition: '',
     },
   },
@@ -20252,7 +21155,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '랙 풀(Rack Pulls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핀에 막대가 있는 전원 랙에 설치합니다. 핀은 원하는 지점에 설정되어야 합니다. 무릎 바로 아래, 바로 위, 허벅지 중간...',
+      setup:
+        '핀에 막대가 있는 전원 랙에 설치합니다. 핀은 원하는 지점에 설정되어야 합니다. 무릎 바로 아래, 바로 위, 허벅지 중간...',
       execution: '무게를 핀에 되돌리고 반복하십시오.',
       transition: '',
     },
@@ -20265,8 +21169,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '뒷다리 올리기는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동 매트 위에 손 무릎을 꿇고 앉으세요. 머리는 정면을 바라보고 무릎을 구부려 90도 각도를 만들어야 합니다...',
-      execution: '한쪽 다리를 위로 뻗어 뒤로 뻗습니다. 무릎과 엉덩이가 모두 펴져야 합니다. 5~10회 반복한 후 방향을 바꿔보세요.',
+      setup:
+        '운동 매트 위에 손 무릎을 꿇고 앉으세요. 머리는 정면을 바라보고 무릎을 구부려 90도 각도를 만들어야 합니다...',
+      execution:
+        '한쪽 다리를 위로 뻗어 뒤로 뻗습니다. 무릎과 엉덩이가 모두 펴져야 합니다. 5~10회 반복한 후 방향을 바꿔보세요.',
       transition: '',
     },
   },
@@ -20279,8 +21185,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리컴번트 바이크(Recumbent Bike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요. 메뉴에서 원하는 옵션을 선택하세요. 페달을 밟아야 할 수도 있습니다...',
-      execution: '기댄 자전거는 편리함과 심혈관 건강에 도움이 되며 다른 활동에 비해 충격이 적습니다. 150파운드의 사람은 약 230칼로리를 소모합니다...',
+      setup:
+        '시작하려면 자전거에 앉고 시트를 자신의 키에 맞게 조절하세요. 메뉴에서 원하는 옵션을 선택하세요. 페달을 밟아야 할 수도 있습니다...',
+      execution:
+        '기댄 자전거는 편리함과 심혈관 건강에 도움이 되며 다른 활동에 비해 충격이 적습니다. 150파운드의 사람은 약 230칼로리를 소모합니다...',
       transition: '',
     },
   },
@@ -20296,7 +21204,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Return Push from Stance는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '이 훈련에는 파트너가 필요합니다. 운동적인 2점 또는 3점 자세로 시작하세요.',
-      execution: '신호를 받으면 파트너로부터 패스를 받을 수 있는 위치로 이동합니다. 메디신볼을 양손으로 잡고 즉시 다시 던진다...',
+      execution:
+        '신호를 받으면 파트너로부터 패스를 받을 수 있는 위치로 이동합니다. 메디신볼을 양손으로 잡고 즉시 다시 던진다...',
       transition: '',
     },
   },
@@ -20309,9 +21218,12 @@ registerLanguageTranslations('ko', {
       '바벨이 몸통에 닿으면 잠시 멈췄다가 최대한 힘을 주어 바벨을 위로 밀어 올리세요. 팔꿈치는 락아웃될 때까지 안으로 들어가야 합니다.',
     ],
     audio: {
-      intro: '리버스 밴드 벤치 프레스(Reverse Band Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 올바른 높이로 설정하고 파워 랙 내부에 벤치를 배치합니다. 밴드 페그나 랙 상단에 밴드를 고정하는 것으로 시작합니다...',
-      execution: '어깨를 펴지 않은 채 바를 랙 밖으로 당깁니다. 바를 쥐고 떼어내는 데 집중하세요. 바를 최저점으로 낮추세요..',
+      intro:
+        '리버스 밴드 벤치 프레스(Reverse Band Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '바를 올바른 높이로 설정하고 파워 랙 내부에 벤치를 배치합니다. 밴드 페그나 랙 상단에 밴드를 고정하는 것으로 시작합니다...',
+      execution:
+        '어깨를 펴지 않은 채 바를 랙 밖으로 당깁니다. 바를 쥐고 떼어내는 데 집중하세요. 바를 최저점으로 낮추세요..',
       transition: '',
     },
   },
@@ -20325,8 +21237,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 밴드 박스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '뒤에 적절한 높이에 상자가 있는 파워 랙에서 시작하십시오. 밴드 페그에 밴드를 설치하거나 랙 상단에 부착하여...',
-      execution: '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 자리에 앉을 때까지 엉덩이를 대고 앉으세요...',
+      setup:
+        '뒤에 적절한 높이에 상자가 있는 파워 랙에서 시작하십시오. 밴드 페그에 밴드를 설치하거나 랙 상단에 부착하여...',
+      execution:
+        '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 자리에 앉을 때까지 엉덩이를 대고 앉으세요...',
       transition: '',
     },
   },
@@ -20341,8 +21255,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 밴드 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 파워 랙에 설치하세요. 밴드 페그나 프레임 자체를 사용하여 랙 상단에 밴드를 부착합니다. 밴드의 다른 쪽 끝을 연결하세요...',
-      execution: '발과 그립이 설정된 상태에서 숨을 크게 들이쉬고 엉덩이를 낮추고 정강이가 바에 닿을 때까지 무릎을 구부립니다. 기대하세요...',
+      setup:
+        '바를 파워 랙에 설치하세요. 밴드 페그나 프레임 자체를 사용하여 랙 상단에 밴드를 부착합니다. 밴드의 다른 쪽 끝을 연결하세요...',
+      execution:
+        '발과 그립이 설정된 상태에서 숨을 크게 들이쉬고 엉덩이를 낮추고 정강이가 바에 닿을 때까지 무릎을 구부립니다. 기대하세요...',
       transition: '',
     },
   },
@@ -20356,8 +21272,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 밴드 파워 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 높이에 설정된 핀과 바를 사용하여 파워 랙에서 시작하십시오. 바를 로드한 후 다음 중 하나를 사용하여 밴드를 랙 상단에 부착합니다...',
-      execution: '머리를 앞으로 향하게 유지하십시오. 등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 편히 앉아요...',
+      setup:
+        '적절한 높이에 설정된 핀과 바를 사용하여 파워 랙에서 시작하십시오. 바를 로드한 후 다음 중 하나를 사용하여 밴드를 랙 상단에 부착합니다...',
+      execution:
+        '머리를 앞으로 향하게 유지하십시오. 등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 편히 앉아요...',
       transition: '',
     },
   },
@@ -20372,8 +21290,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 밴드 스모 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파워 랙 내부 바닥에 바를 올려 놓고 시작하십시오. 페그나 프레임 자체를 사용하여 랙 상단에 밴드를 부착합니다. 첨부하세요...',
-      execution: '숨을 들이쉬고 엉덩이를 낮추고 가슴을 위로 올려 머리를 앞으로 내밀어 보세요. 바닥을 달리며 두 발을 벌리고 재치있게...',
+      setup:
+        '파워 랙 내부 바닥에 바를 올려 놓고 시작하십시오. 페그나 프레임 자체를 사용하여 랙 상단에 밴드를 부착합니다. 첨부하세요...',
+      execution:
+        '숨을 들이쉬고 엉덩이를 낮추고 가슴을 위로 올려 머리를 앞으로 내밀어 보세요. 바닥을 달리며 두 발을 벌리고 재치있게...',
       transition: '',
     },
   },
@@ -20387,7 +21307,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 바벨 컬(Reverse Barbell Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔꿈치를 몸통 가까이에 두고 어깨 너비로 바벨을 잡고 몸통을 똑바로 세우십시오. 손바닥이 평평해야 합니다...',
+      setup:
+        '팔꿈치를 몸통 가까이에 두고 어깨 너비로 바벨을 잡고 몸통을 똑바로 세우십시오. 손바닥이 평평해야 합니다...',
       execution: '숨을 들이쉬면서 천천히 바를 시작 위치로 가져오기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -20402,9 +21323,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '리버스 바벨 프리처 컬(Reverse Barbell Preacher Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비와 손바닥을 아래로(회내) 그립을 사용하여 EZ 바를 잡습니다. 이제 두 팔의 윗부분을 설교자 벤치 위에 올려놓고...',
-      execution: '숨을 내쉴 때 이두근이 완전히 수축되고 바벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 올리십시오. 이두근을 쥐어짜세요...',
+      intro:
+        '리버스 바벨 프리처 컬(Reverse Barbell Preacher Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '어깨 너비와 손바닥을 아래로(회내) 그립을 사용하여 EZ 바를 잡습니다. 이제 두 팔의 윗부분을 설교자 벤치 위에 올려놓고...',
+      execution:
+        '숨을 내쉴 때 이두근이 완전히 수축되고 바벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 올리십시오. 이두근을 쥐어짜세요...',
       transition: '',
     },
   },
@@ -20418,7 +21342,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 케이블 컬(Reverse Cable Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '회내(손바닥을 아래로) 및 어깨 너비 g를 사용하여 낮은 도르래에 부착된 바 부착물을 잡고 몸통을 똑바로 세우십시오.',
+      setup:
+        '회내(손바닥을 아래로) 및 어깨 너비 g를 사용하여 낮은 도르래에 부착된 바 부착물을 잡고 몸통을 똑바로 세우십시오.',
       execution: '숨을 들이쉬면서 천천히 바를 시작 위치로 가져오기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -20434,8 +21359,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 누워서 다리를 완전히 뻗고 팔을 몸통 옆에 두고 손바닥을 바닥에 댑니다. 팔은 고정되어 있어야 합니다...',
-      execution: '숨을 들이쉬면서 다리를 몸통 쪽으로 움직이면서 골반을 뒤로 굴리고 엉덩이를 바닥에서 들어 올립니다. 이 움직임이 끝나면...',
+      setup:
+        '바닥에 누워서 다리를 완전히 뻗고 팔을 몸통 옆에 두고 손바닥을 바닥에 댑니다. 팔은 고정되어 있어야 합니다...',
+      execution:
+        '숨을 들이쉬면서 다리를 몸통 쪽으로 움직이면서 골반을 뒤로 굴리고 엉덩이를 바닥에서 들어 올립니다. 이 움직임이 끝나면...',
       transition: '',
     },
   },
@@ -20451,8 +21378,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 플라이즈(Reverse Flyes)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 경사 벤치에 누워 가슴과 배를 경사면에 대고 누르십시오. 양손에 덤벨을 쥐고 손바닥을 마주보게 하세요...',
-      execution: '팔꿈치를 약간 구부린 상태를 유지하면서 숨을 내쉬면서 원호 운동을 하면서 웨이트를 서로 멀어지게(측면으로) 움직입니다. 팁: 시도해 보세요...',
+      setup:
+        '시작하려면 경사 벤치에 누워 가슴과 배를 경사면에 대고 누르십시오. 양손에 덤벨을 쥐고 손바닥을 마주보게 하세요...',
+      execution:
+        '팔꿈치를 약간 구부린 상태를 유지하면서 숨을 내쉬면서 원호 운동을 하면서 웨이트를 서로 멀어지게(측면으로) 움직입니다. 팁: 시도해 보세요...',
       transition: '',
     },
   },
@@ -20469,8 +21398,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '외부 회전을 이용한 리버스 플라이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 30도 각도로 설정된 경사 벤치에 누워 가슴과 배를 경사면에 대고 누르십시오. 각각 덤벨을 가지고...',
-      execution: '팔꿈치를 살짝 구부린 상태를 유지하면서 숨을 내쉬면서 원호 운동을 하면서 웨이트를 바깥쪽으로 움직여 서로 멀어지도록 하세요. 무게를 들어올리면...',
+      setup:
+        '시작하려면 30도 각도로 설정된 경사 벤치에 누워 가슴과 배를 경사면에 대고 누르십시오. 각각 덤벨을 가지고...',
+      execution:
+        '팔꿈치를 살짝 구부린 상태를 유지하면서 숨을 내쉬면서 원호 운동을 하면서 웨이트를 바깥쪽으로 움직여 서로 멀어지도록 하세요. 무게를 들어올리면...',
       transition: '',
     },
   },
@@ -20484,9 +21415,11 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '리버스 그립 벤트 오버 로우(Reverse Grip Bent-Over Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 그립 벤트 오버 로우(Reverse Grip Bent-Over Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손바닥이 위를 향하도록 하여 바벨을 잡고 똑바로 선다. 무릎을 약간 구부리고 상체를 앞으로 가져옵니다.',
-      execution: '몸통을 고정한 상태에서 숨을 내쉬면서 바벨을 들어 올리고, 팔꿈치를 몸에 가깝게 유지하고 앞쪽에 힘을 가하지 마십시오.',
+      execution:
+        '몸통을 고정한 상태에서 숨을 내쉬면서 바벨을 들어 올리고, 팔꿈치를 몸에 가깝게 유지하고 앞쪽에 힘을 가하지 마십시오.',
       transition: '',
     },
   },
@@ -20501,8 +21434,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 그립 트라이셉스 푸시다운은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '하이 풀리 기계에 바 부착물(직선 또는 e-z)을 설정하는 것부터 시작하십시오. 바 부착물을 마주보며 손바닥이 위를 향하도록 잡습니다(외전...',
-      execution: '숨을 들이쉬면서 바 부착물을 천천히 위로 올려 가슴과 일직선이 되도록 하세요. 팔뚝만 움직여야 하고 팔꿈치/윗팔은 움직여야 합니다.',
+      setup:
+        '하이 풀리 기계에 바 부착물(직선 또는 e-z)을 설정하는 것부터 시작하십시오. 바 부착물을 마주보며 손바닥이 위를 향하도록 잡습니다(외전...',
+      execution:
+        '숨을 들이쉬면서 바 부착물을 천천히 위로 올려 가슴과 일직선이 되도록 하세요. 팔뚝만 움직여야 하고 팔꿈치/윗팔은 움직여야 합니다.',
       transition: '',
     },
   },
@@ -20517,8 +21452,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '역과신전(Reverse Hyperextension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 무게를 실은 후 패드 사이에 발을 놓습니다. 탑 패드 위에 누워서 엉덩이가 등 뒤로 늘어지도록 하고, t를 잡습니다.',
-      execution: '엉덩이를 펴고 다리를 뒤로 차면서 동작을 반대로 하세요. 이 동작에서 엉덩이를 과도하게 확장하지 않는 것이 매우 중요합니다.',
+      setup:
+        '적절한 무게를 실은 후 패드 사이에 발을 놓습니다. 탑 패드 위에 누워서 엉덩이가 등 뒤로 늘어지도록 하고, t를 잡습니다.',
+      execution:
+        '엉덩이를 펴고 다리를 뒤로 차면서 동작을 반대로 하세요. 이 동작에서 엉덩이를 과도하게 확장하지 않는 것이 매우 중요합니다.',
       transition: '',
     },
   },
@@ -20531,9 +21468,12 @@ registerLanguageTranslations('ko', {
       '동작의 뒤쪽에서 잠시 멈추고 천천히 무게를 시작 위치로 되돌립니다.',
     ],
     audio: {
-      intro: '리버스 머신 플라이즈(Reverse Machine Flyes)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '핸들이 완전히 뒤쪽에 위치하도록 조정하십시오. 적절한 무게를 선택하고 핸들이 제자리에 위치하도록 좌석 높이를 조정하세요.',
-      execution: '모든 움직임이 어깨 관절에서 일어나도록 하는 동안 팔을 약간 구부린 상태를 유지하십시오. 무브먼트 뒤쪽에서 잠시 멈추고...',
+      intro:
+        '리버스 머신 플라이즈(Reverse Machine Flyes)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '핸들이 완전히 뒤쪽에 위치하도록 조정하십시오. 적절한 무게를 선택하고 핸들이 제자리에 위치하도록 좌석 높이를 조정하세요.',
+      execution:
+        '모든 움직임이 어깨 관절에서 일어나도록 하는 동안 팔을 약간 구부린 상태를 유지하십시오. 무브먼트 뒤쪽에서 잠시 멈추고...',
       transition: '',
     },
   },
@@ -20548,8 +21488,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '리버스 플레이트 컬(Reverse Plate Curls)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 무거운 접시를 잡고 팔을 완전히 뻗은 채 똑바로 서서 시작하세요. 회내 그립(손바닥이 아래를 향하도록)을 사용하고 다음을 확인하세요.',
-      execution: '숨을 내쉬면서 팔뚝과 팔뚝이 닿을 때까지 팔꿈치를 안쪽으로 유지하고 팔뚝을 고정한 상태에서 플레이트를 천천히 들어 올리십시오. 접시는...',
+      setup:
+        '양손으로 무거운 접시를 잡고 팔을 완전히 뻗은 채 똑바로 서서 시작하세요. 회내 그립(손바닥이 아래를 향하도록)을 사용하고 다음을 확인하세요.',
+      execution:
+        '숨을 내쉬면서 팔뚝과 팔뚝이 닿을 때까지 팔꿈치를 안쪽으로 유지하고 팔뚝을 고정한 상태에서 플레이트를 천천히 들어 올리십시오. 접시는...',
       transition: '',
     },
   },
@@ -20563,9 +21505,12 @@ registerLanguageTranslations('ko', {
       '작업이 끝나면 바를 랙에 다시 놓습니다.',
     ],
     audio: {
-      intro: '리버스 트라이셉스 벤치 프레스(Reverse Triceps Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '평평한 벤치에 누워보세요. 어깨 넓이 정도의 가까운 그립을 사용하여 랙에서 바를 들어올린 다음 바를 몸 위로 똑바로 잡습니다...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 삼두근을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
+      intro:
+        '리버스 트라이셉스 벤치 프레스(Reverse Triceps Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '평평한 벤치에 누워보세요. 어깨 넓이 정도의 가까운 그립을 사용하여 랙에서 바를 들어올린 다음 바를 몸 위로 똑바로 잡습니다...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 삼두근을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
       transition: '',
     },
   },
@@ -20578,7 +21523,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Rhomboids-SMR은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥에 등을 대고 눕습니다. 등 위쪽 아래에 폼롤러를 놓고 팔을 앞으로 교차시켜 어깨를 펴세요...',
-      execution: '엉덩이를 땅에서 들어 올려 체중을 폼 롤에 올려 놓습니다. 체중을 한 번에 한쪽으로 옮기면서 중앙과 위쪽으로 굴러갑니다...',
+      execution:
+        '엉덩이를 땅에서 들어 올려 체중을 폼 롤에 올려 놓습니다. 체중을 한 번에 한쪽으로 옮기면서 중앙과 위쪽으로 굴러갑니다...',
       transition: '',
     },
   },
@@ -20591,7 +21537,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '인력거 운반은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '프레임을 시작점에 위치시키고 적절한 무게를 싣습니다. 프레임 중앙에 서서 핸들을 잡는 것부터 시작합니다...',
-      execution: '빠르고 통제된 발걸음으로 즉시 활기차게 걷기 시작하세요. 가슴을 펴고 머리를 앞으로 숙인 채 계속 호흡을 하십시오. 가져오세요...',
+      execution:
+        '빠르고 통제된 발걸음으로 즉시 활기차게 걷기 시작하세요. 가슴을 펴고 머리를 앞으로 숙인 채 계속 호흡을 하십시오. 가져오세요...',
       transition: '',
     },
   },
@@ -20604,7 +21551,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인력거 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 무게로 프레임을 로드합니다. 핸들 사이 중앙에 몸을 집중시키세요. 발은 엉덩이 너비 정도 떨어져 있어야 합니다. 엉덩이를 구부려 그립을 잡는다...',
+      setup:
+        '원하는 무게로 프레임을 로드합니다. 핸들 사이 중앙에 몸을 집중시키세요. 발은 엉덩이 너비 정도 떨어져 있어야 합니다. 엉덩이를 구부려 그립을 잡는다...',
       execution: '엉덩이를 구부리고 바닥에 닿게 하여 무게를 낮추세요.',
       transition: '',
     },
@@ -20619,7 +21567,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '링 딥스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 링을 쥐고 작은 점프를 하여 팔을 고정한 상태에서 시작 위치로 들어갈 수 있도록 도와줍니다. 엘브를 구부리는 것부터 시작하세요...',
+      setup:
+        '양손에 링을 쥐고 작은 점프를 하여 팔을 고정한 상태에서 시작 위치로 들어갈 수 있도록 도와줍니다. 엘브를 구부리는 것부터 시작하세요...',
       execution: '팔꿈치를 펴고 동작을 반대로 하여 시작 위치로 몸을 밀어 올리세요. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
@@ -20633,7 +21582,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '로켓 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 편안한 자세로 시작하고 팔을 몸에 가깝게 잡습니다. 움직임을 시작하려면 반쯤 쪼그려 앉고 예...',
+      setup:
+        '발을 어깨 너비로 벌리고 편안한 자세로 시작하고 팔을 몸에 가깝게 잡습니다. 움직임을 시작하려면 반쯤 쪼그려 앉고 예...',
       execution: '몸 전체를 완전히 펴서 머리 위로 최대한 멀리 뻗으세요. 착지할 때 충격을 다리를 통해 흡수합니다.',
       transition: '',
     },
@@ -20651,9 +21601,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '락킹 스탠딩 카프 레이즈(Rocking Standing Calf raise)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      intro:
+        '락킹 스탠딩 카프 레이즈(Rocking Standing Calf raise)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -20669,8 +21622,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '록키 풀업/풀다운은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 선택한 지점에서 바를 잡고 두 팔을 앞으로 뻗은 상태에서...',
-      execution: '어깨와 팔 윗부분을 아래쪽과 뒤로 당겨 바가 가슴 윗부분에 닿을 때까지 몸통을 위로 당깁니다. 이 동작을 수행하면서 숨을 내쉬세요...',
+      setup:
+        '넓은 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 선택한 지점에서 바를 잡고 두 팔을 앞으로 뻗은 상태에서...',
+      execution:
+        '어깨와 팔 윗부분을 아래쪽과 뒤로 당겨 바가 가슴 윗부분에 닿을 때까지 몸통을 위로 당깁니다. 이 동작을 수행하면서 숨을 내쉬세요...',
       transition: '',
     },
   },
@@ -20685,8 +21640,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '루마니안 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바벨을 바닥에 놓고 어깨 너비보다 약간 넓은 회내(손바닥이 아래를 향하도록) 그립을 사용하여 바벨을 잡습니다. 팁: Dep...',
-      execution: '등과 팔을 항상 완전히 직선으로 유지하고, 숨을 내쉬면서 엉덩이를 사용하여 바를 들어 올리세요. 팁: 움직임이 빠르면 안 되지만...',
+      setup:
+        '바벨을 바닥에 놓고 어깨 너비보다 약간 넓은 회내(손바닥이 아래를 향하도록) 그립을 사용하여 바벨을 잡습니다. 팁: Dep...',
+      execution:
+        '등과 팔을 항상 완전히 직선으로 유지하고, 숨을 내쉬면서 엉덩이를 사용하여 바를 들어 올리세요. 팁: 움직임이 빠르면 안 되지만...',
       transition: '',
     },
   },
@@ -20698,8 +21655,10 @@ registerLanguageTranslations('ko', {
       '시작 위치로 돌아가려면 동작을 반대로 하세요.',
     ],
     audio: {
-      intro: '적자(Deficit)의 루마니아 데드리프트(Romanian Deadlift)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔 길이만큼 앞쪽으로 바를 잡고 서서 시작하세요. 높은 플랫폼에 서서 동작 범위를 늘릴 수 있습니다. fl로 시작하세요...',
+      intro:
+        '적자(Deficit)의 루마니아 데드리프트(Romanian Deadlift)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '팔 길이만큼 앞쪽으로 바를 잡고 서서 시작하세요. 높은 플랫폼에 서서 동작 범위를 늘릴 수 있습니다. fl로 시작하세요...',
       execution: '시작 위치로 돌아가려면 동작을 반대로 하세요.',
       transition: '',
     },
@@ -20715,8 +21674,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '로프 클라이밍은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '머리 위로 양손으로 밧줄을 잡습니다. 작은 점프를 하면서 로프를 아래로 당깁니다. 한쪽 다리에 로프를 감고 발을 사용하여 핀을 고정합니다...',
-      execution: '팔로 몸을 끌어당기면서 발에서 밧줄을 풀고 무릎을 가슴 쪽으로 가져옵니다. 밧줄에 발을 다시 고정하고...',
+      setup:
+        '머리 위로 양손으로 밧줄을 잡습니다. 작은 점프를 하면서 로프를 아래로 당깁니다. 한쪽 다리에 로프를 감고 발을 사용하여 핀을 고정합니다...',
+      execution:
+        '팔로 몸을 끌어당기면서 발에서 밧줄을 풀고 무릎을 가슴 쪽으로 가져옵니다. 밧줄에 발을 다시 고정하고...',
       transition: '',
     },
   },
@@ -20731,8 +21692,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '로프 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로프가 부착된 케이블 시스템 앞에서 1~2피트 무릎을 꿇습니다. 적절한 무게추를 선택한 후 양손을 뻗어 로프를 잡는다...',
-      execution: '시작하려면 척추를 구부려 케이블을 아래로 당기면서 흉곽을 다리 쪽으로 가져오세요. 모션 하단에서 잠시 멈춘 후...',
+      setup:
+        '로프가 부착된 케이블 시스템 앞에서 1~2피트 무릎을 꿇습니다. 적절한 무게추를 선택한 후 양손을 뻗어 로프를 잡는다...',
+      execution:
+        '시작하려면 척추를 구부려 케이블을 아래로 당기면서 흉곽을 다리 쪽으로 가져오세요. 모션 하단에서 잠시 멈춘 후...',
       transition: '',
     },
   },
@@ -20744,8 +21707,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '줄넘기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '각 손에 로프 끝을 잡습니다. 로프를 바닥에 위치시키십시오. 팔을 위로 올리고 머리 위로 로프를 돌려서 가져오세요...',
-      execution: '줄넘기는 흥미롭고 조정력에 도전하며 많은 에너지가 필요합니다. 150파운드의 사람은 약 350칼로리의 줄넘기를 소모합니다...',
+      setup:
+        '각 손에 로프 끝을 잡습니다. 로프를 바닥에 위치시키십시오. 팔을 위로 올리고 머리 위로 로프를 돌려서 가져오세요...',
+      execution:
+        '줄넘기는 흥미롭고 조정력에 도전하며 많은 에너지가 필요합니다. 150파운드의 사람은 약 350칼로리의 줄넘기를 소모합니다...',
       transition: '',
     },
   },
@@ -20758,9 +21723,12 @@ registerLanguageTranslations('ko', {
       '무게가 스택에 완전히 놓이지 않도록 하고 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '로프 스트레이트 암 풀다운(Rope Straight-Arm Pulldown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높은 도르래에 로프를 연결하고 무게를 선택하세요. 도르래에서 몇 피트 뒤로 서서 발을 비틀거리며 밧줄을 잡습니다.',
-      execution: '동작의 가장 낮은 지점에서 잠시 멈추고 광배근을 조이세요. 무게가 스택에 완전히 놓이지 않도록 하고 시작 위치로 돌아갑니다.',
+      intro:
+        '로프 스트레이트 암 풀다운(Rope Straight-Arm Pulldown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '높은 도르래에 로프를 연결하고 무게를 선택하세요. 도르래에서 몇 피트 뒤로 서서 발을 비틀거리며 밧줄을 잡습니다.',
+      execution:
+        '동작의 가장 낮은 지점에서 잠시 멈추고 광배근을 조이세요. 무게가 스택에 완전히 놓이지 않도록 하고 시작 위치로 돌아갑니다.',
       transition: '',
     },
   },
@@ -20773,7 +21741,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Round The World 어깨 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 모으고 똑바로 서서 바디바나 빗자루를 잡습니다. 어깨 너비보다 넓은 그립으로 엉덩이 뒤로 폴을 잡습니다. 네...',
+      setup:
+        '다리를 모으고 똑바로 서서 바디바나 빗자루를 잡습니다. 어깨 너비보다 넓은 그립으로 엉덩이 뒤로 폴을 잡습니다. 네...',
       execution: '천천히 머리 뒤로 팔을 들어 올리십시오. 더 이상 들어 올리기가 어려워지면 강제로 힘을 가하지 마십시오.',
       transition: '',
     },
@@ -20787,7 +21756,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '조정, 고정식은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 노 젓는 사람에 앉으십시오. 발뒤꿈치가 풋 페달 바닥에 편안하게 닿고 스트랩이 잘 고정되어 있는지 확인하세요...',
+      setup:
+        '시작하려면 노 젓는 사람에 앉으십시오. 발뒤꿈치가 풋 페달 바닥에 편안하게 닿고 스트랩이 잘 고정되어 있는지 확인하세요...',
       execution: '회복 단계에는 단순히 팔을 곧게 펴고, 무릎을 구부리고, 몸을 다시 앞으로 가져가는 과정이 포함됩니다...',
       transition: '',
     },
@@ -20800,9 +21770,11 @@ registerLanguageTranslations('ko', {
       '양손을 앞다리 양쪽에 올려놓으세요. 이 스트레칭을 최대한 활용하려면 엉덩이를 천장 쪽으로 밀었다가 점차적으로 다시 바닥 쪽으로 낮추십시오. 뒤쪽 다리의 고관절 굴곡근과 앞쪽의 햄스트링 및 엉덩이를 스트레칭합니다.',
     ],
     audio: {
-      intro: '러너스 스트레치(Runner\'s Stretch)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 스트레칭을 시작하는 가장 쉬운 방법은 일어서기 시작하고 한쪽 다리를 뒤에 두고 천천히 몸통을 바닥으로 낮추는 것입니다. 계속 이리저리...',
-      execution: '양손을 앞다리 양쪽에 올려놓으세요. 이 스트레칭을 더 많이 활용하려면 엉덩이를 천장 쪽으로 밀어 올린 다음 점차 낮추세요.',
+      intro: "러너스 스트레치(Runner's Stretch)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.",
+      setup:
+        '이 스트레칭을 시작하는 가장 쉬운 방법은 일어서기 시작하고 한쪽 다리를 뒤에 두고 천천히 몸통을 바닥으로 낮추는 것입니다. 계속 이리저리...',
+      execution:
+        '양손을 앞다리 양쪽에 올려놓으세요. 이 스트레칭을 더 많이 활용하려면 엉덩이를 천장 쪽으로 밀어 올린 다음 점차 낮추세요.',
       transition: '',
     },
   },
@@ -20814,8 +21786,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '달리기, 런닝머신은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 런닝머신에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 런닝머신에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
-      execution: '런닝머신은 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 달리는 것보다 충격이 적습니다. 150파운드의 사람은 450칼로리 이상을 소모합니다...',
+      setup:
+        '시작하려면 런닝머신에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 런닝머신에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
+      execution:
+        '런닝머신은 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 달리는 것보다 충격이 적습니다. 150파운드의 사람은 450칼로리 이상을 소모합니다...',
       transition: '',
     },
   },
@@ -20831,7 +21805,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '러시안 트위스트(Russian Twist)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '움직이지 않는 물체 아래에 발을 놓거나 파트너가 발을 잡아주도록 바닥에 눕습니다. 다리는 굽혀야 합니다...',
-      execution: '숨을 내쉬면서 팔이 바닥과 평행이 될 때까지 몸통을 오른쪽으로 비틀어줍니다. 잠시 동안 수축을 유지하고 뒤로 이동합니다...',
+      execution:
+        '숨을 내쉬면서 팔이 바닥과 평행이 될 때까지 몸통을 오른쪽으로 비틀어줍니다. 잠시 동안 수축을 유지하고 뒤로 이동합니다...',
       transition: '',
     },
   },
@@ -20845,8 +21820,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '샌드백 로드(Sandbag Load)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '모래주머니나 기타 물체를 적재하려면 적재 플랫폼에서 일반적으로 50피트 떨어진 곳에 도구를 배치하는 것부터 시작하십시오. s를 들어올리는 것부터 시작하세요...',
-      execution: '가능한 한 빨리 플랫폼으로 이동하여 짐을 싣고 엉덩이, 무릎, 발목을 통해 최대한 높이 올라갑니다. 올려두세요...',
+      setup:
+        '모래주머니나 기타 물체를 적재하려면 적재 플랫폼에서 일반적으로 50피트 떨어진 곳에 도구를 배치하는 것부터 시작하십시오. s를 들어올리는 것부터 시작하세요...',
+      execution:
+        '가능한 한 빨리 플랫폼으로 이동하여 짐을 싣고 엉덩이, 무릎, 발목을 통해 최대한 높이 올라갑니다. 올려두세요...',
       transition: '',
     },
   },
@@ -20859,7 +21836,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '견갑골 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '풀업 바를 회내 그립으로 잡습니다. 매달린 자세에서 팔을 사용하지 않고 몸을 몇 인치 정도 들어 올리세요. 당신의 쇼를 우울하게 하여 이것을 하세요...',
+      setup:
+        '풀업 바를 회내 그립으로 잡습니다. 매달린 자세에서 팔을 사용하지 않고 몸을 몇 인치 정도 들어 올리세요. 당신의 쇼를 우울하게 하여 이것을 하세요...',
       execution: '동작이 끝나면 잠시 멈췄다가 천천히 시작 자세로 돌아와서 더 반복하세요.',
       transition: '',
     },
@@ -20876,7 +21854,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '가위차기는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작하려면 바닥이나 운동 매트(선택 사항)에 등을 대고 눕습니다. 팔은 옆으로 완전히 뻗어야 합니다...',
-      execution: '이제 왼쪽 다리를 약 45도 각도로 들어 올리고 오른쪽 다리는 발뒤꿈치가 땅에서 약 2-3인치 정도 될 때까지 내립니다. 이동 전환...',
+      execution:
+        '이제 왼쪽 다리를 약 45도 각도로 들어 올리고 오른쪽 다리는 발뒤꿈치가 땅에서 약 2-3인치 정도 될 때까지 내립니다. 이동 전환...',
       transition: '',
     },
   },
@@ -20891,7 +21870,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '가위점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무릎을 구부린 채 한 발을 앞으로 내밀고 뒤쪽 무릎이 거의 땅에 닿는 런지 자세를 취합니다. 앞쪽 무릎이...',
-      execution: '최대한 높이 점프하면서 다리의 위치를 ​​바꿔서 앞다리를 뒤로, 뒷다리를 앞으로 움직이세요. 착지하면서 복근이...',
+      execution:
+        '최대한 높이 점프하면서 다리의 위치를 ​​바꿔서 앞다리를 뒤로, 뒷다리를 앞으로 움직이세요. 착지하면서 복근이...',
       transition: '',
     },
   },
@@ -20905,8 +21885,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시티드 밴드 햄스트링 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밴드를 지면 가까이에 고정하고 밴드에서 몇 피트 떨어진 곳에 벤치를 놓습니다. 벤치에 앉아 발목 뒤에 밴드를 고정하고 ...',
-      execution: '무릎을 구부려 발을 벤치 쪽으로 가져옵니다. 발이 바닥에 닿지 않도록 약간 뒤로 몸을 기울여야 할 수도 있습니다. 잠시 멈춰...',
+      setup:
+        '밴드를 지면 가까이에 고정하고 밴드에서 몇 피트 떨어진 곳에 벤치를 놓습니다. 벤치에 앉아 발목 뒤에 밴드를 고정하고 ...',
+      execution:
+        '무릎을 구부려 발을 벤치 쪽으로 가져옵니다. 발이 바닥에 닿지 않도록 약간 뒤로 몸을 기울여야 할 수도 있습니다. 잠시 멈춰...',
       transition: '',
     },
   },
@@ -20921,8 +21903,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시티드 바벨 밀리터리 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '머리 뒤에 바가 있는 군용 프레스 벤치에 앉아 보조원에게 바를 주거나(이 방법은 회전근개에 더 좋음) 바를 선택하도록 합니다.',
-      execution: '숨을 들이쉬면서 천천히 바를 쇄골 아래로 내립니다. 숨을 내쉬면서 바를 시작 위치로 다시 들어 올리십시오.',
+      setup:
+        '머리 뒤에 바가 있는 군용 프레스 벤치에 앉아 보조원에게 바를 주거나(이 방법은 회전근개에 더 좋음) 바를 선택하도록 합니다.',
+      execution:
+        '숨을 들이쉬면서 천천히 바를 쇄골 아래로 내립니다. 숨을 내쉬면서 바를 시작 위치로 다시 들어 올리십시오.',
       transition: '',
     },
   },
@@ -20939,7 +21923,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Seated Barbell Twist는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '허벅지 위에 바벨을 올리고 플랫 벤치 끝에 앉아 시작하세요. 발은 어깨 너비만큼 떨어져야합니다 ...',
-      execution: '이제 바벨이 목 밑 부분에 닿을 때까지 머리 뒤로 바벨을 내립니다. 이것이 시작 위치입니다. 발을 지키면서 ...',
+      execution:
+        '이제 바벨이 목 밑 부분에 닿을 때까지 머리 뒤로 바벨을 내립니다. 이것이 시작 위치입니다. 발을 지키면서 ...',
       transition: '',
     },
   },
@@ -20956,8 +21941,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉아서 벤트 오버 한 팔 덤벨 삼두근 확장은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '중립 그립(손바닥이 자신을 향하도록)을 사용하여 한쪽 팔에 덤벨을 들고 플랫 벤치 끝에 앉습니다. 무릎을 살짝 구부리고...',
-      execution: '덤벨을 든 위쪽 팔은 몸통에 가까워야 하고 몸통과 일직선이 되어야 합니다(팔뚝이 아령이 되는 동안 바닥과 평행이 될 때까지 들어 올리십시오).',
+      setup:
+        '중립 그립(손바닥이 자신을 향하도록)을 사용하여 한쪽 팔에 덤벨을 들고 플랫 벤치 끝에 앉습니다. 무릎을 살짝 구부리고...',
+      execution:
+        '덤벨을 든 위쪽 팔은 몸통에 가까워야 하고 몸통과 일직선이 되어야 합니다(팔뚝이 아령이 되는 동안 바닥과 평행이 될 때까지 들어 올리십시오).',
       transition: '',
     },
   },
@@ -20974,7 +21961,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '시티드 벤트 오버 리어 델트 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '플랫 벤치 앞에 덤벨 두 개를 올려 놓습니다. 다리를 모으고 덤벨을 뒤에 두고 벤치 끝에 앉으세요.',
-      execution: '덤벨을 들어올리기 위해 등을 곧게 유지하면서 허리를 구부립니다. 사진처럼 손바닥이 서로 마주보게 해주세요..',
+      execution:
+        '덤벨을 들어올리기 위해 등을 곧게 유지하면서 허리를 구부립니다. 사진처럼 손바닥이 서로 마주보게 해주세요..',
       transition: '',
     },
   },
@@ -20990,8 +21978,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉아서 구부린 양팔 덤벨 삼두근 확장은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '중립 그립(손바닥이 자신을 향하도록)을 사용하여 양팔에 덤벨을 들고 플랫 벤치 끝에 앉습니다. 무릎을 살짝 구부리고..',
-      execution: '덤벨을 들고 있는 위쪽 팔은 몸통에 가까워야 하며 몸통과 일직선이 되어야 합니다(앞쪽 팔이 바닥과 평행이 될 때까지 들어 올리십시오).',
+      setup:
+        '중립 그립(손바닥이 자신을 향하도록)을 사용하여 양팔에 덤벨을 들고 플랫 벤치 끝에 앉습니다. 무릎을 살짝 구부리고..',
+      execution:
+        '덤벨을 들고 있는 위쪽 팔은 몸통에 가까워야 하며 몸통과 일직선이 되어야 합니다(앞쪽 팔이 바닥과 평행이 될 때까지 들어 올리십시오).',
       transition: '',
     },
   },
@@ -21004,8 +21994,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Biceps는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 파트너가 뒤에 서서 바닥에 앉으십시오. 손바닥이 서로 마주보게 하여 팔을 뒤로 쭉 뻗으세요....',
-      execution: '10~20초 후, 파트너가 팔뚝을 스트레칭하기 위해 손목을 부드럽게 위로 당기는 동안 팔의 긴장을 풀어주세요. 파트너에게 이 사실을 알리십시오.',
+      setup:
+        '무릎을 구부리고 파트너가 뒤에 서서 바닥에 앉으십시오. 손바닥이 서로 마주보게 하여 팔을 뒤로 쭉 뻗으세요....',
+      execution:
+        '10~20초 후, 파트너가 팔뚝을 스트레칭하기 위해 손목을 부드럽게 위로 당기는 동안 팔의 긴장을 풀어주세요. 파트너에게 이 사실을 알리십시오.',
       transition: '',
     },
   },
@@ -21020,8 +22012,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시티드 케이블 로우(Seated Cable Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 연습을 위해서는 V바가 있는 로우 풀리 로우 머신에 접근해야 합니다. 참고: V-바를 사용하면 중립 그립을 가질 수 있습니다.',
-      execution: '팔을 뻗은 상태에서 몸통이 다리에서 90도 각도가 될 때까지 뒤로 당깁니다. 등은 약간 아치형으로, 가슴은 약간 굽혀야 합니다.',
+      setup:
+        '이 연습을 위해서는 V바가 있는 로우 풀리 로우 머신에 접근해야 합니다. 참고: V-바를 사용하면 중립 그립을 가질 수 있습니다.',
+      execution:
+        '팔을 뻗은 상태에서 몸통이 다리에서 90도 각도가 될 때까지 뒤로 당깁니다. 등은 약간 아치형으로, 가슴은 약간 굽혀야 합니다.',
       transition: '',
     },
   },
@@ -21036,7 +22030,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '시티드 케이블 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무게를 적당량 조절한 후 손잡이를 잡고 앉으세요. 윗팔은 몸과 약 90도가 되어야 합니다.',
-      execution: '상단에서 잠시 멈춘 후 핸들을 시작 위치로 되돌립니다. 케이블의 장력을 유지하십시오. 이 순간을 실행할 수도 있습니다...',
+      execution:
+        '상단에서 잠시 멈춘 후 핸들을 시작 위치로 되돌립니다. 케이블의 장력을 유지하십시오. 이 순간을 실행할 수도 있습니다...',
       transition: '',
     },
   },
@@ -21053,7 +22048,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '앉아서 하는 종아리 키우기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '기계에 앉아서 발뒤꿈치가 뻗어 있는 플랫폼의 아래쪽 부분에 발가락을 놓습니다. 발가락 위치를 선택하세요...',
-      execution: '발뒤꿈치를 위로 밀어 레버를 살짝 들어올린 후 안전바를 풀어줍니다. 이것이 당신의 시작 위치가 될 것입니다. 구부리면서 천천히 발뒤꿈치를 낮추세요...',
+      execution:
+        '발뒤꿈치를 위로 밀어 레버를 살짝 들어올린 후 안전바를 풀어줍니다. 이것이 당신의 시작 위치가 될 것입니다. 구부리면서 천천히 발뒤꿈치를 낮추세요...',
       transition: '',
     },
   },
@@ -21068,7 +22064,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '앉아서 하는 종아리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 매트에 똑바로 앉으세요. 한쪽 무릎을 구부리고 발을 바닥에 놓아 몸통을 안정시킵니다.',
-      execution: '다른 쪽 다리를 곧게 펴고 발목을 구부립니다. 밴드, 수건 또는 손이 닿을 수 있는 경우 손을 사용하여 발가락을 몸쪽으로 당깁니다. 10~20초 동안 기다리세요...',
+      execution:
+        '다른 쪽 다리를 곧게 펴고 발목을 구부립니다. 밴드, 수건 또는 손이 닿을 수 있는 경우 손을 사용하여 발가락을 몸쪽으로 당깁니다. 10~20초 동안 기다리세요...',
       transition: '',
     },
   },
@@ -21084,7 +22081,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '시티드 클로즈 그립 집중 바벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바벨이나 E-Z 바를 다리 사이에 두고 플랫 벤치에 앉으세요. 다리는 무릎을 구부린 채 벌려야 하며, 요금은...',
-      execution: '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 앞으로 컬링합니다. 팔뚝만 움직여야 합니다. 씨...',
+      execution:
+        '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 앞으로 컬링합니다. 팔뚝만 움직여야 합니다. 씨...',
       transition: '',
     },
   },
@@ -21099,8 +22097,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시티드 덤벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 팔 길이를 유지한 채 플랫 벤치에 앉습니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥을 회전시키세요...',
-      execution: '윗팔을 고정한 상태에서 웨이트를 컬링하고 덤벨이 허벅지를 통과하면 손바닥이 손바닥에 닿도록 손목을 비틀기 시작합니다...',
+      setup:
+        '양손에 덤벨을 들고 팔 길이를 유지한 채 플랫 벤치에 앉습니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥을 회전시키세요...',
+      execution:
+        '윗팔을 고정한 상태에서 웨이트를 컬링하고 덤벨이 허벅지를 통과하면 손바닥이 손바닥에 닿도록 손목을 비틀기 시작합니다...',
       transition: '',
     },
   },
@@ -21116,8 +22116,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Dumbbell Inner Biceps Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 팔 길이를 유지한 채 플랫 벤치 끝에 앉습니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥을 회전시키세요...',
-      execution: '팔 윗부분을 고정시킨 상태에서 덤벨을 바깥쪽으로 말리면서 손바닥을 바깥쪽으로 돌리고 팔뚝을 몸과 일직선으로 유지하세요...',
+      setup:
+        '양손에 덤벨을 들고 팔 길이를 유지한 채 플랫 벤치 끝에 앉습니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥을 회전시키세요...',
+      execution:
+        '팔 윗부분을 고정시킨 상태에서 덤벨을 바깥쪽으로 말리면서 손바닥을 바깥쪽으로 돌리고 팔뚝을 몸과 일직선으로 유지하세요...',
       transition: '',
     },
   },
@@ -21134,7 +22136,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Dumbbell Palms-Down 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치 앞 바닥에 2개의 덤벨을 놓고 시작하세요. 플랫벤치 가장자리에 앉아 다리를 어깨 정도 높이에 놓고...',
+      setup:
+        '플랫 벤치 앞 바닥에 2개의 덤벨을 놓고 시작하세요. 플랫벤치 가장자리에 앉아 다리를 어깨 정도 높이에 놓고...',
       execution: '팔을 사용하여 두 개의 덤벨을 잡고 손바닥이 정면을 향하도록 팔뚝이 허벅지에 닿도록 들어 올리세요.',
       transition: '',
     },
@@ -21152,7 +22155,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Dumbbell Palms-Up 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치 앞 바닥에 2개의 덤벨을 놓고 시작하세요. 플랫벤치 가장자리에 앉아 다리를 어깨 정도 높이에 놓고...',
+      setup:
+        '플랫 벤치 앞 바닥에 2개의 덤벨을 놓고 시작하세요. 플랫벤치 가장자리에 앉아 다리를 어깨 정도 높이에 놓고...',
       execution: '팔을 사용하여 두 개의 덤벨을 잡고 손바닥이 정면을 향하도록 팔뚝이 허벅지에 닿도록 들어 올리세요.',
       transition: '',
     },
@@ -21170,7 +22174,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Seated Dumbbell Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '덤벨 두 개를 들고 군용 프레스 벤치나 등받이가 있는 다용도 벤치에 앉아 덤벨을 똑바로 세우세요...',
-      execution: '손바닥이 앞을 향하도록 손목을 회전시킵니다. 이것이 당신의 시작 위치입니다. 숨을 내쉬면서 덤벨을 위로 밀어 올리세요...',
+      execution:
+        '손바닥이 앞을 향하도록 손목을 회전시킵니다. 이것이 당신의 시작 위치입니다. 숨을 내쉬면서 덤벨을 위로 밀어 올리세요...',
       transition: '',
     },
   },
@@ -21197,8 +22202,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉은 바닥 햄스트링 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '매트 위에 앉아 오른쪽 다리를 앞으로 뻗고 왼쪽 다리는 구부려 오른쪽 허벅지 안쪽에 발을 대세요. 앞으로 기대어...',
-      execution: '엉덩이에서 앞으로 몸을 기울여 햄스트링이 늘어나는 느낌이 들 때까지 발목을 잡아당깁니다. 15초 동안 유지한 후 반대쪽도 반복하세요.',
+      setup:
+        '매트 위에 앉아 오른쪽 다리를 앞으로 뻗고 왼쪽 다리는 구부려 오른쪽 허벅지 안쪽에 발을 대세요. 앞으로 기대어...',
+      execution:
+        '엉덩이에서 앞으로 몸을 기울여 햄스트링이 늘어나는 느낌이 들 때까지 발목을 잡아당깁니다. 15초 동안 유지한 후 반대쪽도 반복하세요.',
       transition: '',
     },
   },
@@ -21211,8 +22218,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Front Deltoid는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 구부린 채 바닥에 똑바로 앉으세요. 파트너는 뒤에 서 있습니다. 손바닥이 마주보게 하여 팔을 옆으로 곧게 펴십시오.',
-      execution: '이제 근육을 이완시키고 파트너가 어깨와 가슴의 스트레칭을 부드럽게 늘리도록 하세요. 10~20초 동안 유지하세요.',
+      setup:
+        '다리를 구부린 채 바닥에 똑바로 앉으세요. 파트너는 뒤에 서 있습니다. 손바닥이 마주보게 하여 팔을 옆으로 곧게 펴십시오.',
+      execution:
+        '이제 근육을 이완시키고 파트너가 어깨와 가슴의 스트레칭을 부드럽게 늘리도록 하세요. 10~20초 동안 유지하세요.',
       transition: '',
     },
   },
@@ -21225,7 +22234,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Glute는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부린 채 앉은 자세에서 한쪽 발목을 반대쪽 무릎 위로 교차시킵니다. 당신의 파트너가 당신 뒤에 서 있을 것입니다. 이제 아빠처럼 앞으로 몸을 기울여 보세요.',
+      setup:
+        '무릎을 구부린 채 앉은 자세에서 한쪽 발목을 반대쪽 무릎 위로 교차시킵니다. 당신의 파트너가 당신 뒤에 서 있을 것입니다. 이제 아빠처럼 앞으로 몸을 기울여 보세요.',
       execution: '이제 파트너가 몸통을 10~20초 동안 앞으로 부드럽게 밀어 스트레칭을 늘리는 동안 근육을 ​​이완하세요.',
       transition: '',
     },
@@ -21240,8 +22250,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Good Mornings는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '파워랙에 상자를 설치하세요. 핀은 적절한 높이에 설치되어야 합니다. 바 아래로 들어가 바 뒤쪽을 가로질러 놓는 것부터 시작하세요...',
-      execution: '바를 단단히 고정한 상태에서 엉덩이를 최대한 앞으로 구부립니다. 핀을 평행하게 설정하면 안전할 뿐만 아니라...',
+      setup:
+        '파워랙에 상자를 설치하세요. 핀은 적절한 높이에 설치되어야 합니다. 바 아래로 들어가 바 뒤쪽을 가로질러 놓는 것부터 시작하세요...',
+      execution:
+        '바를 단단히 고정한 상태에서 엉덩이를 최대한 앞으로 구부립니다. 핀을 평행하게 설정하면 안전할 뿐만 아니라...',
       transition: '',
     },
   },
@@ -21254,7 +22266,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시티드 햄스트링은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '다리를 쭉 뻗은 채 앉은 자세로 파트너가 당신 뒤에 서도록 하세요. 이제 파트너가 당신의 어깨를 받쳐주는 동안 앞으로 몸을 기울이세요...',
+      setup:
+        '다리를 쭉 뻗은 채 앉은 자세로 파트너가 당신 뒤에 서도록 하세요. 이제 파트너가 당신의 어깨를 받쳐주는 동안 앞으로 몸을 기울이세요...',
       execution: '이제 파트너가 몸통을 10~20초 동안 앞으로 부드럽게 밀어 스트레칭을 늘리는 동안 근육을 ​​이완하세요.',
       transition: '',
     },
@@ -21267,8 +22280,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉아서 하는 햄스트링과 종아리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 발 주위에 벨트, 로프 또는 밴드를 감습니다. 두 다리를 쭉 뻗고 앉으세요. 이것이 당신의 시작 위치가 될 것입니다. 앞으로 살짝 기대어 당기고 ...',
-      execution: '앞으로 약간 기대어 벨트를 당겨 발의 발가락을 뒤로 당깁니다. 이 자세를 10-20초 동안 유지한 다음 다른 자세로 반복하세요...',
+      setup:
+        '한쪽 발 주위에 벨트, 로프 또는 밴드를 감습니다. 두 다리를 쭉 뻗고 앉으세요. 이것이 당신의 시작 위치가 될 것입니다. 앞으로 살짝 기대어 당기고 ...',
+      execution:
+        '앞으로 약간 기대어 벨트를 당겨 발의 발가락을 뒤로 당깁니다. 이 자세를 10-20초 동안 유지한 다음 다른 자세로 반복하세요...',
       transition: '',
     },
   },
@@ -21284,8 +22299,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉은 머리 하네스 목 저항은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫벤치 끝에 있는 바닥에 넥 스트랩을 놓습니다. 웨이트를 선택했으면 플랫 벤치 끝에 발을 벌리고 앉으세요...',
-      execution: '이제 양손을 무릎 위에 올려주세요. 이것이 시작 위치입니다. 턱이 윗부분에 닿을 때까지 천천히 목을 아래로 내립니다...',
+      setup:
+        '플랫벤치 끝에 있는 바닥에 넥 스트랩을 놓습니다. 웨이트를 선택했으면 플랫 벤치 끝에 발을 벌리고 앉으세요...',
+      execution:
+        '이제 양손을 무릎 위에 올려주세요. 이것이 시작 위치입니다. 턱이 윗부분에 닿을 때까지 천천히 목을 아래로 내립니다...',
       transition: '',
     },
   },
@@ -21300,8 +22317,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Leg Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '키에 맞게 기계 레버를 조정하고 등받이 패드에 등을 대고 기계 위에 앉으십시오. 아래쪽 다리의 뒤쪽을 위에 놓습니다...',
-      execution: '숨을 내쉬면서 무릎을 구부려 머신 레버를 허벅지 뒤쪽으로 최대한 당깁니다. 몸통을 항상 움직이지 않게 유지하세요...',
+      setup:
+        '키에 맞게 기계 레버를 조정하고 등받이 패드에 등을 대고 기계 위에 앉으십시오. 아래쪽 다리의 뒤쪽을 위에 놓습니다...',
+      execution:
+        '숨을 내쉬면서 무릎을 구부려 머신 레버를 허벅지 뒤쪽으로 최대한 당깁니다. 몸통을 항상 움직이지 않게 유지하세요...',
       transition: '',
     },
   },
@@ -21331,9 +22350,12 @@ registerLanguageTranslations('ko', {
       '권장 횟수만큼 반복한 후 오른손으로 동일한 동작을 수행합니다.',
     ],
     audio: {
-      intro: '시티드 원암 케이블 풀리 로우(Seated One-arm Cable Pulley Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작 위치로 들어가려면 먼저 기계에 앉아 전면 플랫폼이나 제공된 크로스바에 발을 올려 놓고 다음 사항을 확인하세요...',
-      execution: '팔을 뻗은 상태에서 몸통이 다리에서 90도 각도가 될 때까지 뒤로 당깁니다. 등은 약간 아치형을 이루고 가슴은...',
+      intro:
+        '시티드 원암 케이블 풀리 로우(Seated One-arm Cable Pulley Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '시작 위치로 들어가려면 먼저 기계에 앉아 전면 플랫폼이나 제공된 크로스바에 발을 올려 놓고 다음 사항을 확인하세요...',
+      execution:
+        '팔을 뻗은 상태에서 몸통이 다리에서 90도 각도가 될 때까지 뒤로 당깁니다. 등은 약간 아치형을 이루고 가슴은...',
       transition: '',
     },
   },
@@ -21348,9 +22370,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 수행하고 팔을 바꿔 동작을 반복합니다.',
     ],
     audio: {
-      intro: '앉아서 하는 한쪽 팔 덤벨 손바닥 아래로 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른손에 덤벨을 들고 플랫 벤치에 앉으세요. 어깨 너비보다 약간 넓은 거리에 발을 바닥에 평평하게 놓습니다...',
-      execution: '앞으로 몸을 기울여 오른쪽 팔뚝을 손바닥이 아래로 향하게 하여 오른쪽 허벅지 위에 올려 놓습니다. 팁: 손목 뒤쪽이 t에 놓여 있는지 확인하세요...',
+      intro:
+        '앉아서 하는 한쪽 팔 덤벨 손바닥 아래로 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '오른손에 덤벨을 들고 플랫 벤치에 앉으세요. 어깨 너비보다 약간 넓은 거리에 발을 바닥에 평평하게 놓습니다...',
+      execution:
+        '앞으로 몸을 기울여 오른쪽 팔뚝을 손바닥이 아래로 향하게 하여 오른쪽 허벅지 위에 올려 놓습니다. 팁: 손목 뒤쪽이 t에 놓여 있는지 확인하세요...',
       transition: '',
     },
   },
@@ -21365,9 +22390,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 수행하고 팔을 바꿔 동작을 반복합니다.',
     ],
     audio: {
-      intro: '앉아서 하는 한쪽 팔 덤벨 손바닥 위로 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른손에 덤벨을 들고 플랫 벤치에 앉으세요. 어깨 너비보다 약간 넓은 거리에 발을 바닥에 평평하게 놓습니다...',
-      execution: '앞으로 몸을 기울여 손바닥을 위로 하여 오른쪽 팔뚝을 오른쪽 허벅지 위에 올려 놓습니다. 팁: 손목 앞쪽이...',
+      intro:
+        '앉아서 하는 한쪽 팔 덤벨 손바닥 위로 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '오른손에 덤벨을 들고 플랫 벤치에 앉으세요. 어깨 너비보다 약간 넓은 거리에 발을 바닥에 평평하게 놓습니다...',
+      execution:
+        '앞으로 몸을 기울여 손바닥을 위로 하여 오른쪽 팔뚝을 오른쪽 허벅지 위에 올려 놓습니다. 팁: 손목 앞쪽이...',
       transition: '',
     },
   },
@@ -21382,7 +22410,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '앉아서 오버헤드 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 매트에 똑바로 앉으세요. 발바닥을 엉덩이 앞에서 6~8인치 정도 떨어진 곳에 두 발을 맞대어 닿게 하세요.',
-      execution: '한 손은 옆 바닥에 놓고 다른 손은 머리 뒤에 놓습니다. 몸통을 다른쪽으로 기울이면서 팔꿈치를 천장으로 들어 올리십시오 ...',
+      execution:
+        '한 손은 옆 바닥에 놓고 다른 손은 머리 뒤에 놓습니다. 몸통을 다른쪽으로 기울이면서 팔꿈치를 천장으로 들어 올리십시오 ...',
       transition: '',
     },
   },
@@ -21397,8 +22426,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Palm-Up Barbell 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 바벨을 잡고 손바닥이 위를 향하도록 하세요. 손은 어깨 너비만큼 벌립니다. 발을 바닥에 평평하게 놓고, 내가 볼 수 있는 거리를 두고...',
-      execution: '앞으로 몸을 기울여 손바닥을 위로 하여 팔뚝을 허벅지 위쪽 위에 올려 놓습니다. 팁: 손목 앞쪽이 손목 위에 놓이도록 하세요...',
+      setup:
+        '양손으로 바벨을 잡고 손바닥이 위를 향하도록 하세요. 손은 어깨 너비만큼 벌립니다. 발을 바닥에 평평하게 놓고, 내가 볼 수 있는 거리를 두고...',
+      execution:
+        '앞으로 몸을 기울여 손바닥을 위로 하여 팔뚝을 허벅지 위쪽 위에 올려 놓습니다. 팁: 손목 앞쪽이 손목 위에 놓이도록 하세요...',
       transition: '',
     },
   },
@@ -21413,8 +22444,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '시티드 팜스 다운 바벨 리스트 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 바벨을 잡고 손바닥이 아래를 향하게 합니다. 손은 어깨 너비만큼 벌립니다. 발을 바닥에 편평하게 놓고...',
-      execution: '앞으로 몸을 기울여 손바닥을 아래로 한 채 팔뚝을 허벅지 위쪽 위에 올려 놓습니다. 팁: 손목 뒤쪽이 몸 위에 놓이도록 하세요...',
+      setup:
+        '양손으로 바벨을 잡고 손바닥이 아래를 향하게 합니다. 손은 어깨 너비만큼 벌립니다. 발을 바닥에 편평하게 놓고...',
+      execution:
+        '앞으로 몸을 기울여 손바닥을 아래로 한 채 팔뚝을 허벅지 위쪽 위에 올려 놓습니다. 팁: 손목 뒤쪽이 몸 위에 놓이도록 하세요...',
       transition: '',
     },
   },
@@ -21428,7 +22461,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉아서 하는 측면 측면 올리기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '덤벨 두 개를 들고 발을 바닥에 단단히 고정한 채 플랫 벤치 끝에 앉으세요. 손바닥이 안쪽을 향하도록 덤벨을 잡고 ...',
+      setup:
+        '덤벨 두 개를 들고 발을 바닥에 단단히 고정한 채 플랫 벤치 끝에 앉으세요. 손바닥이 안쪽을 향하도록 덤벨을 잡고 ...',
       execution: '숨을 들이쉬면서 덤벨을 천천히 시작 위치로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -21443,8 +22477,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Seated Triceps Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등받이가 있는 벤치에 앉아 양손으로 덤벨을 잡고 팔 길이만큼 머리 위로 들어 올리세요. 팁: 더 좋은 방법은 뭔가를 갖는 것입니다...',
-      execution: '삼두근을 이용해 덤벨을 들어 올려 시작 자세로 돌아갑니다. 이 단계를 수행하면서 숨을 내쉬십시오. 권장 금액만큼 반복하세요...',
+      setup:
+        '등받이가 있는 벤치에 앉아 양손으로 덤벨을 잡고 팔 길이만큼 머리 위로 들어 올리세요. 팁: 더 좋은 방법은 뭔가를 갖는 것입니다...',
+      execution:
+        '삼두근을 이용해 덤벨을 들어 올려 시작 자세로 돌아갑니다. 이 단계를 수행하면서 숨을 내쉬십시오. 권장 금액만큼 반복하세요...',
       transition: '',
     },
   },
@@ -21463,8 +22499,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앉은 두 팔 손바닥 위로 로우 풀리 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바벨이나 EZ 컬 부착물이 장착된 로우 풀리 머신 앞에 벤치를 놓습니다. 벤치를 충분히 멀리 이동하여 가져올 때 ...',
-      execution: '이제 어깨 너비 그립을 사용하여 손바닥을 위로 하고 양손으로 핸들을 잡습니다. 뒤로 물러서서 발을 어깨 너비만큼 벌리고 벤치에 앉으세요...',
+      setup:
+        '바벨이나 EZ 컬 부착물이 장착된 로우 풀리 머신 앞에 벤치를 놓습니다. 벤치를 충분히 멀리 이동하여 가져올 때 ...',
+      execution:
+        '이제 어깨 너비 그립을 사용하여 손바닥을 위로 하고 양손으로 핸들을 잡습니다. 뒤로 물러서서 발을 어깨 너비만큼 벌리고 벤치에 앉으세요...',
       transition: '',
     },
   },
@@ -21479,7 +22517,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'See-Saw Press(Alternating Side Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 잡고 똑바로 일어섭니다. 덤벨을 가슴/어깨 높이까지 클린(들어올리기)한 다음 손목을 회전하여 ...',
+      setup:
+        '양손에 덤벨을 잡고 똑바로 일어섭니다. 덤벨을 가슴/어깨 높이까지 클린(들어올리기)한 다음 손목을 회전하여 ...',
       execution: '이제 손목을 회전시키면서 왼팔을 머리 위로 뻗어 손바닥이 앞으로 향하도록 하세요. 팔꿈치는...',
       transition: '',
     },
@@ -21494,8 +22533,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Shotgun Row는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '단일 핸들을 낮은 케이블에 연결하십시오. 올바른 무게를 선택한 후 넓게 쪼개진 자세로 몇 피트 뒤로 서십시오. 팔이 길어야 합니다...',
-      execution: '어깨를 뒤로 젖히고 팔꿈치를 구부리는 동작을 수행합니다. 당길 때 손목을 회외시키고 손바닥을 위쪽으로 돌립니다. 잠시 후에 ...',
+      setup:
+        '단일 핸들을 낮은 케이블에 연결하십시오. 올바른 무게를 선택한 후 넓게 쪼개진 자세로 몇 피트 뒤로 서십시오. 팔이 길어야 합니다...',
+      execution:
+        '어깨를 뒤로 젖히고 팔꿈치를 구부리는 동작을 수행합니다. 당길 때 손목을 회외시키고 손바닥을 위쪽으로 돌립니다. 잠시 후에 ...',
       transition: '',
     },
   },
@@ -21507,7 +22548,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '숄더 서클은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨를 편안하게 하고 팔을 옆구리(또는 앉아 있는 경우 무릎)에 느슨하게 놓고 어깨를 앞뒤로 부드럽게 굴립니다.',
+      setup:
+        '어깨를 편안하게 하고 팔을 옆구리(또는 앉아 있는 경우 무릎)에 느슨하게 놓고 어깨를 앞뒤로 부드럽게 굴립니다.',
       execution: '반대 방향. 이 운동은 어깨를 번갈아 가거나 동시에 할 수 있습니다.',
       transition: '',
     },
@@ -21521,16 +22563,15 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '숄더 프레스 - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 팔 길이에서 긴장이 시작되도록 운동 밴드 위에 서십시오. 손잡이를 잡고 손이 어깨 높이에 오도록 들어 올리세요...',
+      setup:
+        '시작하려면 팔 길이에서 긴장이 시작되도록 운동 밴드 위에 서십시오. 손잡이를 잡고 손이 어깨 높이에 오도록 들어 올리세요...',
       execution: '숨을 내쉬면서 팔이 머리 위로 완전히 뻗을 때까지 핸들을 들어 올리세요.',
       transition: '',
     },
   },
   fed_shoulder_raise: {
     name: '어깨 올리기',
-    instructions: [
-      '팔을 옆으로 편안하게 하고 어깨를 귀 쪽으로 들어 올렸다가 다시 내립니다.',
-    ],
+    instructions: ['팔을 옆으로 편안하게 하고 어깨를 귀 쪽으로 들어 올렸다가 다시 내립니다.'],
     audio: {
       intro: '어깨 올리기는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '팔을 옆으로 편안하게 하고 어깨를 귀 쪽으로 들어 올렸다가 다시 내립니다.',
@@ -21540,9 +22581,7 @@ registerLanguageTranslations('ko', {
   },
   fed_shoulder_stretch: {
     name: '어깨 스트레칭',
-    instructions: [
-      '왼팔을 몸 위로 뻗어 똑바로 잡으세요.',
-    ],
+    instructions: ['왼팔을 몸 위로 뻗어 똑바로 잡으세요.'],
     audio: {
       intro: '어깨 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '왼팔을 몸 위로 뻗어 똑바로 잡으세요.',
@@ -21559,8 +22598,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 홉 스프린트(Side Hop-Sprint)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원뿔이나 장애물 옆에 서십시오. 장애물 위로 옆으로 뛰어오르고, 착지한 곳에서 다시 뛰어올라 다시 제자리로 뛰어오르면서 이 훈련을 시작하세요.',
-      execution: '가능한 한 빨리 정해진 횟수만큼 뛰거나 반복하고, 마지막 홉에 착지한 후 짧은 거리를 질주하여 이 훈련을 마무리하세요.',
+      setup:
+        '원뿔이나 장애물 옆에 서십시오. 장애물 위로 옆으로 뛰어오르고, 착지한 곳에서 다시 뛰어올라 다시 제자리로 뛰어오르면서 이 훈련을 시작하세요.',
+      execution:
+        '가능한 한 빨리 정해진 횟수만큼 뛰거나 반복하고, 마지막 홉에 착지한 후 짧은 거리를 질주하여 이 훈련을 마무리하세요.',
       transition: '',
     },
   },
@@ -21591,8 +22632,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 래터럴에서 프론트 레이즈까지의 운동은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '선 자세에서 덤벨 한 쌍을 옆구리에 잡습니다. 이것이 당신의 시작 위치가 될 것입니다. 팔꿈치를 약간 구부린 상태에서 몸을 들어 올리세요.',
-      execution: '운동의 최고 단계에서는 팔을 쭉 뻗은 상태로 웨이트를 앞쪽으로 옮깁니다. 제어된 동작으로 중량을 낮추십시오.',
+      setup:
+        '선 자세에서 덤벨 한 쌍을 옆구리에 잡습니다. 이것이 당신의 시작 위치가 될 것입니다. 팔꿈치를 약간 구부린 상태에서 몸을 들어 올리세요.',
+      execution:
+        '운동의 최고 단계에서는 팔을 쭉 뻗은 상태로 웨이트를 앞쪽으로 옮깁니다. 제어된 동작으로 중량을 낮추십시오.',
       transition: '',
     },
   },
@@ -21605,7 +22648,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 레그 레이즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '지지대 역할을 할 수 있는 의자 옆에 서십시오. 한쪽 다리로 서십시오. 이것이 당신의 시작 위치가 될 것입니다. 다리를 쭉 펴고, 레이...',
+      setup:
+        '지지대 역할을 할 수 있는 의자 옆에 서십시오. 한쪽 다리로 서십시오. 이것이 당신의 시작 위치가 될 것입니다. 다리를 쭉 펴고, 레이...',
       execution: '이 스윙 동작을 5~10회 반복하여 동작 범위를 늘리세요.',
       transition: '',
     },
@@ -21618,8 +22662,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '옆으로 누운 바닥 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '먼저 왼쪽으로 누워서 왼쪽 무릎을 앞으로 구부려 몸통을 안정시킵니다(복부 근육도 사용하여 몸을 똑바로 유지합니다...).',
-      execution: '오른쪽 다리를 곧게 펴고 오른쪽 발을 왼쪽 뒤 바닥에 놓습니다. 오른팔을 머리 위로 곧게 펴고 오른쪽 팔을 부드럽게 당깁니다.',
+      setup:
+        '먼저 왼쪽으로 누워서 왼쪽 무릎을 앞으로 구부려 몸통을 안정시킵니다(복부 근육도 사용하여 몸을 똑바로 유지합니다...).',
+      execution:
+        '오른쪽 다리를 곧게 펴고 오른쪽 발을 왼쪽 뒤 바닥에 놓습니다. 오른팔을 머리 위로 곧게 펴고 오른쪽 팔을 부드럽게 당깁니다.',
       transition: '',
     },
   },
@@ -21632,8 +22678,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '옆으로 누운 사타구니 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오른쪽으로 누워서 시작하고 오른쪽 무릎을 앞으로 구부려 몸통을 안정시킵니다. 머리를 오른쪽 손이나 어깨에 대고...',
-      execution: '왼쪽 무릎을 왼쪽 어깨 쪽으로 당기는 동시에 발이나 무릎을 바닥으로 누릅니다. 이 스트레칭을 강화하려면...',
+      setup:
+        '오른쪽으로 누워서 시작하고 오른쪽 무릎을 앞으로 구부려 몸통을 안정시킵니다. 머리를 오른쪽 손이나 어깨에 대고...',
+      execution:
+        '왼쪽 무릎을 왼쪽 어깨 쪽으로 당기는 동시에 발이나 무릎을 바닥으로 누릅니다. 이 스트레칭을 강화하려면...',
       transition: '',
     },
   },
@@ -21645,7 +22693,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '옆목 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨를 편안하게 하고 머리를 어깨쪽으로 부드럽게 기울이십시오. 머리 옆면을 부드럽게 잡아당겨 스트레칭을 돕습니다.',
+      setup:
+        '어깨를 편안하게 하고 머리를 어깨쪽으로 부드럽게 기울이십시오. 머리 옆면을 부드럽게 잡아당겨 스트레칭을 돕습니다.',
       execution: '머리 옆면을 부드럽게 잡아당겨 스트레칭을 돕습니다.',
       transition: '',
     },
@@ -21659,7 +22708,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '옆으로 서서 멀리뛰기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '운동 자세로 발을 엉덩이 너비로 벌리고 서기 시작합니다. 머리와 가슴은 위로 올라가고, 무릎과 엉덩이는 약간 구부러져야 합니다. 이것은 당신이 될 것입니다...',
+      setup:
+        '운동 자세로 발을 엉덩이 너비로 벌리고 서기 시작합니다. 머리와 가슴은 위로 올라가고, 무릎과 엉덩이는 약간 구부러져야 합니다. 이것은 당신이 될 것입니다...',
       execution: '발을 엉덩이 너비로 벌리고 같은 방향을 바라보며 착지하여 충격을 하체로 흡수합니다.',
       transition: '',
     },
@@ -21691,8 +22741,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 투 사이드 턱(Side To Side Chins)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 두 팔을 앞으로 뻗어 바를 넓은 그립으로 잡으면...',
-      execution: '어깨를 그려서 바가 가슴 위쪽에 거의 닿을 때까지 왼쪽으로 몸을 기울이면서 몸통을 당기고, 위쪽 팔도 닿습니다...',
+      setup:
+        '넓은 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 두 팔을 앞으로 뻗어 바를 넓은 그립으로 잡으면...',
+      execution:
+        '어깨를 그려서 바가 가슴 위쪽에 거의 닿을 때까지 왼쪽으로 몸을 기울이면서 몸통을 당기고, 위쪽 팔도 닿습니다...',
       transition: '',
     },
   },
@@ -21704,8 +22756,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 손목 당기기는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 스트레칭은 서서 하는 것이 가장 좋습니다. 왼팔을 몸의 중앙선 위로 교차시키고 오른손으로 왼쪽 손목을 아래로 잡아...',
-      execution: '그림과 같이 천천히 펴고 당겨서 어깨 높이까지 들어올립니다. 이 스트레칭이 어깨가 아닌 등에서 시작되는 것을 느끼며 무리하지 마세요...',
+      setup:
+        '이 스트레칭은 서서 하는 것이 가장 좋습니다. 왼팔을 몸의 중앙선 위로 교차시키고 오른손으로 왼쪽 손목을 아래로 잡아...',
+      execution:
+        '그림과 같이 천천히 펴고 당겨서 어깨 높이까지 들어올립니다. 이 스트레칭이 어깨가 아닌 등에서 시작되는 것을 느끼며 무리하지 마세요...',
       transition: '',
     },
   },
@@ -21719,8 +22773,10 @@ registerLanguageTranslations('ko', {
       '시작 위치에서 1초간 유지한 후 반대쪽으로 동작을 반복합니다. 규정된 반복 횟수만큼 앞뒤로 교대로 계속합니다.',
     ],
     audio: {
-      intro: '싱글 암 케이블 크로스오버(Single-Arm Cable Crossover)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '도르래를 높은 위치로 옮기는 것으로 시작하고 사용할 저항을 선택한 다음 양손에 손잡이를 잡습니다. 두 사람 앞으로 앞으로 나아가세요...',
+      intro:
+        '싱글 암 케이블 크로스오버(Single-Arm Cable Crossover)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '도르래를 높은 위치로 옮기는 것으로 시작하고 사용할 저항을 선택한 다음 양손에 손잡이를 잡습니다. 두 사람 앞으로 앞으로 나아가세요...',
       execution: '왼팔은 제자리에 유지하고, 오른팔은 옆으로 뻗어 팔꿈치를 약간 구부립니다. 오른팔은...',
       transition: '',
     },
@@ -21735,8 +22791,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '단일 팔 선형 방해기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '막대를 지뢰에 설치하거나 모서리에 단단히 고정하십시오. 바에 적절한 무게를 싣습니다. 바를 바닥에서 들어올려...',
-      execution: '팔꿈치를 펴고 웨이트를 위로 올려 동작을 수행합니다. 폭발적으로 움직이며 엉덩이와 무릎을 완전히 펴서 최대의 힘을 발휘합니다....',
+      setup:
+        '막대를 지뢰에 설치하거나 모서리에 단단히 고정하십시오. 바에 적절한 무게를 싣습니다. 바를 바닥에서 들어올려...',
+      execution:
+        '팔꿈치를 펴고 웨이트를 위로 올려 동작을 수행합니다. 폭발적으로 움직이며 엉덩이와 무릎을 완전히 펴서 최대의 힘을 발휘합니다....',
       transition: '',
     },
   },
@@ -21750,8 +22808,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '싱글 암 푸쉬업(Single-Arm Push-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 엎드려 누워 시작합니다. 발가락과 한쪽 팔로 체중을 지탱하는 자세로 몸을 움직여 보세요. 작업용 팔을 배치해야 합니다...',
-      execution: '팔꿈치가 땅에 닿을 때까지 굽혀 몸을 낮추십시오. 천천히 내려오다가 반대방향으로 팔을 뻗어 원위치로 돌아옵니다...',
+      setup:
+        '바닥에 엎드려 누워 시작합니다. 발가락과 한쪽 팔로 체중을 지탱하는 자세로 몸을 움직여 보세요. 작업용 팔을 배치해야 합니다...',
+      execution:
+        '팔꿈치가 땅에 닿을 때까지 굽혀 몸을 낮추십시오. 천천히 내려오다가 반대방향으로 팔을 뻗어 원위치로 돌아옵니다...',
       transition: '',
     },
   },
@@ -21763,8 +22823,10 @@ registerLanguageTranslations('ko', {
       '원뿔 주위를 세 번 돌고 나면 휴식을 취하세요.',
     ],
     audio: {
-      intro: '싱글 콘 스프린트 드릴(Single-Cone Sprint Drill)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 빠른 발 동작을 가르칩니다. 단일 원뿔이 필요합니다. 한쪽 팔은 뒤로, 한쪽 팔은 앞쪽으로 원뿔 옆에 서기 시작합니다. 발을 자르세요...',
+      intro:
+        '싱글 콘 스프린트 드릴(Single-Cone Sprint Drill)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 훈련은 빠른 발 동작을 가르칩니다. 단일 원뿔이 필요합니다. 한쪽 팔은 뒤로, 한쪽 팔은 앞쪽으로 원뿔 옆에 서기 시작합니다. 발을 자르세요...',
       execution: '원뿔 주위를 세 번 돌고 나면 휴식을 취하세요.',
       transition: '',
     },
@@ -21778,7 +22840,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '싱글 덤벨 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 자세로 양손으로 덤벨을 잡고 손잡이 대신 덤벨의 머리 부분을 잡습니다. 팔을 쭉 뻗고 매달아야 합니다...',
+      setup:
+        '넓은 자세로 양손으로 덤벨을 잡고 손잡이 대신 덤벨의 머리 부분을 잡습니다. 팔을 쭉 뻗고 매달아야 합니다...',
       execution: '시작 위치로 돌아가서 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -21793,8 +22856,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '한쪽 다리 엉덩이 차기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리로 서서 시작하고, 구부린 무릎을 들어올립니다. 이것이 시작 위치가 될 것입니다. 반동 점프를 사용하여 확장하여 위쪽으로 이륙합니다...',
-      execution: '즉시 무릎을 구부리고 점프하는 다리의 뒤꿈치로 엉덩이를 터치해 보세요. 다리를 아래쪽으로 부분적으로 구부린 위치로 되돌립니다...',
+      setup:
+        '한쪽 다리로 서서 시작하고, 구부린 무릎을 들어올립니다. 이것이 시작 위치가 될 것입니다. 반동 점프를 사용하여 확장하여 위쪽으로 이륙합니다...',
+      execution:
+        '즉시 무릎을 구부리고 점프하는 다리의 뒤꿈치로 엉덩이를 터치해 보세요. 다리를 아래쪽으로 부분적으로 구부린 위치로 되돌립니다...',
       transition: '',
     },
   },
@@ -21807,9 +22872,12 @@ registerLanguageTranslations('ko', {
       '최대한 뻗었다가 잠시 멈췄다가 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '싱글 레그 글루트 브리지(Single Leg Glute Bridge)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 편평하게 하고 무릎을 구부린 채 바닥에 눕습니다. 한쪽 다리를 땅에서 들어 올려 무릎을 가슴쪽으로 당깁니다. 이것이 당신의 출발점이 될 것입니다...',
-      execution: '발뒤꿈치를 통해 구동하고 엉덩이를 위쪽으로 확장하고 둔근을 땅에서 들어 올려 동작을 실행합니다. 최대한 확장하세요. p...',
+      intro:
+        '싱글 레그 글루트 브리지(Single Leg Glute Bridge)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '발을 편평하게 하고 무릎을 구부린 채 바닥에 눕습니다. 한쪽 다리를 땅에서 들어 올려 무릎을 가슴쪽으로 당깁니다. 이것이 당신의 출발점이 될 것입니다...',
+      execution:
+        '발뒤꿈치를 통해 구동하고 엉덩이를 위쪽으로 확장하고 둔근을 땅에서 들어 올려 동작을 실행합니다. 최대한 확장하세요. p...',
       transition: '',
     },
   },
@@ -21822,7 +22890,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '싱글 레그 하이 박스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '랙에 상자를 놓습니다. 상자 위에 밴드나 밧줄을 고정하십시오. 그 앞에 서서 상자 위로 완전히 서있는 자세로 올라서서...',
+      setup:
+        '랙에 상자를 놓습니다. 상자 위에 밴드나 밧줄을 고정하십시오. 그 앞에 서서 상자 위로 완전히 서있는 자세로 올라서서...',
       execution: '. 반대쪽으로 전환하기 전에 같은 다리를 계속해서 위아래로 밟습니다.',
       transition: '',
     },
@@ -21836,8 +22905,10 @@ registerLanguageTranslations('ko', {
       '마지막에는 돌아서 다른 쪽 다리로 돌아갑니다.',
     ],
     audio: {
-      intro: '단일 다리 홉 진행(Single-Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '당신 앞에 원뿔을 배열하십시오. 한쪽 다리로 균형을 잡고 편안하게 선 자세를 취하세요. 반대쪽 다리의 무릎을 들어 올리세요. 이것은...',
+      intro:
+        '단일 다리 홉 진행(Single-Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '당신 앞에 원뿔을 배열하십시오. 한쪽 다리로 균형을 잡고 편안하게 선 자세를 취하세요. 반대쪽 다리의 무릎을 들어 올리세요. 이것은...',
       execution: '원뿔에서 원뿔로 점프하려면 반동 점프를 사용하세요. 마지막에는 돌아서 다른 쪽 다리로 돌아갑니다.',
       transition: '',
     },
@@ -21852,7 +22923,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '단일 다리 측면 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원뿔이나 장애물 옆에 서십시오. 시작 위치로 들어가려면 무릎을 약간 구부린 채 한쪽 다리로 서세요. 시작하려면 counterju를 실행하세요...',
+      setup:
+        '원뿔이나 장애물 옆에 서십시오. 시작 위치로 들어가려면 무릎을 약간 구부린 채 한쪽 다리로 서세요. 시작하려면 counterju를 실행하세요...',
       execution: '점프하는 다리로 착지한 후 즉시 시작 위치로 다시 점프하여 튀어나옵니다. 계속해서 앞뒤로 뛰어보세요.',
       transition: '',
     },
@@ -21866,8 +22938,10 @@ registerLanguageTranslations('ko', {
       '원하는 반복 횟수만큼 반복합니다.',
     ],
     audio: {
-      intro: '단일 다리 다리 확장(Single Leg Leg Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '기계에 앉아 올바른 위치에 있도록 조정하십시오. 패드는 정강이 아래쪽 부분에 닿아야 하지만 반대 방향으로는 안 됩니다...',
+      intro:
+        '단일 다리 다리 확장(Single Leg Leg Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '기계에 앉아 올바른 위치에 있도록 조정하십시오. 패드는 정강이 아래쪽 부분에 닿아야 하지만 반대 방향으로는 안 됩니다...',
       execution: '근육에 긴장을 유지하면서 무게를 멈추지 않고 시작 위치로 돌아갑니다. 원하는 반복 횟수만큼 반복합니다.',
       transition: '',
     },
@@ -21881,7 +22955,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '싱글 레그 푸시오프(Single Leg Push-off)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 발을 상자 위에 놓고 바닥에 서서 발뒤꿈치를 가장자리에 가깝게 합니다. 상자 위로 발을 올려 밀어서 최대한 많은 것을 얻으려고 노력하세요...',
+      setup:
+        '한쪽 발을 상자 위에 놓고 바닥에 서서 발뒤꿈치를 가장자리에 가깝게 합니다. 상자 위로 발을 올려 밀어서 최대한 많은 것을 얻으려고 노력하세요...',
       execution: '같은 발로 박스 위에 착지하고 다른 발을 다시 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -21895,7 +22970,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '한쪽 다리 보폭 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '안쪽 발을 상자 가장자리에 가깝게 상자 옆에 놓으십시오. 위쪽 다리를 밀면서 팔을 위로 휘두르면서 시작하세요...',
+      setup:
+        '안쪽 발을 상자 가장자리에 가깝게 상자 옆에 놓으십시오. 위쪽 다리를 밀면서 팔을 위로 휘두르면서 시작하세요...',
       execution: '시작했을 때와 같은 자세로 착지하고 안쪽 다리를 사용하여 충격을 줄입니다.',
       transition: '',
     },
@@ -21909,8 +22985,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '싯 스쿼트는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 무릎과 엉덩이를 구부리고 편안하게 앉아 동작을 시작하세요...',
-      execution: '아래로 쪼그리고 앉아 평행선 위에 도달할 때까지 계속하고, 시작 지점으로 돌아올 때까지 빠르게 동작을 반대로 합니다...',
+      setup:
+        '발을 어깨 너비로 벌리고 서세요. 이것이 당신의 시작 위치가 될 것입니다. 무릎과 엉덩이를 구부리고 편안하게 앉아 동작을 시작하세요...',
+      execution:
+        '아래로 쪼그리고 앉아 평행선 위에 도달할 때까지 계속하고, 시작 지점으로 돌아올 때까지 빠르게 동작을 반대로 합니다...',
       transition: '',
     },
   },
@@ -21938,8 +23016,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스케이트는 적당한 속도의 운동이다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '롤러 스케이트는 심폐지구력과 근지구력을 향상시키는 데 효과적인 재미있는 활동입니다. 상대적으로 좋은 것이 필요합니다...',
-      execution: '30분 동안 편안한 속도로 스케이트를 탈 수 있습니다. 심장 강화 운동을 원한다면 인터벌 스케이팅을 하세요. 스피드 스케이팅은 매 2분마다...',
+      setup:
+        '롤러 스케이트는 심폐지구력과 근지구력을 향상시키는 데 효과적인 재미있는 활동입니다. 상대적으로 좋은 것이 필요합니다...',
+      execution:
+        '30분 동안 편안한 속도로 스케이트를 탈 수 있습니다. 심장 강화 운동을 원한다면 인터벌 스케이팅을 하세요. 스피드 스케이팅은 매 2분마다...',
       transition: '',
     },
   },
@@ -21951,7 +23031,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '슬레드 드래그(Sled Drag) - 하네스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 원하는 무게의 썰매를 싣고 당김 스트랩을 부착하세요. 손잡이로 당기거나, 하네스를 사용하거나, 당기는 끈을 부착할 수 있습니다...',
+      setup:
+        '시작하려면 원하는 무게의 썰매를 싣고 당김 스트랩을 부착하세요. 손잡이로 당기거나, 하네스를 사용하거나, 당기는 끈을 부착할 수 있습니다...',
       execution: '앞으로 당기든 뒤로 당기든 이동 방향으로 몸을 기울이고 엉덩이와 무릎을 뻗어 전진합니다.',
       transition: '',
     },
@@ -21964,8 +23045,10 @@ registerLanguageTranslations('ko', {
       '팔을 머리 위로 올린 채 뒤로 걷는다. 갑작스런 움직임을 피하십시오.',
     ],
     audio: {
-      intro: '썰매 오버헤드 백워드 워크(Sled Overhead Backward Walk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밧줄이나 사슬로 연결된 썰매에 이중 손잡이를 부착하세요. 썰매를 가벼운 무게로 싣습니다. 썰매를 바라보며 약간의 긴장감이 생길 때까지 후진합니다...',
+      intro:
+        '썰매 오버헤드 백워드 워크(Sled Overhead Backward Walk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '밧줄이나 사슬로 연결된 썰매에 이중 손잡이를 부착하세요. 썰매를 가벼운 무게로 싣습니다. 썰매를 바라보며 약간의 긴장감이 생길 때까지 후진합니다...',
       execution: '팔을 머리 위로 올린 채 뒤로 걷는다. 갑작스런 움직임을 피하십시오.',
       transition: '',
     },
@@ -21979,9 +23062,12 @@ registerLanguageTranslations('ko', {
       '완전히 뻗은 후에는 앞으로 나아가서 라인에서 느슨해진 부분을 빼냅니다. 안정성을 높이기 위해 발을 엇갈리게 유지할 수 있습니다.',
     ],
     audio: {
-      intro: '슬레드 오버헤드 삼두근 확장(Sled Overhead Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '체인이나 로프를 사용하여 썰매에 이중 손잡이를 부착합니다. 슬레드를 적절한 적재량으로 적재합니다. 썰매에서 멀어지는 방향으로 수십 명이 나올 때까지 물러나세요...',
-      execution: '팔꿈치를 통해 팔을 곧게 펴십시오. 삼두근을 분리할 수 있도록 윗팔이 제 위치에 있는지 확인하세요. 완전히 확장되면 앞으로 나아갑니다...',
+      intro:
+        '슬레드 오버헤드 삼두근 확장(Sled Overhead Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '체인이나 로프를 사용하여 썰매에 이중 손잡이를 부착합니다. 슬레드를 적절한 적재량으로 적재합니다. 썰매에서 멀어지는 방향으로 수십 명이 나올 때까지 물러나세요...',
+      execution:
+        '팔꿈치를 통해 팔을 곧게 펴십시오. 삼두근을 분리할 수 있도록 윗팔이 제 위치에 있는지 확인하세요. 완전히 확장되면 앞으로 나아갑니다...',
       transition: '',
     },
   },
@@ -21993,8 +23079,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '슬레드 푸시(Sled Push)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 무게로 미는 썰매를 싣습니다. 팔을 완전히 뻗은 채 썰매에 기대어 핸들을 잡고 운동적인 자세를 취하세요...',
-      execution: '팔을 완전히 뻗은 채 썰매에 몸을 기대고 손잡이를 잡는 운동적인 자세를 취하세요. 썰매를 최대한 빨리 밀면서 집중하세요...',
+      setup:
+        '원하는 무게로 미는 썰매를 싣습니다. 팔을 완전히 뻗은 채 썰매에 기대어 핸들을 잡고 운동적인 자세를 취하세요...',
+      execution:
+        '팔을 완전히 뻗은 채 썰매에 몸을 기대고 손잡이를 잡는 운동적인 자세를 취하세요. 썰매를 최대한 빨리 밀면서 집중하세요...',
       transition: '',
     },
   },
@@ -22008,8 +23096,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '슬레드 리버스 플라이(Sled Reverse Flye)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밧줄이나 사슬로 연결된 썰매에 이중 손잡이를 부착하세요. 썰매를 가벼운 무게로 싣습니다. 썰매를 바라보며 약간의 긴장감이 생길 때까지 후진합니다...',
-      execution: '팔꿈치를 구부리지 않은 채 핸들을 위쪽으로 당겨 벌리고 외부 회전을 하면서 리버스 플라이를 수행합니다. 손바닥은 다음을 향해야 합니다...',
+      setup:
+        '밧줄이나 사슬로 연결된 썰매에 이중 손잡이를 부착하세요. 썰매를 가벼운 무게로 싣습니다. 썰매를 바라보며 약간의 긴장감이 생길 때까지 후진합니다...',
+      execution:
+        '팔꿈치를 구부리지 않은 채 핸들을 위쪽으로 당겨 벌리고 외부 회전을 하면서 리버스 플라이를 수행합니다. 손바닥은 다음을 향해야 합니다...',
       transition: '',
     },
   },
@@ -22023,8 +23113,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '슬레드 로우(Sled Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밧줄이나 사슬로 연결된 썰매에 이중 손잡이를 부착하세요. 썰매에 적절한 무게를 싣습니다. 썰매를 바라보며 약간의 충격이 있을 때까지 후진합니다...',
-      execution: '움직임을 시작하려면 견갑골을 수축하면서 팔꿈치를 구부리고 썰매를 몸쪽으로 당깁니다. 긴장을 풀기 위해 한두 걸음 뒤로 물러서세요...',
+      setup:
+        '밧줄이나 사슬로 연결된 썰매에 이중 손잡이를 부착하세요. 썰매에 적절한 무게를 싣습니다. 썰매를 바라보며 약간의 충격이 있을 때까지 후진합니다...',
+      execution:
+        '움직임을 시작하려면 견갑골을 수축하면서 팔꿈치를 구부리고 썰매를 몸쪽으로 당깁니다. 긴장을 풀기 위해 한두 걸음 뒤로 물러서세요...',
       transition: '',
     },
   },
@@ -22038,8 +23130,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '슬레지해머 스윙(Sledgehammer Swings)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 하려면 타이어와 큰 망치가 필요합니다. 엇갈린 자세로 타이어에서 약 2피트 떨어진 곳에 서십시오. 그립...',
-      execution: '썰매를 올리면 오른손이 머리쪽으로 미끄러집니다. 다운스윙을 하면 오른손이 아래로 미끄러져 왼손과 합류하게 됩니다. 꽝...',
+      setup:
+        '이 운동을 하려면 타이어와 큰 망치가 필요합니다. 엇갈린 자세로 타이어에서 약 2피트 떨어진 곳에 서십시오. 그립...',
+      execution:
+        '썰매를 올리면 오른손이 머리쪽으로 미끄러집니다. 다운스윙을 하면 오른손이 아래로 미끄러져 왼손과 합류하게 됩니다. 꽝...',
       transition: '',
     },
   },
@@ -22055,8 +23149,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스미스 인클라인 숄더 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신 아래에 경사 벤치를 놓습니다. 바벨을 누워서 손이 닿을 수 있는 높이, 팔이 거의 꽉 찬 위치에 놓습니다...',
-      execution: '숨을 내쉬면서 팔이 완전히 펴질 때까지 바를 들어 올리세요. 참고: 수축은 어깨 주위에서 느껴져야 합니다. 잠시 후...',
+      setup:
+        '스미스 머신 아래에 경사 벤치를 놓습니다. 바벨을 누워서 손이 닿을 수 있는 높이, 팔이 거의 꽉 찬 위치에 놓습니다...',
+      execution:
+        '숨을 내쉬면서 팔이 완전히 펴질 때까지 바를 들어 올리세요. 참고: 수축은 어깨 주위에서 느껴져야 합니다. 잠시 후...',
       transition: '',
     },
   },
@@ -22071,8 +23167,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Machine Behind the Back Shrug은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 허벅지 높이에 놓고 적절한 중량을 싣습니다. 바를 뒤에 두고 서서 어깨 너비로 바를 회내 그립으로 잡은 후 풀기...',
-      execution: '어깨를 수직으로 으쓱하면서 동작을 시작하세요. 동작 중에 팔이나 손목을 구부리지 마십시오. 잠시 멈춘 후 우리는...',
+      setup:
+        '바를 허벅지 높이에 놓고 적절한 중량을 싣습니다. 바를 뒤에 두고 서서 어깨 너비로 바를 회내 그립으로 잡은 후 풀기...',
+      execution:
+        '어깨를 수직으로 으쓱하면서 동작을 시작하세요. 동작 중에 팔이나 손목을 구부리지 마십시오. 잠시 멈춘 후 우리는...',
       transition: '',
     },
   },
@@ -22086,9 +23184,12 @@ registerLanguageTranslations('ko', {
       '작업이 끝나면 바를 랙에 다시 잠급니다.',
     ],
     audio: {
-      intro: '스미스 머신 벤치 프레스(Smith Machine Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신 아래에 평평한 벤치를 놓습니다. 이제 바벨을 누워서 손이 닿을 수 있고 팔이 거의 꽉 찬 높이에 놓습니다...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
+      intro:
+        '스미스 머신 벤치 프레스(Smith Machine Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '스미스 머신 아래에 평평한 벤치를 놓습니다. 이제 바벨을 누워서 손이 닿을 수 있고 팔이 거의 꽉 찬 높이에 놓습니다...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
       transition: '',
     },
   },
@@ -22104,8 +23205,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Machine Bent Over Row는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신에 부착된 바벨을 무릎 아래 약 2인치 높이에 설정합니다. 무릎을 살짝 구부리고 상체를 앞으로 가져오세요...',
-      execution: '이제 오버핸드(회내) 그립을 사용하여 바벨을 잡고 스미스 머신 랙에서 잠금을 해제합니다. 그런 다음 그것이 당신 앞에 직접 매달리도록 하세요...',
+      setup:
+        '스미스 머신에 부착된 바벨을 무릎 아래 약 2인치 높이에 설정합니다. 무릎을 살짝 구부리고 상체를 앞으로 가져오세요...',
+      execution:
+        '이제 오버핸드(회내) 그립을 사용하여 바벨을 잡고 스미스 머신 랙에서 잠금을 해제합니다. 그런 다음 그것이 당신 앞에 직접 매달리도록 하세요...',
       transition: '',
     },
   },
@@ -22120,8 +23223,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스미스머신 카프 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신의 바 아래에 블록이나 웨이트 플레이트를 놓습니다. 바를 자신의 키에 가장 잘 맞는 위치로 설정하세요. 높이가 정확하면 ...',
-      execution: '발의 볼을 밀어 발뒤꿈치를 최대한 높이 올리고, 수축 최고점에서 종아리를 구부립니다. 무릎을 꿇어야 합니다...',
+      setup:
+        '스미스 머신의 바 아래에 블록이나 웨이트 플레이트를 놓습니다. 바를 자신의 키에 가장 잘 맞는 위치로 설정하세요. 높이가 정확하면 ...',
+      execution:
+        '발의 볼을 밀어 발뒤꿈치를 최대한 높이 올리고, 수축 최고점에서 종아리를 구부립니다. 무릎을 꿇어야 합니다...',
       transition: '',
     },
   },
@@ -22135,9 +23240,12 @@ registerLanguageTranslations('ko', {
       '작업이 끝나면 바를 랙에 다시 잠급니다.',
     ],
     audio: {
-      intro: '스미스 머신 클로즈 그립 벤치 프레스(Smith Machine Close-Grip Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신 아래에 평평한 벤치를 놓습니다. 누웠을 때 손이 닿을 수 있는 높이에 바벨을 놓고 팔을 거의 완전히 펴세요...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 삼두근을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
+      intro:
+        '스미스 머신 클로즈 그립 벤치 프레스(Smith Machine Close-Grip Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '스미스 머신 아래에 평평한 벤치를 놓습니다. 누웠을 때 손이 닿을 수 있는 높이에 바벨을 놓고 팔을 거의 완전히 펴세요...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 삼두근을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
       transition: '',
     },
   },
@@ -22153,7 +23261,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Smith Machine Decline Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바가 가슴 위에 오도록 디클라인 벤치를 랙에 배치합니다. 적절한 무게를 싣고 벤치에 앉으세요. 회전...',
-      execution: '팔을 구부리고 바를 가슴까지 낮추면서 동작을 시작하세요. 잠시 멈췄다가 팔을 뻗어 무게를 다시 수직으로 밀어 넣으세요...',
+      execution:
+        '팔을 구부리고 바를 가슴까지 낮추면서 동작을 시작하세요. 잠시 멈췄다가 팔을 뻗어 무게를 다시 수직으로 밀어 넣으세요...',
       transition: '',
     },
   },
@@ -22169,7 +23278,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Machine Hang Power Clean은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 무릎 높이에 놓고 적절한 무게를 싣습니다. 바를 어깨 너비 바깥쪽으로 회내 그립으로 잡고 바를 풀어줍니다...',
+      setup:
+        '바를 무릎 높이에 놓고 적절한 무게를 싣습니다. 바를 어깨 너비 바깥쪽으로 회내 그립으로 잡고 바를 풀어줍니다...',
       execution: '엉덩이와 무릎을 힘차게 펴고 바를 향해 가속하면서 동작을 시작합니다. 이 파 동안 팔을 곧게 펴십시오...',
       transition: '',
     },
@@ -22199,9 +23309,12 @@ registerLanguageTranslations('ko', {
       '작업이 끝나면 바를 랙에 다시 놓습니다.',
     ],
     audio: {
-      intro: '스미스 머신 인클라인 벤치 프레스(Smith Machine Incline Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신 아래에 경사 벤치를 놓습니다. 바벨을 누워서 손이 닿을 수 있는 높이, 팔이 거의 꽉 찬 위치에 놓습니다...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
+      intro:
+        '스미스 머신 인클라인 벤치 프레스(Smith Machine Incline Bench Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '스미스 머신 아래에 경사 벤치를 놓습니다. 바벨을 누워서 손이 닿을 수 있는 높이, 팔이 거의 꽉 찬 위치에 놓습니다...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하세요...',
       transition: '',
     },
   },
@@ -22214,7 +23327,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Machine Leg Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 'Smith 머신 바를 지면에서 몇 피트 떨어진 곳에 배치합니다. 안전 장치 위에 놓여 있는지 확인하십시오. 막대를 적절한 위치에 로드한 후 우리는...',
+      setup:
+        'Smith 머신 바를 지면에서 몇 피트 떨어진 곳에 배치합니다. 안전 장치 위에 놓여 있는지 확인하십시오. 막대를 적절한 위치에 로드한 후 우리는...',
       execution: '동작의 최고 단계에서 잠시 멈춘 후 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -22231,7 +23345,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Smith Machine One-Arm Upright Row는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바를 허벅지 높이에 놓고 적절한 중량을 싣습니다. 바를 넓게 잡고 웨이트를 풀고 바에서 손을 떼십시오. 요...',
-      execution: '팔꿈치를 구부리고 팔꿈치가 뾰족한 상태에서 윗팔을 들어 올려 동작을 시작합니다. 윗팔이 바닥과 평행이 될 때까지 계속하세요. ...',
+      execution:
+        '팔꿈치를 구부리고 팔꿈치가 뾰족한 상태에서 윗팔을 들어 올려 동작을 시작합니다. 윗팔이 바닥과 평행이 될 때까지 계속하세요. ...',
       transition: '',
     },
   },
@@ -22246,8 +23361,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스미스 머신 오버헤드 숄더 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 스미스 머신 아래에 평평한 벤치(또는 등받이가 있는 벤치가 있으면 좋음)를 놓습니다. 앉았을 때...',
-      execution: '숨을 들이마시면서 바벨이 턱 높이에 올 때까지 천천히 바벨을 내리기 시작합니다. 그런 다음 s를 사용하여 바벨을 다시 시작 위치로 들어 올리세요...',
+      setup:
+        '시작하려면 스미스 머신 아래에 평평한 벤치(또는 등받이가 있는 벤치가 있으면 좋음)를 놓습니다. 앉았을 때...',
+      execution:
+        '숨을 들이마시면서 바벨이 턱 높이에 올 때까지 천천히 바벨을 내리기 시작합니다. 그런 다음 s를 사용하여 바벨을 다시 시작 위치로 들어 올리세요...',
       transition: '',
     },
   },
@@ -22262,8 +23379,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스미스 머신 피스톨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 먼저 바를 자신의 키에 가장 잘 맞는 위치에 설정하세요. 그 아래로 가서 바를 어깨 뒤쪽에 위치시키세요. 받아...',
-      execution: '바 앞쪽으로 한 발을 약 12인치 앞으로 이동합니다. 다른 쪽 다리를 앞으로 뻗어 땅에서 떼어냅니다. 기대해 보세요...',
+      setup:
+        '시작하려면 먼저 바를 자신의 키에 가장 잘 맞는 위치에 설정하세요. 그 아래로 가서 바를 어깨 뒤쪽에 위치시키세요. 받아...',
+      execution:
+        '바 앞쪽으로 한 발을 약 12인치 앞으로 이동합니다. 다른 쪽 다리를 앞으로 뻗어 땅에서 떼어냅니다. 기대해 보세요...',
       transition: '',
     },
   },
@@ -22278,9 +23397,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스미스 머신 리버스 카프 레이즈(Smith Machine Reverse Calf Racheles)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스미스 머신의 바벨을 자신의 키에 맞게 조정하고 바 바로 아래에 올려진 플랫폼을 정렬합니다. 플랫폼에 서서...',
-      execution: '이제 설명된 발 위치를 유지하면서 어깨를 바벨 아래에 놓고 엉덩이와 무릎을 펴서 바벨을 위로 밀어 올리세요...',
+      intro:
+        '스미스 머신 리버스 카프 레이즈(Smith Machine Reverse Calf Racheles)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '스미스 머신의 바벨을 자신의 키에 맞게 조정하고 바 바로 아래에 올려진 플랫폼을 정렬합니다. 플랫폼에 서서...',
+      execution:
+        '이제 설명된 발 위치를 유지하면서 어깨를 바벨 아래에 놓고 엉덩이와 무릎을 펴서 바벨을 위로 밀어 올리세요...',
       transition: '',
     },
   },
@@ -22296,8 +23418,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스미스 머신 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 먼저 자신의 키에 가장 잘 맞는 높이에 바를 설정하세요. 올바른 높이가 선택되고 바가 로드되면 바 아래로 들어가세요...',
-      execution: '발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 배치합니다. 항상 머리를 숙이고 긴장을 유지하세요...',
+      setup:
+        '시작하려면 먼저 자신의 키에 가장 잘 맞는 높이에 바를 설정하세요. 올바른 높이가 선택되고 바가 로드되면 바 아래로 들어가세요...',
+      execution:
+        '발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 배치합니다. 항상 머리를 숙이고 긴장을 유지하세요...',
       transition: '',
     },
   },
@@ -22312,8 +23436,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Machine Stiff-Legged Deadlift는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 스미스 머신의 바를 허벅지 중간 정도의 높이로 설정하십시오. 올바른 높이가 선택되고 막대가 l이 되면...',
-      execution: '무릎을 고정한 상태에서 등을 곧게 유지하면서 허리를 구부려 바벨을 발 위쪽까지 내립니다. 계속 움직여...',
+      setup:
+        '시작하려면 스미스 머신의 바를 허벅지 중간 정도의 높이로 설정하십시오. 올바른 높이가 선택되고 막대가 l이 되면...',
+      execution:
+        '무릎을 고정한 상태에서 등을 곧게 유지하면서 허리를 구부려 바벨을 발 위쪽까지 내립니다. 계속 움직여...',
       transition: '',
     },
   },
@@ -22328,8 +23454,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Machine Upright Row는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 스미스 머신의 바를 허벅지 중간 정도의 높이로 설정하십시오. 올바른 높이가 선택되고 막대가 l이 되면...',
-      execution: '숨을 내쉴 때 옆 어깨를 사용하여 바를 들어 올리십시오. 바를 위로 움직일 때 바가 몸에 가까워야 합니다. 거의 닿을 때까지 계속 들어 올리세요...',
+      setup:
+        '시작하려면 스미스 머신의 바를 허벅지 중간 정도의 높이로 설정하십시오. 올바른 높이가 선택되고 막대가 l이 되면...',
+      execution:
+        '숨을 내쉴 때 옆 어깨를 사용하여 바를 들어 올리십시오. 바를 위로 움직일 때 바가 몸에 가까워야 합니다. 거의 닿을 때까지 계속 들어 올리세요...',
       transition: '',
     },
   },
@@ -22346,8 +23474,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Smith Single-Leg Split Squat는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 대장간 기계 뒤에 2~3피트 떨어진 곳에 평평한 벤치를 놓습니다. 그런 다음 자신의 키에 가장 잘 맞는 높이에 바를 설정하세요. 일단 정답이군요...',
-      execution: '한쪽 발을 바 아래 약간 앞으로 놓고 다른 쪽 다리를 뒤로 뻗어 발등을 벤치 위에 올려 다리 위치를 정하세요...',
+      setup:
+        '시작하려면 대장간 기계 뒤에 2~3피트 떨어진 곳에 평평한 벤치를 놓습니다. 그런 다음 자신의 키에 가장 잘 맞는 높이에 바를 설정하세요. 일단 정답이군요...',
+      execution:
+        '한쪽 발을 바 아래 약간 앞으로 놓고 다른 쪽 다리를 뒤로 뻗어 발등을 벤치 위에 올려 다리 위치를 정하세요...',
       transition: '',
     },
   },
@@ -22364,8 +23494,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스내치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발가락과 발의 나머지 부분 사이의 연결 바로 위에 바벨을 놓고 발을 어깨 너비의 자세로 놓습니다. 아빠와 함께...',
-      execution: '발로 움직이는 플랫폼처럼 바닥을 밀기 시작하고 동시에 바벨을 다리 가까이에 유지하면서 들어 올리기 시작합니다. ...',
+      setup:
+        '발가락과 발의 나머지 부분 사이의 연결 바로 위에 바벨을 놓고 발을 어깨 너비의 자세로 놓습니다. 아빠와 함께...',
+      execution:
+        '발로 움직이는 플랫폼처럼 바닥을 밀기 시작하고 동시에 바벨을 다리 가까이에 유지하면서 들어 올리기 시작합니다. ...',
       transition: '',
     },
   },
@@ -22380,7 +23512,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스내치 밸런스(Snatch Balance)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발은 당기는 자세로 시작하고, 바는 어깨 뒤쪽에 걸치고, 손은 넓은 스내치 그립에 놓습니다. b를 터뜨려...',
-      execution: '스쿼트 바닥 근처에서 머리 위로 바를 잠그십시오. 몸통은 수직을 유지하면서 다리 사이의 엉덩이를 낮추어야 합니다. 계속해서...',
+      execution:
+        '스쿼트 바닥 근처에서 머리 위로 바를 잠그십시오. 몸통은 수직을 유지하면서 다리 사이의 엉덩이를 낮추어야 합니다. 계속해서...',
       transition: '',
     },
   },
@@ -22393,8 +23526,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스내치 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스내치 데드리프트는 스내치의 첫 번째 당기기를 강화합니다. 플랫폼에 바벨을 놓고 넓은 스내치 그립으로 시작하십시오. 발은...',
-      execution: '그 시점에서 뒤로 누워서 엉덩이를 바 위로 밀어 넣으십시오. 동작을 반대로 하여 바를 플랫폼으로 되돌립니다.',
+      setup:
+        '스내치 데드리프트는 스내치의 첫 번째 당기기를 강화합니다. 플랫폼에 바벨을 놓고 넓은 스내치 그립으로 시작하십시오. 발은...',
+      execution:
+        '그 시점에서 뒤로 누워서 엉덩이를 바 위로 밀어 넣으십시오. 동작을 반대로 하여 바를 플랫폼으로 되돌립니다.',
       transition: '',
     },
   },
@@ -22409,8 +23544,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Snatch from Blocks는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '원하는 높이의 상자나 스탠드에 로드된 바벨로 시작하십시오. 바는 넓은 그립으로 잡아야 합니다. 발은 발 바로 아래에 있어야 합니다...',
-      execution: '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
+      setup:
+        '원하는 높이의 상자나 스탠드에 로드된 바벨로 시작하십시오. 바는 넓은 그립으로 잡아야 합니다. 발은 발 바로 아래에 있어야 합니다...',
+      execution:
+        '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
       transition: '',
     },
   },
@@ -22424,8 +23561,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스내치 풀(Snatch Pull)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바벨을 정강이 근처 바닥에 놓고 넓은 스내치 그립을 잡습니다. 발뒤꿈치, 등을 곧게 펴고 머리에 체중을 집중하여 엉덩이를 낮추고...',
-      execution: '다음에는 당기는 가속도의 주요 원인인 두 번째 당기기가 옵니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
+      setup:
+        '바벨을 정강이 근처 바닥에 놓고 넓은 스내치 그립을 잡습니다. 발뒤꿈치, 등을 곧게 펴고 머리에 체중을 집중하여 엉덩이를 낮추고...',
+      execution:
+        '다음에는 당기는 가속도의 주요 원인인 두 번째 당기기가 옵니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
       transition: '',
     },
   },
@@ -22437,8 +23576,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Snatch Shrug는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 허벅지 중간 위치에 매달고 넓은 그립으로 시작합니다. 후크나 오버핸드 그립을 사용할 수 있습니다. 등은 곧고 구부러져야 합니다...',
-      execution: '어깨를 귀 쪽으로 으쓱해 보세요. 이 운동은 일반적으로 스내치보다 더 무거운 무게로 수행될 수 있지만, 지점까지 과부하가 걸리지 않도록 하세요...',
+      setup:
+        '바를 허벅지 중간 위치에 매달고 넓은 그립으로 시작합니다. 후크나 오버핸드 그립을 사용할 수 있습니다. 등은 곧고 구부러져야 합니다...',
+      execution:
+        '어깨를 귀 쪽으로 으쓱해 보세요. 이 운동은 일반적으로 스내치보다 더 무거운 무게로 수행될 수 있지만, 지점까지 과부하가 걸리지 않도록 하세요...',
       transition: '',
     },
   },
@@ -22452,8 +23593,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스피드 밴드 오버헤드 삼두근은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동을 하려면 밴드를 땅에 고정하세요. 우리는 경사 벤치를 사용하고 벤치 위에 서서 밴드를 베이스에 고정했습니다. 또는 ...',
-      execution: '동작을 수행하려면 팔꿈치를 통해 팔을 곧게 펴고 팔 윗부분이 제자리에 유지되도록 하세요. 일시중지한 후 다시 돌아가세요...',
+      setup:
+        '이 운동을 하려면 밴드를 땅에 고정하세요. 우리는 경사 벤치를 사용하고 벤치 위에 서서 밴드를 베이스에 고정했습니다. 또는 ...',
+      execution:
+        '동작을 수행하려면 팔꿈치를 통해 팔을 곧게 펴고 팔 윗부분이 제자리에 유지되도록 하세요. 일시중지한 후 다시 돌아가세요...',
       transition: '',
     },
   },
@@ -22468,8 +23611,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스피드 박스 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '지면 근처에 단단히 고정된 바에 밴드를 부착합니다. 적절한 장력을 얻으려면 밴드를 조여야 할 수도 있습니다. 앱 상자를 사용하세요...',
-      execution: '바를 등 위쪽에 위치시키고, 견갑골은 수축하고, 등은 아치형이 되며, 머리부터 발끝까지 모든 것이 단단해집니다. 이것이 시작 위치가 될 것입니다. 너...',
+      setup:
+        '지면 근처에 단단히 고정된 바에 밴드를 부착합니다. 적절한 장력을 얻으려면 밴드를 조여야 할 수도 있습니다. 앱 상자를 사용하세요...',
+      execution:
+        '바를 등 위쪽에 위치시키고, 견갑골은 수축하고, 등은 아치형이 되며, 머리부터 발끝까지 모든 것이 단단해집니다. 이것이 시작 위치가 될 것입니다. 너...',
       transition: '',
     },
   },
@@ -22485,8 +23630,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스피드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -22500,8 +23647,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스펠 캐스터는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '회내 그립으로 양손에 덤벨을 잡습니다. 엉덩이와 무릎을 펴고 발을 넓게 벌려야 합니다. 이것이 당신의 시작 위치가 될 것입니다....',
-      execution: '팔을 곧게 펴고 덤벨을 지면과 평행하게 유지하면서 몸통을 회전시켜 웨이트를 반대쪽으로 휘두르세요. 계속해서...',
+      setup:
+        '회내 그립으로 양손에 덤벨을 잡습니다. 엉덩이와 무릎을 펴고 발을 넓게 벌려야 합니다. 이것이 당신의 시작 위치가 될 것입니다....',
+      execution:
+        '팔을 곧게 펴고 덤벨을 지면과 평행하게 유지하면서 몸통을 회전시켜 웨이트를 반대쪽으로 휘두르세요. 계속해서...',
       transition: '',
     },
   },
@@ -22547,8 +23696,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '척추 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등이 곧게 펴지고 발이 바닥에 닿도록 의자에 앉습니다. 손가락을 머리 뒤로 깍지 끼고 팔꿈치는 바깥쪽으로, 턱은 아래로 내립니다.',
-      execution: '상체를 한쪽으로 3회 정도 최대한 비틀어줍니다. 그런 다음 앞으로 몸을 기울이고 몸통을 비틀어 팔꿈치가 바닥에 닿도록 합니다...',
+      setup:
+        '등이 곧게 펴지고 발이 바닥에 닿도록 의자에 앉습니다. 손가락을 머리 뒤로 깍지 끼고 팔꿈치는 바깥쪽으로, 턱은 아래로 내립니다.',
+      execution:
+        '상체를 한쪽으로 3회 정도 최대한 비틀어줍니다. 그런 다음 앞으로 몸을 기울이고 몸통을 비틀어 팔꿈치가 바닥에 닿도록 합니다...',
       transition: '',
     },
   },
@@ -22564,8 +23715,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스플릿 클린(Split Clean)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바벨을 정강이 근처 바닥에 놓고 다리 바로 바깥쪽을 오버핸드 그립으로 잡습니다. 뒤꿈치에 체중을 집중시켜 엉덩이를 낮추고, ...',
-      execution: '다음은 클린 가속의 주요 원인인 두 번째 당김입니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
+      setup:
+        '바벨을 정강이 근처 바닥에 놓고 다리 바로 바깥쪽을 오버핸드 그립으로 잡습니다. 뒤꿈치에 체중을 집중시켜 엉덩이를 낮추고, ...',
+      execution:
+        '다음은 클린 가속의 주요 원인인 두 번째 당김입니다. 바가 허벅지 중간 위치에 접근하면 바를 통해 확장을 시작합니다...',
       transition: '',
     },
   },
@@ -22580,7 +23733,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스플릿 저크(Split Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무게를 어깨 앞쪽에 싣고 서서 딥부터 시작하세요. 발을 엉덩이 바로 아래에 놓고 무릎을 구부리세요....',
-      execution: '발이 플랫폼을 향해 활발하게 움직이지 않는 짧은 순간 동안 선수는 바를 위로 밀려는 노력으로 인해 발이 아래로 내려가게 됩니다. 발 ...',
+      execution:
+        '발이 플랫폼을 향해 활발하게 움직이지 않는 짧은 순간 동안 선수는 바를 위로 밀려는 노력으로 인해 발이 아래로 내려가게 됩니다. 발 ...',
       transition: '',
     },
   },
@@ -22596,7 +23750,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스플릿 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무릎을 구부린 채 한 발을 앞으로 내밀고 뒤쪽 무릎이 거의 땅에 닿는 런지 자세를 취합니다. 앞쪽 무릎이...',
-      execution: '두 다리를 뻗어 최대한 높이 점프하고 팔을 휘두르며 들어올리세요. 점프하면서 발을 모으고 뒤로 이동하세요...',
+      execution:
+        '두 다리를 뻗어 최대한 높이 점프하고 팔을 휘두르며 들어올리세요. 점프하면서 발을 모으고 뒤로 이동하세요...',
       transition: '',
     },
   },
@@ -22612,8 +23767,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스플릿 스내치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 바벨을 얹고 시작하세요. 바는 정강이에 가깝거나 닿아야 하며 바를 넓은 그립으로 잡아야 합니다. 발이...',
-      execution: '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
+      setup:
+        '바닥에 바벨을 얹고 시작하세요. 바는 정강이에 가깝거나 닿아야 하며 바를 넓은 그립으로 잡아야 합니다. 발이...',
+      execution:
+        '엉덩이, 무릎, 발목을 확장하여 두 번째 당김으로 전환하고 바를 최대한 빨리 위로 올립니다. 바는 가까이 있어야 합니다...',
       transition: '',
     },
   },
@@ -22628,7 +23785,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '덤벨을 이용한 스플릿 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒷발을 높이 올리고 앞발을 앞으로 내밀어 엇갈린 자세를 취합니다. 양손에 덤벨을 잡고 매달리게 합니다...',
-      execution: '하강하면서 시작하고, 무릎과 엉덩이를 구부려 몸을 아래로 내립니다. 동작 내내 좋은 자세를 유지하세요. 앞쪽 무릎을 일직선으로 유지하세요...',
+      execution:
+        '하강하면서 시작하고, 무릎과 엉덩이를 구부려 몸을 아래로 내립니다. 동작 내내 좋은 자세를 유지하세요. 앞쪽 무릎을 일직선으로 유지하세요...',
       transition: '',
     },
   },
@@ -22640,7 +23798,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스플릿 스쿼트는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '서있는 자세. 한쪽 다리는 앞으로, 한쪽 다리는 뒤로 뻗은 스플릿 레그 자세로 점프하여 무릎을 구부리고 엉덩이를 아래로 내리세요...',
+      setup:
+        '서있는 자세. 한쪽 다리는 앞으로, 한쪽 다리는 뒤로 뻗은 스플릿 레그 자세로 점프하여 무릎을 구부리고 엉덩이를 아래로 내리세요...',
       execution: '하강하면서 즉시 방향을 바꿔 서서 점프하고 다리 위치를 바꿉니다. 각 다리에서 5~10회 반복합니다.',
       transition: '',
     },
@@ -22655,7 +23814,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스쿼트 저크(Squat Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '무게를 어깨 앞쪽에 싣고 서서 딥부터 시작하세요. 발을 엉덩이 바로 아래에 놓고 무릎을 구부리세요....',
-      execution: '바를 발뒤꿈치 앞쪽에 정렬하고 머리와 가슴을 위로 유지한 채 발뒤꿈치를 통과하여 서있는 자세로 이동합니다. 조심하세요...',
+      execution:
+        '바를 발뒤꿈치 앞쪽에 정렬하고 머리와 가슴을 위로 유지한 채 발뒤꿈치를 통과하여 서있는 자세로 이동합니다. 조심하세요...',
       transition: '',
     },
   },
@@ -22669,8 +23829,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '밴드를 슬리브에 설치하고 밴드 페그, 랙 또는 덤벨에 고정하여 적절한 장력을 유지합니다. 아래로 내려가서 시작하세요...',
-      execution: '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 가능한 한 엉덩이를 뒤로 젖혀 앉으십시오. 신분증...',
+      setup:
+        '밴드를 슬리브에 설치하고 밴드 페그, 랙 또는 덤벨에 고정하여 적절한 장력을 유지합니다. 아래로 내려가서 시작하세요...',
+      execution:
+        '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 가능한 한 엉덩이를 뒤로 젖혀 앉으십시오. 신분증...',
       transition: '',
     },
   },
@@ -22684,8 +23846,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스쿼트 체인은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '체인을 설정하려면 바의 슬리브 위로 리더 체인을 고리로 묶는 것부터 시작하십시오. 무거운 체인은 스냅 후크를 사용하여 부착해야 합니다. 조정하세요...',
-      execution: '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 가능한 한 엉덩이를 뒤로 젖혀 앉으십시오. 신분증...',
+      setup:
+        '체인을 설정하려면 바의 슬리브 위로 리더 체인을 고리로 묶는 것부터 시작하십시오. 무거운 체인은 스냅 후크를 사용하여 부착해야 합니다. 조정하세요...',
+      execution:
+        '등과 어깨, 코어를 단단히 조인 상태에서 무릎과 엉덩이를 바깥쪽으로 밀고 하강을 시작합니다. 가능한 한 엉덩이를 뒤로 젖혀 앉으십시오. 신분증...',
       transition: '',
     },
   },
@@ -22703,8 +23867,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '플레이트 무버를 이용한 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 먼저 랙의 바를 어깨 높이 바로 아래에 설정합니다. 랙에서 몇 피트 떨어진 곳에 웨이트 플레이트를 놓습니다. 일단...',
-      execution: '랙에서 한 걸음 물러나서 발가락을 약간 뾰족하게 하고 한쪽 발을 웨이트 플레이트 위에 올려놓고 넓은 자세를 취합니다. 항상 고개를 들고 계세요...',
+      setup:
+        '시작하려면 먼저 랙의 바를 어깨 높이 바로 아래에 설정합니다. 랙에서 몇 피트 떨어진 곳에 웨이트 플레이트를 놓습니다. 일단...',
+      execution:
+        '랙에서 한 걸음 물러나서 발가락을 약간 뾰족하게 하고 한쪽 발을 웨이트 플레이트 위에 올려놓고 넓은 자세를 취합니다. 항상 고개를 들고 계세요...',
       transition: '',
     },
   },
@@ -22719,8 +23885,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스쿼트 - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 운동 밴드가 신체의 왼쪽과 오른쪽에 균등하게 분할되어 있는지 확인하십시오. 이렇게 하려면 손을 사용하여 ...',
-      execution: '숨을 내쉬면서 천천히 무릎을 구부리고 다리를 낮추어 허벅지가 바닥과 평행이 되도록 합니다. 발뒤꿈치를 이용해 Y를 밀어보세요...',
+      setup:
+        '시작하려면 운동 밴드가 신체의 왼쪽과 오른쪽에 균등하게 분할되어 있는지 확인하십시오. 이렇게 하려면 손을 사용하여 ...',
+      execution:
+        '숨을 내쉬면서 천천히 무릎을 구부리고 다리를 낮추어 허벅지가 바닥과 평행이 되도록 합니다. 발뒤꿈치를 이용해 Y를 밀어보세요...',
       transition: '',
     },
   },
@@ -22733,8 +23901,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Stairmaster는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 계단 마스터에 올라 메뉴에서 원하는 옵션을 선택하세요. 수동 설정을 선택하거나 실행할 프로그램을 선택할 수 있습니다...',
-      execution: 'Stairmasters는 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 달리는 것보다 충격이 적습니다. 일반적으로 다른 것보다 훨씬 어렵습니다...',
+      setup:
+        '시작하려면 계단 마스터에 올라 메뉴에서 원하는 옵션을 선택하세요. 수동 설정을 선택하거나 실행할 프로그램을 선택할 수 있습니다...',
+      execution:
+        'Stairmasters는 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 달리는 것보다 충격이 적습니다. 일반적으로 다른 것보다 훨씬 어렵습니다...',
       transition: '',
     },
   },
@@ -22747,8 +23917,10 @@ registerLanguageTranslations('ko', {
       '팔을 계속 번갈아 가며 반대쪽도 반복합니다.',
     ],
     audio: {
-      intro: '서서 교대 덤벨 프레스(Standing Alternating Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 서세요. 손바닥이 앞을 향하고 팔꿈치가 바깥쪽을 향하게 하여 덤벨을 어깨까지 들어 올리세요. 이것은...',
+      intro:
+        '서서 교대 덤벨 프레스(Standing Alternating Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '양손에 덤벨을 들고 서세요. 손바닥이 앞을 향하고 팔꿈치가 바깥쪽을 향하게 하여 덤벨을 어깨까지 들어 올리세요. 이것은...',
       execution: '잠시 멈춘 후 중량을 시작 위치로 되돌립니다. 팔을 계속 번갈아 가며 반대쪽도 반복합니다.',
       transition: '',
     },
@@ -22765,8 +23937,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 바벨 카프 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -22781,9 +23955,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 바벨 프레스 비하인드 넥(Standing Barbell Press Behind Neck)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 바를 더 쉽게 들어올릴 수 있도록 스쿼트 랙 안에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 자신의 체력에 가장 잘 맞는 랙에 바를 설치하세요...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 허리를 곧게 펴야 합니다...',
+      intro:
+        '스탠딩 바벨 프레스 비하인드 넥(Standing Barbell Press Behind Neck)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이 운동은 바를 더 쉽게 들어올릴 수 있도록 스쿼트 랙 안에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 자신의 체력에 가장 잘 맞는 랙에 바를 설치하세요...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 허리를 곧게 펴야 합니다...',
       transition: '',
     },
   },
@@ -22799,8 +23976,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서서 구부리고 한 팔로 덤벨 삼두근 확장은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한 손에 덤벨을 쥐고 손바닥이 몸통을 향하게 한 채 무릎을 약간 구부리고 허리를 구부려 몸통을 앞으로 가져옵니다.',
-      execution: '팔뚝을 고정한 상태에서 팔뚝이 바닥 및 팔 전체와 평행이 될 때까지 숨을 내쉬면서 삼두근을 사용하여 웨이트를 들어올립니다.',
+      setup:
+        '한 손에 덤벨을 쥐고 손바닥이 몸통을 향하게 한 채 무릎을 약간 구부리고 허리를 구부려 몸통을 앞으로 가져옵니다.',
+      execution:
+        '팔뚝을 고정한 상태에서 팔뚝이 바닥 및 팔 전체와 평행이 될 때까지 숨을 내쉬면서 삼두근을 사용하여 웨이트를 들어올립니다.',
       transition: '',
     },
   },
@@ -22814,8 +23993,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서서 굽힌 양팔 덤벨 삼두근 확장은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 쥐고 손바닥이 몸통을 향하게 한 채 무릎을 살짝 구부리고 허리를 구부려 몸통을 앞으로 가져오세요.',
-      execution: '최고 지점에서 두 번째 수축을 한 후 숨을 들이쉬면서 천천히 덤벨을 시작 위치로 내립니다. prescr에 대한 동작을 반복합니다...',
+      setup:
+        '양손에 덤벨을 쥐고 손바닥이 몸통을 향하게 한 채 무릎을 살짝 구부리고 허리를 구부려 몸통을 앞으로 가져오세요.',
+      execution:
+        '최고 지점에서 두 번째 수축을 한 후 숨을 들이쉬면서 천천히 덤벨을 시작 위치로 내립니다. prescr에 대한 동작을 반복합니다...',
       transition: '',
     },
   },
@@ -22828,7 +24009,8 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 바이셉스 케이블 컬(Standing Biceps Cable Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '스탠딩 바이셉스 케이블 컬(Standing Biceps Cable Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '로우 풀리에 부착된 케이블 컬 바를 잡고 상체를 똑바로 세우십시오. 케이블 바를 어깨 너비로 잡고...',
       execution: '숨을 들이쉬면서 천천히 컬 바를 시작 위치로 되돌리기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
@@ -22841,8 +24023,10 @@ registerLanguageTranslations('ko', {
       '팔을 들어 올리고 팔뚝이 스트레칭되는 느낌이 들 때까지 기다리세요.',
     ],
     audio: {
-      intro: '스탠딩 이두박근 스트레칭(Standing Biceps Stretch)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손바닥을 모아 등 뒤로 손을 깍지 끼고 팔을 곧게 편 다음 손바닥이 아래를 향하도록 회전합니다. 팔을 위로 올려보세요...',
+      intro:
+        '스탠딩 이두박근 스트레칭(Standing Biceps Stretch)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '손바닥을 모아 등 뒤로 손을 깍지 끼고 팔을 곧게 편 다음 손바닥이 아래를 향하도록 회전합니다. 팔을 위로 올려보세요...',
       execution: '팔을 들어 올리고 팔뚝이 스트레칭되는 느낌이 들 때까지 기다리세요.',
       transition: '',
     },
@@ -22858,9 +24042,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수를 완료할 때까지 이 방식을 번갈아 수행합니다.',
     ],
     audio: {
-      intro: '스탠딩 브래드포드 프레스(Standing Bradford Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로드된 바를 랙의 어깨 높이에 놓습니다. 어깨 너비로 프로네이티드 그립을 하고, 바를 어깨 앞쪽에 가로지르는 자세로 시작하세요...',
-      execution: '팔꿈치가 직각을 이룰 때까지 바를 머리 뒤쪽으로 내립니다. 팔꿈치를 펴서 바를 머리 위로 다시 들어 올리세요',
+      intro:
+        '스탠딩 브래드포드 프레스(Standing Bradford Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '로드된 바를 랙의 어깨 높이에 놓습니다. 어깨 너비로 프로네이티드 그립을 하고, 바를 어깨 앞쪽에 가로지르는 자세로 시작하세요...',
+      execution:
+        '팔꿈치가 직각을 이룰 때까지 바를 머리 뒤쪽으로 내립니다. 팔꿈치를 펴서 바를 머리 위로 다시 들어 올리세요',
       transition: '',
     },
   },
@@ -22873,9 +24060,12 @@ registerLanguageTranslations('ko', {
       '동작의 최고 지점에서 잠시 멈췄다가 시작 위치로 돌아갑니다.',
     ],
     audio: {
-      intro: '스탠딩 케이블 체스트 프레스(Standing Cable Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이중 도르래를 가슴 높이에 배치하고 적절한 무게를 선택합니다. 케이블 앞에 1~2피트 정도 서서 양손으로 케이블을 잡습니다. 당신은 ...',
-      execution: '몸의 나머지 부분은 고정된 상태로 팔꿈치를 뻗어 핸들을 앞으로 밀면서 앞쪽으로 모아줍니다. 잠시 멈춰주세요...',
+      intro:
+        '스탠딩 케이블 체스트 프레스(Standing Cable Chest Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '이중 도르래를 가슴 높이에 배치하고 적절한 무게를 선택합니다. 케이블 앞에 1~2피트 정도 서서 양손으로 케이블을 잡습니다. 당신은 ...',
+      execution:
+        '몸의 나머지 부분은 고정된 상태로 팔꿈치를 뻗어 핸들을 앞으로 밀면서 앞쪽으로 모아줍니다. 잠시 멈춰주세요...',
       transition: '',
     },
   },
@@ -22893,8 +24083,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 케이블 리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '타워에 표준 핸들을 연결하고 케이블을 가장 낮은 풀리 위치로 이동합니다. 측면을 케이블에 대고 한 손으로 손잡이를 잡습니다...',
-      execution: '발을 어깨너비로 벌리고 쪼그리고 앉아 양손으로 손잡이를 잡습니다. 팔은 여전히 ​​완전히 뻗어 있어야 합니다. 한 달 안에...',
+      setup:
+        '타워에 표준 핸들을 연결하고 케이블을 가장 낮은 풀리 위치로 이동합니다. 측면을 케이블에 대고 한 손으로 손잡이를 잡습니다...',
+      execution:
+        '발을 어깨너비로 벌리고 쪼그리고 앉아 양손으로 손잡이를 잡습니다. 팔은 여전히 ​​완전히 뻗어 있어야 합니다. 한 달 안에...',
       transition: '',
     },
   },
@@ -22911,9 +24103,12 @@ registerLanguageTranslations('ko', {
       '그런 다음 반대편에서도 동일한 일련의 동작을 재배치하고 반복합니다.',
     ],
     audio: {
-      intro: '스탠딩 케이블 우드 찹(Standing Cable Wood Chop)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '표준 핸들을 타워에 연결하고 케이블을 가장 높은 도르래 위치로 이동합니다. 케이블을 옆으로 두고 한 손으로 손잡이를 잡습니다...',
-      execution: '발을 어깨 너비로 벌리고 다른 손을 위쪽으로 뻗어 양손으로 손잡이를 잡습니다. 팔은 아직 튼튼해야 합니다...',
+      intro:
+        '스탠딩 케이블 우드 찹(Standing Cable Wood Chop)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '표준 핸들을 타워에 연결하고 케이블을 가장 높은 도르래 위치로 이동합니다. 케이블을 옆으로 두고 한 손으로 손잡이를 잡습니다...',
+      execution:
+        '발을 어깨 너비로 벌리고 다른 손을 위쪽으로 뻗어 양손으로 손잡이를 잡습니다. 팔은 아직 튼튼해야 합니다...',
       transition: '',
     },
   },
@@ -22928,8 +24123,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 카프 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '종아리 들어올리기 기계의 패딩 레버를 자신의 키에 맞게 조정하세요. 제공된 패드 아래에 어깨를 놓고 발가락이 앞쪽을 향하도록 위치시킵니다...',
-      execution: '발목을 최대한 높이 펴고 종아리를 구부려 숨을 내쉬면서 발뒤꿈치를 들어 올리세요. 무릎이 고정된 상태로 유지되도록 하십시오.',
+      setup:
+        '종아리 들어올리기 기계의 패딩 레버를 자신의 키에 맞게 조정하세요. 제공된 패드 아래에 어깨를 놓고 발가락이 앞쪽을 향하도록 위치시킵니다...',
+      execution:
+        '발목을 최대한 높이 펴고 종아리를 구부려 숨을 내쉬면서 발뒤꿈치를 들어 올리세요. 무릎이 고정된 상태로 유지되도록 하십시오.',
       transition: '',
     },
   },
@@ -22942,8 +24139,10 @@ registerLanguageTranslations('ko', {
       '정해진 반복 횟수만큼 동작을 반복합니다.',
     ],
     audio: {
-      intro: '스탠딩 컨센트레이션 컬(Standing Concentration Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '일하는 손에 덤벨을 들고 앞으로 몸을 기울이십시오. 작업용 팔이 팔꿈치가 바깥쪽을 향하도록 지면에 수직으로 매달리도록 하십시오. 이것은...',
+      intro:
+        '스탠딩 컨센트레이션 컬(Standing Concentration Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '일하는 손에 덤벨을 들고 앞으로 몸을 기울이십시오. 작업용 팔이 팔꿈치가 바깥쪽을 향하도록 지면에 수직으로 매달리도록 하십시오. 이것은...',
       execution: '덤벨을 다시 시작 위치로 내립니다. 정해진 반복 횟수만큼 동작을 반복합니다.',
       transition: '',
     },
@@ -22971,8 +24170,10 @@ registerLanguageTranslations('ko', {
       '잠시 멈추고 천천히 무게를 시작 위치로 되돌립니다.',
     ],
     audio: {
-      intro: '스탠딩 덤벨 프레스(Standing Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 서서 양손에 덤벨을 잡습니다. 덤벨을 머리 높이까지 올리고 팔꿈치를 바깥쪽으로 약 90도 각도로 들어 올립니다.',
+      intro:
+        '스탠딩 덤벨 프레스(Standing Dumbbell Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '발을 어깨 너비로 벌리고 서서 양손에 덤벨을 잡습니다. 덤벨을 머리 높이까지 올리고 팔꿈치를 바깥쪽으로 약 90도 각도로 들어 올립니다.',
       execution: '잠시 멈추고 천천히 무게를 시작 위치로 되돌립니다.',
       transition: '',
     },
@@ -22986,8 +24187,10 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 덤벨 리버스 컬(Standing Dumbbell Reverse Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 내전 그립(손바닥이 아래를 향하도록)을 사용하여 양손에 덤벨을 들고 똑바로 서세요. 팔은 완전히 펴야 하며 발은...',
+      intro:
+        '스탠딩 덤벨 리버스 컬(Standing Dumbbell Reverse Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '시작하려면 내전 그립(손바닥이 아래를 향하도록)을 사용하여 양손에 덤벨을 들고 똑바로 서세요. 팔은 완전히 펴야 하며 발은...',
       execution: '숨을 들이쉬면서 천천히 덤벨을 시작 위치로 가져오기 시작합니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -23002,9 +24205,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '머리 위로 스탠딩 덤벨 스트레이트 암 프론트 델트 레이즈는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '허벅지 앞에 덤벨을 들고 손바닥이 허벅지를 향하게 합니다. 팔을 곧게 펴고 팔꿈치를 살짝 구부리되 잠긴 상태를 유지하세요.',
-      execution: '숨을 내쉬면서 반원형 동작으로 덤벨을 팔 길이만큼 머리 위로 들어 올리세요. 와 같은 경로를 이용하여 천천히 시작자세로 돌아옵니다.',
+      intro:
+        '머리 위로 스탠딩 덤벨 스트레이트 암 프론트 델트 레이즈는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '허벅지 앞에 덤벨을 들고 손바닥이 허벅지를 향하게 합니다. 팔을 곧게 펴고 팔꿈치를 살짝 구부리되 잠긴 상태를 유지하세요.',
+      execution:
+        '숨을 내쉬면서 반원형 동작으로 덤벨을 팔 길이만큼 머리 위로 들어 올리세요. 와 같은 경로를 이용하여 천천히 시작자세로 돌아옵니다.',
       transition: '',
     },
   },
@@ -23018,9 +24224,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 덤벨 트라이셉스 익스텐션(Standing Dumbbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 양손에 덤벨을 들고 일어섭니다. 발은 서로 어깨 너비만큼 떨어져 있어야합니다. 천천히 양손을 사용하여 그립니다.',
-      execution: '팔꿈치를 바닥에 수직으로 대고 위쪽 팔을 머리 가까이에 유지한 채 몸 뒤에서 반원을 그리며 저항을 낮추세요.',
+      intro:
+        '스탠딩 덤벨 트라이셉스 익스텐션(Standing Dumbbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '시작하려면 양손에 덤벨을 들고 일어섭니다. 발은 서로 어깨 너비만큼 떨어져 있어야합니다. 천천히 양손을 사용하여 그립니다.',
+      execution:
+        '팔꿈치를 바닥에 수직으로 대고 위쪽 팔을 머리 가까이에 유지한 채 몸 뒤에서 반원을 그리며 저항을 낮추세요.',
       transition: '',
     },
   },
@@ -23033,9 +24242,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 덤벨 업라이트 로우(Standing Dumbbell Upright Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '어깨 너비보다 약간 작은 회내(손바닥을 앞으로) 그립으로 양손에 덤벨을 잡습니다. 덤벨은 휴식을 취해야 합니다...',
-      execution: '덤벨을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장 금액만큼 반복하세요...',
+      intro:
+        '스탠딩 덤벨 업라이트 로우(Standing Dumbbell Upright Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '어깨 너비보다 약간 작은 회내(손바닥을 앞으로) 그립으로 양손에 덤벨을 잡습니다. 덤벨은 휴식을 취해야 합니다...',
+      execution:
+        '덤벨을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장 금액만큼 반복하세요...',
       transition: '',
     },
   },
@@ -23048,8 +24260,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Standing Elevated Quad Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벤치나 계단에서 약 2~3피트 떨어진 곳에 등을 대고 서서 시작하세요. 한쪽 다리를 뒤로 들고 발을 계단 위에 올려 놓거나...',
-      execution: '지지하는 무릎을 약간 구부린 상태로 유지하고 무릎이 발가락 너머로 나오지 않도록 하세요. 측면을 전환하십시오.',
+      setup:
+        '벤치나 계단에서 약 2~3피트 떨어진 곳에 등을 대고 서서 시작하세요. 한쪽 다리를 뒤로 들고 발을 계단 위에 올려 놓거나...',
+      execution:
+        '지지하는 무릎을 약간 구부린 상태로 유지하고 무릎이 발가락 너머로 나오지 않도록 하세요. 측면을 전환하십시오.',
       transition: '',
     },
   },
@@ -23064,8 +24278,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 프론트 바벨 레이즈 오버 헤드는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 손에 바벨을 들고 똑바로 서십시오. 손바닥이 아래를 향하도록 하고 바를 어깨 너비보다 더 가깝게 그립해야 합니다.',
-      execution: '숨을 내쉬면서 바벨이 머리 바로 위에 올 때까지 들어 올리세요. 각 반복을 수행할 때 팔꿈치를 약간 구부린 상태를 유지하세요...',
+      setup:
+        '시작하려면 손에 바벨을 들고 똑바로 서십시오. 손바닥이 아래를 향하도록 하고 바를 어깨 너비보다 더 가깝게 그립해야 합니다.',
+      execution:
+        '숨을 내쉬면서 바벨이 머리 바로 위에 올 때까지 들어 올리세요. 각 반복을 수행할 때 팔꿈치를 약간 구부린 상태를 유지하세요...',
       transition: '',
     },
   },
@@ -23078,7 +24294,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기립 비복근 종아리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 펴고 오른쪽 발뒤꿈치를 계단에 올려놓고 앞으로 몸을 기울여 오른손으로 오른쪽 발가락을 잡습니다. 왼쪽 무릎이 펴져야 합니다...',
+      setup:
+        '무릎을 펴고 오른쪽 발뒤꿈치를 계단에 올려놓고 앞으로 몸을 기울여 오른손으로 오른쪽 발가락을 잡습니다. 왼쪽 무릎이 펴져야 합니다...',
       execution: '종아리가 늘어나는 느낌이 들 때까지 오른쪽 발가락을 무릎 쪽으로 당깁니다.',
       transition: '',
     },
@@ -23092,8 +24309,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 햄스트링 및 종아리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 발에 벨트, 밴드 또는 로프를 감아서 존재합니다. 서있는 동안 그 발을 앞으로 놓으십시오. 뒷다리를 구부리고 앞다리는 한 자세로 유지하세요...',
-      execution: '벨트를 사용하여 발등을 당겨 종아리의 신축성을 높입니다. 10~20초 동안 유지하고 반대쪽 발로 반복합니다.',
+      setup:
+        '한쪽 발에 벨트, 밴드 또는 로프를 감아서 존재합니다. 서있는 동안 그 발을 앞으로 놓으십시오. 뒷다리를 구부리고 앞다리는 한 자세로 유지하세요...',
+      execution:
+        '벨트를 사용하여 발등을 당겨 종아리의 신축성을 높입니다. 10~20초 동안 유지하고 반대쪽 발로 반복합니다.',
       transition: '',
     },
   },
@@ -23107,8 +24326,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 힙 서클(Standing Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '수직 지지대를 잡고 한쪽 다리로 서기 시작합니다. 지지되지 않은 무릎을 90도까지 들어올립니다. 이것이 당신의 시작 위치가 될 것입니다.',
-      execution: '엉덩이를 최대한 열어 무릎으로 큰 원을 그리도록 하세요. 이 동작을 여러 번 반복하면서 천천히 수행하고 반복하세요...',
+      setup:
+        '수직 지지대를 잡고 한쪽 다리로 서기 시작합니다. 지지되지 않은 무릎을 90도까지 들어올립니다. 이것이 당신의 시작 위치가 될 것입니다.',
+      execution:
+        '엉덩이를 최대한 열어 무릎으로 큰 원을 그리도록 하세요. 이 동작을 여러 번 반복하면서 천천히 수행하고 반복하세요...',
       transition: '',
     },
   },
@@ -23120,8 +24341,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서서 고관절 굴곡근은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '척추를 수직으로 세우고, 왼발이 오른쪽보다 약간 앞에 위치하도록 똑바로 서세요. 양쪽 무릎을 구부리고 뒷발꿈치를 바닥에서 들어 올리세요...',
-      execution: '양쪽 무릎을 구부리고 오른쪽 엉덩이를 앞으로 밀면서 뒷발꿈치를 바닥에서 들어올립니다. 이 자세에서는 철저하고 깊은 스트레칭을 할 수 없습니다. 아...',
+      setup:
+        '척추를 수직으로 세우고, 왼발이 오른쪽보다 약간 앞에 위치하도록 똑바로 서세요. 양쪽 무릎을 구부리고 뒷발꿈치를 바닥에서 들어 올리세요...',
+      execution:
+        '양쪽 무릎을 구부리고 오른쪽 엉덩이를 앞으로 밀면서 뒷발꿈치를 바닥에서 들어올립니다. 이 자세에서는 철저하고 깊은 스트레칭을 할 수 없습니다. 아...',
       transition: '',
     },
   },
@@ -23138,8 +24361,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Standing Inner-Biceps Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 들고 팔 길이를 유지한 채 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 다리는 대략 어깨 높이에 있어야 합니다...',
-      execution: '팔 윗부분을 고정시킨 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 바깥쪽으로 말립니다. 손목은 다음과 같이 회전해야 합니다.',
+      setup:
+        '양손에 덤벨을 들고 팔 길이를 유지한 채 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 다리는 대략 어깨 높이에 있어야 합니다...',
+      execution:
+        '팔 윗부분을 고정시킨 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 바깥쪽으로 말립니다. 손목은 다음과 같이 회전해야 합니다.',
       transition: '',
     },
   },
@@ -23153,8 +24378,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 측면 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 약간 구부린 상태에서 엉덩이 거리보다 약간 넓게 자세를 취합니다. 척추를 지탱하기 위해 오른쪽 엉덩이에 오른손을 놓습니다.',
-      execution: '왼팔을 수직선으로 올리고 왼손을 머리 뒤에 놓습니다. 몸통을 오른쪽으로 기울일 때 그 상태를 유지하세요. 계속해서...',
+      setup:
+        '무릎을 약간 구부린 상태에서 엉덩이 거리보다 약간 넓게 자세를 취합니다. 척추를 지탱하기 위해 오른쪽 엉덩이에 오른손을 놓습니다.',
+      execution:
+        '왼팔을 수직선으로 올리고 왼손을 머리 뒤에 놓습니다. 몸통을 오른쪽으로 기울일 때 그 상태를 유지하세요. 계속해서...',
       transition: '',
     },
   },
@@ -23169,8 +24396,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 레그 컬(Standing Leg Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '키에 맞게 머신 레버를 조정하고 상체를 허리 쪽으로 구부려 30~45도 정도 앞쪽을 향하게 눕습니다(각진 자세이므로...',
-      execution: '숨을 내쉴 때 패드에서 위쪽 다리를 올리지 않고 오른쪽 다리를 최대한 위로 구부립니다. 완전히 수축된 자세에 도달하면, 호...',
+      setup:
+        '키에 맞게 머신 레버를 조정하고 상체를 허리 쪽으로 구부려 30~45도 정도 앞쪽을 향하게 눕습니다(각진 자세이므로...',
+      execution:
+        '숨을 내쉴 때 패드에서 위쪽 다리를 올리지 않고 오른쪽 다리를 최대한 위로 구부립니다. 완전히 수축된 자세에 도달하면, 호...',
       transition: '',
     },
   },
@@ -23184,8 +24413,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서서 멀리뛰기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 모래나 기타 부드러운 착지 표면에서 가장 잘 수행됩니다. 거리를 측정할 수 있는지 확인하세요. F를 사용하여 부분 스쿼트 자세로 서십시오.',
-      execution: '발을 앞으로 내밀고 착지하려고 시도하고 다리를 최대한 멀리 뻗으십시오. 착지점에서 출발점까지의 거리를 측정합니다.',
+      setup:
+        '이 훈련은 모래나 기타 부드러운 착지 표면에서 가장 잘 수행됩니다. 거리를 측정할 수 있는지 확인하세요. F를 사용하여 부분 스쿼트 자세로 서십시오.',
+      execution:
+        '발을 앞으로 내밀고 착지하려고 시도하고 다리를 최대한 멀리 뻗으십시오. 착지점에서 출발점까지의 거리를 측정합니다.',
       transition: '',
     },
   },
@@ -23201,8 +24432,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 로우 풀리 삼각근 올리기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '낮은 도르래 줄의 오른쪽에 서서 시작하십시오. 왼손을 사용하여 몸을 가로질러 낮은 PU에 부착된 손잡이 하나를 잡습니다.',
-      execution: '숨을 내쉬면서 왼손을 사용하여 몸이 어깨 높이까지 올라올 때까지 몸을 가로질러 뻗습니다. 윗부분의 수축을 느껴보세요..',
+      setup:
+        '낮은 도르래 줄의 오른쪽에 서서 시작하십시오. 왼손을 사용하여 몸을 가로질러 낮은 PU에 부착된 손잡이 하나를 잡습니다.',
+      execution:
+        '숨을 내쉬면서 왼손을 사용하여 몸이 어깨 높이까지 올라올 때까지 몸을 가로질러 뻗습니다. 윗부분의 수축을 느껴보세요..',
       transition: '',
     },
   },
@@ -23218,7 +24451,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스탠딩 로우 풀리 한 팔 삼두근 확장은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '로우 풀리 기계 옆에 있는 왼팔로 핸들 하나를 잡으세요. 손잡이를 몸 옆에 두고 기계에서 멀어지세요.',
-      execution: '삼두근을 사용하여 단일 핸들을 들어 올려 시작 위치로 돌아갑니다. 이 단계를 수행하면서 숨을 내쉬십시오. 권장 사항에 대해 반복합니다 ...',
+      execution:
+        '삼두근을 사용하여 단일 핸들을 들어 올려 시작 위치로 돌아갑니다. 이 단계를 수행하면서 숨을 내쉬십시오. 권장 사항에 대해 반복합니다 ...',
       transition: '',
     },
   },
@@ -23233,9 +24467,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 밀리터리 프레스(Standing Military Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스쿼트 랙에 가슴 높이 정도의 바벨을 올려놓고 시작하세요. 무게를 선택한 후에는 회내(손바닥)을 사용하여 바벨을 잡습니다.',
-      execution: '올바른 그립 길이로 바벨을 집어 들었다면 팔을 잠그고 바를 머리 위로 들어 올리십시오. 대략 어깨 높이와 약간의 높이를 유지하세요...',
+      intro:
+        '스탠딩 밀리터리 프레스(Standing Military Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '스쿼트 랙에 가슴 높이 정도의 바벨을 올려놓고 시작하세요. 무게를 선택한 후에는 회내(손바닥)을 사용하여 바벨을 잡습니다.',
+      execution:
+        '올바른 그립 길이로 바벨을 집어 들었다면 팔을 잠그고 바를 머리 위로 들어 올리십시오. 대략 어깨 높이와 약간의 높이를 유지하세요...',
       transition: '',
     },
   },
@@ -23248,9 +24485,12 @@ registerLanguageTranslations('ko', {
       '프로그램에 규정된 권장 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 올림픽 플레이트 핸드 스퀴즈(Standing Olympic Plate Hand Squeeze)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 중립 그립(손바닥이 안쪽을 향함)을 사용하여 양손의 팔 길이만큼 능선 옆의 웨이트 플레이트를 잡고 똑바로 서십시오. 발이 똥...',
-      execution: '이제 손을 닫고 숨을 내쉬면서 플레이트를 시작 위치로 다시 올리십시오. 규정된 권장 반복 횟수만큼 반복하세요...',
+      intro:
+        '스탠딩 올림픽 플레이트 핸드 스퀴즈(Standing Olympic Plate Hand Squeeze)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '시작하려면 중립 그립(손바닥이 안쪽을 향함)을 사용하여 양손의 팔 길이만큼 능선 옆의 웨이트 플레이트를 잡고 똑바로 서십시오. 발이 똥...',
+      execution:
+        '이제 손을 닫고 숨을 내쉬면서 플레이트를 시작 위치로 다시 올리십시오. 규정된 권장 반복 횟수만큼 반복하세요...',
       transition: '',
     },
   },
@@ -23265,9 +24505,12 @@ registerLanguageTranslations('ko', {
       '이 운동을 수행하는 동안 팔을 바꿔보세요.',
     ],
     audio: {
-      intro: '스탠딩 원암 케이블 컬(Standing One-Arm Cable Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '로우 풀리 기계 옆에 있는 단일 핸들을 잡고 시작하세요. 팔이 기계를 지탱할 수 있을 정도로 기계에서 충분히 멀리 떨어져 있는지 확인하세요...',
-      execution: '숨을 내쉬는 동안 팔뚝이 이두박근에 닿을 때까지 윗팔을 고정한 상태로 천천히 한쪽 핸들을 위쪽으로 말리기 시작합니다. 팁: 켜짐...',
+      intro:
+        '스탠딩 원암 케이블 컬(Standing One-Arm Cable Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '로우 풀리 기계 옆에 있는 단일 핸들을 잡고 시작하세요. 팔이 기계를 지탱할 수 있을 정도로 기계에서 충분히 멀리 떨어져 있는지 확인하세요...',
+      execution:
+        '숨을 내쉬는 동안 팔뚝이 이두박근에 닿을 때까지 윗팔을 고정한 상태로 천천히 한쪽 핸들을 위쪽으로 말리기 시작합니다. 팁: 켜짐...',
       transition: '',
     },
   },
@@ -23282,9 +24525,12 @@ registerLanguageTranslations('ko', {
       '이 운동을 수행하는 동안 팔을 바꿔보세요.',
     ],
     audio: {
-      intro: '인클라인 벤치 위에 서서 한 팔로 덤벨 컬을 하는 것은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '마치 누군가의 감시자가 될 것처럼 경사 벤치 뒤쪽에 서십시오. 한 손에 덤벨을 들고 몸 전체에 걸쳐 놓습니다...',
-      execution: '팔뚝을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 덤벨을 위쪽으로 컬링합니다. 팔뚝만 움직여야 합니다. 공동...',
+      intro:
+        '인클라인 벤치 위에 서서 한 팔로 덤벨 컬을 하는 것은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '마치 누군가의 감시자가 될 것처럼 경사 벤치 뒤쪽에 서십시오. 한 손에 덤벨을 들고 몸 전체에 걸쳐 놓습니다...',
+      execution:
+        '팔뚝을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 덤벨을 위쪽으로 컬링합니다. 팔뚝만 움직여야 합니다. 공동...',
       transition: '',
     },
   },
@@ -23300,8 +24546,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 원암 덤벨 트라이셉스 익스텐션은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 한 손에 덤벨을 들고 일어섭니다. 발은 서로 어깨 너비만큼 떨어져 있어야합니다. 이제 팔을 완전히 펴십시오.',
-      execution: '위쪽 팔을 머리 가까이(팔꿈치를 안쪽으로) 유지하고 바닥과 수직을 유지하면서 머리 뒤에서 반원을 그리며 저항을 낮추세요...',
+      setup:
+        '시작하려면 한 손에 덤벨을 들고 일어섭니다. 발은 서로 어깨 너비만큼 떨어져 있어야합니다. 이제 팔을 완전히 펴십시오.',
+      execution:
+        '위쪽 팔을 머리 가까이(팔꿈치를 안쪽으로) 유지하고 바닥과 수직을 유지하면서 머리 뒤에서 반원을 그리며 저항을 낮추세요...',
       transition: '',
     },
   },
@@ -23315,9 +24563,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 오버헤드 바벨 트라이셉스 익스텐션(Standing Overhead Barbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 양손을 어깨 너비보다 가깝게 벌리고 내전 그립(손바닥이 앞을 향함)을 사용하여 바벨이나 e-z 바를 잡고 일어납니다. ...',
-      execution: '윗팔을 머리 가까이에 두고 팔꿈치를 바닥과 수직으로 유지한 채 머리 뒤에서 반원을 그리며 저항을 낮추세요...',
+      intro:
+        '스탠딩 오버헤드 바벨 트라이셉스 익스텐션(Standing Overhead Barbell Triceps Extension)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '시작하려면 양손을 어깨 너비보다 가깝게 벌리고 내전 그립(손바닥이 앞을 향함)을 사용하여 바벨이나 e-z 바를 잡고 일어납니다. ...',
+      execution:
+        '윗팔을 머리 가까이에 두고 팔꿈치를 바닥과 수직으로 유지한 채 머리 뒤에서 반원을 그리며 저항을 낮추세요...',
       transition: '',
     },
   },
@@ -23334,8 +24585,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Standing Palm-In One-Arm Dumbbell Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '중립 그립을 사용하여 팔을 옆으로 완전히 뻗은 상태에서 한 손에 덤벨을 들고 시작하십시오. 다른 팔을 사용하여 경사면을 잡으세요...',
-      execution: '팔이 완전히 펴질 때까지 천천히 덤벨을 들어 올리세요. 이것이 시작 위치입니다. 숨을 들이쉬면서 팔이 닿을 때까지 무게를 낮추세요...',
+      setup:
+        '중립 그립을 사용하여 팔을 옆으로 완전히 뻗은 상태에서 한 손에 덤벨을 들고 시작하십시오. 다른 팔을 사용하여 경사면을 잡으세요...',
+      execution:
+        '팔이 완전히 펴질 때까지 천천히 덤벨을 들어 올리세요. 이것이 시작 위치입니다. 숨을 들이쉬면서 팔이 닿을 때까지 무게를 낮추세요...',
       transition: '',
     },
   },
@@ -23349,8 +24602,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Standing Palms-In Dumbbell Press는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '중립 그립을 사용하여 팔을 옆으로 완전히 뻗은 상태에서 양손에 덤벨을 쥐고 시작하십시오. 발은 어깨 너비로 벌려야 합니다...',
-      execution: '숨을 들이쉬면서 팔이 다시 90도 각도가 될 때까지 웨이트를 아래로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
+      setup:
+        '중립 그립을 사용하여 팔을 옆으로 완전히 뻗은 상태에서 양손에 덤벨을 쥐고 시작하십시오. 발은 어깨 너비로 벌려야 합니다...',
+      execution:
+        '숨을 들이쉬면서 팔이 다시 90도 각도가 될 때까지 웨이트를 아래로 내립니다. 권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
   },
@@ -23366,8 +24621,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 팜스업 바벨 비하인드 더 백 손목 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '먼저 똑바로 서서 둔부 뒤에 바벨을 팔 길이로 잡고 회내 그립을 사용합니다(손바닥은 반대쪽을 향하게 합니다...)',
-      execution: '숨을 내쉬면서 손목을 천장을 향해 반원 모양으로 구부려 바벨을 천천히 들어 올립니다. 참고: 손목이 가장 중요해야 합니다.',
+      setup:
+        '먼저 똑바로 서서 둔부 뒤에 바벨을 팔 길이로 잡고 회내 그립을 사용합니다(손바닥은 반대쪽을 향하게 합니다...)',
+      execution:
+        '숨을 내쉬면서 손목을 천장을 향해 반원 모양으로 구부려 바벨을 천천히 들어 올립니다. 참고: 손목이 가장 중요해야 합니다.',
       transition: '',
     },
   },
@@ -23395,8 +24652,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스탠딩 로프 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높은 도르래에 로프를 연결하고 적절한 무게를 선택하세요. 케이블 타워에 등을 대고 서십시오. 양손으로 밧줄을 잡고..',
-      execution: '척추를 구부리고 가능한 한 무게를 낮추면서 동작을 수행하십시오. 최고 수축을 잠시 유지한 후 다시 돌아옵니다.',
+      setup:
+        '높은 도르래에 로프를 연결하고 적절한 무게를 선택하세요. 케이블 타워에 등을 대고 서십시오. 양손으로 밧줄을 잡고..',
+      execution:
+        '척추를 구부리고 가능한 한 무게를 낮추면서 동작을 수행하십시오. 최고 수축을 잠시 유지한 후 다시 돌아옵니다.',
       transition: '',
     },
   },
@@ -23408,7 +24667,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Standing Soleus And Achilles Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 발을 엉덩이 거리만큼 벌리고 서서 한 발은 다른 발보다 약간 앞에 놓습니다. 양쪽 무릎을 구부려 뒷발꿈치가 바닥에 닿도록 합니다. 측면을 전환하십시오.',
+      setup:
+        '두 발을 엉덩이 거리만큼 벌리고 서서 한 발은 다른 발보다 약간 앞에 놓습니다. 양쪽 무릎을 구부려 뒷발꿈치가 바닥에 닿도록 합니다. 측면을 전환하십시오.',
       execution: '양쪽 무릎을 구부려 뒷발꿈치가 바닥에 닿도록 합니다. 측면을 전환하십시오.',
       transition: '',
     },
@@ -23421,8 +24681,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Standing Toe Touches는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '앞뒤로 어느 정도 공간을 두고 서십시오. 긴장을 풀 수 있을 때까지 허리를 구부리고 다리를 쭉 펴고 상체를 아래로 늘어뜨립니다.',
-      execution: '긴장을 풀 수 있을 때까지 허리를 구부리고 다리를 쭉 펴고 상체를 앞으로 늘어뜨립니다. 팔과 손을 늘어뜨려라...',
+      setup:
+        '앞뒤로 어느 정도 공간을 두고 서십시오. 긴장을 풀 수 있을 때까지 허리를 구부리고 다리를 쭉 펴고 상체를 아래로 늘어뜨립니다.',
+      execution:
+        '긴장을 풀 수 있을 때까지 허리를 구부리고 다리를 쭉 펴고 상체를 앞으로 늘어뜨립니다. 팔과 손을 늘어뜨려라...',
       transition: '',
     },
   },
@@ -23435,9 +24697,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스탠딩 타월 트라이셉스 익스텐션(Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 양손으로 수건의 한쪽 끝을 잡고 두 팔을 머리 위로 완전히 뻗은 채 일어섭니다. 팔꿈치는 안으로 들어가야 하고 팔은 안쪽으로 들어가야 합니다.',
-      execution: '삼두근을 사용하여 수건을 들어 올려 시작 위치로 돌아갑니다. 이 단계를 수행하면서 숨을 내쉬십시오. 권장량만큼 반복하세요...',
+      intro:
+        '스탠딩 타월 트라이셉스 익스텐션(Triceps Extension)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '시작하려면 양손으로 수건의 한쪽 끝을 잡고 두 팔을 머리 위로 완전히 뻗은 채 일어섭니다. 팔꿈치는 안으로 들어가야 하고 팔은 안쪽으로 들어가야 합니다.',
+      execution:
+        '삼두근을 사용하여 수건을 들어 올려 시작 위치로 돌아갑니다. 이 단계를 수행하면서 숨을 내쉬십시오. 권장량만큼 반복하세요...',
       transition: '',
     },
   },
@@ -23449,7 +24714,8 @@ registerLanguageTranslations('ko', {
       '메디신 볼은 파트너나 벽에 던져지고 다시 튀어오를 때 받을 수 있습니다.',
     ],
     audio: {
-      intro: '서서 양팔 머리 위로 던지기(Standing Two-Arm Overhead Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '서서 양팔 머리 위로 던지기(Standing Two-Arm Overhead Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '양발을 어깨너비로 벌리고 서서 양손에 메디신볼을 잡습니다. 시작하려면 머리 뒤 깊은 메디신볼에 도달하세요.',
       execution: '메디신 볼은 파트너나 벽에 던져지고 다시 튀어오를 때 받을 수 있습니다.',
       transition: '',
@@ -23464,7 +24730,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스타 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 어깨 너비로 벌리고 편안한 자세로 시작하고 팔을 몸에 가깝게 잡습니다. 움직임을 시작하려면 반쯤 쪼그려 앉고 예...',
+      setup:
+        '발을 어깨 너비로 벌리고 편안한 자세로 시작하고 팔을 몸에 가깝게 잡습니다. 움직임을 시작하려면 반쯤 쪼그려 앉고 예...',
       execution: '착지할 때 팔다리를 다시 가져오고 다리를 통해 충격을 흡수하십시오.',
       transition: '',
     },
@@ -23477,8 +24744,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스텝밀(Step Mill)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 스텝밀에 올라 메뉴에서 원하는 옵션을 선택하세요. 수동 설정을 선택하거나 실행할 프로그램을 선택할 수 있습니다. ...',
-      execution: '스텝밀은 편리함, 심혈관 혜택을 제공하며 일반적으로 비슷한 칼로리 비율을 제공하면서 밖에서 달리는 것보다 충격이 적습니다...',
+      setup:
+        '시작하려면 스텝밀에 올라 메뉴에서 원하는 옵션을 선택하세요. 수동 설정을 선택하거나 실행할 프로그램을 선택할 수 있습니다. ...',
+      execution:
+        '스텝밀은 편리함, 심혈관 혜택을 제공하며 일반적으로 비슷한 칼로리 비율을 제공하면서 밖에서 달리는 것보다 충격이 적습니다...',
       transition: '',
     },
   },
@@ -23491,7 +24760,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '니 레이즈를 이용한 스텝업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '적절한 높이의 상자나 벤치를 바라보고 두 발을 모으고 선다. 이것이 당신의 시작 위치가 될 것입니다. 당신을 밟아 움직임을 시작하세요...',
+      setup:
+        '적절한 높이의 상자나 벤치를 바라보고 두 발을 모으고 선다. 이것이 당신의 시작 위치가 될 것입니다. 당신을 밟아 움직임을 시작하세요...',
       execution: '상자에서 내려오려면 이 동작을 반대로 한 다음 반대쪽 다리로 이 순서를 반복하세요.',
       transition: '',
     },
@@ -23508,7 +24778,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Stiff Leg Barbell Good Morning은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
       execution: '랙에서 한발 물러나 어깨 너비의 중간 자세로 다리를 위치시킵니다. 아래를 내려다보면...',
       transition: '',
     },
@@ -23524,8 +24795,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Stiff-Legged Barbell Deadlift는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '오버핸드 그립(손바닥이 아래를 향하도록)을 사용하여 바를 잡습니다. 상당한 양의 무게를 사용하는 경우 손목 랩이 필요할 수 있습니다. 당신의 토르들과 함께하세요...',
-      execution: '무릎을 고정한 상태에서 등을 곧게 유지하면서 엉덩이를 구부려 바벨을 발 위쪽까지 내립니다. 계속 움직여...',
+      setup:
+        '오버핸드 그립(손바닥이 아래를 향하도록)을 사용하여 바를 잡습니다. 상당한 양의 무게를 사용하는 경우 손목 랩이 필요할 수 있습니다. 당신의 토르들과 함께하세요...',
+      execution:
+        '무릎을 고정한 상태에서 등을 곧게 유지하면서 엉덩이를 구부려 바벨을 발 위쪽까지 내립니다. 계속 움직여...',
       transition: '',
     },
   },
@@ -23541,7 +24814,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Stiff-Legged Dumbbell Deadlift는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '팔 길이만큼 옆에 덤벨 두 개를 잡습니다. 몸통을 똑바로 세우고 다리는 어깨 너비로 벌립니다.',
-      execution: '무릎을 고정한 상태에서 등을 곧게 유지하면서 허리를 구부려 덤벨을 발 위쪽까지 내립니다. 계속 움직여...',
+      execution:
+        '무릎을 고정한 상태에서 등을 곧게 유지하면서 허리를 구부려 덤벨을 발 위쪽까지 내립니다. 계속 움직여...',
       transition: '',
     },
   },
@@ -23556,8 +24830,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '위 진공은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 발을 어깨 너비로 벌리고 똑바로 서십시오. 엉덩이에 손을 얹으십시오. 이것이 시작 위치입니다. 이제 슬로...',
-      execution: '한 번의 아이소메트릭 수축은 약 20초입니다. 20초간 유지하는 동안 정상적으로 호흡하도록 노력하십시오. 그런 다음 숨을 들이마시며 배를 다시 제자리로 가져오세요...',
+      setup:
+        '시작하려면 발을 어깨 너비로 벌리고 똑바로 서십시오. 엉덩이에 손을 얹으십시오. 이것이 시작 위치입니다. 이제 슬로...',
+      execution:
+        '한 번의 아이소메트릭 수축은 약 20초입니다. 20초간 유지하는 동안 정상적으로 호흡하도록 노력하십시오. 그런 다음 숨을 들이마시며 배를 다시 제자리로 가져오세요...',
       transition: '',
     },
   },
@@ -23573,7 +24849,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스트레이트 암 덤벨 풀오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '플랫 벤치에 덤벨을 세워 놓습니다. 덤벨이 벤치 상단에 단단히 고정되어 있는지 확인하고 벤치에 수직으로 눕습니다...',
+      setup:
+        '플랫 벤치에 덤벨을 세워 놓습니다. 덤벨이 벤치 상단에 단단히 고정되어 있는지 확인하고 벤치에 수직으로 눕습니다...',
       execution: '양손으로 덤벨을 잡고 팔 길이를 가슴 위로 수직으로 잡습니다. 두 손바닥은 ...',
       transition: '',
     },
@@ -23588,9 +24865,12 @@ registerLanguageTranslations('ko', {
       '권장되는 반복 횟수만큼 반복하세요.',
     ],
     audio: {
-      intro: '스트레이트 암 풀다운(Straight-Arm Pulldown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '풀다운 머신의 상단 도르래에 있는 넓은 바를 잡고 어깨 너비보다 넓은 회내(손바닥을 아래로) 그립을 사용하여 시작합니다....',
-      execution: '팔을 똑바로 유지하면서 손이 허벅지 옆에 올 때까지 광배근을 수축하여 바를 아래로 당깁니다. 숨을 내쉬면서 ...',
+      intro:
+        '스트레이트 암 풀다운(Straight-Arm Pulldown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '풀다운 머신의 상단 도르래에 있는 넓은 바를 잡고 어깨 너비보다 넓은 회내(손바닥을 아래로) 그립을 사용하여 시작합니다....',
+      execution:
+        '팔을 똑바로 유지하면서 손이 허벅지 옆에 올 때까지 광배근을 수축하여 바를 아래로 당깁니다. 숨을 내쉬면서 ...',
       transition: '',
     },
   },
@@ -23602,8 +24882,10 @@ registerLanguageTranslations('ko', {
       '잠시 멈춘 후 바를 천천히 시작 위치로 되돌려 완전히 아래로 내려갑니다.',
     ],
     audio: {
-      intro: '스트레이트 바 벤치 미드 로우(Straight Bar Bench Mid Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '벤치 끝에 로드된 바벨을 놓습니다. 바 뒤의 벤치에 서서 중간 크기의 회내 그립을 잡습니다. 엉덩이를 뒤로 젖히고 서서 체...',
+      intro:
+        '스트레이트 바 벤치 미드 로우(Straight Bar Bench Mid Rows)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '벤치 끝에 로드된 바벨을 놓습니다. 바 뒤의 벤치에 서서 중간 크기의 회내 그립을 잡습니다. 엉덩이를 뒤로 젖히고 서서 체...',
       execution: '잠시 멈춘 후 바를 천천히 시작 위치로 되돌려 완전히 아래로 내려갑니다.',
       transition: '',
     },
@@ -23618,7 +24900,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '인클라인 벤치에서의 스트레이트 레이즈는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '경사 벤치 머리 뒤의 바닥에 바를 놓습니다. 벤치에 엎드려 눕습니다. 회내 그립으로 바닥에서 바벨을 들어올립니다...',
+      setup:
+        '경사 벤치 머리 뒤의 바닥에 바를 놓습니다. 벤치에 엎드려 눕습니다. 회내 그립으로 바닥에서 바벨을 들어올립니다...',
       execution: '시작하려면 팔을 쭉 뻗은 상태에서 바벨을 머리 앞으로 들어 올리세요. 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -23632,9 +24915,12 @@ registerLanguageTranslations('ko', {
       '반대쪽으로 다시 교차하면서 동작을 반복합니다.',
     ],
     audio: {
-      intro: '스트라이드 점프 크로스오버(Stride Jump Crossover)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '안쪽 발을 상자 가장자리에 가깝게 상자 옆에 놓으십시오. 위쪽 다리를 밀면서 팔을 위로 휘두르면서 시작하세요...',
-      execution: '시작했던 반대 위치, 즉 상자 반대쪽에 착지합니다. 처음에 상자 위에 있던 발은 이제 땅에 닿게 됩니다. ...',
+      intro:
+        '스트라이드 점프 크로스오버(Stride Jump Crossover)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '안쪽 발을 상자 가장자리에 가깝게 상자 옆에 놓으십시오. 위쪽 다리를 밀면서 팔을 위로 휘두르면서 시작하세요...',
+      execution:
+        '시작했던 반대 위치, 즉 상자 반대쪽에 착지합니다. 처음에 상자 위에 있던 발은 이제 땅에 닿게 됩니다. ...',
       transition: '',
     },
   },
@@ -23648,8 +24934,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스모 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바를 땅에 얹은 채 시작하세요. 바가 발 중앙과 교차하도록 바에 접근합니다. 발은 매우 넓게, T 근처에 설정되어야 합니다...',
-      execution: '바가 무릎을 통과할 때 뒤로 몸을 기울여 엉덩이를 바 안으로 밀어 넣고 견갑골을 함께 당깁니다. 무게를 그로에 반납하세요...',
+      setup:
+        '바를 땅에 얹은 채 시작하세요. 바가 발 중앙과 교차하도록 바에 접근합니다. 발은 매우 넓게, T 근처에 설정되어야 합니다...',
+      execution:
+        '바가 무릎을 통과할 때 뒤로 몸을 기울여 엉덩이를 바 안으로 밀어 넣고 견갑골을 함께 당깁니다. 무게를 그로에 반납하세요...',
       transition: '',
     },
   },
@@ -23664,8 +24952,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '밴드를 이용한 스모 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '짧은 밴드를 사용하여 데드리프트를 하려면 시작하기 전에 밴드를 바 위에 걸고 그 안으로 들어가 설정을 하면 됩니다. 뒤쪽 절반 아래에 있는지 확인하세요...',
-      execution: '숨을 들이쉬고 엉덩이를 낮추고 가슴을 위로 올려 머리를 앞으로 내밀어 보세요. 바닥을 달리며 두 발을 벌리고 재치있게...',
+      setup:
+        '짧은 밴드를 사용하여 데드리프트를 하려면 시작하기 전에 밴드를 바 위에 걸고 그 안으로 들어가 설정을 하면 됩니다. 뒤쪽 절반 아래에 있는지 확인하세요...',
+      execution:
+        '숨을 들이쉬고 엉덩이를 낮추고 가슴을 위로 올려 머리를 앞으로 내밀어 보세요. 바닥을 달리며 두 발을 벌리고 재치있게...',
       transition: '',
     },
   },
@@ -23680,8 +24970,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '체인을 이용한 스모 데드리프트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '체인을 바의 슬리브에 부착하거나 바 중앙을 늘어뜨려 들어올릴 때 무게가 더 많이 증가하도록 할 수 있습니다. 시도...',
-      execution: '숨을 들이쉬고 엉덩이를 낮추고 가슴을 위로 올려 머리를 앞으로 내밀어 보세요. 바닥을 달리며 두 발을 벌리고 재치있게...',
+      setup:
+        '체인을 바의 슬리브에 부착하거나 바 중앙을 늘어뜨려 들어올릴 때 무게가 더 많이 증가하도록 할 수 있습니다. 시도...',
+      execution:
+        '숨을 들이쉬고 엉덩이를 낮추고 가슴을 위로 올려 머리를 앞으로 내밀어 보세요. 바닥을 달리며 두 발을 벌리고 재치있게...',
       transition: '',
     },
   },
@@ -23695,8 +24987,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '슈퍼맨은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 바닥이나 운동 매트에 똑바로 누워 얼굴을 아래로 향하게 하십시오. 팔은 앞으로 완전히 뻗어야 합니다. 이것이 시작 위치입니다...',
-      execution: '숨을 들이쉬면서 천천히 팔, 다리, 가슴을 낮추어 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요...',
+      setup:
+        '시작하려면 바닥이나 운동 매트에 똑바로 누워 얼굴을 아래로 향하게 하십시오. 팔은 앞으로 완전히 뻗어야 합니다. 이것이 시작 위치입니다...',
+      execution:
+        '숨을 들이쉬면서 천천히 팔, 다리, 가슴을 낮추어 시작 위치로 돌아갑니다. 권장되는 반복 횟수만큼 반복하세요...',
       transition: '',
     },
   },
@@ -23710,8 +25004,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Supine Chest Throw는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 훈련은 파트너가 부족하거나 힘이 충분한 벽이 없을 때 가슴 패스에 적합합니다. 무릎을 구부린 채 등을 대고 바닥에 눕습니다....',
-      execution: '위로 폭발하여 팔꿈치를 통해 확장하여 가능한 한 높이 바로 위로 공을 던집니다. 내려오는 공을 양손으로 잡는다.',
+      setup:
+        '이 훈련은 파트너가 부족하거나 힘이 충분한 벽이 없을 때 가슴 패스에 적합합니다. 무릎을 구부린 채 등을 대고 바닥에 눕습니다....',
+      execution:
+        '위로 폭발하여 팔꿈치를 통해 확장하여 가능한 한 높이 바로 위로 공을 던집니다. 내려오는 공을 양손으로 잡는다.',
       transition: '',
     },
   },
@@ -23723,8 +25019,10 @@ registerLanguageTranslations('ko', {
       '공은 파트너에게 던지거나 벽에 부딪힐 수 있습니다.',
     ],
     audio: {
-      intro: '앙와위 한 팔 오버헤드 던지기(Spine One-Arm Overhead Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부린 채 바닥에 등을 대고 눕습니다. 한 손으로 공을 잡고 팔을 머리 뒤로 완전히 뻗습니다. 이것이 당신의 시작이 될 것입니다...',
+      intro:
+        '앙와위 한 팔 오버헤드 던지기(Spine One-Arm Overhead Throw)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '무릎을 구부린 채 바닥에 등을 대고 눕습니다. 한 손으로 공을 잡고 팔을 머리 뒤로 완전히 뻗습니다. 이것이 당신의 시작이 될 것입니다...',
       execution: '공은 파트너에게 던지거나 벽에 부딪힐 수 있습니다.',
       transition: '',
     },
@@ -23739,8 +25037,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '앙와위 양팔 오버헤드 던지기는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부린 채 바닥에 등을 대고 눕습니다. 양손으로 공을 잡고 팔을 머리 뒤로 완전히 뻗습니다. 이것이 당신의 일이 될 것입니다...',
-      execution: '어깨에서 움직임을 시작하고, 앉으면서 공을 몸 앞으로 직접 던지면서 최대 거리를 향해 나아가려고 합니다. 공은...',
+      setup:
+        '무릎을 구부린 채 바닥에 등을 대고 눕습니다. 양손으로 공을 잡고 팔을 머리 뒤로 완전히 뻗습니다. 이것이 당신의 일이 될 것입니다...',
+      execution:
+        '어깨에서 움직임을 시작하고, 앉으면서 공을 몸 앞으로 직접 던지면서 최대 거리를 향해 나아가려고 합니다. 공은...',
       transition: '',
     },
   },
@@ -23755,7 +25055,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서스펜디드 폴아웃(Suspended Fallout)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손잡이가 허리 높이 아래의 적절한 높이에 있도록 스트랩을 조정하십시오. 서서 손잡이를 잡기 시작합니다. 끈에 기대어 좀...',
+      setup:
+        '손잡이가 허리 높이 아래의 적절한 높이에 있도록 스트랩을 조정하십시오. 서서 손잡이를 잡기 시작합니다. 끈에 기대어 좀...',
       execution: '팔을 똑바로 유지하고 서스펜션 스트랩에 더 몸을 기울여 몸을 땅에 더 가까이 가져가 어깨를 쭉 펴세요.',
       transition: '',
     },
@@ -23770,8 +25071,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서스펜디드 푸시업(Suspended Push-Up)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '서스펜션 스트랩을 랙 상단이나 기타 물체에 단단히 고정하십시오. 스트랩에 기대어 양손에 손잡이를 잡고 푸딩 안으로 이동합니다...',
-      execution: '곧고 단단한 몸통을 유지하면서 팔꿈치를 구부리면서 천천히 하강합니다. 팔꿈치가 90도 부러질 때까지 계속하고, 그 전에 잠시 멈춥니다...',
+      setup:
+        '서스펜션 스트랩을 랙 상단이나 기타 물체에 단단히 고정하십시오. 스트랩에 기대어 양손에 손잡이를 잡고 푸딩 안으로 이동합니다...',
+      execution:
+        '곧고 단단한 몸통을 유지하면서 팔꿈치를 구부리면서 천천히 하강합니다. 팔꿈치가 90도 부러질 때까지 계속하고, 그 전에 잠시 멈춥니다...',
       transition: '',
     },
   },
@@ -23785,8 +25088,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서스펜디드 리버스 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손잡이가 지면에서 약 1피트 떨어진 곳에 매달려 있는 서스펜션 스트랩 세트를 고정합니다. 반대 방향으로 팔굽혀펴기 플랭크 자세를 취하세요...',
-      execution: '무릎과 엉덩이를 구부리고 무릎을 몸통쪽으로 끌어당기는 동작을 시작합니다. 그렇게 하면서 골반을 앞쪽으로 기울여 척추를 곧게 펴세요...',
+      setup:
+        '손잡이가 지면에서 약 1피트 떨어진 곳에 매달려 있는 서스펜션 스트랩 세트를 고정합니다. 반대 방향으로 팔굽혀펴기 플랭크 자세를 취하세요...',
+      execution:
+        '무릎과 엉덩이를 구부리고 무릎을 몸통쪽으로 끌어당기는 동작을 시작합니다. 그렇게 하면서 골반을 앞쪽으로 기울여 척추를 곧게 펴세요...',
       transition: '',
     },
   },
@@ -23799,7 +25104,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서스펜디드 로우(Suspended Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '스트랩을 가슴 높이에 걸어두세요. 양손에 손잡이를 잡고 몸을 뒤로 젖히세요. 몸을 똑바로 세우고 머리와 가슴을 위로 유지하십시오. 팔이 쉬...',
+      setup:
+        '스트랩을 가슴 높이에 걸어두세요. 양손에 손잡이를 잡고 몸을 뒤로 젖히세요. 몸을 똑바로 세우고 머리와 가슴을 위로 유지하십시오. 팔이 쉬...',
       execution: '동작이 끝나면 일시 정지한 후 시작 위치로 돌아갑니다.',
       transition: '',
     },
@@ -23814,7 +25120,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '서스펜디드 스플릿 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손잡이가 바닥에서 18~30인치 떨어져 있도록 스트랩을 매단다. 셋업 반대 방향으로 뒤쪽 발을 뒤쪽 핸들에 위치시킵니다. 케...',
+      setup:
+        '손잡이가 바닥에서 18~30인치 떨어져 있도록 스트랩을 매단다. 셋업 반대 방향으로 뒤쪽 발을 뒤쪽 핸들에 위치시킵니다. 케...',
       execution: '무릎과 엉덩이를 구부려 바닥에 몸을 낮추면서 하강합니다. 체중을 발뒤꿈치에 싣고 자세를 유지하세요...',
       transition: '',
     },
@@ -23829,8 +25136,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스벤드 프레스(Svend Press)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '서있는 자세로 시작하십시오. 두 개의 가벼운 판을 손으로 함께 누르십시오. 접시를 가슴 가까이에 모아 이솜을 만듭니다...',
-      execution: '손바닥 사이에 판을 쥐고 제어된 동작으로 팔을 몸 바로 앞으로 뻗으십시오. 모션의 상단에서 잠시 멈추고...',
+      setup:
+        '서있는 자세로 시작하십시오. 두 개의 가벼운 판을 손으로 함께 누르십시오. 접시를 가슴 가까이에 모아 이솜을 만듭니다...',
+      execution:
+        '손바닥 사이에 판을 쥐고 제어된 동작으로 팔을 몸 바로 앞으로 뻗으십시오. 모션의 상단에서 잠시 멈추고...',
       transition: '',
     },
   },
@@ -23846,7 +25155,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '핸들이 있는 T-바 로우는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바가 움직이지 않도록 지뢰나 구석에 바를 위치시키세요. 끝에 적절한 무게를 실으세요. 바 위에 서서 ...',
-      execution: '엉덩이를 뒤로 젖히고 가슴을 위로 한 채 넓은 자세를 취하세요. 팔을 뻗어야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 무게를 Y쪽으로 당기세요...',
+      execution:
+        '엉덩이를 뒤로 젖히고 가슴을 위로 한 채 넓은 자세를 취하세요. 팔을 뻗어야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 무게를 Y쪽으로 당기세요...',
       transition: '',
     },
   },
@@ -23862,7 +25172,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '테이트 프레스(Tate Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '허벅지 위에 덤벨을 양손에 들고 플랫 벤치에 눕습니다. 손바닥이 서로 마주보게 됩니다. 허벅지를 사용해서...',
-      execution: '윗팔을 고정한 상태에서 숨을 들이쉬면서 덤벨이 가슴 윗부분에 닿을 때까지 반원 모양으로 천천히 안팎으로 움직입니다....',
+      execution:
+        '윗팔을 고정한 상태에서 숨을 들이쉬면서 덤벨이 가슴 윗부분에 닿을 때까지 반원 모양으로 천천히 안팎으로 움직입니다....',
       transition: '',
     },
   },
@@ -23874,7 +25185,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Straddle은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '앉고 곧은 자세로 시작하십시오. V자 모양으로 다리를 앞으로 뻗는 것부터 시작하세요. 바닥에 손을 대고 최대한 앞으로 몸을 숙이세요...',
+      setup:
+        '앉고 곧은 자세로 시작하십시오. V자 모양으로 다리를 앞으로 뻗는 것부터 시작하세요. 바닥에 손을 대고 최대한 앞으로 몸을 숙이세요...',
       execution: '바닥에 손을 대고 최대한 앞으로 몸을 기울입니다. 10~20초 동안 유지하세요.',
       transition: '',
     },
@@ -23889,8 +25201,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '허벅지 외전근은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 외전 기계에 앉아서 편안한 무게를 선택하십시오. 다리가 올바른 위치에 있으면 손잡이를 잡습니다...',
-      execution: '잠시 동안 수축을 느끼고 숨을 들이쉬면서 다리를 시작 위치로 다시 움직이기 시작합니다. 참고: 상체를 유지하는 것을 잊지 마세요...',
+      setup:
+        '시작하려면 외전 기계에 앉아서 편안한 무게를 선택하십시오. 다리가 올바른 위치에 있으면 손잡이를 잡습니다...',
+      execution:
+        '잠시 동안 수축을 느끼고 숨을 들이쉬면서 다리를 시작 위치로 다시 움직이기 시작합니다. 참고: 상체를 유지하는 것을 잊지 마세요...',
       transition: '',
     },
   },
@@ -23905,7 +25219,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '허벅지 내전근은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작하려면 내전근 기계에 앉아서 편안한 무게를 선택하십시오. 다리가 다리 패드 위에 올바르게 위치하면 ...',
-      execution: '잠시 동안 수축을 느끼고 숨을 들이쉬면서 다리를 시작 위치로 다시 움직이기 시작합니다. 참고: 상체를 유지하는 것을 잊지 마세요...',
+      execution:
+        '잠시 동안 수축을 느끼고 숨을 들이쉬면서 다리를 시작 위치로 다시 움직이기 시작합니다. 참고: 상체를 유지하는 것을 잊지 마세요...',
       transition: '',
     },
   },
@@ -23918,8 +25233,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '타이어 뒤집기는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '먼저 트레드에 있는 타이어 바닥을 잡고 발을 약간 뒤로 위치시킵니다. 가슴이 타이어 안으로 들어가야 합니다. 티를 들어올리려면...',
-      execution: '타이어가 45도 각도에 도달하면 앞으로 나아가 무릎을 타이어 안으로 밀어 넣습니다. 그렇게 하면서 그립을 타이어 윗부분으로 조정합니다...',
+      setup:
+        '먼저 트레드에 있는 타이어 바닥을 잡고 발을 약간 뒤로 위치시킵니다. 가슴이 타이어 안으로 들어가야 합니다. 티를 들어올리려면...',
+      execution:
+        '타이어가 45도 각도에 도달하면 앞으로 나아가 무릎을 타이어 안으로 밀어 넣습니다. 그렇게 하면서 그립을 타이어 윗부분으로 조정합니다...',
       transition: '',
     },
   },
@@ -23948,8 +25265,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '몸통 회전은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 운동공을 들고 똑바로 선다. 공이 바로 앞쪽에 있도록 팔을 뻗어보세요. 이것이 당신의 출발점이 될 것입니다...',
-      execution: '몸통을 한쪽으로 돌리면서 움직일 때 공에 시선을 고정하세요. 이제 다시 반대 방향으로 회전합니다. 10~20회 반복합니다.',
+      setup:
+        '양손으로 운동공을 들고 똑바로 선다. 공이 바로 앞쪽에 있도록 팔을 뻗어보세요. 이것이 당신의 출발점이 될 것입니다...',
+      execution:
+        '몸통을 한쪽으로 돌리면서 움직일 때 공에 시선을 고정하세요. 이제 다시 반대 방향으로 회전합니다. 10~20회 반복합니다.',
       transition: '',
     },
   },
@@ -23961,8 +25280,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '트레일 러닝/워킹은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '트레일에서 달리거나 하이킹을 하면 거의 즉시 혈액이 펌핑되고 ​​심장이 뛰게 됩니다. 좋은 신발을 가지고 있는지 확인하십시오. 근육을 사용하는 동안...',
-      execution: '평평한 표면에서 175칼로리를 소모하는 데 비해 150파운드의 사람은 오르막길을 걷는 30분 동안 200칼로리 이상을 소모할 수 있습니다. 트레일을 달리는 경우 150파운드의 사람이 ...',
+      setup:
+        '트레일에서 달리거나 하이킹을 하면 거의 즉시 혈액이 펌핑되고 ​​심장이 뛰게 됩니다. 좋은 신발을 가지고 있는지 확인하십시오. 근육을 사용하는 동안...',
+      execution:
+        '평평한 표면에서 175칼로리를 소모하는 데 비해 150파운드의 사람은 오르막길을 걷는 30분 동안 200칼로리 이상을 소모할 수 있습니다. 트레일을 달리는 경우 150파운드의 사람이 ...',
       transition: '',
     },
   },
@@ -23977,7 +25298,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '트랩바 데드리프트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '이 운동을 위해서는 육각 바로 알려진 트랩 바를 바닥에 얹은 적절한 무게추에 싣습니다. 장치 중앙에 서서...',
-      execution: '발뒤꿈치를 통해 운동을 시작하고 엉덩이와 무릎을 펴십시오. 항상 등을 구부리지 마십시오. 영화가 완료되면...',
+      execution:
+        '발뒤꿈치를 통해 운동을 시작하고 엉덩이와 무릎을 펴십시오. 항상 등을 구부리지 마십시오. 영화가 완료되면...',
       transition: '',
     },
   },
@@ -23991,8 +25313,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '삼두근 덤벨 킥백(Tricep Dumbbell Kickback)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 쥐고 손바닥이 몸통을 향하게 하여 시작하세요. 등을 곧게 펴고 무릎을 살짝 구부린 후 앞으로 구부리세요...',
-      execution: '최고 수축 단계에서 잠시 멈춘 후 숨을 들이마시며 천천히 덤벨을 다시 시작 위치로 내립니다. p에 대한 움직임을 반복합니다...',
+      setup:
+        '양손에 덤벨을 쥐고 손바닥이 몸통을 향하게 하여 시작하세요. 등을 곧게 펴고 무릎을 살짝 구부린 후 앞으로 구부리세요...',
+      execution:
+        '최고 수축 단계에서 잠시 멈춘 후 숨을 들이마시며 천천히 덤벨을 다시 시작 위치로 내립니다. p에 대한 움직임을 반복합니다...',
       transition: '',
     },
   },
@@ -24003,8 +25327,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '삼두근 측면 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '삼두근이 늘어나는 느낌이 들 때까지 왼손으로 팔꿈치를 잡고 오른쪽 팔을 몸을 가로질러 왼쪽 어깨 위로 가져옵니다. 그럼...',
-      execution: '삼두근이 늘어나는 느낌이 들 때까지 왼손으로 팔꿈치를 잡고 오른쪽 팔을 몸을 가로질러 왼쪽 어깨 위로 가져옵니다. 그럼...',
+      setup:
+        '삼두근이 늘어나는 느낌이 들 때까지 왼손으로 팔꿈치를 잡고 오른쪽 팔을 몸을 가로질러 왼쪽 어깨 위로 가져옵니다. 그럼...',
+      execution:
+        '삼두근이 늘어나는 느낌이 들 때까지 왼손으로 팔꿈치를 잡고 오른쪽 팔을 몸을 가로질러 왼쪽 어깨 위로 가져옵니다. 그럼...',
       transition: '',
     },
   },
@@ -24018,8 +25344,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '로프를 이용한 삼두근 오버헤드 익스텐션은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '낮은 도르래에 로프를 연결합니다. 적절한 무게추를 선택한 후 양손으로 로프를 잡고 케이블에서 얼굴을 돌리십시오. 위치를 잡아...',
-      execution: '동작을 수행하려면 윗팔을 제자리에 유지하면서 팔꿈치를 통해 확장하고 손을 머리 위로 들어 올리십시오. 삼두근을 조여보세요...',
+      setup:
+        '낮은 도르래에 로프를 연결합니다. 적절한 무게추를 선택한 후 양손으로 로프를 잡고 케이블에서 얼굴을 돌리십시오. 위치를 잡아...',
+      execution:
+        '동작을 수행하려면 윗팔을 제자리에 유지하면서 팔꿈치를 통해 확장하고 손을 머리 위로 들어 올리십시오. 삼두근을 조여보세요...',
       transition: '',
     },
   },
@@ -24034,8 +25362,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '트라이셉스 푸시다운(Triceps Pushdown)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '직선형 또는 각진 막대를 하이 도르래에 부착하고 어깨 너비로 오버핸드 그립(손바닥이 아래를 향하도록)으로 잡습니다. 를 들고 똑바로 서 있는 중...',
-      execution: '삼두근을 사용하여 바가 허벅지 앞쪽에 닿고 팔이 바닥과 수직으로 완전히 뻗을 때까지 바를 아래로 내립니다. 문제가...',
+      setup:
+        '직선형 또는 각진 막대를 하이 도르래에 부착하고 어깨 너비로 오버핸드 그립(손바닥이 아래를 향하도록)으로 잡습니다. 를 들고 똑바로 서 있는 중...',
+      execution:
+        '삼두근을 사용하여 바가 허벅지 앞쪽에 닿고 팔이 바닥과 수직으로 완전히 뻗을 때까지 바를 아래로 내립니다. 문제가...',
       transition: '',
     },
   },
@@ -24050,8 +25380,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '삼두근 푸시다운 - 로프 부착은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높은 도르래에 로프 부착물을 부착하고 중립 그립(손바닥이 서로 마주보게)으로 잡습니다. 상체를 곧게 펴고 똑바로 서서...',
-      execution: '삼두근을 사용하여 로프의 양쪽을 허벅지 옆으로 가져오면서 로프를 아래로 내립니다. 동작이 끝나면 팔이 완전히 펴집니다...',
+      setup:
+        '높은 도르래에 로프 부착물을 부착하고 중립 그립(손바닥이 서로 마주보게)으로 잡습니다. 상체를 곧게 펴고 똑바로 서서...',
+      execution:
+        '삼두근을 사용하여 로프의 양쪽을 허벅지 옆으로 가져오면서 로프를 아래로 내립니다. 동작이 끝나면 팔이 완전히 펴집니다...',
       transition: '',
     },
   },
@@ -24066,16 +25398,16 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '삼두근 푸시다운 - V-Bar 부착은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '높은 도르래에 V바를 부착하고 어깨 너비로 오버핸드 그립(손바닥이 아래를 향하도록)으로 잡습니다. 상체를 곧게 펴고 똑바로 서서 ...',
-      execution: '삼두근을 사용하여 바가 허벅지 앞쪽에 닿고 팔이 바닥과 수직으로 완전히 뻗을 때까지 바를 아래로 내립니다. 문제가...',
+      setup:
+        '높은 도르래에 V바를 부착하고 어깨 너비로 오버핸드 그립(손바닥이 아래를 향하도록)으로 잡습니다. 상체를 곧게 펴고 똑바로 서서 ...',
+      execution:
+        '삼두근을 사용하여 바가 허벅지 앞쪽에 닿고 팔이 바닥과 수직으로 완전히 뻗을 때까지 바를 아래로 내립니다. 문제가...',
       transition: '',
     },
   },
   fed_triceps_stretch: {
     name: '삼두근 스트레칭',
-    instructions: [
-      '머리 뒤로 손을 뻗어 팔꿈치를 잡고 가볍게 당깁니다. 10~20초 동안 유지한 다음 방향을 전환합니다.',
-    ],
+    instructions: ['머리 뒤로 손을 뻗어 팔꿈치를 잡고 가볍게 당깁니다. 10~20초 동안 유지한 다음 방향을 전환합니다.'],
     audio: {
       intro: '삼두근 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 뻗어 팔꿈치를 잡고 가볍게 당깁니다. 10~20초 동안 유지한 다음 방향을 전환합니다.',
@@ -24096,7 +25428,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '턱 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작하려면 바닥이나 운동 매트에 등을 바닥에 대고 눕습니다. 팔은 옆구리를 가로질러 누워 있어야 합니다...',
-      execution: '팔을 바닥에서 움직여 가슴 위에 놓이도록 교차하세요. 이것이 시작 위치입니다. 허리 프레스를 유지하면서...',
+      execution:
+        '팔을 바닥에서 움직여 가슴 위에 놓이도록 교차하세요. 이것이 시작 위치입니다. 허리 프레스를 유지하면서...',
       transition: '',
     },
   },
@@ -24109,9 +25442,11 @@ registerLanguageTranslations('ko', {
       '수축된 자세에서 이두근을 1초간 강하게 쥐고 권장 횟수만큼 반복합니다.',
     ],
     audio: {
-      intro: '투암 덤벨 프리처 컬(Two-Arm Dumbbell Preacher Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '투암 덤벨 프리처 컬(Two-Arm Dumbbell Preacher Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '각 팔에 덤벨을 잡고 윗팔을 프리처 벤치나 경사 벤치 위에 놓습니다. 덤벨은 어깨에 위치해야 합니다...',
-      execution: '숨을 내쉴 때 이두근이 완전히 수축되고 덤벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 컬링하십시오. 바이를 짜내세요...',
+      execution:
+        '숨을 내쉴 때 이두근이 완전히 수축되고 덤벨이 어깨 높이에 올 때까지 이두근을 사용하여 웨이트를 컬링하십시오. 바이를 짜내세요...',
       transition: '',
     },
   },
@@ -24124,7 +25459,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '투암 케틀벨 클린은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨을 깨끗이 닦아주세요...',
+      setup:
+        '두 개의 케틀벨을 발 사이에 놓습니다. 시작 자세를 취하려면 엉덩이를 뒤로 밀고 정면을 바라보세요. 케틀벨을 깨끗이 닦아주세요...',
       execution: '케틀벨을 다시 시작 위치로 낮추고 반복하세요.',
       transition: '',
     },
@@ -24136,8 +25472,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '투암 케틀벨 저크(Two-Arm Kettlebell Jerk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 휘두르면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
-      execution: '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 휘두르면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      setup:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 휘두르면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      execution:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 휘두르면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
       transition: '',
     },
   },
@@ -24148,9 +25486,12 @@ registerLanguageTranslations('ko', {
       '케틀벨을 위아래로 누르세요. 케틀벨이 머리를 지나갈 때 케틀벨이 머리 뒤에 놓이도록 웨이트 쪽으로 몸을 기울이세요. 안정성을 더하려면 광배근, 엉덩이, 배를 수축하세요.',
     ],
     audio: {
-      intro: '투암 케틀벨 밀리터리 프레스(Two-Arm Kettlebell Military Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 휘두르면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
-      execution: '케틀벨을 위아래로 누르세요. 케틀벨이 머리를 지나갈 때 케틀벨이 머리 뒤에 놓이도록 웨이트 쪽으로 몸을 기울이세요. 막...',
+      intro:
+        '투암 케틀벨 밀리터리 프레스(Two-Arm Kettlebell Military Press)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '두 개의 케틀벨을 어깨에 대고 청소하세요. 케틀벨을 휘두르면서 다리와 엉덩이를 확장하여 케틀벨을 어깨까지 깨끗하게 만드세요...',
+      execution:
+        '케틀벨을 위아래로 누르세요. 케틀벨이 머리를 지나갈 때 케틀벨이 머리 뒤에 놓이도록 웨이트 쪽으로 몸을 기울이세요. 막...',
       transition: '',
     },
   },
@@ -24163,7 +25504,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '투암 케틀벨 로우(Two-Arm Kettlebell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '케틀벨 두 개를 발 앞에 놓습니다. 무릎을 살짝 구부린 후 몸을 굽히면서 엉덩이를 최대한 밀어내세요...',
-      execution: '두 케틀벨을 잡고 배쪽으로 당기면서 견갑골을 수축시키고 팔꿈치를 구부립니다. 등을 똑바로 유지하십시오. 낮추고 반복...',
+      execution:
+        '두 케틀벨을 잡고 배쪽으로 당기면서 견갑골을 수축시키고 팔꿈치를 구부립니다. 등을 똑바로 유지하십시오. 낮추고 반복...',
       transition: '',
     },
   },
@@ -24179,8 +25521,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '언더핸드 케이블 풀다운은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 키에 맞게 머신의 무릎 패드를 조정하세요. 이 패드는 ...',
-      execution: '선택한 그립 너비로 바를 잡고 두 팔을 앞쪽으로 뻗은 상태에서 몸통을 약 30도 정도 뒤로 젖히면서 창조...',
+      setup:
+        '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 키에 맞게 머신의 무릎 패드를 조정하세요. 이 패드는 ...',
+      execution:
+        '선택한 그립 너비로 바를 잡고 두 팔을 앞쪽으로 뻗은 상태에서 몸통을 약 30도 정도 뒤로 젖히면서 창조...',
       transition: '',
     },
   },
@@ -24193,15 +25537,14 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Upper Back-Leg Grab은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '앉은 상태에서 앞으로 몸을 굽혀 두 팔로 허벅지 아래를 감싸줍니다. 무릎을 모으고 다리를 쭉 뻗은 채...',
-      execution: '가슴을 무릎까지 내리면서 무릎을 모으고 다리를 쭉 뻗으세요. 요를 당겨서 등 가운데를 늘릴 수도 있습니다...',
+      execution:
+        '가슴을 무릎까지 내리면서 무릎을 모으고 다리를 쭉 뻗으세요. 요를 당겨서 등 가운데를 늘릴 수도 있습니다...',
       transition: '',
     },
   },
   fed_upper_back_stretch: {
     name: '등 위쪽 스트레칭',
-    instructions: [
-      '엄지손가락이 아래를 향하도록 손가락을 모아서 손을 앞으로 뻗으면서 어깨를 둥글게 만듭니다.',
-    ],
+    instructions: ['엄지손가락이 아래를 향하도록 손가락을 모아서 손을 앞으로 뻗으면서 어깨를 둥글게 만듭니다.'],
     audio: {
       intro: '등 위쪽 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엄지손가락이 아래를 향하도록 손가락을 모아서 손을 앞으로 뻗으면서 어깨를 둥글게 만듭니다.',
@@ -24220,7 +25563,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '업라이트 바벨 로우(Upright Barbell Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨 너비보다 약간 좁은 오버핸드 그립으로 바벨을 잡습니다. 바는 팔과 함께 허벅지 위쪽에 놓여야 합니다...',
-      execution: '바를 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장되는 r의 양만큼 반복합니다...',
+      execution:
+        '바를 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장되는 r의 양만큼 반복합니다...',
       transition: '',
     },
   },
@@ -24234,8 +25578,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '업라이트 케이블 로우(Upright Cable Row)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: 's보다 약간 작은 회내(손바닥이 허벅지를 향함) 그립으로 낮은 도르래에 부착된 직선 바 케이블 부착물을 잡습니다.',
-      execution: '바를 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장되는 r의 양만큼 반복합니다...',
+      setup:
+        's보다 약간 작은 회내(손바닥이 허벅지를 향함) 그립으로 낮은 도르래에 부착된 직선 바 케이블 부착물을 잡습니다.',
+      execution:
+        '바를 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장되는 r의 양만큼 반복합니다...',
       transition: '',
     },
   },
@@ -24249,8 +25595,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Upright Row - 밴드 사용은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 팔 길이에서 긴장이 시작되도록 운동 밴드 위에 서십시오. 회내(손바닥이 허벅지를 향함) 그립을 사용하여 핸들을 잡습니다...',
-      execution: '핸들을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장량만큼 반복하세요...',
+      setup:
+        '시작하려면 팔 길이에서 긴장이 시작되도록 운동 밴드 위에 서십시오. 회내(손바닥이 허벅지를 향함) 그립을 사용하여 핸들을 잡습니다...',
+      execution:
+        '핸들을 다시 천천히 시작 위치로 내립니다. 이 동작을 수행하면서 숨을 들이쉬세요. 권장량만큼 반복하세요...',
       transition: '',
     },
   },
@@ -24279,8 +25627,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'V-Bar 풀다운은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '상단 풀리에 V바가 부착된 풀다운 머신에 앉으세요. 키에 맞게 머신의 무릎 패드를 조정하세요. 이 패드는 미리...',
-      execution: '손바닥이 서로 마주보게 하여 V바를 잡습니다(중립 그립). 가슴을 내밀고 몸을 뒤로 약간(30도 정도) 순서대로 기울이세요...',
+      setup:
+        '상단 풀리에 V바가 부착된 풀다운 머신에 앉으세요. 키에 맞게 머신의 무릎 패드를 조정하세요. 이 패드는 미리...',
+      execution:
+        '손바닥이 서로 마주보게 하여 V바를 잡습니다(중립 그립). 가슴을 내밀고 몸을 뒤로 약간(30도 정도) 순서대로 기울이세요...',
       transition: '',
     },
   },
@@ -24296,7 +25646,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'V-Bar 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '풀업 바 중앙에 V바 중앙을 배치하는 것부터 시작합니다(사용 중인 풀업 스테이션에 중립 그립이 없다고 가정).',
-      execution: '광배근을 이용하여 상체를 위로 당기면서 머리를 살짝 뒤로 젖혀 턱걸이 막대에 부딪히지 않도록 합니다. 당신이 될 때까지 계속 ...',
+      execution:
+        '광배근을 이용하여 상체를 위로 당기면서 머리를 살짝 뒤로 젖혀 턱걸이 막대에 부딪히지 않도록 합니다. 당신이 될 때까지 계속 ...',
       transition: '',
     },
   },
@@ -24310,8 +25661,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '버티컬 스윙은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '덤벨을 다리 사이에 팔 길이만큼 걸고 양손으로 잡습니다. 등을 곧게 펴고 머리를 위로 들어주세요. 덤벨을 휘두르세요...',
-      execution: '엉덩이, 무릎, 발목을 펴서 힘차게 동작을 역전시켜 몸을 위쪽으로 추진하고 덤벨을 머리 위로 흔듭니다. 당신처럼 ...',
+      setup:
+        '덤벨을 다리 사이에 팔 길이만큼 걸고 양손으로 잡습니다. 등을 곧게 펴고 머리를 위로 들어주세요. 덤벨을 휘두르세요...',
+      execution:
+        '엉덩이, 무릎, 발목을 펴서 힘차게 동작을 역전시켜 몸을 위쪽으로 추진하고 덤벨을 머리 위로 흔듭니다. 당신처럼 ...',
       transition: '',
     },
   },
@@ -24323,8 +25676,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '걷기, 런닝머신은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '시작하려면 런닝머신에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 런닝머신에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
-      execution: '런닝머신은 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 걷는 것보다 충격이 적습니다. 걸을 때는 적당한 속도로 움직여야 합니다.',
+      setup:
+        '시작하려면 런닝머신에 올라 메뉴에서 원하는 옵션을 선택하세요. 대부분의 런닝머신에는 수동 설정이 있거나 프로그램을 선택할 수 있습니다...',
+      execution:
+        '런닝머신은 편리함과 심혈관 혜택을 제공하며 일반적으로 밖에서 걷는 것보다 충격이 적습니다. 걸을 때는 적당한 속도로 움직여야 합니다.',
       transition: '',
     },
   },
@@ -24339,7 +25694,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Weighted Ball Hyperextension은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작하려면 운동 공 위에 누워 몸통을 공에 대고 바닥과 평행하게 누르십시오. 발의 공을 눌러야합니다 ...',
-      execution: '허리의 수축을 1초 동안 유지하고 숨을 들이마시면서 몸통을 다시 시작 위치로 내립니다. 추천을 위해 반복하세요...',
+      execution:
+        '허리의 수축을 1초 동안 유지하고 숨을 들이마시면서 몸통을 다시 시작 위치로 내립니다. 추천을 위해 반복하세요...',
       transition: '',
     },
   },
@@ -24357,7 +25713,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: 'Weighted Ball Side Bend는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '시작하려면 왼쪽 몸통(허리, 엉덩이, 어깨)을 공에 대고 운동 공 위에 눕습니다. 발을 딛고 있어야 합니다...',
-      execution: '손바닥이 비스듬한 위치에 있도록 왼팔을 몸통에 걸쳐 놓습니다. 왼쪽 팔뚝과 윗팔 사이에 직각이 있어야 합니다....',
+      execution:
+        '손바닥이 비스듬한 위치에 있도록 왼팔을 몸통에 걸쳐 놓습니다. 왼쪽 팔뚝과 윗팔 사이에 직각이 있어야 합니다....',
       transition: '',
     },
   },
@@ -24388,8 +25745,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '웨이티드 크런치는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 바닥에 편평하게 대고 등을 대고 눕거나 무릎을 90도 각도로 구부린 채 벤치에 눕습니다. 가슴에 무게를 두세요...',
-      execution: '이제 숨을 내쉬며 천천히 어깨를 바닥에서 굴리기 시작합니다. 어깨는 바닥에서 4인치 정도 올라와야 하고 허리는...',
+      setup:
+        '발을 바닥에 편평하게 대고 등을 대고 눕거나 무릎을 90도 각도로 구부린 채 벤치에 눕습니다. 가슴에 무게를 두세요...',
+      execution:
+        '이제 숨을 내쉬며 천천히 어깨를 바닥에서 굴리기 시작합니다. 어깨는 바닥에서 4인치 정도 올라와야 하고 허리는...',
       transition: '',
     },
   },
@@ -24403,8 +25762,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Weighted Jump Squat는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '가볍게 로드된 바벨을 어깨 뒤쪽에 위치시킵니다. 또한 무게가 있는 조끼, 모래주머니 또는 기타 유형의 저항을 사용할 수도 있습니다...',
-      execution: '반대 동작을 사용하여 부분적으로 쪼그려 앉았다가 즉시 방향을 바꾸어 땅에서 폭발하여 엉덩이, 무릎까지 확장합니다...',
+      setup:
+        '가볍게 로드된 바벨을 어깨 뒤쪽에 위치시킵니다. 또한 무게가 있는 조끼, 모래주머니 또는 기타 유형의 저항을 사용할 수도 있습니다...',
+      execution:
+        '반대 동작을 사용하여 부분적으로 쪼그려 앉았다가 즉시 방향을 바꾸어 땅에서 폭발하여 엉덩이, 무릎까지 확장합니다...',
       transition: '',
     },
   },
@@ -24418,8 +25779,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '웨이트 풀업(Weighted Pull Ups)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '딥 벨트에 웨이트를 부착하고 허리에 고정합니다. 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 중간 정도 그립의 경우...',
-      execution: '이제 숨을 내쉬며 머리가 손 위에 올 때까지 몸통을 위로 당깁니다. 도달할 때 견갑골을 앞뒤로 조이는 데 집중하세요...',
+      setup:
+        '딥 벨트에 웨이트를 부착하고 허리에 고정합니다. 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 중간 정도 그립의 경우...',
+      execution:
+        '이제 숨을 내쉬며 머리가 손 위에 올 때까지 몸통을 위로 당깁니다. 도달할 때 견갑골을 앞뒤로 조이는 데 집중하세요...',
       transition: '',
     },
   },
@@ -24433,8 +25796,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Weighted Sissy Squat는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '똑바로 서서 발을 어깨 너비로 벌리고 발가락을 들어 올리고 한 손으로 스쿼트 랙의 기둥을 잡고 반대쪽 팔로 p를 잡습니다...',
-      execution: '1초 동안 자세를 유지한 후 허벅지 근육을 사용하여 몸통을 시작 위치로 되돌립니다. 위로 올라갈 때 숨을 내쉬십시오. 반성할 때까지 반복하세요...',
+      setup:
+        '똑바로 서서 발을 어깨 너비로 벌리고 발가락을 들어 올리고 한 손으로 스쿼트 랙의 기둥을 잡고 반대쪽 팔로 p를 잡습니다...',
+      execution:
+        '1초 동안 자세를 유지한 후 허벅지 근육을 사용하여 몸통을 시작 위치로 되돌립니다. 위로 올라갈 때 숨을 내쉬십시오. 반성할 때까지 반복하세요...',
       transition: '',
     },
   },
@@ -24448,8 +25813,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Weighted Sit-Ups - Bands는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치 바닥 주위에 밴드를 묶어서 시작하세요. 핸들을 디클라인 벤치 안쪽으로 배치하여 누워 있을 때...',
-      execution: '숨을 내쉬면서 상체가 바닥과 수직이 될 때까지 몸통을 위쪽으로 움직입니다. 1초간 수축을 유지한 후 상체를 낮추세요...',
+      setup:
+        '디클라인 벤치 바닥 주위에 밴드를 묶어서 시작하세요. 핸들을 디클라인 벤치 안쪽으로 배치하여 누워 있을 때...',
+      execution:
+        '숨을 내쉬면서 상체가 바닥과 수직이 될 때까지 몸통을 위쪽으로 움직입니다. 1초간 수축을 유지한 후 상체를 낮추세요...',
       transition: '',
     },
   },
@@ -24464,8 +25831,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 개의 플랫 벤치를 어깨 너비로 서로 간격을 두고 배치하는 것부터 시작하세요. 그 위에 서서 무거운 벨트를 허리에 감으세요.',
-      execution: '머리를 위로 들고 곧은 자세를 유지하면서 무릎을 구부리는 것부터 시작하세요. 위쪽 다리와 종아리 사이의 각도까지 계속 내려가세요...',
+      setup:
+        '두 개의 플랫 벤치를 어깨 너비로 서로 간격을 두고 배치하는 것부터 시작하세요. 그 위에 서서 무거운 벨트를 허리에 감으세요.',
+      execution:
+        '머리를 위로 들고 곧은 자세를 유지하면서 무릎을 구부리는 것부터 시작하세요. 위쪽 다리와 종아리 사이의 각도까지 계속 내려가세요...',
       transition: '',
     },
   },
@@ -24479,8 +25848,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 그립 바벨 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 바닥에 단단히 고정한 채 평평한 벤치에 등을 대고 눕습니다. 어깨 너비에서 약 3인치 떨어진 넓고 회내(손바닥을 앞으로) 그립 사용...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
+      setup:
+        '발을 바닥에 단단히 고정한 채 평평한 벤치에 등을 대고 눕습니다. 어깨 너비에서 약 3인치 떨어진 넓고 회내(손바닥을 앞으로) 그립 사용...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
       transition: '',
     },
   },
@@ -24494,8 +25865,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 그립 디클라인 바벨 벤치 프레스는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '디클라인 벤치에 누워서 발을 벤치 앞쪽에 단단히 고정합니다. 약 3i 정도의 넓고 회내(손바닥이 앞쪽) 그립을 사용합니다...',
-      execution: '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
+      setup:
+        '디클라인 벤치에 누워서 발을 벤치 앞쪽에 단단히 고정합니다. 약 3i 정도의 넓고 회내(손바닥이 앞쪽) 그립을 사용합니다...',
+      execution:
+        '두 번째 멈춘 후 숨을 내쉬면서 가슴 근육을 사용하여 바를 밀면서 바를 시작 위치로 되돌립니다. 팔을 고정하고 ...',
       transition: '',
     },
   },
@@ -24511,8 +25884,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 그립 디클라인 바벨 풀오버는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '두 다리가 제자리에 단단히 고정된 상태로 디클라인 벤치에 눕습니다. 회내형 그립을 사용하여 머리 뒤로 바벨을 잡습니다(손바닥이 O를 향함...',
-      execution: '바벨을 바닥에 놓는 것처럼 반원형 동작으로 다시 아래로 움직이는 것으로 시작하지만 대신 팔이 접힐 때 멈춥니다...',
+      setup:
+        '두 다리가 제자리에 단단히 고정된 상태로 디클라인 벤치에 눕습니다. 회내형 그립을 사용하여 머리 뒤로 바벨을 잡습니다(손바닥이 O를 향함...',
+      execution:
+        '바벨을 바닥에 놓는 것처럼 반원형 동작으로 다시 아래로 움직이는 것으로 시작하지만 대신 팔이 접힐 때 멈춥니다...',
       transition: '',
     },
   },
@@ -24528,8 +25903,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Wide-Grip Lat Pulldown is a moderate strength exercise. It primarily targets your multiple muscles.',
-      setup: '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 반드시 키에 맞게 머신의 무릎 패드를 조절하세요...',
-      execution: '선택한 그립 너비로 바를 잡고 두 팔을 앞쪽으로 뻗은 상태에서 몸통을 약 30도 정도 뒤로 젖히면서 창조...',
+      setup:
+        '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 반드시 키에 맞게 머신의 무릎 패드를 조절하세요...',
+      execution:
+        '선택한 그립 너비로 바를 잡고 두 팔을 앞쪽으로 뻗은 상태에서 몸통을 약 30도 정도 뒤로 젖히면서 창조...',
       transition: '',
     },
   },
@@ -24545,8 +25922,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 그립 풀다운 비하인드 더 넥은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 반드시 키에 맞게 머신의 무릎 패드를 조절하세요...',
-      execution: '두 팔을 앞으로 뻗어 선택한 그립 너비로 바를 잡고 몸통과 머리를 앞으로 가져옵니다. 상상 속의 나에 대해 생각해 보세요...',
+      setup:
+        '상단 도르래에 넓은 막대가 부착된 풀다운 기계에 앉으세요. 반드시 키에 맞게 머신의 무릎 패드를 조절하세요...',
+      execution:
+        '두 팔을 앞으로 뻗어 선택한 그립 너비로 바를 잡고 몸통과 머리를 앞으로 가져옵니다. 상상 속의 나에 대해 생각해 보세요...',
       transition: '',
     },
   },
@@ -24561,8 +25940,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 그립 리어 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓은 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 두 팔을 앞으로 뻗어 바를 잡고 바를 잡고...',
-      execution: '바가 목 뒤쪽 근처에 올 때까지 몸통을 위로 당깁니다. 이렇게 하려면 약간 기울인 상태에서 어깨와 팔뚝을 아래로 그리고 뒤로 당기세요...',
+      setup:
+        '넓은 그립을 사용하여 손바닥이 앞을 향하도록 풀업 바를 잡습니다. 두 팔을 앞으로 뻗어 바를 잡고 바를 잡고...',
+      execution:
+        '바가 목 뒤쪽 근처에 올 때까지 몸통을 위로 당깁니다. 이렇게 하려면 약간 기울인 상태에서 어깨와 팔뚝을 아래로 그리고 뒤로 당기세요...',
       transition: '',
     },
   },
@@ -24578,7 +25959,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '와이드 그립 스탠딩 바벨 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 바깥쪽 손잡이에 바벨을 잡고 몸통을 똑바로 세우십시오. 손바닥이 앞을 향해야 합니다. 팔꿈치가...',
-      execution: '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
+      execution:
+        '이두근이 완전히 수축되고 바가 어깨 높이에 올 때까지 움직임을 계속하십시오. 1초간 수축한 자세를 유지한 후 쥐어짜세요...',
       transition: '',
     },
   },
@@ -24594,8 +25976,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 스탠스 바벨 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
-      execution: '랙에서 한발 물러나 발가락이 약간 뾰족한 상태에서 어깨 너비보다 넓은 자세로 다리를 배치합니다. 머리를 숙여...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 한 번 ...',
+      execution:
+        '랙에서 한발 물러나 발가락이 약간 뾰족한 상태에서 어깨 너비보다 넓은 자세로 다리를 배치합니다. 머리를 숙여...',
       transition: '',
     },
   },
@@ -24607,8 +25991,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '와이드 스탠스 스티프 레그(Wide Stiff Legs)는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바닥에 바벨을 얹고 시작하세요. 넓은 자세를 취하고 엉덩이를 구부려 바를 잡습니다. 엉덩이는 최대한 뒤로 있어야 합니다...',
-      execution: '엉덩이를 사용하여 동작을 시작하고 팔이 똑바로 늘어지도록 하면서 엉덩이를 앞으로 밀어냅니다. 똑바로 서 있을 때까지 계속하세요. ...',
+      setup:
+        '바닥에 바벨을 얹고 시작하세요. 넓은 자세를 취하고 엉덩이를 구부려 바를 잡습니다. 엉덩이는 최대한 뒤로 있어야 합니다...',
+      execution:
+        '엉덩이를 사용하여 동작을 시작하고 팔이 똑바로 늘어지도록 하면서 엉덩이를 앞으로 밀어냅니다. 똑바로 서 있을 때까지 계속하세요. ...',
       transition: '',
     },
   },
@@ -24622,8 +26008,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '윈드 스프린트(Wind Sprints)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '회내형 그립을 사용하여 풀업 바에 매달립니다. 팔과 다리는 펴져야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 빨리 올리는 것부터 시작하세요...',
-      execution: '즉시 동작을 뒤집어 다리를 시작 위치로 되돌립니다. 동시에 반대쪽 무릎을 최대한 높이 들어올립니다. 계속하세요...',
+      setup:
+        '회내형 그립을 사용하여 풀업 바에 매달립니다. 팔과 다리는 펴져야 합니다. 이것이 당신의 시작 위치가 될 것입니다. 빨리 올리는 것부터 시작하세요...',
+      execution:
+        '즉시 동작을 뒤집어 다리를 시작 위치로 되돌립니다. 동시에 반대쪽 무릎을 최대한 높이 들어올립니다. 계속하세요...',
       transition: '',
     },
   },
@@ -24636,7 +26024,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '풍차는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '팔을 옆으로 뻗고 다리를 곧게 펴고 등을 대고 눕습니다. 이것이 당신의 시작 위치가 될 것입니다. 한쪽 다리를 들어올리고 빠르게 크로...',
+      setup:
+        '팔을 옆으로 뻗고 다리를 곧게 펴고 등을 대고 눕습니다. 이것이 당신의 시작 위치가 될 것입니다. 한쪽 다리를 들어올리고 빠르게 크로...',
       execution: '시작 위치로 돌아가 반대쪽 다리로 반복합니다. 계속해서 10~20회 반복합니다.',
       transition: '',
     },
@@ -24649,9 +26038,11 @@ registerLanguageTranslations('ko', {
       '10~20초 후에 양손을 앞발 양쪽에 올려 놓습니다. 앞발의 발가락을 땅에서 들어 올리고 다리를 곧게 펴십시오. 이렇게 하려면 뒷다리의 위치를 ​​바꿔야 할 수도 있습니다. 10~20초 동안 유지한 다음 반대쪽도 전체 순서를 반복합니다.',
     ],
     audio: {
-      intro: 'World\'s Greatest Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이것은 세 부분으로 구성된 스트레칭입니다. 앞발을 땅에 평평하게 대고 뒷발의 발가락을 딛고 앞으로 돌진하면서 시작하십시오. 무릎을 꿇고...',
-      execution: '10~20초 후에 양손을 앞발 양쪽에 올려 놓습니다. 앞발의 발가락을 땅에서 들어 올리고 발을 곧게 펴세요...',
+      intro: "World's Greatest Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.",
+      setup:
+        '이것은 세 부분으로 구성된 스트레칭입니다. 앞발을 땅에 평평하게 대고 뒷발의 발가락을 딛고 앞으로 돌진하면서 시작하십시오. 무릎을 꿇고...',
+      execution:
+        '10~20초 후에 양손을 앞발 양쪽에 올려 놓습니다. 앞발의 발가락을 땅에서 들어 올리고 발을 곧게 펴세요...',
       transition: '',
     },
   },
@@ -24664,7 +26055,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '손목 서클은 중간 정도의 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '발을 똑바로 서서 시작합니다. shoulder width apart from each other. Elevate your arms to the side of you until they are fully ext...',
+      setup:
+        '발을 똑바로 서서 시작합니다. shoulder width apart from each other. Elevate your arms to the side of you until they are fully ext...',
       execution: '권장되는 반복 횟수만큼 반복하세요.',
       transition: '',
     },
@@ -24680,8 +26072,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Wrist Roller is a moderate strength exercise. It primarily targets your multiple muscles.',
-      setup: 'To begin, stand straight up grabbing a wrist roller using a 내전 그립(손바닥이 아래를 향함) 발은 어깨 너비로 벌려야 합니다.',
-      execution: '한 번에 한쪽 손목을 위쪽으로 회전하여 롤러 주위로 로프를 굴려 무게를 바까지 가져옵니다. 무게가 도달하면...',
+      setup:
+        'To begin, stand straight up grabbing a wrist roller using a 내전 그립(손바닥이 아래를 향함) 발은 어깨 너비로 벌려야 합니다.',
+      execution:
+        '한 번에 한쪽 손목을 위쪽으로 회전하여 롤러 주위로 로프를 굴려 무게를 바까지 가져옵니다. 무게가 도달하면...',
       transition: '',
     },
   },
@@ -24694,7 +26088,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '직선바를 이용한 손목 회전은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손으로 바벨을 잡고 손바닥이 아래를 향하게 합니다. 손은 어깨 너비만큼 벌립니다. 이것이 당신의 시작 위치가 될 것입니다. 교대로...',
+      setup:
+        '양손으로 바벨을 잡고 손바닥이 아래를 향하게 합니다. 손은 어깨 너비만큼 벌립니다. 이것이 당신의 시작 위치가 될 것입니다. 교대로...',
       execution: '손목을 구부리고 반대 방향으로 굴려 동작을 반대로 합니다. 실패할 때까지 교번 동작을 계속합니다.',
       transition: '',
     },
@@ -24708,8 +26103,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '멍에 걷기(Yoke Walk)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '멍에는 멍에 장치를 사용하는 것이 일반적이지만, 냉장고나 기타 무거운 물체에 멍에를 두는 경우도 가끔 보입니다. 장치를 랙에 올려놓는 것부터 시작하세요...',
-      execution: '짧고 빠른 걸음으로 최대한 빨리 걷기 시작하세요. 요크의 측면 기둥을 잡고 고정하고 제 위치에 고정할 수 있습니다. 씨...',
+      setup:
+        '멍에는 멍에 장치를 사용하는 것이 일반적이지만, 냉장고나 기타 무거운 물체에 멍에를 두는 경우도 가끔 보입니다. 장치를 랙에 올려놓는 것부터 시작하세요...',
+      execution:
+        '짧고 빠른 걸음으로 최대한 빨리 걷기 시작하세요. 요크의 측면 기둥을 잡고 고정하고 제 위치에 고정할 수 있습니다. 씨...',
       transition: '',
     },
   },
@@ -24725,8 +26122,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '저처 스쿼트는 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 그...',
-      execution: '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
+      setup:
+        '이 운동은 안전을 위해 스쿼트 랙 내부에서 수행하는 것이 가장 좋습니다. 시작하려면 먼저 키에 가장 잘 맞는 랙에 바를 설치하세요. 그...',
+      execution:
+        '랙에서 한발 물러나서 발가락이 약간 뾰족한 상태에서 어깨 너비의 중간 자세로 다리를 위치시킵니다. 고개를 항상 들고 계세요...',
       transition: '',
     },
   },
@@ -24744,8 +26143,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '조트만 컬(Zottman Curl)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '상체를 똑바로 세우고 양손에 덤벨을 팔 길이만큼 잡고 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥을 확인하세요...',
-      execution: '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 컬링합니다. 팔뚝만 움직여야 합니다. 손목...',
+      setup:
+        '상체를 똑바로 세우고 양손에 덤벨을 팔 길이만큼 잡고 일어섭니다. 팔꿈치는 몸통에 가까워야 합니다. 손바닥을 확인하세요...',
+      execution:
+        '윗팔을 고정한 상태에서 숨을 내쉬면서 이두근을 수축하면서 웨이트를 컬링합니다. 팔뚝만 움직여야 합니다. 손목...',
       transition: '',
     },
   },
@@ -24761,8 +26162,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Zottman Preacher Curl은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '양손에 덤벨을 잡고 윗팔을 프리처 벤치나 인클라인 벤치 위에 올려 놓습니다. 덤벨은 어깨에 위치해야 합니다...',
-      execution: '이제 동작이 가장 아래에 있을 때 손바닥이 위를 향하도록 손목을 회전합니다. 숨을 내쉴 때 이두근을 사용하여 ...',
+      setup:
+        '양손에 덤벨을 잡고 윗팔을 프리처 벤치나 인클라인 벤치 위에 올려 놓습니다. 덤벨은 어깨에 위치해야 합니다...',
+      execution:
+        '이제 동작이 가장 아래에 있을 때 손바닥이 위를 향하도록 손목을 회전합니다. 숨을 내쉴 때 이두근을 사용하여 ...',
       transition: '',
     },
   },
@@ -24793,7 +26196,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등을 대고 누워 다리를 쭉 뻗습니다. 양손으로 오른쪽 무릎을 가슴 쪽으로 끌어안습니다.',
-      execution: '왼쪽 다리를 쭉 뻗고 바닥에 무거운 자세를 유지하세요. 30초 동안 유지하세요. 허리 스트레칭을 느껴보세요.',
+      execution:
+        '왼쪽 다리를 쭉 뻗고 바닥에 무거운 자세를 유지하세요. 30초 동안 유지하세요. 허리 스트레칭을 느껴보세요.',
       transition: '',
     },
   },
@@ -24822,7 +26226,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '해피 베이비는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워; 바깥쪽 발이나 정강이를 잡습니다. 무릎은 나비보다 깊게 겨드랑이 쪽으로 굽혀집니다.',
-      execution: '플렉스 피트; 가슴 옆 바닥을 향해 무릎을 부드럽게 당깁니다. 30초 동안 좌우로 흔들어 허리를 마사지합니다.',
+      execution:
+        '플렉스 피트; 가슴 옆 바닥을 향해 무릎을 부드럽게 당깁니다. 30초 동안 좌우로 흔들어 허리를 마사지합니다.',
       transition: '',
     },
   },
@@ -24838,8 +26243,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '프론트 스플릿(하프 스플릿)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '낮은 런지로 시작하세요: 오른발은 앞으로, 양쪽 무릎은 90°입니다. 발뒤꿈치를 바닥에 유지한 채 오른발을 조금씩 앞으로 미십시오.',
-      execution: '동시에 앞다리를 곧게 펴고 뒷무릎이 발등이 평평해질 때까지 뒤로 이동합니다. 엉덩이를 직각으로 유지하십시오(헤드라이트가 앞쪽에 있다고 상상해 보십시오).',
+      setup:
+        '낮은 런지로 시작하세요: 오른발은 앞으로, 양쪽 무릎은 90°입니다. 발뒤꿈치를 바닥에 유지한 채 오른발을 조금씩 앞으로 미십시오.',
+      execution:
+        '동시에 앞다리를 곧게 펴고 뒷무릎이 발등이 평평해질 때까지 뒤로 이동합니다. 엉덩이를 직각으로 유지하십시오(헤드라이트가 앞쪽에 있다고 상상해 보십시오).',
       transition: '',
     },
   },
@@ -24854,8 +26261,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '사이드 스플릿(Middle Split)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '넓게 서서 발가락을 앞으로 내밀어 보세요. 체중을 좌우로 이동하고 한쪽 무릎을 구부리고 다른 쪽 다리는 곧게 유지합니다(말 자세 흔들기).',
-      execution: '허벅지 안쪽이 늘어나는 느낌이 들 때까지 숨을 내쉴 때마다 점차적으로 자세를 넓힙니다. 지지를 위해 바닥에 손을 얹으세요. 척추를 길게 유지하고 가슴을 자랑스럽게 유지하십시오.',
+      setup:
+        '넓게 서서 발가락을 앞으로 내밀어 보세요. 체중을 좌우로 이동하고 한쪽 무릎을 구부리고 다른 쪽 다리는 곧게 유지합니다(말 자세 흔들기).',
+      execution:
+        '허벅지 안쪽이 늘어나는 느낌이 들 때까지 숨을 내쉴 때마다 점차적으로 자세를 넓힙니다. 지지를 위해 바닥에 손을 얹으세요. 척추를 길게 유지하고 가슴을 자랑스럽게 유지하십시오.',
       transition: '',
     },
   },
@@ -24870,7 +26279,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스콜피온 스트레치(Scorpion Stretch)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드린 자세로 팔을 90° 벌립니다(T 위치). 왼쪽 다리를 들고 무릎을 구부린 다음 몸을 가로질러 오른쪽 손을 향해 발을 뻗습니다.',
+      setup:
+        '엎드린 자세로 팔을 90° 벌립니다(T 위치). 왼쪽 다리를 들고 무릎을 구부린 다음 몸을 가로질러 오른쪽 손을 향해 발을 뻗습니다.',
       execution: '어깨를 아래로 유지하십시오. 편안하다면 머리를 반대쪽으로 돌리십시오. 30초 유지; 측면을 전환하십시오.',
       transition: '',
     },
@@ -24886,8 +26296,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'King Arthur Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '소파/벤치에서 멀어지는 방향으로 무릎을 꿇습니다. 왼발 윗부분을 가장자리에 놓고 정강이를 수직으로 놓습니다.',
-      execution: '오른발을 앞으로 내밀어 런지 자세를 취합니다. 왼쪽 대퇴사두근/고관절 굴근이 깊게 늘어날 때까지 엉덩이를 앞뒤로 밀어냅니다.',
+      setup:
+        '소파/벤치에서 멀어지는 방향으로 무릎을 꿇습니다. 왼발 윗부분을 가장자리에 놓고 정강이를 수직으로 놓습니다.',
+      execution:
+        '오른발을 앞으로 내밀어 런지 자세를 취합니다. 왼쪽 대퇴사두근/고관절 굴근이 깊게 늘어날 때까지 엉덩이를 앞뒤로 밀어냅니다.',
       transition: '',
     },
   },
@@ -25013,11 +26425,7 @@ registerLanguageTranslations('ko', {
   },
   foc_009: {
     name: '감사 연습',
-    instructions: [
-      '조용히 앉아라.',
-      '다시 한번 감사드립니다.",',
-      ',',
-    ],
+    instructions: ['조용히 앉아라.', '다시 한번 감사드립니다.",', ','],
     audio: {
       intro: '감사 연습은 적당한 집중 연습입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '조용히 앉아라. 다시 한번 감사드립니다.",',
@@ -25051,7 +26459,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '요가 니드라(Yoga Nidra)는 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등을 대고 편안한 자세로 눕습니다. 수행에 대한 개인적인 의도나 결심을 설정합니다.',
-      execution: '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
+      execution:
+        '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
       transition: '',
     },
   },
@@ -25066,7 +26475,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자애 명상은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아 눈을 감으세요. 자신에 대한 선의의 말을 조용히 반복하십시오.',
-      execution: '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
+      execution:
+        '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
       transition: '',
     },
   },
@@ -25141,7 +26551,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '접지 운동 5-4-3-2-1은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 심호흡을 해보세요. 당신이 볼 수 있는 5가지와 만질 수 있는 4가지를 주목하세요.',
-      execution: '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
+      execution:
+        '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -25186,7 +26597,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '저온 노출 호흡은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 깊은 힘으로 심호흡을 30번 하세요. 마지막 숨을 내쉴 때 편안할 때까지 숨을 참으십시오.',
-      execution: '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
+      execution:
+        '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
       transition: '',
     },
   },
@@ -25357,11 +26769,7 @@ registerLanguageTranslations('ko', {
   },
   foc_032: {
     name: '감사 연습',
-    instructions: [
-      '조용히 앉아라.',
-      '다시 한번 감사드립니다.",',
-      ',',
-    ],
+    instructions: ['조용히 앉아라.', '다시 한번 감사드립니다.",', ','],
     audio: {
       intro: '감사 연습은 적당한 집중 연습입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '조용히 앉아라. 다시 한번 감사드립니다.",',
@@ -25395,7 +26803,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '요가 니드라(Yoga Nidra)는 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등을 대고 편안한 자세로 눕습니다. 수행에 대한 개인적인 의도나 결심을 설정합니다.',
-      execution: '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
+      execution:
+        '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
       transition: '',
     },
   },
@@ -25410,7 +26819,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자애 명상은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아 눈을 감으세요. 자신에 대한 선의의 말을 조용히 반복하십시오.',
-      execution: '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
+      execution:
+        '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
       transition: '',
     },
   },
@@ -25485,7 +26895,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '접지 운동 5-4-3-2-1은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 심호흡을 해보세요. 당신이 볼 수 있는 5가지와 만질 수 있는 4가지를 주목하세요.',
-      execution: '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
+      execution:
+        '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -25530,7 +26941,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '저온 노출 호흡은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 깊은 힘으로 심호흡을 30번 하세요. 마지막 숨을 내쉴 때 편안할 때까지 숨을 참으십시오.',
-      execution: '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
+      execution:
+        '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
       transition: '',
     },
   },
@@ -25701,11 +27113,7 @@ registerLanguageTranslations('ko', {
   },
   foc_055: {
     name: '감사 연습',
-    instructions: [
-      '조용히 앉아라.',
-      '다시 한번 감사드립니다.",',
-      ',',
-    ],
+    instructions: ['조용히 앉아라.', '다시 한번 감사드립니다.",', ','],
     audio: {
       intro: '감사 연습은 적당한 집중 연습입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '조용히 앉아라. 다시 한번 감사드립니다.",',
@@ -25739,7 +27147,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '요가 니드라(Yoga Nidra)는 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등을 대고 편안한 자세로 눕습니다. 수행에 대한 개인적인 의도나 결심을 설정합니다.',
-      execution: '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
+      execution:
+        '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
       transition: '',
     },
   },
@@ -25754,7 +27163,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자애 명상은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아 눈을 감으세요. 자신에 대한 선의의 말을 조용히 반복하십시오.',
-      execution: '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
+      execution:
+        '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
       transition: '',
     },
   },
@@ -25829,7 +27239,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '접지 운동 5-4-3-2-1은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 심호흡을 해보세요. 당신이 볼 수 있는 5가지와 만질 수 있는 4가지를 주목하세요.',
-      execution: '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
+      execution:
+        '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -25874,7 +27285,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '저온 노출 호흡은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 깊은 힘으로 심호흡을 30번 하세요. 마지막 숨을 내쉴 때 편안할 때까지 숨을 참으십시오.',
-      execution: '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
+      execution:
+        '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
       transition: '',
     },
   },
@@ -26090,11 +27502,7 @@ registerLanguageTranslations('ko', {
   },
   foc_081: {
     name: '감사 연습',
-    instructions: [
-      '조용히 앉아라.',
-      '다시 한번 감사드립니다.",',
-      ',',
-    ],
+    instructions: ['조용히 앉아라.', '다시 한번 감사드립니다.",', ','],
     audio: {
       intro: '감사 연습은 적당한 집중 연습입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '조용히 앉아라. 다시 한번 감사드립니다.",',
@@ -26128,7 +27536,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '요가 니드라(Yoga Nidra)는 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등을 대고 편안한 자세로 눕습니다. 수행에 대한 개인적인 의도나 결심을 설정합니다.',
-      execution: '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
+      execution:
+        '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
       transition: '',
     },
   },
@@ -26143,7 +27552,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자애 명상은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아 눈을 감으세요. 자신에 대한 선의의 말을 조용히 반복하십시오.',
-      execution: '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
+      execution:
+        '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
       transition: '',
     },
   },
@@ -26218,7 +27628,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '접지 운동 5-4-3-2-1은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 심호흡을 해보세요. 당신이 볼 수 있는 5가지와 만질 수 있는 4가지를 주목하세요.',
-      execution: '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
+      execution:
+        '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -26263,7 +27674,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '저온 노출 호흡은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 깊은 힘으로 심호흡을 30번 하세요. 마지막 숨을 내쉴 때 편안할 때까지 숨을 참으십시오.',
-      execution: '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
+      execution:
+        '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
       transition: '',
     },
   },
@@ -26479,11 +27891,7 @@ registerLanguageTranslations('ko', {
   },
   foc_107: {
     name: '감사 연습',
-    instructions: [
-      '조용히 앉아라.',
-      '다시 한번 감사드립니다.",',
-      ',',
-    ],
+    instructions: ['조용히 앉아라.', '다시 한번 감사드립니다.",', ','],
     audio: {
       intro: '감사 연습은 적당한 집중 연습입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '조용히 앉아라. 다시 한번 감사드립니다.",',
@@ -26517,7 +27925,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '요가 니드라(Yoga Nidra)는 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '등을 대고 편안한 자세로 눕습니다. 수행에 대한 개인적인 의도나 결심을 설정합니다.',
-      execution: '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
+      execution:
+        '체계적으로 각 신체 부위에 대한 인식을 따르십시오. 깨어 있는 상태와 잠자는 상태 사이에서 의식을 유지하십시오.',
       transition: '',
     },
   },
@@ -26532,7 +27941,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자애 명상은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아 눈을 감으세요. 자신에 대한 선의의 말을 조용히 반복하십시오.',
-      execution: '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
+      execution:
+        '사랑하는 사람에게, 그리고 모든 존재에게 같은 소망을 전하세요. 심장 부위의 따뜻함과 개방성을 주목하십시오.',
       transition: '',
     },
   },
@@ -26607,7 +28017,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '접지 운동 5-4-3-2-1은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 심호흡을 해보세요. 당신이 볼 수 있는 5가지와 만질 수 있는 4가지를 주목하세요.',
-      execution: '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
+      execution:
+        '당신이 듣는 3가지와 냄새를 맡을 수 있는 2가지에 주목하세요. 맛볼 수 있는 한 가지를 주목하세요. 전체적으로 깊게 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -26652,7 +28063,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '저온 노출 호흡은 적당한 집중 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '편안하게 앉아서 깊은 힘으로 심호흡을 30번 하세요. 마지막 숨을 내쉴 때 편안할 때까지 숨을 참으십시오.',
-      execution: '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
+      execution:
+        '깊게 숨을 들이쉬고 15초 동안 유지하세요. 정신적 강인함과 집중력을 기르기 위해 3라운드 동안 반복합니다.',
       transition: '',
     },
   },
@@ -26763,12 +28175,7 @@ registerLanguageTranslations('ko', {
   },
   mob_005: {
     name: '고양이-소 스트레칭',
-    instructions: [
-      '손과 무릎에.',
-      '아치 백업 (고양이).',
-      '그런 다음 배를 아래로 내립니다(소).',
-      '위치 간 흐름.',
-    ],
+    instructions: ['손과 무릎에.', '아치 백업 (고양이).', '그런 다음 배를 아래로 내립니다(소).', '위치 간 흐름.'],
     audio: {
       intro: 'Cat-Cow Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 아치 백업 (고양이).',
@@ -26883,12 +28290,7 @@ registerLanguageTranslations('ko', {
   },
   mob_013: {
     name: '개구리 스트레칭',
-    instructions: [
-      '손과 무릎에.',
-      '무릎을 넓게 벌립니다.',
-      '바닥을 향해 엉덩이를 낮추세요.',
-      '잡고 숨을 쉬십시오.',
-    ],
+    instructions: ['손과 무릎에.', '무릎을 넓게 벌립니다.', '바닥을 향해 엉덩이를 낮추세요.', '잡고 숨을 쉬십시오.'],
     audio: {
       intro: '개구리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 무릎을 넓게 벌립니다.',
@@ -26995,7 +28397,8 @@ registerLanguageTranslations('ko', {
       '더 깊은 스트레칭을 위해 앞으로 접으세요.',
     ],
     audio: {
-      intro: '버터플라이 스트레치 딥(Butterfly Stretch Deep)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '버터플라이 스트레치 딥(Butterfly Stretch Deep)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발바닥을 모으고 높이 앉으십시오. 발뒤꿈치를 몸에 가깝게 그립니다.',
       execution: '팔꿈치를 사용하여 무릎을 바닥쪽으로 부드럽게 누르십시오. 더 깊은 스트레칭을 위해 앞으로 접으세요.',
       transition: '',
@@ -27087,7 +28490,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '크로스 바디 숄더 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 한쪽 팔을 가슴 위로 곧게 가져옵니다.',
-      execution: '반대쪽 손을 사용하여 팔을 몸에 더 가까이 당깁니다. 뒤쪽 어깨가 늘어나는 것을 느끼고, 잡고 양쪽을 전환하십시오.',
+      execution:
+        '반대쪽 손을 사용하여 팔을 몸에 더 가까이 당깁니다. 뒤쪽 어깨가 늘어나는 것을 느끼고, 잡고 양쪽을 전환하십시오.',
       transition: '',
     },
   },
@@ -27117,7 +28521,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '손목 서클 및 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손가락을 벌린 채 팔을 앞으로 뻗습니다. 손목을 양쪽 방향으로 천천히 돌립니다.',
-      execution: '손바닥을 모아 기도하며 스트레칭을 위해 손을 내립니다. 손등으로 뒤집어서 가볍게 눌러 굴곡근을 늘립니다.',
+      execution:
+        '손바닥을 모아 기도하며 스트레칭을 위해 손을 내립니다. 손등으로 뒤집어서 가볍게 눌러 굴곡근을 늘립니다.',
       transition: '',
     },
   },
@@ -27132,7 +28537,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '넥 롤(Neck Rolls)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨를 편안하게 하고 똑바로 서거나 앉으십시오. 턱을 가슴쪽으로 부드럽게 내리십시오.',
-      execution: '귀에서 귀까지 반원 모양으로 머리를 천천히 굴립니다. 방향을 반대로 하고, 전체적으로 깊게 숨을 쉬십시오.',
+      execution:
+        '귀에서 귀까지 반원 모양으로 머리를 천천히 굴립니다. 방향을 반대로 하고, 전체적으로 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -27162,7 +28568,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스탠딩 사이드 벤드(Standing Side Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이 너비로 벌리고 서세요. 한쪽 팔을 머리 위로 들어 올리세요.',
-      execution: '들어올린 팔을 위로 뻗어 반대쪽으로 몸을 기울입니다. 경사근과 광배근이 늘어나는 것을 느끼고 누르고 전환하세요.',
+      execution:
+        '들어올린 팔을 위로 뻗어 반대쪽으로 몸을 기울입니다. 경사근과 광배근이 늘어나는 것을 느끼고 누르고 전환하세요.',
       transition: '',
     },
   },
@@ -27176,8 +28583,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기대어 있는 영웅 자세(Reclined Hero Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발을 엉덩이 옆에 두고 발뒤꿈치 사이에 앉습니다. 천천히 몸을 뒤로 젖혀 손과 팔꿈치를 바닥에 댑니다.',
-      execution: '편안하다면 등까지 완전히 낮추십시오. 깊은 대퇴사두근과 고관절 굴곡근의 스트레칭을 느끼면서 잠시 숨을 쉬세요.',
+      setup:
+        '무릎을 꿇고 발을 엉덩이 옆에 두고 발뒤꿈치 사이에 앉습니다. 천천히 몸을 뒤로 젖혀 손과 팔꿈치를 바닥에 댑니다.',
+      execution:
+        '편안하다면 등까지 완전히 낮추십시오. 깊은 대퇴사두근과 고관절 굴곡근의 스트레칭을 느끼면서 잠시 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -27295,7 +28704,8 @@ registerLanguageTranslations('ko', {
       '점차적으로 범위를 늘리십시오.',
     ],
     audio: {
-      intro: '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '균형을 위해 벽을 잡으세요. 다리를 앞뒤로 흔듭니다.',
       execution: '핵심 참여를 유지하세요. 점차적으로 범위를 늘리십시오.',
       transition: '',
@@ -27370,7 +28780,8 @@ registerLanguageTranslations('ko', {
       '원을 완성한 후 전환하세요.',
     ],
     audio: {
-      intro: '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎부터 시작하세요. 한쪽 다리를 바깥쪽으로 돌립니다.',
       execution: '코어를 안정적으로 유지하세요. 원을 완성한 후 전환하세요.',
       transition: '',
@@ -27858,12 +29269,7 @@ registerLanguageTranslations('ko', {
   },
   mob_078: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -27978,12 +29384,7 @@ registerLanguageTranslations('ko', {
   },
   mob_086: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -28008,12 +29409,7 @@ registerLanguageTranslations('ko', {
   },
   mob_088: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -28287,7 +29683,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -28300,8 +29697,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -28316,7 +29715,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -28332,7 +29732,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -28347,7 +29748,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -28392,7 +29794,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -28406,7 +29809,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -28465,7 +29869,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -28533,12 +29938,7 @@ registerLanguageTranslations('ko', {
   },
   mob_123: {
     name: '고양이-소 스트레칭',
-    instructions: [
-      '손과 무릎에.',
-      '아치 백업 (고양이).',
-      '그런 다음 배를 아래로 내립니다(소).',
-      '위치 간 흐름.',
-    ],
+    instructions: ['손과 무릎에.', '아치 백업 (고양이).', '그런 다음 배를 아래로 내립니다(소).', '위치 간 흐름.'],
     audio: {
       intro: 'Cat-Cow Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 아치 백업 (고양이).',
@@ -28653,12 +30053,7 @@ registerLanguageTranslations('ko', {
   },
   mob_131: {
     name: '개구리 스트레칭',
-    instructions: [
-      '손과 무릎에.',
-      '무릎을 넓게 벌립니다.',
-      '바닥을 향해 엉덩이를 낮추세요.',
-      '잡고 숨을 쉬십시오.',
-    ],
+    instructions: ['손과 무릎에.', '무릎을 넓게 벌립니다.', '바닥을 향해 엉덩이를 낮추세요.', '잡고 숨을 쉬십시오.'],
     audio: {
       intro: '개구리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 무릎을 넓게 벌립니다.',
@@ -28765,7 +30160,8 @@ registerLanguageTranslations('ko', {
       '더 깊은 스트레칭을 위해 앞으로 접으세요.',
     ],
     audio: {
-      intro: '버터플라이 스트레치 딥(Butterfly Stretch Deep)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '버터플라이 스트레치 딥(Butterfly Stretch Deep)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발바닥을 모으고 높이 앉으십시오. 발뒤꿈치를 몸에 가깝게 그립니다.',
       execution: '팔꿈치를 사용하여 무릎을 바닥쪽으로 부드럽게 누르십시오. 더 깊은 스트레칭을 위해 앞으로 접으세요.',
       transition: '',
@@ -28857,7 +30253,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '크로스 바디 숄더 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 한쪽 팔을 가슴 위로 곧게 가져옵니다.',
-      execution: '반대쪽 손을 사용하여 팔을 몸에 더 가까이 당깁니다. 뒤쪽 어깨가 늘어나는 것을 느끼고, 잡고 양쪽을 전환하십시오.',
+      execution:
+        '반대쪽 손을 사용하여 팔을 몸에 더 가까이 당깁니다. 뒤쪽 어깨가 늘어나는 것을 느끼고, 잡고 양쪽을 전환하십시오.',
       transition: '',
     },
   },
@@ -28887,7 +30284,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '손목 서클 및 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손가락을 벌린 채 팔을 앞으로 뻗습니다. 손목을 양쪽 방향으로 천천히 돌립니다.',
-      execution: '손바닥을 모아 기도하며 스트레칭을 위해 손을 내립니다. 손등으로 뒤집어서 가볍게 눌러 굴곡근을 늘립니다.',
+      execution:
+        '손바닥을 모아 기도하며 스트레칭을 위해 손을 내립니다. 손등으로 뒤집어서 가볍게 눌러 굴곡근을 늘립니다.',
       transition: '',
     },
   },
@@ -28902,7 +30300,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '넥 롤(Neck Rolls)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨를 편안하게 하고 똑바로 서거나 앉으십시오. 턱을 가슴쪽으로 부드럽게 내리십시오.',
-      execution: '귀에서 귀까지 반원 모양으로 머리를 천천히 굴립니다. 방향을 반대로 하고, 전체적으로 깊게 숨을 쉬십시오.',
+      execution:
+        '귀에서 귀까지 반원 모양으로 머리를 천천히 굴립니다. 방향을 반대로 하고, 전체적으로 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -28932,7 +30331,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스탠딩 사이드 벤드(Standing Side Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이 너비로 벌리고 서세요. 한쪽 팔을 머리 위로 들어 올리세요.',
-      execution: '들어올린 팔을 위로 뻗어 반대쪽으로 몸을 기울입니다. 경사근과 광배근이 늘어나는 것을 느끼고 누르고 전환하세요.',
+      execution:
+        '들어올린 팔을 위로 뻗어 반대쪽으로 몸을 기울입니다. 경사근과 광배근이 늘어나는 것을 느끼고 누르고 전환하세요.',
       transition: '',
     },
   },
@@ -28946,8 +30346,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기대어 있는 영웅 자세(Reclined Hero Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발을 엉덩이 옆에 두고 발뒤꿈치 사이에 앉습니다. 천천히 몸을 뒤로 젖혀 손과 팔꿈치를 바닥에 댑니다.',
-      execution: '편안하다면 등까지 완전히 낮추십시오. 깊은 대퇴사두근과 고관절 굴곡근의 스트레칭을 느끼면서 잠시 숨을 쉬세요.',
+      setup:
+        '무릎을 꿇고 발을 엉덩이 옆에 두고 발뒤꿈치 사이에 앉습니다. 천천히 몸을 뒤로 젖혀 손과 팔꿈치를 바닥에 댑니다.',
+      execution:
+        '편안하다면 등까지 완전히 낮추십시오. 깊은 대퇴사두근과 고관절 굴곡근의 스트레칭을 느끼면서 잠시 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -29065,7 +30467,8 @@ registerLanguageTranslations('ko', {
       '점차적으로 범위를 늘리십시오.',
     ],
     audio: {
-      intro: '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '균형을 위해 벽을 잡으세요. 다리를 앞뒤로 흔듭니다.',
       execution: '핵심 참여를 유지하세요. 점차적으로 범위를 늘리십시오.',
       transition: '',
@@ -29140,7 +30543,8 @@ registerLanguageTranslations('ko', {
       '원을 완성한 후 전환하세요.',
     ],
     audio: {
-      intro: '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎부터 시작하세요. 한쪽 다리를 바깥쪽으로 돌립니다.',
       execution: '코어를 안정적으로 유지하세요. 원을 완성한 후 전환하세요.',
       transition: '',
@@ -29628,12 +31032,7 @@ registerLanguageTranslations('ko', {
   },
   mob_196: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -29748,12 +31147,7 @@ registerLanguageTranslations('ko', {
   },
   mob_204: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -29778,12 +31172,7 @@ registerLanguageTranslations('ko', {
   },
   mob_206: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -30057,7 +31446,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -30070,8 +31460,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -30086,7 +31478,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -30102,7 +31495,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -30117,7 +31511,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -30162,7 +31557,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -30176,7 +31572,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -30235,7 +31632,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -30303,12 +31701,7 @@ registerLanguageTranslations('ko', {
   },
   mob_241: {
     name: '고양이-소 스트레칭',
-    instructions: [
-      '손과 무릎에.',
-      '아치 백업 (고양이).',
-      '그런 다음 배를 아래로 내립니다(소).',
-      '위치 간 흐름.',
-    ],
+    instructions: ['손과 무릎에.', '아치 백업 (고양이).', '그런 다음 배를 아래로 내립니다(소).', '위치 간 흐름.'],
     audio: {
       intro: 'Cat-Cow Stretch는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 아치 백업 (고양이).',
@@ -30423,12 +31816,7 @@ registerLanguageTranslations('ko', {
   },
   mob_249: {
     name: '개구리 스트레칭',
-    instructions: [
-      '손과 무릎에.',
-      '무릎을 넓게 벌립니다.',
-      '바닥을 향해 엉덩이를 낮추세요.',
-      '잡고 숨을 쉬십시오.',
-    ],
+    instructions: ['손과 무릎에.', '무릎을 넓게 벌립니다.', '바닥을 향해 엉덩이를 낮추세요.', '잡고 숨을 쉬십시오.'],
     audio: {
       intro: '개구리 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 무릎을 넓게 벌립니다.',
@@ -30535,7 +31923,8 @@ registerLanguageTranslations('ko', {
       '더 깊은 스트레칭을 위해 앞으로 접으세요.',
     ],
     audio: {
-      intro: '버터플라이 스트레치 딥(Butterfly Stretch Deep)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '버터플라이 스트레치 딥(Butterfly Stretch Deep)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발바닥을 모으고 높이 앉으십시오. 발뒤꿈치를 몸에 가깝게 그립니다.',
       execution: '팔꿈치를 사용하여 무릎을 바닥쪽으로 부드럽게 누르십시오. 더 깊은 스트레칭을 위해 앞으로 접으세요.',
       transition: '',
@@ -30627,7 +32016,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '크로스 바디 숄더 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 한쪽 팔을 가슴 위로 곧게 가져옵니다.',
-      execution: '반대쪽 손을 사용하여 팔을 몸에 더 가까이 당깁니다. 뒤쪽 어깨가 늘어나는 것을 느끼고, 잡고 양쪽을 전환하십시오.',
+      execution:
+        '반대쪽 손을 사용하여 팔을 몸에 더 가까이 당깁니다. 뒤쪽 어깨가 늘어나는 것을 느끼고, 잡고 양쪽을 전환하십시오.',
       transition: '',
     },
   },
@@ -30657,7 +32047,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '손목 서클 및 스트레칭은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손가락을 벌린 채 팔을 앞으로 뻗습니다. 손목을 양쪽 방향으로 천천히 돌립니다.',
-      execution: '손바닥을 모아 기도하며 스트레칭을 위해 손을 내립니다. 손등으로 뒤집어서 가볍게 눌러 굴곡근을 늘립니다.',
+      execution:
+        '손바닥을 모아 기도하며 스트레칭을 위해 손을 내립니다. 손등으로 뒤집어서 가볍게 눌러 굴곡근을 늘립니다.',
       transition: '',
     },
   },
@@ -30672,7 +32063,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '넥 롤(Neck Rolls)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '어깨를 편안하게 하고 똑바로 서거나 앉으십시오. 턱을 가슴쪽으로 부드럽게 내리십시오.',
-      execution: '귀에서 귀까지 반원 모양으로 머리를 천천히 굴립니다. 방향을 반대로 하고, 전체적으로 깊게 숨을 쉬십시오.',
+      execution:
+        '귀에서 귀까지 반원 모양으로 머리를 천천히 굴립니다. 방향을 반대로 하고, 전체적으로 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -30702,7 +32094,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스탠딩 사이드 벤드(Standing Side Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이 너비로 벌리고 서세요. 한쪽 팔을 머리 위로 들어 올리세요.',
-      execution: '들어올린 팔을 위로 뻗어 반대쪽으로 몸을 기울입니다. 경사근과 광배근이 늘어나는 것을 느끼고 누르고 전환하세요.',
+      execution:
+        '들어올린 팔을 위로 뻗어 반대쪽으로 몸을 기울입니다. 경사근과 광배근이 늘어나는 것을 느끼고 누르고 전환하세요.',
       transition: '',
     },
   },
@@ -30716,8 +32109,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기대어 있는 영웅 자세(Reclined Hero Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발을 엉덩이 옆에 두고 발뒤꿈치 사이에 앉습니다. 천천히 몸을 뒤로 젖혀 손과 팔꿈치를 바닥에 댑니다.',
-      execution: '편안하다면 등까지 완전히 낮추십시오. 깊은 대퇴사두근과 고관절 굴곡근의 스트레칭을 느끼면서 잠시 숨을 쉬세요.',
+      setup:
+        '무릎을 꿇고 발을 엉덩이 옆에 두고 발뒤꿈치 사이에 앉습니다. 천천히 몸을 뒤로 젖혀 손과 팔꿈치를 바닥에 댑니다.',
+      execution:
+        '편안하다면 등까지 완전히 낮추십시오. 깊은 대퇴사두근과 고관절 굴곡근의 스트레칭을 느끼면서 잠시 숨을 쉬세요.',
       transition: '',
     },
   },
@@ -30835,7 +32230,8 @@ registerLanguageTranslations('ko', {
       '점차적으로 범위를 늘리십시오.',
     ],
     audio: {
-      intro: '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '균형을 위해 벽을 잡으세요. 다리를 앞뒤로 흔듭니다.',
       execution: '핵심 참여를 유지하세요. 점차적으로 범위를 늘리십시오.',
       transition: '',
@@ -30910,7 +32306,8 @@ registerLanguageTranslations('ko', {
       '원을 완성한 후 전환하세요.',
     ],
     audio: {
-      intro: '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎부터 시작하세요. 한쪽 다리를 바깥쪽으로 돌립니다.',
       execution: '코어를 안정적으로 유지하세요. 원을 완성한 후 전환하세요.',
       transition: '',
@@ -31398,12 +32795,7 @@ registerLanguageTranslations('ko', {
   },
   mob_314: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -31518,12 +32910,7 @@ registerLanguageTranslations('ko', {
   },
   mob_322: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -31548,12 +32935,7 @@ registerLanguageTranslations('ko', {
   },
   mob_324: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -31827,7 +33209,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -31840,8 +33223,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -31856,7 +33241,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -31872,7 +33258,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -31887,7 +33274,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -31932,7 +33320,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -31946,7 +33335,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -32005,7 +33395,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -32328,12 +33719,7 @@ registerLanguageTranslations('ko', {
   },
   mob_376: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -32448,12 +33834,7 @@ registerLanguageTranslations('ko', {
   },
   mob_384: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -32478,12 +33859,7 @@ registerLanguageTranslations('ko', {
   },
   mob_386: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -32757,7 +34133,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -32770,8 +34147,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -32786,7 +34165,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -32802,7 +34182,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -32817,7 +34198,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -32862,7 +34244,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -32876,7 +34259,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -32935,7 +34319,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -33055,7 +34440,8 @@ registerLanguageTranslations('ko', {
       '점차적으로 범위를 늘리십시오.',
     ],
     audio: {
-      intro: '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '균형을 위해 벽을 잡으세요. 다리를 앞뒤로 흔듭니다.',
       execution: '핵심 참여를 유지하세요. 점차적으로 범위를 늘리십시오.',
       transition: '',
@@ -33130,7 +34516,8 @@ registerLanguageTranslations('ko', {
       '원을 완성한 후 전환하세요.',
     ],
     audio: {
-      intro: '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎부터 시작하세요. 한쪽 다리를 바깥쪽으로 돌립니다.',
       execution: '코어를 안정적으로 유지하세요. 원을 완성한 후 전환하세요.',
       transition: '',
@@ -33618,12 +35005,7 @@ registerLanguageTranslations('ko', {
   },
   mob_462: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -33738,12 +35120,7 @@ registerLanguageTranslations('ko', {
   },
   mob_470: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -33768,12 +35145,7 @@ registerLanguageTranslations('ko', {
   },
   mob_472: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -34047,7 +35419,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -34060,8 +35433,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -34076,7 +35451,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -34092,7 +35468,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -34107,7 +35484,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -34152,7 +35530,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -34166,7 +35545,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -34225,7 +35605,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -34345,7 +35726,8 @@ registerLanguageTranslations('ko', {
       '점차적으로 범위를 늘리십시오.',
     ],
     audio: {
-      intro: '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '균형을 위해 벽을 잡으세요. 다리를 앞뒤로 흔듭니다.',
       execution: '핵심 참여를 유지하세요. 점차적으로 범위를 늘리십시오.',
       transition: '',
@@ -34420,7 +35802,8 @@ registerLanguageTranslations('ko', {
       '원을 완성한 후 전환하세요.',
     ],
     audio: {
-      intro: '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎부터 시작하세요. 한쪽 다리를 바깥쪽으로 돌립니다.',
       execution: '코어를 안정적으로 유지하세요. 원을 완성한 후 전환하세요.',
       transition: '',
@@ -34908,12 +36291,7 @@ registerLanguageTranslations('ko', {
   },
   mob_548: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -35028,12 +36406,7 @@ registerLanguageTranslations('ko', {
   },
   mob_556: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -35058,12 +36431,7 @@ registerLanguageTranslations('ko', {
   },
   mob_558: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -35337,7 +36705,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -35350,8 +36719,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -35366,7 +36737,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -35382,7 +36754,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -35397,7 +36770,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -35442,7 +36816,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -35456,7 +36831,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -35515,7 +36891,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -35635,7 +37012,8 @@ registerLanguageTranslations('ko', {
       '점차적으로 범위를 늘리십시오.',
     ],
     audio: {
-      intro: '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '다이나믹 레그 스윙 포워드(Dynamic Leg Swing Forward)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '균형을 위해 벽을 잡으세요. 다리를 앞뒤로 흔듭니다.',
       execution: '핵심 참여를 유지하세요. 점차적으로 범위를 늘리십시오.',
       transition: '',
@@ -35710,7 +37088,8 @@ registerLanguageTranslations('ko', {
       '원을 완성한 후 전환하세요.',
     ],
     audio: {
-      intro: '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '네 발 달린 엉덩이 서클(Quadruped Hip Circles)은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎부터 시작하세요. 한쪽 다리를 바깥쪽으로 돌립니다.',
       execution: '코어를 안정적으로 유지하세요. 원을 완성한 후 전환하세요.',
       transition: '',
@@ -36198,12 +37577,7 @@ registerLanguageTranslations('ko', {
   },
   mob_634: {
     name: '기대어 있는 나비',
-    instructions: [
-      '뒤로 누워.',
-      '발바닥이 함께 있습니다.',
-      '무릎을 펴십시오.',
-      '팔을 옆으로 편안하게 하세요.',
-    ],
+    instructions: ['뒤로 누워.', '발바닥이 함께 있습니다.', '무릎을 펴십시오.', '팔을 옆으로 편안하게 하세요.'],
     audio: {
       intro: '리클라이닝 버터플라이(Reclining Butterfly)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 발바닥이 함께 있습니다.',
@@ -36318,12 +37692,7 @@ registerLanguageTranslations('ko', {
   },
   mob_642: {
     name: '무릎을 가슴에 대고 누워',
-    instructions: [
-      '뒤로 누워.',
-      '한쪽 무릎을 가슴쪽으로 당깁니다.',
-      '잡고 숨을 쉬십시오.',
-      '측면을 전환하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '한쪽 무릎을 가슴쪽으로 당깁니다.', '잡고 숨을 쉬십시오.', '측면을 전환하십시오.'],
     audio: {
       intro: '무릎부터 가슴까지 누운 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 한쪽 무릎을 가슴쪽으로 당깁니다.',
@@ -36348,12 +37717,7 @@ registerLanguageTranslations('ko', {
   },
   mob_644: {
     name: '네 발 흉부 확장',
-    instructions: [
-      '손과 무릎에.',
-      '몸체 아래에 암을 끼웁니다.',
-      '어깨를 바닥으로 내립니다.',
-      '반환하고 전환하십시오.',
-    ],
+    instructions: ['손과 무릎에.', '몸체 아래에 암을 끼웁니다.', '어깨를 바닥으로 내립니다.', '반환하고 전환하십시오.'],
     audio: {
       intro: '사족 흉부 확장은 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '손과 무릎에. 몸체 아래에 암을 끼웁니다.',
@@ -36627,7 +37991,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '갈랜드 포즈(Garland Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이보다 약간 넓게 벌리고 서세요. 발뒤꿈치를 바닥에 대고 완전히 쪼그리고 앉으세요.',
-      execution: '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
+      execution:
+        '팔꿈치를 무릎 안쪽에 대고 손바닥을 함께 누르십시오. 척추를 길게 펴고, 자세를 유지하며 깊게 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -36640,8 +38005,10 @@ registerLanguageTranslations('ko', {
       '숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
     ],
     audio: {
-      intro: '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
+      intro:
+        '머리부터 무릎까지 앞으로 구부리기(Head-to-Knee Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      setup:
+        '한쪽 다리를 쭉 뻗은 채 앉고, 다른 쪽 발은 허벅지 안쪽까지 뻗습니다. 뻗은 다리를 향하도록 몸통을 돌립니다.',
       execution: '발에 닿는 엉덩이부터 앞으로 접습니다. 숨을 멈추고 숨을 쉬고 측면을 전환하십시오.',
       transition: '',
     },
@@ -36656,7 +38023,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Half Lord of the Fishes 자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
+      setup:
+        '한쪽 다리를 구부린 채 앉고, 발은 반대쪽 무릎 바깥쪽에 둡니다. 반대쪽 팔꿈치를 들어 올린 무릎 바깥쪽에 걸으세요.',
       execution: '어깨 너머로 몸통을 비틀어 보세요. 숨을 들이쉴 때 척추를 늘리고, 숨을 내쉴 때 비틀림을 깊게 합니다.',
       transition: '',
     },
@@ -36672,7 +38040,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '로터스 포즈(Lotus Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 꼬고 앉아 각 발을 반대쪽 허벅지에 올려 놓습니다. 무릎을 바닥쪽으로 가볍게 누르십시오.',
-      execution: '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
+      execution:
+        '손을 무릎 위에 올리고 손바닥을 위 또는 아래로 놓습니다. 척추를 늘리고 어깨를 이완시키며 호흡을 꾸준히 하십시오.',
       transition: '',
     },
   },
@@ -36687,7 +38056,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '코브라 포즈는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워서 어깨 아래에 손을 놓습니다. 가슴을 바닥에서 들어 올리면서 손으로 누르십시오.',
-      execution: '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
+      execution:
+        '팔꿈치는 약간 구부리고 엉덩이는 바닥에 붙입니다. 가슴을 열고, 어깨를 뒤로 젖히고, 그 자세를 유지하세요.',
       transition: '',
     },
   },
@@ -36732,7 +38102,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '활자세는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 누워 무릎을 구부려 발을 둔부 쪽으로 가져옵니다. 뒤로 손을 뻗어 양손으로 발목을 잡습니다.',
-      execution: '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
+      execution:
+        '가슴과 허벅지를 들어 올려 손으로 발을 누르십시오. 원할 경우 가볍게 흔들고, 누른 상태에서 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -36746,7 +38117,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '브리지 포즈(Bridge Pose)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
+      setup:
+        '무릎을 구부리고 발을 엉덩이 너비로 벌린 채 등을 대고 눕습니다. 발을 바닥에 대고 엉덩이를 천장 쪽으로 들어 올리세요.',
       execution: '등 아래에서 손을 잡고 어깨를 아래로 굴립니다. 가슴을 열고 둔근을 맞물린 상태로 유지합니다.',
       transition: '',
     },
@@ -36805,7 +38177,8 @@ registerLanguageTranslations('ko', {
       '머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
     ],
     audio: {
-      intro: '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '넓은 다리 앞으로 구부리기(Wide Legged Forward Bend)는 적당한 이동성 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 넓게 벌리고 발가락은 약간 안쪽으로 서십시오. 엉덩이를 접고 앞으로 접으십시오.',
       execution: '바닥에 손을 얹거나 발목을 잡습니다. 머리를 무겁게 숙이고 숨을 쉬며 참으세요.',
       transition: '',
@@ -36873,12 +38246,7 @@ registerLanguageTranslations('ko', {
   },
   pos_005: {
     name: '프론 Y 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 Y자 모양으로 들어올립니다.',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 Y자 모양으로 들어올립니다.', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 Y 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 Y자 모양으로 들어올립니다.',
@@ -36888,12 +38256,7 @@ registerLanguageTranslations('ko', {
   },
   pos_006: {
     name: '프론 T 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 옆으로 벌립니다(T자 모양).',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 옆으로 벌립니다(T자 모양).', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 T 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 옆으로 벌립니다(T자 모양).',
@@ -36963,12 +38326,7 @@ registerLanguageTranslations('ko', {
   },
   pos_011: {
     name: '견갑골 압박',
-    instructions: [
-      '서거나 앉으십시오.',
-      '견갑골을 함께 당깁니다.',
-      '5초 동안 유지하세요.',
-      '놓아주고 반복하세요.',
-    ],
+    instructions: ['서거나 앉으십시오.', '견갑골을 함께 당깁니다.', '5초 동안 유지하세요.', '놓아주고 반복하세요.'],
     audio: {
       intro: '견갑골 압박은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 견갑골을 함께 당깁니다.',
@@ -36985,7 +38343,8 @@ registerLanguageTranslations('ko', {
       '다른 흉부 부위로 굴려 반복합니다.',
     ],
     audio: {
-      intro: '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '폼롤러를 등 중앙 아래에 놓습니다. 목 뒤에 손을 대고 머리를 받쳐줍니다.',
       execution: '가슴을 열어주는 롤러 위로 뒤로 뻗습니다. 다른 흉부 부위로 굴려 반복합니다.',
       transition: '',
@@ -37092,7 +38451,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '도어웨이 가슴 스트레칭은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '프레임에 팔을 90도로 얹은 채 출입구에 서세요. 출입구를 통해 한 발 앞으로 나아갑니다.',
-      execution: '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
+      execution:
+        '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
       transition: '',
     },
   },
@@ -37107,7 +38467,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자세를 위한 고관절 굴곡근 런지는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 무릎을 꿇고 앞발은 바닥에 편평하게 놓습니다. 뒤쪽 둔근을 쥐어짜면서 엉덩이를 앞으로 밀어냅니다.',
-      execution: '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
+      execution:
+        '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
       transition: '',
     },
   },
@@ -37121,7 +38482,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Glute Bridge for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
+      setup:
+        '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
       execution: '무릎부터 어깨까지 일직선이 되도록 위쪽을 잡습니다. 천천히 낮추고 제어하면서 반복하십시오.',
       transition: '',
     },
@@ -37166,7 +38528,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dead Bug for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
+      setup:
+        '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
       execution: '허리를 땅에 단단히 누르십시오. 시작 및 대체 측면으로 돌아갑니다.',
       transition: '',
     },
@@ -37180,9 +38543,11 @@ registerLanguageTranslations('ko', {
       '잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
     ],
     audio: {
-      intro: '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 높이에서 도어 프레임까지 앵커 밴드. 가슴 부분에 밴드를 잡고 옆으로 움직여 긴장을 풀어줍니다.',
-      execution: '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
+      execution:
+        '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
       transition: '',
     },
   },
@@ -37196,7 +38561,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기립 흉부 회전은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
+      setup:
+        '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
       execution: '가슴으로 이끌고 머리로 따른다. 중앙으로 돌아가서 반대쪽으로 회전합니다.',
       transition: '',
     },
@@ -37242,7 +38608,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -37256,7 +38623,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -37338,12 +38706,7 @@ registerLanguageTranslations('ko', {
   },
   pos_036: {
     name: '프론 Y 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 Y자 모양으로 들어올립니다.',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 Y자 모양으로 들어올립니다.', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 Y 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 Y자 모양으로 들어올립니다.',
@@ -37353,12 +38716,7 @@ registerLanguageTranslations('ko', {
   },
   pos_037: {
     name: '프론 T 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 옆으로 벌립니다(T자 모양).',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 옆으로 벌립니다(T자 모양).', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 T 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 옆으로 벌립니다(T자 모양).',
@@ -37428,12 +38786,7 @@ registerLanguageTranslations('ko', {
   },
   pos_042: {
     name: '견갑골 압박',
-    instructions: [
-      '서거나 앉으십시오.',
-      '견갑골을 함께 당깁니다.',
-      '5초 동안 유지하세요.',
-      '놓아주고 반복하세요.',
-    ],
+    instructions: ['서거나 앉으십시오.', '견갑골을 함께 당깁니다.', '5초 동안 유지하세요.', '놓아주고 반복하세요.'],
     audio: {
       intro: '견갑골 압박은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 견갑골을 함께 당깁니다.',
@@ -37450,7 +38803,8 @@ registerLanguageTranslations('ko', {
       '다른 흉부 부위로 굴려 반복합니다.',
     ],
     audio: {
-      intro: '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '폼롤러를 등 중앙 아래에 놓습니다. 목 뒤에 손을 대고 머리를 받쳐줍니다.',
       execution: '가슴을 열어주는 롤러 위로 뒤로 뻗습니다. 다른 흉부 부위로 굴려 반복합니다.',
       transition: '',
@@ -37557,7 +38911,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '도어웨이 가슴 스트레칭은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '프레임에 팔을 90도로 얹은 채 출입구에 서세요. 출입구를 통해 한 발 앞으로 나아갑니다.',
-      execution: '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
+      execution:
+        '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
       transition: '',
     },
   },
@@ -37572,7 +38927,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자세를 위한 고관절 굴곡근 런지는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 무릎을 꿇고 앞발은 바닥에 편평하게 놓습니다. 뒤쪽 둔근을 쥐어짜면서 엉덩이를 앞으로 밀어냅니다.',
-      execution: '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
+      execution:
+        '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
       transition: '',
     },
   },
@@ -37586,7 +38942,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Glute Bridge for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
+      setup:
+        '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
       execution: '무릎부터 어깨까지 일직선이 되도록 위쪽을 잡습니다. 천천히 낮추고 제어하면서 반복하십시오.',
       transition: '',
     },
@@ -37631,7 +38988,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dead Bug for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
+      setup:
+        '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
       execution: '허리를 땅에 단단히 누르십시오. 시작 및 대체 측면으로 돌아갑니다.',
       transition: '',
     },
@@ -37645,9 +39003,11 @@ registerLanguageTranslations('ko', {
       '잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
     ],
     audio: {
-      intro: '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 높이에서 도어 프레임까지 앵커 밴드. 가슴 부분에 밴드를 잡고 옆으로 움직여 긴장을 풀어줍니다.',
-      execution: '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
+      execution:
+        '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
       transition: '',
     },
   },
@@ -37661,7 +39021,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기립 흉부 회전은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
+      setup:
+        '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
       execution: '가슴으로 이끌고 머리로 따른다. 중앙으로 돌아가서 반대쪽으로 회전합니다.',
       transition: '',
     },
@@ -37707,7 +39068,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -37721,7 +39083,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -37803,12 +39166,7 @@ registerLanguageTranslations('ko', {
   },
   pos_067: {
     name: '프론 Y 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 Y자 모양으로 들어올립니다.',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 Y자 모양으로 들어올립니다.', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 Y 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 Y자 모양으로 들어올립니다.',
@@ -37818,12 +39176,7 @@ registerLanguageTranslations('ko', {
   },
   pos_068: {
     name: '프론 T 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 옆으로 벌립니다(T자 모양).',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 옆으로 벌립니다(T자 모양).', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 T 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 옆으로 벌립니다(T자 모양).',
@@ -37893,12 +39246,7 @@ registerLanguageTranslations('ko', {
   },
   pos_073: {
     name: '견갑골 압박',
-    instructions: [
-      '서거나 앉으십시오.',
-      '견갑골을 함께 당깁니다.',
-      '5초 동안 유지하세요.',
-      '놓아주고 반복하세요.',
-    ],
+    instructions: ['서거나 앉으십시오.', '견갑골을 함께 당깁니다.', '5초 동안 유지하세요.', '놓아주고 반복하세요.'],
     audio: {
       intro: '견갑골 압박은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 견갑골을 함께 당깁니다.',
@@ -37915,7 +39263,8 @@ registerLanguageTranslations('ko', {
       '다른 흉부 부위로 굴려 반복합니다.',
     ],
     audio: {
-      intro: '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '폼롤러를 등 중앙 아래에 놓습니다. 목 뒤에 손을 대고 머리를 받쳐줍니다.',
       execution: '가슴을 열어주는 롤러 위로 뒤로 뻗습니다. 다른 흉부 부위로 굴려 반복합니다.',
       transition: '',
@@ -38022,7 +39371,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '도어웨이 가슴 스트레칭은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '프레임에 팔을 90도로 얹은 채 출입구에 서세요. 출입구를 통해 한 발 앞으로 나아갑니다.',
-      execution: '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
+      execution:
+        '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
       transition: '',
     },
   },
@@ -38037,7 +39387,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자세를 위한 고관절 굴곡근 런지는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 무릎을 꿇고 앞발은 바닥에 편평하게 놓습니다. 뒤쪽 둔근을 쥐어짜면서 엉덩이를 앞으로 밀어냅니다.',
-      execution: '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
+      execution:
+        '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
       transition: '',
     },
   },
@@ -38051,7 +39402,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Glute Bridge for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
+      setup:
+        '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
       execution: '무릎부터 어깨까지 일직선이 되도록 위쪽을 잡습니다. 천천히 낮추고 제어하면서 반복하십시오.',
       transition: '',
     },
@@ -38096,7 +39448,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dead Bug for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
+      setup:
+        '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
       execution: '허리를 땅에 단단히 누르십시오. 시작 및 대체 측면으로 돌아갑니다.',
       transition: '',
     },
@@ -38110,9 +39463,11 @@ registerLanguageTranslations('ko', {
       '잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
     ],
     audio: {
-      intro: '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 높이에서 도어 프레임까지 앵커 밴드. 가슴 부분에 밴드를 잡고 옆으로 움직여 긴장을 풀어줍니다.',
-      execution: '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
+      execution:
+        '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
       transition: '',
     },
   },
@@ -38126,7 +39481,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기립 흉부 회전은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
+      setup:
+        '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
       execution: '가슴으로 이끌고 머리로 따른다. 중앙으로 돌아가서 반대쪽으로 회전합니다.',
       transition: '',
     },
@@ -38172,7 +39528,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -38186,7 +39543,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -38247,7 +39605,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -38261,7 +39620,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -38343,12 +39703,7 @@ registerLanguageTranslations('ko', {
   },
   pos_103: {
     name: '프론 Y 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 Y자 모양으로 들어올립니다.',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 Y자 모양으로 들어올립니다.', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 Y 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 Y자 모양으로 들어올립니다.',
@@ -38358,12 +39713,7 @@ registerLanguageTranslations('ko', {
   },
   pos_104: {
     name: '프론 T 레이즈',
-    instructions: [
-      '엎드려 눕습니다.',
-      '팔을 옆으로 벌립니다(T자 모양).',
-      '견갑골을 조입니다.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['엎드려 눕습니다.', '팔을 옆으로 벌립니다(T자 모양).', '견갑골을 조입니다.', '낮추고 반복하십시오.'],
     audio: {
       intro: '프론 T 레이즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '엎드려 눕습니다. 팔을 옆으로 벌립니다(T자 모양).',
@@ -38433,12 +39783,7 @@ registerLanguageTranslations('ko', {
   },
   pos_109: {
     name: '견갑골 압박',
-    instructions: [
-      '서거나 앉으십시오.',
-      '견갑골을 함께 당깁니다.',
-      '5초 동안 유지하세요.',
-      '놓아주고 반복하세요.',
-    ],
+    instructions: ['서거나 앉으십시오.', '견갑골을 함께 당깁니다.', '5초 동안 유지하세요.', '놓아주고 반복하세요.'],
     audio: {
       intro: '견갑골 압박은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '서거나 앉으십시오. 견갑골을 함께 당깁니다.',
@@ -38455,7 +39800,8 @@ registerLanguageTranslations('ko', {
       '다른 흉부 부위로 굴려 반복합니다.',
     ],
     audio: {
-      intro: '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '흉부 확장 오버 롤러(Thoracic Extension Over Roller)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '폼롤러를 등 중앙 아래에 놓습니다. 목 뒤에 손을 대고 머리를 받쳐줍니다.',
       execution: '가슴을 열어주는 롤러 위로 뒤로 뻗습니다. 다른 흉부 부위로 굴려 반복합니다.',
       transition: '',
@@ -38562,7 +39908,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '도어웨이 가슴 스트레칭은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '프레임에 팔을 90도로 얹은 채 출입구에 서세요. 출입구를 통해 한 발 앞으로 나아갑니다.',
-      execution: '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
+      execution:
+        '가슴이 늘어나는 느낌이 들 때까지 천천히 앞으로 기울입니다. 누르고 숨을 쉬고 다양한 섬유에 맞게 팔 높이를 조정하십시오.',
       transition: '',
     },
   },
@@ -38577,7 +39924,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '자세를 위한 고관절 굴곡근 런지는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 무릎을 꿇고 앞발은 바닥에 편평하게 놓습니다. 뒤쪽 둔근을 쥐어짜면서 엉덩이를 앞으로 밀어냅니다.',
-      execution: '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
+      execution:
+        '척추 확장을 위해 같은 쪽 팔을 머리 위로 들어 올리십시오. 자세를 유지하고 심호흡한 다음 방향을 전환하세요.',
       transition: '',
     },
   },
@@ -38591,7 +39939,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Glute Bridge for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
+      setup:
+        '무릎을 구부리고 발을 평평하게 한 채 등을 대고 눕습니다. 둔근을 조이고 엉덩이를 천장쪽으로 들어 올리십시오.',
       execution: '무릎부터 어깨까지 일직선이 되도록 위쪽을 잡습니다. 천천히 낮추고 제어하면서 반복하십시오.',
       transition: '',
     },
@@ -38636,7 +39985,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Dead Bug for Posture는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
+      setup:
+        '등을 대고 누워 팔은 천장을 향하고 무릎은 90도 각도를 유지합니다. 반대쪽 팔과 다리를 바닥을 향해 천천히 내립니다.',
       execution: '허리를 땅에 단단히 누르십시오. 시작 및 대체 측면으로 돌아갑니다.',
       transition: '',
     },
@@ -38650,9 +40000,11 @@ registerLanguageTranslations('ko', {
       '잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
     ],
     audio: {
-      intro: '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '팔로프 프레스 위드 밴드(Pallof Press with Band)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '가슴 높이에서 도어 프레임까지 앵커 밴드. 가슴 부분에 밴드를 잡고 옆으로 움직여 긴장을 풀어줍니다.',
-      execution: '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
+      execution:
+        '프레스 밴드는 회전에 저항하여 똑바로 펴집니다. 잠시 뻗은 자세를 유지했다가 가슴으로 돌아가 반복합니다.',
       transition: '',
     },
   },
@@ -38666,7 +40018,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '기립 흉부 회전은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
+      setup:
+        '손을 엉덩이에 얹고 발을 어깨너비로 벌리고 서세요. 엉덩이를 안정되게 유지하면서 상체를 한쪽으로 회전시킵니다.',
       execution: '가슴으로 이끌고 머리로 따른다. 중앙으로 돌아가서 반대쪽으로 회전합니다.',
       transition: '',
     },
@@ -38712,7 +40065,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -38726,7 +40080,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -38787,7 +40142,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -38801,7 +40157,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -38862,7 +40219,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '스태프 포즈(Staff Pose)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다리를 앞으로 쭉 뻗고 앉으세요. 손바닥이나 손끝으로 엉덩이 옆을 누르세요.',
-      execution: '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
+      execution:
+        '발을 구부리고 대퇴사두근을 사용해 허벅지를 아래로 누르세요. 척추를 길게 늘이고 꾸준한 호흡으로 유지합니다.',
       transition: '',
     },
   },
@@ -38876,7 +40234,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '스핑크스 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
+      setup:
+        '엎드려서 팔뚝을 바닥 팔꿈치에 대고 어깨 아래로 눕습니다. 팔뚝을 아래로 누르고 가슴을 부드럽게 들어 올리십시오.',
       execution: '엉덩이와 다리를 바닥에 유지하세요. 어깨를 귀에서 멀리 떨어뜨리고 잠시 기다리세요.',
       transition: '',
     },
@@ -38898,12 +40257,7 @@ registerLanguageTranslations('ko', {
   },
   spd_001: {
     name: '무릎 높이',
-    instructions: [
-      '제자리에서 달리십시오.',
-      '무릎을 가슴쪽으로 높이 올리십시오.',
-      '펌프 암.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['제자리에서 달리십시오.', '무릎을 가슴쪽으로 높이 올리십시오.', '펌프 암.', '발의 공에 머물러 라.'],
     audio: {
       intro: 'High Knees는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '제자리에서 달리십시오. 무릎을 가슴쪽으로 높이 올리십시오.',
@@ -38988,12 +40342,7 @@ registerLanguageTranslations('ko', {
   },
   spd_007: {
     name: '측면 셔플',
-    instructions: [
-      '운동 자세, 무릎 구부리기.',
-      '빠르게 옆으로 섞으세요.',
-      '몸을 낮추세요.',
-      '방향을 전환하세요.',
-    ],
+    instructions: ['운동 자세, 무릎 구부리기.', '빠르게 옆으로 섞으세요.', '몸을 낮추세요.', '방향을 전환하세요.'],
     audio: {
       intro: '측면 셔플(Lateral Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 무릎 구부리기. 빠르게 옆으로 섞으세요.',
@@ -39408,12 +40757,7 @@ registerLanguageTranslations('ko', {
   },
   spd_035: {
     name: '게 발가락 터치',
-    instructions: [
-      '크랩 자세로 시작하세요.',
-      '한쪽 다리를 걷어차세요.',
-      '반대쪽 손을 발로 뻗으세요.',
-      '반환 및 교체.',
-    ],
+    instructions: ['크랩 자세로 시작하세요.', '한쪽 다리를 걷어차세요.', '반대쪽 손을 발로 뻗으세요.', '반환 및 교체.'],
     audio: {
       intro: '크랩 토 터치(Crab Toe Touch)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '크랩 자세로 시작하세요. 한쪽 다리를 걷어차세요.',
@@ -39475,7 +40819,8 @@ registerLanguageTranslations('ko', {
       '반복 횟수를 완료한 후 전환하세요.',
     ],
     audio: {
-      intro: '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 폭발적으로 무릎을 뒤로 밀어 올립니다.',
       execution: '런지로 돌아갑니다. 반복 횟수를 완료한 후 전환하세요.',
       transition: '',
@@ -39693,12 +41038,7 @@ registerLanguageTranslations('ko', {
   },
   spd_054: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -39783,12 +41123,7 @@ registerLanguageTranslations('ko', {
   },
   spd_060: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -39813,12 +41148,7 @@ registerLanguageTranslations('ko', {
   },
   spd_062: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -39850,7 +41180,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -39888,12 +41219,7 @@ registerLanguageTranslations('ko', {
   },
   spd_067: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -39933,12 +41259,7 @@ registerLanguageTranslations('ko', {
   },
   spd_070: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -39948,12 +41269,7 @@ registerLanguageTranslations('ko', {
   },
   spd_071: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -39978,12 +41294,7 @@ registerLanguageTranslations('ko', {
   },
   spd_073: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -39993,12 +41304,7 @@ registerLanguageTranslations('ko', {
   },
   spd_074: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -40038,12 +41344,7 @@ registerLanguageTranslations('ko', {
   },
   spd_077: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -40053,12 +41354,7 @@ registerLanguageTranslations('ko', {
   },
   spd_078: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -40068,12 +41364,7 @@ registerLanguageTranslations('ko', {
   },
   spd_079: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -40083,12 +41374,7 @@ registerLanguageTranslations('ko', {
   },
   spd_080: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -40098,12 +41384,7 @@ registerLanguageTranslations('ko', {
   },
   spd_081: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -40158,12 +41439,7 @@ registerLanguageTranslations('ko', {
   },
   spd_085: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -40233,12 +41509,7 @@ registerLanguageTranslations('ko', {
   },
   spd_090: {
     name: '무릎 높이',
-    instructions: [
-      '제자리에서 달리십시오.',
-      '무릎을 가슴쪽으로 높이 올리십시오.',
-      '펌프 암.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['제자리에서 달리십시오.', '무릎을 가슴쪽으로 높이 올리십시오.', '펌프 암.', '발의 공에 머물러 라.'],
     audio: {
       intro: 'High Knees는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '제자리에서 달리십시오. 무릎을 가슴쪽으로 높이 올리십시오.',
@@ -40323,12 +41594,7 @@ registerLanguageTranslations('ko', {
   },
   spd_096: {
     name: '측면 셔플',
-    instructions: [
-      '운동 자세, 무릎 구부리기.',
-      '빠르게 옆으로 섞으세요.',
-      '몸을 낮추세요.',
-      '방향을 전환하세요.',
-    ],
+    instructions: ['운동 자세, 무릎 구부리기.', '빠르게 옆으로 섞으세요.', '몸을 낮추세요.', '방향을 전환하세요.'],
     audio: {
       intro: '측면 셔플(Lateral Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 무릎 구부리기. 빠르게 옆으로 섞으세요.',
@@ -40743,12 +42009,7 @@ registerLanguageTranslations('ko', {
   },
   spd_124: {
     name: '게 발가락 터치',
-    instructions: [
-      '크랩 자세로 시작하세요.',
-      '한쪽 다리를 걷어차세요.',
-      '반대쪽 손을 발로 뻗으세요.',
-      '반환 및 교체.',
-    ],
+    instructions: ['크랩 자세로 시작하세요.', '한쪽 다리를 걷어차세요.', '반대쪽 손을 발로 뻗으세요.', '반환 및 교체.'],
     audio: {
       intro: '크랩 토 터치(Crab Toe Touch)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '크랩 자세로 시작하세요. 한쪽 다리를 걷어차세요.',
@@ -40810,7 +42071,8 @@ registerLanguageTranslations('ko', {
       '반복 횟수를 완료한 후 전환하세요.',
     ],
     audio: {
-      intro: '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 폭발적으로 무릎을 뒤로 밀어 올립니다.',
       execution: '런지로 돌아갑니다. 반복 횟수를 완료한 후 전환하세요.',
       transition: '',
@@ -41028,12 +42290,7 @@ registerLanguageTranslations('ko', {
   },
   spd_143: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -41118,12 +42375,7 @@ registerLanguageTranslations('ko', {
   },
   spd_149: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -41148,12 +42400,7 @@ registerLanguageTranslations('ko', {
   },
   spd_151: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -41185,7 +42432,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -41223,12 +42471,7 @@ registerLanguageTranslations('ko', {
   },
   spd_156: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -41268,12 +42511,7 @@ registerLanguageTranslations('ko', {
   },
   spd_159: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -41283,12 +42521,7 @@ registerLanguageTranslations('ko', {
   },
   spd_160: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -41313,12 +42546,7 @@ registerLanguageTranslations('ko', {
   },
   spd_162: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -41328,12 +42556,7 @@ registerLanguageTranslations('ko', {
   },
   spd_163: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -41373,12 +42596,7 @@ registerLanguageTranslations('ko', {
   },
   spd_166: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -41388,12 +42606,7 @@ registerLanguageTranslations('ko', {
   },
   spd_167: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -41403,12 +42616,7 @@ registerLanguageTranslations('ko', {
   },
   spd_168: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -41418,12 +42626,7 @@ registerLanguageTranslations('ko', {
   },
   spd_169: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -41433,12 +42636,7 @@ registerLanguageTranslations('ko', {
   },
   spd_170: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -41493,12 +42691,7 @@ registerLanguageTranslations('ko', {
   },
   spd_174: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -41568,12 +42761,7 @@ registerLanguageTranslations('ko', {
   },
   spd_179: {
     name: '무릎 높이',
-    instructions: [
-      '제자리에서 달리십시오.',
-      '무릎을 가슴쪽으로 높이 올리십시오.',
-      '펌프 암.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['제자리에서 달리십시오.', '무릎을 가슴쪽으로 높이 올리십시오.', '펌프 암.', '발의 공에 머물러 라.'],
     audio: {
       intro: 'High Knees는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '제자리에서 달리십시오. 무릎을 가슴쪽으로 높이 올리십시오.',
@@ -41658,12 +42846,7 @@ registerLanguageTranslations('ko', {
   },
   spd_185: {
     name: '측면 셔플',
-    instructions: [
-      '운동 자세, 무릎 구부리기.',
-      '빠르게 옆으로 섞으세요.',
-      '몸을 낮추세요.',
-      '방향을 전환하세요.',
-    ],
+    instructions: ['운동 자세, 무릎 구부리기.', '빠르게 옆으로 섞으세요.', '몸을 낮추세요.', '방향을 전환하세요.'],
     audio: {
       intro: '측면 셔플(Lateral Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 무릎 구부리기. 빠르게 옆으로 섞으세요.',
@@ -42078,12 +43261,7 @@ registerLanguageTranslations('ko', {
   },
   spd_213: {
     name: '게 발가락 터치',
-    instructions: [
-      '크랩 자세로 시작하세요.',
-      '한쪽 다리를 걷어차세요.',
-      '반대쪽 손을 발로 뻗으세요.',
-      '반환 및 교체.',
-    ],
+    instructions: ['크랩 자세로 시작하세요.', '한쪽 다리를 걷어차세요.', '반대쪽 손을 발로 뻗으세요.', '반환 및 교체.'],
     audio: {
       intro: '크랩 토 터치(Crab Toe Touch)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '크랩 자세로 시작하세요. 한쪽 다리를 걷어차세요.',
@@ -42145,7 +43323,8 @@ registerLanguageTranslations('ko', {
       '반복 횟수를 완료한 후 전환하세요.',
     ],
     audio: {
-      intro: '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 폭발적으로 무릎을 뒤로 밀어 올립니다.',
       execution: '런지로 돌아갑니다. 반복 횟수를 완료한 후 전환하세요.',
       transition: '',
@@ -42363,12 +43542,7 @@ registerLanguageTranslations('ko', {
   },
   spd_232: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -42453,12 +43627,7 @@ registerLanguageTranslations('ko', {
   },
   spd_238: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -42483,12 +43652,7 @@ registerLanguageTranslations('ko', {
   },
   spd_240: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -42520,7 +43684,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -42558,12 +43723,7 @@ registerLanguageTranslations('ko', {
   },
   spd_245: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -42603,12 +43763,7 @@ registerLanguageTranslations('ko', {
   },
   spd_248: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -42618,12 +43773,7 @@ registerLanguageTranslations('ko', {
   },
   spd_249: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -42648,12 +43798,7 @@ registerLanguageTranslations('ko', {
   },
   spd_251: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -42663,12 +43808,7 @@ registerLanguageTranslations('ko', {
   },
   spd_252: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -42708,12 +43848,7 @@ registerLanguageTranslations('ko', {
   },
   spd_255: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -42723,12 +43858,7 @@ registerLanguageTranslations('ko', {
   },
   spd_256: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -42738,12 +43868,7 @@ registerLanguageTranslations('ko', {
   },
   spd_257: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -42753,12 +43878,7 @@ registerLanguageTranslations('ko', {
   },
   spd_258: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -42768,12 +43888,7 @@ registerLanguageTranslations('ko', {
   },
   spd_259: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -42828,12 +43943,7 @@ registerLanguageTranslations('ko', {
   },
   spd_263: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -42948,12 +44058,7 @@ registerLanguageTranslations('ko', {
   },
   spd_271: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -43038,12 +44143,7 @@ registerLanguageTranslations('ko', {
   },
   spd_277: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -43068,12 +44168,7 @@ registerLanguageTranslations('ko', {
   },
   spd_279: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -43105,7 +44200,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -43143,12 +44239,7 @@ registerLanguageTranslations('ko', {
   },
   spd_284: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -43188,12 +44279,7 @@ registerLanguageTranslations('ko', {
   },
   spd_287: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -43203,12 +44289,7 @@ registerLanguageTranslations('ko', {
   },
   spd_288: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -43233,12 +44314,7 @@ registerLanguageTranslations('ko', {
   },
   spd_290: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -43248,12 +44324,7 @@ registerLanguageTranslations('ko', {
   },
   spd_291: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -43293,12 +44364,7 @@ registerLanguageTranslations('ko', {
   },
   spd_294: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -43308,12 +44374,7 @@ registerLanguageTranslations('ko', {
   },
   spd_295: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -43323,12 +44384,7 @@ registerLanguageTranslations('ko', {
   },
   spd_296: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -43338,12 +44394,7 @@ registerLanguageTranslations('ko', {
   },
   spd_297: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -43353,12 +44404,7 @@ registerLanguageTranslations('ko', {
   },
   spd_298: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -43413,12 +44459,7 @@ registerLanguageTranslations('ko', {
   },
   spd_302: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -43488,12 +44529,7 @@ registerLanguageTranslations('ko', {
   },
   spd_307: {
     name: '무릎 높이',
-    instructions: [
-      '제자리에서 달리십시오.',
-      '무릎을 가슴쪽으로 높이 올리십시오.',
-      '펌프 암.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['제자리에서 달리십시오.', '무릎을 가슴쪽으로 높이 올리십시오.', '펌프 암.', '발의 공에 머물러 라.'],
     audio: {
       intro: 'High Knees는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '제자리에서 달리십시오. 무릎을 가슴쪽으로 높이 올리십시오.',
@@ -43578,12 +44614,7 @@ registerLanguageTranslations('ko', {
   },
   spd_313: {
     name: '측면 셔플',
-    instructions: [
-      '운동 자세, 무릎 구부리기.',
-      '빠르게 옆으로 섞으세요.',
-      '몸을 낮추세요.',
-      '방향을 전환하세요.',
-    ],
+    instructions: ['운동 자세, 무릎 구부리기.', '빠르게 옆으로 섞으세요.', '몸을 낮추세요.', '방향을 전환하세요.'],
     audio: {
       intro: '측면 셔플(Lateral Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 무릎 구부리기. 빠르게 옆으로 섞으세요.',
@@ -43998,12 +45029,7 @@ registerLanguageTranslations('ko', {
   },
   spd_341: {
     name: '게 발가락 터치',
-    instructions: [
-      '크랩 자세로 시작하세요.',
-      '한쪽 다리를 걷어차세요.',
-      '반대쪽 손을 발로 뻗으세요.',
-      '반환 및 교체.',
-    ],
+    instructions: ['크랩 자세로 시작하세요.', '한쪽 다리를 걷어차세요.', '반대쪽 손을 발로 뻗으세요.', '반환 및 교체.'],
     audio: {
       intro: '크랩 토 터치(Crab Toe Touch)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '크랩 자세로 시작하세요. 한쪽 다리를 걷어차세요.',
@@ -44065,7 +45091,8 @@ registerLanguageTranslations('ko', {
       '반복 횟수를 완료한 후 전환하세요.',
     ],
     audio: {
-      intro: '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 폭발적으로 무릎을 뒤로 밀어 올립니다.',
       execution: '런지로 돌아갑니다. 반복 횟수를 완료한 후 전환하세요.',
       transition: '',
@@ -44283,12 +45310,7 @@ registerLanguageTranslations('ko', {
   },
   spd_360: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -44373,12 +45395,7 @@ registerLanguageTranslations('ko', {
   },
   spd_366: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -44403,12 +45420,7 @@ registerLanguageTranslations('ko', {
   },
   spd_368: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -44440,7 +45452,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -44478,12 +45491,7 @@ registerLanguageTranslations('ko', {
   },
   spd_373: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -44523,12 +45531,7 @@ registerLanguageTranslations('ko', {
   },
   spd_376: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -44538,12 +45541,7 @@ registerLanguageTranslations('ko', {
   },
   spd_377: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -44568,12 +45566,7 @@ registerLanguageTranslations('ko', {
   },
   spd_379: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -44583,12 +45576,7 @@ registerLanguageTranslations('ko', {
   },
   spd_380: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -44628,12 +45616,7 @@ registerLanguageTranslations('ko', {
   },
   spd_383: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -44643,12 +45626,7 @@ registerLanguageTranslations('ko', {
   },
   spd_384: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -44658,12 +45636,7 @@ registerLanguageTranslations('ko', {
   },
   spd_385: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -44673,12 +45646,7 @@ registerLanguageTranslations('ko', {
   },
   spd_386: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -44688,12 +45656,7 @@ registerLanguageTranslations('ko', {
   },
   spd_387: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -44748,12 +45711,7 @@ registerLanguageTranslations('ko', {
   },
   spd_391: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -44943,12 +45901,7 @@ registerLanguageTranslations('ko', {
   },
   spd_404: {
     name: '게 발가락 터치',
-    instructions: [
-      '크랩 자세로 시작하세요.',
-      '한쪽 다리를 걷어차세요.',
-      '반대쪽 손을 발로 뻗으세요.',
-      '반환 및 교체.',
-    ],
+    instructions: ['크랩 자세로 시작하세요.', '한쪽 다리를 걷어차세요.', '반대쪽 손을 발로 뻗으세요.', '반환 및 교체.'],
     audio: {
       intro: '크랩 토 터치(Crab Toe Touch)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '크랩 자세로 시작하세요. 한쪽 다리를 걷어차세요.',
@@ -45010,7 +45963,8 @@ registerLanguageTranslations('ko', {
       '반복 횟수를 완료한 후 전환하세요.',
     ],
     audio: {
-      intro: '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 폭발적으로 무릎을 뒤로 밀어 올립니다.',
       execution: '런지로 돌아갑니다. 반복 횟수를 완료한 후 전환하세요.',
       transition: '',
@@ -45228,12 +46182,7 @@ registerLanguageTranslations('ko', {
   },
   spd_423: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -45318,12 +46267,7 @@ registerLanguageTranslations('ko', {
   },
   spd_429: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -45348,12 +46292,7 @@ registerLanguageTranslations('ko', {
   },
   spd_431: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -45385,7 +46324,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -45423,12 +46363,7 @@ registerLanguageTranslations('ko', {
   },
   spd_436: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -45468,12 +46403,7 @@ registerLanguageTranslations('ko', {
   },
   spd_439: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -45483,12 +46413,7 @@ registerLanguageTranslations('ko', {
   },
   spd_440: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -45513,12 +46438,7 @@ registerLanguageTranslations('ko', {
   },
   spd_442: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -45528,12 +46448,7 @@ registerLanguageTranslations('ko', {
   },
   spd_443: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -45573,12 +46488,7 @@ registerLanguageTranslations('ko', {
   },
   spd_446: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -45588,12 +46498,7 @@ registerLanguageTranslations('ko', {
   },
   spd_447: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -45603,12 +46508,7 @@ registerLanguageTranslations('ko', {
   },
   spd_448: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -45618,12 +46518,7 @@ registerLanguageTranslations('ko', {
   },
   spd_449: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -45633,12 +46528,7 @@ registerLanguageTranslations('ko', {
   },
   spd_450: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -45693,12 +46583,7 @@ registerLanguageTranslations('ko', {
   },
   spd_454: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -45768,12 +46653,7 @@ registerLanguageTranslations('ko', {
   },
   spd_459: {
     name: '무릎 높이',
-    instructions: [
-      '제자리에서 달리십시오.',
-      '무릎을 가슴쪽으로 높이 올리십시오.',
-      '펌프 암.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['제자리에서 달리십시오.', '무릎을 가슴쪽으로 높이 올리십시오.', '펌프 암.', '발의 공에 머물러 라.'],
     audio: {
       intro: 'High Knees는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '제자리에서 달리십시오. 무릎을 가슴쪽으로 높이 올리십시오.',
@@ -45858,12 +46738,7 @@ registerLanguageTranslations('ko', {
   },
   spd_465: {
     name: '측면 셔플',
-    instructions: [
-      '운동 자세, 무릎 구부리기.',
-      '빠르게 옆으로 섞으세요.',
-      '몸을 낮추세요.',
-      '방향을 전환하세요.',
-    ],
+    instructions: ['운동 자세, 무릎 구부리기.', '빠르게 옆으로 섞으세요.', '몸을 낮추세요.', '방향을 전환하세요.'],
     audio: {
       intro: '측면 셔플(Lateral Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 무릎 구부리기. 빠르게 옆으로 섞으세요.',
@@ -46278,12 +47153,7 @@ registerLanguageTranslations('ko', {
   },
   spd_493: {
     name: '게 발가락 터치',
-    instructions: [
-      '크랩 자세로 시작하세요.',
-      '한쪽 다리를 걷어차세요.',
-      '반대쪽 손을 발로 뻗으세요.',
-      '반환 및 교체.',
-    ],
+    instructions: ['크랩 자세로 시작하세요.', '한쪽 다리를 걷어차세요.', '반대쪽 손을 발로 뻗으세요.', '반환 및 교체.'],
     audio: {
       intro: '크랩 토 터치(Crab Toe Touch)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '크랩 자세로 시작하세요. 한쪽 다리를 걷어차세요.',
@@ -46345,7 +47215,8 @@ registerLanguageTranslations('ko', {
       '반복 횟수를 완료한 후 전환하세요.',
     ],
     audio: {
-      intro: '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '리버스 런지 니 드라이브(Reverse Lunge Knee Drive)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '다시 리버스 런지 자세로 들어갑니다. 폭발적으로 무릎을 뒤로 밀어 올립니다.',
       execution: '런지로 돌아갑니다. 반복 횟수를 완료한 후 전환하세요.',
       transition: '',
@@ -46563,12 +47434,7 @@ registerLanguageTranslations('ko', {
   },
   spd_512: {
     name: '회전 점프',
-    instructions: [
-      '쪼그리고 앉으세요.',
-      '점프하고 90도 회전하세요.',
-      '부드럽게 착지하세요.',
-      '다시 시작하세요.',
-    ],
+    instructions: ['쪼그리고 앉으세요.', '점프하고 90도 회전하세요.', '부드럽게 착지하세요.', '다시 시작하세요.'],
     audio: {
       intro: '회전 점프는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '쪼그리고 앉으세요. 점프하고 90도 회전하세요.',
@@ -46653,12 +47519,7 @@ registerLanguageTranslations('ko', {
   },
   spd_518: {
     name: '방어 셔플',
-    instructions: [
-      '운동 자세, 낮음.',
-      '좌우로 섞습니다.',
-      '발을 교차하지 마십시오.',
-      '발의 공에 머물러 라.',
-    ],
+    instructions: ['운동 자세, 낮음.', '좌우로 섞습니다.', '발을 교차하지 마십시오.', '발의 공에 머물러 라.'],
     audio: {
       intro: '방어 셔플은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세, 낮음. 좌우로 섞습니다.',
@@ -46683,12 +47544,7 @@ registerLanguageTranslations('ko', {
   },
   spd_520: {
     name: '스프린트 시작',
-    instructions: [
-      '3점 입장.',
-      '폭발적으로 몰아내세요.',
-      '10~20야드를 스프린트하세요.',
-      '폭발적인 시작을 연습하세요.',
-    ],
+    instructions: ['3점 입장.', '폭발적으로 몰아내세요.', '10~20야드를 스프린트하세요.', '폭발적인 시작을 연습하세요.'],
     audio: {
       intro: '스프린트 스타트(Sprint Start)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3점 입장. 폭발적으로 몰아내세요.',
@@ -46720,7 +47576,8 @@ registerLanguageTranslations('ko', {
       '착륙할 때마다 균형을 유지하십시오.',
     ],
     audio: {
-      intro: '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '싱글 레그 홉 프로그레션(Single Leg Hop Progression)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 앞으로 뛰어보세요. 대각선 홉으로 진행합니다.',
       execution: '그런 다음 측면 홉. 착륙할 때마다 균형을 유지하십시오.',
       transition: '',
@@ -46758,12 +47615,7 @@ registerLanguageTranslations('ko', {
   },
   spd_525: {
     name: '어퍼컷',
-    instructions: [
-      '복싱 자세로 서세요.',
-      '어퍼컷 펀치를 던집니다.',
-      '다리와 엉덩이를 통해 운전하십시오.',
-      '대체 손.',
-    ],
+    instructions: ['복싱 자세로 서세요.', '어퍼컷 펀치를 던집니다.', '다리와 엉덩이를 통해 운전하십시오.', '대체 손.'],
     audio: {
       intro: '어퍼컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '복싱 자세로 서세요. 어퍼컷 펀치를 던집니다.',
@@ -46803,12 +47655,7 @@ registerLanguageTranslations('ko', {
   },
   spd_528: {
     name: '사이드킥',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '옆으로 킥.',
-      '완전히 확장하십시오.',
-      '대체 다리.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '옆으로 킥.', '완전히 확장하십시오.', '대체 다리.'],
     audio: {
       intro: '사이드킥은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 옆으로 킥.',
@@ -46818,12 +47665,7 @@ registerLanguageTranslations('ko', {
   },
   spd_529: {
     name: '무릎 타격',
-    instructions: [
-      '전투 자세로 서세요.',
-      '강제로 무릎을 들어 올립니다.',
-      '팔을 무릎 아래로 당깁니다.',
-      '대체 다리.',
-    ],
+    instructions: ['전투 자세로 서세요.', '강제로 무릎을 들어 올립니다.', '팔을 무릎 아래로 당깁니다.', '대체 다리.'],
     audio: {
       intro: '니 스트라이크(Knee Strike)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '전투 자세로 서세요. 강제로 무릎을 들어 올립니다.',
@@ -46848,12 +47690,7 @@ registerLanguageTranslations('ko', {
   },
   spd_531: {
     name: 'V-Up 잭',
-    instructions: [
-      '뒤로 누워.',
-      '다리를 벌린 채 V업.',
-      '발가락을 만져보세요.',
-      '낮추고 반복하십시오.',
-    ],
+    instructions: ['뒤로 누워.', '다리를 벌린 채 V업.', '발가락을 만져보세요.', '낮추고 반복하십시오.'],
     audio: {
       intro: 'V-Up 잭은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '뒤로 누워. 다리를 벌린 채 V업.',
@@ -46863,12 +47700,7 @@ registerLanguageTranslations('ko', {
   },
   spd_532: {
     name: '터치다운 셔플',
-    instructions: [
-      '한쪽으로 섞습니다.',
-      '바닥을 터치하세요.',
-      '다른 쪽으로 섞으세요.',
-      '바닥을 터치하세요. 반복하다.',
-    ],
+    instructions: ['한쪽으로 섞습니다.', '바닥을 터치하세요.', '다른 쪽으로 섞으세요.', '바닥을 터치하세요. 반복하다.'],
     audio: {
       intro: '터치다운 셔플(Touchdown Shuffle)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽으로 섞습니다. 바닥을 터치하세요.',
@@ -46908,12 +47740,7 @@ registerLanguageTranslations('ko', {
   },
   spd_535: {
     name: '스모 펄스',
-    instructions: [
-      '와이드 스탠스 스모 스쿼트.',
-      '펄스 위아래로.',
-      '스쿼트 자세를 유지하세요.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['와이드 스탠스 스모 스쿼트.', '펄스 위아래로.', '스쿼트 자세를 유지하세요.', '화상을 느껴보세요.'],
     audio: {
       intro: '스모 펄스(Sumo Pulse)는 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '와이드 스탠스 스모 스쿼트. 펄스 위아래로.',
@@ -46923,12 +47750,7 @@ registerLanguageTranslations('ko', {
   },
   spd_536: {
     name: '드롭 단계',
-    instructions: [
-      '운동 자세.',
-      '45도 각도로 뒤로 물러납니다.',
-      '앞으로 질주하세요.',
-      '대체 방향.',
-    ],
+    instructions: ['운동 자세.', '45도 각도로 뒤로 물러납니다.', '앞으로 질주하세요.', '대체 방향.'],
     audio: {
       intro: '드롭 스텝(Drop Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 45도 각도로 뒤로 물러납니다.',
@@ -46938,12 +47760,7 @@ registerLanguageTranslations('ko', {
   },
   spd_537: {
     name: '셔플 컷',
-    instructions: [
-      '한 방향으로 섞으세요.',
-      '심고 날카롭게 자릅니다.',
-      '반대로 가속하십시오.',
-      '반복하다.',
-    ],
+    instructions: ['한 방향으로 섞으세요.', '심고 날카롭게 자릅니다.', '반대로 가속하십시오.', '반복하다.'],
     audio: {
       intro: '셔플컷은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 방향으로 섞으세요. 심고 날카롭게 자릅니다.',
@@ -46953,12 +47770,7 @@ registerLanguageTranslations('ko', {
   },
   spd_538: {
     name: '크로스오버 스텝',
-    instructions: [
-      '운동 자세.',
-      '한 발을 다른 발 위로 교차시키세요.',
-      '그 방향으로 가속하세요.',
-      '대체 시작 방향.',
-    ],
+    instructions: ['운동 자세.', '한 발을 다른 발 위로 교차시키세요.', '그 방향으로 가속하세요.', '대체 시작 방향.'],
     audio: {
       intro: '크로스오버 스텝(Crossover Step)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '운동 자세. 한 발을 다른 발 위로 교차시키세요.',
@@ -46968,12 +47780,7 @@ registerLanguageTranslations('ko', {
   },
   spd_539: {
     name: '트리플 홉',
-    instructions: [
-      '한쪽 다리로 서십시오.',
-      '앞으로 세 번 뛰어보세요.',
-      '거리를 최대화하세요.',
-      '다리를 바꿔보세요.',
-    ],
+    instructions: ['한쪽 다리로 서십시오.', '앞으로 세 번 뛰어보세요.', '거리를 최대화하세요.', '다리를 바꿔보세요.'],
     audio: {
       intro: '트리플 홉은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서십시오. 앞으로 세 번 뛰어보세요.',
@@ -47028,12 +47835,7 @@ registerLanguageTranslations('ko', {
   },
   spd_543: {
     name: '측면 홉 및 스틱',
-    instructions: [
-      '옆으로 한쪽으로 홉.',
-      '착륙을 고수하십시오.',
-      '2초 동안 기다리세요.',
-      '뒤로 물러서서 반복하세요.',
-    ],
+    instructions: ['옆으로 한쪽으로 홉.', '착륙을 고수하십시오.', '2초 동안 기다리세요.', '뒤로 물러서서 반복하세요.'],
     audio: {
       intro: '측면 홉 앤 스틱(Lateral Hop and Stick)은 적당한 속도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '옆으로 한쪽으로 홉. 착륙을 고수하십시오.',
@@ -47103,12 +47905,7 @@ registerLanguageTranslations('ko', {
   },
   str_001: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -47118,12 +47915,7 @@ registerLanguageTranslations('ko', {
   },
   str_002: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -47148,12 +47940,7 @@ registerLanguageTranslations('ko', {
   },
   str_004: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -47275,7 +48062,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -47291,7 +48079,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -47320,7 +48109,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -47380,9 +48170,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -47412,7 +48204,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -47472,7 +48265,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -47493,12 +48287,7 @@ registerLanguageTranslations('ko', {
   },
   str_027: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -47508,12 +48297,7 @@ registerLanguageTranslations('ko', {
   },
   str_028: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -47538,12 +48322,7 @@ registerLanguageTranslations('ko', {
   },
   str_030: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -47665,7 +48444,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -47681,7 +48461,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -47710,7 +48491,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -47770,9 +48552,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -47802,7 +48586,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -47862,7 +48647,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -47883,12 +48669,7 @@ registerLanguageTranslations('ko', {
   },
   str_053: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -47898,12 +48679,7 @@ registerLanguageTranslations('ko', {
   },
   str_054: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -47928,12 +48704,7 @@ registerLanguageTranslations('ko', {
   },
   str_056: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -48055,7 +48826,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -48071,7 +48843,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -48100,7 +48873,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -48160,9 +48934,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -48192,7 +48968,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -48252,7 +49029,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -48273,12 +49051,7 @@ registerLanguageTranslations('ko', {
   },
   str_079: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -48288,12 +49061,7 @@ registerLanguageTranslations('ko', {
   },
   str_080: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -48318,12 +49086,7 @@ registerLanguageTranslations('ko', {
   },
   str_082: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -48445,7 +49208,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -48461,7 +49225,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -48490,7 +49255,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -48550,9 +49316,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -48582,7 +49350,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -48642,7 +49411,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -48663,12 +49433,7 @@ registerLanguageTranslations('ko', {
   },
   str_105: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -48678,12 +49443,7 @@ registerLanguageTranslations('ko', {
   },
   str_106: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -48708,12 +49468,7 @@ registerLanguageTranslations('ko', {
   },
   str_108: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -48835,7 +49590,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -48851,7 +49607,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -48880,7 +49637,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -48940,9 +49698,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -48972,7 +49732,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -49032,7 +49793,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -49053,12 +49815,7 @@ registerLanguageTranslations('ko', {
   },
   str_131: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -49068,12 +49825,7 @@ registerLanguageTranslations('ko', {
   },
   str_132: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -49098,12 +49850,7 @@ registerLanguageTranslations('ko', {
   },
   str_134: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -49225,7 +49972,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -49241,7 +49989,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -49270,7 +50019,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -49330,9 +50080,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -49362,7 +50114,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -49422,7 +50175,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -49443,12 +50197,7 @@ registerLanguageTranslations('ko', {
   },
   str_157: {
     name: '템포 푸쉬업',
-    instructions: [
-      '4초 남았습니다.',
-      '하단에서 1초 정지.',
-      '2초 남았습니다.',
-      '근육 긴장에 집중하세요.',
-    ],
+    instructions: ['4초 남았습니다.', '하단에서 1초 정지.', '2초 남았습니다.', '근육 긴장에 집중하세요.'],
     audio: {
       intro: '템포 푸쉬업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '4초 남았습니다. 하단에서 1초 정지.',
@@ -49458,12 +50207,7 @@ registerLanguageTranslations('ko', {
   },
   str_158: {
     name: '템포 스쿼트',
-    instructions: [
-      '3초 남았습니다.',
-      '하단에서 2초 정지.',
-      '1초가 폭발적으로 올라갑니다.',
-      '화상을 느껴보세요.',
-    ],
+    instructions: ['3초 남았습니다.', '하단에서 2초 정지.', '1초가 폭발적으로 올라갑니다.', '화상을 느껴보세요.'],
     audio: {
       intro: '템포 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '3초 남았습니다. 하단에서 2초 정지.',
@@ -49488,12 +50232,7 @@ registerLanguageTranslations('ko', {
   },
   str_160: {
     name: '웨이티드 스쿼트',
-    instructions: [
-      '짐이 가득한 배낭을 착용하세요.',
-      '스쿼트를 수행하십시오.',
-      '가슴을 펴세요.',
-      '전체 깊이.',
-    ],
+    instructions: ['짐이 가득한 배낭을 착용하세요.', '스쿼트를 수행하십시오.', '가슴을 펴세요.', '전체 깊이.'],
     audio: {
       intro: '웨이티드 스쿼트는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '짐이 가득한 배낭을 착용하세요. 스쿼트를 수행하십시오.',
@@ -49615,7 +50354,8 @@ registerLanguageTranslations('ko', {
       '뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
     ],
     audio: {
-      intro: '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '피스톨 스쿼트 프로그레션(Pistol Squat Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한쪽 다리로 서서 다른 쪽 다리를 앞으로 뻗습니다. 한쪽 다리 스쿼트 자세로 뒤로 앉으세요.',
       execution: '균형을 유지하면서 최대한 깊게 들어가십시오. 뒤꿈치를 통해 드라이브하여 선 자세로 돌아갑니다.',
       transition: '',
@@ -49631,7 +50371,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '노르딕 컬은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
+      setup:
+        '무릎을 꿇고 발목을 벤치 밑에 고정하거나 누른 상태로 유지합니다. 제어하면서 몸통을 땅을 향해 천천히 내립니다.',
       execution: '햄스트링 근력을 이용해 중력에 저항하세요. 손을 사용하여 자신을 잡고 뒤로 밀어 올리십시오.',
       transition: '',
     },
@@ -49660,7 +50401,8 @@ registerLanguageTranslations('ko', {
       '만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
     ],
     audio: {
-      intro: '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '드래곤 플래그 프로그레션(Dragon Flag Progression)은 적당한 근력 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '머리 뒤로 손을 잡고 벤치에 눕습니다. 몸 전체를 수직으로 들어올려 단단하게 유지합니다.',
       execution: '벤치를 향한 직선 레버로 몸을 낮추십시오. 만지기 전에 멈추고 제어력을 가지고 다시 일어나십시오.',
       transition: '',
@@ -49720,9 +50462,11 @@ registerLanguageTranslations('ko', {
       '광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
     ],
     audio: {
-      intro: '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
+      intro:
+        '원암 풀업 프로그레션(One-Arm Pull-up Progression)은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '한 손으로 바를 잡고 다른 손으로 손목을 잡습니다. 주로 위쪽 팔을 사용하여 당겨 올립니다.',
-      execution: '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
+      execution:
+        '시간이 지남에 따라 낮은 손의 도움을 점차적으로 줄입니다. 광배근 참여에 초점을 맞춘 컨트롤로 낮추세요.',
       transition: '',
     },
   },
@@ -49752,7 +50496,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '백 레버 홀드(Back Lever Hold)는 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '거꾸로 된 그립으로 링에 매달립니다. 거꾸로 된 매달기를 통해 뒤로 굴립니다.',
-      execution: '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
+      execution:
+        '링 뒤에서 몸을 수평으로 아래로 향하게 하여 확장합니다. 몸을 곧게 펴고 코어를 맞물린 상태로 자세를 유지합니다.',
       transition: '',
     },
   },
@@ -49812,7 +50557,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '아처 풀업은 적당한 강도의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '넓은 오버핸드 그립을 갖춘 그립 바. 한 손으로 당기면서 다른 팔은 곧게 뻗습니다.',
-      execution: '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
+      execution:
+        '컨트롤을 사용하여 완전히 매달리도록 내립니다. 균형 잡힌 발전을 위해 각 대표를 번갈아 가며 진행합니다.',
       transition: '',
     },
   },
@@ -49842,8 +50588,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '바 데드행은 적당한 자세의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '튼튼한 풀업 바에 머리 위로 손을 뻗으세요. 점프하거나 올라가서 손을 어깨 너비로 잡고 손바닥을 앞으로 뻗습니다.',
-      execution: '체중이 당신을 가라앉히게 하십시오; 어깨를 귀에서 멀리 떨어뜨리세요. 과도한 확장을 피하기 위해 팔을 똑바로 유지하고 약간 구부리십시오.',
+      setup:
+        '튼튼한 풀업 바에 머리 위로 손을 뻗으세요. 점프하거나 올라가서 손을 어깨 너비로 잡고 손바닥을 앞으로 뻗습니다.',
+      execution:
+        '체중이 당신을 가라앉히게 하십시오; 어깨를 귀에서 멀리 떨어뜨리세요. 과도한 확장을 피하기 위해 팔을 똑바로 유지하고 약간 구부리십시오.',
       transition: '',
     },
   },
@@ -49857,7 +50605,8 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Active Hang Scapular Elevation은 적당한 자세의 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '바에 팔을 곧게 걸으십시오. 팔을 구부리지 않은 채 견갑골을 아래로(귀에서 멀리) 당겨 몸을 2~3cm 정도 올립니다.',
+      setup:
+        '바에 팔을 곧게 걸으십시오. 팔을 구부리지 않은 채 견갑골을 아래로(귀에서 멀리) 당겨 몸을 2~3cm 정도 올립니다.',
       execution: '천천히 어깨를 위로 올리십시오(이완). s 1회—작지만 강력합니다.",',
       transition: '',
     },
@@ -49873,8 +50622,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: '코브라 포즈는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '얼굴을 아래로 하고, 다리를 곧게 펴고, 발끝을 바닥에 대고 눕습니다. 어깨 아래에 손을 놓고 팔꿈치를 집어 넣습니다.',
-      execution: '발등과 골반을 아래로 누릅니다. 엉덩이가 들리기 시작할 때까지 팔을 천천히 곧게 펴십시오. 허리에 통증이 없습니다.',
+      setup:
+        '얼굴을 아래로 하고, 다리를 곧게 펴고, 발끝을 바닥에 대고 눕습니다. 어깨 아래에 손을 놓고 팔꿈치를 집어 넣습니다.',
+      execution:
+        '발등과 골반을 아래로 누릅니다. 엉덩이가 들리기 시작할 때까지 팔을 천천히 곧게 펴십시오. 허리에 통증이 없습니다.',
       transition: '',
     },
   },
@@ -49888,8 +50639,10 @@ registerLanguageTranslations('ko', {
     ],
     audio: {
       intro: 'Cat-Camel은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
-      setup: '네 발 모두 어깨 아래 손목, 엉덩이 아래 무릎. 화난 고양이처럼 뒤로 돌아서 꼬리뼈를 집어넣고 머리를 떨어뜨립니다.',
-      execution: '천천히 ARCH 뒤로, 배가 떨어지고, 꼬리뼈가 올라가고, 기대됩니다. 숨을 쉬면서 두 모양 사이를 10~12회 흐름.',
+      setup:
+        '네 발 모두 어깨 아래 손목, 엉덩이 아래 무릎. 화난 고양이처럼 뒤로 돌아서 꼬리뼈를 집어넣고 머리를 떨어뜨립니다.',
+      execution:
+        '천천히 ARCH 뒤로, 배가 떨어지고, 꼬리뼈가 올라가고, 기대됩니다. 숨을 쉬면서 두 모양 사이를 10~12회 흐름.',
       transition: '',
     },
   },
@@ -49905,7 +50658,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '앞으로 접기(Standing Forward Fold)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '발을 엉덩이 너비로 벌립니다. 엉덩이를 힌지하고(엉덩이를 뒤로 밀기) 몸통을 허벅지 쪽으로 접습니다.',
-      execution: '팔을 늘어뜨려라. 원한다면 반대쪽 팔꿈치를 잡으세요. 체중을 약간 앞으로 옮겨 엉덩이가 발목 위에 쌓이도록 합니다.',
+      execution:
+        '팔을 늘어뜨려라. 원한다면 반대쪽 팔꿈치를 잡으세요. 체중을 약간 앞으로 옮겨 엉덩이가 발목 위에 쌓이도록 합니다.',
       transition: '',
     },
   },
@@ -49923,7 +50677,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '제퍼슨 컬(가벼운)은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '작은 계단이나 튼튼한 책 위에 서십시오. 가벼운 배낭을 허벅지에 잡습니다.',
-      execution: '턱을 집어넣고 한 번에 하나의 척추뼈를 천천히 아래로 굴립니다. 다리를 똑바로 유지하십시오. 통증 없이 햄스트링이 허용하는 한도까지만 가십시오.',
+      execution:
+        '턱을 집어넣고 한 번에 하나의 척추뼈를 천천히 아래로 굴립니다. 다리를 똑바로 유지하십시오. 통증 없이 햄스트링이 허용하는 한도까지만 가십시오.',
       transition: '',
     },
   },
@@ -49939,7 +50694,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '월엔젤스(Wall Angels)는 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '벽에 등을 대고 서서 발을 10cm 앞으로 내립니다. 허리, 등 위쪽을 누르고 머리를 벽에 대십시오.',
-      execution: '팔을 90°(골 포스트)로 들어올리고 손등이 벽에 닿습니다. 접촉을 잃지 않고 팔을 머리 위로 최대한 높이 밉니다.',
+      execution:
+        '팔을 90°(골 포스트)로 들어올리고 손등이 벽에 닿습니다. 접촉을 잃지 않고 팔을 머리 위로 최대한 높이 밉니다.',
       transition: '',
     },
   },
@@ -49955,7 +50711,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '흉곽 확장(폼 롤러)은 적당한 자세 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '바닥에 앉아 등 위쪽 아래에 폼롤러(또는 말아놓은 수건)를 놓습니다. 손으로 머리를 받치고 턱을 당깁니다.',
-      execution: '숨을 내쉬며 롤러 위로 아치를 그리며 바닥을 향해 어깨를 뻗습니다. 20-30초 동안 유지하세요. 가슴으로 숨을 쉬십시오.',
+      execution:
+        '숨을 내쉬며 롤러 위로 아치를 그리며 바닥을 향해 어깨를 뻗습니다. 20-30초 동안 유지하세요. 가슴으로 숨을 쉬십시오.',
       transition: '',
     },
   },
@@ -49971,7 +50728,8 @@ registerLanguageTranslations('ko', {
     audio: {
       intro: '넥롤스(Neck Rolls)는 적당한 자세를 위한 운동입니다. 주로 여러 근육을 대상으로 합니다.',
       setup: '앉거나 높이 서십시오. 턱을 가슴쪽으로 내리세요. 오른쪽 귀를 오른쪽 어깨쪽으로 천천히 굴립니다.',
-      execution: '계속해서 뒤로 원을 그리며 왼쪽 귀에서 왼쪽 어깨로, 턱에서 가슴으로 마무리합니다. 어깨를 편안하게 유지하십시오. 천천히 움직입니다(반원당 5초).',
+      execution:
+        '계속해서 뒤로 원을 그리며 왼쪽 귀에서 왼쪽 어깨로, 턱에서 가슴으로 마무리합니다. 어깨를 편안하게 유지하십시오. 천천히 움직입니다(반원당 5초).',
       transition: '',
     },
   },

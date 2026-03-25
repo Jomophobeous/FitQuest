@@ -28,13 +28,13 @@ import { t } from '../i18n/engine-i18n';
 // ============================================
 
 export type TrialPhase =
-  | 'ONBOARDING'     // Day 1–3: Light signals, first wins
-  | 'DISCOVERY'      // Day 4–7: Introduce memory, show improvements
-  | 'DEEPENING'      // Day 8–11: Full intelligence, pattern recognition
-  | 'DECISION'       // Day 12–14: Peak value + transparent transition notice
-  | 'EXPIRED'        // Post-trial: core works, intelligence locked
-  | 'CONVERTED'      // Paid subscriber
-  | 'NOT_STARTED';   // No trial yet
+  | 'ONBOARDING' // Day 1–3: Light signals, first wins
+  | 'DISCOVERY' // Day 4–7: Introduce memory, show improvements
+  | 'DEEPENING' // Day 8–11: Full intelligence, pattern recognition
+  | 'DECISION' // Day 12–14: Peak value + transparent transition notice
+  | 'EXPIRED' // Post-trial: core works, intelligence locked
+  | 'CONVERTED' // Paid subscriber
+  | 'NOT_STARTED'; // No trial yet
 
 export type TrialMessageType =
   | 'WELCOME'
@@ -188,7 +188,7 @@ export function getFeatureGating(phase: TrialPhase): FeatureGating {
       return {
         ...core,
         aiInsights: true,
-        sessionMemory: false,       // Not yet — let them build history first
+        sessionMemory: false, // Not yet — let them build history first
         behavioralSignals: true,
         progressionNarratives: false,
         advancedHealth: true,
@@ -199,7 +199,7 @@ export function getFeatureGating(phase: TrialPhase): FeatureGating {
       return {
         ...core,
         aiInsights: true,
-        sessionMemory: true,        // Day 4+: "Last session impact"
+        sessionMemory: true, // Day 4+: "Last session impact"
         behavioralSignals: true,
         progressionNarratives: true, // Day 4+: "You improved here"
         advancedHealth: true,
@@ -434,9 +434,10 @@ function buildExpired(dayNumber: number, stats: TrialStats | null): TrialSnapsho
     message: {
       type: 'TRIAL_ENDED',
       headline: t('trial.expired.headline'),
-      subtext: workoutCount > 0
-        ? t('trial.expired.subtext.withWorkouts', { workouts: String(workoutCount) })
-        : t('trial.expired.subtext.noWorkouts'),
+      subtext:
+        workoutCount > 0
+          ? t('trial.expired.subtext.withWorkouts', { workouts: String(workoutCount) })
+          : t('trial.expired.subtext.noWorkouts'),
       prominent: true,
       actionLabel: t('trial.viewPlans'),
       actionRoute: '/paywall',

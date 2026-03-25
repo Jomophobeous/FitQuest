@@ -11,16 +11,8 @@
  * Deterministic. No AI calls. No network. All math on-device.
  */
 
-import {
-  getRecentSessions,
-  getSessionExercises,
-  getStreak,
-  getUserProfile,
-} from '../database/service';
-import {
-  analyzeExerciseProgression,
-  type ProgressionDecision,
-} from './progressionEngine';
+import { getRecentSessions, getSessionExercises, getStreak, getUserProfile } from '../database/service';
+import { analyzeExerciseProgression, type ProgressionDecision } from './progressionEngine';
 import type { TargetMuscle, WorkoutSession } from '../database/types';
 import { t } from '../i18n/engine-i18n';
 
@@ -97,9 +89,8 @@ export async function getLastSessionImpact(userId: string): Promise<LastSessionI
   }
 
   const last = completed[0]!;
-  const completionRate = last.total_exercises > 0
-    ? Math.round((last.completed_exercises / last.total_exercises) * 100)
-    : 0;
+  const completionRate =
+    last.total_exercises > 0 ? Math.round((last.completed_exercises / last.total_exercises) * 100) : 0;
 
   // Time since
   const timeSince = formatTimeSince(last.completed_at || last.started_at);
@@ -310,9 +301,7 @@ function formatTimeSince(dateStr: string): string {
   return t('memory.timeSince.days', { days: String(days) });
 }
 
-function analyzeTrend(
-  sessions: WorkoutSession[],
-): 'improving' | 'steady' | 'declining' {
+function analyzeTrend(sessions: WorkoutSession[]): 'improving' | 'steady' | 'declining' {
   if (sessions.length < 2) return 'steady';
 
   // Compare completion rates of recent vs older
@@ -336,32 +325,22 @@ function avgCompletionRate(sessions: WorkoutSession[]): number {
   );
 }
 
-function buildTrendStatement(
-  trend: 'improving' | 'steady' | 'declining' | 'unknown',
-  sessionCount: number,
-): string {
+function buildTrendStatement(trend: 'improving' | 'steady' | 'declining' | 'unknown', sessionCount: number): string {
   switch (trend) {
     case 'improving':
       return t('memory.trend.improving');
     case 'declining':
       return t('memory.trend.declining');
     case 'steady':
-      return sessionCount >= 3
-        ? t('memory.trend.steady.data')
-        : t('memory.trend.steady.building');
+      return sessionCount >= 3 ? t('memory.trend.steady.data') : t('memory.trend.steady.building');
     case 'unknown':
       return t('memory.noHistory.trendStatement');
   }
 }
 
-function inferRemovalReason(
-  exerciseId: string,
-  exerciseName: string,
-  fatigueMap: Map<TargetMuscle, number>,
-): string {
-  const avgFatigue = fatigueMap.size > 0
-    ? Array.from(fatigueMap.values()).reduce((a, b) => a + b, 0) / fatigueMap.size
-    : 0;
+function inferRemovalReason(exerciseId: string, exerciseName: string, fatigueMap: Map<TargetMuscle, number>): string {
+  const avgFatigue =
+    fatigueMap.size > 0 ? Array.from(fatigueMap.values()).reduce((a, b) => a + b, 0) / fatigueMap.size : 0;
 
   if (avgFatigue > 60) {
     return t('memory.reason.removedFatigue');

@@ -2743,9 +2743,7 @@ export async function updateUserPersonalGoalStatus(
 // MIND XP (v17)
 // ============================================
 
-export async function getMindXP(
-  userId: string,
-): Promise<{
+export async function getMindXP(userId: string): Promise<{
   total_mind_xp: number;
   mind_level: number;
   pages_read_total: number;

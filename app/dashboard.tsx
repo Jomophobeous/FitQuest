@@ -139,7 +139,20 @@ export default function DashboardScreen() {
     if (__DEV__) console.log('[Dashboard] loadProgress:start');
     try {
       // Parallel data loading — all independent queries at once
-      const [savedName, progress, streakData, fatigue, sessions, stepsData, xpData, readinessSnap, signal, impact, trialSnap, consistencySnap] = await Promise.all([
+      const [
+        savedName,
+        progress,
+        streakData,
+        fatigue,
+        sessions,
+        stepsData,
+        xpData,
+        readinessSnap,
+        signal,
+        impact,
+        trialSnap,
+        consistencySnap,
+      ] = await Promise.all([
         getAppState('user.display_name').catch(() => null as string | null),
         getUserProgress().catch(() => null),
         getStreak('user_local_001').catch(() => null),
@@ -572,10 +585,7 @@ export default function DashboardScreen() {
               >
                 <View style={styles.signalInner}>
                   <View
-                    style={[
-                      styles.signalIconWrap,
-                      { backgroundColor: theme.colors[behavioralSignal.colorKey] + '18' },
-                    ]}
+                    style={[styles.signalIconWrap, { backgroundColor: theme.colors[behavioralSignal.colorKey] + '18' }]}
                   >
                     <MaterialCommunityIcons
                       name={behavioralSignal.icon as any}
@@ -643,14 +653,21 @@ export default function DashboardScreen() {
                     styles.trialCard,
                     {
                       backgroundColor: theme.colors.accent + '08',
-                      borderColor: trialSnapshot.phase === 'DECISION' ? theme.colors.warning + '40' : theme.colors.accent + '20',
+                      borderColor:
+                        trialSnapshot.phase === 'DECISION' ? theme.colors.warning + '40' : theme.colors.accent + '20',
                     },
                   ]}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <View style={[styles.trialIconWrap, { backgroundColor: theme.colors.accent + '14' }]}>
                       <MaterialCommunityIcons
-                        name={trialSnapshot.phase === 'DECISION' ? 'timer-sand' : trialSnapshot.phase === 'EXPIRED' ? 'lock-outline' : 'shield-check'}
+                        name={
+                          trialSnapshot.phase === 'DECISION'
+                            ? 'timer-sand'
+                            : trialSnapshot.phase === 'EXPIRED'
+                              ? 'lock-outline'
+                              : 'shield-check'
+                        }
                         size={18}
                         color={trialSnapshot.phase === 'DECISION' ? theme.colors.warning : theme.colors.accent}
                       />
@@ -670,7 +687,17 @@ export default function DashboardScreen() {
                     )}
                   </View>
                   {consistencyProfile && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.colors.border }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginTop: 8,
+                        paddingTop: 8,
+                        borderTopWidth: StyleSheet.hairlineWidth,
+                        borderTopColor: theme.colors.border,
+                      }}
+                    >
                       <MaterialCommunityIcons
                         name={consistencyProfile.mode === 'DISCIPLINED' ? 'chart-line' : 'tune-vertical'}
                         size={12}

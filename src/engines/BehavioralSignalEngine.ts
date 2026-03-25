@@ -13,11 +13,7 @@
  * Deterministic. No AI calls. No network. All math on-device.
  */
 
-import {
-  getRecentSessions,
-  getStreak,
-  getUserProfile,
-} from '../database/service';
+import { getRecentSessions, getStreak, getUserProfile } from '../database/service';
 import { getCachedReadiness, type ReadinessSnapshot } from './ReadinessEngine';
 import { getAverageFatigue } from './recoveryEngine';
 import { classifyConsistency, type BehavioralMode } from './ConsistencyClassifier';
@@ -104,9 +100,10 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
       type: 'TRANSITION',
       urgency: 'MEDIUM',
       headline: consistency.statusLine,
-      subtext: consistency.transitionDirection === 'advancing'
-        ? t('signal.transition.advancing.subtext')
-        : t('signal.transition.regressing.subtext'),
+      subtext:
+        consistency.transitionDirection === 'advancing'
+          ? t('signal.transition.advancing.subtext')
+          : t('signal.transition.regressing.subtext'),
       icon: consistency.transitionDirection === 'advancing' ? 'arrow-up-bold' : 'tune-vertical',
       colorKey: consistency.transitionDirection === 'advancing' ? 'success' : 'blue',
       pulse: false,
@@ -134,9 +131,10 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
       type: 'STREAK_AT_RISK',
       urgency: 'MEDIUM',
       headline: t('signal.streakAtRisk.headline', { streak: String(streak) }),
-      subtext: mode === 'DISCIPLINED'
-        ? t('signal.streakAtRisk.subtext.disciplined')
-        : t('signal.streakAtRisk.subtext.inconsistent'),
+      subtext:
+        mode === 'DISCIPLINED'
+          ? t('signal.streakAtRisk.subtext.disciplined')
+          : t('signal.streakAtRisk.subtext.inconsistent'),
       icon: 'fire',
       colorKey: 'warning',
       pulse: false,
@@ -150,9 +148,10 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
       type: 'REST_ADVISED',
       urgency: 'MEDIUM',
       headline: t('signal.restAdvised.headline'),
-      subtext: avgFatigue > 70
-        ? t('signal.restAdvised.subtext.fatigue', { fatigue: String(Math.round(avgFatigue)) })
-        : t('signal.restAdvised.subtext.readiness', { readiness: String(readinessScore) }),
+      subtext:
+        avgFatigue > 70
+          ? t('signal.restAdvised.subtext.fatigue', { fatigue: String(Math.round(avgFatigue)) })
+          : t('signal.restAdvised.subtext.readiness', { readiness: String(readinessScore) }),
       icon: 'battery-charging',
       colorKey: 'blue',
       pulse: false,
@@ -166,9 +165,10 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
       type: 'MOMENTUM',
       urgency: 'LOW',
       headline: t('signal.momentum.headline'),
-      subtext: streak > 1
-        ? t('signal.momentum.subtext.streak', { streak: String(streak) })
-        : t('signal.momentum.subtext.default'),
+      subtext:
+        streak > 1
+          ? t('signal.momentum.subtext.streak', { streak: String(streak) })
+          : t('signal.momentum.subtext.default'),
       icon: 'check-circle',
       colorKey: 'success',
       pulse: false,
@@ -182,12 +182,12 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
     return {
       type: 'COMEBACK',
       urgency: 'MEDIUM',
-      headline: mode === 'INCONSISTENT'
-        ? t('signal.comeback.headline.inconsistent', { days: String(days) })
-        : t('signal.comeback.headline.disciplined', { days: String(days) }),
-      subtext: mode === 'INCONSISTENT'
-        ? t('signal.comeback.subtext.inconsistent')
-        : t('signal.comeback.subtext.disciplined'),
+      headline:
+        mode === 'INCONSISTENT'
+          ? t('signal.comeback.headline.inconsistent', { days: String(days) })
+          : t('signal.comeback.headline.disciplined', { days: String(days) }),
+      subtext:
+        mode === 'INCONSISTENT' ? t('signal.comeback.subtext.inconsistent') : t('signal.comeback.subtext.disciplined'),
       icon: 'arrow-u-left-top',
       colorKey: 'accent',
       pulse: false,
@@ -200,9 +200,10 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
     return {
       type: 'RECOVERY_READY',
       urgency: 'MEDIUM',
-      headline: mode === 'DISCIPLINED'
-        ? t('signal.recoveryReady.headline.disciplined')
-        : t('signal.recoveryReady.headline.inconsistent'),
+      headline:
+        mode === 'DISCIPLINED'
+          ? t('signal.recoveryReady.headline.disciplined')
+          : t('signal.recoveryReady.headline.inconsistent'),
       subtext: t('signal.recoveryReady.subtext', { readiness: String(readinessScore) }),
       icon: 'lightning-bolt',
       colorKey: 'accent',
@@ -217,9 +218,10 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
       type: 'STREAK_BUILDING',
       urgency: 'LOW',
       headline: t('signal.streakBuilding.headline', { streak: String(streak) }),
-      subtext: mode === 'DISCIPLINED'
-        ? t('signal.streakBuilding.subtext.disciplined')
-        : t('signal.streakBuilding.subtext.inconsistent'),
+      subtext:
+        mode === 'DISCIPLINED'
+          ? t('signal.streakBuilding.subtext.disciplined')
+          : t('signal.streakBuilding.subtext.inconsistent'),
       icon: 'trending-up',
       colorKey: 'success',
       pulse: false,
@@ -231,12 +233,14 @@ export async function getDailySignal(userId: string): Promise<BehavioralSignal> 
   return {
     type: 'EXPECT_TODAY',
     urgency: 'LOW',
-    headline: mode === 'DISCIPLINED'
-      ? t('signal.expectToday.headline.disciplined')
-      : t('signal.expectToday.headline.inconsistent'),
-    subtext: readinessScore >= 50
-      ? t('signal.expectToday.subtext.good', { readiness: String(readinessScore) })
-      : t('signal.expectToday.subtext.moderate'),
+    headline:
+      mode === 'DISCIPLINED'
+        ? t('signal.expectToday.headline.disciplined')
+        : t('signal.expectToday.headline.inconsistent'),
+    subtext:
+      readinessScore >= 50
+        ? t('signal.expectToday.subtext.good', { readiness: String(readinessScore) })
+        : t('signal.expectToday.subtext.moderate'),
     icon: 'calendar-check',
     colorKey: 'accent',
     pulse: false,

@@ -239,7 +239,9 @@ function FitQuestScreenInner() {
   const isSubscribed = accessState === 'SUBSCRIBED';
   useEffect(() => {
     if (isReady) {
-      getTrialSnapshot('user_local_001', isSubscribed).then(setTrialSnapshot).catch(() => {});
+      getTrialSnapshot('user_local_001', isSubscribed)
+        .then(setTrialSnapshot)
+        .catch(() => {});
     }
   }, [isReady, isSubscribed]);
 
@@ -627,33 +629,36 @@ function FitQuestScreenInner() {
                       color={theme.colors.textMuted}
                     />
                   </View>
-          {/* Preview panel — locked AI Insight (post-trial, not subscribed) */}
-          {workout.aiInsight && trialSnapshot && !trialSnapshot.hasIntelligence && trialSnapshot.previewAvailable && (
-            <Animated.View entering={FadeInDown.delay(120).duration(150)}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => router.push('/paywall')}
-                style={{ marginHorizontal: 16, marginTop: 8 }}
-              >
-                <GlassCard style={{ padding: 12, opacity: 0.6 }}>
-                  <View style={styles.insightHeader}>
-                    <View style={[styles.hintIcon, { backgroundColor: theme.colors.blue + '15' }]}>
-                      <MaterialCommunityIcons name="brain" size={18} color={theme.colors.textMuted} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.insightTitle, { color: theme.colors.textMuted }]}>
-                        AI Workout Intelligence
-                      </Text>
-                      <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
-                        Advanced intelligence requires subscription.
-                      </Text>
-                    </View>
-                    <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textMuted} />
-                  </View>
-                </GlassCard>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+                  {/* Preview panel — locked AI Insight (post-trial, not subscribed) */}
+                  {workout.aiInsight &&
+                    trialSnapshot &&
+                    !trialSnapshot.hasIntelligence &&
+                    trialSnapshot.previewAvailable && (
+                      <Animated.View entering={FadeInDown.delay(120).duration(150)}>
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() => router.push('/paywall')}
+                          style={{ marginHorizontal: 16, marginTop: 8 }}
+                        >
+                          <GlassCard style={{ padding: 12, opacity: 0.6 }}>
+                            <View style={styles.insightHeader}>
+                              <View style={[styles.hintIcon, { backgroundColor: theme.colors.blue + '15' }]}>
+                                <MaterialCommunityIcons name="brain" size={18} color={theme.colors.textMuted} />
+                              </View>
+                              <View style={{ flex: 1 }}>
+                                <Text style={[styles.insightTitle, { color: theme.colors.textMuted }]}>
+                                  AI Workout Intelligence
+                                </Text>
+                                <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
+                                  Advanced intelligence requires subscription.
+                                </Text>
+                              </View>
+                              <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textMuted} />
+                            </View>
+                          </GlassCard>
+                        </TouchableOpacity>
+                      </Animated.View>
+                    )}
                   {showInsight && (
                     <View style={styles.insightBody}>
                       {/* Volume reasoning */}
@@ -669,9 +674,7 @@ function FitQuestScreenInner() {
                           <MaterialCommunityIcons name="dumbbell" size={14} color={theme.colors.textMuted} />
                           <View style={{ flex: 1 }}>
                             <Text style={[styles.insightExName, { color: theme.colors.text }]}>{er.exercise_name}</Text>
-                            <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
-                              {er.reason}
-                            </Text>
+                            <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>{er.reason}</Text>
                             {er.score_breakdown && (
                               <View style={styles.insightChips}>
                                 <View style={[styles.insightChip, { backgroundColor: theme.colors.accent + '15' }]}>
@@ -709,170 +712,169 @@ function FitQuestScreenInner() {
           )}
 
           {/* Adaptive Memory — Session comparison + progression context (gated by subscription) */}
-          {(workout.lastImpact?.hasHistory || workout.workoutDelta?.hasChanges) && trialSnapshot?.hasMemory !== false && (
-            <Animated.View entering={FadeInDown.delay(140).duration(150)}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => setShowMemory((v) => !v)}
-                style={{ marginHorizontal: 16, marginTop: 8 }}
-              >
-                <GlassCard style={{ padding: 0 }}>
-                  <View style={styles.insightHeader}>
-                    <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '15' }]}>
-                      <MaterialCommunityIcons name="memory" size={18} color={theme.colors.accent} />
+          {(workout.lastImpact?.hasHistory || workout.workoutDelta?.hasChanges) &&
+            trialSnapshot?.hasMemory !== false && (
+              <Animated.View entering={FadeInDown.delay(140).duration(150)}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setShowMemory((v) => !v)}
+                  style={{ marginHorizontal: 16, marginTop: 8 }}
+                >
+                  <GlassCard style={{ padding: 0 }}>
+                    <View style={styles.insightHeader}>
+                      <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '15' }]}>
+                        <MaterialCommunityIcons name="memory" size={18} color={theme.colors.accent} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.insightTitle, { color: theme.colors.text }]}>
+                          {t('fitquest.adaptiveMemory') || 'Session Memory'}
+                        </Text>
+                        <Text style={[styles.insightSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                          {workout.workoutDelta?.headline || workout.lastImpact?.headline || ''}
+                        </Text>
+                      </View>
+                      <MaterialCommunityIcons
+                        name={showMemory ? 'chevron-up' : 'chevron-down'}
+                        size={22}
+                        color={theme.colors.textMuted}
+                      />
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.insightTitle, { color: theme.colors.text }]}>
-                        {t('fitquest.adaptiveMemory') || 'Session Memory'}
-                      </Text>
-                      <Text style={[styles.insightSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                        {workout.workoutDelta?.headline || workout.lastImpact?.headline || ''}
-                      </Text>
-                    </View>
-                    <MaterialCommunityIcons
-                      name={showMemory ? 'chevron-up' : 'chevron-down'}
-                      size={22}
-                      color={theme.colors.textMuted}
-                    />
-                  </View>
-                  {showMemory && (
-                    <View style={styles.insightBody}>
-                      {/* Last session impact */}
-                      {workout.lastImpact?.hasHistory && (
-                        <>
-                          <View style={styles.insightRow}>
-                            <MaterialCommunityIcons name="history" size={15} color={theme.colors.accent} />
-                            <View style={{ flex: 1 }}>
-                              <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>
-                                Last Session
-                              </Text>
-                              <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
-                                {workout.lastImpact.headline}
-                              </Text>
-                            </View>
-                            <Text style={[styles.memoryTime, { color: theme.colors.textMuted }]}>
-                              {workout.lastImpact.timeSince}
-                            </Text>
-                          </View>
-                          <View style={styles.insightRow}>
-                            <MaterialCommunityIcons
-                              name={
-                                workout.lastImpact.trend === 'improving'
-                                  ? 'trending-up'
-                                  : workout.lastImpact.trend === 'declining'
-                                    ? 'trending-down'
-                                    : 'trending-neutral'
-                              }
-                              size={15}
-                              color={
-                                workout.lastImpact.trend === 'improving'
-                                  ? theme.colors.success
-                                  : workout.lastImpact.trend === 'declining'
-                                    ? theme.colors.warning
-                                    : theme.colors.textMuted
-                              }
-                            />
-                            <Text style={[styles.insightRowText, { color: theme.colors.textSecondary }]}>
-                              {workout.lastImpact.trendStatement}
-                            </Text>
-                          </View>
-                        </>
-                      )}
-                      {/* Workout delta */}
-                      {workout.workoutDelta?.hasChanges && (
-                        <View style={styles.insightRow}>
-                          <MaterialCommunityIcons name="swap-horizontal" size={15} color={theme.colors.blue} />
-                          <View style={{ flex: 1 }}>
-                            <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>
-                              Changes
-                            </Text>
-                            <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
-                              {workout.workoutDelta.headline}
-                            </Text>
-                            {workout.workoutDelta.removed.length > 0 && (
-                              <View style={styles.insightChips}>
-                                {workout.workoutDelta.removed.slice(0, 3).map((name, i) => (
-                                  <View key={i} style={[styles.insightChip, { backgroundColor: theme.colors.error + '12' }]}>
-                                    <Text style={[styles.insightChipText, { color: theme.colors.error }]}>
-                                      - {name}
-                                    </Text>
-                                  </View>
-                                ))}
-                              </View>
-                            )}
-                          </View>
-                        </View>
-                      )}
-                      {/* Progression narratives — top 3 */}
-                      {workout.progressionNarratives.length > 0 && (
-                        <>
-                          <View style={[styles.insightRow, { marginTop: 4 }]}>
-                            <MaterialCommunityIcons name="chart-line" size={15} color={theme.colors.accent} />
-                            <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>
-                              Progression
-                            </Text>
-                          </View>
-                          {workout.progressionNarratives.slice(0, 4).map((pn) => (
-                            <View key={pn.exerciseId} style={[styles.insightRow, { paddingLeft: 8 }]}>
-                              <View
-                                style={[
-                                  styles.momentumDot,
-                                  {
-                                    backgroundColor:
-                                      pn.trend === 'improving'
-                                        ? theme.colors.success
-                                        : pn.trend === 'declining'
-                                          ? theme.colors.warning
-                                          : theme.colors.textMuted,
-                                  },
-                                ]}
-                              />
+                    {showMemory && (
+                      <View style={styles.insightBody}>
+                        {/* Last session impact */}
+                        {workout.lastImpact?.hasHistory && (
+                          <>
+                            <View style={styles.insightRow}>
+                              <MaterialCommunityIcons name="history" size={15} color={theme.colors.accent} />
                               <View style={{ flex: 1 }}>
-                                <Text style={[styles.insightExName, { color: theme.colors.text }]}>
-                                  {pn.exerciseName}
-                                </Text>
+                                <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>Last Session</Text>
                                 <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
-                                  {pn.narrative}
+                                  {workout.lastImpact.headline}
                                 </Text>
                               </View>
+                              <Text style={[styles.memoryTime, { color: theme.colors.textMuted }]}>
+                                {workout.lastImpact.timeSince}
+                              </Text>
                             </View>
-                          ))}
-                        </>
-                      )}
-                    </View>
-                  )}
-                </GlassCard>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+                            <View style={styles.insightRow}>
+                              <MaterialCommunityIcons
+                                name={
+                                  workout.lastImpact.trend === 'improving'
+                                    ? 'trending-up'
+                                    : workout.lastImpact.trend === 'declining'
+                                      ? 'trending-down'
+                                      : 'trending-neutral'
+                                }
+                                size={15}
+                                color={
+                                  workout.lastImpact.trend === 'improving'
+                                    ? theme.colors.success
+                                    : workout.lastImpact.trend === 'declining'
+                                      ? theme.colors.warning
+                                      : theme.colors.textMuted
+                                }
+                              />
+                              <Text style={[styles.insightRowText, { color: theme.colors.textSecondary }]}>
+                                {workout.lastImpact.trendStatement}
+                              </Text>
+                            </View>
+                          </>
+                        )}
+                        {/* Workout delta */}
+                        {workout.workoutDelta?.hasChanges && (
+                          <View style={styles.insightRow}>
+                            <MaterialCommunityIcons name="swap-horizontal" size={15} color={theme.colors.blue} />
+                            <View style={{ flex: 1 }}>
+                              <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>Changes</Text>
+                              <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
+                                {workout.workoutDelta.headline}
+                              </Text>
+                              {workout.workoutDelta.removed.length > 0 && (
+                                <View style={styles.insightChips}>
+                                  {workout.workoutDelta.removed.slice(0, 3).map((name, i) => (
+                                    <View
+                                      key={i}
+                                      style={[styles.insightChip, { backgroundColor: theme.colors.error + '12' }]}
+                                    >
+                                      <Text style={[styles.insightChipText, { color: theme.colors.error }]}>
+                                        - {name}
+                                      </Text>
+                                    </View>
+                                  ))}
+                                </View>
+                              )}
+                            </View>
+                          </View>
+                        )}
+                        {/* Progression narratives — top 3 */}
+                        {workout.progressionNarratives.length > 0 && (
+                          <>
+                            <View style={[styles.insightRow, { marginTop: 4 }]}>
+                              <MaterialCommunityIcons name="chart-line" size={15} color={theme.colors.accent} />
+                              <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>Progression</Text>
+                            </View>
+                            {workout.progressionNarratives.slice(0, 4).map((pn) => (
+                              <View key={pn.exerciseId} style={[styles.insightRow, { paddingLeft: 8 }]}>
+                                <View
+                                  style={[
+                                    styles.momentumDot,
+                                    {
+                                      backgroundColor:
+                                        pn.trend === 'improving'
+                                          ? theme.colors.success
+                                          : pn.trend === 'declining'
+                                            ? theme.colors.warning
+                                            : theme.colors.textMuted,
+                                    },
+                                  ]}
+                                />
+                                <View style={{ flex: 1 }}>
+                                  <Text style={[styles.insightExName, { color: theme.colors.text }]}>
+                                    {pn.exerciseName}
+                                  </Text>
+                                  <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
+                                    {pn.narrative}
+                                  </Text>
+                                </View>
+                              </View>
+                            ))}
+                          </>
+                        )}
+                      </View>
+                    )}
+                  </GlassCard>
+                </TouchableOpacity>
+              </Animated.View>
+            )}
 
           {/* Preview panel — locked Session Memory (post-trial, not subscribed) */}
-          {(workout.lastImpact?.hasHistory || workout.workoutDelta?.hasChanges) && trialSnapshot && !trialSnapshot.hasMemory && trialSnapshot.previewAvailable && (
-            <Animated.View entering={FadeInDown.delay(140).duration(150)}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => router.push('/paywall')}
-                style={{ marginHorizontal: 16, marginTop: 8 }}
-              >
-                <GlassCard style={{ padding: 12, opacity: 0.6 }}>
-                  <View style={styles.insightHeader}>
-                    <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '15' }]}>
-                      <MaterialCommunityIcons name="memory" size={18} color={theme.colors.textMuted} />
+          {(workout.lastImpact?.hasHistory || workout.workoutDelta?.hasChanges) &&
+            trialSnapshot &&
+            !trialSnapshot.hasMemory &&
+            trialSnapshot.previewAvailable && (
+              <Animated.View entering={FadeInDown.delay(140).duration(150)}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => router.push('/paywall')}
+                  style={{ marginHorizontal: 16, marginTop: 8 }}
+                >
+                  <GlassCard style={{ padding: 12, opacity: 0.6 }}>
+                    <View style={styles.insightHeader}>
+                      <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '15' }]}>
+                        <MaterialCommunityIcons name="memory" size={18} color={theme.colors.textMuted} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.insightTitle, { color: theme.colors.textMuted }]}>Session Memory</Text>
+                        <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
+                          Advanced intelligence requires subscription.
+                        </Text>
+                      </View>
+                      <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textMuted} />
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.insightTitle, { color: theme.colors.textMuted }]}>
-                        Session Memory
-                      </Text>
-                      <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
-                        Advanced intelligence requires subscription.
-                      </Text>
-                    </View>
-                    <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textMuted} />
-                  </View>
-                </GlassCard>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+                  </GlassCard>
+                </TouchableOpacity>
+              </Animated.View>
+            )}
 
           {/* Warnings */}
           {workout.warnings?.length > 0 && (

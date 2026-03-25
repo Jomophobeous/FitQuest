@@ -31,7 +31,9 @@ function AccessGate({ children }: { children: React.ReactNode }) {
   // While subscription state is resolving, show themed loading instead of blank flash
   if (accessState === 'RESOLVING') {
     return (
-      <View style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }}>
+      <View
+        style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }}
+      >
         <ActivityIndicator size="large" color={theme.colors.accent} />
       </View>
     );

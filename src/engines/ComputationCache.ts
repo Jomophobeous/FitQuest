@@ -43,11 +43,7 @@ const DEFAULT_TTL_MS = 5 * 60 * 1000;
  * @param compute - Async function to produce the value
  * @param ttlMs - Time-to-live in milliseconds (default: 5 min)
  */
-export async function cached<T>(
-  key: string,
-  compute: () => Promise<T>,
-  ttlMs = DEFAULT_TTL_MS,
-): Promise<T> {
+export async function cached<T>(key: string, compute: () => Promise<T>, ttlMs = DEFAULT_TTL_MS): Promise<T> {
   const existing = store.get(key);
   if (existing && Date.now() < existing.expiresAt) {
     return existing.value as T;

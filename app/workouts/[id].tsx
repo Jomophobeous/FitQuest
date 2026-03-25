@@ -60,26 +60,27 @@ export default function WorkoutDetail() {
 
   return (
     <ScreenErrorBoundary screenName="WorkoutDetail" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing[4] }}>
-      <ThemedText variant="h2" color="primary">
-        Workout Session
-      </ThemedText>
-      {session?.duration_minutes != null && (
-        <ThemedText variant="body" color="secondary" style={{ marginTop: theme.spacing[1] }}>
-          Duration: {session.duration_minutes} min · Exercises: {session.completed_exercises}/{session.total_exercises}
+      <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing[4] }}>
+        <ThemedText variant="h2" color="primary">
+          Workout Session
         </ThemedText>
-      )}
-      {session?.notes ? (
-        <ThemedText variant="caption" color="muted" style={{ marginTop: theme.spacing[2] }}>
-          {session.notes}
-        </ThemedText>
-      ) : null}
-      {session?.started_at && (
-        <ThemedText variant="caption" color="muted" style={{ marginTop: theme.spacing[1] }}>
-          {new Date(session.started_at).toLocaleDateString()}
-        </ThemedText>
-      )}
-    </ScrollView>
+        {session?.duration_minutes != null && (
+          <ThemedText variant="body" color="secondary" style={{ marginTop: theme.spacing[1] }}>
+            Duration: {session.duration_minutes} min · Exercises: {session.completed_exercises}/
+            {session.total_exercises}
+          </ThemedText>
+        )}
+        {session?.notes ? (
+          <ThemedText variant="caption" color="muted" style={{ marginTop: theme.spacing[2] }}>
+            {session.notes}
+          </ThemedText>
+        ) : null}
+        {session?.started_at && (
+          <ThemedText variant="caption" color="muted" style={{ marginTop: theme.spacing[1] }}>
+            {new Date(session.started_at).toLocaleDateString()}
+          </ThemedText>
+        )}
+      </ScrollView>
     </ScreenErrorBoundary>
   );
 }

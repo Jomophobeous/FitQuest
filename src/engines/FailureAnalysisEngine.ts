@@ -16,10 +16,7 @@
  * Deterministic. No AI. No network.
  */
 
-import {
-  getRecentSessions,
-  getSessionExercises,
-} from '../database/service';
+import { getRecentSessions, getSessionExercises } from '../database/service';
 import type { WorkoutSession } from '../database/types';
 import { t } from '../i18n/engine-i18n';
 
@@ -49,12 +46,12 @@ export interface SessionFailureAnalysis {
 }
 
 export type FailureType =
-  | 'NONE'           // Completed successfully
-  | 'EARLY_DROPOUT'  // Stopped in first 30% of exercises
-  | 'MID_DROPOUT'    // Stopped in middle 30-70%
-  | 'LATE_DROPOUT'   // Stopped after 70%
-  | 'SKIP_HEAVY'     // Completed but skipped many exercises
-  | 'LOW_VOLUME';    // Completed but with very few sets
+  | 'NONE' // Completed successfully
+  | 'EARLY_DROPOUT' // Stopped in first 30% of exercises
+  | 'MID_DROPOUT' // Stopped in middle 30-70%
+  | 'LATE_DROPOUT' // Stopped after 70%
+  | 'SKIP_HEAVY' // Completed but skipped many exercises
+  | 'LOW_VOLUME'; // Completed but with very few sets
 
 /** Concrete adjustment for next session */
 export interface SessionAdjustment {
@@ -91,7 +88,7 @@ export interface FailurePattern {
 // ============================================
 
 /** Below this completion rate, session is a failure */
-const FAILURE_THRESHOLD = 0.80;
+const FAILURE_THRESHOLD = 0.8;
 /** Below this skip rate (exercises skipped / total) is acceptable */
 const SKIP_THRESHOLD = 0.3;
 
@@ -110,8 +107,8 @@ export async function analyzeSession(sessionId: string): Promise<SessionFailureA
     return buildEmptyAnalysis(sessionId);
   }
 
-  const completed = exercises.filter(e => !e.skipped && e.completed_sets > 0);
-  const skipped = exercises.filter(e => e.skipped);
+  const completed = exercises.filter((e) => !e.skipped && e.completed_sets > 0);
+  const skipped = exercises.filter((e) => e.skipped);
   const completionPercent = Math.round((completed.length / total) * 100);
   const isFailure = completionPercent / 100 < FAILURE_THRESHOLD;
 
@@ -156,7 +153,7 @@ export async function analyzeSession(sessionId: string): Promise<SessionFailureA
  */
 export async function getFailurePattern(userId: string): Promise<FailurePattern> {
   const sessions = await getRecentSessions(userId, 10).catch(() => [] as WorkoutSession[]);
-  const completedSessions = sessions.filter(s => s.completed_at);
+  const completedSessions = sessions.filter((s) => s.completed_at);
 
   if (completedSessions.length === 0) {
     return {
@@ -177,7 +174,7 @@ export async function getFailurePattern(userId: string): Promise<FailurePattern>
     analyses.push(analysis);
   }
 
-  const failures = analyses.filter(a => a.isFailure);
+  const failures = analyses.filter((a) => a.isFailure);
   const failureRate = failures.length / analyses.length;
 
   // Dominant failure type
@@ -195,18 +192,17 @@ export async function getFailurePattern(userId: string): Promise<FailurePattern>
   }
 
   // Average drop-off point
-  const dropOffs = analyses.filter(a => a.dropOffPoint !== null).map(a => a.dropOffPoint!);
+  const dropOffs = analyses.filter((a) => a.dropOffPoint !== null).map((a) => a.dropOffPoint!);
   const avgDropOffPoint = dropOffs.length > 0 ? dropOffs.reduce((s, d) => s + d, 0) / dropOffs.length : null;
 
   // Trend: compare first half vs second half failure rates
   const mid = Math.floor(analyses.length / 2);
-  const olderFailures = analyses.slice(mid).filter(a => a.isFailure).length;
-  const newerFailures = analyses.slice(0, mid).filter(a => a.isFailure).length;
+  const olderFailures = analyses.slice(mid).filter((a) => a.isFailure).length;
+  const newerFailures = analyses.slice(0, mid).filter((a) => a.isFailure).length;
   const olderHalfLen = analyses.length - mid;
   const newerHalfLen = mid;
-  const trendWorsening = newerHalfLen > 0 && olderHalfLen > 0
-    ? (newerFailures / newerHalfLen) > (olderFailures / olderHalfLen) + 0.1
-    : false;
+  const trendWorsening =
+    newerHalfLen > 0 && olderHalfLen > 0 ? newerFailures / newerHalfLen > olderFailures / olderHalfLen + 0.1 : false;
 
   // Recommendation
   let recommendation: string;
@@ -263,7 +259,11 @@ function classifyFailure(
   return 'LOW_VOLUME';
 }
 
-function buildAdjustment(failureType: FailureType, dropOffPoint: number | null, totalExercises: number): SessionAdjustment {
+function buildAdjustment(
+  failureType: FailureType,
+  dropOffPoint: number | null,
+  totalExercises: number,
+): SessionAdjustment {
   switch (failureType) {
     case 'NONE':
       return { reduceExercisesBy: 0, reduceSetsBy: 0, durationDeltaMinutes: 0, reason: t('failure.adjustment.none') };
@@ -352,7 +352,12 @@ function buildEmptyAnalysis(sessionId: string): SessionFailureAnalysis {
     durationMinutes: 0,
     isFailure: true,
     failureType: 'EARLY_DROPOUT',
-    adjustment: { reduceExercisesBy: 2, reduceSetsBy: 1, durationDeltaMinutes: -10, reason: t('failure.adjustment.empty') },
+    adjustment: {
+      reduceExercisesBy: 2,
+      reduceSetsBy: 1,
+      durationDeltaMinutes: -10,
+      reason: t('failure.adjustment.empty'),
+    },
     insight: t('failure.insight.empty'),
   };
 }

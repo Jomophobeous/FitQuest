@@ -6,17 +6,7 @@
  * Designed for dark backgrounds with neon green (#00FF99) accents.
  */
 import React from 'react';
-import Svg, {
-  Defs,
-  LinearGradient,
-  Stop,
-  Path,
-  Circle,
-  Line,
-  G,
-  Rect,
-  RadialGradient,
-} from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Stop, Path, Circle, Line, G, Rect, RadialGradient } from 'react-native-svg';
 
 interface Props {
   /** Rendered width/height in dp (square) */
@@ -82,52 +72,20 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant = 'full
         {/* ═══ SHARED VERTICAL SPINE ═══
             The backbone: runs from top to bottom, shared by F and Q.
             F attaches its horizontals; Q's arc connects at top and bottom. */}
-        <Line
-          x1="160"
-          y1="120"
-          x2="160"
-          y2="392"
-          stroke="url(#fqAccent)"
-          strokeWidth="10"
-          strokeLinecap="round"
-        />
+        <Line x1="160" y1="120" x2="160" y2="392" stroke="url(#fqAccent)" strokeWidth="10" strokeLinecap="round" />
 
         {/* ═══ F — TOP HORIZONTAL ARM ═══
             Sharp extension from spine top, rightward */}
-        <Line
-          x1="160"
-          y1="120"
-          x2="280"
-          y2="120"
-          stroke="url(#fqAccent)"
-          strokeWidth="10"
-          strokeLinecap="round"
-        />
+        <Line x1="160" y1="120" x2="280" y2="120" stroke="url(#fqAccent)" strokeWidth="10" strokeLinecap="round" />
 
         {/* ═══ F — MIDDLE HORIZONTAL ARM ═══
             Shorter arm at vertical midpoint — links into Q's arc */}
-        <Line
-          x1="160"
-          y1="240"
-          x2="260"
-          y2="240"
-          stroke="url(#fqAccent)"
-          strokeWidth="10"
-          strokeLinecap="round"
-        />
+        <Line x1="160" y1="240" x2="260" y2="240" stroke="url(#fqAccent)" strokeWidth="10" strokeLinecap="round" />
 
         {/* ═══ LINKAGE: F-arm → Q-arc ═══
             A diagonal connector bridges the F middle arm to the Q circle.
             This is the key "interconnection" — the system becomes one. */}
-        <Line
-          x1="260"
-          y1="240"
-          x2="290"
-          y2="200"
-          stroke="url(#fqAccent)"
-          strokeWidth="8"
-          strokeLinecap="round"
-        />
+        <Line x1="260" y1="240" x2="290" y2="200" stroke="url(#fqAccent)" strokeWidth="8" strokeLinecap="round" />
 
         {/* ═══ Q — CIRCULAR ARC ═══
             Semi-circular/full arc on the right side.
@@ -145,28 +103,12 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant = 'full
         />
 
         {/* ═══ Q — Connection: top of arc to F top arm ═══ */}
-        <Line
-          x1="280"
-          y1="120"
-          x2="290"
-          y2="160"
-          stroke="url(#fqAccent)"
-          strokeWidth="8"
-          strokeLinecap="round"
-        />
+        <Line x1="280" y1="120" x2="290" y2="160" stroke="url(#fqAccent)" strokeWidth="8" strokeLinecap="round" />
 
         {/* ═══ Q — TAIL ═══
             The signature Q tail — emerges diagonally from the bottom-right
             of the arc. Sharp, decisive, forward-leaning. */}
-        <Line
-          x1="360"
-          y1="340"
-          x2="420"
-          y2="410"
-          stroke="url(#fqAccent)"
-          strokeWidth="10"
-          strokeLinecap="round"
-        />
+        <Line x1="360" y1="340" x2="420" y2="410" stroke="url(#fqAccent)" strokeWidth="10" strokeLinecap="round" />
 
         {/* ═══ ACCENT NODES ═══
             Small circles at key junction points — geometric precision. */}

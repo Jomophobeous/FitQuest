@@ -78,10 +78,7 @@ const STREAK_BREAK_DAYS = 2;
  * Simulate near-future state for each possible action.
  * Returns predictions for SKIP, TRAIN, and REST_DAY.
  */
-export async function simulateNextDay(
-  userId: string,
-  isSubscribed = false,
-): Promise<SimulationReport> {
+export async function simulateNextDay(userId: string, isSubscribed = false): Promise<SimulationReport> {
   const [currentState, streak, recentSessions, profile] = await Promise.all([
     getUserState(userId, isSubscribed),
     getStreak(userId),
@@ -98,12 +95,36 @@ export async function simulateNextDay(
   const daysSinceLastSession = computeDaysSinceLastSession(recentSessions);
 
   // Count sessions in last 14 days for mode prediction
-  const recentSessionCount = recentSessions.filter(s => s.completed_at != null).length;
+  const recentSessionCount = recentSessions.filter((s) => s.completed_at != null).length;
 
   const predictions: StatePrediction[] = [
-    simulateAction('SKIP', currentFatigue, currentStreak, currentMode, daysSinceLastSession, recentSessionCount, trainingDays),
-    simulateAction('TRAIN', currentFatigue, currentStreak, currentMode, daysSinceLastSession, recentSessionCount, trainingDays),
-    simulateAction('REST_DAY', currentFatigue, currentStreak, currentMode, daysSinceLastSession, recentSessionCount, trainingDays),
+    simulateAction(
+      'SKIP',
+      currentFatigue,
+      currentStreak,
+      currentMode,
+      daysSinceLastSession,
+      recentSessionCount,
+      trainingDays,
+    ),
+    simulateAction(
+      'TRAIN',
+      currentFatigue,
+      currentStreak,
+      currentMode,
+      daysSinceLastSession,
+      recentSessionCount,
+      trainingDays,
+    ),
+    simulateAction(
+      'REST_DAY',
+      currentFatigue,
+      currentStreak,
+      currentMode,
+      daysSinceLastSession,
+      recentSessionCount,
+      trainingDays,
+    ),
   ];
 
   const bestAction = determineBestAction(predictions, currentFatigue, currentState);
@@ -137,7 +158,7 @@ export async function predictAction(
   ]);
 
   const daysSinceLastSession = computeDaysSinceLastSession(recentSessions);
-  const recentSessionCount = recentSessions.filter(s => s.completed_at != null).length;
+  const recentSessionCount = recentSessions.filter((s) => s.completed_at != null).length;
 
   return simulateAction(
     action,
@@ -217,10 +238,7 @@ function simulateAction(
   };
 }
 
-function predictMode(
-  sessionsIn14Days: number,
-  trainingDaysPerWeek: number,
-): 'INCONSISTENT' | 'DISCIPLINED' {
+function predictMode(sessionsIn14Days: number, trainingDaysPerWeek: number): 'INCONSISTENT' | 'DISCIPLINED' {
   // 14 days = 2 weeks. Expected sessions = trainingDaysPerWeek * 2.
   const expected = trainingDaysPerWeek * 2;
   const ratio = expected > 0 ? sessionsIn14Days / expected : 0;
@@ -235,7 +253,7 @@ function determineBestAction(
   // High fatigue → rest
   if (currentFatigue > 65) return 'REST_DAY';
   // Streak at risk → train
-  const skipPrediction = predictions.find(p => p.action === 'SKIP');
+  const skipPrediction = predictions.find((p) => p.action === 'SKIP');
   if (skipPrediction?.streakBreaks) return 'TRAIN';
   // Mode regression risk → train
   const skipModeShift = skipPrediction?.modeShift && skipPrediction.projectedMode === 'INCONSISTENT';
@@ -250,7 +268,7 @@ function determineBestAction(
 // ============================================
 
 function computeDaysSinceLastSession(sessions: Array<{ completed_at?: string | null }>): number {
-  const completed = sessions.filter(s => s.completed_at != null);
+  const completed = sessions.filter((s) => s.completed_at != null);
   if (completed.length === 0) return 99;
   // Most recent first
   const sorted = [...completed].sort((a, b) => {

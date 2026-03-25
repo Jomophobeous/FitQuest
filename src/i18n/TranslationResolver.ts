@@ -103,21 +103,25 @@ class TranslationResolverImpl {
       return this.fetchEnglish(exerciseId);
     }
 
-    // Try registry (cache + DB)
-    const translation = await translationRegistry.get(exerciseId, lang);
-    if (translation) {
-      return {
-        exerciseId,
-        language: lang,
-        name: translation.name,
-        instructions: translation.instructions,
-        audioIntro: translation.audioIntro,
-        audioSetup: translation.audioSetup,
-        audioExecution: translation.audioExecution,
-        audioTransition: translation.audioTransition,
-        isFallback: false,
-        source: 'db',
-      };
+    // Try registry (cache + DB) — catch DB errors to prevent UI blocking
+    try {
+      const translation = await translationRegistry.get(exerciseId, lang);
+      if (translation) {
+        return {
+          exerciseId,
+          language: lang,
+          name: translation.name,
+          instructions: translation.instructions,
+          audioIntro: translation.audioIntro,
+          audioSetup: translation.audioSetup,
+          audioExecution: translation.audioExecution,
+          audioTransition: translation.audioTransition,
+          isFallback: false,
+          source: 'db',
+        };
+      }
+    } catch {
+      // DB failure — fall through to English fallback
     }
 
     // Fallback to English
@@ -141,8 +145,16 @@ class TranslationResolverImpl {
       return this.fetchEnglishBatch(exerciseIds);
     }
 
-    // Batch from registry (cache + DB)
-    const translations = await translationRegistry.getBatch(exerciseIds, lang);
+    // Batch from registry (cache + DB) — catch DB errors to prevent UI blocking
+    let translations: Map<string, import('./TranslationRegistry').CachedTranslation>;
+    try {
+      translations = await translationRegistry.getBatch(exerciseIds, lang);
+    } catch {
+      // DB failure — all fall back to English
+      const english = await this.fetchEnglishBatch(exerciseIds);
+      for (const id of exerciseIds) this.recordFallback(id, lang);
+      return english;
+    }
     const result = new Map<string, ResolvedExercise>();
     const missingIds: string[] = [];
 

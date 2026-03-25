@@ -1,0 +1,249 @@
+{
+  "timestamp": "2026-03-25T01:58:39.877Z",
+  "phase": "7.5",
+  "title": "Runtime Translation Stress Test Report",
+  "config": {
+    "exercises": 3312,
+    "languages": 14,
+    "cacheCapacity": 10000
+  },
+  "summary": {
+    "passed": 40,
+    "failed": 0,
+    "totalMs": 1730
+  },
+  "tests": [
+    {
+      "name": "1.1 Single lookup avg <5ms (warm cache)",
+      "status": "PASS",
+      "elapsed": 25.35
+    },
+    {
+      "name": "1.2 Batch lookup (20 exercises) avg <10ms",
+      "status": "PASS",
+      "elapsed": 24.45
+    },
+    {
+      "name": "1.3 Cold cache lookup (DB hit)",
+      "status": "PASS",
+      "elapsed": 1.36
+    },
+    {
+      "name": "1.4 Cache hit rate >90% after preload",
+      "status": "PASS",
+      "elapsed": 82.06
+    },
+    {
+      "name": "1.5 Mixed language concurrent lookups (5 langs)",
+      "status": "PASS",
+      "elapsed": 108.87
+    },
+    {
+      "name": "2.1 LRU eviction at 10k limit",
+      "status": "PASS",
+      "elapsed": 60.53
+    },
+    {
+      "name": "2.2 Eviction order (LRU tail evicted first)",
+      "status": "PASS",
+      "elapsed": 0.22
+    },
+    {
+      "name": "2.3 No stale entries after DB update",
+      "status": "PASS",
+      "elapsed": 0.27
+    },
+    {
+      "name": "2.4 No duplication across languages",
+      "status": "PASS",
+      "elapsed": 0.13
+    },
+    {
+      "name": "2.5 Language invalidation clears only target language",
+      "status": "PASS",
+      "elapsed": 53.46
+    },
+    {
+      "name": "3.1 Missing translations fall back to English",
+      "status": "PASS",
+      "elapsed": 1.29
+    },
+    {
+      "name": "3.2 No crashes during batch with mixed availability",
+      "status": "PASS",
+      "elapsed": 1.86
+    },
+    {
+      "name": "3.3 Fallback events logged correctly",
+      "status": "PASS",
+      "elapsed": 0.89
+    },
+    {
+      "name": "3.4 Fallback log bounded at 50k",
+      "status": "PASS",
+      "elapsed": 60.24
+    },
+    {
+      "name": "4.1 DB throw → fallback to English (no crash)",
+      "status": "PASS",
+      "elapsed": 0.69
+    },
+    {
+      "name": "4.2 DB throw → batch fallback (no crash)",
+      "status": "PASS",
+      "elapsed": 0.42
+    },
+    {
+      "name": "4.3 DB recovery → normal resolution resumes",
+      "status": "PASS",
+      "elapsed": 0.14
+    },
+    {
+      "name": "4.4 Preload during DB failure → no crash",
+      "status": "PASS",
+      "elapsed": 0.32
+    },
+    {
+      "name": "4.5 DB latency spike (100ms) → system survives",
+      "status": "PASS",
+      "elapsed": 101.74
+    },
+    {
+      "name": "5.1 Rapid 20 language switches — no crash",
+      "status": "PASS",
+      "elapsed": 147.37
+    },
+    {
+      "name": "5.2 Concurrent preload deduplication",
+      "status": "PASS",
+      "elapsed": 4.71
+    },
+    {
+      "name": "5.3 Cache memory stable after 20 switches",
+      "status": "PASS",
+      "elapsed": 104.75
+    },
+    {
+      "name": "5.4 Resolution correct after language switch",
+      "status": "PASS",
+      "elapsed": 10.03
+    },
+    {
+      "name": "6.1 Heap usage <300MB after full stress",
+      "status": "PASS",
+      "elapsed": 265.48
+    },
+    {
+      "name": "6.2 Fallback log memory bounded",
+      "status": "PASS",
+      "elapsed": 36.5
+    },
+    {
+      "name": "6.3 Cache eviction prevents unbounded growth",
+      "status": "PASS",
+      "elapsed": 4.66
+    },
+    {
+      "name": "7.1 Gap report fallback count matches reality",
+      "status": "PASS",
+      "elapsed": 0.54
+    },
+    {
+      "name": "7.2 Fallback rate calculation correct",
+      "status": "PASS",
+      "elapsed": 0.25
+    },
+    {
+      "name": "7.3 Top missing by language ranks correctly",
+      "status": "PASS",
+      "elapsed": 0.14
+    },
+    {
+      "name": "7.4 No false positives (fr has 0 fallbacks)",
+      "status": "PASS",
+      "elapsed": 0.12
+    },
+    {
+      "name": "7.5 Reset tracking clears all counters",
+      "status": "PASS",
+      "elapsed": 0.08
+    },
+    {
+      "name": "8.1 Invalid exerciseId → graceful fallback",
+      "status": "PASS",
+      "elapsed": 0.11
+    },
+    {
+      "name": "8.2 Unsupported language → English fallback",
+      "status": "PASS",
+      "elapsed": 0.07
+    },
+    {
+      "name": "8.3 Empty exerciseIds batch → empty map",
+      "status": "PASS",
+      "elapsed": 0.05
+    },
+    {
+      "name": "8.4 English language → direct resolution (no cache)",
+      "status": "PASS",
+      "elapsed": 0.05
+    },
+    {
+      "name": "8.5 Corrupted instructions JSON → safe parse",
+      "status": "PASS",
+      "elapsed": 0.16
+    },
+    {
+      "name": "8.6 Null/undefined instructions → empty array",
+      "status": "PASS",
+      "elapsed": 0.06
+    },
+    {
+      "name": "8.7 Very long exerciseId → no crash",
+      "status": "PASS",
+      "elapsed": 0.08
+    },
+    {
+      "name": "8.8 Special characters in exerciseId → no crash",
+      "status": "PASS",
+      "elapsed": 0.13
+    },
+    {
+      "name": "8.9 Concurrent resolve same exercise → no duplication",
+      "status": "PASS",
+      "elapsed": 0.28
+    }
+  ],
+  "metrics": {
+    "warmCacheSingleLookupAvgMs": 0.004,
+    "warmCacheLookupCount": 5000,
+    "warmCacheTotalMs": 17.59,
+    "warmCacheLookupsPerSec": 284253,
+    "batchLookupAvgMs": 0.049,
+    "batchIterations": 500,
+    "coldCacheSingleLookupAvgMs": 0.01,
+    "hitRateAfterPreload": 100,
+    "mixedLangConcurrentMs": 2.37,
+    "mixedLangConcurrentCount": 500,
+    "fallbackToEnglishVerified": true,
+    "mixedBatchNocrash": true,
+    "mixedBatchFallbacks": 50,
+    "mixedBatchTotal": 100,
+    "fallbackEventsLogged": 100,
+    "fallbackRate": 66.67,
+    "dbFailureFallbackVerified": true,
+    "dbFailureBatchFallbackVerified": true,
+    "dbRecoveryVerified": true,
+    "preloadDuringDBFailure": "error_propagated",
+    "latencySpikeMs": 102,
+    "latencySpikeRecovered": true,
+    "rapidSwitchCount": 20,
+    "rapidSwitchTotalMs": 147,
+    "rapidSwitchAvgMs": 7,
+    "concurrentPreloadDedup": true,
+    "cacheAfterAllPreloads": 10000,
+    "memoryDeltaAfterPreloads": 12.78,
+    "languageSwitchCorrectnessVerified": true,
+    "gapReportAccurate": true
+  }
+}

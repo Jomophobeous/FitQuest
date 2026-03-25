@@ -1,14 +1,19 @@
 /**
  * PremiumGate — wraps premium screens with subscription check.
  * Shows upgrade prompt if user has no access (trial expired, no subscription).
+ *
+ * Enforcement: RevenueCat is the single source of truth. The gate blocks
+ * rendering of children until accessState confirms TRIAL_ACTIVE or SUBSCRIBED.
+ * RESOLVING → spinner, EXPIRED → upgrade prompt + paywall redirect.
  */
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useSubscription } from '../purchases/SubscriptionContext';
 import { GradientButton } from './ui/GlassUI';
+import { logEvent } from '../services/telemetry';
 
 interface PremiumGateProps {
   children: React.ReactNode;
@@ -17,8 +22,43 @@ interface PremiumGateProps {
 }
 
 export default function PremiumGate({ children, featureName }: PremiumGateProps) {
-  // App is FREE — all features unlocked unconditionally.
-  return <>{children}</>;
+  const { accessState } = useSubscription();
+  const { theme } = useTheme();
+  const router = useRouter();
+
+  // RESOLVING — subscription state not yet hydrated, show loading
+  if (accessState === 'RESOLVING') {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <ActivityIndicator size="large" color={theme.colors.accent} />
+      </View>
+    );
+  }
+
+  // TRIAL_ACTIVE or SUBSCRIBED — user has access, render children
+  if (accessState === 'TRIAL_ACTIVE' || accessState === 'SUBSCRIBED') {
+    return <>{children}</>;
+  }
+
+  // EXPIRED — show upgrade prompt
+  void logEvent('premium_gate_blocked', { feature: featureName, accessState });
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.iconWrap, { backgroundColor: theme.colors.accent + '20' }]}>
+        <MaterialCommunityIcons name="lock-outline" size={48} color={theme.colors.accent} />
+      </View>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Premium Feature</Text>
+      <Text style={[styles.feature, { color: theme.colors.accent }]}>{featureName}</Text>
+      <Text style={[styles.desc, { color: theme.colors.textSecondary }]}>
+        Your trial has ended. Subscribe to unlock {featureName} and all premium features.
+      </Text>
+      <View style={styles.cta}>
+        <GradientButton title="View Plans" variant="primary" size="lg" onPress={() => router.push('/paywall')} />
+      </View>
+      <Text style={[styles.hint, { color: theme.colors.textSecondary }]}>Cancel anytime. No commitment required.</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

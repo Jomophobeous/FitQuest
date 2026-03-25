@@ -350,7 +350,7 @@ describe('SubscriptionManager', () => {
   });
 
   describe('offline grace period', () => {
-    it('restores cached state within 7-day grace window', async () => {
+    it('restores cached state within 24-hour grace window', async () => {
       const cachedState: SubscriptionState = {
         status: 'ACTIVE',
         isTrial: false,
@@ -359,7 +359,7 @@ describe('SubscriptionManager', () => {
         willRenew: true,
         productIdentifier: 'fitquest_annual',
         verificationSource: 'revenuecat',
-        lastVerifiedAt: Date.now() - 3 * 86400000, // verified 3 days ago (within 7-day grace)
+        lastVerifiedAt: Date.now() - 12 * 3600000, // verified 12 hours ago (within 24h grace)
       };
 
       mockSecureStoreGet.mockImplementation((key: string) => {
@@ -377,7 +377,7 @@ describe('SubscriptionManager', () => {
       expect(graceState.willRenew).toBe(false); // grace period doesn't guarantee renewal
     });
 
-    it('returns null when grace period exceeded (>7 days)', async () => {
+    it('returns null when grace period exceeded (>24 hours)', async () => {
       const cachedState: SubscriptionState = {
         status: 'ACTIVE',
         isTrial: false,
@@ -386,7 +386,7 @@ describe('SubscriptionManager', () => {
         willRenew: true,
         productIdentifier: 'fitquest_annual',
         verificationSource: 'revenuecat',
-        lastVerifiedAt: Date.now() - 8 * 86400000, // verified 8 days ago (beyond grace)
+        lastVerifiedAt: Date.now() - 2 * 86400000, // verified 2 days ago (beyond 24h grace)
       };
 
       mockSecureStoreGet.mockImplementation((key: string) => {

@@ -29,8 +29,8 @@ jobs:
       - name: TypeScript strict check
         run: npx tsc --noEmit
 
-      - name: Lint check (zero errors enforced)
-        run: npx eslint app/ src/ --max-warnings 9999
+      - name: Lint check (ratchet — warnings can only decrease)
+        run: npx eslint app/ src/ --max-warnings 804
 
       - name: Format check
         run: npx prettier --check "app/**/*.{ts,tsx}" "src/**/*.{ts,tsx}"

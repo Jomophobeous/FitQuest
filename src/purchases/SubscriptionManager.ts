@@ -45,7 +45,7 @@ export interface SubscriptionOfferings {
 // ============================================
 
 const TRIAL_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
-const OFFLINE_GRACE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const OFFLINE_GRACE_MS = 24 * 60 * 60 * 1000; // 24 hours
 const ENTITLEMENT_ID = 'full_access';
 const PRODUCT_MONTHLY = 'fitquest_monthly';
 const PRODUCT_ANNUAL = 'fitquest_annual';
@@ -100,19 +100,20 @@ export class SubscriptionManager {
         // it causes a fatal SimulatedStoreErrorDialogActivity crash
         const isTestKey = apiKey?.startsWith('test_');
         if (isTestKey && !__DEV__) {
-          if (__DEV__) console.warn('[SubscriptionManager] Skipping RevenueCat: test key in production');
+          safeWarn('[SubscriptionManager] Skipping RevenueCat: test key in production');
           this.revenueCatAvailable = false;
         } else if (apiKey && !apiKey.includes('your_key_here')) {
           // Guard: RevenueCat native SDK retains state across JS reloads (HMR).
           // Only configure if not already configured to avoid duplicate init warning.
           if (typeof Purchases.isConfigured === 'function' && Purchases.isConfigured()) {
-            if (__DEV__) console.log('[SubscriptionManager] RevenueCat already configured, skipping');
+            safeWarn('[SubscriptionManager] RevenueCat already configured, skipping');
           } else {
             Purchases.configure({ apiKey: apiKey.trim() });
           }
           this.revenueCatAvailable = true;
 
           // Listen for purchase events
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RevenueCat callback type
           Purchases.addCustomerInfoUpdateListener((info: any) => {
             this.handleCustomerInfoUpdate(info);
           });
@@ -127,6 +128,7 @@ export class SubscriptionManager {
     await this.refresh();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RevenueCat SDK has no TS declarations in dynamic require
   private async getRevenueCatModule(): Promise<any | null> {
     try {
       return require('react-native-purchases').default;
@@ -180,12 +182,19 @@ export class SubscriptionManager {
           // L1: backward rollback (>60s tolerance for NTP drift)
           if (now < lastSeen - 60_000) {
             safeWarn('[SubscriptionManager] Clock rollback detected', { now, lastSeen });
+            void logEvent('subscription_clock_tamper', { type: 'rollback', now, lastSeen });
             return true;
           }
           // L2: abnormal forward jump (>24h since last app lifecycle)
           const FORWARD_JUMP_THRESHOLD = 24 * 60 * 60 * 1000; // 24h
           if (now - lastSeen > FORWARD_JUMP_THRESHOLD) {
             safeWarn('[SubscriptionManager] Abnormal forward clock jump detected', {
+              now,
+              lastSeen,
+              deltaHours: Math.round((now - lastSeen) / 3600000),
+            });
+            void logEvent('subscription_clock_tamper', {
+              type: 'forward_jump',
               now,
               lastSeen,
               deltaHours: Math.round((now - lastSeen) / 3600000),
@@ -299,6 +308,7 @@ export class SubscriptionManager {
     return state;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RevenueCat CustomerInfo has no public TS declarations
   private parseCustomerInfo(info: any, source: 'revenuecat' | 'local' = 'local'): SubscriptionState {
     const now = Date.now();
     const entitlement = info?.entitlements?.active?.[ENTITLEMENT_ID];
@@ -357,6 +367,11 @@ export class SubscriptionManager {
       if (now < lastVerifiedAt) return null;
 
       if (now - lastVerifiedAt > OFFLINE_GRACE_MS) {
+        void logEvent('subscription_grace_expired', {
+          lastVerifiedAt,
+          graceDurationMs: OFFLINE_GRACE_MS,
+          elapsedMs: now - lastVerifiedAt,
+        });
         return null;
       }
 
@@ -364,6 +379,12 @@ export class SubscriptionManager {
       if (parsed.status !== 'ACTIVE' && parsed.status !== 'TRIAL') {
         return null;
       }
+
+      void logEvent('subscription_grace_used', {
+        status: parsed.status,
+        lastVerifiedAt,
+        elapsedMs: now - lastVerifiedAt,
+      });
 
       return {
         ...parsed,
@@ -380,7 +401,7 @@ export class SubscriptionManager {
 
   async purchaseMonthly(): Promise<boolean> {
     if (this.purchaseInProgress) {
-      if (__DEV__) console.log('[SubscriptionManager] Purchase already in progress, ignoring');
+      safeWarn('[SubscriptionManager] Purchase already in progress, ignoring');
       return false;
     }
     this.purchaseInProgress = true;
@@ -396,7 +417,7 @@ export class SubscriptionManager {
 
   async purchaseAnnual(): Promise<boolean> {
     if (this.purchaseInProgress) {
-      if (__DEV__) console.log('[SubscriptionManager] Purchase already in progress, ignoring');
+      safeWarn('[SubscriptionManager] Purchase already in progress, ignoring');
       return false;
     }
     this.purchaseInProgress = true;
@@ -419,7 +440,7 @@ export class SubscriptionManager {
       const pkg = plan === 'monthly' ? offerings.current?.monthly : offerings.current?.annual;
 
       if (!pkg) {
-        if (__DEV__) console.warn(`[SubscriptionManager] ${plan} package not found in RC offerings`);
+        safeWarn(`[SubscriptionManager] ${plan} package not found in RC offerings`);
         return false;
       }
 
@@ -427,7 +448,7 @@ export class SubscriptionManager {
       const state = this.parseCustomerInfo(customerInfo);
       this.updateState(state);
       return state.status === 'ACTIVE' || state.status === 'TRIAL';
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Check if user cancelled
       try {
         const Purchases = await this.getRevenueCatModule();
@@ -440,9 +461,10 @@ export class SubscriptionManager {
 
       // CRITICAL: Do NOT fall back to purchaseLocal() when RC is available.
       // A transient RC error must NOT grant free access on real devices.
-      if (__DEV__) console.warn('[SubscriptionManager] RC purchase failed:', error?.message);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      safeWarn('[SubscriptionManager] RC purchase failed', { message: errMsg });
       captureException(error, { flow: 'purchase', plan, source: 'revenuecat' });
-      void logEvent('purchase_failed', { plan, error: error?.message });
+      void logEvent('purchase_failed', { plan, error: errMsg });
       return false;
     }
   }
@@ -469,7 +491,7 @@ export class SubscriptionManager {
 
   async restorePurchases(): Promise<SubscriptionState> {
     if (this.purchaseInProgress) {
-      if (__DEV__) console.log('[SubscriptionManager] Operation in progress, ignoring restore');
+      safeWarn('[SubscriptionManager] Operation in progress, ignoring restore');
       return this.currentState;
     }
     this.purchaseInProgress = true;
@@ -571,10 +593,20 @@ export class SubscriptionManager {
   }
 
   private updateState(state: SubscriptionState): void {
+    const prev = this.currentState.status;
     this.currentState = state;
+    // Track every state transition for anomaly detection
+    if (prev !== state.status) {
+      void logEvent('subscription_state_change', {
+        from: prev,
+        to: state.status,
+        source: state.verificationSource ?? 'unknown',
+      });
+    }
     this.listeners.forEach((l) => l(state));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RevenueCat callback type
   private handleCustomerInfoUpdate(info: any): void {
     const state = this.parseCustomerInfo(info, 'revenuecat');
     this.updateState(state);

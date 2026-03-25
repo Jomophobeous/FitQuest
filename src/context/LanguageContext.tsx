@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { translations, SUPPORTED_LANGUAGES } from '../i18n/translations';
 import { audioService } from '../services/audioService';
 import { setCurrentLanguage } from '../i18n/engine-i18n';
+import { translationResolver } from '../i18n/TranslationResolver';
 
 const LANGUAGE_STORAGE_KEY = 'fitquest.language';
 
@@ -85,11 +86,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     [language, setLanguage, t, languageName],
   );
 
-  // Keep audioService TTS language in sync (was separate AudioLanguageSyncer component)
+  // Keep audioService TTS language in sync + preload translation cache
   useEffect(() => {
     setCurrentLanguage(language);
     audioService.setLanguage(language);
     audioService.setTranslator(t);
+    // Warm translation cache for new language (async, non-blocking)
+    if (language !== 'en') {
+      translationResolver.preloadLanguage(language).catch(() => {});
+    }
   }, [language, t]);
 
   return <LanguageContext.Provider value={contextValue}>{children}</LanguageContext.Provider>;

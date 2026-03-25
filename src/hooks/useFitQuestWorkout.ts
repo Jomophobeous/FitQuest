@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDatabase, DEFAULT_USER_ID } from '../context/DatabaseContext';
 import { useLanguage } from '../context/LanguageContext';
-import { getLocalizedExerciseBatch } from '../i18n/ExerciseLocalizationService';
+import { translationResolver } from '../i18n/TranslationResolver';
 
 // Engine imports
 import {
@@ -408,7 +408,7 @@ export function useFitQuestWorkout() {
             ...warmupDisplays.map((e) => e.exerciseId),
             ...cooldownDisplays.map((e) => e.exerciseId),
           ];
-          const localized = await getLocalizedExerciseBatch(allIds, language);
+          const localized = await translationResolver.resolveBatch(allIds, language);
           const overlayLocalization = (displays: WorkoutExerciseDisplay[]) => {
             for (let i = 0; i < displays.length; i++) {
               const loc = localized.get(displays[i]!.exerciseId);
@@ -538,7 +538,7 @@ export function useFitQuestWorkout() {
         if (language !== 'en') {
           try {
             const allIds = exerciseDisplays.map((e) => e.exerciseId);
-            const localized = await getLocalizedExerciseBatch(allIds, language);
+            const localized = await translationResolver.resolveBatch(allIds, language);
             for (let i = 0; i < exerciseDisplays.length; i++) {
               const loc = localized.get(exerciseDisplays[i]!.exerciseId);
               if (loc && !loc.isFallback) {

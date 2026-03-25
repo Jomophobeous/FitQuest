@@ -25,21 +25,10 @@ import { initializeExerciseImages } from '../services/exerciseImageService';
 import { seedExerciseTranslations } from '../i18n/exercise-translation-seed';
 import { captureException } from '../services/crashReporting';
 
-// Import exercise translation data per language (self-registering)
-import '../i18n/translations/exercises-af';
-import '../i18n/translations/exercises-zu';
-import '../i18n/translations/exercises-xh';
-import '../i18n/translations/exercises-st';
-import '../i18n/translations/exercises-es';
-import '../i18n/translations/exercises-fr';
-import '../i18n/translations/exercises-de';
-import '../i18n/translations/exercises-pt';
-import '../i18n/translations/exercises-zh';
-import '../i18n/translations/exercises-ja';
-import '../i18n/translations/exercises-ko';
-import '../i18n/translations/exercises-ar';
-import '../i18n/translations/exercises-hi';
-import '../i18n/translations/exercises-sw';
+// Static language file imports removed — Phase 7 runtime translation layer.
+// Translations are loaded lazily from SQLite via TranslationResolver.
+// Bundled TS files remain on disk as fallback seed source only.
+// See: src/i18n/TranslationRegistry.ts, src/i18n/TranslationResolver.ts
 
 let initialized = false;
 let initPromise: Promise<void> | null = null;

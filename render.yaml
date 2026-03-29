@@ -1,0 +1,35 @@
+# Render.com Blueprint — FitQuest Marketing Website
+# https://docs.render.com/infrastructure-as-code
+#
+# Deploy: Connect this repo in Render Dashboard → select "Blueprint"
+# The website/ directory is a self-contained static site (no build step).
+
+services:
+  - type: web
+    name: fitquest-website
+    runtime: static
+    buildCommand: ''
+    staticPublishPath: ./website
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      - path: /css/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: redirect
+        source: /home
+        destination: /index.html

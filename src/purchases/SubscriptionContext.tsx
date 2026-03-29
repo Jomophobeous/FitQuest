@@ -14,6 +14,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { unstable_batchedUpdates } from 'react-native';
 import { SubscriptionManager, type SubscriptionState, type SubscriptionOfferings } from './SubscriptionManager';
 import { useDatabase } from '../context/DatabaseContext';
+import { verifySubscription } from '../services/authorityClient';
 
 // ============================================
 // TYPES
@@ -139,6 +140,11 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setState(currentState);
           setOfferings(currentOfferings);
         });
+
+        // Phase 19: Backend authority verification — fire-and-forget.
+        // Server cross-references local subscription state with ground truth.
+        // Non-blocking: result applied via tamper engine bridge.
+        verifySubscription('user_local_001', 'device_local').catch(() => {});
       } catch (error) {
         if (__DEV__) console.warn('[SubscriptionProvider] Init failed:', error);
       } finally {

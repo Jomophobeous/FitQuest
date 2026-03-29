@@ -1,0 +1,52 @@
+# Render.com Blueprint — FitQuest Marketing Website
+# https://docs.render.com/infrastructure-as-code
+#
+# ⚠️  IMPORTANT: This repo is an Expo React Native mobile app.
+#     The ONLY thing deployed to Render is the static marketing website
+#     in the website/ directory (pure HTML/CSS/JS — no build step).
+#
+# ⚠️  DO NOT deploy this as a "Web Service" — it must be a "Static Site".
+#     A Web Service will try to run `node expo-router/entry` and crash.
+#
+# How to deploy:
+#   1. Go to Render Dashboard → New → Blueprint
+#   2. Connect the JOMO-Playground/FitQ repository
+#   3. Render auto-detects this render.yaml and creates a Static Site
+#   4. (Optional) Add custom domain in Render dashboard
+#
+# OR manually create a Static Site:
+#   1. Render Dashboard → New → Static Site
+#   2. Connect repo, set Root Directory to "website"
+#   3. Leave Build Command empty
+#   4. Set Publish Directory to "."
+
+services:
+  - type: web
+    name: fitquest-website
+    runtime: static
+    branch: main
+    buildCommand: ''
+    staticPublishPath: ./website
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      - path: /css/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: redirect
+        source: /home
+        destination: /index.html

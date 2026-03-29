@@ -1,9 +1,9 @@
 /**
- * FitQuest Backend Authority Server — Phase 22.2
+ * FitQuest Backend Authority Server — Phase 22.3
  *
- * Real-time anomaly detection, persistent scoring, AI governance,
- * trust enforcement, silent detection, modular architecture.
- * Anomaly deduplication, computeEffectiveScore, score hidden from clients.
+ * Anti-abuse hardening: trust, anomaly detection, AI usage monitoring.
+ * All internal scores (trust_score, anomaly_score, effectiveTrust) server-only.
+ * Enriched anomaly metadata, high-severity audit logging, RLS enforcement.
  * Client is untrusted. Server decides everything.
  *
  * Stack: Express + Supabase (service_role)
@@ -107,8 +107,8 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
-    version: '2.4.0',
-    phase: 22.2,
+    version: '2.5.0',
+    phase: 22.3,
     status: 'operational',
     timestamp: new Date().toISOString(),
   });
@@ -138,7 +138,7 @@ app.use((err, _req, res, _next) => {
 
 if (require.main === module) {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v2.4.0 (Phase 22.2) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v2.5.0 (Phase 22.3) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 }

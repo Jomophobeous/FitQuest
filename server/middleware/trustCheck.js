@@ -1,5 +1,5 @@
 /**
- * Trust scoring middleware — Phase 22.1.
+ * Trust scoring middleware — Phase 22.3.
  *
  * Enforces trust thresholds BEFORE endpoint logic executes.
  * Reads DB-persisted anomaly_score (set by anomalyEngine) — no per-request computation.
@@ -11,7 +11,13 @@
  *   0.3–0.5 → restricted (feature degradation, req.restricted = true)
  *   < 0.3   → suspended (403 — access denied)
  *
- * Attaches: req.user, req.device, req.restricted, req.effectiveTrust, req.anomalyScore.
+ * Phase 22.3 additions:
+ *   - Backend verification flag (req.backendVerified = true)
+ *   - trust_score and anomaly_score NEVER exposed to client
+ *   - All sensitive computation server-side only
+ *
+ * Attaches: req.user, req.device, req.restricted, req.effectiveTrust,
+ *           req.anomalyScore, req.backendVerified.
  */
 'use strict';
 
@@ -151,6 +157,7 @@ async function trustCheck(req, res, next) {
     req.restricted = restricted;
     req.effectiveTrust = effectiveTrust;
     req.anomalyScore = anomalyScore;
+    req.backendVerified = true; // Phase 22.3: backend verification flag for critical routes
 
     logEvent(sanitizedUserId, sanitizedDeviceId, 'trust_check_passed', ip, {
       effective: effectiveTrust,

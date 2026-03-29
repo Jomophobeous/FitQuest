@@ -1,8 +1,11 @@
 /**
  * POST /verify/subscription — Authoritative subscription check.
  * Trust middleware enforced — unknown/suspended users blocked before reaching this.
- * Phase 22.2: anomaly evaluation + force re-verify if score > 0.6.
- *             anomaly_score never exposed to client.
+ * Phase 22.3: Anti-abuse hardening.
+ *   - trust_score, anomaly_score, effective_trust: INTERNAL ONLY, never in response
+ *   - Enriched anomaly metadata
+ *   - computeEffectiveScore computed once per request server-side
+ *   - Anomaly evaluation on every subscription event
  */
 'use strict';
 
@@ -21,23 +24,25 @@ router.post('/verify/subscription', trustCheck, async (req, res) => {
     const sanitizedUserId = user_id.trim().slice(0, 128);
     const sanitizedDeviceId = device_id.trim().slice(0, 256);
 
-    // Phase 22.2: Real-time anomaly evaluation
+    // Phase 22.3: Real-time anomaly evaluation with request context
     const anomaly = await evaluateUserActivity(sanitizedUserId, sanitizedDeviceId, {
       ip,
       event_type: 'verify_subscription',
+    }, {
+      ip,
+      headers: req.headers,
+      body: req.body,
     });
 
-    // Enforcement: anomaly_score > 0.6 → force re-verification
-    if (anomaly.anomalyScore > 0.6) {
+    // Enforcement: anomaly effectiveScore < 0.4 → force re-verification
+    if (anomaly.effectiveScore < 0.4) {
       logEvent(sanitizedUserId, sanitizedDeviceId, 'subscription_force_reverify', ip, {
-        anomaly_score: anomaly.anomalyScore,
         triggered: anomaly.triggered,
       });
       return respond(res, 200, {
         user_id: sanitizedUserId,
         status: 'reverify_required',
         reason: 'Anomalous activity detected. Subscription must be re-verified.',
-        effective_trust: req.effectiveTrust,
         verified_at: new Date().toISOString(),
       });
     }
@@ -66,7 +71,6 @@ router.post('/verify/subscription', trustCheck, async (req, res) => {
         status: 'inactive',
         expires_at: null,
         restricted: req.restricted || false,
-        effective_trust: req.effectiveTrust,
         verified_at: new Date().toISOString(),
       });
     }
@@ -82,7 +86,6 @@ router.post('/verify/subscription', trustCheck, async (req, res) => {
       status: effectiveStatus,
       expires_at: subscription.expires_at,
       restricted: req.restricted || false,
-      effective_trust: req.effectiveTrust,
       verified_at: new Date().toISOString(),
     });
   } catch (err) {

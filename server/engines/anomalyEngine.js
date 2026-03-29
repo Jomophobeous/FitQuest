@@ -1,5 +1,5 @@
 /**
- * FitQuest Anomaly Detection Engine — Phase 22.2
+ * FitQuest Anomaly Detection Engine — Phase 22.3
  *
  * Real-time behavioral anomaly detection with persistent scoring.
  * Converts raw telemetry into anomaly records, updates trust scores,
@@ -10,6 +10,9 @@
  *   applyAnomaly(user_id, device_id, type, severity, metadata)
  *   updateScores(user_id, device_id)
  *   computeEffectiveScore(user_id, device_id)
+ *   THRESHOLDS — detection threshold config
+ *   SEVERITIES — per-type severity config
+ *   DEDUP_WINDOW_MINUTES — sliding dedup window
  *
  * Detection rules:
  *   A. Device switching  — >3 devices in 10 min      → severity 0.30
@@ -21,18 +24,20 @@
  * Scoring: decay-weighted sum of last 20 anomalies
  *   anomaly_score = MIN(1.0, SUM(severity * exp(-age_hours / 24)))
  *
- * Phase 22.2 additions:
- *   - Deduplication: same type + window → no duplicate insert
- *   - computeEffectiveScore: trust_score - anomaly_score
- *   - Enriched metadata: rule_triggered, timestamp, count, window
- *   - anomaly_score never exposed to client
+ * Phase 22.3 additions:
+ *   - Sliding 5-min dedup window per type/device/user
+ *   - Enriched metadata: ip_origin, device_fingerprint, request_headers, payload_hash
+ *   - computeEffectiveScore computed once per request server-side
+ *   - trust_score + anomaly_score NEVER exposed to client
+ *   - All scores internal-only (enforced at route level)
  */
 'use strict';
 
+const crypto = require('crypto');
 const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
 
-// ── Deduplication: prevent same anomaly type within this window (minutes) ──
+// ── Deduplication: sliding window per type/device/user (minutes) ──
 const DEDUP_WINDOW_MINUTES = 5;
 
 // ── Detection thresholds ──
@@ -52,6 +57,19 @@ const SEVERITIES = {
   ai_abuse: 0.35,
   ip_anomaly: 0.30,
 };
+
+/**
+ * Generate SHA-256 hash of request payload for audit trail.
+ */
+function hashPayload(payload) {
+  if (!payload) return null;
+  try {
+    const str = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    return crypto.createHash('sha256').update(str).digest('hex').slice(0, 16);
+  } catch {
+    return null;
+  }
+}
 
 // ── Detection Functions ──
 
@@ -151,22 +169,35 @@ async function detectIPAnomaly(userId, since10Min) {
 
 /**
  * Insert an anomaly record + log the event.
- * Idempotent: skips insert if same anomaly_type exists within DEDUP_WINDOW_MINUTES.
+ * Idempotent: sliding 5-min dedup per type + device + user.
+ *
+ * @param {string} userId
+ * @param {string} deviceId
+ * @param {string} type — anomaly_type
+ * @param {number} severity — 0..1
+ * @param {object} meta — trigger_value, threshold, reason, etc.
+ * @param {object} [requestContext] — ip, headers, body (Phase 22.3 enrichment)
  */
-async function applyAnomaly(userId, deviceId, type, severity, meta) {
+async function applyAnomaly(userId, deviceId, type, severity, meta, requestContext) {
   try {
-    // Dedup check — prevent duplicate anomalies for same type within window
+    // Sliding dedup: same type + device + user within window → skip
     const dedupSince = new Date(Date.now() - DEDUP_WINDOW_MINUTES * 60 * 1000).toISOString();
-    const { count: existing } = await supabase
+    let query = supabase
       .from('anomalies')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
       .eq('anomaly_type', type)
       .gte('created_at', dedupSince);
 
+    if (deviceId) {
+      query = query.eq('device_id', deviceId);
+    }
+
+    const { count: existing } = await query;
     if ((existing || 0) > 0) return; // Already recorded in this window
 
-    // Enriched metadata per Phase 22.2 spec
+    // Phase 22.3: enriched metadata with audit fields
+    const ctx = requestContext || {};
     const enrichedMeta = {
       rule_triggered: type,
       trigger_value: meta?.trigger_value,
@@ -174,6 +205,16 @@ async function applyAnomaly(userId, deviceId, type, severity, meta) {
       count: meta?.trigger_value,
       window: meta?.reason || `${DEDUP_WINDOW_MINUTES}min`,
       timestamp: new Date().toISOString(),
+      // Phase 22.3 enrichment
+      ip_origin: ctx.ip || null,
+      device_fingerprint: deviceId || null,
+      request_headers: ctx.headers ? {
+        user_agent: ctx.headers['user-agent'] || null,
+        x_app_version: ctx.headers['x-app-version'] || null,
+        x_device_id: ctx.headers['x-device-id'] || null,
+        accept_language: ctx.headers['accept-language'] || null,
+      } : null,
+      payload_hash: hashPayload(ctx.body),
       ...(meta || {}),
     };
 
@@ -185,7 +226,7 @@ async function applyAnomaly(userId, deviceId, type, severity, meta) {
       metadata: enrichedMeta,
     });
 
-    logEvent(userId, deviceId, 'anomaly_detected', null, enrichedMeta);
+    logEvent(userId, deviceId, 'anomaly_detected', ctx.ip || null, enrichedMeta);
   } catch (_e) {
     // Silent — anomaly logging must never break request flow
   }
@@ -267,12 +308,14 @@ async function updateScores(userId, deviceId) {
 /**
  * Run all detection rules against current user activity.
  * If any rule triggers, applies the anomaly and updates scores.
+ * Computes effectiveScore ONCE per request (Phase 22.3: single computation).
  *
  * context: { ip, app_version, previous_version, event_type, prompt_length }
+ * requestContext: { ip, headers, body } — passed to applyAnomaly for metadata enrichment
  *
- * Returns { triggered: [...], anomalyScore }
+ * Returns { triggered: [...], anomalyScore, effectiveScore }
  */
-async function evaluateUserActivity(userId, deviceId, context = {}) {
+async function evaluateUserActivity(userId, deviceId, context = {}, requestContext = {}) {
   const now = new Date();
   const since10Min = new Date(now.getTime() - 10 * 60 * 1000).toISOString();
   const since15Min = new Date(now.getTime() - 15 * 60 * 1000).toISOString();
@@ -291,10 +334,10 @@ async function evaluateUserActivity(userId, deviceId, context = {}) {
 
   const results = [deviceSwitch, subAbuse, versionDown, aiAbuse, ipAnomaly].filter(Boolean);
 
-  // Apply each triggered anomaly
+  // Apply each triggered anomaly (with Phase 22.3 request context)
   for (const r of results) {
     const severity = SEVERITIES[r.type] || 0.2;
-    await applyAnomaly(userId, deviceId, r.type, severity, r);
+    await applyAnomaly(userId, deviceId, r.type, severity, r, requestContext);
   }
 
   // Recompute scores only if something triggered (avoids unnecessary DB round-trips)
@@ -302,11 +345,14 @@ async function evaluateUserActivity(userId, deviceId, context = {}) {
   if (results.length > 0) {
     anomalyScore = await updateScores(userId, deviceId);
   }
-  // When nothing triggers, return 0 — trustCheck already reads DB-persisted scores
+
+  // Phase 22.3: compute effectiveScore ONCE per request, server-side only
+  const effective = await computeEffectiveScore(userId, deviceId);
 
   return {
     triggered: results.map(r => r.type),
-    anomalyScore,
+    anomalyScore: effective.anomalyScore,
+    effectiveScore: effective.effectiveScore,
   };
 }
 
@@ -356,4 +402,13 @@ async function computeEffectiveScore(userId, deviceId) {
   }
 }
 
-module.exports = { evaluateUserActivity, applyAnomaly, updateScores, computeEffectiveScore, THRESHOLDS, SEVERITIES };
+module.exports = {
+  evaluateUserActivity,
+  applyAnomaly,
+  updateScores,
+  computeEffectiveScore,
+  THRESHOLDS,
+  SEVERITIES,
+  DEDUP_WINDOW_MINUTES,
+  hashPayload,
+};

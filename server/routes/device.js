@@ -1,8 +1,11 @@
 /**
  * POST /verify/device — Device fingerprint + trust scoring.
  * No trust middleware (device may not exist yet — this is registration).
- * Phase 22.2: Real-time anomaly detection, persistent scoring, device untrust enforcement.
- *             anomaly_score never exposed to client.
+ * Phase 22.3: Anti-abuse hardening.
+ *   - trust_score, anomaly_score, effective_trust: INTERNAL ONLY, never in response
+ *   - Enriched anomaly metadata (ip_origin, device_fingerprint, request_headers, payload_hash)
+ *   - computeEffectiveScore computed once per request server-side
+ *   - Anomaly evaluation on every device event
  */
 'use strict';
 
@@ -114,33 +117,34 @@ router.post('/verify/device', async (req, res) => {
       app_version: sanitizedAppVersion,
     });
 
-    // Phase 22.2: Real-time anomaly evaluation
+    // Phase 22.3: Real-time anomaly evaluation with request context
     const anomaly = await evaluateUserActivity(sanitizedUserId, sanitizedDeviceId, {
       ip,
       app_version: sanitizedAppVersion,
       previous_version: existingDevice?.app_version || null,
       event_type: 'verify_device',
+    }, {
+      ip,
+      headers: req.headers,
+      body: req.body,
     });
 
-    const anomalyScore = anomaly.anomalyScore;
-    const effectiveTrust = Math.max(0, Math.min(1.0, trustScore - anomalyScore));
+    // Phase 22.3: effectiveScore computed once by engine — no double subtraction
+    const effectiveScore = anomaly.effectiveScore;
 
     // Enforcement: device anomaly_score > 0.5 → mark untrusted
     let deviceUntrusted = false;
-    if (anomalyScore > 0.5) {
+    if (anomaly.anomalyScore > 0.5) {
       deviceUntrusted = true;
       logEvent(sanitizedUserId, sanitizedDeviceId, 'device_untrusted', ip, {
-        anomaly_score: anomalyScore,
         triggered: anomaly.triggered,
       });
     }
 
-    // Phase 22.2: anomaly_score hidden from client
+    // Phase 22.3: trust_score, anomaly_score, effective_trust ALL hidden from client
     return respond(res, 200, {
       user_id: sanitizedUserId,
       device_id: sanitizedDeviceId,
-      trust_score: trustScore,
-      effective_trust: effectiveTrust,
       untrusted: deviceUntrusted,
       verified_at: new Date().toISOString(),
     });

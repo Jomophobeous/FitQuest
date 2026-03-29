@@ -1,16 +1,17 @@
 /**
- * AI governance route — Phase 22.2.
+ * AI governance route — Phase 22.3.
  *
  * POST /ai/request
  *   - trustCheck middleware enforces trust thresholds
  *   - Per-user rate limiting (20 req / 15 min)
  *   - Real-time anomaly evaluation on every request
  *   - Enforcement:
- *       effective_trust < 0.3   → blocked (trustCheck 403)
- *       effective_trust < 0.5   → restricted (degraded access)
- *       anomaly_score > 0.6     → AI blocked at route level
- *   - anomaly_score never exposed to client
- *   - Usage logged to events + ai_usage tables
+ *       effectiveScore < 0.3   → blocked (trustCheck 403)
+ *       effectiveScore < 0.5   → restricted (degraded access)
+ *       anomalyScore > 0.6     → AI blocked at route level
+ *   - trust_score, anomaly_score, effectiveTrust: INTERNAL ONLY, never in response
+ *   - Usage logged to events + ai_usage (prompt_length, device_id, timestamp)
+ *   - computeEffectiveScore applied server-side before any response
  */
 'use strict';
 
@@ -97,17 +98,20 @@ router.post('/ai/request', trustCheck, async (req, res) => {
   // trustCheck already blocks < 0.3 (403) and sets req.restricted for < 0.5
   const restricted = req.restricted || false;
 
-  // Phase 22.2: Real-time anomaly evaluation
+  // Phase 22.3: Real-time anomaly evaluation with full request context
   const anomaly = await evaluateUserActivity(sanitizedUserId, sanitizedDeviceId, {
     ip,
     event_type: 'ai_request',
     prompt_length: sanitizedPrompt.length,
+  }, {
+    ip,
+    headers: req.headers,
+    body: { user_id: sanitizedUserId, device_id: sanitizedDeviceId, prompt_length: sanitizedPrompt.length },
   });
 
-  // Enforcement: anomaly_score > 0.6 → block AI entirely
+  // Enforcement: anomalyScore > 0.6 → block AI entirely
   if (anomaly.anomalyScore > 0.6) {
     logEvent(sanitizedUserId, sanitizedDeviceId, 'ai_blocked_anomaly', ip, {
-      anomaly_score: anomaly.anomalyScore,
       triggered: anomaly.triggered,
     });
     return respond(res, 403, {
@@ -116,10 +120,8 @@ router.post('/ai/request', trustCheck, async (req, res) => {
     });
   }
 
-  // Enforcement: effective_trust < 0.5 → restricted
-  const effectiveTrust = req.effectiveTrust || 1.0;
-
-  if (restricted || effectiveTrust < 0.5) {
+  // Enforcement: effectiveScore < 0.5 → restricted
+  if (restricted || anomaly.effectiveScore < 0.5) {
     logEvent(sanitizedUserId, sanitizedDeviceId, 'ai_access_restricted', ip);
     return respond(res, 200, {
       authorized: false,
@@ -132,14 +134,14 @@ router.post('/ai/request', trustCheck, async (req, res) => {
   // ── Log usage ──
   logEvent(sanitizedUserId, sanitizedDeviceId, 'ai_request', ip);
 
-  // Fire-and-forget: log to ai_usage table
+  // Phase 22.3: enhanced ai_usage logging (prompt_length, device_id, timestamp, ip)
   supabase.from('ai_usage').insert({
     user_id: sanitizedUserId,
     device_id: sanitizedDeviceId,
     prompt_length: sanitizedPrompt.length,
   }).then(() => {}).catch(() => {});
 
-  // ── Authorized — anomaly_score hidden per Phase 22.2 ──
+  // Phase 22.3: ALL internal scores hidden — authorized response only
   return respond(res, 200, {
     authorized: true,
     restricted: false,

@@ -1,10 +1,9 @@
 /**
- * FitQuest Backend Authority Server — Phase 22.3
+ * FitQuest Backend Authority Server — Phase 23
  *
- * Anti-abuse hardening: trust, anomaly detection, AI usage monitoring.
+ * Full audit remediation: HMAC signatures, CORS lockdown, semver,
+ * graceful shutdown, DB optimization, data retention.
  * All internal scores (trust_score, anomaly_score, effectiveTrust) server-only.
- * Enriched anomaly metadata, high-severity audit logging, RLS enforcement.
- * Client is untrusted. Server decides everything.
  *
  * Stack: Express + Supabase (service_role)
  * Deploy: Render (https://fitquest-gbhv.onrender.com)
@@ -22,9 +21,19 @@ const respond = require('./utils/respond');
 const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 
-// CORS
+// CORS — S3 fix: restrict origins (no wildcard)
+const allowedOrigins = [
+  'https://fitquest-gbhv.onrender.com',
+  process.env.CORS_ALLOWED_ORIGIN,
+].filter(Boolean);
+
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('CORS: origin not allowed'));
+  },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-App-Version', 'X-Device-ID'],
 }));
@@ -107,8 +116,8 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
-    version: '2.5.0',
-    phase: 22.3,
+    version: '2.6.0',
+    phase: 23,
     status: 'operational',
     timestamp: new Date().toISOString(),
   });
@@ -136,11 +145,34 @@ app.use((err, _req, res, _next) => {
 
 // ── Start server ──
 
+let server;
 if (require.main === module) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v2.5.0 (Phase 22.3) listening on port ${PORT}`);
+  server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[FitQuest Authority] v2.6.0 (Phase 23) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
   });
 }
+
+// ── A5 fix: Graceful shutdown ──
+
+function gracefulShutdown(signal) {
+  console.log(`[FitQuest Authority] ${signal} received — shutting down gracefully.`);
+  if (server) {
+    server.close(() => {
+      console.log('[FitQuest Authority] HTTP server closed.');
+      process.exit(0);
+    });
+    // Force exit after 10s if connections don't drain
+    setTimeout(() => {
+      console.error('[FitQuest Authority] Forced exit after timeout.');
+      process.exit(1);
+    }, 10_000).unref();
+  } else {
+    process.exit(0);
+  }
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 module.exports = app;

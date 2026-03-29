@@ -233,3 +233,55 @@ WHERE table_schema = 'public'
     'events', 'ai_usage', 'anomalies'
   )
 ORDER BY table_name, ordinal_position;
+
+
+-- ============================================================
+-- Phase 23: DATA RETENTION POLICIES (D1-D3)
+--
+-- events     → 90 days (high-volume telemetry)
+-- anomalies  → 180 days (audit trail)
+-- ai_usage   → 90 days (usage analytics)
+--
+-- Manual deletion functions — call via pg_cron or scheduled job.
+-- ============================================================
+
+-- D1: Events retention (90 days)
+CREATE OR REPLACE FUNCTION purge_old_events()
+RETURNS INTEGER AS $$
+DECLARE
+  deleted INTEGER;
+BEGIN
+  DELETE FROM events WHERE timestamp < NOW() - INTERVAL '90 days';
+  GET DIAGNOSTICS deleted = ROW_COUNT;
+  RETURN deleted;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- D2: Anomalies retention (180 days)
+CREATE OR REPLACE FUNCTION purge_old_anomalies()
+RETURNS INTEGER AS $$
+DECLARE
+  deleted INTEGER;
+BEGIN
+  DELETE FROM anomalies WHERE created_at < NOW() - INTERVAL '180 days';
+  GET DIAGNOSTICS deleted = ROW_COUNT;
+  RETURN deleted;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- D3: AI usage retention (90 days)
+CREATE OR REPLACE FUNCTION purge_old_ai_usage()
+RETURNS INTEGER AS $$
+DECLARE
+  deleted INTEGER;
+BEGIN
+  DELETE FROM ai_usage WHERE timestamp < NOW() - INTERVAL '90 days';
+  GET DIAGNOSTICS deleted = ROW_COUNT;
+  RETURN deleted;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Optional: If pg_cron is available, schedule nightly purges
+-- SELECT cron.schedule('purge-events', '0 3 * * *', 'SELECT purge_old_events()');
+-- SELECT cron.schedule('purge-anomalies', '0 3 * * *', 'SELECT purge_old_anomalies()');
+-- SELECT cron.schedule('purge-ai-usage', '0 3 * * *', 'SELECT purge_old_ai_usage()');

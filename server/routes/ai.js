@@ -81,8 +81,9 @@ router.post('/ai/request', trustCheck, async (req, res) => {
   }
 
   const sanitizedPrompt = prompt.trim().slice(0, 4000);
-  const sanitizedUserId = user_id.trim().slice(0, 128);
-  const sanitizedDeviceId = device_id.trim().slice(0, 256);
+  // trustCheck already validated/sanitized user_id, device_id — use req values
+  const sanitizedUserId = req.user.id;
+  const sanitizedDeviceId = req.device.device_id;
 
   // ── Per-user rate limit ──
   const rl = checkAIRateLimit(sanitizedUserId, sanitizedDeviceId);
@@ -98,7 +99,7 @@ router.post('/ai/request', trustCheck, async (req, res) => {
   // trustCheck already blocks < 0.3 (403) and sets req.restricted for < 0.5
   const restricted = req.restricted || false;
 
-  // Phase 22.3: Real-time anomaly evaluation with full request context
+  // Phase 23: Pass preloaded trust data from trustCheck (P3 optimization — saves 2 DB reads)
   const anomaly = await evaluateUserActivity(sanitizedUserId, sanitizedDeviceId, {
     ip,
     event_type: 'ai_request',
@@ -107,6 +108,12 @@ router.post('/ai/request', trustCheck, async (req, res) => {
     ip,
     headers: req.headers,
     body: { user_id: sanitizedUserId, device_id: sanitizedDeviceId, prompt_length: sanitizedPrompt.length },
+  }, {
+    preloadedScores: {
+      effectiveScore: req.effectiveTrust,
+      trustScore: Number(req.user.trust_score) || 1.0,
+      anomalyScore: req.anomalyScore,
+    },
   });
 
   // Enforcement: anomalyScore > 0.6 → block AI entirely
@@ -134,12 +141,16 @@ router.post('/ai/request', trustCheck, async (req, res) => {
   // ── Log usage ──
   logEvent(sanitizedUserId, sanitizedDeviceId, 'ai_request', ip);
 
-  // Phase 22.3: enhanced ai_usage logging (prompt_length, device_id, timestamp, ip)
+  // Phase 23: ai_usage logging (fire-and-forget with error logging)
   supabase.from('ai_usage').insert({
     user_id: sanitizedUserId,
     device_id: sanitizedDeviceId,
     prompt_length: sanitizedPrompt.length,
-  }).then(() => {}).catch(() => {});
+  }).then(({ error }) => {
+    if (error) console.error('[ai] ai_usage insert error:', error.message);
+  }).catch((err) => {
+    console.error('[ai] ai_usage insert exception:', err.message);
+  });
 
   // Phase 22.3: ALL internal scores hidden — authorized response only
   return respond(res, 200, {

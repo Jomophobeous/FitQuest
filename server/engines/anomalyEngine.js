@@ -1,41 +1,31 @@
 /**
- * FitQuest Anomaly Detection Engine — Phase 22.3
+ * FitQuest Anomaly Detection Engine — Phase 23
  *
  * Real-time behavioral anomaly detection with persistent scoring.
  * Converts raw telemetry into anomaly records, updates trust scores,
  * and feeds enforcement decisions.
  *
  * Exports:
- *   evaluateUserActivity(user_id, device_id, context)
- *   applyAnomaly(user_id, device_id, type, severity, metadata)
- *   updateScores(user_id, device_id)
- *   computeEffectiveScore(user_id, device_id)
+ *   evaluateUserActivity(userId, deviceId, context, requestContext, options)
+ *   applyAnomaly(userId, deviceId, type, severity, meta, requestContext)
+ *   updateScores(userId, deviceId)
+ *   computeEffectiveScore(userId, deviceId)
  *   THRESHOLDS — detection threshold config
  *   SEVERITIES — per-type severity config
  *   DEDUP_WINDOW_MINUTES — sliding dedup window
+ *   hashPayload(payload)
  *
- * Detection rules:
- *   A. Device switching  — >3 devices in 10 min      → severity 0.30
- *   B. Subscription abuse — >5 failures in 15 min     → severity 0.40
- *   C. Version downgrade  — current < previous        → severity 0.25
- *   D. AI abuse           — >20 req/5min OR avg>2000  → severity 0.35
- *   E. IP anomaly         — >5 IPs in 10 min          → severity 0.30
- *
- * Scoring: decay-weighted sum of last 20 anomalies
- *   anomaly_score = MIN(1.0, SUM(severity * exp(-age_hours / 24)))
- *
- * Phase 22.3 additions:
- *   - Sliding 5-min dedup window per type/device/user
- *   - Enriched metadata: ip_origin, device_fingerprint, request_headers, payload_hash
- *   - computeEffectiveScore computed once per request server-side
- *   - trust_score + anomaly_score NEVER exposed to client
- *   - All scores internal-only (enforced at route level)
+ * Phase 23 additions:
+ *   - Proper semver comparison via isVersionDowngrade (S5 fix)
+ *   - preloadedScores option to skip redundant DB reads (P3 optimization)
+ *   - Row limit on device/IP detection queries (P2 optimization)
  */
 'use strict';
 
 const crypto = require('crypto');
 const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
+const { isVersionDowngrade } = require('../utils/semver');
 
 // ── Deduplication: sliding window per type/device/user (minutes) ──
 const DEDUP_WINDOW_MINUTES = 5;
@@ -75,6 +65,7 @@ function hashPayload(payload) {
 
 /**
  * A. Device switching — >3 distinct devices in 10 minutes
+ * P2 optimization: limit rows to threshold*3 (cap data transfer)
  */
 async function detectDeviceSwitching(userId, since10Min) {
   const { data } = await supabase
@@ -82,7 +73,8 @@ async function detectDeviceSwitching(userId, since10Min) {
     .select('device_id')
     .eq('user_id', userId)
     .gte('timestamp', since10Min)
-    .not('device_id', 'is', null);
+    .not('device_id', 'is', null)
+    .limit(50);
 
   if (!data || data.length === 0) return null;
   const distinctDevices = new Set(data.map(r => r.device_id)).size;
@@ -116,7 +108,7 @@ async function detectSubscriptionAbuse(userId, since15Min) {
  */
 function detectVersionDowngrade(context) {
   if (!context.app_version || !context.previous_version) return null;
-  if (context.app_version < context.previous_version) {
+  if (isVersionDowngrade(context.app_version, context.previous_version)) {
     return { type: 'version_downgrade', trigger_value: context.app_version, threshold: context.previous_version };
   }
   return null;
@@ -148,6 +140,7 @@ async function detectAIAbuse(userId, since5Min) {
 
 /**
  * E. IP anomaly — >5 distinct IPs in 10 minutes
+ * P2 optimization: limit rows to threshold*3 (cap data transfer)
  */
 async function detectIPAnomaly(userId, since10Min) {
   const { data } = await supabase
@@ -155,7 +148,8 @@ async function detectIPAnomaly(userId, since10Min) {
     .select('ip')
     .eq('user_id', userId)
     .gte('timestamp', since10Min)
-    .not('ip', 'is', null);
+    .not('ip', 'is', null)
+    .limit(50);
 
   if (!data || data.length === 0) return null;
   const distinctIPs = new Set(data.map(r => r.ip)).size;
@@ -308,14 +302,16 @@ async function updateScores(userId, deviceId) {
 /**
  * Run all detection rules against current user activity.
  * If any rule triggers, applies the anomaly and updates scores.
- * Computes effectiveScore ONCE per request (Phase 22.3: single computation).
+ * Computes effectiveScore ONCE per request (Phase 23: accepts preloaded scores).
  *
  * context: { ip, app_version, previous_version, event_type, prompt_length }
  * requestContext: { ip, headers, body } — passed to applyAnomaly for metadata enrichment
+ * options: { preloadedScores?: { effectiveScore, trustScore, anomalyScore } }
+ *   — if provided, skip DB reads for computeEffectiveScore (P3 optimization)
  *
  * Returns { triggered: [...], anomalyScore, effectiveScore }
  */
-async function evaluateUserActivity(userId, deviceId, context = {}, requestContext = {}) {
+async function evaluateUserActivity(userId, deviceId, context = {}, requestContext = {}, options = {}) {
   const now = new Date();
   const since10Min = new Date(now.getTime() - 10 * 60 * 1000).toISOString();
   const since15Min = new Date(now.getTime() - 15 * 60 * 1000).toISOString();
@@ -346,8 +342,15 @@ async function evaluateUserActivity(userId, deviceId, context = {}, requestConte
     anomalyScore = await updateScores(userId, deviceId);
   }
 
-  // Phase 22.3: compute effectiveScore ONCE per request, server-side only
-  const effective = await computeEffectiveScore(userId, deviceId);
+    // Phase 23 P3 optimization: use preloaded scores if available (skip DB re-read)
+    let effective;
+    if (options.preloadedScores && results.length === 0) {
+      // No new anomalies — preloaded scores are still valid
+      effective = options.preloadedScores;
+    } else {
+      // New anomalies triggered or no preloaded data — must read fresh
+      effective = await computeEffectiveScore(userId, deviceId);
+    }
 
   return {
     triggered: results.map(r => r.type),

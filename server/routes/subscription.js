@@ -21,10 +21,11 @@ router.post('/verify/subscription', trustCheck, async (req, res) => {
   try {
     const { user_id, device_id } = req.body;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
-    const sanitizedUserId = user_id.trim().slice(0, 128);
-    const sanitizedDeviceId = device_id.trim().slice(0, 256);
+    // trustCheck already validated/sanitized user_id, device_id — use req values
+    const sanitizedUserId = req.user.id;
+    const sanitizedDeviceId = req.device.device_id;
 
-    // Phase 22.3: Real-time anomaly evaluation with request context
+    // Phase 23: Pass preloaded trust data from trustCheck (P3 optimization — saves 2 DB reads)
     const anomaly = await evaluateUserActivity(sanitizedUserId, sanitizedDeviceId, {
       ip,
       event_type: 'verify_subscription',
@@ -32,6 +33,12 @@ router.post('/verify/subscription', trustCheck, async (req, res) => {
       ip,
       headers: req.headers,
       body: req.body,
+    }, {
+      preloadedScores: {
+        effectiveScore: req.effectiveTrust,
+        trustScore: Number(req.user.trust_score) || 1.0,
+        anomalyScore: req.anomalyScore,
+      },
     });
 
     // Enforcement: anomaly effectiveScore < 0.4 → force re-verification

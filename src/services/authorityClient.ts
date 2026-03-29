@@ -37,7 +37,7 @@ export interface SubscriptionVerification {
 export interface DeviceVerification {
   user_id: string;
   device_id: string;
-  trust_score: number;
+  untrusted: boolean;
   verified_at: string;
 }
 

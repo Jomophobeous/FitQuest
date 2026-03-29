@@ -1,7 +1,9 @@
 /**
  * POST /verify/device — Device fingerprint + trust scoring.
  * No trust middleware (device may not exist yet — this is registration).
- * Phase 22.3: Anti-abuse hardening.
+ * Phase 23: Full audit remediation.
+ *   - HMAC-SHA256 signature validation (S1 fix)
+ *   - Semver comparison for version downgrade (S4 fix)
  *   - trust_score, anomaly_score, effective_trust: INTERNAL ONLY, never in response
  *   - Enriched anomaly metadata (ip_origin, device_fingerprint, request_headers, payload_hash)
  *   - computeEffectiveScore computed once per request server-side
@@ -9,12 +11,36 @@
  */
 'use strict';
 
+const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supabaseClient');
 const respond = require('../utils/respond');
 const logEvent = require('../utils/logEvent');
 const { evaluateUserActivity } = require('../engines/anomalyEngine');
+const { isVersionDowngrade } = require('../utils/semver');
+
+/**
+ * Verify HMAC-SHA256 device signature.
+ * Signature = HMAC-SHA256(user_id|device_id|app_version, DEVICE_SIGNING_SECRET)
+ * Uses constant-time comparison to prevent timing attacks.
+ */
+function verifyDeviceSignature(userId, deviceId, appVersion, signature) {
+  const secret = process.env.DEVICE_SIGNING_SECRET;
+  if (!secret) {
+    // If no secret configured, reject all requests (fail closed)
+    console.error('[/verify/device] DEVICE_SIGNING_SECRET not configured — rejecting.');
+    return false;
+  }
+  try {
+    const payload = `${userId}|${deviceId}|${appVersion}`;
+    const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    if (expected.length !== signature.length) return false;
+    return crypto.timingSafeEqual(Buffer.from(expected, 'utf8'), Buffer.from(signature, 'utf8'));
+  } catch {
+    return false;
+  }
+}
 
 router.post('/verify/device', async (req, res) => {
   try {
@@ -35,9 +61,16 @@ router.post('/verify/device', async (req, res) => {
       return respond(res, 400, null, 'Missing or invalid "signature" field.');
     }
 
+    // S1 fix: HMAC-SHA256 signature validation (fail closed)
     const sanitizedUserId = user_id.trim().slice(0, 128);
     const sanitizedDeviceId = device_id.trim().slice(0, 256);
     const sanitizedAppVersion = app_version.trim().slice(0, 32);
+
+    if (!verifyDeviceSignature(sanitizedUserId, sanitizedDeviceId, sanitizedAppVersion, signature)) {
+      const ip2 = req.ip || req.connection.remoteAddress || 'unknown';
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'device_invalid_signature', ip2);
+      return respond(res, 403, null, 'Invalid device signature.');
+    }
 
     // Check if user exists
     const { data: user } = await supabase
@@ -78,8 +111,8 @@ router.post('/verify/device', async (req, res) => {
         });
       }
 
-      // App version downgrade → suspicious (reduce trust)
-      if (existingDevice.app_version && sanitizedAppVersion < existingDevice.app_version) {
+      // App version downgrade → suspicious (reduce trust) — S4 fix: proper semver
+      if (existingDevice.app_version && isVersionDowngrade(sanitizedAppVersion, existingDevice.app_version)) {
         trustScore = Math.max(0, trustScore - 0.1);
         logEvent(sanitizedUserId, sanitizedDeviceId, 'app_version_downgrade', ip, {
           previous_version: existingDevice.app_version,

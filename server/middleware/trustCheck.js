@@ -175,3 +175,5 @@ async function trustCheck(req, res, next) {
 module.exports = trustCheck;
 module.exports.THRESHOLD_RESTRICTED = THRESHOLD_RESTRICTED;
 module.exports.THRESHOLD_SUSPENDED = THRESHOLD_SUSPENDED;
+module.exports.THRESHOLD_RESTRICTED = THRESHOLD_RESTRICTED;
+module.exports.THRESHOLD_SUSPENDED = THRESHOLD_SUSPENDED;

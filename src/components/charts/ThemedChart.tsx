@@ -5,7 +5,7 @@
  * for all Victory-native chart components.
  */
 
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import {
@@ -18,7 +18,7 @@ import {
   LIGHT_CHART_THEME,
 } from './types';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
 // PROPS
@@ -44,7 +44,7 @@ interface ThemedChartWrapperProps {
 // ============================================
 
 export function useChartTheme(): ChartThemeColors {
-  const { theme, mode } = useTheme();
+  const { mode } = useTheme();
   return mode === 'light' ? LIGHT_CHART_THEME : DARK_CHART_THEME;
 }
 

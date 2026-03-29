@@ -17,7 +17,7 @@ interface Props {
   variant?: 'full' | 'icon';
 }
 
-export default function FQLogoMark({ size = 80, showGlow = true, variant = 'full' }: Props) {
+export default function FQLogoMark({ size = 80, showGlow = true, variant: _variant = 'full' }: Props) {
   return (
     <Svg width={size} height={size} viewBox="0 0 512 512">
       <Defs>

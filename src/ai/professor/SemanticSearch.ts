@@ -17,10 +17,6 @@ import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
 import {
   TransformerLayerWeights as TransformerLayer,
   transformerLayer as sharedTransformerLayer,
-  linearF64,
-  layerNorm,
-  gelu,
-  softmaxF64,
 } from '../TransformerRuntime';
 
 // ============================================
@@ -307,7 +303,7 @@ export class SemanticSearch {
         'search_v3.model',
       );
       if (!modelData) {
-        if (__DEV__) console.log('[SemanticSearch] Encoder not found — using TF-IDF fallback');
+        if (__DEV__) console.warn('[SemanticSearch] Encoder not found — using TF-IDF fallback');
         return false;
       }
       this.model = modelData;
@@ -315,7 +311,7 @@ export class SemanticSearch {
       this.isLoaded = true;
       const version = (this.model as any).version ?? '3.0.0';
       if (__DEV__) {
-        console.log(
+        console.warn(
           `[SemanticSearch] v${version}: ${this.model.numLayers} layers, ` + `dim=${this.model.sentenceSize}`,
         );
       }

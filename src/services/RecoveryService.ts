@@ -11,7 +11,6 @@
  */
 
 import { getDatabase } from '../database/schema';
-import { initializeDatabase } from '../database';
 import { snapshotService, type SnapshotInfo } from './SnapshotService';
 import { walService, type ReplayResult } from './WriteAheadLogService';
 import { importEncryptedBackup } from './backupService';
@@ -89,7 +88,7 @@ class RecoveryServiceImpl {
       let replayResult: ReplayResult | null = null;
 
       if (pendingEntries > 0) {
-        if (__DEV__) console.log(`[Recovery] Found ${pendingEntries} pending WAL entries — replaying...`);
+        if (__DEV__) console.warn(`[Recovery] Found ${pendingEntries} pending WAL entries — replaying...`);
         replayResult = await walService.replayPendingIntents();
 
         if (replayResult.failed > 0) {
@@ -103,14 +102,14 @@ class RecoveryServiceImpl {
         }
 
         if (__DEV__)
-          console.log(
+          console.warn(
             `[Recovery] WAL replay: ${replayResult.replayed} replayed, ${replayResult.skipped} skipped, ${replayResult.failed} failed`,
           );
       }
 
       // Step 3: Prune old committed/replayed entries
       const pruned = await walService.pruneCommitted();
-      if (__DEV__ && pruned > 0) console.log(`[Recovery] Pruned ${pruned} old WAL entries`);
+      if (__DEV__ && pruned > 0) console.warn(`[Recovery] Pruned ${pruned} old WAL entries`);
 
       const durationMs = Date.now() - startTime;
       let outcome: RecoveryOutcome = 'healthy';
@@ -120,7 +119,7 @@ class RecoveryServiceImpl {
         outcome = 'wal_cleaned';
       }
 
-      if (__DEV__) console.log(`[Recovery] Complete: ${outcome} (${durationMs}ms)`);
+      if (__DEV__) console.warn(`[Recovery] Complete: ${outcome} (${durationMs}ms)`);
 
       return {
         outcome,
@@ -159,7 +158,7 @@ class RecoveryServiceImpl {
       const db = await getDatabase();
       const result = await db.getFirstAsync<{ integrity_check: string }>(`PRAGMA integrity_check`);
       const ok = result?.integrity_check === 'ok';
-      if (__DEV__) console.log(`[Recovery] Integrity check: ${ok ? 'PASS' : 'FAIL'}`);
+      if (__DEV__) console.warn(`[Recovery] Integrity check: ${ok ? 'PASS' : 'FAIL'}`);
       return ok;
     } catch (error) {
       if (__DEV__) console.error('[Recovery] Integrity check error:', error);
@@ -182,7 +181,7 @@ class RecoveryServiceImpl {
           continue;
         }
 
-        if (__DEV__) console.log(`[Recovery] Restoring from: ${snap.filename}`);
+        if (__DEV__) console.warn(`[Recovery] Restoring from: ${snap.filename}`);
 
         await importEncryptedBackup({ backupUri: snap.uri });
 
@@ -190,7 +189,7 @@ class RecoveryServiceImpl {
         await walService.clearAll();
 
         const durationMs = Date.now() - startTime;
-        if (__DEV__) console.log(`[Recovery] Snapshot restored successfully (${durationMs}ms)`);
+        if (__DEV__) console.warn(`[Recovery] Snapshot restored successfully (${durationMs}ms)`);
 
         captureException(new Error('Database restored from snapshot'), {
           context: 'RecoveryService.restoreFromSnapshot',

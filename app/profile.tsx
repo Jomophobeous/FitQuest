@@ -489,7 +489,7 @@ export default function ProfileScreen() {
       })),
       onSelect: async (val) => {
         const d = Number(val);
-        if (__DEV__) console.log('[Profile] Update training days', { value: d });
+        if (__DEV__) console.warn('[Profile] Update training days', { value: d });
         await updateUserProfile('user_local_001', { training_days_per_week: d });
         setProfile((prev) => (prev ? { ...prev, trainingDays: d } : prev));
         await refreshProfile();
@@ -508,7 +508,7 @@ export default function ProfileScreen() {
       })),
       onSelect: async (val) => {
         const m = Number(val);
-        if (__DEV__) console.log('[Profile] Update session length', { value: m });
+        if (__DEV__) console.warn('[Profile] Update session length', { value: m });
         await updateUserProfile('user_local_001', { time_per_session_minutes: m });
         setProfile((prev) => (prev ? { ...prev, sessionMinutes: m } : prev));
         await refreshProfile();
@@ -537,7 +537,7 @@ export default function ProfileScreen() {
         { label: t('profile.level.advanced'), value: 'advanced' },
       ],
       onSelect: async (val) => {
-        if (__DEV__) console.log('[Profile] Update experience', { value: val });
+        if (__DEV__) console.warn('[Profile] Update experience', { value: val });
         await updateUserProfile('user_local_001', { experience: val as any });
         setProfile((prev) => (prev ? { ...prev, experience: val } : prev));
         await refreshProfile();
@@ -559,7 +559,7 @@ export default function ProfileScreen() {
         { label: t('profile.goal.strength'), value: 'strength' },
       ],
       onSelect: async (val) => {
-        if (__DEV__) console.log('[Profile] Update goal', { value: val });
+        if (__DEV__) console.warn('[Profile] Update goal', { value: val });
         await updateUserProfile('user_local_001', { goal: val as any });
         setProfile((prev) => (prev ? { ...prev, goal: val } : prev));
         await refreshProfile();
@@ -579,7 +579,7 @@ export default function ProfileScreen() {
       ],
       onSelect: async (val) => {
         const level = val as 'none' | 'minimal' | 'playground';
-        if (__DEV__) console.log('[Profile] Update equipment level', { value: level });
+        if (__DEV__) console.warn('[Profile] Update equipment level', { value: level });
         await setAppState('user.equipment_level', level);
         setEquipmentLevel(level);
       },
@@ -809,6 +809,7 @@ export default function ProfileScreen() {
       if (Date.now() - lastProfileLoadAt.current < PROFILE_LOAD_COOLDOWN_MS) return;
       loadData();
     }, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadData intentionally omitted to prevent re-trigger
   }, [dbReady]);
 
   useEffect(() => {
@@ -817,6 +818,7 @@ export default function ProfileScreen() {
     void loadData();
     void refreshHealthIntegrationStatus();
     void refreshHealthSyncErrors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run once on mount when dbReady
   }, [dbReady]);
 
   // Refresh data when screen gains focus (e.g. navigating back from workout)
@@ -834,7 +836,7 @@ export default function ProfileScreen() {
 
   const loadData = useCallback(async () => {
     if (isLoadingProfileRef.current) {
-      if (__DEV__) console.log('[Profile] loadData:skipped (already loading)');
+      if (__DEV__) console.warn('[Profile] loadData:skipped (already loading)');
       return;
     }
     isLoadingProfileRef.current = true;
@@ -1997,6 +1999,19 @@ export default function ProfileScreen() {
             />
           </View>
 
+          {/* ── FEEDBACK & BUG REPORT ── */}
+          <View style={styles.section}>
+            <SectionHeader title="Feedback" delay={750} />
+            <MenuItem
+              icon="message-star-outline"
+              label="Review & Bug Report"
+              sublabel="Help us improve FitQuest"
+              color={theme.colors.accent}
+              delay={760}
+              onPress={() => router.push('/feedback' as any)}
+            />
+          </View>
+
           {/* ── LOGOUT ── */}
           <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.logoutSection}>
             <TouchableOpacity
@@ -2283,7 +2298,9 @@ export default function ProfileScreen() {
                     <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>
                       {t('help.contactTitle')}
                     </Text>
-                    <Text style={{ color: theme.colors.accent, fontSize: 12, marginTop: 2 }}>support@fitquest.app</Text>
+                    <Text style={{ color: theme.colors.accent, fontSize: 12, marginTop: 2 }}>
+                      fitquestsupp0rt@gmail.com
+                    </Text>
                   </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>

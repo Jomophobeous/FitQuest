@@ -5,7 +5,7 @@
  * Extracted from monolithic workoutGenerator.ts
  */
 
-import type { ExerciseWithDetails, Category, TargetMuscle, TrainingType, Difficulty } from '../../../database/types';
+import type { ExerciseWithDetails, Category, TargetMuscle, Difficulty } from '../../../database/types';
 import {
   GOAL_TRAINING_PRIORITIES,
   MOVEMENT_PATTERNS,

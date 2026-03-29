@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "title": "FitQuest 2.0 — Architecture Map",
+    "version": "2.3.0",
+    "schemaVersion": 20,
+    "generatedAt": "2025-07-17T00:00:00Z",
+    "generatedBy": "Alfred Ω — Full System Discovery",
+    "framework": "React Native 0.83.2 + Expo SDK 55 + Expo Router v6",
+    "architecture": "Fully client-side, offline-first, SQLite single source of truth"
+  },
+  "layers": {
+    "presentation": {
+      "description": "UI layer — screens, components, navigation",
+      "technology": "Expo Router v6 (file-based routing), React Native, Reanimated 3",
+      "modules": {
+        "screens": {
+          "path": "app/",
+          "count": 31,
+          "router": "expo-router v6, file-based, tab layout + stack screens",
+          "tabScreens": ["dashboard.tsx", "fitquest.tsx", "move.tsx", "coach/index.tsx", "profile.tsx"],
+          "layout": "app/_layout.tsx — ThemeProvider → LanguageProvider → DatabaseProvider → AuthProvider → SubscriptionProvider → Tabs"
+        },
+        "components": {
+          "path": "src/components/",
+          "count": 41,
+          "designSystem": "Glass morphism (GlassUI.tsx) + themed components",
+          "coreExports": ["GlassCard", "GradientButton", "ProgressRing", "SectionHeader", "ThemedText", "AnimatedListItem"],
+          "accessControl": ["PremiumGate", "AuthGate"],
+          "charts": ["ThemedChart", "WorkoutTrendChart", "MuscleDistributionChart", "StepsChart", "StreakCalendar", "XPProgressChart"]
+        }
+      }
+    },
+    "state": {
+      "description": "State management — contexts, hooks, stores",
+      "modules": {
+        "contexts": {
+          "path": "src/context/",
+          "count": 4,
+          "hierarchy": ["ThemeProvider", "LanguageProvider", "DatabaseProvider", "AuthProvider"],
+          "pattern": "React Context + Provider + useX() hook"
+        },
+        "subscriptionContext": {
+          "path": "src/purchases/SubscriptionContext.tsx",
+          "pattern": "Wraps SubscriptionManager singleton in React Context"
+        },
+        "hooks": {
+          "path": "src/hooks/",
+          "count": 6,
+          "domainHooks": ["useFitQuestWorkout", "useTimer", "usePedometer", "useAudio"],
+          "utilityHooks": ["useCustom (6 hooks)", "useSystemState"]
+        },
+        "zustand": {
+          "path": "store/useAuthStore.ts",
+          "scope": "Auth token/user only — minimal Zustand usage"
+        }
+      }
+    },
+    "domain": {
+      "description": "Business logic — engines, AI, workout generation",
+      "modules": {
+        "workoutEngine": {
+          "path": "src/engines/",
+          "pattern": "workoutGenerator (v1) + WorkoutEngine (v2 modular) with legacyAdapter bridge",
+          "flow": "Profile → Fatigue Map → Exercise Selection → Muscle Balance → Volume Prescription → Validation → Session",
+          "supporting": ["progressionEngine", "recoveryEngine", "warmupCooldownGenerator", "edgeCaseGuards"]
+        },
+        "healthEngines": {
+          "pattern": "Singletons with getInstance()",
+          "engines": ["SensorFusionEngine", "HealthMonitor", "AnomalyDetector", "SleepAnalysisEngine", "BackgroundHealthEngine", "StepCounterEngine"],
+          "orchestrator": "BackgroundHealthEngine — 5min collection, 30min anomaly, daily summaries"
+        },
+        "aiEngines": {
+          "engines": ["DualAIEngine", "IntentRouter", "UserStateEngine", "AdaptiveMemoryEngine"],
+          "personalities": {"COACH": "Fitness guidance", "PROFESSOR": "Knowledge/reading"},
+          "intentCategories": ["COACH", "PROFESSOR", "HEALTH", "WORKOUT", "NAVIGATION", "SETTINGS", "GENERAL"]
+        },
+        "mlModels": {
+          "path": "src/ai/",
+          "models": [
+            {"name": "TrainedIntentRouter", "type": "SVC", "purpose": "Intent classification"},
+            {"name": "TrainedActivityClassifier", "type": "Random Forest", "purpose": "Activity recognition from sensors"},
+            {"name": "DeepActivityClassifier", "type": "CNN + BiLSTM", "purpose": "Advanced activity recognition (experimental)"},
+            {"name": "TrainedFitCoach", "type": "Template-based", "purpose": "Coaching response generation"},
+            {"name": "SemanticSearch", "type": "MiniLM embeddings", "purpose": "Document semantic search"},
+            {"name": "NeuralSummarizer", "type": "BERT extractive", "purpose": "Text summarization"}
+          ]
+        },
+        "bodycraft": {
+          "engines": ["bodyCraftEngine.ts"],
+          "service": "bodyCraftService.ts",
+          "purpose": "Body transformation algorithm — body type, goals, macros, training split"
+        }
+      }
+    },
+    "data": {
+      "description": "Persistence — SQLite, encrypted storage, caching, recovery",
+      "modules": {
+        "sqlite": {
+          "path": "src/database/",
+          "technology": "expo-sqlite with WAL mode",
+          "schemaVersion": 20,
+          "tableCount": "30+",
+          "tableGroups": {
+            "core": ["exercises", "exercise_muscles", "exercise_equipment", "exercise_training_types", "exercise_images", "user_profile", "user_equipment", "user_injuries", "muscle_fatigue", "workout_sessions", "session_exercises", "progress_records", "subscription_state", "trial_state", "app_state", "workout_streaks", "daily_steps", "jog_sessions", "audio_settings", "body_craft_algorithms", "exercise_translations"],
+            "encrypted": ["encrypted_health_data", "encrypted_ai_conversations", "encrypted_notes", "health_alerts"],
+            "fitmind": ["fitmind_documents", "fitmind_reading_sessions", "fitmind_annotations", "fitmind_flashcards", "fitmind_reading_goals", "fitmind_reading_streaks"],
+            "healthMonitoring": ["heart_rate_readings", "anomaly_log", "daily_health_summaries", "document_content_hashes"]
+          },
+          "pragmas": ["journal_mode=WAL", "foreign_keys=ON", "mmap_size=268435456", "cache_size=-8000"]
+        },
+        "encryptedStorage": {
+          "path": "src/security/EncryptedDatabase.ts",
+          "technology": "AES-256-GCM (v3)",
+          "keyDerivation": "PBKDF2-SHA256, 100k iterations",
+          "keyStorage": "expo-secure-store",
+          "autoMigration": "v1(XOR) → v2(CTR+HMAC) → v3(AES-GCM)"
+        },
+        "caching": {
+          "layers": [
+            {"name": "QueryCache", "file": "src/database/queryCache.ts", "ttl": "5min", "scope": "DB queries"},
+            {"name": "ComputationCache", "file": "src/engines/ComputationCache.ts", "scope": "Engine computations"},
+            {"name": "TranslationRegistry", "file": "src/i18n/TranslationRegistry.ts", "type": "LRU", "size": 10000, "scope": "i18n lookups"},
+            {"name": "CacheStoreService", "file": "src/services/cacheStoreService.ts", "scope": "Persistent cache"}
+          ]
+        },
+        "durability": {
+          "writeAheadLog": "src/services/WriteAheadLogService.ts",
+          "snapshots": "src/services/SnapshotService.ts",
+          "recovery": "src/services/RecoveryService.ts",
+          "pattern": "WAL → Mutation → Snapshot → Recovery on crash"
+        }
+      }
+    },
+    "security": {
+      "description": "Authentication, encryption, secure storage",
+      "modules": {
+        "authentication": {
+          "primary": "Biometric (Face ID / Touch ID / Fingerprint)",
+          "fallback": "PBKDF2-hardened passcode",
+          "lockout": "5 attempts → exponential backoff, 15 total → emergency wipe",
+          "session": "30-minute expiry, token in SecureStore",
+          "provider": "src/context/AuthContext.tsx + src/security/AuthService.ts + src/security/BiometricAuth.ts"
+        },
+        "encryption": {
+          "algorithm": "AES-256-GCM (v3)",
+          "keyDerivation": "PBKDF2-SHA256 (100,000 iterations)",
+          "protectedData": ["Health metrics (HR, sleep, weight)", "AI conversations", "Personal notes", "Health alerts"],
+          "keyRotation": "Automatic detection via shouldRotateKey()",
+          "secureDelete": "encryptedDB.secureDelete() for GDPR/POPIA"
+        },
+        "storage": {
+          "credentials": "expo-secure-store (Keychain/Keystore)",
+          "masterKey": "SecureStore-backed, never in memory longer than needed",
+          "noAsyncStorage": true
+        }
+      }
+    },
+    "platform": {
+      "description": "Platform services, monetization, analytics",
+      "modules": {
+        "monetization": {
+          "provider": "RevenueCat",
+          "tiers": ["free", "premium"],
+          "trial": "14 days full access",
+          "offlineGrace": true,
+          "premiumScreens": 5,
+          "enforcement": "PremiumGate component + SubscriptionManager singleton"
+        },
+        "analytics": {
+          "provider": "PostHog",
+          "features": ["Product analytics", "Session replay"],
+          "package": "posthog-react-native + posthog-react-native-session-replay"
+        },
+        "crashReporting": {
+          "provider": "Sentry",
+          "package": "@sentry/react-native"
+        },
+        "aiProviders": {
+          "chain": ["Grok (primary)", "Groq (fallback 1)", "OpenRouter (fallback 2)"],
+          "pattern": "Waterfall fallback with timeout"
+        }
+      }
+    },
+    "i18n": {
+      "description": "Internationalization — two-tier translation system",
+      "tiers": {
+        "uiStrings": {
+          "file": "src/i18n/translations.ts",
+          "keys": 648,
+          "languages": 15,
+          "totalLines": 20120,
+          "resolver": "LanguageContext → t(key) → translations[lang][key]"
+        },
+        "exerciseData": {
+          "path": "src/i18n/translations/",
+          "exercises": 3312,
+          "languages": 14,
+          "totalTranslations": 46368,
+          "totalLines": 725951,
+          "storage": "SQLite exercise_translations table",
+          "resolver": "TranslationResolver → TranslationRegistry (LRU 10k) → SQLite → fallback to English"
+        }
+      }
+    }
+  },
+  "dataFlows": {
+    "appLaunch": {
+      "sequence": [
+        "1. _layout.tsx mounts provider hierarchy",
+        "2. DatabaseContext: initializeDatabase() → schema creation → migrations → seeding",
+        "3. AuthContext: restore session from SecureStore → biometric check",
+        "4. ThemeContext: load preference from app_state",
+        "5. LanguageContext: load language, preload exercise translations",
+        "6. WriteAheadLogService: init WAL, check for unfinished replays",
+        "7. SnapshotService: check snapshot schedule",
+        "8. RecoveryService: check for corruption, repair if needed",
+        "9. Route to appropriate screen (splash → onboarding/dashboard)"
+      ]
+    },
+    "workoutGeneration": {
+      "sequence": [
+        "1. User taps 'Start Workout' on dashboard or fitquest",
+        "2. useFitQuestWorkout hook → workoutGenerator.generateWorkout()",
+        "3. Generator reads: user_profile, muscle_fatigue, available exercises, equipment",
+        "4. Pipeline: fatigue filtering → goal targeting → muscle balancing → volume prescription → edge case guards",
+        "5. Returns WorkoutSession with ordered exercises, prescribed sets/reps",
+        "6. warmupCooldownGenerator adds warmup/cooldown exercises",
+        "7. Session stored in workout_sessions + session_exercises tables"
+      ]
+    },
+    "activeWorkout": {
+      "sequence": [
+        "1. Timer starts per exercise (timerService singleton)",
+        "2. Audio cues play (audioService → expo-speech TTS)",
+        "3. Sensor fusion polls at 10Hz (SensorFusionEngine) for rep detection",
+        "4. User marks sets complete → progressionEngine records performance",
+        "5. Muscle fatigue accumulated per exercise → muscle_fatigue table",
+        "6. Rest timer between sets (RestTimerOverlay component)",
+        "7. Next exercise → GetReadyOverlay → timer → repeat"
+      ]
+    },
+    "workoutCompletion": {
+      "sequence": [
+        "1. All exercises completed or session ended",
+        "2. Session analysis: total exercises, completion rate, duration",
+        "3. XP calculation: 100 base + 20/exercise + streak bonus (xpService)",
+        "4. Streak update: workout_streaks table",
+        "5. Snapshot triggered (SnapshotService)",
+        "6. dataSyncService broadcasts 'workout_completed' event",
+        "7. ConfettiBurst animation + WorkoutSummaryView"
+      ]
+    },
+    "dailyRecovery": {
+      "sequence": [
+        "1. recoveryEngine.dailyRecoveryTick()",
+        "2. Each muscle: fatigue -= 8% per day (passive recovery)",
+        "3. Sleep quality multiplier applied (SleepAnalysisEngine)",
+        "4. BackgroundHealthEngine: 5min data collection cycle",
+        "5. AnomalyDetector: 30min check cycle → encrypted alerts if anomaly found",
+        "6. Daily summary written to daily_health_summaries table"
+      ]
+    },
+    "aiConversation": {
+      "sequence": [
+        "1. User types message in Coach screen",
+        "2. IntentRouter classifies intent → COACH/HEALTH/WORKOUT/etc.",
+        "3. UserStateEngine aggregates user context (fatigue, streak, goals)",
+        "4. DualAIEngine selects COACH personality",
+        "5. Template-based response + optional API augmentation (Grok → Groq → OpenRouter)",
+        "6. Conversation encrypted and stored in encrypted_ai_conversations",
+        "7. AdaptiveMemoryEngine updates coaching memory"
+      ]
+    },
+    "subscriptionCheck": {
+      "sequence": [
+        "1. SubscriptionManager checks RevenueCat entitlements",
+        "2. Fallback to local trial_state table if offline",
+        "3. State machine: LOADING → check tier → TRIAL (14 days) / FULL (premium) / LOCKED (expired)",
+        "4. PremiumGate component reads SubscriptionContext",
+        "5. Gated content shows paywall or premium features based on tier"
+      ]
+    }
+  },
+  "dependencyGraph": {
+    "presentation_depends_on": ["state", "domain", "i18n"],
+    "state_depends_on": ["data", "security"],
+    "domain_depends_on": ["data", "security"],
+    "data_depends_on": ["security"],
+    "security_depends_on": [],
+    "platform_depends_on": ["state", "data"],
+    "i18n_depends_on": ["data"]
+  },
+  "singletonRegistry": {
+    "description": "All singletons in the system — instantiated once, accessed globally",
+    "instances": [
+      {"name": "encryptedDB", "file": "src/security/EncryptedDatabase.ts", "scope": "Data encryption"},
+      {"name": "bioAuth", "file": "src/security/BiometricAuth.ts", "scope": "Biometric auth"},
+      {"name": "sensorFusion", "file": "src/engines/SensorFusionEngine.ts", "scope": "Sensor data fusion"},
+      {"name": "healthMonitor", "file": "src/engines/HealthMonitor.ts", "scope": "Health tracking"},
+      {"name": "anomalyDetector", "file": "src/engines/AnomalyDetector.ts", "scope": "Anomaly detection"},
+      {"name": "sleepEngine", "file": "src/engines/SleepAnalysisEngine.ts", "scope": "Sleep analysis"},
+      {"name": "backgroundHealth", "file": "src/engines/BackgroundHealthEngine.ts", "scope": "Background health orchestrator"},
+      {"name": "dualAI", "file": "src/engines/DualAIEngine.ts", "scope": "AI personalities"},
+      {"name": "intentRouter", "file": "src/engines/IntentRouter.ts", "scope": "NLP intent routing"},
+      {"name": "userStateEngine", "file": "src/engines/UserStateEngine.ts", "scope": "User state aggregation"},
+      {"name": "timerService", "file": "src/services/timerService.ts", "scope": "Workout timers"},
+      {"name": "audioService", "file": "src/services/audioService.ts", "scope": "TTS coaching"},
+      {"name": "dataSync", "file": "src/services/dataSyncService.ts", "scope": "Cross-component sync events"},
+      {"name": "walService", "file": "src/services/WriteAheadLogService.ts", "scope": "Write-ahead logging"},
+      {"name": "snapshotService", "file": "src/services/SnapshotService.ts", "scope": "DB snapshots"},
+      {"name": "recoveryService", "file": "src/services/RecoveryService.ts", "scope": "Crash recovery"},
+      {"name": "mutationQueue", "file": "src/services/mutationQueueService.ts", "scope": "Offline mutation queue"},
+      {"name": "systemGuard", "file": "src/services/SystemGuard.ts", "scope": "System health"},
+      {"name": "notificationReliability", "file": "src/services/notificationReliabilityService.ts", "scope": "Notification delivery"},
+      {"name": "subscriptionManager", "file": "src/purchases/SubscriptionManager.ts", "scope": "Subscription state"},
+      {"name": "translationRegistry", "file": "src/i18n/TranslationRegistry.ts", "scope": "Translation cache"}
+    ]
+  },
+  "buildConfiguration": {
+    "runtime": {"node": "v25.5.0", "platform": "React Native 0.83.2", "expo": "SDK 55"},
+    "build": {"metro": "metro.config.js", "babel": "babel.config.js (reanimated plugin LAST)", "typescript": "tsconfig.json (strict)"},
+    "ci": {"tool": "GitHub Actions", "checks": ["tsc strict", "eslint (ratchet 804 warnings)", "prettier", "vitest"]},
+    "eas": {"config": "eas.json", "platform": "Android (primary)", "profile": "dev-client for native modules"},
+    "scripts": {
+      "start": "expo start",
+      "android": "expo run:android",
+      "web": "expo start --web",
+      "lint": "eslint .",
+      "test": "vitest"
+    }
+  }
+}

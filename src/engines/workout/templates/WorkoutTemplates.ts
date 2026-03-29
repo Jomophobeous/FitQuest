@@ -205,7 +205,7 @@ export function suggestTemplate(
   goal: Category,
   sessionsPerWeek: number,
   dayInWeek: number,
-  preferredDuration?: number,
+  _preferredDuration?: number,
 ): WorkoutTemplate {
   const suitableTemplates = getTemplatesForGoal(goal);
 

@@ -10,7 +10,7 @@
  *  • Auto-dismisses after countdown reaches 0
  */
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Modal, StyleSheet, Vibration } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { ZoomIn, FadeIn, FadeInUp, FadeInDown } from 'react-native-reanimated';

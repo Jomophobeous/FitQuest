@@ -11,7 +11,7 @@
  * All data processed and stored on-device. Nothing leaves the phone.
  */
 
-import { SensorFusionEngine, type ActivityType, type StepData, type MotionSnapshot } from './SensorFusionEngine';
+import { SensorFusionEngine, type ActivityType, type MotionSnapshot } from './SensorFusionEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
 import { getAppState, setAppState } from '../database/service';
 import { systemGuard } from '../services/SystemGuard';
@@ -153,7 +153,7 @@ export class HealthMonitorService {
     );
 
     this.initialized = true;
-    if (__DEV__) console.log('[HealthMonitor] Initialized');
+    if (__DEV__) console.warn('[HealthMonitor] Initialized');
   }
 
   /**
@@ -171,7 +171,7 @@ export class HealthMonitorService {
 
     await this.saveTodaySummary();
     this.initialized = false;
-    if (__DEV__) console.log('[HealthMonitor] Shutdown');
+    if (__DEV__) console.warn('[HealthMonitor] Shutdown');
   }
 
   // ============================================

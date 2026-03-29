@@ -40,7 +40,7 @@ export function useAudio(): UseAudioReturn {
     audioService.initialize(DEFAULT_USER_ID);
 
     // Subscribe to audio events
-    const unsubscribe = audioService.subscribe((event, text) => {
+    const unsubscribe = audioService.subscribe((event, _text) => {
       setCurrentPhase(event);
       setIsPlaying(audioService.isPlaying());
     });

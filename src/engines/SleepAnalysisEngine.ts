@@ -24,7 +24,6 @@
 
 import * as Crypto from 'expo-crypto';
 import { encryptedDB } from '../security/EncryptedDatabase';
-import { getDatabase } from '../database/schema';
 
 // ============================================
 // TYPES
@@ -77,13 +76,13 @@ export interface SleepGoal {
 // ============================================
 
 const RECOMMENDED_SLEEP_MS = 8 * 60 * 60 * 1000; // 8 hours
-const MIN_SLEEP_MS = 7 * 60 * 60 * 1000; // 7 hours
-const ATHLETE_SLEEP_MS = 9 * 60 * 60 * 1000; // 9 hours
+const _MIN_SLEEP_MS = 7 * 60 * 60 * 1000; // 7 hours
+const _ATHLETE_SLEEP_MS = 9 * 60 * 60 * 1000; // 9 hours
 const HOUR_MS = 60 * 60 * 1000;
-const DAY_MS = 24 * HOUR_MS;
+const _DAY_MS = 24 * HOUR_MS;
 
 // Sleep stage distribution (typical healthy adult, % of total sleep)
-const IDEAL_STAGE_DISTRIBUTION = {
+const _IDEAL_STAGE_DISTRIBUTION = {
   AWAKE: 0.05, // 5% (brief awakenings)
   LIGHT: 0.5, // 50%
   DEEP: 0.2, // 20%
@@ -171,7 +170,7 @@ export class SleepAnalysisEngine {
     await encryptedDB.storeHealthData('sleep_session', session);
 
     if (__DEV__) {
-      console.log(
+      console.warn(
         `[SleepEngine] Session recorded: ${(totalDurationMs / HOUR_MS).toFixed(1)}h, quality: ${qualityScore}`,
       );
     }

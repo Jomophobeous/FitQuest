@@ -14,7 +14,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 const IS_DEV_CLIENT = process.env.FITQUEST_DEV_CLIENT === '1';
 const APP_ENV = process.env.EXPO_PUBLIC_ENV || (__DEV__ ? 'development' : 'production');
 
-export default ({ config }: ConfigContext): ExpoConfig => {
+export default ({ config: _config }: ConfigContext): ExpoConfig => {
   // ── Plugins common to both profiles ──
   const basePlugins: ExpoConfig['plugins'] = [
     'expo-router',
@@ -39,21 +39,22 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     ],
     // Sentry crash reporting — always included for native builds
-    ['@sentry/react-native', {
-      organization: 'fitquest-x4',
-      project: 'react-native',
-    }],
+    [
+      '@sentry/react-native',
+      {
+        organization: 'fitquest-x4',
+        project: 'react-native',
+      },
+    ],
   ];
 
   // ── Native-only plugins (require dev-client build) ──
-  const nativePlugins: ExpoConfig['plugins'] = IS_DEV_CLIENT
-    ? []
-    : [];
+  const nativePlugins: ExpoConfig['plugins'] = IS_DEV_CLIENT ? [] : [];
 
   return {
     name: 'FitQuest',
     slug: 'fitquest',
-    version: '2.3.0',
+    version: '1.0.0',
     sdkVersion: '55.0.0',
 
     // runtimeVersion required for EAS Update on all build profiles
@@ -74,16 +75,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       bundleIdentifier: 'com.hugelet.fitquest',
       buildNumber: '2',
       infoPlist: {
-        NSCameraUsageDescription:
-          'FitQuest needs camera access to capture progress photos and profile pictures.',
+        NSCameraUsageDescription: 'FitQuest needs camera access to capture progress photos and profile pictures.',
         NSPhotoLibraryUsageDescription:
           'FitQuest needs photo library access to select profile pictures and import documents.',
-        NSLocationWhenInUseUsageDescription:
-          'FitQuest uses your location to track jog routes and estimate distance.',
-        NSMotionUsageDescription:
-          'FitQuest uses motion sensors to count steps and track workout movements.',
-        NSFaceIDUsageDescription:
-          'FitQuest uses Face ID to securely protect your health data and app access.',
+        NSLocationWhenInUseUsageDescription: 'FitQuest uses your location to track jog routes and estimate distance.',
+        NSMotionUsageDescription: 'FitQuest uses motion sensors to count steps and track workout movements.',
+        NSFaceIDUsageDescription: 'FitQuest uses Face ID to securely protect your health data and app access.',
         // Health permissions for dev-client only
         ...(IS_DEV_CLIENT && {
           NSHealthShareUsageDescription:

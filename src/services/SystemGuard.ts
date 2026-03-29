@@ -71,7 +71,7 @@ class SystemGuardService {
     this._state = 'READY';
     this._error = null;
     this.notify();
-    if (__DEV__) console.log('[SystemGuard] State → READY');
+    if (__DEV__) console.warn('[SystemGuard] State → READY');
   }
 
   /** Call when DB integrity validation begins */
@@ -79,7 +79,7 @@ class SystemGuardService {
     this._state = 'VALIDATING';
     this._error = null;
     this.notify();
-    if (__DEV__) console.log('[SystemGuard] State → VALIDATING');
+    if (__DEV__) console.warn('[SystemGuard] State → VALIDATING');
   }
 
   /** Call when data issues found, auto-repair in progress */
@@ -103,7 +103,7 @@ class SystemGuardService {
     this._state = 'BOOTING';
     this._error = null;
     this.notify();
-    if (__DEV__) console.log('[SystemGuard] State → BOOTING (retry)');
+    if (__DEV__) console.warn('[SystemGuard] State → BOOTING (retry)');
   }
 
   // ── Listener management ────────────────────────────────────

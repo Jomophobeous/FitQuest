@@ -123,7 +123,9 @@ export function usePedometer(): UsePedometerReturn {
 
   // Check availability on mount
   useEffect(() => {
-    Pedometer.isAvailableAsync().then(setIsAvailable);
+    Pedometer.isAvailableAsync()
+      .then(setIsAvailable)
+      .catch(() => setIsAvailable(false));
   }, []);
 
   // Load today's steps from database
@@ -172,8 +174,8 @@ export function usePedometer(): UsePedometerReturn {
           baseStepsRef.current = result.steps;
           setTodaySteps(result.steps);
           await saveTodaySteps(result.steps);
-        } catch (e) {
-          if (__DEV__) console.log('[Pedometer] getStepCountAsync not available, starting from loaded value');
+        } catch {
+          if (__DEV__) console.warn('[Pedometer] getStepCountAsync not available, starting from loaded value');
         }
       }
 
@@ -187,9 +189,9 @@ export function usePedometer(): UsePedometerReturn {
           saveTodaySteps(newTotal);
         });
         nativePedometerStarted = true;
-        if (__DEV__) console.log('[Pedometer] Native pedometer subscription started');
+        if (__DEV__) console.warn('[Pedometer] Native pedometer subscription started');
       } catch (e) {
-        if (__DEV__) console.log('[Pedometer] Native pedometer subscription failed:', e);
+        if (__DEV__) console.warn('[Pedometer] Native pedometer subscription failed:', e);
       }
 
       // Start SensorFusion as fallback step counter
@@ -198,9 +200,9 @@ export function usePedometer(): UsePedometerReturn {
       if (!engine.isRunning()) {
         try {
           await engine.start();
-          if (__DEV__) console.log('[Pedometer] SensorFusion fallback started');
+          if (__DEV__) console.warn('[Pedometer] SensorFusion fallback started');
         } catch (e) {
-          if (__DEV__) console.log('[Pedometer] SensorFusion start failed:', e);
+          if (__DEV__) console.warn('[Pedometer] SensorFusion start failed:', e);
         }
       }
 
@@ -219,7 +221,7 @@ export function usePedometer(): UsePedometerReturn {
       }, 2000); // Check every 2 seconds
 
       setIsTracking(true);
-      if (__DEV__) console.log('[Pedometer] Tracking started (native:', nativePedometerStarted, ', fallback: active)');
+      if (__DEV__) console.warn('[Pedometer] Tracking started (native:', nativePedometerStarted, ', fallback: active)');
     } catch (error) {
       if (__DEV__) console.error('[Pedometer] Failed to start tracking:', error);
     }
@@ -295,7 +297,7 @@ export function usePedometer(): UsePedometerReturn {
           const gpsStarted = await distanceEngine.startTracking();
           if (gpsStarted) {
             jogUsingGPSRef.current = true;
-            if (__DEV__) console.log('[Pedometer] GPS tracking started for jog');
+            if (__DEV__) console.warn('[Pedometer] GPS tracking started for jog');
             const updateStats = () => {
               try {
                 setJogStats(distanceEngine.getStats());
@@ -306,7 +308,7 @@ export function usePedometer(): UsePedometerReturn {
             distanceEngine.on('distance', updateStats);
             distanceEngine.on('location', updateStats);
           } else {
-            if (__DEV__) console.log('[Pedometer] GPS not available, using step-based distance');
+            if (__DEV__) console.warn('[Pedometer] GPS not available, using step-based distance');
             startStepFallbackInterval();
           }
         } catch (error) {
@@ -320,6 +322,7 @@ export function usePedometer(): UsePedometerReturn {
     if (!useGPS) {
       startStepFallbackInterval();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- startStepFallbackInterval defined below; circular dep if included
   }, []);
 
   // Step-based distance fallback interval (used when GPS is unavailable)
@@ -382,7 +385,7 @@ export function usePedometer(): UsePedometerReturn {
       distanceEngine.removeAllListeners('location');
 
       if (__DEV__) {
-        console.log('[Pedometer] Jog stopped with GPS data:', {
+        console.warn('[Pedometer] Jog stopped with GPS data:', {
           distance: distanceMeters,
           pace: avgPacePerKm,
           elevation: elevationGainMeters,
@@ -396,7 +399,7 @@ export function usePedometer(): UsePedometerReturn {
       caloriesEstimate = stepSessionData.caloriesBurned;
 
       if (__DEV__) {
-        console.log('[Pedometer] Jog stopped with step-based data:', {
+        console.warn('[Pedometer] Jog stopped with step-based data:', {
           distance: distanceMeters,
           steps: stepSessionData.steps,
         });
@@ -438,6 +441,7 @@ export function usePedometer(): UsePedometerReturn {
     }
 
     return completedSession;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- todaySteps flagged as unnecessary; currentJog is the real dependency
   }, [currentJog, todaySteps]);
 
   const getStepHistory = useCallback(async (days: number): Promise<DailySteps[]> => {

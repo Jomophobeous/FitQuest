@@ -211,6 +211,9 @@ export default function MealPrepScreen() {
 
   useEffect(() => {
     let active = true;
+    // Reset expand states when location changes to prevent layout corruption
+    setShowAllFoods(false);
+    setShowMoreMeal(false);
     const loadFoods = async () => {
       const regionCode = String(location?.isoCountryCode || 'GLOBAL').toUpperCase();
       const cacheId = `foods_${regionCode}`;

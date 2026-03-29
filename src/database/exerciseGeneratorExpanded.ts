@@ -9835,7 +9835,7 @@ export function generateAllExercises(): GeneratedExercise[] {
   }
 
   if (__DEV__)
-    console.log(`[ExerciseGenerator] Generated ${exercises.length} exercises from ${allTemplates.length} templates`);
+    console.warn(`[ExerciseGenerator] Generated ${exercises.length} exercises from ${allTemplates.length} templates`);
   return exercises;
 }
 

@@ -17,7 +17,7 @@ export function initializeCrashReporting(): void {
 
   const dsn = getSentryDsn();
   if (!dsn) {
-    if (__DEV__) console.log('[Observability] Crash reporting skipped (no EXPO_PUBLIC_SENTRY_DSN)');
+    if (__DEV__) console.warn('[Observability] Crash reporting skipped (no EXPO_PUBLIC_SENTRY_DSN)');
     return;
   }
 

@@ -116,7 +116,7 @@ export class TrialOnboarding {
         trigger: null, // Immediately
       });
     } catch (e) {
-      if (__DEV__) console.log('[TrialOnboarding] Day 0 notification error:', e);
+      if (__DEV__) console.warn('[TrialOnboarding] Day 0 notification error:', e);
     }
   }
 
@@ -136,7 +136,7 @@ export class TrialOnboarding {
           trigger: { seconds: 3 * 24 * 60 * 60, type: 'timeInterval' as any },
         });
       } catch (e) {
-        if (__DEV__) console.log('[TrialOnboarding] Day 3 notification error:', e);
+        if (__DEV__) console.warn('[TrialOnboarding] Day 3 notification error:', e);
       }
     }
   }
@@ -155,7 +155,7 @@ export class TrialOnboarding {
         trigger: { seconds: 7 * 24 * 60 * 60, type: 'timeInterval' as any },
       });
     } catch (e) {
-      if (__DEV__) console.log('[TrialOnboarding] Day 7 notification error:', e);
+      if (__DEV__) console.warn('[TrialOnboarding] Day 7 notification error:', e);
     }
   }
 
@@ -173,7 +173,7 @@ export class TrialOnboarding {
         trigger: { seconds: 12 * 24 * 60 * 60, type: 'timeInterval' as any },
       });
     } catch (e) {
-      if (__DEV__) console.log('[TrialOnboarding] Day 12 notification error:', e);
+      if (__DEV__) console.warn('[TrialOnboarding] Day 12 notification error:', e);
     }
   }
 
@@ -191,7 +191,7 @@ export class TrialOnboarding {
         trigger: { seconds: 14 * 24 * 60 * 60, type: 'timeInterval' as any },
       });
     } catch (e) {
-      if (__DEV__) console.log('[TrialOnboarding] Day 14 notification error:', e);
+      if (__DEV__) console.warn('[TrialOnboarding] Day 14 notification error:', e);
     }
   }
 }

@@ -412,6 +412,7 @@ export default function SavedWorkoutsScreen() {
         </AnimatedListItem>
       );
     },
+
     [expandedId, expandedExercises, theme, t, confirmDelete, handleStartWorkout, toggleExpand],
   );
 

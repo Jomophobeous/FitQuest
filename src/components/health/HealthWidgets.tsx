@@ -55,7 +55,7 @@ export function MetricRing({
   icon,
   label,
   unit,
-  theme,
+  theme: _theme,
 }: MetricRingProps) {
   const progress = Math.min(1, value / Math.max(1, max));
 
@@ -168,7 +168,7 @@ interface TrendBarProps {
   theme: any;
 }
 
-export function TrendBar({ data, color, theme }: TrendBarProps) {
+export function TrendBar({ data, color, theme: _theme }: TrendBarProps) {
   if (data.length === 0) return null;
   const maxVal = Math.max(...data.map((d) => d.value), 1);
 

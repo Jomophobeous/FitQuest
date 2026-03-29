@@ -3,14 +3,8 @@
  * React hook for timer integration in workout screens
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  timerService,
-  formatTime,
-  formatTimeHuman,
-  TimerEvent,
-  TimerState as ServiceTimerState,
-} from '../services/timerService';
+import { useState, useEffect, useCallback } from 'react';
+import { timerService, formatTime, formatTimeHuman, TimerState as ServiceTimerState } from '../services/timerService';
 
 export interface TimerHookState {
   state: ServiceTimerState;
@@ -73,17 +67,17 @@ export function useTimer(): UseTimerReturn {
 
   useEffect(() => {
     // Subscribe to exercise timer
-    const unsubExercise = timerService.getExerciseTimer().subscribe((event) => {
+    const unsubExercise = timerService.getExerciseTimer().subscribe((_event) => {
       setExerciseState(createTimerState(timerService.getExerciseTimer().getState()));
     });
 
     // Subscribe to rest timer
-    const unsubRest = timerService.getRestTimer().subscribe((event) => {
+    const unsubRest = timerService.getRestTimer().subscribe((_event) => {
       setRestState(createTimerState(timerService.getRestTimer().getState()));
     });
 
     // Subscribe to session timer
-    const unsubSession = timerService.getSessionTimer().subscribe((event) => {
+    const unsubSession = timerService.getSessionTimer().subscribe((_event) => {
       setSessionState(createTimerState(timerService.getSessionTimer().getState()));
     });
 

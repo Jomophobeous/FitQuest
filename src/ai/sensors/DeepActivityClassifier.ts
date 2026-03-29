@@ -113,7 +113,7 @@ export class DeepActivityClassifier {
       }
 
       if (!modelData) {
-        if (__DEV__) console.log('[DeepActivityClassifier] No model available');
+        if (__DEV__) console.warn('[DeepActivityClassifier] No model available');
         return false;
       }
       this.model = modelData;
@@ -121,7 +121,7 @@ export class DeepActivityClassifier {
       this.isLoaded = true;
       const version = (this.model as any).version ?? '2.0.0';
       if (__DEV__) {
-        console.log(
+        console.warn(
           `[DeepActivityClassifier] v${version}: CNN-LSTM, ` +
             `window=${this.model.windowSize}, ` +
             `classes=${this.model.numClasses}, ` +

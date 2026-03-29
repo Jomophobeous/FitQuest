@@ -10,7 +10,7 @@
  * 3. Remove this adapter
  */
 
-import { getWorkoutEngine, WorkoutPlan, PrescribedExercise, WorkoutEngineFlags, MuscleRecoveryStatus } from './index';
+import { getWorkoutEngine, WorkoutPlan, MuscleRecoveryStatus } from './index';
 import type { ExerciseWithDetails, TargetMuscle, Category } from '../../database/types';
 import { getAppState, setAppState } from '../../database/service';
 

@@ -8,14 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, useWindowDimensions, Text } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withDelay,
-  Easing,
-  runOnJS,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, Easing } from 'react-native-reanimated';
 
 const EMOJIS = ['🎉', '⭐', '💪', '🔥', '✨', '🏆', '🥇', '💥'];
 const PARTICLE_COUNT = 18;
@@ -40,7 +33,7 @@ interface Particle {
   scale: number;
 }
 
-function generateParticles(width: number): Particle[] {
+function generateParticles(_width: number): Particle[] {
   return Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
     id: i,
     emoji: EMOJIS[i % EMOJIS.length]!,

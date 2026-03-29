@@ -3,8 +3,8 @@
  * Uses react-native-pdf for native PDF rendering.
  * Gracefully handles missing native module (Expo Go).
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ViewStyle, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 
 interface PdfViewerSource {
   uri: string;

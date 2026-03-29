@@ -12,7 +12,7 @@
  *  • "Generate New Workout" CTA
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Animated, {
   ZoomIn,

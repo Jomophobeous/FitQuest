@@ -164,7 +164,7 @@ export class SensorFusionEngine {
     try {
       this.deepModelReady = await deepActivityClassifier.initialize();
       if (this.deepModelReady) {
-        if (__DEV__) console.log('[SensorFusion] v2.0 CNN-LSTM classifier loaded');
+        if (__DEV__) console.warn('[SensorFusion] v2.0 CNN-LSTM classifier loaded');
       }
     } catch {
       this.deepModelReady = false;
@@ -174,7 +174,7 @@ export class SensorFusionEngine {
     try {
       this.mlModelReady = await trainedActivityClassifier.initialize();
       if (this.mlModelReady) {
-        if (__DEV__) console.log('[SensorFusion] v1.0 ML activity classifier loaded');
+        if (__DEV__) console.warn('[SensorFusion] v1.0 ML activity classifier loaded');
       }
     } catch {
       if (__DEV__) console.warn('[SensorFusion] ML model unavailable — using threshold-based fallback');
@@ -248,7 +248,7 @@ export class SensorFusionEngine {
 
     // Subscribe to pedometer (OS-level step counting)
     if (pedometerAvail) {
-      const start = new Date();
+      const _start = new Date();
       // Watch step count changes
       this.pedometerSub = Pedometer.watchStepCount((result) => {
         this.pedometerSteps = result.steps;
@@ -268,7 +268,7 @@ export class SensorFusionEngine {
             this.accelSub = null;
             this.gyroSub = null;
             this.pausedByBackground = true;
-            if (__DEV__) console.log('[SensorFusion] Paused — app backgrounded');
+            if (__DEV__) console.warn('[SensorFusion] Paused — app backgrounded');
           }
         } else if (nextState === 'active' && this.pausedByBackground) {
           this.pausedByBackground = false;
@@ -278,13 +278,13 @@ export class SensorFusionEngine {
             Gyroscope.setUpdateInterval(100);
             this.gyroSub = Gyroscope.addListener((data) => this.handleGyroscope(data));
           }
-          if (__DEV__) console.log('[SensorFusion] Resumed — app foregrounded');
+          if (__DEV__) console.warn('[SensorFusion] Resumed — app foregrounded');
         }
       }, 300);
     });
 
     if (__DEV__)
-      console.log(
+      console.warn(
         `[SensorFusion] Started. Accel: ✓, Gyro: ${gyroAvail ? '✓' : '✗'}, Pedometer: ${pedometerAvail ? '✓' : '✗'}`,
       );
     return true;
@@ -308,7 +308,7 @@ export class SensorFusionEngine {
     this.gyroSub = null;
     this.pedometerSub = null;
     this.running = false;
-    if (__DEV__) console.log('[SensorFusion] Stopped');
+    if (__DEV__) console.warn('[SensorFusion] Stopped');
   }
 
   /**

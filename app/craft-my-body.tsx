@@ -51,7 +51,7 @@ import PremiumGate from '../src/components/PremiumGate';
 // ============================================
 
 const STEPS = ['Assessment', 'Goal', 'Focus', 'Timeline', 'Results'] as const;
-type Step = (typeof STEPS)[number];
+type _Step = (typeof STEPS)[number];
 
 const BODY_TYPES: { key: BodyType; label: string; icon: string; desc: string }[] = [
   { key: 'ectomorph', label: 'Ectomorph', icon: 'human-male', desc: 'Slim build, fast metabolism, lean frame' },
@@ -199,6 +199,7 @@ export default function CraftMyBodyScreen() {
         if (profile.sex && (profile.sex === 'male' || profile.sex === 'female')) setSex(profile.sex);
       })
       .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recalculate only on step change
   }, [dbReady]);
 
   // ========== Navigation ==========
@@ -289,6 +290,7 @@ export default function CraftMyBodyScreen() {
       if (__DEV__) console.error('[CraftMyBody] Failed to apply algorithm:', e);
       Alert.alert(t('craftBody.errorAlert'), t('craftBody.errorDetail'));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
   }, [algorithm]);
 
   // ========== Styles ==========

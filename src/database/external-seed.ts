@@ -84,7 +84,7 @@ async function removeDuplicateExercises(): Promise<number> {
   removed += duplicateIds.length;
 
   if (__DEV__ && duplicateIds.length > 0) {
-    console.log(`[ExternalSeed] Name-based dedup removed ${duplicateIds.length} additional duplicates`);
+    console.warn(`[ExternalSeed] Name-based dedup removed ${duplicateIds.length} additional duplicates`);
   }
 
   return removed;
@@ -100,11 +100,11 @@ async function removeDuplicateExercises(): Promise<number> {
 export async function seedExternalExercises(): Promise<void> {
   // Check if already seeded
   if (await hasExternalExercises()) {
-    if (__DEV__) console.log('[ExternalSeed] External exercises already seeded, skipping');
+    if (__DEV__) console.warn('[ExternalSeed] External exercises already seeded, skipping');
     return;
   }
 
-  if (__DEV__) console.log('[ExternalSeed] Seeding 868 external exercises...');
+  if (__DEV__) console.warn('[ExternalSeed] Seeding 868 external exercises...');
 
   const db = await getDatabase();
 
@@ -118,17 +118,17 @@ export async function seedExternalExercises(): Promise<void> {
 
     // Remove duplicates that match core exercises
     const removed = await removeDuplicateExercises();
-    if (__DEV__) console.log(`[ExternalSeed] Removed ${removed} duplicate exercises`);
+    if (__DEV__) console.warn(`[ExternalSeed] Removed ${removed} duplicate exercises`);
 
     // Verify the seed
     const count = await getExternalExerciseCount();
-    if (__DEV__) console.log(`[ExternalSeed] Seeded ${count} external exercises (after dedup)`);
+    if (__DEV__) console.warn(`[ExternalSeed] Seeded ${count} external exercises (after dedup)`);
 
     // Log category breakdown
     const categoryBreakdown = await db.getAllAsync<{ category: string; count: number }>(
       `SELECT category, COUNT(*) as count FROM exercises WHERE external_id IS NOT NULL GROUP BY category ORDER BY count DESC`,
     );
-    if (__DEV__) console.log('[ExternalSeed] Category breakdown:', JSON.stringify(categoryBreakdown));
+    if (__DEV__) console.warn('[ExternalSeed] Category breakdown:', JSON.stringify(categoryBreakdown));
   } catch (error) {
     if (__DEV__) console.error('[ExternalSeed] Failed to seed external exercises:', error);
     // Non-fatal - app can work without external exercises

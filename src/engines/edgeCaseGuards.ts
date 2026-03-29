@@ -6,14 +6,7 @@
  */
 
 import { getExercises, getMuscleFatigue, getUserProfile } from '../database/service';
-import type {
-  Exercise,
-  ExerciseFilter,
-  UserProfile,
-  MuscleFatigue,
-  TargetMuscle,
-  ExerciseWithDetails,
-} from '../database/types';
+import type { Exercise, ExerciseFilter } from '../database/types';
 import { RECOVERY_CONFIG } from './recoveryEngine';
 
 // ============================================
@@ -107,7 +100,7 @@ export async function findValidExercisesWithGuards(
       case 'fatigue_threshold':
         // Raise fatigue tolerance in steps
         for (const step of GUARD_CONFIG.fatigue_relaxation_steps) {
-          const newThreshold = RECOVERY_CONFIG.fatigue_soft_threshold + step;
+          const _newThreshold = RECOVERY_CONFIG.fatigue_soft_threshold + step;
           relaxations_applied.push(`fatigue_threshold_+${step}`);
           warnings.push(`Fatigue tolerance raised by ${step}%`);
 
@@ -187,7 +180,7 @@ export async function findValidExercisesWithGuards(
  */
 export async function ensureDeloadQuality(
   exercises: Exercise[],
-  userId: string,
+  _userId: string,
 ): Promise<{
   exercises: Exercise[];
   adjustments: string[];

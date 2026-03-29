@@ -63,7 +63,7 @@ export interface BehavioralSignal {
  * Only one signal at a time — the system speaks with one voice.
  */
 export async function getDailySignal(userId: string): Promise<BehavioralSignal> {
-  const [streakData, sessions, profile, readiness, avgFatigue, consistency] = await Promise.all([
+  const [streakData, sessions, _profile, readiness, avgFatigue, consistency] = await Promise.all([
     getStreak(userId).catch(() => ({ current: 0, longest: 0 })),
     getRecentSessions(userId, 7).catch(() => [] as WorkoutSession[]),
     getUserProfile(userId).catch(() => null),

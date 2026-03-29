@@ -49,13 +49,13 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       setError(null);
 
       // Initialize database and seed exercises
-      if (__DEV__) console.log('[FitQuest] Initializing database...');
+      if (__DEV__) console.warn('[FitQuest] Initializing database...');
       await initializeDatabase();
-      if (__DEV__) console.log('[FitQuest] Database initialized successfully');
+      if (__DEV__) console.warn('[FitQuest] Database initialized successfully');
 
       // Run recovery check: integrity → WAL → snapshot restore if needed
       const recovery = await recoveryService.run();
-      if (__DEV__) console.log(`[FitQuest] Recovery: ${recovery.outcome} (${recovery.durationMs}ms)`);
+      if (__DEV__) console.warn(`[FitQuest] Recovery: ${recovery.outcome} (${recovery.durationMs}ms)`);
 
       // Initialize WAL table (idempotent)
       await walService.initialize();
@@ -65,17 +65,23 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
 
       // Trigger snapshot on workout completion (critical data event)
       dataSync.subscribe('workout_completed', () => {
-        snapshotService.createSnapshot('workout_complete').catch(() => {});
+        snapshotService.createSnapshot('workout_complete').catch((e) => {
+          if (__DEV__) console.warn('[DB] snapshot failed', e);
+        });
       });
 
       // Trigger snapshot on profile mutation (user-critical data)
       dataSync.subscribe('profile_updated', () => {
-        snapshotService.createSnapshot('profile_updated').catch(() => {});
+        snapshotService.createSnapshot('profile_updated').catch((e) => {
+          if (__DEV__) console.warn('[DB] snapshot failed', e);
+        });
       });
 
       // Trigger snapshot on XP milestone (level up = significant state change)
       dataSync.subscribe('level_up', () => {
-        snapshotService.createSnapshot('xp_milestone').catch(() => {});
+        snapshotService.createSnapshot('xp_milestone').catch((e) => {
+          if (__DEV__) console.warn('[DB] snapshot failed', e);
+        });
       });
 
       // Check for existing user profile
@@ -86,7 +92,7 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       const didOnboard = onboardingFlag === 'true';
 
       if (!profile) {
-        if (__DEV__) console.log('[FitQuest] Creating default user profile...');
+        if (__DEV__) console.warn('[FitQuest] Creating default user profile...');
         await createUserProfile({
           id: DEFAULT_USER_ID,
           goal: 'body_control',
@@ -100,14 +106,14 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
         await lockUserProfile(DEFAULT_USER_ID);
 
         profile = await getUserProfile(DEFAULT_USER_ID);
-        if (__DEV__) console.log('[FitQuest] Default profile created and locked');
+        if (__DEV__) console.warn('[FitQuest] Default profile created and locked');
       }
 
       // Ensure existing profiles are locked (fixes existing unlocked profiles)
       if (profile && !profile.locked) {
         await lockUserProfile(DEFAULT_USER_ID);
         profile = await getUserProfile(DEFAULT_USER_ID);
-        if (__DEV__) console.log('[FitQuest] Existing profile locked');
+        if (__DEV__) console.warn('[FitQuest] Existing profile locked');
       }
 
       setUserProfile(profile);
@@ -141,12 +147,12 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       if (retryCount.current < MAX_RETRIES) {
         retryCount.current += 1;
         const delay = retryCount.current * 1000;
-        if (__DEV__) console.log(`[FitQuest] Retrying in ${delay}ms (attempt ${retryCount.current}/${MAX_RETRIES})`);
+        if (__DEV__) console.warn(`[FitQuest] Retrying in ${delay}ms (attempt ${retryCount.current}/${MAX_RETRIES})`);
         systemGuard.markRecovering(msg);
         // Close the broken connection so retry gets a fresh native handle
         try {
           await closeDatabase();
-        } catch (_) {
+        } catch {
           /* ignore close errors */
         }
         resetInitState();

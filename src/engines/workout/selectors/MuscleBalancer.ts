@@ -28,7 +28,7 @@ const ANTAGONIST_PAIRS: [TargetMuscle, TargetMuscle][] = [
 /**
  * Synergist groups (muscles that work together)
  */
-const SYNERGIST_GROUPS: Record<string, TargetMuscle[]> = {
+const _SYNERGIST_GROUPS: Record<string, TargetMuscle[]> = {
   push_upper: ['chest_mid', 'chest_upper', 'deltoids_front', 'triceps'],
   pull_upper: ['lats', 'rhomboids', 'biceps', 'deltoids_rear', 'traps_mid'],
   quad_dominant: ['quads', 'glutes_max', 'core_deep'],
@@ -51,7 +51,7 @@ export interface BalanceAnalysis {
 /**
  * Analyze muscle balance based on weekly volume
  */
-export function analyzeBalance(weeklyVolume: Map<TargetMuscle, number>, goal: Category): BalanceAnalysis {
+export function analyzeBalance(weeklyVolume: Map<TargetMuscle, number>, _goal: Category): BalanceAnalysis {
   const overworked: TargetMuscle[] = [];
   const underworked: TargetMuscle[] = [];
   const imbalanced: Array<{ strong: TargetMuscle; weak: TargetMuscle; ratio: number }> = [];

@@ -1,6 +1,6 @@
 {
   "name": "fitquest-mobile",
-  "version": "2.3.0",
+  "version": "1.0.0",
   "private": true,
   "engines": {
     "node": ">=20.19.4"
@@ -143,12 +143,12 @@
   },
   "lint-staged": {
     "app/**/*.{ts,tsx}": [
-      "eslint --max-warnings 0",
-      "prettier --check"
+      "eslint --fix",
+      "prettier --write"
     ],
     "src/**/*.{ts,tsx}": [
-      "eslint --max-warnings 0",
-      "prettier --check"
+      "eslint --fix",
+      "prettier --write"
     ]
   },
   "expo": {

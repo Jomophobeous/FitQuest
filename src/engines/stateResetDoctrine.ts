@@ -10,15 +10,8 @@
  * 3. History is preserved but may be "archived" (not invalidated)
  */
 
-import {
-  getUserProfile,
-  updateUserProfile,
-  getRecentSessions,
-  getProgressHistory,
-  getAppState,
-  setAppState,
-} from '../database/service';
-import type { UserProfile, Category, Difficulty } from '../database/types';
+import { getAppState, setAppState } from '../database/service';
+import type { UserProfile, Category } from '../database/types';
 
 // ============================================
 // DOCTRINE DEFINITIONS

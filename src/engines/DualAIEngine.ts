@@ -18,8 +18,8 @@
  */
 
 import { encryptedDB } from '../security/EncryptedDatabase';
-import { neuralSummarizer, SummaryResult } from '../ai/professor/NeuralSummarizer';
-import { semanticSearch, SearchResult } from '../ai/professor/SemanticSearch';
+import { neuralSummarizer } from '../ai/professor/NeuralSummarizer';
+import { semanticSearch } from '../ai/professor/SemanticSearch';
 import { knowledgeGraph, Entity } from '../ai/professor/KnowledgeGraph';
 
 // ============================================
@@ -1064,7 +1064,9 @@ export class DualAIEngine {
         .storeAIConversation(context.personality, input, response.message, {
           processingTimeMs: response.processingTimeMs,
         })
-        .catch(() => {});
+        .catch((e) => {
+          if (__DEV__) console.warn('[DualAI] conversation storage failed', e);
+        });
     }
 
     return response;
@@ -2177,7 +2179,7 @@ export class DualAIEngine {
    * Generate intelligent, context-aware quick reply suggestions.
    * Replaces static suggestions with dynamic ones based on user state.
    */
-  getSmartSuggestions(context: AIContext, recentQuery?: string): string[] {
+  getSmartSuggestions(context: AIContext, _recentQuery?: string): string[] {
     const suggestions: Array<{ text: string; priority: number; category: string }> = [];
     const now = new Date();
     const currentHour = now.getHours();
@@ -2461,7 +2463,7 @@ export class DualAIEngine {
    * Get a brief connecting sentence for a secondary intent to blend into the response.
    * When two intents are close in score, this adds natural topic bridging.
    */
-  private getIntentBlend(intentId: string, context: AIContext): string | null {
+  private getIntentBlend(intentId: string, _context: AIContext): string | null {
     const blends: Record<string, string[]> = {
       motivation: [
         "Also — you've got this. Every session proves you're stronger than you think.",

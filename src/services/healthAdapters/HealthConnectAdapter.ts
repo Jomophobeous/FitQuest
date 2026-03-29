@@ -16,12 +16,7 @@ import type {
   DateRange,
   DailyAggregate,
   HealthRecord,
-  StepRecord,
-  HeartRateRecord,
-  SleepRecord,
-  CaloriesRecord,
   WorkoutRecord,
-  SENSITIVE_CATEGORIES,
 } from './types';
 import { encryptedDB } from '../../security/EncryptedDatabase';
 import { captureHealthError } from '../errorTelemetry';
@@ -153,7 +148,7 @@ class HealthConnectAdapter implements IHealthAdapter {
       if (__DEV__) {
         const msg = error instanceof Error ? error.message : String(error);
         if (msg.includes("doesn't seem to be linked") || msg.includes('not linked')) {
-          if (__DEV__) console.log('[HealthConnect] Not linked — expected in Expo Go, use dev-client build');
+          if (__DEV__) console.warn('[HealthConnect] Not linked — expected in Expo Go, use dev-client build');
         } else {
           await captureHealthError(error instanceof Error ? error : String(error), {
             provider: 'health_connect',
@@ -372,7 +367,7 @@ class HealthConnectAdapter implements IHealthAdapter {
       // SecurityException = permissions not granted — expected, not a real error
       if (errMsg.includes('SecurityException')) {
         if (__DEV__) {
-          console.log(`[HealthConnect] ${category}: permission not granted yet`);
+          console.warn(`[HealthConnect] ${category}: permission not granted yet`);
         }
         return [];
       }
@@ -587,10 +582,10 @@ class HealthConnectAdapter implements IHealthAdapter {
           return null;
         }
         this.healthConnect = hcModule;
-      } catch (e) {
+      } catch {
         // Silently handle — native module not linked (expected in Expo Go)
         if (__DEV__) {
-          console.log('[HealthConnect] Not available — native module not linked (use dev-client build)');
+          console.warn('[HealthConnect] Not available — native module not linked (use dev-client build)');
         }
         return null;
       }

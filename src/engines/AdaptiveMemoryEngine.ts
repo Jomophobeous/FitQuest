@@ -11,8 +11,8 @@
  * Deterministic. No AI calls. No network. All math on-device.
  */
 
-import { getRecentSessions, getSessionExercises, getStreak, getUserProfile } from '../database/service';
-import { analyzeExerciseProgression, type ProgressionDecision } from './progressionEngine';
+import { getRecentSessions, getSessionExercises } from '../database/service';
+import { analyzeExerciseProgression } from './progressionEngine';
 import type { TargetMuscle, WorkoutSession } from '../database/types';
 import { t } from '../i18n/engine-i18n';
 

@@ -4,7 +4,7 @@
  * Scales proportionally to tablets, small phones, and large screens.
  */
 
-import { Dimensions, PixelRatio, Platform } from 'react-native';
+import { Dimensions, PixelRatio } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

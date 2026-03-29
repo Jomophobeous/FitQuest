@@ -185,7 +185,7 @@ class StepCounterEngine extends EventEmitter {
     this.runningStrideLength = this.calculateStrideLength('running');
 
     if (__DEV__) {
-      console.log('[StepCounter] Configured:', {
+      console.warn('[StepCounter] Configured:', {
         heightCm: this.config.heightCm,
         walkingStride: this.walkingStrideLength.toFixed(2),
         runningStride: this.runningStrideLength.toFixed(2),
@@ -199,7 +199,7 @@ class StepCounterEngine extends EventEmitter {
   startSession(): void {
     this.reset();
     this.sessionStartTime = Date.now();
-    if (__DEV__) console.log('[StepCounter] Session started');
+    if (__DEV__) console.warn('[StepCounter] Session started');
   }
 
   /**
@@ -207,7 +207,7 @@ class StepCounterEngine extends EventEmitter {
    */
   endSession(): StepData {
     const data = this.getData();
-    if (__DEV__) console.log('[StepCounter] Session ended:', data);
+    if (__DEV__) console.warn('[StepCounter] Session ended:', data);
     return data;
   }
 

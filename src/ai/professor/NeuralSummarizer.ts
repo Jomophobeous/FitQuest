@@ -15,10 +15,6 @@ import { loadBundledModelWithFallback, safeRequire } from '../ModelLoader';
 import {
   TransformerLayerWeights as TransformerLayer,
   transformerLayer as sharedTransformerLayer,
-  linearF64,
-  layerNorm,
-  gelu,
-  softmaxF64,
   cosineSimilarityF64,
 } from '../TransformerRuntime';
 
@@ -99,7 +95,7 @@ export class NeuralSummarizer {
         'summarizer_v3.model',
       );
       if (!modelData) {
-        if (__DEV__) console.log('[NeuralSummarizer] Model not found — using TF-IDF fallback');
+        if (__DEV__) console.warn('[NeuralSummarizer] Model not found — using TF-IDF fallback');
         return false;
       }
       this.model = modelData;
@@ -107,7 +103,7 @@ export class NeuralSummarizer {
       this.isLoaded = true;
       const version = (this.model as any).version ?? '3.0.0';
       if (__DEV__) {
-        console.log(
+        console.warn(
           `[NeuralSummarizer] v${version}: ${this.model.numLayers} layers, ` +
             `hidden=${this.model.hiddenSize}, ` +
             `sentence_dim=${this.model.sentenceSize}`,

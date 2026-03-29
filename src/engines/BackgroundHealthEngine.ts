@@ -28,7 +28,6 @@ import { encryptedDB } from '../security/EncryptedDatabase';
 import { captureHealthError } from '../services/errorTelemetry';
 import { AnomalyDetector, type MetricDataPoint } from './AnomalyDetector';
 import { SleepAnalysisEngine } from './SleepAnalysisEngine';
-import { RealisticHealthEngine } from './RealisticHealthEngine';
 import { SensorFusionEngine } from './SensorFusionEngine';
 import { HealthMonitorService } from './HealthMonitor';
 import { getCachedReadiness, invalidateReadinessCache } from './ReadinessEngine';
@@ -223,7 +222,7 @@ export class BackgroundHealthEngine {
       if (!sensorEngine.isRunning()) {
         const profile = await getUserProfile('user_local_001');
         await sensorEngine.start({ weightKg: profile?.weight_kg ?? 70 });
-        if (__DEV__) console.log('[BackgroundHealth] SensorFusion started');
+        if (__DEV__) console.warn('[BackgroundHealth] SensorFusion started');
       }
     } catch (e) {
       if (__DEV__) console.warn('[BackgroundHealth] SensorFusion unavailable (expected in Expo Go):', e);
@@ -248,7 +247,7 @@ export class BackgroundHealthEngine {
       this.collectAndProcess();
     }
 
-    if (__DEV__) console.log(`[BackgroundHealth] Engine started (battery: ${this.currentBatteryTier})`);
+    if (__DEV__) console.warn(`[BackgroundHealth] Engine started (battery: ${this.currentBatteryTier})`);
   }
 
   /**
@@ -278,7 +277,7 @@ export class BackgroundHealthEngine {
     this.batterySubscription = null;
     this.state = 'STOPPED';
 
-    if (__DEV__) console.log('[BackgroundHealth] Engine stopped');
+    if (__DEV__) console.warn('[BackgroundHealth] Engine stopped');
   }
 
   /**
@@ -506,7 +505,7 @@ export class BackgroundHealthEngine {
       });
 
       if (anomalies.length > 0) {
-        if (__DEV__) console.log(`[BackgroundHealth] ${anomalies.length} anomalies detected`);
+        if (__DEV__) console.warn(`[BackgroundHealth] ${anomalies.length} anomalies detected`);
       }
     } catch (e) {
       if (__DEV__) console.warn('[BackgroundHealth] Anomaly check error:', e);
@@ -691,7 +690,7 @@ export class BackgroundHealthEngine {
     // Store summary encrypted
     await encryptedDB.storeHealthData('daily_summary', summary);
 
-    if (__DEV__) console.log(`[BackgroundHealth] Daily summary: score=${healthScore}, steps=${this.todayData.steps}`);
+    if (__DEV__) console.warn(`[BackgroundHealth] Daily summary: score=${healthScore}, steps=${this.todayData.steps}`);
 
     return summary;
   }
@@ -798,7 +797,7 @@ export class BackgroundHealthEngine {
    * Re-evaluates tier and restarts timers with adjusted intervals.
    */
   private handleBatteryStateChange = async ({
-    batteryState,
+    batteryState: _batteryState,
   }: {
     batteryState: Battery.BatteryState;
   }): Promise<void> => {
@@ -806,7 +805,7 @@ export class BackgroundHealthEngine {
     await this.updateBatteryTier();
 
     if (previousTier !== this.currentBatteryTier && this.state === 'RUNNING') {
-      if (__DEV__) console.log(`[BackgroundHealth] Battery tier: ${previousTier} → ${this.currentBatteryTier}`);
+      if (__DEV__) console.warn(`[BackgroundHealth] Battery tier: ${previousTier} → ${this.currentBatteryTier}`);
       this.restartTimers();
     }
   };
@@ -842,7 +841,7 @@ export class BackgroundHealthEngine {
     const multiplier = this.getIntervalMultiplier();
     if (multiplier === 0) {
       // Critical battery — pause all polling
-      if (__DEV__) console.log('[BackgroundHealth] Critical battery — polling paused');
+      if (__DEV__) console.warn('[BackgroundHealth] Critical battery — polling paused');
       return;
     }
 
@@ -857,7 +856,7 @@ export class BackgroundHealthEngine {
       this.runAnomalyCheck();
     }, anomalyMs);
 
-    if (__DEV__) console.log(`[BackgroundHealth] Timers set: collect=${collectionMs}ms, anomaly=${anomalyMs}ms`);
+    if (__DEV__) console.warn(`[BackgroundHealth] Timers set: collect=${collectionMs}ms, anomaly=${anomalyMs}ms`);
   }
 
   /**
@@ -874,7 +873,9 @@ export class BackgroundHealthEngine {
   private handleAppState = async (nextState: AppStateStatus): Promise<void> => {
     if (nextState === 'background' || nextState === 'inactive') {
       // Store snapshot before going to background
-      this.storeSnapshot().catch(() => {});
+      this.storeSnapshot().catch((e) => {
+        if (__DEV__) console.warn('[BGHealth] storeSnapshot failed', e);
+      });
     } else if (nextState === 'active') {
       // Re-check battery state when foregrounded — only restart timers if tier changed
       const prevTier = this.currentBatteryTier;

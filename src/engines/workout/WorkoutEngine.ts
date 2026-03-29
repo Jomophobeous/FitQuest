@@ -15,11 +15,11 @@ import {
   getUserInjuries,
   getRecentExerciseIds,
 } from '../../database/service';
-import type { ExerciseWithDetails, UserProfile, Category, TargetMuscle, Difficulty } from '../../database/types';
+import type { ExerciseWithDetails, TargetMuscle, Difficulty } from '../../database/types';
 
 // Selectors
 import { applyHardFilters, scoreExercises, selectExercises } from './selectors/ExerciseSelector';
-import { analyzeBalance, analyzePatternBalance, optimizeExerciseOrder } from './selectors/MuscleBalancer';
+import { analyzeBalance, optimizeExerciseOrder } from './selectors/MuscleBalancer';
 
 // Algorithms
 import { applyFatigueDecay, getMuscleRecoveryStatus, shouldRecommendDeload } from './algorithms/FatigueAlgorithm';
@@ -31,12 +31,7 @@ import {
 } from './algorithms/VolumeAlgorithm';
 
 // Templates
-import {
-  suggestTemplate,
-  getTemplateById,
-  generateSlotsFromTemplate,
-  FULL_BODY_TEMPLATE,
-} from './templates/WorkoutTemplates';
+import { suggestTemplate } from './templates/WorkoutTemplates';
 
 // Types
 import type { WorkoutContext, WorkoutPlan, PrescribedExercise, SelectionOptions, WorkoutEngineFlags } from './types';
@@ -192,7 +187,7 @@ export class WorkoutEngine {
   private prescribeVolume(
     exercises: ExerciseWithDetails[],
     context: WorkoutContext,
-    templateId: string,
+    _templateId: string,
   ): PrescribedExercise[] {
     return exercises.map((exercise) => {
       const primaryMuscle = (exercise.primary_muscles || [])[0] as TargetMuscle;
@@ -321,7 +316,7 @@ export class WorkoutEngine {
    */
   async getWeeklyBalance(userId: string = 'user_local_001') {
     // Get sessions from this week
-    const sessions = await getRecentSessions(userId, 7);
+    const _sessions = await getRecentSessions(userId, 7);
 
     // Aggregate volume per muscle (simplified)
     const weeklyVolume = new Map<TargetMuscle, number>();

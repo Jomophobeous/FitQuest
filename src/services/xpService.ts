@@ -13,9 +13,10 @@
  */
 
 import { getAppState, setAppState } from '../database/service';
-import { getXPMultiplier, checkMilestoneReached } from './rankingService';
+import { getXPMultiplier } from './rankingService';
 import { logEvent } from './telemetry';
 import { walService } from './WriteAheadLogService';
+import { safeWarn } from './logger';
 
 // ============================================
 // TYPES
@@ -185,7 +186,7 @@ export async function addXP(amount: number): Promise<XPGainResult> {
     await saveTotalXP(newTotal);
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[XP] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 

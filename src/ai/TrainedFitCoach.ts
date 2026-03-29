@@ -101,7 +101,7 @@ export class TrainedFitCoach {
       this.model = modelJson as MLPModelData;
       this.isLoaded = true;
       if (__DEV__)
-        console.log(`[TrainedFitCoach] Model loaded: ${this.model.architecture.hidden_layers.join('→')} architecture`);
+        console.warn(`[TrainedFitCoach] Model loaded: ${this.model.architecture.hidden_layers.join('→')} architecture`);
       return true;
     } catch (error) {
       if (__DEV__) console.warn('[TrainedFitCoach] Failed to load model:', error);

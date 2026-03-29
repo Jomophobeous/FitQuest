@@ -22,11 +22,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   AppState,
   type AppStateStatus,
 } from 'react-native';
-import { authService, type AuthLockState } from '../security/AuthService';
+import { authService } from '../security/AuthService';
 import { BiometricAuthService } from '../security/BiometricAuth';
 
 // ============================================

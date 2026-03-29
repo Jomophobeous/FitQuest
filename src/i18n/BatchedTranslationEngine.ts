@@ -243,7 +243,7 @@ class BatchedTranslationEngine {
       const pendingLanguages = allLanguages.filter((l) => !completedLanguages.has(l));
 
       if (pendingLanguages.length === 0) {
-        if (__DEV__) console.log('[TranslationEngine] All languages already completed');
+        if (__DEV__) console.warn('[TranslationEngine] All languages already completed');
         this.running = false;
         return this.buildPerformanceReport(startTime);
       }
@@ -251,7 +251,7 @@ class BatchedTranslationEngine {
       // 4. Process languages in pairs
       for (let i = 0; i < pendingLanguages.length; i += languageBatch) {
         if (this.paused) {
-          if (__DEV__) console.log('[TranslationEngine] Paused — checkpoint saved');
+          if (__DEV__) console.warn('[TranslationEngine] Paused — checkpoint saved');
           break;
         }
 
@@ -279,7 +279,7 @@ class BatchedTranslationEngine {
       // 5. Clear checkpoint on full completion
       if (!this.paused) {
         await this.clearCheckpoint();
-        if (__DEV__) console.log('[TranslationEngine] Full execution complete');
+        if (__DEV__) console.warn('[TranslationEngine] Full execution complete');
       }
 
       return this.buildPerformanceReport(startTime);
@@ -317,7 +317,7 @@ class BatchedTranslationEngine {
     const totalBatches = Math.ceil((exerciseIds.length - startIndex) / batchSize);
 
     if (__DEV__) {
-      console.log(
+      console.warn(
         `[TranslationEngine] ${lang}: ${exerciseIds.length} exercises, starting at ${startIndex}, ${totalBatches} batches`,
       );
     }
@@ -377,7 +377,7 @@ class BatchedTranslationEngine {
       });
 
       if (__DEV__) {
-        console.log(
+        console.warn(
           `[TranslationEngine] ${lang} batch ${batchIndex}/${totalBatches}: +${newIds.length} inserted, ${skipped} skipped (${batchTime}ms)`,
         );
       }
@@ -768,7 +768,7 @@ class BatchedTranslationEngine {
   pause(): void {
     if (this.running) {
       this.paused = true;
-      if (__DEV__) console.log('[TranslationEngine] Pause requested — will stop after current batch');
+      if (__DEV__) console.warn('[TranslationEngine] Pause requested — will stop after current batch');
     }
   }
 

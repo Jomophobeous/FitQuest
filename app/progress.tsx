@@ -32,7 +32,6 @@ import { getXPData, awardProgressPhotoXP, type XPData } from '../src/services/xp
 import { getAppState, setAppState, getUserProgress, getStreak } from '../src/database/service';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import ThemedText from '../src/components/ThemedText';
-import Card from '../src/components/Card';
 import ProgressBar from '../src/components/ProgressBar';
 import { GlassCard, SectionHeader } from '../src/components/ui/GlassUI';
 import { getCardWidth, getGridColumns, ms } from '../src/utils/responsive';

@@ -1,0 +1,267 @@
+{
+  "meta": {
+    "title": "FitQuest 2.0 — Module Status Report",
+    "version": "2.3.0",
+    "schemaVersion": 20,
+    "generatedAt": "2026-03-25T00:00:00Z",
+    "generatedBy": "Alfred Ω — Full System Discovery"
+  },
+
+  "summary": {
+    "totalModules": 178,
+    "activeModules": 156,
+    "deprecatedModules": 16,
+    "stubModules": 6,
+    "translationCoverage": {
+      "uiStrings": "100% (648 keys × 15 languages)",
+      "exerciseData": "100% (3,312 exercises × 14 languages = 46,368 translations)",
+      "aiNarration": "Partial — DualAI template responses are English-only, API responses language-dependent on provider"
+    }
+  },
+
+  "activeModules": {
+    "database": {
+      "path": "src/database/",
+      "files": 13,
+      "status": "ACTIVE",
+      "translationCoverage": "N/A (data layer)",
+      "securityEnforcement": "WriteFirewall, DatabaseLifecycle integrity checks, WAL mode",
+      "testCoverage": "databaseService.test.ts, validation.test.ts",
+      "notes": "Schema v20 with 20 migration versions. Single-file migration pipeline (schema.ts 1700 lines)."
+    },
+    "security": {
+      "path": "src/security/",
+      "files": 7,
+      "status": "ACTIVE",
+      "translationCoverage": "N/A (infrastructure)",
+      "securityEnforcement": "AES-256-GCM v3, PBKDF2-SHA256 100k, biometric lockout, rate limiting",
+      "testCoverage": "aesEncryption.test.ts, aesEncryptionExtended.test.ts, encryptedDatabase.test.ts, biometricAuth.test.ts, authService.test.ts",
+      "notes": "Strongest coverage in the codebase. All crypto paths tested."
+    },
+    "engines_coreWorkout": {
+      "path": "src/engines/",
+      "files": 6,
+      "status": "ACTIVE",
+      "modules": ["workoutGenerator.ts", "progressionEngine.ts", "recoveryEngine.ts", "warmupCooldownGenerator.ts", "edgeCaseGuards.ts", "progressionParsing.ts"],
+      "translationCoverage": "Engine output uses engine-i18n.ts for localized exercise names",
+      "securityEnforcement": "None (internal logic)",
+      "testCoverage": "workoutGenerator.test.ts, progressionEngine.test.ts, recoveryEngine.test.ts, workoutGeneratorEdgeCases.test.ts",
+      "notes": "Well-tested core. v1 generator bridges to v2 WorkoutEngine via legacyAdapter."
+    },
+    "engines_workoutV2": {
+      "path": "src/engines/workout/",
+      "files": 9,
+      "status": "ACTIVE",
+      "modules": ["WorkoutEngine.ts", "FatigueAlgorithm.ts", "VolumeAlgorithm.ts", "ExerciseSelector.ts", "MuscleBalancer.ts", "WorkoutTemplates.ts", "legacyAdapter.ts", "types.ts", "index.ts"],
+      "translationCoverage": "Exercise names resolved via TranslationResolver at render time",
+      "testCoverage": "Partial — tested indirectly via workoutGenerator tests",
+      "notes": "Modular rewrite of workout generation. Used alongside v1 via adapter pattern."
+    },
+    "engines_healthMonitoring": {
+      "path": "src/engines/",
+      "files": 7,
+      "status": "ACTIVE",
+      "modules": ["RealisticHealthEngine.ts", "SensorFusionEngine.ts", "AnomalyDetector.ts", "SleepAnalysisEngine.ts", "HealthMonitor.ts", "BackgroundHealthEngine.ts", "StepCounterEngine.ts"],
+      "translationCoverage": "Health labels use t() UI strings",
+      "securityEnforcement": "Health data stored via encryptedDB. Anomaly alerts encrypted.",
+      "testCoverage": "anomalyDetector.test.ts, sleepAnalysisEngine.test.ts, realisticHealthEngine.test.ts, healthMonitor.test.ts, backgroundHealthEngine.test.ts",
+      "notes": "Background engine runs 5min/30min/daily cycles. Health Connect disabled on Android."
+    },
+    "engines_aiState": {
+      "path": "src/engines/",
+      "files": 12,
+      "status": "ACTIVE",
+      "modules": ["DualAIEngine.ts", "IntentRouter.ts", "UserStateEngine.ts", "ConsistencyClassifier.ts", "LongTermProgressionEngine.ts", "FailureAnalysisEngine.ts", "BehavioralSignalEngine.ts", "TrialProgressionEngine.ts", "ReadinessEngine.ts", "AdaptiveMemoryEngine.ts", "StateSimulationEngine.ts", "bodyCraftEngine.ts"],
+      "translationCoverage": "AI responses English-only for templates. API responses language depends on prompt.",
+      "securityEnforcement": "Conversations encrypted via encryptedDB.storeAIConversation()",
+      "testCoverage": "dualAIEngine.test.ts, intentRouter.test.ts, adaptiveTrainingService.test.ts",
+      "notes": "12 behavioral engines. Many lack direct tests. StateSimulationEngine used for testing scenarios."
+    },
+    "engines_supporting": {
+      "path": "src/engines/",
+      "files": 4,
+      "status": "ACTIVE",
+      "modules": ["transparencyLayer.ts", "stateResetDoctrine.ts", "ComputationCache.ts", "index.ts"],
+      "testCoverage": "None direct",
+      "notes": "Utility engines. ComputationCache used by multiple engines for memoization."
+    },
+    "services_core": {
+      "path": "src/services/",
+      "files": 5,
+      "status": "ACTIVE",
+      "modules": ["xpService.ts", "timerService.ts", "audioService.ts", "featureFlags.ts", "dataSyncService.ts"],
+      "translationCoverage": "audioService uses translated exercise names for TTS",
+      "testCoverage": "xpService.test.ts, xpSystem.test.ts",
+      "notes": "Critical services. timerService, audioService, featureFlags have no tests."
+    },
+    "services_observability": {
+      "path": "src/services/",
+      "files": 7,
+      "status": "ACTIVE",
+      "modules": ["logger.ts", "telemetry.ts", "errorTelemetry.ts", "crashReporting.ts", "posthogService.tsx", "analyticsIngestionService.ts", "analyticsDataService.ts"],
+      "translationCoverage": "N/A",
+      "testCoverage": "loggerRedaction.test.ts",
+      "notes": "Logger has redaction tests. Other telemetry services untested."
+    },
+    "services_healthFitness": {
+      "path": "src/services/",
+      "files": 10,
+      "status": "ACTIVE",
+      "modules": ["derivedMetricsService.ts", "adaptiveTrainingService.ts", "adaptiveTrainingMath.ts", "rankingService.ts", "foodDatabase.ts", "locationService.ts", "healthAdapters/*"],
+      "translationCoverage": "Ranking titles use t() strings",
+      "testCoverage": "adaptiveTrainingService.test.ts, dashboardAggregation.test.ts",
+      "notes": "Health Connect adapter disabled (ff_health_sync=false). HealthKit active on iOS."
+    },
+    "services_persistence": {
+      "path": "src/services/",
+      "files": 6,
+      "status": "ACTIVE",
+      "modules": ["WriteAheadLogService.ts", "SnapshotService.ts", "RecoveryService.ts", "backupService.ts", "cloudBackupService.ts", "SovereignExportService.ts"],
+      "translationCoverage": "N/A",
+      "securityEnforcement": "Backups encrypted via AES-256-GCM. Export service strips encryption for GDPR.",
+      "testCoverage": "durabilityLayer.test.ts (partial)",
+      "notes": "Cloud backup requires EXPO_PUBLIC_API_BASE_URL. Currently a placeholder."
+    },
+    "services_workoutGenerator": {
+      "path": "src/services/workoutGenerator/",
+      "files": 5,
+      "status": "ACTIVE",
+      "modules": ["pipeline.ts", "exerciseDatabase.ts", "fatigueTracking.ts", "subscriptionGating.ts", "types.ts"],
+      "securityEnforcement": "subscriptionGating.ts enforces premium workout complexity limits",
+      "testCoverage": "Tested via workoutGenerator engine tests",
+      "notes": "Service-layer orchestration for workout generation pipeline."
+    },
+    "purchases": {
+      "path": "src/purchases/",
+      "files": 4,
+      "status": "ACTIVE",
+      "modules": ["SubscriptionManager.ts", "TrialOnboarding.ts", "SubscriptionContext.tsx", "index.ts"],
+      "translationCoverage": "Paywall uses t() for all user-facing text",
+      "securityEnforcement": "RevenueCat receipt validation, 24h offline grace, clock tamper detection, 5 telemetry events",
+      "testCoverage": "subscriptionManager.test.ts, premiumGateModule.test.ts",
+      "notes": "Phase 9 hardened: PremiumGate re-enabled, grace reduced to 24h."
+    },
+    "i18n": {
+      "path": "src/i18n/",
+      "files": 20,
+      "status": "ACTIVE",
+      "modules": ["translations.ts", "TranslationResolver.ts", "TranslationRegistry.ts", "BatchedTranslationEngine.ts", "engine-i18n.ts", "exercise-translation-seed.ts", "14 exercise translation files"],
+      "translationCoverage": "648 UI keys × 15 languages (100%). 3,312 exercises × 14 languages (100%).",
+      "testCoverage": "translationCompleteness.test.ts",
+      "notes": "Phase 7 fully optimized. LRU cache benchmarked at 14M ops/sec."
+    },
+    "context": {
+      "path": "src/context/",
+      "files": 4,
+      "status": "ACTIVE",
+      "modules": ["ThemeContext.tsx", "LanguageContext.tsx", "DatabaseContext.tsx", "AuthContext.tsx"],
+      "translationCoverage": "LanguageContext provides t() to entire app",
+      "testCoverage": "No direct tests",
+      "notes": "Core providers. No tests exist for context initialization paths."
+    },
+    "hooks": {
+      "path": "src/hooks/",
+      "files": 6,
+      "status": "ACTIVE",
+      "modules": ["useFitQuestWorkout.ts", "useTimer.ts", "usePedometer.ts", "useAudio.ts", "useCustom.ts", "useSystemState.ts"],
+      "testCoverage": "workoutLifecycle.test.ts (useFitQuestWorkout path tested)",
+      "notes": "useFitQuestWorkout is the primary workout orchestrator hook."
+    },
+    "components": {
+      "path": "src/components/",
+      "files": 41,
+      "status": "ACTIVE",
+      "translationCoverage": "All user-facing text uses t() or ThemedText",
+      "testCoverage": "screenSmokeTests.test.ts (shallow renders)",
+      "notes": "Glass morphism design system. Charts module has 9 files."
+    },
+    "ai": {
+      "path": "src/ai/",
+      "files": 10,
+      "status": "ACTIVE",
+      "modules": ["ModelLoader.ts", "TrainedIntentRouter.ts", "TrainedFitCoach.ts", "TrainedActivityClassifier.ts", "DeepActivityClassifier.ts", "SemanticSearch.ts", "NeuralSummarizer.ts", "KnowledgeGraph.ts", "TransformerRuntime.ts (DEPRECATED)", "index.ts"],
+      "testCoverage": "aiProvider.test.ts",
+      "notes": "On-device ML models. TransformerRuntime is deprecated (48MB)."
+    },
+    "design": {
+      "path": "src/design/",
+      "files": 1,
+      "status": "ACTIVE",
+      "modules": ["theme-system.ts"],
+      "translationCoverage": "N/A",
+      "notes": "Canonical theme tokens. Dark (#0A0E17), Light (#F4F5F7), BlackGold themes."
+    },
+    "utils": {
+      "path": "src/utils/",
+      "files": 6,
+      "status": "ACTIVE",
+      "modules": ["validation.ts", "formatMuscle.ts", "haptics.ts", "responsive.ts", "rateLimiter.ts", "regionalPricing.ts"],
+      "testCoverage": "rateLimiter.test.ts, regionalPricing.test.ts",
+      "notes": "Rate limiter protects auth, AI, and destructive operations."
+    }
+  },
+
+  "deprecatedModules": {
+    "screens": [
+      {"file": "app/fitmind-library.tsx", "reason": "FitMind cognitive module stripped before shipping. Redirects to /dashboard."},
+      {"file": "app/fitmind-reader.tsx", "reason": "FitMind reader stripped. Redirects to /dashboard."},
+      {"file": "app/professor/index.tsx", "reason": "Professor AI merged into Coach AI. Redirects to /coach."}
+    ],
+    "engines": [
+      {"file": "src/engines/MindSessionEngine.ts", "reason": "FitMind meditation sessions removed. Types still imported by MindExerciseView component."},
+      {"file": "src/engines/DistanceEngine.ts", "reason": "GPS distance calculation. Types still imported by JogMap component."}
+    ],
+    "services": [
+      {"file": "src/services/autonomousPolicyRuntime.ts", "reason": "Alfred agent policy runtime concept. Unused."},
+      {"file": "src/services/socialLayerService.ts", "reason": "Social features planned but not implemented. Still imported by profile.tsx."},
+      {"file": "src/services/aiWorkoutService.ts", "reason": "Legacy AI workout API. Still imported by coach/index.tsx."},
+      {"file": "src/services/syncService.ts", "reason": "Overlaps dataSyncService. Only imported by testing files."}
+    ],
+    "ai": [
+      {"file": "src/ai/TransformerRuntime.ts", "reason": "Shared transformer primitives — too heavy (48MB). Still imported by professor/* files."}
+    ],
+    "components": [
+      {"file": "src/components/Card.tsx", "reason": "Replaced by GlassCard from GlassUI.tsx."},
+      {"file": "src/components/DatabaseRecoveryScreen.tsx", "reason": "Replaced by RecoveryService + SystemGuard auto-recovery."}
+    ],
+    "fitmind": [
+      {"file": "src/fitmind/schema.ts", "reason": "FitMind tables still exist in DB but module is deprecated."},
+      {"file": "src/fitmind/readerEngine.ts", "reason": "Reader engine for stripped FitMind module."},
+      {"file": "src/fitmind/FSRSService.ts", "reason": "Spaced repetition for stripped flashcard feature."},
+      {"file": "src/fitmind/readerWebAssets.ts", "reason": "Web reader assets for stripped FitMind."},
+      {"file": "src/fitmind/readers/*", "reason": "All 6 reader component files (PDFReader, EPUBReader, ArticleReader, TextReader, factory, types)."}
+    ],
+    "platform": [
+      {"file": "src/platform/phase8AutonomousOperations.ts", "reason": "Stub only — no implementation."},
+      {"file": "src/platform/phase9EcosystemFederation.ts", "reason": "Stub only — no implementation."},
+      {"file": "src/platform/phase10EnterpriseHardening.ts", "reason": "Stub only — no implementation."}
+    ]
+  },
+
+  "testCoverageByModule": {
+    "strongCoverage": [
+      "src/security/ — 5 test files",
+      "src/engines/ (core workout) — 4 test files",
+      "src/engines/ (health monitoring) — 5 test files",
+      "src/purchases/ — 2 test files",
+      "src/i18n/ — 1 test file (completeness check)"
+    ],
+    "partialCoverage": [
+      "src/engines/ (AI/state) — 3 test files for 12 engines",
+      "src/services/ (core) — 2 test files for 5 services",
+      "src/services/ (health) — 2 test files for 10 services",
+      "src/hooks/ — 1 test file for 6 hooks",
+      "src/database/ — 2 test files for 13 files"
+    ],
+    "noCoverage": [
+      "src/context/ — 0 test files for 4 contexts",
+      "src/components/ — smoke tests only",
+      "src/services/ (observability) — 1 test for 7 services",
+      "src/services/ (persistence) — 1 partial test for 6 services",
+      "src/ai/ — 1 test for 10 files",
+      "src/platform/ — 0 test files",
+      "src/fitmind/ — 4 test files but module is DEPRECATED",
+      "app/ (screens) — 0 unit tests, smoke tests only"
+    ]
+  }
+}

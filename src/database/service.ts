@@ -6,12 +6,10 @@
 import { getDatabase } from './schema';
 import { queryCache } from './queryCache';
 import type {
-  Exercise,
   ExerciseWithDetails,
   ExerciseFilter,
   ExerciseImageRecord,
   UserProfile,
-  UserEquipment,
   UserInjury,
   MuscleFatigue,
   WorkoutSession,
@@ -31,11 +29,11 @@ import type {
   ReadingSession,
   Annotation,
   Flashcard,
-  ReadingGoal,
 } from './types';
 import type { BodyCraftAlgorithm } from '../engines/bodyCraftEngine';
 import { generateSecureId } from '../security/randomId';
 import { walService } from '../services/WriteAheadLogService';
+import { safeWarn } from '../services/logger';
 
 // ============================================
 // HELPERS
@@ -449,7 +447,7 @@ export async function insertSeedExercise(params: {
   );
   if (existing && existing.id !== params.id) {
     if (__DEV__)
-      console.log(
+      console.warn(
         `[DB] Skipping duplicate exercise: "${params.name}" (${params.category}) — existing id: ${existing.id}`,
       );
     return;
@@ -564,7 +562,7 @@ export async function createUserProfile(profile: Omit<UserProfile, 'created_at' 
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -606,7 +604,7 @@ export async function updateUserProfile(
     await walService.commit(walId);
     return true;
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -655,7 +653,7 @@ export async function setUserEquipment(userId: string, equipment: EquipmentItem[
     });
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -695,7 +693,7 @@ export async function setUserInjury(
     ]);
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -811,7 +809,7 @@ export async function createWorkoutSession(
     await walService.commit(walId);
     return session.id;
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -844,7 +842,7 @@ export async function completeWorkoutSession(
     queryCache.invalidatePrefix('streak:');
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -914,7 +912,7 @@ export async function addSessionExercise(exercise: SessionExercise): Promise<voi
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -997,7 +995,7 @@ export async function recordProgress(record: ProgressRecord): Promise<void> {
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -1082,7 +1080,7 @@ export async function updateSubscriptionState(state: Omit<SubscriptionState, 'la
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -1175,7 +1173,7 @@ export async function updateStreak(userId: string): Promise<{ current: number; l
     await walService.commit(walId);
     return { current: currentStreak, longest: longestStreak };
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -1877,7 +1875,7 @@ export async function upsertTrialState(state: TrialStateRow): Promise<void> {
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -1897,7 +1895,7 @@ export async function updateTrialConverted(userId: string, productId: string | n
     ]);
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -1991,7 +1989,7 @@ export async function upsertDailySteps(
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -2057,7 +2055,7 @@ export async function createJogSession(params: {
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -2099,7 +2097,7 @@ export async function endJogSession(params: {
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -2305,7 +2303,7 @@ export async function saveBodyCraftAlgorithm(algo: BodyCraftAlgorithm): Promise<
     );
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }
@@ -2887,7 +2885,7 @@ export async function deleteAllUserData(userId: string): Promise<void> {
     }
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => safeWarn('[DB] WAL markFailed error', { error: String(e) }));
     throw error;
   }
 }

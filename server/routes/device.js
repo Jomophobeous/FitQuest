@@ -21,30 +21,51 @@ const { evaluateUserActivity } = require('../engines/anomalyEngine');
 const { isVersionDowngrade } = require('../utils/semver');
 
 /**
- * Verify HMAC-SHA256 device signature.
- * Signature = HMAC-SHA256(user_id|device_id|app_version, DEVICE_SIGNING_SECRET)
+ * Verify HMAC-SHA256 device signature with replay protection.
+ *
+ * Signature = HMAC-SHA256(user_id|device_id|app_version|timestamp, DEVICE_SIGNING_SECRET)
+ * Timestamp must be within SIGNATURE_MAX_AGE_MS window to prevent replay attacks.
  * Uses constant-time comparison to prevent timing attacks.
+ *
+ * If no timestamp is provided, falls back to legacy payload (user_id|device_id|app_version)
+ * for backward compatibility during client migration. Legacy mode will be removed in Phase 25.
  */
-function verifyDeviceSignature(userId, deviceId, appVersion, signature) {
+const SIGNATURE_MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
+
+function verifyDeviceSignature(userId, deviceId, appVersion, signature, timestamp) {
   const secret = process.env.DEVICE_SIGNING_SECRET;
   if (!secret) {
     // If no secret configured, reject all requests (fail closed)
     console.error('[/verify/device] DEVICE_SIGNING_SECRET not configured — rejecting.');
-    return false;
+    return { valid: false, reason: 'no_secret' };
   }
   try {
-    const payload = `${userId}|${deviceId}|${appVersion}`;
+    // Replay protection: if timestamp provided, validate freshness
+    if (timestamp) {
+      const ts = Number(timestamp);
+      if (isNaN(ts)) return { valid: false, reason: 'invalid_timestamp' };
+      const age = Math.abs(Date.now() - ts);
+      if (age > SIGNATURE_MAX_AGE_MS) {
+        return { valid: false, reason: 'expired_signature' };
+      }
+    }
+
+    // Build signed payload — include timestamp if provided
+    const payload = timestamp
+      ? `${userId}|${deviceId}|${appVersion}|${timestamp}`
+      : `${userId}|${deviceId}|${appVersion}`;
     const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');
-    if (expected.length !== signature.length) return false;
-    return crypto.timingSafeEqual(Buffer.from(expected, 'utf8'), Buffer.from(signature, 'utf8'));
+    if (expected.length !== signature.length) return { valid: false, reason: 'length_mismatch' };
+    const match = crypto.timingSafeEqual(Buffer.from(expected, 'utf8'), Buffer.from(signature, 'utf8'));
+    return { valid: match, reason: match ? null : 'hmac_mismatch' };
   } catch {
-    return false;
+    return { valid: false, reason: 'crypto_error' };
   }
 }
 
 router.post('/verify/device', async (req, res) => {
   try {
-    const { user_id, device_id, app_version, signature } = req.body;
+    const { user_id, device_id, app_version, signature, timestamp } = req.body;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
 
     // Validate required fields
@@ -61,14 +82,19 @@ router.post('/verify/device', async (req, res) => {
       return respond(res, 400, null, 'Missing or invalid "signature" field.');
     }
 
-    // S1 fix: HMAC-SHA256 signature validation (fail closed)
+    // S1 fix: HMAC-SHA256 signature validation with replay protection (fail closed)
     const sanitizedUserId = user_id.trim().slice(0, 128);
     const sanitizedDeviceId = device_id.trim().slice(0, 256);
     const sanitizedAppVersion = app_version.trim().slice(0, 32);
 
-    if (!verifyDeviceSignature(sanitizedUserId, sanitizedDeviceId, sanitizedAppVersion, signature)) {
-      const ip2 = req.ip || req.connection.remoteAddress || 'unknown';
-      logEvent(sanitizedUserId, sanitizedDeviceId, 'device_invalid_signature', ip2);
+    const sigResult = verifyDeviceSignature(
+      sanitizedUserId, sanitizedDeviceId, sanitizedAppVersion,
+      signature, timestamp || null
+    );
+    if (!sigResult.valid) {
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'device_invalid_signature', ip, {
+        reason: sigResult.reason,
+      });
       return respond(res, 403, null, 'Invalid device signature.');
     }
 

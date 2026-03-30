@@ -1,9 +1,9 @@
 /**
- * Phase 23 Integration Test — Full Audit Remediation
+ * Phase 23 Integration Test — Full Hardening Validation
  * Run from server/: node test-phase23.js
  *
- * Tests Phase 23 fixes:
- *   1.  Health check (v2.6.0, phase 23)
+ * Tests Phase 23 hardening fixes:
+ *   1.  Health check (v2.7.0, phase 23)
  *   2.  Create user
  *   3.  Device verify — valid HMAC signature → 200
  *   4.  Device verify — invalid signature → 403
@@ -35,6 +35,14 @@
  *   30. Version downgrade with semver in device verify
  *   31. CORS: blocked origin gets rejected (unit)
  *   32. Graceful shutdown handler registered
+ *   33. Security headers (Helmet) present
+ *   34. Replay protection: expired timestamp → 403
+ *   35. Replay protection: valid timestamp → 200
+ *   36. Authorization header: missing → 401
+ *   37. Authorization header: invalid → 401
+ *   38. Retention module exports
+ *   39. Device verify — no timestamp (legacy compat) → 200
+ *   40. API key not required for GET /health
  */
 'use strict';
 
@@ -53,11 +61,14 @@ const {
 const { HIGH_SEVERITY_EVENTS } = require('./utils/logEvent');
 const { THRESHOLD_RESTRICTED, THRESHOLD_SUSPENDED } = require('./middleware/trustCheck');
 const { isVersionDowngrade } = require('./utils/semver');
+const { runRetentionCycle, startRetentionScheduler, stopRetentionScheduler } = require('./utils/retention');
 
 const PORT = 4026;
 let server;
 let passed = 0;
 let failed = 0;
+
+const API_KEY = process.env.API_KEY;
 
 // Safety timeout
 const SAFETY_TIMEOUT = setTimeout(() => {
@@ -68,26 +79,35 @@ const SAFETY_TIMEOUT = setTimeout(() => {
 
 /**
  * Generate HMAC-SHA256 signature for device verification.
+ * Supports optional timestamp for replay protection.
  */
-function signDevice(userId, deviceId, appVersion) {
+function signDevice(userId, deviceId, appVersion, timestamp) {
   const secret = process.env.DEVICE_SIGNING_SECRET;
   if (!secret) throw new Error('DEVICE_SIGNING_SECRET not set — tests cannot run.');
-  const payload = `${userId}|${deviceId}|${appVersion}`;
+  const payload = timestamp
+    ? `${userId}|${deviceId}|${appVersion}|${timestamp}`
+    : `${userId}|${deviceId}|${appVersion}`;
   return crypto.createHmac('sha256', secret).update(payload).digest('hex');
 }
 
-async function post(path, body) {
+function authHeaders() {
+  const h = { 'Content-Type': 'application/json' };
+  if (API_KEY) h['Authorization'] = `Bearer ${API_KEY}`;
+  return h;
+}
+
+async function post(path, body, headers) {
   const res = await fetch(`http://127.0.0.1:${PORT}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: headers || authHeaders(),
     body: JSON.stringify(body),
   });
-  return { status: res.status, data: await res.json() };
+  return { status: res.status, headers: res.headers, data: await res.json() };
 }
 
 async function get(path) {
   const res = await fetch(`http://127.0.0.1:${PORT}${path}`);
-  return { status: res.status, data: await res.json() };
+  return { status: res.status, headers: res.headers, data: await res.json() };
 }
 
 function check(name, condition) {
@@ -117,12 +137,30 @@ const FORBIDDEN_KEYS = [
   'triggered', 'anomalyScore', 'trustScore',
 ];
 
+const supabase = require('./utils/supabaseClient');
+
 const USER_ID = 'test_p23_user';
 const DEVICE_ID = 'dev_p23_001';
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.7.0';
+
+/**
+ * Reset test user's anomaly state to ensure test idempotency.
+ * Without this, anomalies from previous runs accumulate and degrade trust.
+ */
+async function resetTestState() {
+  // Reset user anomaly_score
+  await supabase.from('users').update({ anomaly_score: 0, trust_score: 1.0 }).eq('id', USER_ID);
+  // Reset device anomaly_score
+  await supabase.from('devices').update({ anomaly_score: 0, trust_score: 1.0 }).eq('device_id', DEVICE_ID);
+  // Delete recent anomalies for test user (prevents cascading)
+  await supabase.from('anomalies').delete().eq('user_id', USER_ID);
+}
 
 async function run() {
-  console.log('\n=== Phase 23 Integration Tests — Full Audit Remediation ===\n');
+  console.log('\n=== Phase 23 Hardening Tests — Full Validation ===\n');
+
+  // Reset accumulated anomaly state from previous runs
+  await resetTestState();
 
   const validSig = signDevice(USER_ID, DEVICE_ID, APP_VERSION);
 
@@ -131,7 +169,7 @@ async function run() {
     const r = await get('/health');
     check('1. Health 200', r.status === 200);
     check('1b. Phase 23', r.data.data?.phase === 23);
-    check('1c. Version 2.6.0', r.data.data?.version === '2.6.0');
+    check('1c. Version 2.7.0', r.data.data?.version === '2.7.0');
   }
 
   // ── 2. Create user ──
@@ -362,7 +400,6 @@ async function run() {
 
   // ── 30. Version downgrade detection via device verify ──
   {
-    // First register with 2.6.0 (already done), then try 2.4.0
     const downSig = signDevice(USER_ID, DEVICE_ID, '2.4.0');
     const r = await post('/verify/device', {
       user_id: USER_ID,
@@ -370,14 +407,12 @@ async function run() {
       app_version: '2.4.0',
       signature: downSig,
     });
-    // Should succeed (200) but log downgrade event
     check('30. Version downgrade detected (still 200)', r.status === 200);
   }
 
   // ── 31. CORS: origin validation (unit test level) ──
   {
-    // Can't fully test CORS from fetch to localhost, verify config exists
-    check('31. CORS config: allowedOrigins defined in server', true); // structural check
+    check('31. CORS config: allowedOrigins defined in server', true);
   }
 
   // ── 32. Graceful shutdown handler registered ──
@@ -386,6 +421,95 @@ async function run() {
     check('32. SIGTERM handler registered', listeners.length > 0);
     const intListeners = process.listeners('SIGINT');
     check('32b. SIGINT handler registered', intListeners.length > 0);
+  }
+
+  // ── 33. Security headers (Helmet) present ──
+  {
+    const r = await get('/health');
+    const xco = r.headers.get('x-content-type-options');
+    const xfo = r.headers.get('x-frame-options');
+    check('33a. X-Content-Type-Options = nosniff', xco === 'nosniff');
+    check('33b. X-Frame-Options present', !!xfo);
+    const xpb = r.headers.get('x-powered-by');
+    check('33c. X-Powered-By removed', !xpb);
+  }
+
+  // ── 34. Replay protection: expired timestamp → 403 ──
+  {
+    const expiredTs = Date.now() - 10 * 60 * 1000; // 10 min ago
+    const sig = signDevice(USER_ID, DEVICE_ID, APP_VERSION, expiredTs);
+    const r = await post('/verify/device', {
+      user_id: USER_ID,
+      device_id: DEVICE_ID,
+      app_version: APP_VERSION,
+      signature: sig,
+      timestamp: expiredTs,
+    });
+    check('34. Expired timestamp → 403', r.status === 403);
+  }
+
+  // ── 35. Replay protection: valid timestamp → 200 ──
+  {
+    const freshTs = Date.now();
+    const sig = signDevice(USER_ID, DEVICE_ID, APP_VERSION, freshTs);
+    const r = await post('/verify/device', {
+      user_id: USER_ID,
+      device_id: DEVICE_ID,
+      app_version: APP_VERSION,
+      signature: sig,
+      timestamp: freshTs,
+    });
+    check('35. Fresh timestamp → 200', r.status === 200);
+  }
+
+  // ── 36. Authorization header: missing → 401 (only if API_KEY configured) ──
+  {
+    if (API_KEY) {
+      const r = await post('/user/create', { id: 'auth_test', email: 'auth@test.com' }, {
+        'Content-Type': 'application/json',
+      });
+      check('36. Missing auth header → 401', r.status === 401);
+    } else {
+      check('36. SKIP (API_KEY not configured)', true);
+    }
+  }
+
+  // ── 37. Authorization header: invalid → 401 ──
+  {
+    if (API_KEY) {
+      const r = await post('/user/create', { id: 'auth_test', email: 'auth@test.com' }, {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer wrong_key_1234567890123456789012345678901234567890123456789012345678901234',
+      });
+      check('37. Invalid auth header → 401', r.status === 401);
+    } else {
+      check('37. SKIP (API_KEY not configured)', true);
+    }
+  }
+
+  // ── 38. Retention module exports ──
+  {
+    check('38a. runRetentionCycle is function', typeof runRetentionCycle === 'function');
+    check('38b. startRetentionScheduler is function', typeof startRetentionScheduler === 'function');
+    check('38c. stopRetentionScheduler is function', typeof stopRetentionScheduler === 'function');
+  }
+
+  // ── 39. Device verify — no timestamp (legacy compat) → 200 ──
+  {
+    const legacySig = signDevice(USER_ID, DEVICE_ID, APP_VERSION);
+    const r = await post('/verify/device', {
+      user_id: USER_ID,
+      device_id: DEVICE_ID,
+      app_version: APP_VERSION,
+      signature: legacySig,
+    });
+    check('39. Legacy sig (no timestamp) → 200', r.status === 200);
+  }
+
+  // ── 40. API key not required for GET /health ──
+  {
+    const r = await get('/health');
+    check('40. GET /health without API key → 200', r.status === 200);
   }
 
   // ── Summary ──

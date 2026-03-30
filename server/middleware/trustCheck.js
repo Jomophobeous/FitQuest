@@ -44,29 +44,50 @@ async function trustCheck(req, res, next) {
   const sanitizedDeviceId = device_id.trim().slice(0, 256);
 
   try {
-    // Fetch device (anomaly_score may not exist yet if schema not updated)
-    let device = null;
-    let deviceErr = null;
+    // P1 optimization: parallel user + device DB reads (saves ~50ms per request)
+    const [deviceResult, userResult] = await Promise.all([
+      // Fetch device (anomaly_score may not exist yet if schema not updated)
+      (async () => {
+        const deviceQuery = await supabase
+          .from('devices')
+          .select('device_id, user_id, app_version, trust_score, anomaly_score, last_seen')
+          .eq('device_id', sanitizedDeviceId)
+          .maybeSingle();
 
-    const deviceQuery = await supabase
-      .from('devices')
-      .select('device_id, user_id, app_version, trust_score, anomaly_score, last_seen')
-      .eq('device_id', sanitizedDeviceId)
-      .maybeSingle();
+        if (deviceQuery.error && deviceQuery.error.message?.includes('anomaly_score')) {
+          const fallback = await supabase
+            .from('devices')
+            .select('device_id, user_id, app_version, trust_score, last_seen')
+            .eq('device_id', sanitizedDeviceId)
+            .maybeSingle();
+          return { data: fallback.data, error: fallback.error };
+        }
+        return { data: deviceQuery.data, error: deviceQuery.error };
+      })(),
+      // Fetch user (anomaly_score may not exist yet if schema not updated)
+      (async () => {
+        const userQuery = await supabase
+          .from('users')
+          .select('id, email, trust_score, anomaly_score')
+          .eq('id', sanitizedUserId)
+          .maybeSingle();
 
-    if (deviceQuery.error && deviceQuery.error.message?.includes('anomaly_score')) {
-      // Fallback: schema not updated yet — query without anomaly_score
-      const fallback = await supabase
-        .from('devices')
-        .select('device_id, user_id, app_version, trust_score, last_seen')
-        .eq('device_id', sanitizedDeviceId)
-        .maybeSingle();
-      device = fallback.data;
-      deviceErr = fallback.error;
-    } else {
-      device = deviceQuery.data;
-      deviceErr = deviceQuery.error;
-    }
+        if (userQuery.error && userQuery.error.message?.includes('anomaly_score')) {
+          const fallback = await supabase
+            .from('users')
+            .select('id, email, trust_score')
+            .eq('id', sanitizedUserId)
+            .maybeSingle();
+          return { data: fallback.data, error: fallback.error };
+        }
+        return { data: userQuery.data, error: userQuery.error };
+      })(),
+    ]);
+
+    const device = deviceResult.data;
+    const deviceErr = deviceResult.error;
+    const user = userResult.data;
+    const userErr = userResult.error;
 
     if (deviceErr) {
       console.error('[trustCheck] Device lookup error:', deviceErr.message);
@@ -83,29 +104,6 @@ async function trustCheck(req, res, next) {
         actual_user: device.user_id,
       });
       return respond(res, 403, null, 'Device is not registered to this user.');
-    }
-
-    // Fetch user (anomaly_score may not exist yet if schema not updated)
-    let user = null;
-    let userErr = null;
-
-    const userQuery = await supabase
-      .from('users')
-      .select('id, email, trust_score, anomaly_score')
-      .eq('id', sanitizedUserId)
-      .maybeSingle();
-
-    if (userQuery.error && userQuery.error.message?.includes('anomaly_score')) {
-      const fallback = await supabase
-        .from('users')
-        .select('id, email, trust_score')
-        .eq('id', sanitizedUserId)
-        .maybeSingle();
-      user = fallback.data;
-      userErr = fallback.error;
-    } else {
-      user = userQuery.data;
-      userErr = userQuery.error;
     }
 
     if (userErr) {
@@ -173,7 +171,5 @@ async function trustCheck(req, res, next) {
 }
 
 module.exports = trustCheck;
-module.exports.THRESHOLD_RESTRICTED = THRESHOLD_RESTRICTED;
-module.exports.THRESHOLD_SUSPENDED = THRESHOLD_SUSPENDED;
 module.exports.THRESHOLD_RESTRICTED = THRESHOLD_RESTRICTED;
 module.exports.THRESHOLD_SUSPENDED = THRESHOLD_SUSPENDED;

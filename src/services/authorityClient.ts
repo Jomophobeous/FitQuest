@@ -18,6 +18,9 @@
 import { getApiBaseUrl } from './apiBaseUrl';
 import * as Application from 'expo-application';
 
+// S2: API key for authority server authentication (POST routes)
+const AUTHORITY_API_KEY = process.env.EXPO_PUBLIC_AUTHORITY_API_KEY || '';
+
 // ── Types ──
 
 export interface AuthorityResponse<T> {
@@ -116,12 +119,19 @@ async function authorityFetch<T>(path: string, body?: Record<string, unknown>): 
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-App-Version': getAppVersion(),
+    };
+
+    // S2: Add auth header for POST requests
+    if (body && AUTHORITY_API_KEY) {
+      headers['Authorization'] = `Bearer ${AUTHORITY_API_KEY}`;
+    }
+
     const options: RequestInit = {
       method: body ? 'POST' : 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-App-Version': getAppVersion(),
-      },
+      headers,
       signal: controller.signal,
     };
 
@@ -203,6 +213,7 @@ export async function verifyDevice(
     device_id: deviceId,
     app_version: getAppVersion(),
     signature,
+    timestamp: Date.now(), // S1: replay protection
   });
 
   if (result?.success && result.data) {
@@ -246,12 +257,17 @@ export async function requestAI(userId: string, deviceId: string, prompt: string
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const aiHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-App-Version': getAppVersion(),
+    };
+    if (AUTHORITY_API_KEY) {
+      aiHeaders['Authorization'] = `Bearer ${AUTHORITY_API_KEY}`;
+    }
+
     const res = await fetch(`${baseUrl}/ai/request`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-App-Version': getAppVersion(),
-      },
+      headers: aiHeaders,
       body: JSON.stringify({
         user_id: userId,
         device_id: deviceId,

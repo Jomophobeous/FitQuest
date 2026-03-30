@@ -1,11 +1,11 @@
 /**
  * FitQuest Backend Authority Server — Phase 23
  *
- * Full audit remediation: HMAC signatures, CORS lockdown, semver,
- * graceful shutdown, DB optimization, data retention.
+ * Full audit remediation: HMAC signatures, CORS lockdown, security headers,
+ * replay protection, graceful shutdown, DB optimization, data retention.
  * All internal scores (trust_score, anomaly_score, effectiveTrust) server-only.
  *
- * Stack: Express + Supabase (service_role)
+ * Stack: Express + Supabase (service_role) + Helmet
  * Deploy: Render (https://fitquest-gbhv.onrender.com)
  */
 
@@ -13,7 +13,9 @@
 
 require('dotenv').config();
 const express = require('express');
+const crypto = require('crypto');
 const cors = require('cors');
+const helmet = require('helmet');
 const respond = require('./utils/respond');
 
 // ── Express setup ──
@@ -21,7 +23,16 @@ const respond = require('./utils/respond');
 const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 
-// CORS — S3 fix: restrict origins (no wildcard)
+// ── Security Headers (must come before routes) ──
+app.use(helmet({
+  contentSecurityPolicy: false, // API server — no HTML content
+  crossOriginEmbedderPolicy: false, // Not serving embedded content
+}));
+
+// Disable X-Powered-By (also done by helmet, belt-and-suspenders)
+app.disable('x-powered-by');
+
+// CORS — S3 fix: strict origin enforcement
 const allowedOrigins = [
   'https://fitquest-gbhv.onrender.com',
   process.env.CORS_ALLOWED_ORIGIN,
@@ -29,19 +40,58 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    // Mobile apps send no Origin header — allow only if no origin present
+    // This is required for React Native fetch + curl/server-to-server
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error('CORS: origin not allowed'));
   },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-App-Version', 'X-Device-ID'],
+  credentials: false, // No cookies — API key auth only
+  maxAge: 86400, // Cache preflight for 24h
 }));
 
 // JSON body parsing
 app.use(express.json({ limit: '100kb' }));
 
 // ── Global Middleware ──
+
+/**
+ * S2 fix: API key validation for all POST routes.
+ * The mobile client must send Authorization: Bearer <API_KEY>.
+ * Health check (GET) is exempt.
+ */
+const API_KEY = process.env.API_KEY;
+
+app.use((req, res, next) => {
+  // GET requests (health check, etc.) are exempt
+  if (req.method !== 'POST') return next();
+
+  // If API_KEY is not configured, skip check (development mode)
+  if (!API_KEY) return next();
+
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return respond(res, 401, null, 'Missing or invalid Authorization header.');
+  }
+
+  const token = authHeader.slice(7);
+  if (token.length !== API_KEY.length) {
+    return respond(res, 401, null, 'Invalid API key.');
+  }
+
+  // Constant-time comparison to prevent timing attacks
+  const valid = crypto.timingSafeEqual(
+    Buffer.from(token, 'utf8'),
+    Buffer.from(API_KEY, 'utf8')
+  );
+  if (!valid) {
+    return respond(res, 401, null, 'Invalid API key.');
+  }
+
+  next();
+});
 
 /**
  * Reject POST requests without a JSON body.
@@ -116,7 +166,7 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
-    version: '2.6.0',
+    version: '2.7.0',
     phase: 23,
     status: 'operational',
     timestamp: new Date().toISOString(),
@@ -145,11 +195,15 @@ app.use((err, _req, res, _next) => {
 
 // ── Start server ──
 
+const { startRetentionScheduler, stopRetentionScheduler } = require('./utils/retention');
+
 let server;
 if (require.main === module) {
   server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v2.6.0 (Phase 23) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v2.7.0 (Phase 23 Hardened) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
+    // D1-D3: Start data retention scheduler (60s delay, then every 24h)
+    startRetentionScheduler();
   });
 }
 
@@ -157,6 +211,7 @@ if (require.main === module) {
 
 function gracefulShutdown(signal) {
   console.log(`[FitQuest Authority] ${signal} received — shutting down gracefully.`);
+  stopRetentionScheduler(); // D1-D3: Stop retention scheduler
   if (server) {
     server.close(() => {
       console.log('[FitQuest Authority] HTTP server closed.');

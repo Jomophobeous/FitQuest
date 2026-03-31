@@ -1,5 +1,5 @@
 /**
- * Admin API Routes — Phase 27 (Trust Decay + Alerting)
+ * Admin API Routes — Phase 28 (Enforcement Layer)
  *
  * Dashboard hooks for trust management:
  *   POST /admin/trust-scores   — List users with degraded/blocked trust
@@ -14,6 +14,12 @@
  *   POST /admin/inject-anomaly — Insert anomaly record (admin use)
  *   POST /admin/check-thresholds — Trigger threshold check + alerting
  *   POST /admin/config         — Return current threshold config
+ *   POST /admin/enforcement-status — Get user's enforcement state (Phase 28)
+ *   POST /admin/force-profile  — Override user's access profile (Phase 28)
+ *   POST /admin/clear-override — Remove active enforcement override (Phase 28)
+ *   POST /admin/revoke-tokens  — Revoke all device tokens (Phase 28)
+ *   POST /admin/reinstate-tokens — Reinstate revoked tokens (Phase 28)
+ *   POST /admin/trigger-recovery — Apply soft trust recovery (Phase 28)
  *
  * Auth: Requires API_KEY (global middleware) + ADMIN_SECRET in request body.
  * ADMIN_SECRET defaults to DEVICE_SIGNING_SECRET if not set separately.
@@ -27,6 +33,21 @@ const respond = require('../utils/respond');
 const logEvent = require('../utils/logEvent');
 const { TRUST_THRESHOLDS, ALERT_THRESHOLDS, ALERT_COUNT_THRESHOLDS, THREAT_SCORE_THRESHOLDS, THREAT_WEIGHTS } = require('../engines/trustDecayEngine');
 const { computeEffectiveScore } = require('../engines/anomalyEngine');
+const {
+  TRUST_BANDS,
+  ACCESS_PROFILES,
+  getAccessProfile,
+  getEnforcementState,
+  getOverrideStatus,
+  forceProfile,
+  clearOverride,
+  revokeAllTokens,
+  reinstateTokens,
+  applySoftRecovery,
+  bridgeAlertToEnforcement,
+  getFeatureGate,
+  applyAdaptivePenalty,
+} = require('../engines/enforcementEngine');
 
 // ── Admin auth: constant-time comparison ──
 const crypto = require('crypto');
@@ -530,18 +551,207 @@ router.post('/admin/check-thresholds', async (req, res) => {
 });
 
 // ── GET /admin/config ──
-// Returns current trust + alert threshold configuration
+// Returns current trust + alert + enforcement threshold configuration
 router.post('/admin/config', async (req, res) => {
   if (!validateAdminSecret(req, res)) return;
 
   return respond(res, 200, {
     trust_thresholds: TRUST_THRESHOLDS,
+    trust_bands: TRUST_BANDS,
+    access_profiles: Object.values(ACCESS_PROFILES),
     alert_thresholds: ALERT_THRESHOLDS,
     alert_count_thresholds: ALERT_COUNT_THRESHOLDS,
     threat_score_thresholds: THREAT_SCORE_THRESHOLDS,
     threat_weights: THREAT_WEIGHTS,
-    phase: 27.1,
+    phase: 28,
   });
+});
+
+// ════════════════════════════════════════════════════════════════
+// Phase 28 — Enforcement Layer Routes
+// ════════════════════════════════════════════════════════════════
+
+// ── POST /admin/enforcement-status ──
+// Get full enforcement state for a user (access profile, override, feature gate)
+router.post('/admin/enforcement-status', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const state = await getEnforcementState(user_id.trim().slice(0, 128));
+    const featureGate = getFeatureGate(state.accessProfile);
+
+    return respond(res, 200, {
+      ...state,
+      featureGate,
+    });
+  } catch (err) {
+    console.error('[admin] enforcement-status error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/force-profile ──
+// Admin override: force a user to a specific access profile (24h cooldown)
+router.post('/admin/force-profile', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, profile, reason } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+    if (!profile || typeof profile !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid profile.');
+    }
+
+    const sanitizedId = user_id.trim().slice(0, 128);
+    const sanitizedProfile = profile.trim().toUpperCase();
+    const sanitizedReason = typeof reason === 'string' ? reason.trim().slice(0, 500) : 'admin_override';
+
+    const result = forceProfile(sanitizedId, sanitizedProfile, sanitizedReason);
+    if (!result.success) {
+      return respond(res, 400, null, result.error);
+    }
+
+    logEvent(sanitizedId, null, 'admin_force_profile', null, {
+      profile: sanitizedProfile,
+      reason: sanitizedReason,
+      expires_at: new Date(result.expiresAt).toISOString(),
+    });
+
+    return respond(res, 200, {
+      user_id: sanitizedId,
+      forced_profile: sanitizedProfile,
+      expires_at: new Date(result.expiresAt).toISOString(),
+    });
+  } catch (err) {
+    console.error('[admin] force-profile error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/clear-override ──
+// Remove active enforcement override for a user
+router.post('/admin/clear-override', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const sanitizedId = user_id.trim().slice(0, 128);
+    const result = clearOverride(sanitizedId);
+
+    return respond(res, 200, {
+      user_id: sanitizedId,
+      cleared: result.existed,
+    });
+  } catch (err) {
+    console.error('[admin] clear-override error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/revoke-tokens ──
+// Revoke all device tokens for a user (kill switch)
+router.post('/admin/revoke-tokens', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, reason } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const sanitizedId = user_id.trim().slice(0, 128);
+    const sanitizedReason = typeof reason === 'string' ? reason.trim().slice(0, 500) : 'ADMIN_REVOCATION';
+
+    const result = await revokeAllTokens(sanitizedId, sanitizedReason);
+    if (!result.success) {
+      return respond(res, 500, null, `Token revocation failed: ${result.error}`);
+    }
+
+    logEvent(sanitizedId, null, 'admin_revoke_tokens', null, {
+      reason: sanitizedReason,
+      revoked: result.revoked,
+    });
+
+    return respond(res, 200, {
+      user_id: sanitizedId,
+      tokens_revoked: result.revoked,
+      reason: sanitizedReason,
+    });
+  } catch (err) {
+    console.error('[admin] revoke-tokens error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/reinstate-tokens ──
+// Reinstate all revoked device tokens for a user
+router.post('/admin/reinstate-tokens', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const sanitizedId = user_id.trim().slice(0, 128);
+    const result = await reinstateTokens(sanitizedId);
+    if (!result.success) {
+      return respond(res, 500, null, `Token reinstatement failed: ${result.error}`);
+    }
+
+    logEvent(sanitizedId, null, 'admin_reinstate_tokens', null, {
+      reinstated: result.reinstated,
+    });
+
+    return respond(res, 200, {
+      user_id: sanitizedId,
+      tokens_reinstated: result.reinstated,
+    });
+  } catch (err) {
+    console.error('[admin] reinstate-tokens error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/trigger-recovery ──
+// Manually apply soft trust recovery for a user
+router.post('/admin/trigger-recovery', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, hours_clean } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const sanitizedId = user_id.trim().slice(0, 128);
+    const hours = Math.min(Math.max(1, Number(hours_clean) || 1), 720); // max 30 days
+
+    const result = await applySoftRecovery(sanitizedId, hours);
+    if (!result.success) {
+      return respond(res, 500, null, `Recovery failed: ${result.error}`);
+    }
+
+    return respond(res, 200, {
+      user_id: sanitizedId,
+      ...result,
+    });
+  } catch (err) {
+    console.error('[admin] trigger-recovery error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
 });
 
 module.exports = router;

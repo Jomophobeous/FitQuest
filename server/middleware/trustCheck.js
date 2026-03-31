@@ -1,25 +1,23 @@
 /**
- * Trust scoring middleware — Phase 27 (Trust Decay + Alerting).
+ * Trust scoring middleware — Phase 28 (Enforcement Layer).
  *
- * Enforces trust thresholds BEFORE endpoint logic executes.
+ * Enforces trust thresholds + access profiles BEFORE endpoint logic executes.
  * Reads DB-persisted anomaly_score (set by anomalyEngine) — no per-request computation.
  *
  *   effective_score = trust_score - anomaly_score
  *
- * Phase 27 thresholds:
- *   >= 0.6  → full access
- *   0.3–0.6 → degraded mode (restricted features, req.degraded = true)
- *   < 0.3   → soft block (req.softBlocked = true, alert generated — no hard 403)
+ * Phase 28 access profiles:
+ *   FULL:          >= 0.8  → full access
+ *   WATCH:         0.6–0.79 → increased logging, no restriction
+ *   SOFT_RESTRICT: 0.4–0.59 → rate limits, disable non-essential, revalidation
+ *   HARD_RESTRICT: 0.2–0.39 → block premium, block subscription endpoints
+ *   LOCKDOWN:      < 0.2    → deny all privileged actions, force re-auth
  *
- * Phase 27 changes:
- *   - THRESHOLD_RESTRICTED raised from 0.5 → 0.6
- *   - Hard 403 at <0.3 replaced with soft block + admin alert
- *   - req.softBlocked flag for routes to enforce restrictions
- *   - Backward compat: req.restricted still set for <0.6
- *   - Trust alert generation on threshold breach
+ * Backward compat preserved: req.restricted, req.degraded, req.softBlocked.
  *
  * Attaches: req.user, req.device, req.restricted, req.degraded, req.softBlocked,
- *           req.effectiveTrust, req.anomalyScore, req.backendVerified.
+ *           req.effectiveTrust, req.anomalyScore, req.backendVerified,
+ *           req.accessProfile, req.featureGate.
  */
 'use strict';
 
@@ -27,8 +25,18 @@ const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
 const respond = require('../utils/respond');
 const { checkThresholdsAndAlert, TRUST_THRESHOLDS } = require('../engines/trustDecayEngine');
+const {
+  getAccessProfile,
+  getOverrideStatus,
+  getFeatureGate,
+  ACCESS_PROFILES,
+  TRUST_BANDS,
+  checkOfflineWindow,
+  MAX_OFFLINE_WINDOW_HOURS,
+  profileSeverity,
+} = require('../engines/enforcementEngine');
 
-// ── Thresholds (Phase 27: raised restricted from 0.5 → 0.6) ──
+// ── Thresholds (Phase 27 compat) ──
 const THRESHOLD_RESTRICTED = TRUST_THRESHOLDS.degraded;   // 0.6
 const THRESHOLD_SOFT_BLOCK = TRUST_THRESHOLDS.softBlock;   // 0.3
 
@@ -131,31 +139,69 @@ async function trustCheck(req, res, next) {
 
     const effectiveTrust = Math.max(0, Math.min(1.0, baseTrust - anomalyScore));
 
-    // ── Enforce thresholds (Phase 27: soft block replaces hard 403) ──
+    // ── Phase 28: Check for admin override ──
+    const override = getOverrideStatus(sanitizedUserId);
+    let accessProfile;
+    let overrideActive = false;
+
+    if (override) {
+      accessProfile = override.profile;
+      overrideActive = true;
+    } else {
+      accessProfile = getAccessProfile(effectiveTrust);
+    }
+
+    // ── Phase 28: Anti-bypass — offline window check ──
+    if (!overrideActive && device.last_seen) {
+      const offlineExceeded = checkOfflineWindow(device.last_seen, MAX_OFFLINE_WINDOW_HOURS);
+      if (offlineExceeded && profileSeverity(accessProfile) < profileSeverity(ACCESS_PROFILES.HARD_RESTRICT)) {
+        accessProfile = ACCESS_PROFILES.HARD_RESTRICT;
+        logEvent(sanitizedUserId, sanitizedDeviceId, 'offline_window_exceeded', ip, {
+          last_seen: device.last_seen,
+          max_hours: MAX_OFFLINE_WINDOW_HOURS,
+        });
+      }
+    }
+
+    // ── Phase 28: LOCKDOWN → hard 403 ──
+    if (accessProfile === ACCESS_PROFILES.LOCKDOWN) {
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_lockdown', ip, {
+        effective: effectiveTrust,
+        anomaly_score: anomalyScore,
+        override: overrideActive,
+      });
+      checkThresholdsAndAlert(sanitizedUserId, sanitizedDeviceId, effectiveTrust, anomalyScore);
+      return respond(res, 403, null, 'Access denied. Account under review.');
+    }
+
+    const featureGate = getFeatureGate(accessProfile);
+
+    // ── Backward compat flags (Phase 27) ──
     const softBlocked = effectiveTrust < THRESHOLD_SOFT_BLOCK;
     const degraded = effectiveTrust < THRESHOLD_RESTRICTED;
 
-    if (softBlocked) {
-      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_soft_blocked', ip, {
+    if (softBlocked || accessProfile === ACCESS_PROFILES.HARD_RESTRICT) {
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_hard_restricted', ip, {
         user_trust: userTrust,
         device_trust: deviceTrust,
         anomaly_score: anomalyScore,
         effective: effectiveTrust,
+        access_profile: accessProfile,
+        override: overrideActive,
       });
-      // Fire-and-forget: generate admin alert
       checkThresholdsAndAlert(sanitizedUserId, sanitizedDeviceId, effectiveTrust, anomalyScore);
-    } else if (degraded) {
-      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_degraded', ip, {
+    } else if (degraded || accessProfile === ACCESS_PROFILES.SOFT_RESTRICT) {
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_soft_restricted', ip, {
         user_trust: userTrust,
         device_trust: deviceTrust,
         anomaly_score: anomalyScore,
         effective: effectiveTrust,
+        access_profile: accessProfile,
       });
-      // Fire-and-forget: generate admin alert if threshold breached
       checkThresholdsAndAlert(sanitizedUserId, sanitizedDeviceId, effectiveTrust, anomalyScore);
     }
 
-    // ── Attach to request ──
+    // ── Attach to request (Phase 28: add accessProfile + featureGate) ──
     req.user = user;
     req.device = device;
     req.restricted = degraded;       // backward compat
@@ -164,11 +210,15 @@ async function trustCheck(req, res, next) {
     req.effectiveTrust = effectiveTrust;
     req.anomalyScore = anomalyScore;
     req.backendVerified = true;
+    req.accessProfile = accessProfile;     // Phase 28
+    req.featureGate = featureGate;         // Phase 28
+    req.overrideActive = overrideActive;   // Phase 28
 
     logEvent(sanitizedUserId, sanitizedDeviceId, 'trust_check_passed', ip, {
       effective: effectiveTrust,
       anomaly_score: anomalyScore,
-      restricted,
+      access_profile: accessProfile,
+      override: overrideActive,
     });
 
     next();

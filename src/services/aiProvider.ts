@@ -36,7 +36,7 @@ import {
 import { queueReconciliationBatch } from './security/securityBridge';
 import { requestAI } from './authorityClient';
 import * as SecureStore from 'expo-secure-store';
-import * as Application from 'expo-application';
+import * as Crypto from 'expo-crypto';
 
 // ============================================
 // AI PROXY CONFIGURATION
@@ -58,17 +58,34 @@ function isProxyEnabled(): boolean {
 }
 
 /** Stable device identifier for proxy rate limiting */
+const DEVICE_ID_KEY = 'fitquest_device_id';
 let _deviceId: string | null = null;
+let _deviceIdPromise: Promise<string> | null = null;
 async function getDeviceId(): Promise<string> {
   if (_deviceId) return _deviceId;
-  try {
-    // expo-application provides a stable install ID
-    const id = await Application.getInstallationIdAsync();
-    _deviceId = id || 'unknown';
-  } catch {
-    _deviceId = 'unknown';
-  }
-  return _deviceId;
+  // Mutex: concurrent callers share a single in-flight initialization
+  if (_deviceIdPromise) return _deviceIdPromise;
+  _deviceIdPromise = (async () => {
+    try {
+      // Try SecureStore-persisted UUID first (survives app updates)
+      const stored = await SecureStore.getItemAsync(DEVICE_ID_KEY);
+      if (stored) {
+        _deviceId = stored;
+        return stored;
+      }
+      // Generate a cryptographically random UUID for this installation
+      const id = Crypto.randomUUID();
+      await SecureStore.setItemAsync(DEVICE_ID_KEY, id);
+      _deviceId = id;
+      return id;
+    } catch {
+      _deviceId = 'unknown';
+      return 'unknown';
+    } finally {
+      _deviceIdPromise = null;
+    }
+  })();
+  return _deviceIdPromise;
 }
 
 // ============================================

@@ -229,7 +229,7 @@ async function main() {
     const results = await Promise.all(promises);
     const succeeded = results.filter(r => r.status === 200).length;
     const failed403 = results.filter(r => r.status === 403).length;
-    const errors = results.filter(r => r.status !== 200 && r.status !== 403);
+    const errors = results.filter(r => r.status !== 200 && r.status !== 403 && r.status !== 429);
 
     assert('At least 1 concurrent sync succeeds', succeeded >= 1, `succeeded=${succeeded}`);
     assert('No 500 errors under load', errors.length === 0,

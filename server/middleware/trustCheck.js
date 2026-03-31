@@ -1,33 +1,36 @@
 /**
- * Trust scoring middleware — Phase 22.3.
+ * Trust scoring middleware — Phase 27 (Trust Decay + Alerting).
  *
  * Enforces trust thresholds BEFORE endpoint logic executes.
  * Reads DB-persisted anomaly_score (set by anomalyEngine) — no per-request computation.
  *
  *   effective_score = trust_score - anomaly_score
  *
- * Thresholds:
- *   >= 0.5  → full access
- *   0.3–0.5 → restricted (feature degradation, req.restricted = true)
- *   < 0.3   → suspended (403 — access denied)
+ * Phase 27 thresholds:
+ *   >= 0.6  → full access
+ *   0.3–0.6 → degraded mode (restricted features, req.degraded = true)
+ *   < 0.3   → soft block (req.softBlocked = true, alert generated — no hard 403)
  *
- * Phase 22.3 additions:
- *   - Backend verification flag (req.backendVerified = true)
- *   - trust_score and anomaly_score NEVER exposed to client
- *   - All sensitive computation server-side only
+ * Phase 27 changes:
+ *   - THRESHOLD_RESTRICTED raised from 0.5 → 0.6
+ *   - Hard 403 at <0.3 replaced with soft block + admin alert
+ *   - req.softBlocked flag for routes to enforce restrictions
+ *   - Backward compat: req.restricted still set for <0.6
+ *   - Trust alert generation on threshold breach
  *
- * Attaches: req.user, req.device, req.restricted, req.effectiveTrust,
- *           req.anomalyScore, req.backendVerified.
+ * Attaches: req.user, req.device, req.restricted, req.degraded, req.softBlocked,
+ *           req.effectiveTrust, req.anomalyScore, req.backendVerified.
  */
 'use strict';
 
 const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
 const respond = require('../utils/respond');
+const { checkThresholdsAndAlert, TRUST_THRESHOLDS } = require('../engines/trustDecayEngine');
 
-// ── Thresholds ──
-const THRESHOLD_RESTRICTED = 0.5;
-const THRESHOLD_SUSPENDED = 0.3;
+// ── Thresholds (Phase 27: raised restricted from 0.5 → 0.6) ──
+const THRESHOLD_RESTRICTED = TRUST_THRESHOLDS.degraded;   // 0.6
+const THRESHOLD_SOFT_BLOCK = TRUST_THRESHOLDS.softBlock;   // 0.3
 
 async function trustCheck(req, res, next) {
   const { user_id, device_id } = req.body;
@@ -128,34 +131,39 @@ async function trustCheck(req, res, next) {
 
     const effectiveTrust = Math.max(0, Math.min(1.0, baseTrust - anomalyScore));
 
-    // ── Enforce thresholds ──
-    if (effectiveTrust < THRESHOLD_SUSPENDED) {
-      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_suspended', ip, {
-        user_trust: userTrust,
-        device_trust: deviceTrust,
-        anomaly_score: anomalyScore,
-        effective: effectiveTrust,
-      });
-      return respond(res, 403, null, 'Access temporarily suspended.');
-    }
+    // ── Enforce thresholds (Phase 27: soft block replaces hard 403) ──
+    const softBlocked = effectiveTrust < THRESHOLD_SOFT_BLOCK;
+    const degraded = effectiveTrust < THRESHOLD_RESTRICTED;
 
-    const restricted = effectiveTrust < THRESHOLD_RESTRICTED;
-    if (restricted) {
-      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_restricted', ip, {
+    if (softBlocked) {
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_soft_blocked', ip, {
         user_trust: userTrust,
         device_trust: deviceTrust,
         anomaly_score: anomalyScore,
         effective: effectiveTrust,
       });
+      // Fire-and-forget: generate admin alert
+      checkThresholdsAndAlert(sanitizedUserId, sanitizedDeviceId, effectiveTrust, anomalyScore);
+    } else if (degraded) {
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'access_degraded', ip, {
+        user_trust: userTrust,
+        device_trust: deviceTrust,
+        anomaly_score: anomalyScore,
+        effective: effectiveTrust,
+      });
+      // Fire-and-forget: generate admin alert if threshold breached
+      checkThresholdsAndAlert(sanitizedUserId, sanitizedDeviceId, effectiveTrust, anomalyScore);
     }
 
     // ── Attach to request ──
     req.user = user;
     req.device = device;
-    req.restricted = restricted;
+    req.restricted = degraded;       // backward compat
+    req.degraded = degraded;         // Phase 27: clearer name
+    req.softBlocked = softBlocked;   // Phase 27: soft block flag
     req.effectiveTrust = effectiveTrust;
     req.anomalyScore = anomalyScore;
-    req.backendVerified = true; // Phase 22.3: backend verification flag for critical routes
+    req.backendVerified = true;
 
     logEvent(sanitizedUserId, sanitizedDeviceId, 'trust_check_passed', ip, {
       effective: effectiveTrust,
@@ -172,4 +180,4 @@ async function trustCheck(req, res, next) {
 
 module.exports = trustCheck;
 module.exports.THRESHOLD_RESTRICTED = THRESHOLD_RESTRICTED;
-module.exports.THRESHOLD_SUSPENDED = THRESHOLD_SUSPENDED;
+module.exports.THRESHOLD_SOFT_BLOCK = THRESHOLD_SOFT_BLOCK;

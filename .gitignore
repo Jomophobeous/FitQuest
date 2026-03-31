@@ -81,3 +81,6 @@ assets/models/fitcoach_transformer.min.model
 assets/models/activity_cnn_lstm.min.model
 assets/models/voice_v3.model
 assets/models/ar_v3.model
+
+# Supabase CLI local config
+supabase/

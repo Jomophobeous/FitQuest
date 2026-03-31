@@ -49,7 +49,7 @@ try {
 }
 
 // ── Config ──
-const BASE_URL = process.env.TEST_BASE_URL || 'https://fitq-oxp9.onrender.com';
+const BASE_URL = process.env.TEST_BASE_URL || 'https://fitq-56sj.onrender.com';
 const API_KEY = env.API_KEY;
 const SIGNING_SECRET = env.DEVICE_SIGNING_SECRET;
 

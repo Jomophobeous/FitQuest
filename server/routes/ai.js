@@ -1,13 +1,13 @@
 /**
- * AI governance route — Phase 22.3.
+ * AI governance route — Phase 27.
  *
  * POST /ai/request
  *   - trustCheck middleware enforces trust thresholds
  *   - Per-user rate limiting (20 req / 15 min)
  *   - Real-time anomaly evaluation on every request
- *   - Enforcement:
- *       effectiveScore < 0.3   → blocked (trustCheck 403)
- *       effectiveScore < 0.5   → restricted (degraded access)
+ *   - Enforcement (Phase 27 — soft mode):
+ *       effectiveScore < 0.3   → soft blocked (req.softBlocked, no hard 403)
+ *       effectiveScore < 0.6   → degraded (req.degraded)
  *       anomalyScore > 0.6     → AI blocked at route level
  *   - trust_score, anomaly_score, effectiveTrust: INTERNAL ONLY, never in response
  *   - Usage logged to events + ai_usage (prompt_length, device_id, timestamp)
@@ -97,8 +97,8 @@ router.post('/ai/request', validateDeviceToken(), trustCheck, async (req, res) =
   }
 
   // ── Trust-based AI access ──
-  // trustCheck already blocks < 0.3 (403) and sets req.restricted for < 0.5
-  const restricted = req.restricted || false;
+  // Phase 27: trustCheck sets req.softBlocked and req.degraded (no hard 403)
+  const restricted = req.restricted || req.softBlocked || false;
 
   // Phase 23: Pass preloaded trust data from trustCheck (P3 optimization — saves 2 DB reads)
   const anomaly = await evaluateUserActivity(sanitizedUserId, sanitizedDeviceId, {

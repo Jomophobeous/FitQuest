@@ -19,6 +19,9 @@
  *   - Proper semver comparison via isVersionDowngrade (S5 fix)
  *   - preloadedScores option to skip redundant DB reads (P3 optimization)
  *   - Row limit on device/IP detection queries (P2 optimization)
+ *
+ * Phase 27 additions:
+ *   - Trust decay alert integration — checkThresholdsAndAlert called after anomaly detection
  */
 'use strict';
 
@@ -26,6 +29,7 @@ const crypto = require('crypto');
 const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
 const { isVersionDowngrade } = require('../utils/semver');
+const { checkThresholdsAndAlert } = require('./trustDecayEngine');
 
 // ── Deduplication: sliding window per type/device/user (minutes) ──
 const DEDUP_WINDOW_MINUTES = 5;
@@ -360,6 +364,24 @@ async function evaluateUserActivity(userId, deviceId, context = {}, requestConte
 }
 
 /**
+ * Post-evaluation hook: check trust decay thresholds and create alerts.
+ * Fire-and-forget — never blocks the response.
+ * Called separately from evaluateUserActivity to keep evaluation fast.
+ */
+async function evaluateAndAlert(userId, deviceId, context, requestContext, options) {
+  const result = await evaluateUserActivity(userId, deviceId, context, requestContext, options);
+
+  // Phase 27: Check alert thresholds if new anomalies fired
+  if (result.triggered.length > 0) {
+    // Fire-and-forget
+    checkThresholdsAndAlert(userId, deviceId, result.effectiveScore, result.anomalyScore)
+      .catch(() => {}); // Silent
+  }
+
+  return result;
+}
+
+/**
  * Compute effective trust score: trust_score - anomaly_score.
  * Reads DB-persisted scores. Returns { effectiveScore, trustScore, anomalyScore }.
  */
@@ -407,6 +429,7 @@ async function computeEffectiveScore(userId, deviceId) {
 
 module.exports = {
   evaluateUserActivity,
+  evaluateAndAlert,
   applyAnomaly,
   updateScores,
   computeEffectiveScore,

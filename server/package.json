@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "node test-phase23.js"
+    "test": "node test-phase27-trust-decay.js"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -21,5 +21,8 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "pg": "^8.20.0"
   }
 }

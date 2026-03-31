@@ -17,6 +17,9 @@ const supabase = require('./supabaseClient');
 // Events that warrant immediate alerting / high-severity flagging
 const HIGH_SEVERITY_EVENTS = new Set([
   'access_suspended',
+  'access_soft_blocked',   // Phase 27
+  'access_degraded',       // Phase 27
+  'trust_alert_created',   // Phase 27
   'device_untrusted',
   'ai_blocked_anomaly',
   'anomaly_detected',

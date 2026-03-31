@@ -1,6 +1,7 @@
 /**
- * FitQuest Backend Authority Server — Phase 26
+ * FitQuest Backend Authority Server — Phase 27
  *
+ * Trust decay + alerting system (configurable thresholds, admin dashboard).
  * Device binding & persistent trust (server-issued device_token).
  * Challenge-response authentication (no client-side secrets).
  * Legacy HMAC signature support behind USE_LEGACY_SIGNATURE flag.
@@ -169,8 +170,8 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
-    version: '4.0.0',
-    phase: 26,
+    version: '5.0.0',
+    phase: 27,
     status: 'operational',
     timestamp: new Date().toISOString(),
   });
@@ -185,6 +186,7 @@ app.use(require('./routes/deviceBinding'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/ai'));
 app.use(require('./routes/sync'));
+app.use(require('./routes/admin'));  // Phase 27: Admin dashboard
 
 // ── 404 catch-all ──
 
@@ -212,7 +214,7 @@ const { startRetentionScheduler, stopRetentionScheduler } = require('./utils/ret
 let server;
 if (require.main === module) {
   server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v4.0.0 (Phase 26 — Device Binding) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v5.0.0 (Phase 27 — Trust Decay + Alerting) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`[FitQuest Authority] Legacy HMAC: ${process.env.USE_LEGACY_SIGNATURE === 'true' ? 'ENABLED' : 'DISABLED'}`);
     // D1-D3: Start data retention scheduler (60s delay, then every 24h)

@@ -8,7 +8,7 @@
  * All internal scores (trust_score, anomaly_score, effectiveTrust) server-only.
  *
  * Stack: Express + Supabase (service_role) + Helmet
- * Deploy: Render (https://fitq-oxp9.onrender.com)
+ * Deploy: Render (https://fitq-56sj.onrender.com)
  */
 
 'use strict';
@@ -182,6 +182,7 @@ app.use(require('./routes/subscription'));
 app.use(require('./routes/device'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/ai'));
+app.use(require('./routes/sync'));
 
 // ── 404 catch-all ──
 

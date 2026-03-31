@@ -406,6 +406,29 @@ async function runVersionedMigrations(database: SQLite.SQLiteDatabase, currentVe
       `);
     });
   }
+
+  // v21: offline_queue table for Phase 25B sync engine
+  if (currentVersion < 21) {
+    await runMigrationSandboxed(database, '21', async (db) => {
+      if (__DEV__) console.warn('[FitQuest DB] v21: creating offline_queue table');
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS offline_queue (
+          action_id TEXT PRIMARY KEY,
+          type TEXT NOT NULL,
+          payload TEXT NOT NULL,
+          device_id TEXT NOT NULL,
+          verified INTEGER NOT NULL DEFAULT 0,
+          retry_count INTEGER NOT NULL DEFAULT 0,
+          status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'syncing', 'accepted', 'rejected', 'failed')),
+          error_message TEXT,
+          created_at INTEGER NOT NULL,
+          synced_at INTEGER
+        );
+        CREATE INDEX IF NOT EXISTS idx_offline_queue_status ON offline_queue(status);
+        CREATE INDEX IF NOT EXISTS idx_offline_queue_created ON offline_queue(created_at);
+      `);
+    });
+  }
 }
 
 async function hasTableColumn(
@@ -1705,6 +1728,26 @@ async function createTables(database: SQLite.SQLiteDatabase): Promise<void> {
     );
 
     CREATE INDEX IF NOT EXISTS idx_exercise_translations_lang ON exercise_translations(language);
+
+    -- ============================================
+    -- OFFLINE QUEUE (v21 — Phase 25B sync)
+    -- ============================================
+
+    CREATE TABLE IF NOT EXISTS offline_queue (
+      action_id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      payload TEXT NOT NULL,
+      device_id TEXT NOT NULL,
+      verified INTEGER NOT NULL DEFAULT 0,
+      retry_count INTEGER NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'syncing', 'accepted', 'rejected', 'failed')),
+      error_message TEXT,
+      created_at INTEGER NOT NULL,
+      synced_at INTEGER
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_offline_queue_status ON offline_queue(status);
+    CREATE INDEX IF NOT EXISTS idx_offline_queue_created ON offline_queue(created_at);
   `);
   if (__DEV__) console.warn('[FitQuest DB] createTables() — all tables created successfully');
 }

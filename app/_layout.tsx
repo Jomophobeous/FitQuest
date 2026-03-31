@@ -10,6 +10,8 @@ import { SubscriptionProvider, useSubscription } from '../src/purchases/Subscrip
 import { AuthProvider } from '../src/context/AuthContext';
 import { AuthGate } from '../src/components/AuthGate';
 import { PostHogAnalyticsProvider } from '../src/services/posthogService';
+import { ConnectivityProvider } from '../src/context/ConnectivityContext';
+import OfflineBanner from '../src/components/OfflineBanner';
 
 import { DropdownMenu } from '../src/components/DropdownMenu';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
@@ -526,9 +528,12 @@ export default function RootLayout() {
               <DatabaseProvider>
                 <AuthProvider>
                   <SubscriptionProvider>
-                    <AccessGate>
-                      <ThemedTabs />
-                    </AccessGate>
+                    <ConnectivityProvider>
+                      <AccessGate>
+                        <OfflineBanner />
+                        <ThemedTabs />
+                      </AccessGate>
+                    </ConnectivityProvider>
                   </SubscriptionProvider>
                 </AuthProvider>
               </DatabaseProvider>

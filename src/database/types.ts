@@ -391,7 +391,7 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 20; // v20: exercise_translations table for i18n
+export const SCHEMA_VERSION = 21; // v21: offline_queue table for Phase 25B sync
 
 // ============================================
 // v17 TYPES

@@ -209,6 +209,45 @@ export async function addXP(amount: number): Promise<XPGainResult> {
 }
 
 // ============================================
+// SERVER-AUTHORITATIVE XP (Phase 25B)
+// ============================================
+
+/**
+ * Overwrite local XP with server-verified total.
+ * Called by sync engine when server returns authoritative XP.
+ * Server is ALWAYS the final authority — local value is replaced.
+ */
+export async function setServerAuthoritativeXP(serverTotalXP: number): Promise<XPData> {
+  if (serverTotalXP < 0) serverTotalXP = 0;
+  const oldTotal = await loadTotalXP();
+
+  // Only write if different (avoid unnecessary WAL entries)
+  if (oldTotal !== serverTotalXP) {
+    const walId = await walService.logIntent({
+      operation: 'server_xp_overwrite',
+      table_name: 'app_state',
+      record_id: 'user_total_xp',
+      payload: { oldTotal, serverTotalXP, source: 'authority_server' },
+    });
+    try {
+      await saveTotalXP(serverTotalXP);
+      await walService.commit(walId);
+    } catch (error) {
+      await walService.markFailed(walId).catch((e) => safeWarn('[XP] WAL markFailed error', { error: String(e) }));
+      throw error;
+    }
+
+    void logEvent('xp_server_overwrite', {
+      old_total: oldTotal,
+      server_total: serverTotalXP,
+      delta: serverTotalXP - oldTotal,
+    });
+  }
+
+  return buildXPData(serverTotalXP);
+}
+
+// ============================================
 // MIND XP — Cognitive Fitness Leveling
 // ============================================
 

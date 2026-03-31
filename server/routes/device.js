@@ -8,6 +8,9 @@
  *   - Enriched anomaly metadata (ip_origin, device_fingerprint, request_headers, payload_hash)
  *   - computeEffectiveScore computed once per request server-side
  *   - Anomaly evaluation on every device event
+ *
+ * Phase 25A: Legacy HMAC mode — behind USE_LEGACY_SIGNATURE=true flag.
+ * Default: DISABLED. New clients use /auth/challenge + /auth/verify.
  */
 'use strict';
 
@@ -64,6 +67,11 @@ function verifyDeviceSignature(userId, deviceId, appVersion, signature, timestam
 }
 
 router.post('/verify/device', async (req, res) => {
+  // Phase 25A: Legacy HMAC endpoint — disabled unless USE_LEGACY_SIGNATURE=true
+  if (process.env.USE_LEGACY_SIGNATURE !== 'true') {
+    return respond(res, 410, null, 'Legacy device verification disabled. Use /auth/challenge + /auth/verify.');
+  }
+
   try {
     const { user_id, device_id, app_version, signature, timestamp } = req.body;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';

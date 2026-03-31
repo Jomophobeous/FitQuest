@@ -1,12 +1,13 @@
 /**
- * FitQuest Backend Authority Client — Phase 24A
+ * FitQuest Backend Authority Client — Phase 25A
  *
  * Client-side interface to the FitQuest Authority Server.
  * All verification routes through this service — no local trust.
  *
  * Endpoints:
  *   POST /verify/subscription  — Authoritative subscription status
- *   POST /verify/device        — Device fingerprint + trust scoring (HMAC-signed)
+ *   POST /auth/challenge       — Request challenge nonce (Phase 25A)
+ *   POST /auth/verify          — Submit challenge response (Phase 25A)
  *   POST /user/create          — User identity registration
  *   GET  /health               — Server health check
  *   POST /ai/request           — AI access authorization
@@ -22,7 +23,7 @@
 
 import { getApiBaseUrl } from './apiBaseUrl';
 import * as Application from 'expo-application';
-import { buildDeviceVerificationPayload, getStableDeviceId } from './deviceSignature';
+import { getStableDeviceId, computeChallengeResponse, getAppVersion as getDeviceAppVersion } from './deviceSignature';
 
 // S2: API key for authority server authentication (POST routes)
 const AUTHORITY_API_KEY = process.env.EXPO_PUBLIC_AUTHORITY_API_KEY || '';
@@ -301,11 +302,14 @@ export async function verifySubscription(userId: string, deviceId: string): Prom
 }
 
 /**
- * Verify device with the authority server using HMAC-SHA256 signature.
- * Generates signature automatically via deviceSignature module.
+ * Verify device with the authority server using challenge-response protocol.
+ * Phase 25A: No secrets on client. Server issues challenge, client proves liveness.
  * Throttled to max once per 30 minutes.
  *
- * Phase 24A: Uses dev-only signing secret. Phase 25 replaces with secure protocol.
+ * Flow:
+ *   1. POST /auth/challenge { user_id, device_id } → { challenge_id, nonce }
+ *   2. SHA-256(nonce + device_id + app_version) → response
+ *   3. POST /auth/verify { challenge_id, response, app_version } → DeviceVerification
  */
 export async function verifyDevice(userId: string): Promise<DeviceVerification | null> {
   const state = getState();
@@ -316,16 +320,40 @@ export async function verifyDevice(userId: string): Promise<DeviceVerification |
     return state.lastDeviceResult;
   }
 
-  // Build HMAC-signed payload
-  const payload = await buildDeviceVerificationPayload(userId);
-  if (!payload) {
-    if (__DEV__) console.warn('[Authority] Cannot generate device signature — signing secret missing');
+  const deviceId = await getStableDeviceId();
+
+  // Step 1: Request challenge
+  const challengeResult = await authorityFetch<{
+    challenge_id: string;
+    nonce: string;
+    expires_at: number;
+  }>('/auth/challenge', {
+    user_id: userId,
+    device_id: deviceId,
+  });
+
+  if (!challengeResult || challengeResult.kind !== 'success') {
+    if (__DEV__ && challengeResult && challengeResult.kind === 'error') {
+      console.warn(
+        `[Authority] Challenge request failed: ${challengeResult.error.httpStatus} — ${challengeResult.error.message}`,
+      );
+    }
     return null;
   }
 
-  const result = await authorityFetch<DeviceVerification>('/verify/device', payload);
+  const { challenge_id, nonce } = challengeResult.data;
 
-  const data = unwrapResult(result);
+  // Step 2: Compute response (SHA-256, no secret)
+  const response = await computeChallengeResponse(nonce, deviceId);
+
+  // Step 3: Submit response
+  const verifyResult = await authorityFetch<DeviceVerification>('/auth/verify', {
+    challenge_id,
+    response,
+    app_version: getDeviceAppVersion(),
+  });
+
+  const data = unwrapResult(verifyResult);
   if (data) {
     state.lastDeviceCheck = now;
     state.lastDeviceResult = data;
@@ -333,8 +361,10 @@ export async function verifyDevice(userId: string): Promise<DeviceVerification |
   }
 
   // Log structured error in dev
-  if (__DEV__ && result && result.kind === 'error') {
-    console.warn(`[Authority] Device verification rejected: ${result.error.httpStatus} — ${result.error.message}`);
+  if (__DEV__ && verifyResult && verifyResult.kind === 'error') {
+    console.warn(
+      `[Authority] Device verification rejected: ${verifyResult.error.httpStatus} — ${verifyResult.error.message}`,
+    );
   }
 
   return null;
@@ -343,12 +373,36 @@ export async function verifyDevice(userId: string): Promise<DeviceVerification |
 /**
  * Verify device with full result (including structured errors).
  * Use this when callers need to distinguish offline vs blocked vs rate-limited.
+ * Phase 25A: challenge-response protocol.
  */
 export async function verifyDeviceDetailed(userId: string): Promise<AuthorityResult<DeviceVerification>> {
-  const payload = await buildDeviceVerificationPayload(userId);
-  if (!payload) return null;
+  const deviceId = await getStableDeviceId();
 
-  return authorityFetch<DeviceVerification>('/verify/device', payload);
+  // Step 1: Request challenge
+  const challengeResult = await authorityFetch<{
+    challenge_id: string;
+    nonce: string;
+    expires_at: number;
+  }>('/auth/challenge', {
+    user_id: userId,
+    device_id: deviceId,
+  });
+
+  if (!challengeResult || challengeResult.kind !== 'success') {
+    return challengeResult as AuthorityResult<DeviceVerification>;
+  }
+
+  const { challenge_id, nonce } = challengeResult.data;
+
+  // Step 2: Compute response
+  const response = await computeChallengeResponse(nonce, deviceId);
+
+  // Step 3: Submit
+  return authorityFetch<DeviceVerification>('/auth/verify', {
+    challenge_id,
+    response,
+    app_version: getDeviceAppVersion(),
+  });
 }
 
 /**

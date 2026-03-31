@@ -1,43 +1,26 @@
 /**
- * Device Signature Generation — Phase 24A (Integration Testing Only)
+ * Device Identity & Challenge-Response — Phase 25A
  *
- * Generates HMAC-SHA256 signatures matching the server's verification logic:
- *   payload = `${user_id}|${device_id}|${app_version}|${timestamp}`
- *   signature = HMAC-SHA256(payload, DEVICE_SIGNING_SECRET).hex()
+ * Secure device verification using server-issued challenges.
+ * No secrets on client. No HMAC. No signing key.
  *
- * ═══════════════════════════════════════════════════════════════════
- * ⚠️  SECURITY WARNING — DO NOT SHIP THIS IN PRODUCTION BUILDS  ⚠️
- * ═══════════════════════════════════════════════════════════════════
- * The signing secret is embedded via EXPO_PUBLIC_DEV_SIGNING_SECRET
- * for integration testing ONLY. In production (Phase 25+), this must
- * be replaced by one of:
- *   - Server-issued short-lived tokens
- *   - Device-bound keys provisioned at registration
- *   - Challenge-response protocol
+ * Protocol:
+ *   1. Client → POST /auth/challenge { user_id, device_id }
+ *   2. Server → { challenge_id, nonce, expires_at }
+ *   3. Client computes: SHA-256(nonce + device_id + app_version) — NO secret
+ *   4. Client → POST /auth/verify { challenge_id, response, app_version }
+ *   5. Server validates: reconstructs hash, constant-time compare
  *
- * The EXPO_PUBLIC_ prefix means this value is bundled into the JS
- * and extractable from the APK. This is acceptable ONLY for dev/test.
- * ═══════════════════════════════════════════════════════════════════
+ * Security properties:
+ *   - No secret in APK → nothing to extract
+ *   - Each request tied to ephemeral server-issued nonce (60s TTL)
+ *   - Challenges consumed after use → no replay
+ *   - Trust anchored entirely on server
  */
 
-import { hmac } from '@noble/hashes/hmac.js';
-import { sha256 } from '@noble/hashes/sha2.js';
-import { bytesToHex } from '@noble/hashes/utils.js';
 import * as Application from 'expo-application';
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
-
-// ── Secret access (dev-only) ──
-
-const DEV_SIGNING_SECRET = process.env.EXPO_PUBLIC_DEV_SIGNING_SECRET || '';
-
-/**
- * Returns true if the signing secret is available.
- * If false, signature generation will fail — callers should degrade gracefully.
- */
-export function isSigningAvailable(): boolean {
-  return DEV_SIGNING_SECRET.length > 0;
-}
 
 // ── Device ID ──
 
@@ -79,60 +62,16 @@ export function getAppVersion(): string {
   return Application.nativeApplicationVersion || '1.0.0';
 }
 
-// ── HMAC-SHA256 Signature ──
+// ── Challenge-Response ──
 
 /**
- * Generate an HMAC-SHA256 signature matching the server's `verifyDeviceSignature()`.
- *
- * Server expects: HMAC-SHA256(`${user_id}|${device_id}|${app_version}|${timestamp}`, secret)
- *
- * @param userId    - User identifier (e.g. "user_local_001")
- * @param deviceId  - Device identifier from getStableDeviceId()
- * @param timestamp - Unix epoch ms (Date.now())
- * @returns Hex-encoded HMAC signature, or null if signing secret unavailable
+ * Compute the challenge response: SHA-256(nonce + device_id + app_version).
+ * No secret involved — security comes from server-issued ephemeral nonce.
  */
-export function generateDeviceSignature(userId: string, deviceId: string, timestamp: number): string | null {
-  if (!DEV_SIGNING_SECRET) {
-    if (__DEV__) {
-      console.error(
-        '[DeviceSignature] EXPO_PUBLIC_DEV_SIGNING_SECRET not set. ' +
-          'Cannot generate HMAC signature. Set it in .env for integration testing.',
-      );
-    }
-    return null;
-  }
-
+export async function computeChallengeResponse(nonce: string, deviceId: string): Promise<string> {
   const appVersion = getAppVersion();
-  const payload = `${userId}|${deviceId}|${appVersion}|${timestamp}`;
-
-  // RFC 2104 HMAC-SHA256 via @noble/hashes (audited, zero-dependency)
-  const secretBytes = new TextEncoder().encode(DEV_SIGNING_SECRET);
-  const mac = hmac(sha256, secretBytes, new TextEncoder().encode(payload));
-  return bytesToHex(mac);
-}
-
-/**
- * Generate a complete device verification request payload.
- * Convenience wrapper that assembles all fields the server expects.
- */
-export async function buildDeviceVerificationPayload(userId: string): Promise<{
-  user_id: string;
-  device_id: string;
-  app_version: string;
-  signature: string;
-  timestamp: number;
-} | null> {
-  const deviceId = await getStableDeviceId();
-  const timestamp = Date.now();
-  const signature = generateDeviceSignature(userId, deviceId, timestamp);
-
-  if (!signature) return null;
-
-  return {
-    user_id: userId,
-    device_id: deviceId,
-    app_version: getAppVersion(),
-    signature,
-    timestamp,
-  };
+  const payload = `${nonce}${deviceId}${appVersion}`;
+  // Use expo-crypto for SHA-256 (works in all Expo environments)
+  const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, payload);
+  return digest;
 }

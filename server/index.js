@@ -1,12 +1,14 @@
 /**
- * FitQuest Backend Authority Server — Phase 23
+ * FitQuest Backend Authority Server — Phase 25A
  *
- * Full audit remediation: HMAC signatures, CORS lockdown, security headers,
+ * Challenge-response authentication (no client-side secrets).
+ * Legacy HMAC signature support behind USE_LEGACY_SIGNATURE flag.
+ * Full audit remediation, CORS lockdown, security headers,
  * replay protection, graceful shutdown, DB optimization, data retention.
  * All internal scores (trust_score, anomaly_score, effectiveTrust) server-only.
  *
  * Stack: Express + Supabase (service_role) + Helmet
- * Deploy: Render (https://fitquest-gbhv.onrender.com)
+ * Deploy: Render (https://fitq-oxp9.onrender.com)
  */
 
 'use strict';
@@ -166,8 +168,8 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
-    version: '2.7.0',
-    phase: 23,
+    version: '3.0.0',
+    phase: 25,
     status: 'operational',
     timestamp: new Date().toISOString(),
   });
@@ -178,6 +180,7 @@ app.get('/health', (_req, res) => {
 app.use(require('./routes/user'));
 app.use(require('./routes/subscription'));
 app.use(require('./routes/device'));
+app.use(require('./routes/auth'));
 app.use(require('./routes/ai'));
 
 // ── 404 catch-all ──
@@ -206,8 +209,9 @@ const { startRetentionScheduler, stopRetentionScheduler } = require('./utils/ret
 let server;
 if (require.main === module) {
   server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v2.7.0 (Phase 23 Hardened) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v3.0.0 (Phase 25A — Challenge-Response) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`[FitQuest Authority] Legacy HMAC: ${process.env.USE_LEGACY_SIGNATURE === 'true' ? 'ENABLED' : 'DISABLED'}`);
     // D1-D3: Start data retention scheduler (60s delay, then every 24h)
     startRetentionScheduler();
   });

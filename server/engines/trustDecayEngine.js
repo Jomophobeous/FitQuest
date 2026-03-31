@@ -171,14 +171,19 @@ async function checkThresholdsAndAlert(userId, deviceId, effectiveTrust, anomaly
     }
 
     // ── Insert alert ──
-    // Uses existing table columns: user_id, device_id, trust_score, anomaly_count, alert_type, resolved
+    const severity = deriveSeverity(alertType);
     const alertRecord = {
-      user_id:       userId,
-      device_id:     deviceId || null,
-      trust_score:   Math.round(effectiveTrust * 1000) / 1000,
-      anomaly_count: total,
-      alert_type:    alertType,
-      resolved:      false,
+      user_id:              userId,
+      device_id:            deviceId || null,
+      trust_score:          Math.round(effectiveTrust * 1000) / 1000,
+      trust_score_at_alert: Math.round(effectiveTrust * 1000) / 1000,
+      anomaly_count:        total,
+      alert_type:           alertType,
+      severity,
+      status:               'OPEN',
+      anomaly_summary:      { bands: counts, triggers },
+      metadata:             {},
+      resolved:             false,
     };
 
     const { error } = await supabase.from('trust_alerts').insert(alertRecord);

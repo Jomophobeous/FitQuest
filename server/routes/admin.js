@@ -307,7 +307,12 @@ router.post('/admin/alert/escalate', async (req, res) => {
       user_id: existing.user_id,
       alert_type: 'escalated_' + existing.alert_type,
       trust_score: 0,
+      trust_score_at_alert: 0,
       anomaly_count: 0,
+      severity: 'CRITICAL',
+      status: 'OPEN',
+      anomaly_summary: { escalated_from: alert_id },
+      metadata: { reason: typeof reason === 'string' ? reason.slice(0, 500) : null },
       resolved: false,
     });
 

@@ -44,13 +44,20 @@ function assert(label, condition, detail) {
 async function post(path, body) {
   const headers = { 'Content-Type': 'application/json', 'X-App-Version': APP_VERSION };
   if (API_KEY) headers['Authorization'] = `Bearer ${API_KEY}`;
-  const res = await fetch(`${BASE}${path}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-  const json = await res.json();
-  return { status: res.status, json };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const json = await res.json();
+    return { status: res.status, json };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function computeResponse(nonce, deviceId, appVersion) {

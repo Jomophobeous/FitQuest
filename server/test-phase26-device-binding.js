@@ -43,13 +43,20 @@ function assert(label, condition, detail) {
 async function post(urlPath, body) {
   const headers = { 'Content-Type': 'application/json', 'X-App-Version': APP_VERSION };
   if (API_KEY) headers['Authorization'] = `Bearer ${API_KEY}`;
-  const res = await fetch(`${BASE}${urlPath}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-  const json = await res.json().catch(() => ({}));
-  return { status: res.status, json };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const res = await fetch(`${BASE}${urlPath}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const json = await res.json().catch(() => ({}));
+    return { status: res.status, json };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function computeResponse(nonce, deviceId, appVersion) {
@@ -127,7 +134,10 @@ async function main() {
   // ── 0. Health Check ──
   console.log('0. Preflight');
   try {
-    const res = await fetch(`${BASE}/health`);
+    const hc = new AbortController();
+    const ht = setTimeout(() => hc.abort(), 30000);
+    const res = await fetch(`${BASE}/health`, { signal: hc.signal });
+    clearTimeout(ht);
     const json = await res.json();
     assert('Server reachable', res.status === 200);
     assert('Version 4.0.0+', json.data?.version >= '4.0.0', `got ${json.data?.version}`);

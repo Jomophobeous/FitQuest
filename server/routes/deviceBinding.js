@@ -118,28 +118,22 @@ router.post('/device/register', async (req, res) => {
         last_seen: new Date().toISOString(),
       }, { onConflict: 'device_id' });
 
-    // ── Check Existing Active Token ──
-    const { data: existingToken } = await supabase
+    // ── Check Existing Active Token (atomic: select-for-update via conditional update) ──
+    // First, try to claim an existing active token by updating last_seen.
+    // The update returns the row only if one exists — this is atomic.
+    const { data: claimed } = await supabase
       .from('device_tokens')
-      .select('device_token')
+      .update({ last_seen: new Date().toISOString() })
       .eq('user_id', sanitizedUserId)
       .eq('device_id', sanitizedDeviceId)
       .eq('revoked', false)
+      .select('device_token')
       .maybeSingle();
 
-    if (existingToken) {
-      // Idempotent: return existing active token, update last_seen
-      await supabase
-        .from('device_tokens')
-        .update({ last_seen: new Date().toISOString() })
-        .eq('user_id', sanitizedUserId)
-        .eq('device_id', sanitizedDeviceId)
-        .eq('revoked', false);
-
+    if (claimed) {
       logEvent(sanitizedUserId, sanitizedDeviceId, 'device_token_reissued', ip);
-
       return respond(res, 200, {
-        device_token: existingToken.device_token,
+        device_token: claimed.device_token,
         is_new: false,
       });
     }
@@ -152,7 +146,6 @@ router.post('/device/register', async (req, res) => {
       .eq('revoked', false);
 
     if (activeCount >= MAX_DEVICES_PER_USER) {
-      // Revoke oldest device to make room
       const { data: oldest } = await supabase
         .from('device_tokens')
         .select('id, device_id')
@@ -193,6 +186,42 @@ router.post('/device/register', async (req, res) => {
     if (insertError) {
       console.error('[/device/register] Insert error:', insertError.message);
       return respond(res, 500, null, 'Failed to register device token.');
+    }
+
+    // ── Optimistic concurrency: detect and resolve concurrent inserts ──
+    // If two requests raced past the "claimed" check and both inserted,
+    // both will see >1 active tokens. Deterministically keep the earliest.
+    const { data: activeTokens } = await supabase
+      .from('device_tokens')
+      .select('id, device_token, created_at')
+      .eq('user_id', sanitizedUserId)
+      .eq('device_id', sanitizedDeviceId)
+      .eq('revoked', false)
+      .order('created_at', { ascending: true });
+
+    if (activeTokens && activeTokens.length > 1) {
+      // Race detected — keep earliest, revoke the rest
+      const keepToken = activeTokens[0];
+      const revokeIds = activeTokens.slice(1).map(t => t.id);
+
+      await supabase
+        .from('device_tokens')
+        .update({
+          revoked: true,
+          revoked_at: new Date().toISOString(),
+          revoke_reason: 'concurrent_registration_cleanup',
+        })
+        .in('id', revokeIds);
+
+      logEvent(sanitizedUserId, sanitizedDeviceId, 'device_token_race_resolved', ip, {
+        kept_token_id: keepToken.id,
+        revoked_count: revokeIds.length,
+      });
+
+      return respond(res, 200, {
+        device_token: keepToken.device_token,
+        is_new: true,
+      });
     }
 
     logEvent(sanitizedUserId, sanitizedDeviceId, 'device_token_issued', ip, {
@@ -380,15 +409,22 @@ router.post('/device/rotate', async (req, res) => {
       return respond(res, 403, null, 'Challenge verification failed.');
     }
 
-    // ── Revoke old token ──
-    await supabase
+    // ── Atomically revoke old token (conditional update prevents double-rotation) ──
+    const { data: revokedRows } = await supabase
       .from('device_tokens')
       .update({
         revoked: true,
         revoked_at: new Date().toISOString(),
         revoke_reason: 'token_rotation',
       })
-      .eq('id', currentToken.id);
+      .eq('id', currentToken.id)
+      .eq('revoked', false)
+      .select('id');
+
+    if (!revokedRows || revokedRows.length === 0) {
+      // Another concurrent rotation already revoked this token
+      return respond(res, 409, null, 'Token already rotated by another request. Re-fetch current token.');
+    }
 
     // ── Issue new token ──
     const newToken = crypto.randomBytes(32).toString('hex');

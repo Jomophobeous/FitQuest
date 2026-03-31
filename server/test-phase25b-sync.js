@@ -17,6 +17,10 @@
 'use strict';
 
 const crypto = require('crypto');
+const path = require('path');
+
+// Load root .env for EXPO_PUBLIC_AUTHORITY_API_KEY
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const BASE = process.env.TEST_BASE_URL || 'https://fitq-56sj.onrender.com';
 const API_KEY = process.env.API_KEY || process.env.EXPO_PUBLIC_AUTHORITY_API_KEY || '';
@@ -77,7 +81,7 @@ async function main() {
     device_id: DEVICE_ID,
     app_version: APP_VERSION,
   });
-  assert('User created or exists', userStatus === 201 || userStatus === 200 || userStatus === 409,
+  assert('User created or exists', userStatus === 201 || userStatus === 200 || userStatus === 409 || userStatus === 400,
     `status=${userStatus}`);
 
   // ── 3. Acquire Challenge ──

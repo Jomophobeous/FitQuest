@@ -24,6 +24,12 @@ vi.mock('../src/services/logger', () => ({
   safeError: vi.fn(),
 }));
 
+vi.mock('expo-application', () => ({
+  applicationId: 'com.fitquest.test',
+  nativeApplicationVersion: '1.0.0',
+  nativeBuildVersion: '1',
+}));
+
 import { aiProvider } from '../src/services/aiProvider';
 
 describe('AIProvider', () => {
@@ -101,9 +107,7 @@ describe('AIProvider', () => {
 
       try {
         // This tests the absolute worst case — should not crash the app
-        await expect(
-          aiProvider.generateResponse('test', { personality: 'COACH' } as any)
-        ).resolves.toBeDefined();
+        await expect(aiProvider.generateResponse('test', { personality: 'COACH' } as any)).resolves.toBeDefined();
       } catch {
         // If it does throw, the test framework will catch it.
         // This is acceptable — it documents the behavior.

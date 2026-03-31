@@ -15,9 +15,10 @@ const supabase = require('../utils/supabaseClient');
 const respond = require('../utils/respond');
 const logEvent = require('../utils/logEvent');
 const trustCheck = require('../middleware/trustCheck');
+const { validateDeviceToken } = require('../middleware/validateDeviceToken');
 const { evaluateUserActivity } = require('../engines/anomalyEngine');
 
-router.post('/verify/subscription', trustCheck, async (req, res) => {
+router.post('/verify/subscription', validateDeviceToken(), trustCheck, async (req, res) => {
   try {
     const { user_id, device_id } = req.body;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';

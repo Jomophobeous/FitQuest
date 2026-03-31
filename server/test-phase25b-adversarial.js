@@ -56,6 +56,28 @@ function computeResponse(nonce, deviceId, appVersion) {
   return crypto.createHash('sha256').update(`${nonce}${deviceId}${appVersion}`).digest('hex');
 }
 
+/**
+ * Register device and return device_token (Phase 26 requirement).
+ */
+async function registerDeviceToken(deviceId) {
+  const chRes = await post('/auth/challenge', { user_id: USER_ID, device_id: deviceId });
+  if (chRes.status !== 200 || !chRes.json.data?.challenge_id) {
+    throw new Error(`Device register challenge failed: ${chRes.status}`);
+  }
+  const response = computeResponse(chRes.json.data.nonce, deviceId, APP_VERSION);
+  const regRes = await post('/device/register', {
+    user_id: USER_ID, device_id: deviceId, app_version: APP_VERSION,
+    challenge_id: chRes.json.data.challenge_id, challenge_response: response,
+  });
+  if (regRes.status !== 200 || !regRes.json.data?.device_token) {
+    throw new Error(`Device register failed: ${regRes.status}, ${regRes.json.error}`);
+  }
+  return regRes.json.data.device_token;
+}
+
+// Device token acquired during setup
+let DEVICE_TOKEN = null;
+
 async function getAuthenticatedChallenge(deviceId = DEVICE_ID) {
   const { status, json } = await post('/auth/challenge', { user_id: USER_ID, device_id: deviceId });
   if (status === 429) {
@@ -75,6 +97,7 @@ async function syncBatch(actions, deviceId = DEVICE_ID) {
   return post('/sync/batch', {
     user_id: USER_ID,
     device_id: deviceId,
+    device_token: DEVICE_TOKEN,
     app_version: APP_VERSION,
     ...auth,
     actions,
@@ -85,10 +108,22 @@ async function main() {
   console.log(`\n⚔️  Phase 25B Adversarial Validation Suite`);
   console.log(`   Target: ${BASE}\n`);
 
+  // ── Setup: ensure user + register device (Phase 26) ──
+  console.log('0. Setup');
+  await post('/user/create', { id: USER_ID, device_id: DEVICE_ID, app_version: APP_VERSION });
+  try {
+    DEVICE_TOKEN = await registerDeviceToken(DEVICE_ID);
+    assert('Device token acquired', typeof DEVICE_TOKEN === 'string' && DEVICE_TOKEN.length === 64);
+  } catch (e) {
+    assert('Device token acquired', false, e.message);
+    console.log('\n⛔ Device registration failed. Cannot continue.\n');
+    process.exit(1);
+  }
+
   // ══════════════════════════════════════════════
   // A. OFFLINE XP INFLATION ATTEMPT
   // ══════════════════════════════════════════════
-  console.log('A. Offline XP Inflation Attempt');
+  console.log('\nA. Offline XP Inflation Attempt');
   {
     // Client claims 9999 XP from a single workout — server recalculates
     const { status, json } = await syncBatch([
@@ -149,6 +184,7 @@ async function main() {
     const { status: s1 } = await post('/sync/batch', {
       user_id: USER_ID,
       device_id: DEVICE_ID,
+      device_token: DEVICE_TOKEN,
       app_version: APP_VERSION,
       ...auth,
       actions: [{ action_id: 'replay-first', type: 'step_log', payload: { steps: 1000 } }],
@@ -159,6 +195,7 @@ async function main() {
     const { status: s2, json: j2 } = await post('/sync/batch', {
       user_id: USER_ID,
       device_id: DEVICE_ID,
+      device_token: DEVICE_TOKEN,
       app_version: APP_VERSION,
       ...auth,
       actions: [{ action_id: 'replay-second', type: 'step_log', payload: { steps: 1000 } }],
@@ -256,6 +293,7 @@ async function main() {
     const { status, json } = await post('/sync/batch', {
       user_id: USER_ID,
       device_id: DEVICE_ID,
+      device_token: DEVICE_TOKEN,
       app_version: APP_VERSION,
       ...auth,
       actions: [
@@ -328,14 +366,14 @@ async function main() {
     // Empty actions array
     const auth1 = await getAuthenticatedChallenge();
     const { status: s1 } = await post('/sync/batch', {
-      user_id: USER_ID, device_id: DEVICE_ID, app_version: APP_VERSION,
+      user_id: USER_ID, device_id: DEVICE_ID, device_token: DEVICE_TOKEN, app_version: APP_VERSION,
       ...auth1, actions: [],
     });
     assert('Empty actions rejected (400)', s1 === 400);
 
     // Missing challenge_id
     const { status: s2 } = await post('/sync/batch', {
-      user_id: USER_ID, device_id: DEVICE_ID, app_version: APP_VERSION,
+      user_id: USER_ID, device_id: DEVICE_ID, device_token: DEVICE_TOKEN, app_version: APP_VERSION,
       challenge_response: 'fake', actions: [{ action_id: 'x', type: 'step_log', payload: { steps: 1 } }],
     });
     assert('Missing challenge_id rejected (400)', s2 === 400);
@@ -343,7 +381,7 @@ async function main() {
     // Missing user_id
     const auth3 = await getAuthenticatedChallenge();
     const { status: s3 } = await post('/sync/batch', {
-      device_id: DEVICE_ID, app_version: APP_VERSION,
+      device_id: DEVICE_ID, device_token: DEVICE_TOKEN, app_version: APP_VERSION,
       ...auth3, actions: [{ action_id: 'x', type: 'step_log', payload: { steps: 1 } }],
     });
     assert('Missing user_id rejected (400)', s3 === 400);
@@ -354,7 +392,7 @@ async function main() {
       action_id: `big-${i}`, type: 'step_log', payload: { steps: 100 },
     }));
     const { status: s4 } = await post('/sync/batch', {
-      user_id: USER_ID, device_id: DEVICE_ID, app_version: APP_VERSION,
+      user_id: USER_ID, device_id: DEVICE_ID, device_token: DEVICE_TOKEN, app_version: APP_VERSION,
       ...auth4, actions: bigBatch,
     });
     assert('Oversized batch (51) rejected (400)', s4 === 400);
@@ -362,7 +400,7 @@ async function main() {
     // Device mismatch — challenge issued for DEVICE_ID but sync sent with different device
     const auth5 = await getAuthenticatedChallenge('test-adversarial-25b');
     const { status: s5 } = await post('/sync/batch', {
-      user_id: USER_ID, device_id: 'completely-different-device', app_version: APP_VERSION,
+      user_id: USER_ID, device_id: 'completely-different-device', device_token: DEVICE_TOKEN, app_version: APP_VERSION,
       ...auth5, actions: [{ action_id: 'x', type: 'step_log', payload: { steps: 1 } }],
     });
     assert('Device mismatch rejected (403)', s5 === 403);

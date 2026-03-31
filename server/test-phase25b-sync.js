@@ -57,6 +57,25 @@ function computeResponse(nonce, deviceId, appVersion) {
   return crypto.createHash('sha256').update(`${nonce}${deviceId}${appVersion}`).digest('hex');
 }
 
+/**
+ * Register device and return device_token (Phase 26 requirement).
+ */
+async function registerDevice(deviceId) {
+  const chRes = await post('/auth/challenge', { user_id: USER_ID, device_id: deviceId });
+  if (chRes.status !== 200 || !chRes.json.data?.challenge_id) {
+    throw new Error(`Device register challenge failed: ${chRes.status}`);
+  }
+  const response = computeResponse(chRes.json.data.nonce, deviceId, APP_VERSION);
+  const regRes = await post('/device/register', {
+    user_id: USER_ID, device_id: deviceId, app_version: APP_VERSION,
+    challenge_id: chRes.json.data.challenge_id, challenge_response: response,
+  });
+  if (regRes.status !== 200 || !regRes.json.data?.device_token) {
+    throw new Error(`Device register failed: ${regRes.status}, ${regRes.json.error}`);
+  }
+  return regRes.json.data.device_token;
+}
+
 async function main() {
   console.log(`\n🔄 Phase 25B Sync Integration Test`);
   console.log(`   Target: ${BASE}\n`);
@@ -83,6 +102,18 @@ async function main() {
   });
   assert('User created or exists', userStatus === 201 || userStatus === 200 || userStatus === 409 || userStatus === 400,
     `status=${userStatus}`);
+
+  // ── 2b. Register Device (Phase 26: device_token required) ──
+  console.log('\n2b. Register Device Token');
+  let deviceToken;
+  try {
+    deviceToken = await registerDevice(DEVICE_ID);
+    assert('Device token acquired', typeof deviceToken === 'string' && deviceToken.length === 64);
+  } catch (e) {
+    assert('Device token acquired', false, e.message);
+    console.log('\n⛔ Device registration failed. Cannot continue.\n');
+    process.exit(1);
+  }
 
   // ── 3. Acquire Challenge ──
   console.log('\n3. Acquire Challenge');
@@ -140,6 +171,7 @@ async function main() {
   const { status: syncStatus, json: syncJson } = await post('/sync/batch', {
     user_id: USER_ID,
     device_id: DEVICE_ID,
+    device_token: deviceToken,
     app_version: APP_VERSION,
     challenge_id: challengeId,
     challenge_response: response,
@@ -178,6 +210,7 @@ async function main() {
   const { status: replayStatus, json: replayJson } = await post('/sync/batch', {
     user_id: USER_ID,
     device_id: DEVICE_ID,
+    device_token: deviceToken,
     app_version: APP_VERSION,
     challenge_id: challengeId,
     challenge_response: response,
@@ -216,6 +249,7 @@ async function main() {
   const { status: invStatus, json: invJson } = await post('/sync/batch', {
     user_id: USER_ID,
     device_id: DEVICE_ID,
+    device_token: deviceToken,
     app_version: APP_VERSION,
     challenge_id: ch2Json.data.challenge_id,
     challenge_response: response2,

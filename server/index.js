@@ -1,6 +1,7 @@
 /**
- * FitQuest Backend Authority Server — Phase 25A
+ * FitQuest Backend Authority Server — Phase 26
  *
+ * Device binding & persistent trust (server-issued device_token).
  * Challenge-response authentication (no client-side secrets).
  * Legacy HMAC signature support behind USE_LEGACY_SIGNATURE flag.
  * Full audit remediation, CORS lockdown, security headers,
@@ -49,7 +50,7 @@ app.use(cors({
     callback(new Error('CORS: origin not allowed'));
   },
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-App-Version', 'X-Device-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-App-Version', 'X-Device-ID', 'X-Device-Token'],
   credentials: false, // No cookies — API key auth only
   maxAge: 86400, // Cache preflight for 24h
 }));
@@ -168,8 +169,8 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
-    version: '3.0.0',
-    phase: 25,
+    version: '4.0.0',
+    phase: 26,
     status: 'operational',
     timestamp: new Date().toISOString(),
   });
@@ -180,6 +181,7 @@ app.get('/health', (_req, res) => {
 app.use(require('./routes/user'));
 app.use(require('./routes/subscription'));
 app.use(require('./routes/device'));
+app.use(require('./routes/deviceBinding'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/ai'));
 app.use(require('./routes/sync'));
@@ -210,7 +212,7 @@ const { startRetentionScheduler, stopRetentionScheduler } = require('./utils/ret
 let server;
 if (require.main === module) {
   server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v3.0.0 (Phase 25A — Challenge-Response) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v4.0.0 (Phase 26 — Device Binding) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`[FitQuest Authority] Legacy HMAC: ${process.env.USE_LEGACY_SIGNATURE === 'true' ? 'ENABLED' : 'DISABLED'}`);
     // D1-D3: Start data retention scheduler (60s delay, then every 24h)

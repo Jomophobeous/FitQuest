@@ -15,6 +15,7 @@
 
 import { getApiBaseUrl } from './apiBaseUrl';
 import { getStableDeviceId, computeChallengeResponse, getAppVersion } from './deviceSignature';
+import { ensureDeviceRegistered, handleAuthFailure } from './deviceTokenService';
 import {
   getPendingActions,
   markSyncing,
@@ -81,13 +82,20 @@ export async function syncPendingActions(): Promise<SyncResult> {
     await removeExhaustedActions();
     await pruneOldActions();
 
+    // Ensure device is registered before syncing
+    const deviceToken = await ensureDeviceRegistered();
+    if (!deviceToken) {
+      if (__DEV__) console.warn('[SyncEngine] No device token — cannot sync');
+      return result;
+    }
+
     const pending = await getPendingActions();
     if (pending.length === 0) return result;
 
     // Process in batches
     for (let i = 0; i < pending.length; i += MAX_BATCH_SIZE) {
       const batch = pending.slice(i, i + MAX_BATCH_SIZE);
-      const batchResult = await syncBatch(batch);
+      const batchResult = await syncBatch(batch, deviceToken);
 
       result.synced += batchResult.synced;
       result.rejected += batchResult.rejected;
@@ -115,9 +123,9 @@ export async function syncPendingActions(): Promise<SyncResult> {
 }
 
 /**
- * Sync a single batch of actions with challenge-response authentication.
+ * Sync a single batch of actions with challenge-response authentication + device_token.
  */
-async function syncBatch(actions: QueuedAction[]): Promise<SyncResult> {
+async function syncBatch(actions: QueuedAction[], deviceToken: string): Promise<SyncResult> {
   const batchResult: SyncResult = { synced: 0, rejected: 0, failed: 0, serverXP: null, serverSubscriptionStatus: null };
 
   const baseUrl = getBaseUrl();
@@ -168,12 +176,14 @@ async function syncBatch(actions: QueuedAction[]): Promise<SyncResult> {
     const { challenge_id, nonce } = challengeJson.data;
     const response = await computeChallengeResponse(nonce, deviceId);
 
-    // Step 3: Submit batch with challenge proof
+    // Step 3: Submit batch with challenge proof + device_token
     const batchPayload = {
       challenge_id,
-      response,
+      challenge_response: response,
       app_version: appVersion,
       device_id: deviceId,
+      user_id: 'user_local_001',
+      device_token: deviceToken,
       actions: actions.map((a) => ({
         action_id: a.action_id,
         type: a.type,
@@ -189,7 +199,10 @@ async function syncBatch(actions: QueuedAction[]): Promise<SyncResult> {
     });
 
     if (!syncRes.ok) {
-      // Server error — revert to failed for retry
+      // Server error — check if auth failure requiring re-registration
+      if (syncRes.status === 401 || syncRes.status === 403) {
+        await handleAuthFailure(syncRes.status);
+      }
       const errText = await syncRes.text().catch(() => 'Unknown');
       for (const action of actions) {
         await markFailed(action.action_id, `Server ${syncRes.status}: ${errText.slice(0, 200)}`);

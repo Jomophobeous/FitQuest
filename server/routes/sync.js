@@ -1,14 +1,15 @@
 /**
- * Phase 25B — Batch Sync Endpoint
+ * Phase 25B/26 — Batch Sync Endpoint
  *
- * POST /sync/batch — Receive queued offline actions, validate via challenge-response,
- * process each action, return per-action results + authoritative XP + subscription status.
+ * POST /sync/batch — Receive queued offline actions, validate via challenge-response
+ * AND device_token, process each action, return per-action results + authoritative XP.
  *
  * Flow:
  *   1. Client acquires challenge (POST /auth/challenge)
  *   2. Client computes response: SHA-256(nonce + device_id + app_version)
- *   3. Client sends POST /sync/batch with actions + challenge proof
- *   4. Server validates challenge, processes each action, returns results
+ *   3. Client sends POST /sync/batch with actions + challenge proof + device_token
+ *   4. Middleware validates device_token (user + device binding)
+ *   5. Server validates challenge, processes each action, returns results
  *
  * Server is FINAL AUTHORITY on XP and subscription.
  */
@@ -20,6 +21,7 @@ const router = express.Router();
 const supabase = require('../utils/supabaseClient');
 const respond = require('../utils/respond');
 const logEvent = require('../utils/logEvent');
+const { validateDeviceToken } = require('../middleware/validateDeviceToken');
 
 // Import the challenge store from auth route (shared in-memory)
 // Note: For the sync endpoint, we use the same challenge-response mechanism
@@ -56,7 +58,7 @@ const XP_ACTIONS = new Set([
 
 // ── POST /sync/batch ──
 
-router.post('/sync/batch', async (req, res) => {
+router.post('/sync/batch', validateDeviceToken(), async (req, res) => {
   try {
     const { user_id, device_id, app_version, challenge_id, challenge_response, actions } = req.body;
     const ip = req.ip || req.connection.remoteAddress || 'unknown';

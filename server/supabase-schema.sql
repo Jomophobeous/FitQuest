@@ -285,3 +285,35 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- SELECT cron.schedule('purge-events', '0 3 * * *', 'SELECT purge_old_events()');
 -- SELECT cron.schedule('purge-anomalies', '0 3 * * *', 'SELECT purge_old_anomalies()');
 -- SELECT cron.schedule('purge-ai-usage', '0 3 * * *', 'SELECT purge_old_ai_usage()');
+
+
+-- ────────────────────────────────────────────────────────────
+-- 8. DEVICE TOKENS — Phase 26 (server-issued identity proof)
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS device_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  device_id TEXT NOT NULL REFERENCES devices(device_id) ON DELETE CASCADE,
+  device_token TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT now(),
+  last_seen TIMESTAMP DEFAULT now(),
+  revoked BOOLEAN DEFAULT false,
+  revoked_at TIMESTAMP,
+  revoke_reason TEXT
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_device_tokens_token
+  ON device_tokens (device_token) WHERE revoked = false;
+
+CREATE INDEX IF NOT EXISTS idx_device_tokens_user_device
+  ON device_tokens (user_id, device_id) WHERE revoked = false;
+
+CREATE INDEX IF NOT EXISTS idx_device_tokens_user_active
+  ON device_tokens (user_id) WHERE revoked = false;
+
+ALTER TABLE device_tokens ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS device_tokens_service_only ON device_tokens;
+CREATE POLICY device_tokens_service_only ON device_tokens
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');

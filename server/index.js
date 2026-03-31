@@ -189,8 +189,14 @@ app.use((_req, res) => {
 // ── Global error handler ──
 
 app.use((err, _req, res, _next) => {
+  if (err.type === 'entity.too.large') {
+    return respond(res, 413, null, 'Payload too large.');
+  }
+  if (err.status === 400 && err.type === 'entity.parse.failed') {
+    return respond(res, 400, null, 'Malformed JSON.');
+  }
   console.error('[UNHANDLED]', err.message);
-  respond(res, 500, null, 'Internal server error.');
+  respond(res, err.status && err.status >= 400 && err.status < 600 ? err.status : 500, null, 'Internal server error.');
 });
 
 // ── Start server ──

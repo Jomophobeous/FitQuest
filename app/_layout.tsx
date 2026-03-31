@@ -450,10 +450,10 @@ export default function RootLayout() {
         tamperEngine.initialize();
       } catch {}
 
-      // Phase 19: Backend authority — device verification on launch (fire-and-forget)
+      // Phase 24A: Backend authority — device verification with HMAC signature (fire-and-forget)
       try {
         const { verifyDevice } = await import('../src/services/authorityClient');
-        void verifyDevice('user_local_001', 'device_local', 'app_launch').catch(() => {});
+        void verifyDevice('user_local_001').catch(() => {});
       } catch {}
 
       try {

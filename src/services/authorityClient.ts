@@ -1,22 +1,28 @@
 /**
- * FitQuest Backend Authority Client — Phase 21
+ * FitQuest Backend Authority Client — Phase 24A
  *
  * Client-side interface to the FitQuest Authority Server.
  * All verification routes through this service — no local trust.
  *
  * Endpoints:
  *   POST /verify/subscription  — Authoritative subscription status
- *   POST /verify/device        — Device fingerprint + trust scoring
+ *   POST /verify/device        — Device fingerprint + trust scoring (HMAC-signed)
  *   POST /user/create          — User identity registration
  *   GET  /health               — Server health check
+ *   POST /ai/request           — AI access authorization
  *
  * Offline behavior:
  *   All methods return null on network failure. Callers must handle
  *   null gracefully (degrade to cached state with reduced trust).
+ *
+ * Error handling:
+ *   authorityFetch now returns structured errors for 403/429/500,
+ *   enabling callers to map to UI states (blocked, rate-limited, error).
  */
 
 import { getApiBaseUrl } from './apiBaseUrl';
 import * as Application from 'expo-application';
+import { buildDeviceVerificationPayload, getStableDeviceId } from './deviceSignature';
 
 // S2: API key for authority server authentication (POST routes)
 const AUTHORITY_API_KEY = process.env.EXPO_PUBLIC_AUTHORITY_API_KEY || '';
@@ -65,6 +71,24 @@ export interface AIAccessResult {
   timestamp?: string;
 }
 
+/**
+ * Structured error returned when the server responds with a non-200 status.
+ * Callers use `httpStatus` to map to UI states.
+ */
+export interface AuthorityError {
+  httpStatus: number;
+  message: string;
+  retryAfterMs?: number;
+}
+
+/**
+ * Result that distinguishes success, structured error, and offline.
+ * - success: data is present
+ * - error: server responded with a structured error (403/429/500)
+ * - null: offline / network failure
+ */
+export type AuthorityResult<T> = { kind: 'success'; data: T } | { kind: 'error'; error: AuthorityError } | null;
+
 // ── Constants ──
 
 const REQUEST_TIMEOUT_MS = 8_000;
@@ -111,12 +135,21 @@ function getAppVersion(): string {
   return Application.nativeApplicationVersion || '1.0.0';
 }
 
-async function authorityFetch<T>(path: string, body?: Record<string, unknown>): Promise<AuthorityResponse<T> | null> {
+/**
+ * Core fetch wrapper with structured error handling and observability.
+ *
+ * Returns:
+ *   { kind: 'success', data } — 200 with valid response body
+ *   { kind: 'error', error }  — 403/429/500 with structured details
+ *   null                      — offline / timeout / network failure
+ */
+async function authorityFetch<T>(path: string, body?: Record<string, unknown>): Promise<AuthorityResult<T>> {
   const baseUrl = getBaseUrl();
   if (!baseUrl) return null;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const startTime = Date.now();
 
   try {
     const headers: Record<string, string> = {
@@ -142,22 +175,98 @@ async function authorityFetch<T>(path: string, body?: Record<string, unknown>): 
     const res = await fetch(`${baseUrl}${path}`, options);
     clearTimeout(timeout);
 
-    if (!res.ok) {
-      if (__DEV__) console.warn(`[Authority] ${path} returned HTTP ${res.status}`);
-      getState().consecutiveFailures += 1;
-      return null;
+    const latencyMs = Date.now() - startTime;
+
+    // Dev-mode observability: log every response
+    if (__DEV__) {
+      console.log(`[Authority] ${options.method} ${path} → ${res.status} (${latencyMs}ms)`);
     }
 
-    const json = (await res.json()) as AuthorityResponse<T>;
-    getState().consecutiveFailures = 0;
-    return json;
-  } catch (_e) {
+    // Try to parse body for all status codes (server sends structured JSON)
+    let json: AuthorityResponse<T> | null = null;
+    try {
+      json = (await res.json()) as AuthorityResponse<T>;
+    } catch {
+      // Non-JSON response (e.g. HTML error page)
+    }
+
+    if (__DEV__ && json) {
+      console.log(`[Authority] ${path} body:`, JSON.stringify(json).slice(0, 500));
+    }
+
+    // 200 OK — success
+    if (res.ok && json?.success && json.data) {
+      getState().consecutiveFailures = 0;
+      return { kind: 'success', data: json.data };
+    }
+
+    // Non-OK: structured error for callers
     getState().consecutiveFailures += 1;
-    if (__DEV__) console.warn(`[Authority] ${path} failed:`, _e);
-    return null;
-  } finally {
+
+    const errorMessage = json?.error || `HTTP ${res.status}`;
+
+    // 429 — Rate limited
+    if (res.status === 429) {
+      const retryAfter = res.headers.get('Retry-After');
+      return {
+        kind: 'error',
+        error: {
+          httpStatus: 429,
+          message: errorMessage,
+          retryAfterMs: retryAfter ? parseInt(retryAfter, 10) * 1000 : 60_000,
+        },
+      };
+    }
+
+    // 403 — Forbidden (blocked, untrusted, invalid signature)
+    // 401 — Unauthorized (missing or invalid API key)
+    if (res.status === 403 || res.status === 401) {
+      return {
+        kind: 'error',
+        error: { httpStatus: res.status, message: errorMessage },
+      };
+    }
+
+    // 400 — Bad request (missing fields, validation)
+    if (res.status === 400) {
+      return {
+        kind: 'error',
+        error: { httpStatus: 400, message: errorMessage },
+      };
+    }
+
+    // 500+ — Server error
+    if (res.status >= 500) {
+      return {
+        kind: 'error',
+        error: { httpStatus: res.status, message: 'Server error. Try again later.' },
+      };
+    }
+
+    // Other non-OK status
+    return {
+      kind: 'error',
+      error: { httpStatus: res.status, message: errorMessage },
+    };
+  } catch (_e) {
     clearTimeout(timeout);
+    getState().consecutiveFailures += 1;
+    const latencyMs = Date.now() - startTime;
+    if (__DEV__) {
+      const errMsg = _e instanceof Error ? _e.message : String(_e);
+      console.warn(`[Authority] ${path} FAILED (${latencyMs}ms): ${errMsg}`);
+    }
+    return null; // Offline / timeout
   }
+}
+
+/**
+ * Backward-compatible wrapper: extracts data from AuthorityResult or returns null.
+ * Used by methods that don't need granular error handling yet.
+ */
+function unwrapResult<T>(result: AuthorityResult<T>): T | null {
+  if (result && result.kind === 'success') return result.data;
+  return null;
 }
 
 // ── Public API ──
@@ -181,25 +290,24 @@ export async function verifySubscription(userId: string, deviceId: string): Prom
     device_id: deviceId,
   });
 
-  if (result?.success && result.data) {
+  const data = unwrapResult(result);
+  if (data) {
     state.lastSubscriptionCheck = now;
-    state.lastSubscriptionResult = result.data;
-    return result.data;
+    state.lastSubscriptionResult = data;
+    return data;
   }
 
   return null;
 }
 
 /**
- * Verify device with the authority server.
- * Registers device fingerprint and returns trust score.
+ * Verify device with the authority server using HMAC-SHA256 signature.
+ * Generates signature automatically via deviceSignature module.
  * Throttled to max once per 30 minutes.
+ *
+ * Phase 24A: Uses dev-only signing secret. Phase 25 replaces with secure protocol.
  */
-export async function verifyDevice(
-  userId: string,
-  deviceId: string,
-  signature: string,
-): Promise<DeviceVerification | null> {
+export async function verifyDevice(userId: string): Promise<DeviceVerification | null> {
   const state = getState();
   const now = Date.now();
 
@@ -208,21 +316,39 @@ export async function verifyDevice(
     return state.lastDeviceResult;
   }
 
-  const result = await authorityFetch<DeviceVerification>('/verify/device', {
-    user_id: userId,
-    device_id: deviceId,
-    app_version: getAppVersion(),
-    signature,
-    timestamp: Date.now(), // S1: replay protection
-  });
+  // Build HMAC-signed payload
+  const payload = await buildDeviceVerificationPayload(userId);
+  if (!payload) {
+    if (__DEV__) console.warn('[Authority] Cannot generate device signature — signing secret missing');
+    return null;
+  }
 
-  if (result?.success && result.data) {
+  const result = await authorityFetch<DeviceVerification>('/verify/device', payload);
+
+  const data = unwrapResult(result);
+  if (data) {
     state.lastDeviceCheck = now;
-    state.lastDeviceResult = result.data;
-    return result.data;
+    state.lastDeviceResult = data;
+    return data;
+  }
+
+  // Log structured error in dev
+  if (__DEV__ && result && result.kind === 'error') {
+    console.warn(`[Authority] Device verification rejected: ${result.error.httpStatus} — ${result.error.message}`);
   }
 
   return null;
+}
+
+/**
+ * Verify device with full result (including structured errors).
+ * Use this when callers need to distinguish offline vs blocked vs rate-limited.
+ */
+export async function verifyDeviceDetailed(userId: string): Promise<AuthorityResult<DeviceVerification>> {
+  const payload = await buildDeviceVerificationPayload(userId);
+  if (!payload) return null;
+
+  return authorityFetch<DeviceVerification>('/verify/device', payload);
 }
 
 /**
@@ -231,8 +357,7 @@ export async function verifyDevice(
  */
 export async function createUser(id: string, email: string): Promise<UserCreateResult | null> {
   const result = await authorityFetch<UserCreateResult>('/user/create', { id, email });
-
-  return result?.success ? result.data : null;
+  return unwrapResult(result);
 }
 
 /**
@@ -240,7 +365,7 @@ export async function createUser(id: string, email: string): Promise<UserCreateR
  */
 export async function checkHealth(): Promise<HealthStatus | null> {
   const result = await authorityFetch<HealthStatus>('/health');
-  return result?.success ? result.data : null;
+  return unwrapResult(result);
 }
 
 /**
@@ -255,6 +380,7 @@ export async function requestAI(userId: string, deviceId: string, prompt: string
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const startTime = Date.now();
 
   try {
     const aiHeaders: Record<string, string> = {
@@ -277,8 +403,22 @@ export async function requestAI(userId: string, deviceId: string, prompt: string
     });
     clearTimeout(timeout);
 
+    const latencyMs = Date.now() - startTime;
+    if (__DEV__) {
+      console.log(`[Authority] POST /ai/request → ${res.status} (${latencyMs}ms)`);
+    }
+
     // Parse body on all status codes (429 returns rate-limit info)
-    const json = (await res.json()) as AuthorityResponse<AIAccessResult>;
+    let json: AuthorityResponse<AIAccessResult> | null = null;
+    try {
+      json = (await res.json()) as AuthorityResponse<AIAccessResult>;
+    } catch {
+      /* non-JSON */
+    }
+
+    if (__DEV__ && json) {
+      console.log(`[Authority] /ai/request body:`, JSON.stringify(json).slice(0, 500));
+    }
 
     if (json?.success && json.data) {
       getState().consecutiveFailures = 0;
@@ -308,11 +448,14 @@ export async function requestAI(userId: string, deviceId: string, prompt: string
     getState().consecutiveFailures += 1;
     return null;
   } catch (_e) {
-    getState().consecutiveFailures += 1;
-    if (__DEV__) console.warn('[Authority] /ai/request failed:', _e);
-    return null;
-  } finally {
     clearTimeout(timeout);
+    getState().consecutiveFailures += 1;
+    const latencyMs = Date.now() - startTime;
+    if (__DEV__) {
+      const errMsg = _e instanceof Error ? _e.message : String(_e);
+      console.warn(`[Authority] /ai/request FAILED (${latencyMs}ms): ${errMsg}`);
+    }
+    return null;
   }
 }
 

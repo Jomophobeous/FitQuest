@@ -138,8 +138,11 @@ async function sectionA() {
   const { status: s1, json: j1 } = await post('/admin/config', { admin_secret: ADMIN_SECRET });
   assert('A1 Config returns 200', s1 === 200, `status=${s1}`);
   assert('A1 Config has trust_thresholds', j1?.data?.trust_thresholds?.degraded === 0.6, JSON.stringify(j1?.data?.trust_thresholds));
-  assert('A1 Config has alert_thresholds', j1?.data?.alert_thresholds?.severe_count_24h === 1, JSON.stringify(j1?.data?.alert_thresholds));
-  assert('A1 Phase is 27', j1?.data?.phase === 27, `phase=${j1?.data?.phase}`);
+  assert('A1 Config has alert_thresholds', j1?.data?.alert_thresholds?.severe_count_24h === 2, JSON.stringify(j1?.data?.alert_thresholds));
+  assert('A1 Config has alert_count_thresholds', j1?.data?.alert_count_thresholds?.LOW === 3, JSON.stringify(j1?.data?.alert_count_thresholds));
+  assert('A1 Config has threat_score_thresholds', j1?.data?.threat_score_thresholds?.LOW === 5, JSON.stringify(j1?.data?.threat_score_thresholds));
+  assert('A1 Config has threat_weights', typeof j1?.data?.threat_weights === 'object', JSON.stringify(j1?.data?.threat_weights));
+  assert('A1 Phase is 27.1', j1?.data?.phase === 27.1, `phase=${j1?.data?.phase}`);
 
   // A2: Admin endpoint rejects missing admin_secret
   const { status: s2 } = await post('/admin/config', { dummy: true });
@@ -186,8 +189,8 @@ async function sectionB() {
     device_id: deviceId,
   });
   assert('B2 Alert generated', j2?.data?.alerted === true, JSON.stringify(j2?.data));
-  assert('B2 Alert type is severe_anomaly_threshold or trust_degraded',
-    ['severe_anomaly_threshold', 'trust_degraded'].includes(j2?.data?.alertType),
+  assert('B2 Alert type is trust_degraded or ANOMALY_THRESHOLD_EXCEEDED',
+    ['trust_degraded', 'ANOMALY_THRESHOLD_EXCEEDED', 'trust_soft_block'].includes(j2?.data?.alertType),
     `type=${j2?.data?.alertType}`);
 
   // B3: Dedup — calling again within 1h should not create duplicate

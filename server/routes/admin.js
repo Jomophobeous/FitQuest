@@ -25,7 +25,7 @@ const router = express.Router();
 const supabase = require('../utils/supabaseClient');
 const respond = require('../utils/respond');
 const logEvent = require('../utils/logEvent');
-const { deriveSeverity, TRUST_THRESHOLDS, ALERT_THRESHOLDS } = require('../engines/trustDecayEngine');
+const { TRUST_THRESHOLDS, ALERT_THRESHOLDS, ALERT_COUNT_THRESHOLDS, THREAT_SCORE_THRESHOLDS, THREAT_WEIGHTS } = require('../engines/trustDecayEngine');
 const { computeEffectiveScore } = require('../engines/anomalyEngine');
 
 // ── Admin auth: constant-time comparison ──
@@ -139,10 +139,9 @@ router.post('/admin/alerts', async (req, res) => {
       return respond(res, 500, null, 'Failed to fetch alerts.');
     }
 
-    // Enrich with derived severity
     const alerts = (data || []).map(a => ({
       ...a,
-      severity: deriveSeverity(a.alert_type),
+      severity: a.severity || 'LOW',
     }));
 
     return respond(res, 200, {
@@ -538,7 +537,10 @@ router.post('/admin/config', async (req, res) => {
   return respond(res, 200, {
     trust_thresholds: TRUST_THRESHOLDS,
     alert_thresholds: ALERT_THRESHOLDS,
-    phase: 27,
+    alert_count_thresholds: ALERT_COUNT_THRESHOLDS,
+    threat_score_thresholds: THREAT_SCORE_THRESHOLDS,
+    threat_weights: THREAT_WEIGHTS,
+    phase: 27.1,
   });
 });
 

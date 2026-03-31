@@ -417,7 +417,9 @@ export default function RootLayout() {
       if (cancelled) return;
       try {
         const { maybeAutoCloudBackupOncePerDay } = await import('../src/services/cloudBackupService');
-        void maybeAutoCloudBackupOncePerDay().catch(() => {});
+        void maybeAutoCloudBackupOncePerDay().catch((e) => {
+          if (__DEV__) console.warn('[Layout] cloud backup failed', e);
+        });
       } catch {}
 
       if (cancelled) return;
@@ -427,15 +429,38 @@ export default function RootLayout() {
       if (cancelled) return;
       try {
         const { runReplayIfDue } = await import('../src/services/replayOrchestrator');
-        void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch(() => {});
+        void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch((e) => {
+          if (__DEV__) console.warn('[Layout] replay failed', e);
+        });
       } catch {}
       try {
         const { reconcileNotificationReliability } = await import('../src/services/notificationReliabilityService');
-        void reconcileNotificationReliability('app_start').catch(() => {});
+        void reconcileNotificationReliability('app_start').catch((e) => {
+          if (__DEV__) console.warn('[Layout] notification reconcile failed', e);
+        });
       } catch {}
       try {
+        const { reconcileEngagementNotifications } = await import('../src/services/engagementNotificationService');
+        void reconcileEngagementNotifications().catch((e) => {
+          if (__DEV__) console.warn('[Layout] engagement notifications failed', e);
+        });
+      } catch {}
+      try {
+        const { tamperEngine } = await import('../src/services/security/tamperEngine');
+        tamperEngine.initialize();
+      } catch {}
+
+      // Phase 19: Backend authority — device verification on launch (fire-and-forget)
+      try {
+        const { verifyDevice } = await import('../src/services/authorityClient');
+        void verifyDevice('user_local_001', 'device_local', 'app_launch').catch(() => {});
+      } catch {}
+
+      try {
         const { flushAnalyticsQueue } = await import('../src/services/analyticsIngestionService');
-        void flushAnalyticsQueue().catch(() => {});
+        void flushAnalyticsQueue().catch((e) => {
+          if (__DEV__) console.warn('[Layout] analytics flush failed', e);
+        });
       } catch {}
 
       // Phase 3: background health engine last — heaviest service (timers, DB queries, sensors)

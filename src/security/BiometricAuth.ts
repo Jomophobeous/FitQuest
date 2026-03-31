@@ -132,7 +132,7 @@ export class BiometricAuthService {
     await this.restoreSession();
 
     this.initialized = true;
-    if (__DEV__) console.log(`[FitQuest Auth] Biometric: ${biometricType}, available: ${this.capability.isAvailable}`);
+    if (__DEV__) console.warn(`[FitQuest Auth] Biometric: ${biometricType}, available: ${this.capability.isAvailable}`);
     return this.capability;
   }
 
@@ -325,7 +325,7 @@ export class BiometricAuthService {
       SecureStore.deleteItemAsync(SECURE_KEYS.SESSION_EXPIRY),
       SecureStore.deleteItemAsync(SECURE_KEYS.SESSION_METHOD),
     ]);
-    if (__DEV__) console.log('[FitQuest Auth] Session ended');
+    if (__DEV__) console.warn('[FitQuest Auth] Session ended');
   }
 
   /**
@@ -441,7 +441,7 @@ export class BiometricAuthService {
     ]);
 
     this.currentSession = session;
-    if (__DEV__) console.log(`[FitQuest Auth] Session created via ${method}, expires in 30 min`);
+    if (__DEV__) console.warn(`[FitQuest Auth] Session created via ${method}, expires in 30 min`);
     return session;
   }
 

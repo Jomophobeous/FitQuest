@@ -5,7 +5,6 @@ import { SCHEMA_VERSION } from '../database/types';
 import {
   decryptV2,
   decryptV3,
-  encryptV2,
   encryptV3,
   getOrCreateMasterKey,
   isV2Payload,

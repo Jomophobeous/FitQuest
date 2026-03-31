@@ -64,11 +64,11 @@ export class TrainedActivityClassifier {
       this.model = modelJson as ActivityModelData;
       this.isLoaded = true;
       if (__DEV__)
-        console.log(
+        console.warn(
           `[TrainedActivityClassifier] Model loaded: ${this.model.labels.length} activities, ${this.model.n_features} features`,
         );
       return true;
-    } catch (error) {
+    } catch (_error) {
       if (__DEV__) console.warn('[TrainedActivityClassifier] Model not loaded, using heuristic fallback');
       this.isLoaded = false;
       return false;
@@ -244,7 +244,7 @@ export class TrainedActivityClassifier {
 
     // Apply feature importance weighting if model loaded
     if (this.model) {
-      const importances = this.model.feature_importance;
+      const _importances = this.model.feature_importance;
       // Boost scores based on which features the model considers important
       for (const [activity, info] of Object.entries(this.model.decision_rules)) {
         for (const feat of info.key_features) {

@@ -20,7 +20,7 @@
  * Deterministic. No AI. No network.
  */
 
-import { getTrialState, getTrialStats, type TrialStateRow } from '../database/service';
+import { getTrialState, getTrialStats } from '../database/service';
 import { t } from '../i18n/engine-i18n';
 
 // ============================================

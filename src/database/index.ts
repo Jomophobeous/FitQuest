@@ -88,7 +88,7 @@ export async function initializeDatabase(): Promise<void> {
         (SELECT COUNT(*) FROM exercise_training_types) as tt
     `);
       if (__DEV__)
-        console.log(`[FitQuest DB] exercises: ${counts?.ex}, muscles: ${counts?.mu}, training_types: ${counts?.tt}`);
+        console.warn(`[FitQuest DB] exercises: ${counts?.ex}, muscles: ${counts?.mu}, training_types: ${counts?.tt}`);
 
       // If junction tables are empty but exercises exist, force a re-seed
       if ((counts?.ex ?? 0) > 0 && ((counts?.mu ?? 0) === 0 || (counts?.tt ?? 0) === 0)) {
@@ -99,7 +99,7 @@ export async function initializeDatabase(): Promise<void> {
         await seedExercises();
         await seedExternalExercises();
         const recount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercises');
-        if (__DEV__) console.log(`[FitQuest DB] After re-seed: ${recount?.count} exercises`);
+        if (__DEV__) console.warn(`[FitQuest DB] After re-seed: ${recount?.count} exercises`);
       } else {
         // Defer external exercise seeding — don't block app startup
         // Core exercises are seeded above; external 868 seed in background
@@ -109,7 +109,7 @@ export async function initializeDatabase(): Promise<void> {
       }
 
       initialized = true;
-      if (__DEV__) console.log('[FitQuest DB] Full database initialized (core + FitMind + encrypted)');
+      if (__DEV__) console.warn('[FitQuest DB] Full database initialized (core + FitMind + encrypted)');
     } catch (error) {
       if (__DEV__) console.error('Failed to initialize database:', error);
       captureException(error, { flow: 'db_init', critical: true });

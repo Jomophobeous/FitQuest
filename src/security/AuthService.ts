@@ -156,7 +156,7 @@ class AuthServiceImpl {
     this.masterKey = mek;
     this.lockState = 'UNLOCKED';
 
-    if (__DEV__) console.log('[AuthService] Password set, key hierarchy established');
+    if (__DEV__) console.warn('[AuthService] Password set, key hierarchy established');
   }
 
   // ============================================
@@ -194,7 +194,7 @@ class AuthServiceImpl {
     this.masterKey = mek;
     this.lockState = 'UNLOCKED';
 
-    if (__DEV__) console.log('[AuthService] Unlocked via password');
+    if (__DEV__) console.warn('[AuthService] Unlocked via password');
     return true;
   }
 
@@ -211,7 +211,7 @@ class AuthServiceImpl {
     await SecureStore.setItemAsync(SECURE_KEYS.BIOMETRIC_DK, this.derivedKey, {
       keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     });
-    if (__DEV__) console.log('[AuthService] Biometric unlock enabled');
+    if (__DEV__) console.warn('[AuthService] Biometric unlock enabled');
   }
 
   /**
@@ -233,7 +233,7 @@ class AuthServiceImpl {
     this.masterKey = mek;
     this.lockState = 'UNLOCKED';
 
-    if (__DEV__) console.log('[AuthService] Unlocked via biometric');
+    if (__DEV__) console.warn('[AuthService] Unlocked via biometric');
     return true;
   }
 
@@ -256,7 +256,7 @@ class AuthServiceImpl {
     this.derivedKey = null;
     this.masterKey = null;
     this.lockState = 'LOCKED';
-    if (__DEV__) console.log('[AuthService] Locked');
+    if (__DEV__) console.warn('[AuthService] Locked');
   }
 
   // ============================================
@@ -334,7 +334,7 @@ class AuthServiceImpl {
       await this.enableBiometricUnlock();
     }
 
-    if (__DEV__) console.log('[AuthService] Password changed, MEK re-encrypted');
+    if (__DEV__) console.warn('[AuthService] Password changed, MEK re-encrypted');
     return true;
   }
 
@@ -439,7 +439,7 @@ class AuthServiceImpl {
    * If a legacy master key exists in SecureStore (from getOrCreateMasterKey),
    * replace it with the new MEK so all existing encrypted data stays readable.
    */
-  private async migrateExistingMasterKey(newMEK: string): Promise<void> {
+  private async migrateExistingMasterKey(_newMEK: string): Promise<void> {
     const existingKey = await SecureStore.getItemAsync('fitquest_master_key_v2');
     if (existingKey) {
       // The existing key IS the encryption key used by EncryptedDatabase.
@@ -456,7 +456,7 @@ class AuthServiceImpl {
         });
         this.masterKey = existingKey;
       }
-      if (__DEV__) console.log('[AuthService] Migrated existing master key into new hierarchy');
+      if (__DEV__) console.warn('[AuthService] Migrated existing master key into new hierarchy');
     }
   }
 }

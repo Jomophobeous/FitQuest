@@ -11,8 +11,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { useTheme } from '../context/ThemeContext';
 import type { ThemeMode } from '../design/theme-system';
-import { getUserRankInfo, getLevelQuote, type UserRankInfo, type RankMilestone } from '../services/rankingService';
-import { GlassCard, ProgressRing } from './ui/GlassUI';
+import { getUserRankInfo, getLevelQuote, type RankMilestone } from '../services/rankingService';
+import { GlassCard } from './ui/GlassUI';
 
 /**
  * Get theme-aware color — replaces green with gold in blackGold mode

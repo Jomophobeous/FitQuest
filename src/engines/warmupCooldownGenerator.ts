@@ -14,7 +14,7 @@
  */
 
 import { getExercises } from '../database/service';
-import type { ExerciseWithDetails, TargetMuscle, TrainingType } from '../database/types';
+import type { ExerciseWithDetails, TrainingType } from '../database/types';
 
 // ============================================
 // TYPES

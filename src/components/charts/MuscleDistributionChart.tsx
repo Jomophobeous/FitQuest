@@ -7,7 +7,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
-import type { MuscleDistributionChartProps, MuscleGroupDataPoint, MUSCLE_GROUP_COLORS } from './types';
+import type { MuscleDistributionChartProps, MuscleGroupDataPoint } from './types';
 import { formatMuscleName } from '../../utils/formatMuscle';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -110,7 +110,7 @@ function SimplePieChart({ data, size, textColor }: SimplePieChartProps) {
   return (
     <View style={[styles.pieContainer, { width: size, height: size }]}>
       {/* Pie segments represented as colored arcs */}
-      {segments.map((seg, i) => (
+      {segments.map((seg, _i) => (
         <View
           key={seg.muscle}
           style={[
@@ -154,14 +154,14 @@ export function MuscleDistributionChart({
   data,
   config = {},
   chartType = 'bar',
-  onDataPointPress,
+  onDataPointPress: _onDataPointPress,
 }: MuscleDistributionChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 280;
 
   const isEmpty = data.length === 0;
 
-  const totalSets = useMemo(() => data.reduce((sum, d) => sum + d.sets, 0), [data]);
+  const _totalSets = useMemo(() => data.reduce((sum, d) => sum + d.sets, 0), [data]);
   const muscleCount = data.length;
 
   return (

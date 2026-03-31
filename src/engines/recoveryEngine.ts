@@ -20,7 +20,7 @@ import {
 } from '../database/service';
 import { walService } from '../services/WriteAheadLogService';
 import { getDatabase } from '../database/schema';
-import type { TargetMuscle, MuscleFatigue, WorkoutSession } from '../database/types';
+import type { TargetMuscle } from '../database/types';
 import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
 
 // ============================================
@@ -208,12 +208,14 @@ export async function accumulateFatigue(
     });
     await walService.commit(walId);
   } catch (error) {
-    await walService.markFailed(walId).catch(() => {});
+    await walService.markFailed(walId).catch((e) => {
+      if (__DEV__) console.warn('[Recovery] WAL markFailed error', e);
+    });
     throw error;
   }
 }
 
-async function getCurrentFatigue(userId: string, muscle: TargetMuscle): Promise<number> {
+async function _getCurrentFatigue(userId: string, muscle: TargetMuscle): Promise<number> {
   return getMuscleFatigueLevel(userId, muscle);
 }
 

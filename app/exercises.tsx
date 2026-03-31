@@ -19,17 +19,14 @@ import {
 import Animated, {
   FadeIn,
   FadeInDown,
-  FadeInRight,
   FadeInUp,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  Layout,
   useAnimatedScrollHandler,
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -40,8 +37,8 @@ import { useDatabase } from '../src/context/DatabaseContext';
 import { getExercises } from '../src/database/service';
 import { queryCache } from '../src/database/queryCache';
 import ScreenTutorial from '../src/components/ScreenTutorial';
-import type { ExerciseWithDetails, Category, Difficulty } from '../src/database/types';
-import { GlassCard, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
+import type { ExerciseWithDetails, Category } from '../src/database/types';
+import { AnimatedListItem } from '../src/components/ui/GlassUI';
 import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
 import ExerciseImage from '../src/components/ExerciseImage';
 
@@ -273,6 +270,7 @@ export default function ExercisesScreen() {
 
   useEffect(() => {
     if (isReady) loadExercises();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load on mount
   }, [isReady]);
 
   // Memoized filtering — no separate state, derived from source data
@@ -321,6 +319,7 @@ export default function ExercisesScreen() {
     queryCache.invalidate('exercises:all');
     await loadExercises();
     setRefreshing(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadExercises stable via ref guard
   }, []);
 
   const handleExercisePress = useCallback((exercise: ExerciseWithDetails) => {

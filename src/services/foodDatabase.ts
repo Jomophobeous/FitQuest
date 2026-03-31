@@ -13,6 +13,9 @@ export interface RegionalFoodItem {
   description: string;
   calories_per_serving?: number;
   protein_g?: number;
+  carbs_g?: number;
+  fat_g?: number;
+  fiber_g?: number;
   available_regions: string[];
   local_name?: string;
 }

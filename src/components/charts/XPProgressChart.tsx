@@ -76,7 +76,7 @@ function SimpleAreaChart({ data, height, primaryColor, mutedColor }: SimpleAreaC
 
       {/* Data points and connecting lines */}
       <View style={[styles.pointsContainer, { height: chartHeight }]}>
-        {points.map((point, i) => (
+        {points.map((point, _i) => (
           <View
             key={point.date}
             style={[
@@ -142,9 +142,9 @@ function formatXP(value: number): string {
 export function XPProgressChart({
   data,
   config = {},
-  dateRange = '30d',
-  showDelta = true,
-  onDataPointPress,
+  dateRange: _dateRange = '30d',
+  showDelta: _showDelta = true,
+  onDataPointPress: _onDataPointPress,
 }: XPProgressChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 200;

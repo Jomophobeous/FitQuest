@@ -132,7 +132,7 @@ export class TrainedIntentRouter {
 
       this.isLoaded = true;
       if (__DEV__)
-        console.log(
+        console.warn(
           `[TrainedIntentRouter] Model loaded: ${this.modelData.labels.length} classes, ${this.vocabMap.size} vocab`,
         );
       return true;

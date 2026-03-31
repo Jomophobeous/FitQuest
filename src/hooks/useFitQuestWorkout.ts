@@ -10,7 +10,6 @@ import { translationResolver } from '../i18n/TranslationResolver';
 
 // Engine imports
 import {
-  generateWorkout,
   createWorkout,
   recordSessionPerformance,
   getFatigueSnapshot,
@@ -27,7 +26,6 @@ import {
   generatePostWorkoutSummary,
   explainWorkoutSelection,
   type WorkoutExplanation,
-  type ExerciseReason,
 } from '../engines/transparencyLayer';
 
 import {
@@ -53,13 +51,12 @@ import { awardWorkoutXP } from '../services/xpService';
 import { generateRichAudio } from '../services/audioService';
 import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsIngestionService';
 import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
-import { evaluatePostWorkoutPolicyDecision } from '../services/autonomousPolicyRuntime';
 import { notifyWorkoutCompleted } from '../services/dataSyncService';
 import { invalidateReadinessCache } from '../engines/ReadinessEngine';
 import { logEvent } from '../services/telemetry';
 
-import type { TargetMuscle, ExerciseWithDetails } from '../database/types';
-import { generateWarmupCooldown, type WarmupCooldownExercise } from '../engines/warmupCooldownGenerator';
+import type { TargetMuscle } from '../database/types';
+import { generateWarmupCooldown } from '../engines/warmupCooldownGenerator';
 import {
   isMindExercise,
   generateMindTimeline,
@@ -73,7 +70,7 @@ import {
 // ============================================
 
 /** Map raw recovery engine reasons to user-friendly messages */
-function mapRecoveryReasonToFriendly(reasons: string[], severity: string): string {
+function mapRecoveryReasonToFriendly(reasons: string[], _severity: string): string {
   if (reasons.length === 0) return 'All systems healthy — ready to train';
 
   const friendly: string[] = [];
@@ -207,7 +204,7 @@ export function useFitQuestWorkout() {
   const generateNewWorkout = useCallback(async () => {
     // Prevent concurrent generation (double-tap protection)
     if (generatingRef.current) {
-      if (__DEV__) console.log('[FitQuest] Already generating workout, ignoring duplicate call');
+      if (__DEV__) console.warn('[FitQuest] Already generating workout, ignoring duplicate call');
       return;
     }
     generatingRef.current = true;
@@ -239,7 +236,7 @@ export function useFitQuestWorkout() {
       // Step 1: Apply daily recovery if needed
       if (await needsRecoveryTick(DEFAULT_USER_ID)) {
         await applyDailyRecoveryTick(DEFAULT_USER_ID);
-        if (__DEV__) console.log('[FitQuest] Applied daily recovery tick');
+        if (__DEV__) console.warn('[FitQuest] Applied daily recovery tick');
       }
 
       // Step 2: Check deload status
@@ -460,7 +457,7 @@ export function useFitQuestWorkout() {
         error: null,
       });
 
-      if (__DEV__) console.log('[FitQuest] Workout generated:', workout.id);
+      if (__DEV__) console.warn('[FitQuest] Workout generated:', workout.id);
     } catch (err) {
       if (__DEV__) console.error('[FitQuest] Workout generation failed:', err);
       if (mountedRef.current) {
@@ -474,6 +471,7 @@ export function useFitQuestWorkout() {
       clearTimeout(timeoutId);
       generatingRef.current = false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language change during workout generation would disrupt flow
   }, [isReady, userProfile, language]);
 
   /**
@@ -583,7 +581,7 @@ export function useFitQuestWorkout() {
           error: null,
         });
 
-        if (__DEV__) console.log('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
+        if (__DEV__) console.warn('[FitQuest] Custom workout loaded:', sessionId, exerciseDisplays.length, 'exercises');
       } catch (err) {
         if (__DEV__) console.error('[FitQuest] Failed to load custom workout:', err);
         if (mountedRef.current) {
@@ -595,6 +593,7 @@ export function useFitQuestWorkout() {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language change during custom workout load would cause stale closures
     [language],
   );
   /**
@@ -654,14 +653,14 @@ export function useFitQuestWorkout() {
   const skipExercise = useCallback(() => {
     if (!state.workout) return;
 
-    const skippedExercise = state.workout.exercises[state.currentExerciseIndex];
-    void logEvent('exercise_skipped', {
-      exercise_id: skippedExercise?.exerciseId,
-      exercise_index: state.currentExerciseIndex,
-    });
-
     setState((prev: WorkoutState) => {
       if (!prev.workout) return prev;
+
+      const skippedExercise = prev.workout.exercises[prev.currentExerciseIndex];
+      void logEvent('exercise_skipped', {
+        exercise_id: skippedExercise?.exerciseId,
+        exercise_index: prev.currentExerciseIndex,
+      });
 
       const nextIndex = prev.currentExerciseIndex + 1;
       const allComplete = nextIndex >= prev.workout.exercises.length;
@@ -681,7 +680,7 @@ export function useFitQuestWorkout() {
   const finishWorkout = useCallback(async (): Promise<WorkoutCompletionData | null> => {
     // Prevent double-tap race condition
     if (finishingRef.current) {
-      if (__DEV__) console.log('[FitQuest] finishWorkout already in progress, ignoring duplicate call');
+      if (__DEV__) console.warn('[FitQuest] finishWorkout already in progress, ignoring duplicate call');
       return null;
     }
 
@@ -732,7 +731,7 @@ export function useFitQuestWorkout() {
 
       // Award XP
       const xpResult = await awardWorkoutXP(completedCount, mainOnly.length, streak.current);
-      if (__DEV__) console.log(`[FitQuest] XP earned: ${xpResult.xpEarned} (Level ${xpResult.data.level})`);
+      if (__DEV__) console.warn(`[FitQuest] XP earned: ${xpResult.xpEarned} (Level ${xpResult.data.level})`);
 
       // Generate summary
       const progressions = progressionDecisions.filter((p: ProgressionDecision) => p.action === 'progress').length;
@@ -756,18 +755,9 @@ export function useFitQuestWorkout() {
       });
 
       const adaptiveLine = `\n🧠 Adaptive profile: fatigue ${adaptive.fatigueSensitivity.toFixed(2)} · progression ${adaptive.progressionAggressiveness.toFixed(2)} · volume ${adaptive.volumeTolerance.toFixed(2)}`;
-      const completionRatio = mainOnly.length > 0 ? completedCount / mainOnly.length : 0;
+      const finalSummary = summary + adaptiveLine;
 
-      const policyDecision = await evaluatePostWorkoutPolicyDecision(DEFAULT_USER_ID, {
-        completionRatio,
-        averageDifficulty,
-        isDeload: state.workout.isDeload,
-      });
-
-      const policyLine = `\n🤖 Policy decision: ${policyDecision.decision.action} (${Math.round(policyDecision.decision.confidence * 100)}%)`;
-      const finalSummary = summary + adaptiveLine + policyLine;
-
-      if (__DEV__) console.log('[FitQuest] Workout completed:', finalSummary);
+      if (__DEV__) console.warn('[FitQuest] Workout completed:', finalSummary);
 
       const durationSeconds = state.startTime
         ? Math.max(0, Math.floor((Date.now() - state.startTime.getTime()) / 1000))
@@ -803,7 +793,7 @@ export function useFitQuestWorkout() {
 
       // Keep status as 'completed' — the component will reset when user taps "New Workout"
       // DO NOT reset to 'idle' here — it triggers auto-generate before completionResult is set
-      if (__DEV__) console.log('[FitQuest] Workout finished successfully, keeping completed state');
+      if (__DEV__) console.warn('[FitQuest] Workout finished successfully, keeping completed state');
 
       // Notify all subscribed screens that workout data changed
       notifyWorkoutCompleted({

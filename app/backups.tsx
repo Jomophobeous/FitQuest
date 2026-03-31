@@ -192,6 +192,7 @@ export default function BackupsScreen() {
     } finally {
       setBusy(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
   }, [busy, passphrase, refresh]);
 
   const handleRestore = useCallback(
@@ -224,6 +225,7 @@ export default function BackupsScreen() {
         ],
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
     [busy, passphrase, router],
   );
 
@@ -253,6 +255,7 @@ export default function BackupsScreen() {
         ],
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
     [busy, refresh],
   );
 
@@ -273,6 +276,7 @@ export default function BackupsScreen() {
     } finally {
       setBusy(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
   }, [busy, cloudEnabled, passphrase, refreshCloud]);
 
   const handleRestoreCloud = useCallback(
@@ -305,6 +309,7 @@ export default function BackupsScreen() {
         ],
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
     [busy, cloudEnabled, passphrase, router],
   );
 
@@ -334,6 +339,7 @@ export default function BackupsScreen() {
         ],
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
     [busy, cloudEnabled, refreshCloud],
   );
 

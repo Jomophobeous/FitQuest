@@ -107,7 +107,9 @@ class ErrorTelemetryService {
     }
 
     // Persist to SQLite (non-blocking)
-    this.persistErrors().catch(() => {});
+    this.persistErrors().catch((e) => {
+      if (__DEV__) console.warn('[ErrorTelem] persist failed', e);
+    });
 
     // Log to console in development
     if (__DEV__) {

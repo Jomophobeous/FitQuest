@@ -1,0 +1,191 @@
+{
+  "report": "FitQuest 2.0 — Risk Report",
+  "generated": "2025-07-24T00:00:00Z",
+  "version": "2.3.0",
+
+  "risk_matrix": {
+    "critical": [
+      {
+        "id": "RISK-C1",
+        "title": "AI API Key Exposure",
+        "category": "Security",
+        "probability": "HIGH",
+        "impact": "HIGH",
+        "description": "EXPO_PUBLIC_ prefixed AI API keys (Grok, Groq, OpenRouter) are compiled into the JavaScript bundle. Any motivated user can extract them via Hermes bytecode decompilation or runtime inspection.",
+        "consequence": "Unlimited API billing on your keys. Attacker can use your keys for their own applications.",
+        "mitigation": "Remove EXPO_PUBLIC_ AI keys from client. Proxy all AI calls through a backend API endpoint with user authentication and rate limiting. If no backend exists, disable AI features for v1 launch.",
+        "owner": "Architecture",
+        "deadline": "Before any public release"
+      }
+    ],
+
+    "high": [
+      {
+        "id": "RISK-H1",
+        "title": "Low Test Coverage (48%)",
+        "category": "Quality",
+        "probability": "HIGH",
+        "impact": "MEDIUM",
+        "description": "25+ services and 17+ engines have zero test coverage. 27 app screens have no unit or integration tests. Any refactoring or bug fix risks introducing regressions.",
+        "consequence": "Silent bugs in production, slow development velocity, fear of changes.",
+        "mitigation": "Priority: test subscription flow E2E, test database migrations, test workout generation edge cases. Target 70% service coverage.",
+        "owner": "Engineering",
+        "deadline": "Phase 11"
+      },
+      {
+        "id": "RISK-H2",
+        "title": "Health Connect Crashes",
+        "category": "Product",
+        "probability": "HIGH",
+        "impact": "MEDIUM",
+        "description": "Health Connect integration (react-native-health-connect) causes app crashes. Feature flag ff_health_sync is disabled. Android users cannot sync health data from Google Fit or Samsung Health.",
+        "consequence": "Major feature gap on Android. Competitors offer this. User reviews will mention it.",
+        "mitigation": "Debug crashes in isolation. Wrap Health Connect calls in try/catch + error boundaries. Enable behind feature flag for beta testers first.",
+        "owner": "Engineering",
+        "deadline": "Phase 10"
+      },
+      {
+        "id": "RISK-H3",
+        "title": "No Push Notifications",
+        "category": "Retention",
+        "probability": "HIGH",
+        "impact": "HIGH",
+        "description": "expo-notifications plugin is configured but no notification scheduling logic exists. No streak reminders, trial expiry warnings, or re-engagement nudges.",
+        "consequence": "Poor retention. Users forget about the app. Trial expires silently without urgency.",
+        "mitigation": "Implement local notification scheduling: daily workout reminder, streak at risk (missed 1 day), trial countdown (days 10, 12, 13, 14).",
+        "owner": "Product",
+        "deadline": "Phase 10"
+      },
+      {
+        "id": "RISK-H4",
+        "title": "58 react-hooks/exhaustive-deps Violations",
+        "category": "Stability",
+        "probability": "MEDIUM",
+        "impact": "HIGH",
+        "description": "58 hooks with missing or incorrect dependency arrays. Each is a potential stale closure bug — the component reads old state/props when it should read current ones.",
+        "consequence": "Intermittent UI bugs, stale data display, effects that don't re-run when they should.",
+        "mitigation": "Audit each violation manually. Most are intentional (stable refs), but some are genuine bugs. Fix genuine bugs, add eslint-disable with comments for intentional ones.",
+        "owner": "Engineering",
+        "deadline": "Phase 10"
+      },
+      {
+        "id": "RISK-H5",
+        "title": "Silent Error Suppression",
+        "category": "Reliability",
+        "probability": "HIGH",
+        "impact": "MEDIUM",
+        "description": "20+ locations use .catch(() => {}) to silently swallow errors. Most are in database service.ts (WAL failure marking), AI providers, and background engines.",
+        "consequence": "Data operations fail silently. Database corruption goes undetected. AI conversations lost without user knowing.",
+        "mitigation": "Replace all .catch(() => {}) with .catch(e => logError(e, { context: 'operation_name' })). Keep fire-and-forget pattern but log the failure.",
+        "owner": "Engineering",
+        "deadline": "Phase 10"
+      }
+    ],
+
+    "medium": [
+      {
+        "id": "RISK-M1",
+        "title": "No Cross-Device Sync",
+        "category": "Product",
+        "probability": "MEDIUM",
+        "impact": "MEDIUM",
+        "description": "All data lives on-device. No server means no sync between devices. Cloud backup exists but is manual and requires EXPO_PUBLIC_BACKUP_API_BASE_URL to be configured.",
+        "consequence": "Users lose data on device change/loss unless they manually export. Premium subscribers expect cloud sync.",
+        "mitigation": "Phase 12: Implement lightweight backend (Cloudflare Workers + D1) for encrypted sync. In the interim, make backup flow more prominent in UI.",
+        "owner": "Product",
+        "deadline": "Phase 12"
+      },
+      {
+        "id": "RISK-M2",
+        "title": "No Root/Jailbreak Detection",
+        "category": "Security",
+        "probability": "LOW",
+        "impact": "HIGH",
+        "description": "App runs without restriction on rooted Android or jailbroken iOS devices. SQLite database and SecureStore are accessible to other processes.",
+        "consequence": "Database tampering, subscription bypass, encryption key extraction on compromised devices.",
+        "mitigation": "Add root detection library. Warn users on compromised devices. Consider restricting encrypted features.",
+        "owner": "Security",
+        "deadline": "Phase 11"
+      },
+      {
+        "id": "RISK-M3",
+        "title": "No Certificate Pinning",
+        "category": "Security",
+        "probability": "LOW",
+        "impact": "HIGH",
+        "description": "Network calls to RevenueCat, PostHog, Sentry, and AI providers use default TLS without certificate pinning.",
+        "consequence": "Man-in-the-middle attacks can intercept API keys, analytics data, and subscription receipts.",
+        "mitigation": "Implement certificate pinning for RevenueCat and AI provider endpoints. Lower priority since all sensitive data is encrypted at rest.",
+        "owner": "Security",
+        "deadline": "Phase 11"
+      },
+      {
+        "id": "RISK-M4",
+        "title": "Large Screen Files (1000+ lines)",
+        "category": "Maintainability",
+        "probability": "HIGH",
+        "impact": "LOW",
+        "description": "fitquest.tsx, dashboard.tsx, profile.tsx, and several other screens exceed 1000 lines with complex state management, multiple useEffects, and inline logic.",
+        "consequence": "Difficult to debug, high cognitive load, merge conflicts, slow code review.",
+        "mitigation": "Extract sub-components, move business logic to hooks, split into composition pattern.",
+        "owner": "Engineering",
+        "deadline": "Phase 11"
+      },
+      {
+        "id": "RISK-M5",
+        "title": "PostHog Session Replay May Capture Health Data",
+        "category": "Privacy",
+        "probability": "MEDIUM",
+        "impact": "MEDIUM",
+        "description": "PostHog session replay (posthog-react-native-session-replay) captures screen content. Health dashboard, encrypted data screens may have sensitive information visible.",
+        "consequence": "GDPR/HIPAA concern if health data is transmitted to PostHog servers.",
+        "mitigation": "Configure session replay masking for health-related screens. Audit PostHog data collection scope.",
+        "owner": "Privacy/Legal",
+        "deadline": "Phase 10"
+      }
+    ],
+
+    "low": [
+      {
+        "id": "RISK-L1",
+        "title": "Apollo Client Dead Dependency",
+        "category": "Tech Debt",
+        "probability": "LOW",
+        "impact": "LOW",
+        "description": "@apollo/client is installed but never used (SQLite is sole data source). Adds ~150KB to bundle.",
+        "mitigation": "Remove in next cleanup phase."
+      },
+      {
+        "id": "RISK-L2",
+        "title": "No Bundle Size Monitoring",
+        "category": "Performance",
+        "probability": "MEDIUM",
+        "impact": "LOW",
+        "description": "No automated bundle size tracking in CI. 56 production dependencies without size analysis.",
+        "mitigation": "Add expo-optimize or custom size tracking to CI pipeline."
+      },
+      {
+        "id": "RISK-L3",
+        "title": "275 Unused Variables",
+        "category": "Code Quality",
+        "probability": "HIGH",
+        "impact": "LOW",
+        "description": "275 no-unused-vars warnings. Most are unused imports or destructured variables.",
+        "mitigation": "Systematic cleanup. Can be partially automated with ESLint --fix and unused imports plugin."
+      }
+    ]
+  },
+
+  "risk_summary": {
+    "critical_count": 1,
+    "high_count": 5,
+    "medium_count": 5,
+    "low_count": 3,
+    "total": 14,
+    "top_3_actions": [
+      "1. Remove AI API keys from client bundle OR proxy through backend (SEC-H1, RISK-C1)",
+      "2. Replace silent .catch(() => {}) with error telemetry logging (RISK-H5)",
+      "3. Implement local push notifications for retention (RISK-H3)"
+    ]
+  }
+}

@@ -11,15 +11,11 @@
  */
 
 import * as FileSystem from 'expo-file-system/legacy';
-import {
-  exportEncryptedBackup,
-  listEncryptedBackups,
-  deleteEncryptedBackup,
-  type BackupListItem,
-} from './backupService';
+import { exportEncryptedBackup } from './backupService';
 import { walService, type WALEntry } from './WriteAheadLogService';
 import { encryptV3, decryptV3, getOrCreateMasterKey, type EncryptedPayload } from '../security/AESEncryption';
 import { captureException } from './crashReporting';
+import { safeWarn } from './logger';
 
 // ============================================
 // CONSTANTS
@@ -84,14 +80,14 @@ class SnapshotServiceImpl {
   async createSnapshot(trigger: SnapshotTrigger): Promise<SnapshotInfo | null> {
     // Guard: no concurrent snapshots
     if (this.snapshotInProgress) {
-      if (__DEV__) console.log(`[Snapshot] Skipped (${trigger}) — already in progress`);
+      if (__DEV__) console.warn(`[Snapshot] Skipped (${trigger}) — already in progress`);
       return null;
     }
 
     // Guard: cooldown (except pre_migration and manual — always allowed)
     if (trigger !== 'pre_migration' && trigger !== 'manual') {
       if (Date.now() - this.lastSnapshotAt < MIN_SNAPSHOT_INTERVAL_MS) {
-        if (__DEV__) console.log(`[Snapshot] Skipped (${trigger}) — cooldown`);
+        if (__DEV__) console.warn(`[Snapshot] Skipped (${trigger}) — cooldown`);
         return null;
       }
     }
@@ -108,7 +104,7 @@ class SnapshotServiceImpl {
       this.lastSnapshotAt = createdAt;
       this.lastFullSnapshotTs = createdAt;
       this.diffCountSinceFullSnapshot = 0;
-      if (__DEV__) console.log(`[Snapshot] Created (${trigger}): ${filename} [${result.bytes} bytes]`);
+      if (__DEV__) console.warn(`[Snapshot] Created (${trigger}): ${filename} [${result.bytes} bytes]`);
 
       // Rotate: keep only MAX_SNAPSHOTS
       await this.rotateSnapshots();
@@ -142,7 +138,7 @@ class SnapshotServiceImpl {
     // Force full snapshot if too many diffs accumulated
     if (this.diffCountSinceFullSnapshot >= MAX_DIFFS_BEFORE_FULL) {
       if (__DEV__)
-        console.log(`[Snapshot] Forcing full snapshot (${this.diffCountSinceFullSnapshot} diffs accumulated)`);
+        console.warn(`[Snapshot] Forcing full snapshot (${this.diffCountSinceFullSnapshot} diffs accumulated)`);
       this.diffCountSinceFullSnapshot = 0;
       return this.createSnapshot(trigger);
     }
@@ -154,7 +150,7 @@ class SnapshotServiceImpl {
     if (this.lastFullSnapshotTs === 0) {
       const latest = await this.getLatestSnapshot();
       if (!latest || latest.type !== 'full') {
-        if (__DEV__) console.log('[Snapshot] No base full snapshot — creating full instead of diff');
+        if (__DEV__) console.warn('[Snapshot] No base full snapshot — creating full instead of diff');
         return this.createSnapshot(trigger);
       }
       this.lastFullSnapshotTs = latest.created_at;
@@ -166,7 +162,7 @@ class SnapshotServiceImpl {
       const walEntries = await walService.getEntriesSinceCheckpoint(checkpoint);
 
       if (walEntries.length === 0) {
-        if (__DEV__) console.log(`[Snapshot] Diff skipped (${trigger}) — no WAL changes since checkpoint`);
+        if (__DEV__) console.warn(`[Snapshot] Diff skipped (${trigger}) — no WAL changes since checkpoint`);
         return null;
       }
 
@@ -199,7 +195,7 @@ class SnapshotServiceImpl {
       const bytes = 'size' in fileInfo && typeof fileInfo.size === 'number' ? fileInfo.size : json.length;
 
       if (__DEV__)
-        console.log(
+        console.warn(
           `[Snapshot] Diff created (${trigger}): ${filename} [${bytes} bytes, ${walEntries.length} WAL entries]`,
         );
 
@@ -356,9 +352,11 @@ class SnapshotServiceImpl {
   startPeriodicSnapshots(): void {
     if (this.periodicTimer) return;
     this.periodicTimer = setInterval(() => {
-      this.createSnapshot('periodic').catch(() => {});
+      this.createSnapshot('periodic').catch((e) =>
+        safeWarn('[Snapshot] periodic snapshot failed', { error: String(e) }),
+      );
     }, PERIODIC_INTERVAL_MS);
-    if (__DEV__) console.log('[Snapshot] Periodic snapshots started (every 6h)');
+    if (__DEV__) console.warn('[Snapshot] Periodic snapshots started (every 6h)');
   }
 
   /**
@@ -381,7 +379,7 @@ class SnapshotServiceImpl {
     const toDelete = snapshots.slice(MAX_SNAPSHOTS);
     for (const snap of toDelete) {
       await this.deleteSnapshot(snap.uri);
-      if (__DEV__) console.log(`[Snapshot] Rotated out: ${snap.filename}`);
+      if (__DEV__) console.warn(`[Snapshot] Rotated out: ${snap.filename}`);
     }
   }
 }

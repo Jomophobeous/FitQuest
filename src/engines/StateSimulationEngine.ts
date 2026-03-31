@@ -14,7 +14,6 @@
  */
 
 import { getUserState, type UserState } from './UserStateEngine';
-import { getAverageFatigue } from './recoveryEngine';
 import { getStreak, getRecentSessions, getUserProfile } from '../database/service';
 import { t } from '../i18n/engine-i18n';
 
@@ -66,7 +65,7 @@ const SKIP_DAY_RECOVERY = 8;
 /** Average fatigue added by a training session */
 const TRAINING_FATIGUE_COST = 18;
 /** Consistency threshold — sessions per 14 days to maintain DISCIPLINED */
-const DISCIPLINED_THRESHOLD = 4;
+const _DISCIPLINED_THRESHOLD = 4;
 /** Days without training before streak breaks */
 const STREAK_BREAK_DAYS = 2;
 

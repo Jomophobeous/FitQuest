@@ -22,14 +22,11 @@ import {
 } from '../database/service';
 import { generateSecureId } from '../security/randomId';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
-import { getCachedReadiness, type ReadinessSnapshot } from './ReadinessEngine';
+import { getCachedReadiness } from './ReadinessEngine';
 import { calculateProgression, type ProgressionDecision } from './progressionEngine';
 import type {
   ExerciseWithDetails,
   UserProfile,
-  MuscleFatigue,
-  WorkoutSession,
-  SessionExercise,
   Category,
   ProgressRecord,
   TargetMuscle,
@@ -43,7 +40,7 @@ import type {
 // ============================================
 
 const FATIGUE_THRESHOLD = 70; // Skip muscle if fatigue > this
-const FATIGUE_SOFT_PENALTY_START = 50; // Begin scoring penalty at this level
+const _FATIGUE_SOFT_PENALTY_START = 50; // Begin scoring penalty at this level
 const MIN_EXERCISES = 4;
 const MAX_EXERCISES = 6;
 const RECENCY_PENALTY_HOURS = 48;
@@ -260,7 +257,7 @@ async function applyHardFilter(
   };
   const equipmentLevels = getEquipmentLevels(equipmentLevelPref);
   if (__DEV__)
-    console.log(
+    console.warn(
       `[WorkoutGen] Equipment level pref: ${equipmentLevelPref || 'none set'} -> filtering to: ${equipmentLevels.join(', ')}`,
     );
 
@@ -273,7 +270,7 @@ async function applyHardFilter(
   };
 
   if (__DEV__)
-    console.log(
+    console.warn(
       `[WorkoutGen] Hard filter: goal="${profile.goal}", difficulties=${JSON.stringify(getDifficultyRange(profile.experience))}, training_types=${JSON.stringify(intent.training_types)}`,
     );
 
@@ -335,11 +332,11 @@ async function applyHardFilter(
   let rawCandidates = await getExercises(filter);
   let validCandidates = filterCandidates(rawCandidates);
   if (__DEV__)
-    console.log(`[WorkoutGen] Primary filter: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+    console.warn(`[WorkoutGen] Primary filter: ${rawCandidates.length} found, ${validCandidates.length} valid`);
 
   // 2. Fallback: Category Only
   if (validCandidates.length < 4) {
-    if (__DEV__) console.log(`[WorkoutGen] Only ${validCandidates.length} valid candidates. Expanding to category...`);
+    if (__DEV__) console.warn(`[WorkoutGen] Only ${validCandidates.length} valid candidates. Expanding to category...`);
     const expandedFilter: ExerciseFilter = {
       categories: [profile.goal],
       difficulties: getDifficultyRange(profile.experience),
@@ -348,12 +345,13 @@ async function applyHardFilter(
     rawCandidates = await getExercises(expandedFilter);
     validCandidates = filterCandidates(rawCandidates); // Re-filter
     if (__DEV__)
-      console.log(`[WorkoutGen] Category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+      console.warn(`[WorkoutGen] Category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
   }
 
   // 3. Fallback: Cross-Category (Training Type match)
   if (validCandidates.length < 4) {
-    if (__DEV__) console.log(`[WorkoutGen] Still only ${validCandidates.length} valid. Expanding to cross-category...`);
+    if (__DEV__)
+      console.warn(`[WorkoutGen] Still only ${validCandidates.length} valid. Expanding to cross-category...`);
     const crossCategoryFilter: ExerciseFilter = {
       difficulties: getDifficultyRange(profile.experience),
       training_types: intent.training_types,
@@ -362,14 +360,14 @@ async function applyHardFilter(
     rawCandidates = await getExercises(crossCategoryFilter);
     validCandidates = filterCandidates(rawCandidates);
     if (__DEV__)
-      console.log(
+      console.warn(
         `[WorkoutGen] Cross-category fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`,
       );
   }
 
   // 4. Fallback: Difficulty Only (Universal)
   if (validCandidates.length < 4) {
-    if (__DEV__) console.log(`[WorkoutGen] Still only ${validCandidates.length} valid. Universal fallback...`);
+    if (__DEV__) console.warn(`[WorkoutGen] Still only ${validCandidates.length} valid. Universal fallback...`);
     const fallbackFilter: ExerciseFilter = {
       difficulties: getDifficultyRange(profile.experience),
       equipment_levels: equipmentLevels,
@@ -377,7 +375,7 @@ async function applyHardFilter(
     rawCandidates = await getExercises(fallbackFilter);
     validCandidates = filterCandidates(rawCandidates);
     if (__DEV__)
-      console.log(`[WorkoutGen] Universal fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
+      console.warn(`[WorkoutGen] Universal fallback: ${rawCandidates.length} found, ${validCandidates.length} valid`);
   }
 
   if (validCandidates.length > 0) {
@@ -385,7 +383,7 @@ async function applyHardFilter(
     validCandidates.forEach((ex) => {
       catCounts[ex.category] = (catCounts[ex.category] || 0) + 1;
     });
-    if (__DEV__) console.log(`[WorkoutGen] FINAL CANDIDATES by category:`, JSON.stringify(catCounts));
+    if (__DEV__) console.warn(`[WorkoutGen] FINAL CANDIDATES by category:`, JSON.stringify(catCounts));
   }
 
   return validCandidates;
@@ -651,12 +649,12 @@ function prescribeVolume(
     sets = progressionDecision.recommendation.sets;
     reps = progressionDecision.recommendation.reps;
     if (__DEV__)
-      console.log(`[WorkoutGen] Progressive Rx for ${exercise.name}: ${progressionDecision.action} → ${sets}×${reps}`);
+      console.warn(`[WorkoutGen] Progressive Rx for ${exercise.name}: ${progressionDecision.action} → ${sets}×${reps}`);
   } else if (progressionDecision && progressionDecision.action === 'maintain') {
     // Maintain: use last known volume from the progression engine (keeps the user's actual level)
     sets = progressionDecision.recommendation.sets;
     reps = progressionDecision.recommendation.reps;
-    if (__DEV__) console.log(`[WorkoutGen] Maintain Rx for ${exercise.name}: ${sets}×${reps}`);
+    if (__DEV__) console.warn(`[WorkoutGen] Maintain Rx for ${exercise.name}: ${sets}×${reps}`);
   } else {
     // No history: fall back to static preset for new exercises
     const preset = VOLUME_PRESETS[profile.goal]?.[profile.experience] ?? VOLUME_PRESETS.body_control['beginner']!;
@@ -827,7 +825,7 @@ export async function generateWorkout(userId: string, deloadFlag = false): Promi
   }
 
   if (__DEV__ && progressionMap.size > 0) {
-    console.log(`[WorkoutGen] Progressive Rx applied to ${progressionMap.size}/${prepared.selected.length} exercises`);
+    console.warn(`[WorkoutGen] Progressive Rx applied to ${progressionMap.size}/${prepared.selected.length} exercises`);
   }
 
   // 7. Prescribe volume (progression-aware)

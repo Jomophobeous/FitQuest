@@ -22,7 +22,6 @@ import Animated, {
   FadeIn,
   FadeInDown,
   cancelAnimation,
-  runOnJS,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -123,7 +122,7 @@ export default function MindExerciseView({
 
   const startBreathingAnimation = useCallback(
     (pattern: BreathingPattern) => {
-      const cycleDuration = (pattern.inhale + pattern.holdIn + pattern.exhale + pattern.holdOut) * 1000;
+      const _cycleDuration = (pattern.inhale + pattern.holdIn + pattern.exhale + pattern.holdOut) * 1000;
       const inhaleMs = pattern.inhale * 1000;
       const holdInMs = pattern.holdIn * 1000;
       const exhaleMs = pattern.exhale * 1000;
@@ -218,7 +217,7 @@ export default function MindExerciseView({
     if (!isActive) return;
 
     if (__DEV__) {
-      console.log('[MindExercise] start timer', {
+      console.warn('[MindExercise] start timer', {
         currentPhaseIndex,
         phaseDuration: timeline.phases[currentPhaseIndex]?.duration,
         isActive,
@@ -279,6 +278,7 @@ export default function MindExerciseView({
   }, [isActive, currentPhaseIndex, timeline.phases, onComplete, voiceEnabled]);
 
   // Cleanup on unmount
+
   useEffect(() => {
     return () => {
       speakCancelRef.current++;
@@ -288,7 +288,7 @@ export default function MindExerciseView({
   }, []);
 
   // Progress within current phase (0-1)
-  const phaseProgress = currentPhase ? Math.min(phaseElapsed / currentPhase.duration, 1) : 0;
+  const _phaseProgress = currentPhase ? Math.min(phaseElapsed / currentPhase.duration, 1) : 0;
   // Overall progress (0-1)
   const overallProgress = timeline.totalDuration > 0 ? Math.min(totalElapsed / timeline.totalDuration, 1) : 0;
 

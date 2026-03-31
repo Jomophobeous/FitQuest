@@ -102,7 +102,7 @@ const READINESS_CONFIG = {
  */
 export async function getReadinessSnapshot(userId: string): Promise<ReadinessSnapshot> {
   const startMs = Date.now();
-  const [fatigue, sessions, streakData, profile, scheduleRaw] = await Promise.all([
+  const [fatigue, sessions, streakData, _profile, scheduleRaw] = await Promise.all([
     getMuscleFatigue(userId).catch(() => []),
     getRecentSessions(userId, 10).catch(() => []),
     getStreak(userId).catch(() => ({ current: 0, longest: 0 })),
@@ -171,7 +171,9 @@ export async function getReadinessSnapshot(userId: string): Promise<ReadinessSna
     status,
     muscleCount: muscleFatigueMap.length,
     hasProfessionSchedule: !!scheduleRaw,
-  }).catch(() => {}); // fire-and-forget
+  }).catch((e) => {
+    if (__DEV__) console.warn('[Readiness] logPerf failed', e);
+  }); // fire-and-forget
 
   return {
     score,
@@ -375,7 +377,9 @@ export async function saveProfessionSchedule(userId: string, schedule: Professio
   await setAppState(`${userId}_profession_schedule`, JSON.stringify(schedule));
   logEvent('profession_schedule_saved', {
     shiftType: schedule.shift_type,
-  }).catch(() => {});
+  }).catch((e) => {
+    if (__DEV__) console.warn('[Readiness] logEvent failed', e);
+  });
 }
 
 /**

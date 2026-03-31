@@ -1,0 +1,403 @@
+{
+  "report": "FitQuest 2.0 — Full System Analysis",
+  "generated": "2025-07-24T00:00:00Z",
+  "version": "2.3.0",
+  "schema_version": 20,
+  "commit": "e3dbe15",
+
+  "1_architecture": {
+    "summary": "Fully client-side React Native (Expo SDK 55, Router v6, New Architecture). Offline-first SQLite with AES-256-GCM encryption for sensitive data. No backend server — all computation on-device.",
+    "stack": {
+      "framework": "React Native 0.83.2 + React 19.2.0",
+      "routing": "Expo Router v6 (file-based)",
+      "database": "expo-sqlite (SQLite, schema v20, 51 tables, WAL mode)",
+      "encryption": "AES-256-GCM v3 (@noble/ciphers), PBKDF2-SHA256 100k iterations",
+      "analytics": "PostHog + Sentry",
+      "monetization": "RevenueCat (react-native-purchases 9.12.0)",
+      "ai_providers": ["Grok", "Groq", "OpenRouter (fallback chain)"],
+      "health_apis": ["HealthKit (iOS)", "Health Connect (Android)"],
+      "auth": "Biometric (Face ID / Fingerprint) + PBKDF2-hardened passcode"
+    },
+    "codebase_metrics": {
+      "typescript_files": 252,
+      "test_files": 43,
+      "production_dependencies": 56,
+      "dev_dependencies": 16,
+      "app_screens": 27,
+      "engines": 31,
+      "services": 42,
+      "database_tables": 51,
+      "supported_languages": 15,
+      "providers_in_hierarchy": 10
+    },
+    "provider_hierarchy": [
+      "ThemeProvider",
+      "ErrorBoundary",
+      "PostHogAnalyticsProvider",
+      "LanguageProvider",
+      "AuthGate",
+      "DatabaseProvider",
+      "AuthProvider",
+      "SubscriptionProvider",
+      "AccessGate",
+      "ThemedTabs"
+    ],
+    "tab_screens": ["dashboard", "fitquest", "move", "coach", "profile"],
+    "premium_gated_screens": ["fitquest", "coach/index", "meal-prep", "health-dashboard", "craft-my-body"],
+    "key_singletons": [
+      "SubscriptionManager",
+      "SystemGuard",
+      "BiometricAuthService",
+      "encryptedDB",
+      "sensorFusion",
+      "anomalyDetector",
+      "sleepEngine",
+      "backgroundHealth",
+      "intentRouter",
+      "dualAI",
+      "healthMonitor"
+    ],
+    "database_categories": {
+      "exercise_catalogue": 5,
+      "user_state": 6,
+      "workout_sessions": 4,
+      "subscription_and_trials": 3,
+      "activity_and_health": 5,
+      "encrypted_data": 4,
+      "fitmind_module": 6,
+      "health_monitoring": 4,
+      "i18n": 1,
+      "total": 51
+    }
+  },
+
+  "2_system_health_scores": {
+    "methodology": "0-100 per dimension. Based on verified code reads, CI pipeline results, and architecture analysis.",
+
+    "type_safety": {
+      "score": 92,
+      "rationale": "tsc --noEmit EXIT 0 with strict: true, noUncheckedIndexedAccess: true. Zod validation at boundaries. 8 points deducted for: ~233 no-explicit-any ESLint warnings (eslint-disable comments used in several places), and occasional `as any` casts in RevenueCat/health adapter integrations."
+    },
+    "test_coverage": {
+      "score": 48,
+      "rationale": "43 test files, 807 tests pass, 0 fail. But: only ~64% of services tested (27/42), ~45% of engines tested (14/31), 25+ services have zero test files, zero integration tests for screens/navigation, no E2E tests. FitMind, health adapters, and backup services are untested. Score reflects passing tests vs total surface area."
+    },
+    "code_quality": {
+      "score": 68,
+      "rationale": "804 ESLint warnings ratcheted (275 no-unused-vars, 237 no-console, 233 no-explicit-any, 58 react-hooks/exhaustive-deps, 1 react-native/no-raw-text). Prettier enforced. No ESLint errors. Points deducted for: unused variables proliferation, 30+ setTimeout/setInterval usages in app screens (some are legitimate timers, some are timing hacks), silent .catch(() => {}) patterns in 20+ places (swallows errors)."
+    },
+    "security": {
+      "score": 82,
+      "rationale": "AES-256-GCM v3 encryption for health/AI data, PBKDF2-SHA256 100k iterations for passcodes, biometric auth with 5-attempt lockout, rate limiting on auth/AI/destructive ops, log redaction for sensitive keys, 24h offline grace with clock tamper detection. Points deducted for: AI API keys in EXPO_PUBLIC_ env vars (client-extractable), no certificate pinning, no runtime integrity checks (root/jailbreak detection), Health Connect feature flag disabled (ff_health_sync = false)."
+    },
+    "architecture": {
+      "score": 78,
+      "rationale": "Clean separation: engines (algorithmic) vs services (orchestration) vs context (React state). Singleton patterns with getInstance(). SystemGuard state machine for boot. WriteFirewall for data integrity. DatabaseLifecycle for self-healing. Points deducted for: 10 providers deep (nesting risk), Apollo Client still in dependencies (dead weight), some screens exceed 1500+ lines (fitquest.tsx, dashboard.tsx), timing dependencies in splash/login screens."
+    },
+    "performance": {
+      "score": 72,
+      "rationale": "SQLite WAL mode, LRU query cache, memoized tab bar and screen options, lazy screen loading, Reanimated 4 with worklets. Points deducted for: no bundle size analysis, no startup time benchmarks, 30+ setTimeout calls in screens suggesting timing workarounds, no performance profiling data, ComputationCache exists but unclear if all expensive calculations use it."
+    },
+    "reliability": {
+      "score": 70,
+      "rationale": "ErrorBoundary at root, ScreenErrorBoundary per screen, SystemGuard BOOTING→READY state machine, WAL for durability, snapshot/backup services, database integrity validation + auto-repair. Points deducted for: 20+ silent catch blocks (.catch(() => {})), no retry logic for failed database operations (WAL marks failed but doesn't retry), Health Connect disabled due to crashes, no circuit breaker for AI provider failures."
+    },
+    "maintainability": {
+      "score": 65,
+      "rationale": "Strong TypeScript typing, modular file organization, clear naming conventions. Points deducted for: schema.ts at 1700 lines (migration logic is monolithic), service.ts at 2893 lines, several screens over 1000 lines, 25+ services with no tests make refactoring risky, SCHEMA_VERSION managed manually across files."
+    },
+
+    "composite_score": 72,
+    "composite_formula": "Weighted average: type_safety(15%) + test_coverage(20%) + code_quality(10%) + security(15%) + architecture(10%) + performance(10%) + reliability(10%) + maintainability(10%)",
+    "verdict": "SOLID FOUNDATION — mature enough for a controlled beta/soft launch with known gaps documented. Not ready for unrestricted production at scale without addressing test coverage and reliability gaps."
+  },
+
+  "3_monetization_analysis": {
+    "current_state": {
+      "model": "Freemium with 14-day trial → monthly ($5.39) / annual ($53.99, 17% savings)",
+      "gate_mechanism": "PremiumGate component wraps 5 screens. AccessState machine: RESOLVING→spinner, TRIAL_ACTIVE/SUBSCRIBED→render, EXPIRED→paywall redirect.",
+      "subscription_provider": "RevenueCat (react-native-purchases 9.12.0)",
+      "enforcement_status": "ACTIVE — PremiumGate properly enforced, SubscriptionContext derives state from SubscriptionManager dynamically",
+      "offline_grace": "24 hours (reduced from 7 days in Phase 9)",
+      "clock_tamper_detection": true,
+      "telemetry_events": ["premium_gate_blocked", "subscription_clock_tamper", "subscription_state_change", "subscription_grace_expired", "subscription_grace_used"]
+    },
+    "strengths": [
+      "RevenueCat handles receipt validation, renewal, and platform differences",
+      "Regional pricing utility exists (src/utils/regionalPricing.ts)",
+      "Paywall screen is custom-built with feature highlights and plan comparison",
+      "Trial state persisted in SQLite with explicit state machine",
+      "Grace period prevents false lockouts during network issues"
+    ],
+    "gaps": [
+      "No A/B testing on paywall design or pricing",
+      "No onboarding-to-paywall funnel tracking (conversion attribution)",
+      "No win-back flow for churned subscribers",
+      "No promotional offer support (introductory pricing, free trials via RevenueCat)",
+      "No in-app messaging for trial countdown urgency (days 10-14)",
+      "RevenueCat UI package imported but unused (custom paywall only)",
+      "No lifetime purchase option",
+      "No family sharing support",
+      "No web subscription support (Stripe)"
+    ],
+    "revenue_risks": [
+      "All 5 gated screens are intelligence/premium features — free tier includes workouts, exercises, steps, profile. Users may never hit the gate if they only use core features.",
+      "14-day trial may be too generous — users can extract full value before converting",
+      "No server-side receipt validation beyond RevenueCat — if RevenueCat goes down, grace period is only fallback",
+      "AI features require API keys which cost money per query — no usage cap per tier"
+    ]
+  },
+
+  "4_security_analysis": {
+    "encryption": {
+      "algorithm": "AES-256-GCM v3 via @noble/ciphers",
+      "key_derivation": "PBKDF2-SHA256, 100,000 iterations",
+      "key_storage": "expo-secure-store (hardware-backed on supported devices)",
+      "migration": "Auto-migrates v1 (XOR) → v2 (CTR+HMAC) → v3 (GCM) on read",
+      "encrypted_tables": ["encrypted_health_data", "encrypted_ai_conversations", "encrypted_notes", "health_alerts"],
+      "assessment": "STRONG — industry-standard encryption, proper key management, no plaintext health data"
+    },
+    "authentication": {
+      "primary": "Biometric (Face ID / Fingerprint) via expo-local-authentication",
+      "fallback": "PBKDF2-hardened passcode with constant-time comparison",
+      "lockout": "5 attempts → exponential backoff, 15 failures → emergency wipe",
+      "session": "30-minute expiry, AppState-aware (re-auth on foreground resume)",
+      "rate_limiting": "Per-action rate limits (biometric: 5/60s, passcode: 10/5min, AI: 30/5min, destructive: 1/10min)",
+      "assessment": "STRONG — defense in depth with multiple layers"
+    },
+    "data_protection": {
+      "log_redaction": "Sensitive key patterns auto-redacted (token, secret, password, key, session, biometric, receipt)",
+      "no_async_storage": "All storage via SecureStore or SQLite (no plaintext AsyncStorage)",
+      "write_firewall": "Exercise writes validated and deduplicated before DB insert",
+      "database_lifecycle": "Integrity validation + auto-repair on startup",
+      "assessment": "SOLID — proper data hygiene"
+    },
+    "vulnerabilities": {
+      "HIGH": [
+        {
+          "id": "SEC-H1",
+          "title": "AI API keys exposed in client bundle",
+          "detail": "EXPO_PUBLIC_GROK_API_KEY, EXPO_PUBLIC_GROQ_API_KEY, EXPO_PUBLIC_OPENROUTER_API_KEY are compiled into the JS bundle. Any user can extract these via reverse engineering.",
+          "impact": "API key theft → billing abuse, unauthorized AI usage",
+          "fix": "Proxy AI calls through a backend API with user authentication"
+        },
+        {
+          "id": "SEC-H2",
+          "title": "No root/jailbreak detection",
+          "detail": "App runs on rooted/jailbroken devices without restriction. SQLite database is accessible to other processes on rooted devices.",
+          "impact": "Database tampering, encryption key extraction",
+          "fix": "Add expo-device or custom native module for root detection, warn or restrict on compromised devices"
+        }
+      ],
+      "MEDIUM": [
+        {
+          "id": "SEC-M1",
+          "title": "No certificate pinning",
+          "detail": "Network calls to PostHog, Sentry, RevenueCat, and AI providers use default TLS without certificate pinning.",
+          "impact": "MITM attacks on network traffic",
+          "fix": "Implement certificate pinning for critical endpoints (RevenueCat, AI providers)"
+        },
+        {
+          "id": "SEC-M2",
+          "title": "Silent error swallowing in 20+ locations",
+          "detail": ".catch(() => {}) in service.ts, engines, and AI provider. Failed operations are not logged or retried.",
+          "impact": "Data loss goes undetected, security events may be missed",
+          "fix": "Replace silent catches with error telemetry logging"
+        },
+        {
+          "id": "SEC-M3",
+          "title": "Health Connect disabled due to crashes",
+          "detail": "Feature flag ff_health_sync = false. Health Connect adapter exists but is not activated.",
+          "impact": "Android health data integration is non-functional",
+          "fix": "Debug Health Connect crashes, enable with proper error boundaries"
+        }
+      ],
+      "LOW": [
+        {
+          "id": "SEC-L1",
+          "title": "Apollo Client dead dependency",
+          "detail": "Apollo Client is imported but SQLite is the sole data source. Unused dependency increases attack surface.",
+          "impact": "Unused code in bundle, potential supply chain risk",
+          "fix": "Remove @apollo/client from dependencies"
+        },
+        {
+          "id": "SEC-L2",
+          "title": "PostHog session replay on native",
+          "detail": "Session replay captures screen content which may include health data.",
+          "impact": "Health data may be transmitted to PostHog servers",
+          "fix": "Ensure session replay masking is configured for health screens"
+        }
+      ]
+    }
+  },
+
+  "5_product_gaps": {
+    "critical_missing_features": [
+      {
+        "id": "GAP-1",
+        "title": "No backend server",
+        "impact": "No cross-device sync, no remote config, no server-side analytics, no push notifications targeting, no A/B testing, no user account recovery",
+        "severity": "HIGH",
+        "workaround": "Cloud backup to Cloudflare Workers (optional, requires EXPO_PUBLIC_BACKUP_API_BASE_URL)"
+      },
+      {
+        "id": "GAP-2",
+        "title": "Health Connect integration disabled",
+        "impact": "Android users cannot sync steps, heart rate, sleep from Google Fit / Samsung Health",
+        "severity": "HIGH",
+        "workaround": "Manual data entry, pedometer via expo-sensors"
+      },
+      {
+        "id": "GAP-3",
+        "title": "No push notifications",
+        "impact": "Cannot remind users of workouts, trial expiry, streak maintenance",
+        "severity": "HIGH",
+        "workaround": "expo-notifications plugin configured but no notification scheduling logic found"
+      },
+      {
+        "id": "GAP-4",
+        "title": "No social features",
+        "impact": "No sharing, challenges, leaderboards, community",
+        "severity": "MEDIUM",
+        "workaround": "socialLayerService.ts exists as placeholder"
+      },
+      {
+        "id": "GAP-5",
+        "title": "No exercise video/animation content",
+        "impact": "Users rely on text instructions only, poor UX for beginners",
+        "severity": "MEDIUM",
+        "workaround": "exerciseImageService.ts exists, audio guidance via TTS"
+      }
+    ],
+    "retention_gaps": [
+      "No push notification reminders for workout streaks",
+      "No streak recovery mechanism (broken streak = reset to 0)",
+      "No gamification beyond XP (no badges, achievements, levels beyond numeric XP)",
+      "No onboarding completion tracking or re-engagement for dropoff users",
+      "No workout variety suggestions based on user fatigue/boredom detection",
+      "No social accountability features"
+    ],
+    "growth_gaps": [
+      "No referral system",
+      "No deep linking for sharing workouts",
+      "No App Store Optimization (ASO) metadata in app.config.ts",
+      "No review/rating prompt at positive moments",
+      "No user testimonials or community proof in paywall"
+    ]
+  },
+
+  "6_technical_debt": {
+    "lint_warnings": {
+      "total": 804,
+      "breakdown": {
+        "no-unused-vars": 275,
+        "no-console": 237,
+        "no-explicit-any": 233,
+        "react-hooks/exhaustive-deps": 58,
+        "react-native/no-raw-text": 1
+      },
+      "trend": "Ratcheted at 804 in CI — can only decrease"
+    },
+    "code_smells": [
+      {
+        "id": "DEBT-1",
+        "title": "275 unused variables",
+        "severity": "MEDIUM",
+        "impact": "Dead code, confusion, larger bundle",
+        "effort": "2-3 hours systematic cleanup"
+      },
+      {
+        "id": "DEBT-2",
+        "title": "237 console.log/warn statements",
+        "severity": "LOW",
+        "impact": "Performance drag on production builds, potential info leak",
+        "effort": "1-2 hours (replace with safeWarn/logEvent or __DEV__ guard)"
+      },
+      {
+        "id": "DEBT-3",
+        "title": "233 explicit any types",
+        "severity": "MEDIUM",
+        "impact": "Type safety holes, runtime errors possible",
+        "effort": "4-6 hours (needs interface definitions for external APIs)"
+      },
+      {
+        "id": "DEBT-4",
+        "title": "58 react-hooks/exhaustive-deps violations",
+        "severity": "HIGH",
+        "impact": "Stale closures, missed re-renders, subtle bugs",
+        "effort": "3-4 hours (each must be manually analyzed for correctness)"
+      },
+      {
+        "id": "DEBT-5",
+        "title": "30+ setTimeout/setInterval in app screens",
+        "severity": "MEDIUM",
+        "impact": "Timing-dependent code, race conditions, memory leaks if not cleaned up",
+        "effort": "4-6 hours (replace with state machines, Reanimated timing, or explicit guards)"
+      },
+      {
+        "id": "DEBT-6",
+        "title": "20+ silent .catch(() => {}) blocks",
+        "severity": "HIGH",
+        "impact": "Error suppression, data loss, silent failures",
+        "effort": "1-2 hours (add telemetry logging to each)"
+      },
+      {
+        "id": "DEBT-7",
+        "title": "schema.ts at 1700 lines, service.ts at 2893 lines",
+        "severity": "LOW",
+        "impact": "Difficult to navigate, merge conflicts, cognitive load",
+        "effort": "4-6 hours (split into per-module migration files and service modules)"
+      },
+      {
+        "id": "DEBT-8",
+        "title": "Apollo Client dead dependency",
+        "severity": "LOW",
+        "impact": "Bundle size (+150KB gzipped), unused attack surface",
+        "effort": "30 minutes (remove from package.json, find/remove all imports)"
+      }
+    ],
+    "fragile_areas": [
+      "app/fitquest.tsx — 1500+ lines, complex workout state machine with multiple setTimeout calls",
+      "app/dashboard.tsx — heavy data loading with setTimeout-based loading state",
+      "src/database/schema.ts — 20 migration versions in single file, conditional logic is brittle",
+      "src/engines/DualAIEngine.ts — 1067+ lines, template-based AI with silent error catch",
+      "app/_layout.tsx — 10-deep provider nesting, deferred initialization with setTimeout"
+    ]
+  },
+
+  "7_production_readiness": {
+    "verdict": "CONDITIONAL YES — Ready for controlled beta/soft launch on Android",
+    "conditions": [
+      "MUST fix: AI API keys must not ship in production bundle (SEC-H1) — proxy through backend or remove AI features from v1 launch",
+      "MUST fix: At least 1 silent catch block audit pass — replace .catch(() => {}) with .catch(logError) in service.ts and engines",
+      "SHOULD fix: Enable Health Connect with proper error handling (major Android feature gap)",
+      "SHOULD fix: Add push notification scheduling for streak reminders and trial expiry",
+      "SHOULD fix: Audit 58 react-hooks/exhaustive-deps warnings for stale closure bugs"
+    ],
+    "blockers": {
+      "hard_blockers": [
+        "AI API keys in client bundle (SEC-H1) — if AI features ship, this is a billing exposure"
+      ],
+      "soft_blockers": [
+        "Health Connect disabled — limits Android health integration",
+        "No push notifications — limits retention",
+        "48% test coverage — high risk of regression on changes"
+      ]
+    },
+    "ready_for": {
+      "internal_testing": true,
+      "closed_beta_100_users": true,
+      "open_beta_1000_users": "CONDITIONAL — fix SEC-H1 first",
+      "production_launch": "CONDITIONAL — fix SEC-H1, enable Health Connect, add push notifications"
+    },
+    "what_works_well": [
+      "Type safety: tsc strict, 0 errors",
+      "Test suite: 807 pass, 0 fail",
+      "Encryption: AES-256-GCM, proper key management",
+      "Subscription: Full state machine with RevenueCat, grace period, tamper detection",
+      "Database: Self-healing with integrity validation and auto-repair",
+      "i18n: 15 languages with exercise translation pipeline",
+      "CI: Automated typecheck + lint ratchet + format + test"
+    ]
+  }
+}

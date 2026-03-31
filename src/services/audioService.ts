@@ -144,6 +144,9 @@ class AudioService {
   private translator: TranslatorFn | null = null;
   /** Cached enhanced voice ID for current locale */
   private preferredVoiceId: string | undefined;
+  /** Circuit breaker: consecutive TTS failures */
+  private consecutiveSpeechFailures: number = 0;
+  private static readonly MAX_SPEECH_FAILURES = 3;
 
   /**
    * Inject the translation function from React context.
@@ -196,6 +199,7 @@ class AudioService {
       }
 
       this.isInitialized = true;
+      this.consecutiveSpeechFailures = 0; // Reset circuit breaker on init
 
       // Pre-warm TTS engine to eliminate cold-start latency
       // Speaking an empty space primes the native TTS synthesizer
@@ -333,6 +337,12 @@ class AudioService {
       return;
     }
 
+    // Circuit breaker: stop trying TTS after repeated failures
+    if (this.consecutiveSpeechFailures >= AudioService.MAX_SPEECH_FAILURES) {
+      this.emit(type, text);
+      return;
+    }
+
     return new Promise((resolve) => {
       this.isSpeaking = true;
       this.emit(type, text);
@@ -356,10 +366,14 @@ class AudioService {
         voice: this.preferredVoiceId,
         onDone: () => {
           this.isSpeaking = false;
+          this.consecutiveSpeechFailures = 0; // Reset on success
           resolve();
         },
         onError: (error: { message?: string }) => {
-          if (__DEV__) console.warn('[AudioService] Speech error:', error);
+          this.consecutiveSpeechFailures += 1;
+          if (this.consecutiveSpeechFailures === AudioService.MAX_SPEECH_FAILURES && __DEV__) {
+            console.warn(`[AudioService] TTS failed ${AudioService.MAX_SPEECH_FAILURES}x — disabling until next init`);
+          }
           this.isSpeaking = false;
           resolve();
         },

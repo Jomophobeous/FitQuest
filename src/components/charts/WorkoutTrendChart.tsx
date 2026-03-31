@@ -9,7 +9,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
 import { ThemedChartWrapper, useChartTheme, MiniStat, ChartLegend } from './ThemedChart';
-import type { WorkoutTrendChartProps, WorkoutDataPoint, ChartConfig, DEFAULT_CHART_CONFIG } from './types';
+import type { WorkoutTrendChartProps, WorkoutDataPoint } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -62,14 +62,21 @@ interface SimpleBarChartProps {
   mutedColor: string;
 }
 
-function SimpleBarChart({ data, height, primaryColor, secondaryColor, textColor, mutedColor }: SimpleBarChartProps) {
+function SimpleBarChart({
+  data,
+  height,
+  primaryColor,
+  secondaryColor,
+  textColor: _textColor,
+  mutedColor,
+}: SimpleBarChartProps) {
   const maxValue = Math.max(...data.map((d) => d.durationMinutes), 1);
   const barWidth = Math.max(8, Math.min(24, (SCREEN_WIDTH - 80) / data.length - 4));
 
   return (
     <View style={[styles.simpleChartContainer, { height }]}>
       <View style={styles.barsContainer}>
-        {data.map((point, index) => {
+        {data.map((point, _index) => {
           const barHeight = (point.durationMinutes / maxValue) * (height - 40);
           const isDeload = point.isDeload ?? false;
 
@@ -113,9 +120,9 @@ function SimpleBarChart({ data, height, primaryColor, secondaryColor, textColor,
 export function WorkoutTrendChart({
   data,
   config = {},
-  dateRange = '7d',
-  showExerciseCount = false,
-  onDataPointPress,
+  dateRange: _dateRange = '7d',
+  showExerciseCount: _showExerciseCount = false,
+  onDataPointPress: _onDataPointPress,
 }: WorkoutTrendChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 200;

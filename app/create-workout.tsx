@@ -160,6 +160,7 @@ export default function CreateWorkoutScreen() {
 
   useEffect(() => {
     filterExercises();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- filterExercises is stable (useCallback)
   }, [selectedCategory, selectedDifficulty, selectedEquipment, searchQuery, allExercises]);
 
   const loadExercises = async () => {

@@ -8,17 +8,8 @@
  * Keeps existing colors from theme-system.ts — only adds texture & feel.
  */
 
-import React, { useEffect, useRef, memo } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  type StyleProp,
-  ViewStyle,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import React, { useEffect, memo } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, type StyleProp, ViewStyle, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -35,13 +26,12 @@ import Animated, {
   SlideInUp,
   ZoomIn,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
 import { haptic } from '../../utils/haptics';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
 // ANIMATED CARD (Simplified flat design)
@@ -61,10 +51,10 @@ export const GlassCard = memo(function GlassCard({
   children,
   style,
   delay = 0,
-  gradient = false,
-  gradientColors,
+  gradient: _gradient = false,
+  gradientColors: _gradientColors,
   onPress,
-  glowColor, // ignored
+  glowColor: _glowColor, // ignored
 }: GlassCardProps) {
   const { theme } = useTheme();
   const scale = useSharedValue(1);

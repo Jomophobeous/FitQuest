@@ -1385,13 +1385,13 @@ export async function seedExercises(): Promise<void> {
   const count = await getExerciseCountFromService();
 
   if (count >= MINIMUM_EXPECTED) {
-    if (__DEV__) console.log(`Database already seeded with ${count} exercises (above ${MINIMUM_EXPECTED} threshold)`);
+    if (__DEV__) console.warn(`Database already seeded with ${count} exercises (above ${MINIMUM_EXPECTED} threshold)`);
     return;
   }
 
   // Clear existing exercises if re-seeding (incomplete seed from before generator was added)
   if (count > 0) {
-    if (__DEV__) console.log(`Re-seeding: found only ${count} exercises (below ${MINIMUM_EXPECTED} threshold)`);
+    if (__DEV__) console.warn(`Re-seeding: found only ${count} exercises (below ${MINIMUM_EXPECTED} threshold)`);
     await clearExerciseSeedData();
   }
 
@@ -1423,7 +1423,7 @@ export async function seedExercises(): Promise<void> {
   });
 
   if (__DEV__)
-    console.log(
+    console.warn(
       `Seeding ${allExercises.length} exercises (${merged.length - allExercises.length} duplicates removed)...`,
     );
 
@@ -1504,7 +1504,7 @@ export async function seedExercises(): Promise<void> {
     }
 
     await commitSeedTransaction();
-    if (__DEV__) console.log(`Successfully seeded ${allExercises.length} exercises`);
+    if (__DEV__) console.warn(`Successfully seeded ${allExercises.length} exercises`);
   } catch (error) {
     await rollbackSeedTransaction();
     if (__DEV__) console.error(`Failed to seed exercises:`, error);

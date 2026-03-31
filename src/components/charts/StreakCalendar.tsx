@@ -43,7 +43,7 @@ function CalendarGrid({
   successColor,
   mutedColor,
   textColor,
-  surfaceColor,
+  surfaceColor: _surfaceColor,
   onDayPress,
 }: CalendarGridProps) {
   const today = new Date();

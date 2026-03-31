@@ -76,7 +76,7 @@ export async function insertExerciseSafe(
   const existingId = await findExistingExercise(normalizedName, params.category, database);
   if (existingId && existingId !== params.id) {
     if (__DEV__)
-      console.log(
+      console.warn(
         `[WriteFirewall] REJECTED duplicate: "${normalizedName}" (${params.category}) — existing: ${existingId}`,
       );
     return false;

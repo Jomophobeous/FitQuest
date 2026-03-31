@@ -20,7 +20,6 @@ import Animated, {
   FadeIn,
   FadeOut,
   FadeInDown,
-  SlideInDown,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -190,14 +189,14 @@ function AnimatedMenuItem({
   item,
   index,
   isDisabled,
-  isLast,
+  _isLast,
   showDivider,
   onPress,
 }: {
   item: MenuItem;
   index: number;
   isDisabled: boolean;
-  isLast: boolean;
+  _isLast: boolean;
   showDivider: boolean;
   onPress: () => void;
 }) {
@@ -341,7 +340,7 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
                     item={item}
                     index={index}
                     isDisabled={isDisabled}
-                    isLast={index === array.length - 1}
+                    _isLast={index === array.length - 1}
                     showDivider={isLastInCategory && index < array.length - 1}
                     onPress={() => handleItemPress(item)}
                   />

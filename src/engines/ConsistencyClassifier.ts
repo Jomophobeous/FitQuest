@@ -131,7 +131,7 @@ function calculateAvgCompletionRate(sessions: WorkoutSession[]): number {
 function detectTransition(
   sessions: WorkoutSession[],
   sessionsExpected: number,
-  currentMode: BehavioralMode,
+  _currentMode: BehavioralMode,
 ): { transitionDetected: boolean; transitionDirection: 'stabilizing' | 'advancing' | null } {
   if (sessions.length < 4) {
     return { transitionDetected: false, transitionDirection: null };

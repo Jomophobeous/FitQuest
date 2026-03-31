@@ -6,7 +6,7 @@
  */
 
 import type { TargetMuscle, Category, Difficulty } from '../../../database/types';
-import { DEFAULT_VOLUME_LANDMARKS, getMuscleSize, type VolumeLandmarks, type WorkoutContext } from '../types';
+import { DEFAULT_VOLUME_LANDMARKS, getMuscleSize, type VolumeLandmarks } from '../types';
 
 // ============================================
 // VOLUME PRESCRIPTION

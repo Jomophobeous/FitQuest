@@ -24,9 +24,8 @@ import {
   Alert,
   Text,
   Modal,
-  Platform,
 } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp, SlideInRight } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
@@ -54,7 +53,7 @@ import {
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
 // TYPES
@@ -136,11 +135,12 @@ function HealthDashboardScreenInner() {
       if (Date.now() - lastHealthLoadAt.current < HEALTH_LOAD_COOLDOWN_MS) return;
       loadHealthData();
     }, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadHealthData intentionally omitted to prevent re-trigger
   }, [dbReady]);
 
   const loadHealthData = useCallback(async () => {
     if (isLoadingHealthRef.current) {
-      if (__DEV__) console.log('[HealthDashboard] loadHealthData:skipped (already loading)');
+      if (__DEV__) console.warn('[HealthDashboard] loadHealthData:skipped (already loading)');
       return;
     }
     isLoadingHealthRef.current = true;
@@ -260,6 +260,7 @@ function HealthDashboardScreenInner() {
       isLoadingHealthRef.current = false;
       lastHealthLoadAt.current = Date.now();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
   }, []);
 
   useEffect(() => {

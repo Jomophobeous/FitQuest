@@ -184,7 +184,7 @@ function generateBreathingTimeline(exerciseName: string, totalSeconds: number): 
 
 /** Generate timeline for meditation exercises (seated, loving-kindness, visualization, etc.) */
 function generateMeditationTimeline(exerciseName: string, totalSeconds: number): MindTimeline {
-  const name = exerciseName.toLowerCase();
+  const _name = exerciseName.toLowerCase();
   const introDuration = Math.min(20, Math.floor(totalSeconds * 0.15));
   const closingDuration = Math.min(15, Math.floor(totalSeconds * 0.12));
   const coreDuration = totalSeconds - introDuration - closingDuration;
@@ -244,7 +244,7 @@ function generateMeditationTimeline(exerciseName: string, totalSeconds: number):
 
 /** Generate timeline for body awareness exercises (body scan, PMR, yoga nidra) */
 function generateBodyAwarenessTimeline(exerciseName: string, totalSeconds: number): MindTimeline {
-  const name = exerciseName.toLowerCase();
+  const _name = exerciseName.toLowerCase();
   const introDuration = Math.min(20, Math.floor(totalSeconds * 0.12));
   const closingDuration = Math.min(15, Math.floor(totalSeconds * 0.1));
   const coreDuration = totalSeconds - introDuration - closingDuration;
@@ -434,7 +434,7 @@ function getBodyAwarenessIntention(name: string): string {
   return 'Bringing awareness to the body exactly as it is right now.';
 }
 
-function getBodyAwarenessGuidance(name: string, durationSecs: number): string {
+function getBodyAwarenessGuidance(name: string, _durationSecs: number): string {
   const n = name.toLowerCase();
   if (n.includes('body scan')) {
     return 'Bring your awareness to your toes. Notice any sensations. No need to change anything, just notice. As you exhale, release any tension. Now move to your feet. Your ankles. Your calves. Notice without judgment. Moving up through your thighs, your hips. Feel the weight of your body. Continue up through your belly, your chest. Each breath bringing deeper awareness. Your shoulders, your arms, your hands. Your neck, your jaw. Let your face soften. The crown of your head. Now feel your whole body as one field of awareness.';

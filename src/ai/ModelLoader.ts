@@ -140,7 +140,7 @@ export async function loadCognitiveAI(): Promise<TierStatus> {
   modules['knowledgeGraph'] = true; // No model needed
 
   tierState.cognitive = { loaded: true, modules, loadTimeMs: Date.now() - start };
-  if (__DEV__) console.log(`[AI] Tier 2 (Cognitive) loaded in ${tierState.cognitive.loadTimeMs}ms`, modules);
+  if (__DEV__) console.warn(`[AI] Tier 2 (Cognitive) loaded in ${tierState.cognitive.loadTimeMs}ms`, modules);
   return tierState.cognitive;
 }
 

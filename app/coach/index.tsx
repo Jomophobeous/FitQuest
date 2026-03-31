@@ -26,7 +26,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter, useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Clipboard from 'expo-clipboard';
 import SimpleMarkdown from '../../src/components/SimpleMarkdown';
@@ -35,13 +35,11 @@ import Animated, {
   FadeInDown,
   FadeInUp,
   FadeInRight,
-  ZoomIn,
   SlideInDown,
   FadeOut,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withSpring,
   withRepeat,
   Easing,
 } from 'react-native-reanimated';
@@ -80,7 +78,7 @@ import {
 import { haptic } from '../../src/utils/haptics';
 import { getCurrentLocation, getDefaultLocation } from '../../src/services/locationService';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
 // TYPES
@@ -149,6 +147,7 @@ function PulsingDot({ delay, color }: { delay: number; color: string }) {
 
   useEffect(() => {
     progress.value = withRepeat(withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.ease) }), -1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- progress is a Reanimated shared value (stable ref)
   }, []);
 
   const animStyle = useAnimatedStyle(() => {
@@ -185,6 +184,7 @@ function TypingIndicator({ modelName }: { modelName?: string }) {
   const glow = useSharedValue(0);
   useEffect(() => {
     glow.value = withRepeat(withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }), -1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- glow is a Reanimated shared value (stable ref)
   }, []);
 
   const bubbleGlowStyle = useAnimatedStyle(() => {
@@ -571,6 +571,7 @@ function CoachScreenInner() {
 
   useEffect(() => {
     if (dbReady) loadCoachContext();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on mount
   }, [dbReady]);
 
   // Handle Android hardware back button — navigate to dashboard tab
@@ -1002,7 +1003,7 @@ function CoachScreenInner() {
 
       // 2. Generate AI response asynchronously (intent classification happens here, NOT blocking render)
       (async () => {
-        const ctx = coachCtxRef.current!;
+        const _ctx = coachCtxRef.current!;
         let response: string;
         let aiSuggestions: string[] | undefined;
 
@@ -1558,7 +1559,7 @@ function CoachScreenInner() {
                       {t('coach.relatedTopics')}
                     </Text>
                     <View style={styles.followUpRow}>
-                      {activeSuggestions.map((s, idx) => (
+                      {activeSuggestions.map((s, _idx) => (
                         <TouchableOpacity
                           key={s}
                           style={[
@@ -1602,7 +1603,11 @@ function CoachScreenInner() {
               {
                 backgroundColor: theme.colors.background,
                 borderTopColor: theme.colors.border,
-                paddingBottom: keyboardVisible ? 12 : Math.max(12, insets.bottom + 72),
+                // When keyboard hidden: account for floating tab bar (height + bottom offset)
+                // Tab bar: height = 64 + max(0, insets.bottom-4), bottom = max(8, insets.bottom+2)
+                paddingBottom: keyboardVisible
+                  ? 12
+                  : Math.max(12, Math.max(8, insets.bottom + 2) + 64 + Math.max(0, insets.bottom - 4) + 4),
               },
             ]}
           >
@@ -1625,7 +1630,7 @@ function CoachScreenInner() {
                 onSubmitEditing={sendMessage}
                 returnKeyType="send"
                 multiline
-                blurOnSubmit
+                blurOnSubmit={false}
               />
               <Animated.View style={sendAnimatedStyle}>
                 {streamingText !== null || isTyping ? (
@@ -1977,7 +1982,7 @@ const styles = StyleSheet.create({
   scrollFabWrap: {
     position: 'absolute',
     right: 16,
-    bottom: 80,
+    bottom: 90,
     zIndex: 10,
   },
   scrollFab: {

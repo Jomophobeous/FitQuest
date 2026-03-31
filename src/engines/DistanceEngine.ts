@@ -22,6 +22,7 @@
  */
 
 import * as Location from 'expo-location';
+import { useState, useEffect, useCallback } from 'react';
 
 // Lightweight EventEmitter replacement (Node 'events' module is unavailable in React Native)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,7 +92,7 @@ export interface DistanceEngineConfig {
   paceWindowSize: number; // Number of points for current pace calculation
 }
 
-type DistanceEventType = 'distance' | 'pace' | 'split' | 'location' | 'error';
+type _DistanceEventType = 'distance' | 'pace' | 'split' | 'location' | 'error';
 
 // ============================================
 // DEFAULT CONFIG
@@ -146,7 +147,7 @@ class DistanceEngine extends EventEmitter {
    */
   async startTracking(config?: Partial<DistanceEngineConfig>): Promise<boolean> {
     if (this.isRunning) {
-      if (__DEV__) console.log('[DistanceEngine] Already tracking');
+      if (__DEV__) console.warn('[DistanceEngine] Already tracking');
       return true;
     }
 
@@ -179,7 +180,7 @@ class DistanceEngine extends EventEmitter {
         (location) => this.handleLocationUpdate(location),
       );
 
-      if (__DEV__) console.log('[DistanceEngine] Tracking started');
+      if (__DEV__) console.warn('[DistanceEngine] Tracking started');
       return true;
     } catch (error) {
       if (__DEV__) console.error('[DistanceEngine] Failed to start tracking:', error);
@@ -199,7 +200,7 @@ class DistanceEngine extends EventEmitter {
     }
 
     this.isRunning = false;
-    if (__DEV__) console.log('[DistanceEngine] Tracking stopped');
+    if (__DEV__) console.warn('[DistanceEngine] Tracking stopped');
 
     return this.getStats();
   }
@@ -267,7 +268,7 @@ class DistanceEngine extends EventEmitter {
 
     // Filter poor accuracy readings
     if (point.accuracy > this.config.accuracyThreshold) {
-      if (__DEV__) console.log(`[DistanceEngine] Ignoring point with accuracy ${point.accuracy}m`);
+      if (__DEV__) console.warn(`[DistanceEngine] Ignoring point with accuracy ${point.accuracy}m`);
       return;
     }
 
@@ -333,7 +334,7 @@ class DistanceEngine extends EventEmitter {
       this.lastSplitTime = timestamp;
 
       this.emit('split', split);
-      if (__DEV__) console.log(`[DistanceEngine] Split ${currentKm}km: ${this.formatPace(splitTime)}`);
+      if (__DEV__) console.warn(`[DistanceEngine] Split ${currentKm}km: ${this.formatPace(splitTime)}`);
     }
   }
 
@@ -442,7 +443,6 @@ export const distanceEngine = DistanceEngine.getInstance();
 /**
  * React hook for GPS distance tracking
  */
-import { useState, useEffect, useCallback } from 'react';
 
 export interface UseGPSTrackingReturn {
   isTracking: boolean;

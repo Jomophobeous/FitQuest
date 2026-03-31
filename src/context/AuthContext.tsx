@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     } catch (err) {
-      if (__DEV__) console.log('[FitQuest Auth] Failed to restore session:', err);
+      if (__DEV__) console.warn('[FitQuest Auth] Failed to restore session:', err);
     } finally {
       setIsLoading(false);
     }
@@ -292,7 +292,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setIsLocallyAuthenticated(false);
     } catch (err) {
-      if (__DEV__) console.log('[FitQuest Auth] Failed to sign out:', err);
+      if (__DEV__) console.warn('[FitQuest Auth] Failed to sign out:', err);
     } finally {
       setIsLoading(false);
     }

@@ -93,7 +93,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     audioService.setTranslator(t);
     // Warm translation cache for new language (async, non-blocking)
     if (language !== 'en') {
-      translationResolver.preloadLanguage(language).catch(() => {});
+      translationResolver.preloadLanguage(language).catch((e) => {
+        if (__DEV__) console.warn('[i18n] preload failed', e);
+      });
     }
   }, [language, t]);
 

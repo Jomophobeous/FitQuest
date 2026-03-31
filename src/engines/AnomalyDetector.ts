@@ -604,7 +604,7 @@ export class AnomalyDetector {
     return 'LOW';
   }
 
-  private getRecommendation(type: AnomalyType, z: number): string {
+  private getRecommendation(type: AnomalyType, _z: number): string {
     const recommendations: Record<AnomalyType, string> = {
       HEART_RATE_HIGH: 'Rest and monitor. If persistent, consult a healthcare provider.',
       HEART_RATE_LOW: 'If you feel faint or dizzy, seek medical attention.',

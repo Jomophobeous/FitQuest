@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
-  ActivityIndicator,
   useWindowDimensions,
   TouchableOpacity,
   RefreshControl,
@@ -29,7 +28,6 @@ import {
   getRecentSessions,
   getStreak,
   getDailyStepsForDate,
-  getStepHistory,
   getAppState,
 } from '../src/database/service';
 import { getCachedReadiness, getStatusDisplay, type ReadinessSnapshot } from '../src/engines/ReadinessEngine';
@@ -38,7 +36,6 @@ import { getLastSessionImpact, type LastSessionImpact } from '../src/engines/Ada
 import { getTrialSnapshot, type TrialSnapshot } from '../src/engines/TrialProgressionEngine';
 import { classifyConsistency, type ConsistencyProfile } from '../src/engines/ConsistencyClassifier';
 import { getXPData } from '../src/services/xpService';
-import { getCurrentRank } from '../src/services/rankingService';
 import { RankBadge } from '../src/components/RankDisplay';
 import { useDataSync } from '../src/services/dataSyncService';
 import {
@@ -102,6 +99,7 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     headerOpacity.value = withTiming(1, { duration: 300 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- headerOpacity is a Reanimated shared value
   }, []);
 
   // Debounce loadProgress to prevent triple-calls from focus + sync events
@@ -117,6 +115,7 @@ export default function DashboardScreen() {
       if (Date.now() - lastLoadedAt.current < LOAD_COOLDOWN_MS) return;
       loadProgress();
     }, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadProgress identity stable via ref guard
   }, [dbReady]);
 
   // Reload data every time screen gains focus (e.g. after completing a workout)
@@ -131,12 +130,12 @@ export default function DashboardScreen() {
 
   const loadProgress = async () => {
     if (isLoadingRef.current) {
-      if (__DEV__) console.log('[Dashboard] loadProgress:skipped (already loading)');
+      if (__DEV__) console.warn('[Dashboard] loadProgress:skipped (already loading)');
       return;
     }
     isLoadingRef.current = true;
     lastLoadedAt.current = Date.now(); // Stamp BEFORE load — closes cooldown window
-    if (__DEV__) console.log('[Dashboard] loadProgress:start');
+    if (__DEV__) console.warn('[Dashboard] loadProgress:start');
     try {
       // Parallel data loading — all independent queries at once
       const [
@@ -274,7 +273,7 @@ export default function DashboardScreen() {
       setLoading(false);
       isLoadingRef.current = false;
       lastLoadedAt.current = Date.now();
-      if (__DEV__) console.log('[Dashboard] loadProgress:complete');
+      if (__DEV__) console.warn('[Dashboard] loadProgress:complete');
     }
   };
 
@@ -304,8 +303,7 @@ export default function DashboardScreen() {
   }
 
   const streak = userProgress?.current_streak ?? 0;
-  const totalWorkouts = userProgress?.completed_workouts ?? 0;
-  const weeklyXP = userProgress?.weekly_xp ?? 0;
+
   // Today's progress: based on actual exercises completed today (not weekly XP)
   // If no workouts today, check if any minutes/steps activity exists for a small baseline
   const todayProgress =
@@ -460,7 +458,7 @@ export default function DashboardScreen() {
                       title={t('dashboard.startNow') || 'START NOW'}
                       icon="lightning-bolt"
                       onPress={() => {
-                        if (__DEV__) console.log('[Dashboard] CTA:startNow → fitquest?autostart=1');
+                        if (__DEV__) console.warn('[Dashboard] CTA:startNow → fitquest?autostart=1');
                         router.push('/fitquest?autostart=1');
                       }}
                       variant="primary"
@@ -881,7 +879,7 @@ export default function DashboardScreen() {
                     accessibilityLabel={tile.label}
                     accessibilityHint={tile.desc}
                     onPress={() => {
-                      if (__DEV__) console.log('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
+                      if (__DEV__) console.warn('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
                       router.push(tile.route as any);
                     }}
                     style={[

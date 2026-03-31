@@ -5,7 +5,7 @@
  * Premium dark UI inspired by Figma design system.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -115,6 +115,7 @@ export default function LoginScreen() {
 
   // ── Init: Check biometric availability ──
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     const init = async () => {
       const hasPc = await hasPasscode();
       setHasExistingPasscode(hasPc);
@@ -130,7 +131,7 @@ export default function LoginScreen() {
       if (biometricCapability?.isAvailable && biometricEnabled) {
         setMode('biometric');
         // Auto-prompt biometric on mount
-        setTimeout(() => promptBiometric(), 500);
+        timer = setTimeout(() => promptBiometric(), 500);
       } else if (hasPc) {
         setMode('passcode');
       } else {
@@ -138,6 +139,7 @@ export default function LoginScreen() {
       }
     };
     init();
+    return () => clearTimeout(timer);
   }, []);
 
   // Redirect if already signed in

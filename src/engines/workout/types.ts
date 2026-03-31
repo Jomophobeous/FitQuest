@@ -7,7 +7,6 @@
 import type {
   ExerciseWithDetails,
   UserProfile,
-  MuscleFatigue,
   Category,
   TargetMuscle,
   TrainingType,

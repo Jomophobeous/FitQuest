@@ -2,6 +2,7 @@ import { getAppState, setAppState } from '../database/service';
 import { captureException, capturePerformanceMetric, captureFatalCrash, getSessionErrorCount } from './crashReporting';
 import { redactForLog, safeWarn } from './logger';
 import { getPostHogClient } from './posthogService';
+import { tamperEngine } from './security/tamperEngine';
 
 type TelemetryType = 'error' | 'event' | 'perf';
 
@@ -49,6 +50,7 @@ async function appendTelemetry(entry: TelemetryEntry): Promise<void> {
 /** Forward an event to PostHog (fire-and-forget). */
 async function posthogCapture(eventName: string, properties?: Record<string, unknown>): Promise<void> {
   try {
+    tamperEngine.recordTelemetryEvent();
     const client = await getPostHogClient();
     if (client) {
       client.capture(eventName, properties as Record<string, any>);

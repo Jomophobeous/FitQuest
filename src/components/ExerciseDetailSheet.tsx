@@ -7,7 +7,7 @@
  * Shows: muscle groups, instructions, equipment, stats, difficulty.
  */
 
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -16,22 +16,12 @@ import {
   Modal,
   TouchableOpacity,
   Pressable,
-  Dimensions,
   useWindowDimensions,
 } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  SlideInDown,
-  SlideOutDown,
-  ZoomIn,
-  Layout,
-} from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeIn, FadeInDown, FadeInUp, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
-import type { ExerciseWithDetails, TargetMuscle } from '../database/types';
+import type { ExerciseWithDetails } from '../database/types';
 import ExerciseImage from './ExerciseImage';
 
 // ─── Muscle → Icon mapping ───

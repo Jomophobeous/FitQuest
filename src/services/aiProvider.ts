@@ -23,6 +23,97 @@
 
 import { dualAI, AIContext, AIResponse } from '../engines/DualAIEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
+import { rateLimiter, RATE_LIMITS } from '../utils/rateLimiter';
+import { tamperEngine } from './security/tamperEngine';
+import { degradation } from './security/degradation';
+import {
+  sentinelRecordAIAccess,
+  sentinelRecordNetworkCall,
+  sentinelVerifyEngine,
+  sentinelRecordConnectivity,
+  microCheckTiming,
+} from './security/sentinel';
+import { queueReconciliationBatch } from './security/securityBridge';
+import { requestAI } from './authorityClient';
+import * as SecureStore from 'expo-secure-store';
+import * as Application from 'expo-application';
+
+// ============================================
+// AI PROXY CONFIGURATION
+// ============================================
+
+/**
+ * Production: all AI calls route through the Cloudflare Worker proxy.
+ * API keys never leave the server. The client sends only a shared app-key.
+ *
+ * Dev mode: falls back to direct provider calls if EXPO_PUBLIC keys exist
+ * (for local development without deploying the proxy).
+ */
+const PROXY_ENDPOINT = process.env.EXPO_PUBLIC_AI_PROXY_URL || '';
+const PROXY_APP_KEY = process.env.EXPO_PUBLIC_AI_PROXY_APP_KEY || '';
+
+/** Whether the proxy is configured and should be used */
+function isProxyEnabled(): boolean {
+  return !!(PROXY_ENDPOINT && PROXY_APP_KEY && PROXY_ENDPOINT.startsWith('https://'));
+}
+
+/** Stable device identifier for proxy rate limiting */
+let _deviceId: string | null = null;
+async function getDeviceId(): Promise<string> {
+  if (_deviceId) return _deviceId;
+  try {
+    // expo-application provides a stable install ID
+    const id = await Application.getInstallationIdAsync();
+    _deviceId = id || 'unknown';
+  } catch {
+    _deviceId = 'unknown';
+  }
+  return _deviceId;
+}
+
+// ============================================
+// SECURE KEY MANAGEMENT (dev-mode fallback)
+// ============================================
+
+/**
+ * Dev-mode only: load API keys from SecureStore for direct provider calls.
+ * In production, the proxy holds the keys — these are unused.
+ */
+const SECURE_KEY_PREFIX = 'fitquest_ai_key_';
+let _secureKeysLoaded = false;
+const _secureKeys: Record<AIProviderName, string> = { groq: '', grok: '', openrouter: '' };
+
+async function loadSecureKeys(): Promise<void> {
+  if (_secureKeysLoaded) return;
+  // Skip key loading entirely when proxy is enabled — keys aren't needed
+  if (isProxyEnabled()) {
+    _secureKeysLoaded = true;
+    return;
+  }
+  for (const provider of ['groq', 'grok', 'openrouter'] as AIProviderName[]) {
+    const storeKey = `${SECURE_KEY_PREFIX}${provider}`;
+    let key = await SecureStore.getItemAsync(storeKey);
+    if (!key) {
+      // First launch: migrate from env vars into SecureStore
+      const envKey =
+        provider === 'groq'
+          ? process.env.EXPO_PUBLIC_GROQ_API_KEY
+          : provider === 'grok'
+            ? process.env.EXPO_PUBLIC_GROK_API_KEY
+            : process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
+      if (envKey && envKey.length > 10) {
+        await SecureStore.setItemAsync(storeKey, envKey);
+        key = envKey;
+      }
+    }
+    _secureKeys[provider] = key || '';
+  }
+  _secureKeysLoaded = true;
+}
+
+function getSecureKey(provider: AIProviderName): string {
+  return _secureKeys[provider] || '';
+}
 
 // ============================================
 // TYPES
@@ -125,17 +216,6 @@ const MODEL_REGISTRY: ModelInfo[] = [
     contextWindow: 8192,
     description: 'Speculative decoding — very fast',
     maxTokens: 500,
-  },
-  {
-    id: 'llama-3.2-3b-preview',
-    provider: 'groq',
-    displayName: 'Llama 3.2 3B',
-    tier: 'fast',
-    qualityScore: 3,
-    speedScore: 5,
-    contextWindow: 8192,
-    description: 'Groq — fast compact model',
-    maxTokens: 400,
   },
   {
     id: 'llama-3.1-8b-instant',
@@ -341,7 +421,8 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
       parts.push(`- Active injuries: ${profile.injuries}. Be careful recommending exercises that stress these areas.`);
     if (profile?.equipment && profile.equipment !== 'bodyweight')
       parts.push(`- Available equipment: ${profile.equipment}`);
-    if ((profile as any)?.bodyCraftPlan) parts.push(`- Body transformation plan: ${(profile as any).bodyCraftPlan}`);
+    if ((profile as Record<string, unknown>)?.bodyCraftPlan)
+      parts.push(`- Body transformation plan: ${(profile as Record<string, unknown>).bodyCraftPlan}`);
     if (context.totalWorkouts !== undefined) {
       parts.push(`- Workouts completed: ${context.totalWorkouts}`);
       if (context.totalWorkouts === 0) parts.push('  → Brand new user! Be extra welcoming and encouraging.');
@@ -409,7 +490,7 @@ function createProviders(): Record<AIProviderName, ProviderConfig> {
     groq: {
       name: 'groq',
       displayName: 'Groq',
-      apiKey: process.env.EXPO_PUBLIC_GROQ_API_KEY || '',
+      apiKey: getSecureKey('groq'),
       endpoint: 'https://api.groq.com/openai/v1/chat/completions',
       timeoutMs: 8000,
       enabled: false,
@@ -417,7 +498,7 @@ function createProviders(): Record<AIProviderName, ProviderConfig> {
     grok: {
       name: 'grok',
       displayName: 'Grok (xAI)',
-      apiKey: process.env.EXPO_PUBLIC_GROK_API_KEY || '',
+      apiKey: getSecureKey('grok'),
       endpoint: 'https://api.x.ai/v1/chat/completions',
       timeoutMs: 12000,
       enabled: false,
@@ -425,7 +506,7 @@ function createProviders(): Record<AIProviderName, ProviderConfig> {
     openrouter: {
       name: 'openrouter',
       displayName: 'OpenRouter',
-      apiKey: process.env.EXPO_PUBLIC_OPENROUTER_API_KEY || '',
+      apiKey: getSecureKey('openrouter'),
       endpoint: 'https://openrouter.ai/api/v1/chat/completions',
       timeoutMs: 30000,
       enabled: false,
@@ -444,14 +525,33 @@ class AIProvider {
   private modelFailures: Record<string, { count: number; lastAt: number }> = {};
   private static MAX_FAILURES = 3;
   private static COOLDOWN_MS = 60_000;
+  private _initialized = false;
 
   constructor() {
     this.providers = createProviders();
     for (const p of Object.values(this.providers)) {
       p.enabled = !!(p.apiKey && p.apiKey.length > 10);
     }
-    // Auto-route enabled by default — picks best model per query complexity
-    // No default model lock needed; buildModelChain handles selection
+  }
+
+  /** Load keys from SecureStore and refresh provider enabled state */
+  async initialize(): Promise<void> {
+    if (this._initialized) return;
+    await loadSecureKeys();
+    this.providers = createProviders();
+
+    if (isProxyEnabled()) {
+      // Proxy mode: all providers are available (keys live server-side)
+      for (const p of Object.values(this.providers)) {
+        p.enabled = true;
+      }
+    } else {
+      // Direct mode (dev): enable only providers with local keys
+      for (const p of Object.values(this.providers)) {
+        p.enabled = !!(p.apiKey && p.apiKey.length > 10);
+      }
+    }
+    this._initialized = true;
   }
 
   // ─── Registry Queries ───
@@ -519,7 +619,7 @@ class AIProvider {
     this._activeModelId = modelId;
     this._autoRoute = false;
     this.clearFailures(modelId);
-    if (__DEV__) console.log(`[AI] Locked → ${model.displayName} (${TIER_LABELS[model.tier].label})`);
+    if (__DEV__) console.warn(`[AI] Locked → ${model.displayName} (${TIER_LABELS[model.tier].label})`);
     return true;
   }
 
@@ -527,7 +627,7 @@ class AIProvider {
   enableAutoRoute(): void {
     this._activeModelId = null;
     this._autoRoute = true;
-    if (__DEV__) console.log('[AI] Auto-route enabled');
+    if (__DEV__) console.warn('[AI] Auto-route enabled');
   }
 
   /** Set API key for a provider */
@@ -538,7 +638,7 @@ class AIProvider {
     provider.enabled = !!(key && key.length > 10);
     // If no model is active and this provider just got enabled, auto-select
     if (provider.enabled && this._autoRoute) {
-      if (__DEV__) console.log(`[AI] ${provider.displayName} enabled`);
+      if (__DEV__) console.warn(`[AI] ${provider.displayName} enabled`);
     }
   }
 
@@ -622,7 +722,7 @@ class AIProvider {
     });
 
     if (__DEV__) {
-      console.log(
+      console.warn(
         `[AI] Route: "${input.slice(0, 40)}..." → ${complexity} → ${idealTier} tier → trying ${sorted[0]?.displayName}`,
       );
     }
@@ -636,20 +736,140 @@ class AIProvider {
     input: string,
     context: AIContext,
   ): Promise<AIResponse & { fromCloud: boolean; provider?: string; model?: string; tier?: string; modelId?: string }> {
+    // Ensure keys are loaded from SecureStore
+    await this.initialize();
+
+    // Record AI feature usage for tamper detection + sentinel
+    tamperEngine.recordAIFeatureUsed();
+    sentinelRecordAIAccess();
+
+    // Phase 14: Sentinel verifies engine heartbeat is alive
+    sentinelVerifyEngine(tamperEngine.getHeartbeatCounter());
+
+    // Client-side rate limiting — prevents runaway loops and abuse
+    const rl = rateLimiter.attempt('ai_query', RATE_LIMITS.AI_QUERY);
+    if (!rl.allowed) {
+      return {
+        message: `⏳ Rate limit reached — please wait ${Math.ceil(rl.retryAfterMs / 1000)}s before asking again.`,
+        suggestions: [],
+        confidence: 0,
+        processingTimeMs: 0,
+        personality: context.personality || 'COACH',
+        fromCloud: false,
+        provider: 'RateLimited',
+        model: 'none',
+        tier: 'none',
+      };
+    }
+
+    // Input sanitization — cap length to prevent prompt abuse
+    const sanitizedInput = input.slice(0, 4000).trim();
+    if (!sanitizedInput) {
+      return {
+        message: 'Please enter a question or request.',
+        suggestions: [],
+        confidence: 0,
+        processingTimeMs: 0,
+        personality: context.personality || 'COACH',
+        fromCloud: false,
+      };
+    }
+
     const startTime = Date.now();
 
-    const chain = this.buildModelChain(input);
+    // Phase 21: Backend authority gate — server must authorize every AI request.
+    // null = offline (allow local templates only), restricted = show overlay, denied = 403
+    try {
+      const deviceId = await getDeviceId();
+      const access = await requestAI('user_local_001', deviceId, sanitizedInput);
+
+      if (access && !access.authorized) {
+        // Server explicitly denied or restricted — client must respect this
+        const reason = access.reason || 'AI features are currently restricted.';
+        const retryHint = access.retryAfterMs ? ` Try again in ${Math.ceil(access.retryAfterMs / 1000)}s.` : '';
+        return {
+          message: `🔒 ${reason}${retryHint}`,
+          suggestions: [],
+          confidence: 0,
+          processingTimeMs: Date.now() - startTime,
+          personality: context.personality || 'COACH',
+          fromCloud: false,
+          provider: 'AuthorityDenied',
+          model: 'none',
+          tier: 'none',
+        };
+      }
+
+      // access === null means offline — fall through to local templates at bottom
+      // access.authorized === true — proceed to cloud AI chain below
+    } catch (_e) {
+      if (__DEV__) console.warn('[AI] Authority check failed, falling through:', _e);
+      // Non-fatal: proceed to cloud chain (server may be unreachable)
+    }
+
+    const chain = this.buildModelChain(sanitizedInput);
     for (const model of chain) {
       const provider = this.providers[model.provider];
       try {
-        const cloud = await this.queryCloud(provider, model, input, context);
+        tamperEngine.recordAIRequestSent();
+        sentinelRecordNetworkCall();
+        microCheckTiming('ai_request');
+        const cloud = await this.queryCloud(provider, model, sanitizedInput, context);
+        tamperEngine.recordAIResponseReceived();
+        microCheckTiming('ai_response');
         this.clearFailures(model.id);
 
+        // Phase 16: Successful AI round-trip proves online — upgrade confidence to HIGH
+        tamperEngine.updateVerificationConfidence('high');
+        tamperEngine.recordConnectivitySignal();
+        sentinelRecordConnectivity(true);
+
+        // Phase 17: Queue session metrics for future backend reconciliation
+        const metrics = tamperEngine.getSessionMetrics();
+        if (metrics.reconciliationPending) {
+          queueReconciliationBatch({
+            offlineSignals: [], // Signals already reconciled in updateVerificationConfidence
+            shadowFlags: {},
+            offlineDurationMs: metrics.offlineDurationMs,
+            riskScore: metrics.riskScore,
+            deviceContext: metrics.deviceContext,
+            createdAt: Date.now(),
+          });
+        }
+
+        // Phase 18: Opportunistic bridge verification on successful AI round-trip
+        // Server can confirm contradictions and verify entitlement against RevenueCat API.
+        // Fire-and-forget — non-blocking, throttled, null = no-op.
+        tamperEngine.requestBridgeVerification();
+
+        // Apply silent degradation based on tamper risk
+        await degradation.applyAIDelay(tamperEngine.getRiskLevel());
+        if (degradation.shouldDowngradeAI(tamperEngine.getRiskLevel())) {
+          // Downgrade: skip cloud response, return generic fallback
+          return {
+            message: degradation.getFallbackResponse(),
+            suggestions: [],
+            confidence: 0.7,
+            processingTimeMs: Date.now() - startTime,
+            personality: context.personality || 'COACH',
+            fromCloud: true,
+            provider: provider.displayName,
+            model: model.displayName,
+            tier: TIER_LABELS[model.tier].label,
+            modelId: model.id,
+          };
+        }
+
+        // Phase 14: Silent failure injection — subtly degrade response quality
+        const finalText = degradation.injectSubtleFailure(cloud.text);
+
         // Persist encrypted
-        encryptedDB.storeAIConversation(context.personality || 'COACH', input, cloud.text).catch(() => {});
+        encryptedDB.storeAIConversation(context.personality || 'COACH', sanitizedInput, finalText).catch((e) => {
+          if (__DEV__) console.warn('[AI] conversation storage failed', e);
+        });
 
         return {
-          message: cloud.text,
+          message: finalText,
           suggestions: cloud.suggestions,
           confidence: 0.95,
           processingTimeMs: Date.now() - startTime,
@@ -662,12 +882,14 @@ class AIProvider {
         };
       } catch (e) {
         this.recordFailure(model.id);
+        // Phase 18: Record connectivity failure for network reliability tracking
+        tamperEngine.recordConnectivityFailure();
         if (__DEV__) console.warn(`[AI] ${model.displayName} failed:`, e);
       }
     }
 
     // All cloud models exhausted — offline fallback (English-only templates)
-    const templateResponse = await dualAI.query(input, context);
+    const templateResponse = await dualAI.query(sanitizedInput, context);
     // Flag non-English users that response is English due to offline mode
     if (context.language && context.language !== 'en') {
       templateResponse.message = `⚡ *Offline mode — English only*\n\n${templateResponse.message}`;
@@ -726,29 +948,52 @@ class AIProvider {
 
     messages.push({ role: 'user', content: input });
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${provider.apiKey}`,
-    };
-    if (provider.name === 'openrouter') {
-      headers['HTTP-Referer'] = 'https://fitquest.app';
-      headers['X-Title'] = 'FitQuest Coach';
-    }
-
     let response: Response;
     try {
-      response = await fetch(provider.endpoint, {
-        method: 'POST',
-        headers,
-        signal: controller.signal,
-        body: JSON.stringify({
-          model: model.id,
-          messages,
-          temperature: 0.7,
-          max_tokens: model.maxTokens,
-          top_p: 0.9,
-        }),
-      });
+      if (isProxyEnabled()) {
+        // ── PROXY MODE: keys stay server-side ──
+        const deviceId = await getDeviceId();
+        response = await fetch(PROXY_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-App-Key': PROXY_APP_KEY,
+            'X-Device-Id': deviceId,
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            provider: provider.name,
+            model: model.id,
+            messages,
+            temperature: 0.7,
+            max_tokens: model.maxTokens,
+            top_p: 0.9,
+          }),
+        });
+      } else {
+        // ── DIRECT MODE (dev): keys from SecureStore ──
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${provider.apiKey}`,
+        };
+        if (provider.name === 'openrouter') {
+          headers['HTTP-Referer'] = 'https://fitquest.app';
+          headers['X-Title'] = 'FitQuest Coach';
+        }
+
+        response = await fetch(provider.endpoint, {
+          method: 'POST',
+          headers,
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: model.id,
+            messages,
+            temperature: 0.7,
+            max_tokens: model.maxTokens,
+            top_p: 0.9,
+          }),
+        });
+      }
     } finally {
       clearTimeout(timeout);
     }

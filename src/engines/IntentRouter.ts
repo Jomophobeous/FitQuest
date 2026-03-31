@@ -274,7 +274,7 @@ export class IntentRouter {
     try {
       this.mlModelReady = await trainedIntentRouter.initialize();
       if (this.mlModelReady && __DEV__) {
-        console.log('[IntentRouter] v1.0 ML model loaded — using trained classifier');
+        console.warn('[IntentRouter] v1.0 ML model loaded — using trained classifier');
       }
     } catch {
       if (__DEV__) console.warn('[IntentRouter] ML model unavailable — using keyword fallback');

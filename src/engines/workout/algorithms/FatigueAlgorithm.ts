@@ -6,7 +6,7 @@
  */
 
 import type { TargetMuscle, MuscleFatigue } from '../../../database/types';
-import { FATIGUE_DECAY_RATES, getMuscleSize, type FatigueParams, type MuscleRecoveryStatus } from '../types';
+import { FATIGUE_DECAY_RATES, getMuscleSize, type MuscleRecoveryStatus } from '../types';
 
 // ============================================
 // FATIGUE ALGORITHM

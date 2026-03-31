@@ -90,6 +90,7 @@ export default function MoveScreen() {
     const jogs = await getJogHistory(10);
     setStepHistory(steps);
     setJogHistory(jogs);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- getStepHistory/getJogHistory are stable hook-returned functions
   }, []);
 
   // Live jog timer

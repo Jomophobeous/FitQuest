@@ -10,7 +10,7 @@
  *   - City-level context (auto-zoom to fit route with padding)
  */
 
-import React, { useRef, useEffect, useMemo, memo, useState, Component, type ReactNode } from 'react';
+import React, { useRef, useEffect, useMemo, memo, Component, type ReactNode } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';

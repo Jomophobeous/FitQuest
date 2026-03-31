@@ -205,7 +205,9 @@ export default function NutritionCalculatorScreen() {
       date: new Date().toISOString().split('T')[0],
       entries: mealEntries,
     });
-    setAppState('nutrition.todayMeals', payload).catch(() => {});
+    setAppState('nutrition.todayMeals', payload).catch((e) => {
+      if (__DEV__) console.warn('[Nutrition] save failed', e);
+    });
   }, [mealEntries]);
 
   // Search & filter foods
@@ -227,7 +229,7 @@ export default function NutritionCalculatorScreen() {
     }
 
     if (__DEV__)
-      console.log(
+      console.warn(
         `[Nutrition] Filter: category=${categoryFilter}, query="${searchQuery}", results=${foods.length}/${REGIONAL_FOOD_DATABASE.length}`,
       );
     return foods; // Show all matching foods — FlatList handles virtualization
@@ -431,9 +433,10 @@ export default function NutritionCalculatorScreen() {
                   contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
                   showsVerticalScrollIndicator={false}
                   keyboardShouldPersistTaps="handled"
-                  initialNumToRender={20}
-                  maxToRenderPerBatch={15}
-                  windowSize={5}
+                  initialNumToRender={12}
+                  maxToRenderPerBatch={8}
+                  windowSize={3}
+                  updateCellsBatchingPeriod={100}
                   removeClippedSubviews={true}
                   getItemLayout={(_data, index) => ({
                     length: 66,

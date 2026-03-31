@@ -82,7 +82,7 @@ const MASTER_SALT_ALIAS = 'fitquest_master_salt_v2';
  * @param iterations - Number of PBKDF2 iterations
  * @returns Derived key as hex string (256 bits)
  */
-async function pbkdf2Derive(masterKey: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
+async function _pbkdf2Derive(masterKey: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
   // PBKDF2: iteratively hash key+salt
   // U1 = HMAC-SHA256(password, salt || INT(1))
   // Ui = HMAC-SHA256(password, U_{i-1})
@@ -196,7 +196,7 @@ export async function getOrCreateMasterKey(): Promise<string> {
     keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
   });
 
-  if (__DEV__) console.log('[FitQuest Crypto] New v2 master key generated and secured');
+  if (__DEV__) console.warn('[FitQuest Crypto] New v2 master key generated and secured');
   return masterKey;
 }
 

@@ -7,7 +7,7 @@
  * "Trust > aesthetics" - One sentence each, no charts needed.
  */
 
-import type { Exercise, UserProfile, TargetMuscle, Category, ExerciseWithDetails } from '../database/types';
+import type { Exercise, TargetMuscle, Category, ExerciseWithDetails } from '../database/types';
 import { formatMuscleName } from '../utils/formatMuscle';
 
 // ============================================
@@ -289,7 +289,7 @@ export function explainMuscleRecovery(
   muscle: TargetMuscle,
   fatigueLevel: number,
   daysSinceTraining: number,
-  lastTrainingIntensity: 'light' | 'moderate' | 'heavy',
+  _lastTrainingIntensity: 'light' | 'moderate' | 'heavy',
 ): RecoveryExplanation {
   let status: 'fresh' | 'moderate' | 'fatigued' | 'critical';
   let reason: string;

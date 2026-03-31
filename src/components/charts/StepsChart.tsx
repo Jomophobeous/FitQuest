@@ -90,7 +90,7 @@ function SimpleStepsBarChart({
 
       {/* Bars */}
       <View style={styles.barsContainer}>
-        {data.map((point, index) => {
+        {data.map((point, _index) => {
           const barHeight = (point.steps / maxValue) * chartHeight;
 
           return (
@@ -132,9 +132,9 @@ function SimpleStepsBarChart({
 export function StepsChart({
   data,
   config = {},
-  dateRange = '7d',
-  showGoal = true,
-  onDataPointPress,
+  dateRange: _dateRange = '7d',
+  showGoal: _showGoal = true,
+  onDataPointPress: _onDataPointPress,
 }: StepsChartProps) {
   const chartTheme = useChartTheme();
   const height = config.height ?? 200;

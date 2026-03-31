@@ -37,7 +37,6 @@ import {
   updateEncryptedHealthRow,
 } from '../database/service';
 import {
-  type EncryptedPayload,
   decryptV2,
   decryptV3,
   encryptV3,
@@ -104,7 +103,7 @@ export class EncryptedDatabaseService {
     this.legacyKey = await SecureStore.getItemAsync(LEGACY_KEY_ALIAS);
 
     this.initialized = true;
-    if (__DEV__) console.log('[FitQuest Security] Encrypted database v3 initialized (AES-256-GCM)');
+    if (__DEV__) console.warn('[FitQuest Security] Encrypted database v3 initialized (AES-256-GCM)');
   }
 
   // ============================================
@@ -444,7 +443,7 @@ export class EncryptedDatabaseService {
       }
     }
 
-    if (__DEV__) console.log(`[Security] legacy→v3 migration: ${migrated} migrated, ${errors} errors`);
+    if (__DEV__) console.warn(`[Security] legacy→v3 migration: ${migrated} migrated, ${errors} errors`);
     return { migrated, errors };
   }
 

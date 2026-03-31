@@ -18,7 +18,7 @@ import {
   RefreshControl,
   Modal,
 } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -50,40 +50,6 @@ import { useDatabase } from '../src/context/DatabaseContext';
 
 // ─── SCREEN WIDTH ──────────────────────────────────────────────
 const { width: SCREEN_W } = Dimensions.get('window');
-
-const DAY_LABELS_CAL = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-// muscle name → icon mapping (kept for UI only)
-const MUSCLE_ICONS: Record<string, string> = {
-  CHEST: 'arm-flex',
-  BACK: 'human-handsup',
-  QUADRICEPS: 'walk',
-  HAMSTRINGS: 'walk',
-  GLUTES: 'run-fast',
-  SHOULDERS: 'weight-lifter',
-  BICEPS: 'arm-flex-outline',
-  TRICEPS: 'arm-flex-outline',
-  CORE: 'meditation',
-  ABS: 'meditation',
-  CALVES: 'shoe-print',
-  FOREARMS: 'hand-back-right',
-  TRAPS: 'human-handsup',
-  LATS: 'human-handsup',
-};
 
 function getMonthCalendar(year: number, month: number) {
   const firstDay = new Date(year, month, 1);
@@ -137,7 +103,7 @@ export default function AnalyticsScreen() {
 
   const loadData = useCallback(async () => {
     if (isLoadingAnalyticsRef.current) {
-      if (__DEV__) console.log('[Analytics] loadData:skipped (already loading)');
+      if (__DEV__) console.warn('[Analytics] loadData:skipped (already loading)');
       return;
     }
     isLoadingAnalyticsRef.current = true;

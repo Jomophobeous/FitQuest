@@ -10,7 +10,7 @@
  */
 
 import { recordProgress, getProgressExerciseIds, getProgressHistory } from '../database/service';
-import type { ProgressRecord, SessionExercise } from '../database/types';
+import type { ProgressRecord } from '../database/types';
 import { formatRepRange, parseReps, parseRepRange } from './progressionParsing';
 import { generateSecureId } from '../security/randomId';
 import { getAdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
@@ -96,7 +96,7 @@ interface ProgressionState {
 export async function analyzeExerciseProgression(
   userId: string,
   exerciseId: string,
-  lookbackDays = 30,
+  _lookbackDays = 30,
 ): Promise<ProgressionState> {
   const history = await getProgressHistory(userId, exerciseId, 10);
 

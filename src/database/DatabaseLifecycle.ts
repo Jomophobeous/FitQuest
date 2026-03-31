@@ -107,7 +107,7 @@ export async function validateDatabaseIntegrity(db: SQLite.SQLiteDatabase): Prom
   const summary = isClean ? 'Database integrity verified — clean' : `Issues found: ${issues.join('; ')}`;
 
   if (__DEV__) {
-    console.log(`[DBLifecycle] Validation: ${summary}`);
+    console.warn(`[DBLifecycle] Validation: ${summary}`);
   }
 
   return {
@@ -262,7 +262,7 @@ export async function repairDatabaseIntegrity(
 
   const success = errors.length === 0;
   if (__DEV__) {
-    console.log(
+    console.warn(
       `[DBLifecycle] Repair ${success ? 'SUCCESS' : 'FAILED'}: ` +
         `${duplicatesRemoved} dupes removed, ${childrenRemapped} children remapped, ${orphansCleaned} orphans cleaned` +
         (errors.length > 0 ? ` | Errors: ${errors.join('; ')}` : ''),
@@ -290,7 +290,7 @@ export async function runMigrationSandboxed(
   try {
     await migrationFn(db);
     await db.execAsync(`RELEASE SAVEPOINT ${savepoint}`);
-    if (__DEV__) console.log(`[DBLifecycle] Migration ${versionLabel} — committed`);
+    if (__DEV__) console.warn(`[DBLifecycle] Migration ${versionLabel} — committed`);
   } catch (e) {
     if (__DEV__) console.error(`[DBLifecycle] Migration ${versionLabel} — ROLLBACK:`, e);
     try {

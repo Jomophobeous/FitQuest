@@ -1979,7 +1979,7 @@ export function generateAllExercises(): GeneratedExercise[] {
   const muscleExercises = generateVariations(MUSCLE_BUILDING_EXERCISES);
   allExercises.push(...generateExercisesForCategory('strength', muscleExercises, 0));
 
-  if (__DEV__) console.log(`[ExerciseGenerator] Generated ${allExercises.length} exercises`);
+  if (__DEV__) console.warn(`[ExerciseGenerator] Generated ${allExercises.length} exercises`);
   return allExercises;
 }
 

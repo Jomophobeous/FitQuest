@@ -55,10 +55,10 @@ export function redactForLog<T>(input: T): T {
 
 export function safeInfo(message: string, data?: Record<string, unknown>): void {
   if (data) {
-    if (__DEV__) console.log(message, redactForLog(data));
+    if (__DEV__) console.warn(message, redactForLog(data));
     return;
   }
-  if (__DEV__) console.log(message);
+  if (__DEV__) console.warn(message);
 }
 
 export function safeWarn(message: string, data?: Record<string, unknown>): void {

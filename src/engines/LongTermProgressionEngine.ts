@@ -21,13 +21,7 @@
  * Deterministic. No AI. No network.
  */
 
-import {
-  getRecentSessions,
-  getProgressHistory,
-  getProgressExerciseIds,
-  getMuscleFatigue,
-  getAllProgressRecords,
-} from '../database/service';
+import { getRecentSessions, getProgressHistory, getMuscleFatigue, getAllProgressRecords } from '../database/service';
 import type { WorkoutSession, ProgressRecord, MuscleFatigue } from '../database/types';
 import { parseReps } from './progressionParsing';
 

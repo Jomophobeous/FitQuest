@@ -1,0 +1,682 @@
+{
+  "meta": {
+    "title": "FitQuest 2.0 — Comprehensive Feature Map",
+    "version": "2.3.0",
+    "schemaVersion": 20,
+    "generatedAt": "2025-07-17T00:00:00Z",
+    "generatedBy": "Alfred Ω — Full System Discovery",
+    "totalScreens": 31,
+    "totalComponents": 41,
+    "totalEngines": 40,
+    "totalServices": 52,
+    "totalLanguages": 15,
+    "exerciseTranslations": 46368,
+    "uiTranslationKeys": 648
+  },
+  "tabScreens": [
+    {
+      "id": "dashboard",
+      "file": "app/dashboard.tsx",
+      "title": "Dashboard (Home)",
+      "premiumGated": false,
+      "purpose": "Central hub: XP level, recovery score, streak, fatigue map, quick actions, daily goals, workout history",
+      "hooks": ["useTheme", "useLanguage", "useDatabase", "useAuth", "useDataSync", "useSystemState"],
+      "engines": ["recoveryEngine", "UserStateEngine", "healthMonitor", "ReadinessEngine"],
+      "services": ["xpService", "dataSyncService", "rankingService"],
+      "dataFlow": "SQLite → DatabaseContext → dashboard state → GlassUI rendering",
+      "i18n": true
+    },
+    {
+      "id": "fitquest",
+      "file": "app/fitquest.tsx",
+      "title": "FitQuest AI Trainer",
+      "premiumGated": true,
+      "premiumFeatureName": "AI Workout Generator",
+      "purpose": "AI-powered workout generation, exercise-by-exercise execution with audio coaching, set tracking, rep counting",
+      "hooks": ["useTheme", "useLanguage", "useDatabase", "useFitQuestWorkout", "useTimer", "useAudio", "useSensorFusion"],
+      "engines": ["workoutGenerator", "progressionEngine", "recoveryEngine", "warmupCooldownGenerator", "edgeCaseGuards", "SensorFusionEngine"],
+      "services": ["xpService", "timerService", "audioService", "exerciseImageService"],
+      "dataFlow": "Profile + fatigue → workoutGenerator → session → timer/audio → completion → XP + snapshot",
+      "i18n": true
+    },
+    {
+      "id": "move",
+      "file": "app/move.tsx",
+      "title": "Move (Steps & Jogging)",
+      "premiumGated": false,
+      "purpose": "Daily step tracking, jog sessions with GPS, distance/pace/calories, step history charts",
+      "hooks": ["useTheme", "useLanguage", "useDatabase", "usePedometer", "useDataSync"],
+      "engines": ["StepCounterEngine", "SensorFusionEngine", "DistanceEngine", "HealthMonitor"],
+      "services": ["locationService", "dataSyncService"],
+      "dataFlow": "Pedometer/GPS → step counter → SQLite daily_steps/jog_sessions → charts",
+      "i18n": true
+    },
+    {
+      "id": "coach",
+      "file": "app/coach/index.tsx",
+      "title": "AI Coach",
+      "premiumGated": true,
+      "premiumFeatureName": "AI Coach",
+      "purpose": "Conversational AI fitness coach with intent routing, form guidance, motivation, health Q&A",
+      "hooks": ["useTheme", "useLanguage", "useDatabase", "useAuth"],
+      "engines": ["DualAIEngine", "IntentRouter", "UserStateEngine"],
+      "services": ["aiWorkoutService", "aiProvider"],
+      "dataFlow": "User query → IntentRouter → DualAI COACH personality → encrypted conversation storage",
+      "i18n": true
+    },
+    {
+      "id": "profile",
+      "file": "app/profile.tsx",
+      "title": "Profile & Settings",
+      "premiumGated": false,
+      "purpose": "User profile, stats dashboard, workout history, theme/language selection, backup/restore, subscription management",
+      "hooks": ["useTheme", "useLanguage", "useDatabase", "useAuth", "useDataSync"],
+      "engines": ["RealisticHealthEngine", "UserStateEngine"],
+      "services": ["dataSyncService", "backupService", "socialLayerService", "rankingService", "xpService"],
+      "dataFlow": "user_profile → display + app_state → preferences + subscription_state → tier",
+      "i18n": true
+    }
+  ],
+  "hiddenScreens": {
+    "authOnboarding": [
+      {
+        "id": "index",
+        "file": "app/index.tsx",
+        "purpose": "App entry point — routes to splash/onboarding/dashboard based on auth state",
+        "premiumGated": false
+      },
+      {
+        "id": "splash",
+        "file": "app/splash.tsx",
+        "purpose": "Animated splash screen during DB init and auth restore",
+        "premiumGated": false
+      },
+      {
+        "id": "login",
+        "file": "app/login.tsx",
+        "purpose": "Biometric + passcode login screen",
+        "premiumGated": false
+      },
+      {
+        "id": "register",
+        "file": "app/register.tsx",
+        "purpose": "New user registration with profile setup",
+        "premiumGated": false
+      },
+      {
+        "id": "onboarding",
+        "file": "app/onboarding.tsx",
+        "purpose": "First-run guided setup: goals, experience, equipment, training preferences",
+        "premiumGated": false
+      }
+    ],
+    "workoutManagement": [
+      {
+        "id": "workout",
+        "file": "app/workout.tsx",
+        "purpose": "Active workout execution screen (exercise timer, set tracking, audio cues)",
+        "premiumGated": false
+      },
+      {
+        "id": "workoutsIndex",
+        "file": "app/workouts/index.tsx",
+        "purpose": "Workout library — browse generated and saved workouts",
+        "premiumGated": false
+      },
+      {
+        "id": "workoutsDetail",
+        "file": "app/workouts/[id].tsx",
+        "purpose": "Individual workout detail view with exercise list and start action",
+        "premiumGated": false
+      },
+      {
+        "id": "savedWorkouts",
+        "file": "app/saved-workouts.tsx",
+        "purpose": "User-saved workout routines with filtering and management",
+        "premiumGated": false
+      },
+      {
+        "id": "createWorkout",
+        "file": "app/create-workout.tsx",
+        "purpose": "Custom workout builder with exercise selection and configuration",
+        "premiumGated": false
+      }
+    ],
+    "analyticsProgress": [
+      {
+        "id": "progress",
+        "file": "app/progress.tsx",
+        "purpose": "Progress overview — workout trend charts, muscle distribution, streaks",
+        "premiumGated": false
+      },
+      {
+        "id": "analytics",
+        "file": "app/analytics.tsx",
+        "purpose": "Deep analytics — XP progression, workout trends, rank advancement, streaks",
+        "premiumGated": false
+      }
+    ],
+    "premiumFeatures": [
+      {
+        "id": "paywall",
+        "file": "app/paywall.tsx",
+        "purpose": "Subscription paywall with RevenueCat integration and trial/premium/free flows",
+        "premiumGated": false
+      },
+      {
+        "id": "healthDashboard",
+        "file": "app/health-dashboard.tsx",
+        "premiumGated": true,
+        "premiumFeatureName": "Health Dashboard",
+        "purpose": "Composite health score, vitals rings, anomaly alerts, 7-day trends, sleep/recovery cards"
+      },
+      {
+        "id": "craftMyBody",
+        "file": "app/craft-my-body.tsx",
+        "premiumGated": true,
+        "premiumFeatureName": "Body Craft Algorithm",
+        "purpose": "Personalized body transformation algorithm: body type, goals, macros, training split, timelines"
+      },
+      {
+        "id": "mealPrep",
+        "file": "app/meal-prep.tsx",
+        "premiumGated": true,
+        "premiumFeatureName": "Meal Planning",
+        "purpose": "Nutrition planning with food database, macro calculator, meal suggestions"
+      }
+    ],
+    "libraryReference": [
+      {
+        "id": "exercises",
+        "file": "app/exercises.tsx",
+        "purpose": "Exercise catalogue — browse 3,312 exercises with filters, categories, muscle groups",
+        "premiumGated": false
+      },
+      {
+        "id": "nutritionCalculator",
+        "file": "app/nutrition-calculator.tsx",
+        "purpose": "BMR/TDEE/macro calculator using RealisticHealthEngine formulas",
+        "premiumGated": false
+      }
+    ],
+    "legal": [
+      {
+        "id": "legalCenter",
+        "file": "app/legal-center.tsx",
+        "purpose": "Legal document hub — privacy policy, terms, data rights",
+        "premiumGated": false
+      },
+      {
+        "id": "privacyPolicy",
+        "file": "app/privacy-policy.tsx",
+        "purpose": "Privacy policy full-text view",
+        "premiumGated": false
+      },
+      {
+        "id": "termsOfService",
+        "file": "app/terms-of-service.tsx",
+        "purpose": "Terms of service full-text view",
+        "premiumGated": false
+      }
+    ],
+    "system": [
+      {
+        "id": "backups",
+        "file": "app/backups.tsx",
+        "purpose": "Data backup and restore — local snapshots, cloud backup, export/import",
+        "premiumGated": false
+      }
+    ],
+    "deprecated": [
+      {
+        "id": "fitmindLibrary",
+        "file": "app/fitmind-library.tsx",
+        "status": "DEPRECATED",
+        "redirectsTo": "/dashboard",
+        "reason": "FitMind cognitive module stripped before shipping"
+      },
+      {
+        "id": "fitmindReader",
+        "file": "app/fitmind-reader.tsx",
+        "status": "DEPRECATED",
+        "redirectsTo": "/dashboard",
+        "reason": "FitMind reader stripped before shipping"
+      },
+      {
+        "id": "professor",
+        "file": "app/professor/index.tsx",
+        "status": "DEPRECATED",
+        "redirectsTo": "/coach",
+        "reason": "Professor AI merged into Coach AI"
+      }
+    ]
+  },
+  "modules": {
+    "database": {
+      "path": "src/database/",
+      "fileCount": 13,
+      "status": "ACTIVE",
+      "purpose": "SQLite schema v20, CRUD service, exercise catalogue, query cache, write firewall, lifecycle management",
+      "files": [
+        {"file": "types.ts", "purpose": "Schema types, enums (Category, Difficulty, TargetMuscle, Equipment), TypeScript interfaces, SCHEMA_VERSION=20"},
+        {"file": "schema.ts", "purpose": "DB creation, PRAGMAs (WAL, foreign_keys, mmap_size), 20 versioned migrations, schema mutex"},
+        {"file": "service.ts", "purpose": "100+ CRUD functions across all tables — exercises, profiles, fatigue, sessions, streaks, progress, app_state, FitMind"},
+        {"file": "index.ts", "purpose": "Module entry, initializeDatabase() singleton, seed chain orchestration"},
+        {"file": "seed.ts", "purpose": "40+ base exercises seeded on first run, category/difficulty distribution"},
+        {"file": "external-seed.ts", "purpose": "External exercise database merge — imports from external-exercises-data.ts"},
+        {"file": "external-exercises-data.ts", "purpose": "Pre-built exercise catalogue (3,312 exercises with metadata)"},
+        {"file": "exerciseGenerator.ts", "purpose": "Procedural exercise generation for categories without enough pre-built data"},
+        {"file": "exerciseGeneratorExpanded.ts", "purpose": "Extended exercise variations — body_control, posture, speed, mobility, focus, strength"},
+        {"file": "queryCache.ts", "purpose": "In-memory TTL cache (5min default) for repeated queries"},
+        {"file": "WriteFirewall.ts", "purpose": "Write validation layer — type checks, constraint enforcement before DB writes"},
+        {"file": "DatabaseLifecycle.ts", "purpose": "Integrity validation, corruption repair, migration safety, health checks"},
+        {"file": "bodyCraftService.ts", "purpose": "BodyCraft algorithm DB storage — body_craft_algorithms table CRUD"}
+      ]
+    },
+    "security": {
+      "path": "src/security/",
+      "fileCount": 7,
+      "status": "ACTIVE",
+      "purpose": "AES-256-GCM encryption, biometric auth, encrypted DB for sensitive data, secure storage",
+      "files": [
+        {"file": "AESEncryption.ts", "purpose": "Versioned crypto: v2(CTR+HMAC), v3(AES-256-GCM). PBKDF2-SHA256 100k iterations. Auto-migration v1→v2→v3"},
+        {"file": "EncryptedDatabase.ts", "purpose": "Singleton for encrypted health/AI/notes/alert data. Writes v3, auto-migrates older blobs on read"},
+        {"file": "BiometricAuth.ts", "purpose": "Face ID/Touch ID with 5-attempt lockout, exponential backoff, 30-min session expiry, emergency wipe after 15 failures"},
+        {"file": "StorageMigration.ts", "purpose": "SecureStore-backed credential storage, migration from legacy storage"},
+        {"file": "AuthService.ts", "purpose": "Unified auth service — lockout management, session validation, biometric + passcode paths"},
+        {"file": "randomId.ts", "purpose": "Cryptographically secure random ID generation using expo-crypto"},
+        {"file": "index.ts", "purpose": "Module re-exports"}
+      ]
+    },
+    "engines": {
+      "path": "src/engines/",
+      "fileCount": 40,
+      "status": "ACTIVE",
+      "purpose": "Core business logic — workout generation, health monitoring, AI personalities, sensor fusion, recovery, anomaly detection",
+      "submodules": {
+        "coreWorkout": {
+          "purpose": "Deterministic workout generation, progression tracking, recovery management",
+          "files": [
+            {"file": "workoutGenerator.ts", "purpose": "Main workout generator — fatigue-aware, goal-optimized, equipment-filtered, pattern-balanced"},
+            {"file": "progressionEngine.ts", "purpose": "Performance tracking, difficulty auto-scaling, progressive overload logic"},
+            {"file": "recoveryEngine.ts", "purpose": "Fatigue tracking per muscle, 8%/day passive recovery, deload detection"},
+            {"file": "warmupCooldownGenerator.ts", "purpose": "Dynamic warmup/cooldown exercise selection based on workout muscles"},
+            {"file": "edgeCaseGuards.ts", "purpose": "Workout validation — empty session guards, duplicate exercise prevention, minimum exercise thresholds"},
+            {"file": "progressionParsing.ts", "purpose": "Rep range parsing, set/rep string normalization"}
+          ]
+        },
+        "workoutV2": {
+          "path": "src/engines/workout/",
+          "purpose": "Next-generation modular workout engine with algorithms, selectors, templates",
+          "files": [
+            {"file": "WorkoutEngine.ts", "purpose": "New modular engine — orchestrates algorithms + selectors + templates"},
+            {"file": "algorithms/FatigueAlgorithm.ts", "purpose": "Advanced fatigue modeling with muscle group decay curves"},
+            {"file": "algorithms/VolumeAlgorithm.ts", "purpose": "Volume prescription — sets × reps based on training goal and experience"},
+            {"file": "selectors/ExerciseSelector.ts", "purpose": "Exercise selection with scoring — fatigue, equipment, variety, compound preference"},
+            {"file": "selectors/MuscleBalancer.ts", "purpose": "Push/pull/legs balance enforcement across workout sessions"},
+            {"file": "templates/WorkoutTemplates.ts", "purpose": "Pre-built workout templates (full body, upper/lower, PPL, bro split)"},
+            {"file": "legacyAdapter.ts", "purpose": "Bridge between workoutGenerator.ts (v1) and WorkoutEngine.ts (v2)"},
+            {"file": "types.ts", "purpose": "V2 workout engine type definitions"},
+            {"file": "index.ts", "purpose": "Module entry"}
+          ]
+        },
+        "healthMonitoring": {
+          "purpose": "Sensor data fusion, health tracking, anomaly detection, sleep analysis",
+          "files": [
+            {"file": "RealisticHealthEngine.ts", "purpose": "Evidence-based health analytics (static methods) — BMR, TDEE, body fat, HR zones, macros, 1RM, hydration"},
+            {"file": "SensorFusionEngine.ts", "purpose": "Accelerometer + Gyroscope + Pedometer at 10Hz — activity classification, step detection, rep counting"},
+            {"file": "AnomalyDetector.ts", "purpose": "Statistical anomaly detection — Z-score, IQR, rate-of-change, moving average, multi-metric correlation"},
+            {"file": "SleepAnalysisEngine.ts", "purpose": "Sleep quality scoring (0-100), stage estimation, sleep debt, circadian consistency, recovery multiplier"},
+            {"file": "HealthMonitor.ts", "purpose": "Daily health tracking — steps, calories, active minutes, weekly summaries, goal progress"},
+            {"file": "BackgroundHealthEngine.ts", "purpose": "Orchestrator: 5min data collection, 30min anomaly checks, daily summaries, weekly reports, composite score"},
+            {"file": "StepCounterEngine.ts", "purpose": "Dedicated step counting with pedometer + accelerometer fallback"}
+          ]
+        },
+        "aiState": {
+          "purpose": "AI personalities, intent classification, user state modeling, behavioral analysis",
+          "files": [
+            {"file": "DualAIEngine.ts", "purpose": "Two AI personalities: COACH (fitness) + PROFESSOR (knowledge). Template-based + API-augmented responses"},
+            {"file": "IntentRouter.ts", "purpose": "NLP intent classification: COACH/PROFESSOR/HEALTH/WORKOUT/NAVIGATION/SETTINGS/GENERAL"},
+            {"file": "UserStateEngine.ts", "purpose": "User state aggregation — fatigue, readiness, streak, consistency, mood signals"},
+            {"file": "ConsistencyClassifier.ts", "purpose": "Training consistency scoring — workout frequency, time-of-day patterns, session completion rates"},
+            {"file": "LongTermProgressionEngine.ts", "purpose": "Multi-month progression tracking — volume trends, strength curves, body composition estimates"},
+            {"file": "FailureAnalysisEngine.ts", "purpose": "Workout failure pattern analysis — missed sets, skipped exercises, early terminations"},
+            {"file": "BehavioralSignalEngine.ts", "purpose": "Behavioral metadata extraction — session timing, rest patterns, exercise preferences"},
+            {"file": "TrialProgressionEngine.ts", "purpose": "Trial user engagement tracking — feature discovery, usage patterns, conversion signals"},
+            {"file": "ReadinessEngine.ts", "purpose": "Daily readiness scoring — fatigue, sleep, recovery, stress integration"},
+            {"file": "AdaptiveMemoryEngine.ts", "purpose": "Persistent memory for AI coaching — user preferences, injury history, conversation context"},
+            {"file": "StateSimulationEngine.ts", "purpose": "State simulation for testing — synthetic user states, scenario generation"},
+            {"file": "bodyCraftEngine.ts", "purpose": "Body transformation algorithm — body type analysis, goal planning, macro/training prescription"}
+          ]
+        },
+        "supporting": {
+          "purpose": "Caching, transparency logging, state reset utilities",
+          "files": [
+            {"file": "transparencyLayer.ts", "purpose": "Audit logging for AI decisions — tracks why exercises were selected/rejected"},
+            {"file": "stateResetDoctrine.ts", "purpose": "Safe state reset procedures — clears caches, resets singletons, maintains DB integrity"},
+            {"file": "ComputationCache.ts", "purpose": "Generic computation memoization with TTL"},
+            {"file": "index.ts", "purpose": "Engine module re-exports"}
+          ]
+        },
+        "deprecated": {
+          "purpose": "Dead or deprecated engines still in codebase",
+          "files": [
+            {"file": "MindSessionEngine.ts", "status": "DEPRECATED", "reason": "FitMind meditation sessions removed. Types still imported by MindExerciseView component"},
+            {"file": "DistanceEngine.ts", "status": "DEPRECATED", "reason": "GPS distance calculation. Types still imported by JogMap component"}
+          ]
+        }
+      }
+    },
+    "services": {
+      "path": "src/services/",
+      "fileCount": 52,
+      "status": "ACTIVE",
+      "purpose": "Application services — analytics, audio, backup, caching, health adapters, persistence, telemetry",
+      "submodules": {
+        "core": {
+          "purpose": "Essential application services",
+          "files": [
+            {"file": "xpService.ts", "purpose": "XP system — 100 base + 20/exercise + streak bonus, persisted in app_state table"},
+            {"file": "timerService.ts", "purpose": "Singleton timer with pause/resume/events for workout sets and rest periods"},
+            {"file": "audioService.ts", "purpose": "Singleton TTS service for exercise coaching (intro/setup/execution/transition cues)"},
+            {"file": "featureFlags.ts", "purpose": "Runtime feature flags for gradual rollout"},
+            {"file": "dataSyncService.ts", "purpose": "Singleton pub/sub event bus for cross-component data synchronization"}
+          ]
+        },
+        "observability": {
+          "purpose": "Logging, telemetry, crash reporting, analytics",
+          "files": [
+            {"file": "logger.ts", "purpose": "Structured logging with levels and context"},
+            {"file": "telemetry.ts", "purpose": "Performance telemetry — timing, counters, histograms"},
+            {"file": "errorTelemetry.ts", "purpose": "Error event tracking with context and stack traces"},
+            {"file": "crashReporting.ts", "purpose": "Sentry crash reporting integration"},
+            {"file": "posthogService.tsx", "purpose": "PostHog analytics + session replay integration"},
+            {"file": "analyticsIngestionService.ts", "purpose": "Analytics event ingestion pipeline"},
+            {"file": "analyticsDataService.ts", "purpose": "Analytics data aggregation and querying"}
+          ]
+        },
+        "healthFitness": {
+          "purpose": "Derived health metrics, adaptive training, nutrition, ranking",
+          "files": [
+            {"file": "derivedMetricsService.ts", "purpose": "Computed metrics from raw data — weekly averages, trend calculations, composite scores"},
+            {"file": "adaptiveTrainingService.ts", "purpose": "Training plan adaptation based on user performance and recovery signals"},
+            {"file": "adaptiveTrainingMath.ts", "purpose": "Mathematical models for training load, acute:chronic ratio, strain calculations"},
+            {"file": "rankingService.ts", "purpose": "XP-based rank system with military-style tiers and milestone tracking"},
+            {"file": "foodDatabase.ts", "purpose": "Local food nutrition database for macro/calorie lookups"},
+            {"file": "locationService.ts", "purpose": "expo-location wrapper for GPS tracking during jog sessions"},
+            {"file": "healthAdapters/HealthConnectAdapter.ts", "purpose": "Android Health Connect integration (currently disabled)"},
+            {"file": "healthAdapters/HealthKitAdapter.ts", "purpose": "iOS HealthKit integration"},
+            {"file": "healthAdapters/index.ts", "purpose": "Platform-aware health adapter factory"},
+            {"file": "healthAdapters/types.ts", "purpose": "Health adapter type definitions"}
+          ]
+        },
+        "exerciseContent": {
+          "purpose": "Exercise images, taxonomy mapping",
+          "files": [
+            {"file": "exerciseImageService.ts", "purpose": "Exercise image resolution — maps exercise IDs to bundled/remote images"},
+            {"file": "exerciseImageMap.ts", "purpose": "Static exercise-to-image mapping table"},
+            {"file": "exerciseTaxonomyMapper.ts", "purpose": "Maps external exercise taxonomy to FitQuest categories"}
+          ]
+        },
+        "persistence": {
+          "purpose": "Write-ahead log, snapshots, recovery, backup, export",
+          "files": [
+            {"file": "WriteAheadLogService.ts", "purpose": "WAL for crash recovery — logs mutations before applying, replays on recovery"},
+            {"file": "SnapshotService.ts", "purpose": "Periodic DB snapshots for point-in-time recovery"},
+            {"file": "RecoveryService.ts", "purpose": "Crash recovery — WAL replay, snapshot restore, integrity validation"},
+            {"file": "backupService.ts", "purpose": "Local backup create/restore with compression"},
+            {"file": "cloudBackupService.ts", "purpose": "Cloud backup integration (placeholder for future remote sync)"},
+            {"file": "SovereignExportService.ts", "purpose": "Full data export in user-readable format (GDPR/POPIA compliance)"}
+          ]
+        },
+        "dataCache": {
+          "purpose": "Caching, mutation queue, sync, notification reliability",
+          "files": [
+            {"file": "cachePolicy.ts", "purpose": "Cache TTL policies per data type"},
+            {"file": "cacheStoreService.ts", "purpose": "Persistent cache store with eviction"},
+            {"file": "mutationQueueService.ts", "purpose": "Offline mutation queue — queues writes, replays when ready"},
+            {"file": "notificationReliabilityService.ts", "purpose": "Notification delivery tracking and retry"}
+          ]
+        },
+        "workoutGenerator": {
+          "path": "src/services/workoutGenerator/",
+          "purpose": "Service-layer workout generation pipeline",
+          "files": [
+            {"file": "pipeline.ts", "purpose": "Workout generation pipeline — profile → fatigue → exercise selection → validation"},
+            {"file": "exerciseDatabase.ts", "purpose": "Exercise database queries for generator"},
+            {"file": "fatigueTracking.ts", "purpose": "Service-layer fatigue state management"},
+            {"file": "subscriptionGating.ts", "purpose": "Premium feature gating for advanced workout options"},
+            {"file": "types.ts", "purpose": "Workout generator type definitions"}
+          ]
+        },
+        "aiProvider": {
+          "purpose": "AI API provider with fallback chain",
+          "files": [
+            {"file": "aiProvider.ts", "purpose": "AI provider abstraction — Grok → Groq → OpenRouter fallback chain"}
+          ]
+        },
+        "system": {
+          "purpose": "System-level services",
+          "files": [
+            {"file": "SystemGuard.ts", "purpose": "System health monitoring — memory, battery, storage checks"},
+            {"file": "apiBaseUrl.ts", "purpose": "API base URL configuration (minimal — mostly offline app)"},
+            {"file": "legalService.ts", "purpose": "Legal document content and consent management"},
+            {"file": "authApi.ts", "purpose": "Auth API client (minimal — biometric-first local auth)"}
+          ]
+        },
+        "testing": {
+          "purpose": "Testing-only utilities (not shipped in production bundle)",
+          "files": [
+            {"file": "smokeTestUtils.ts", "purpose": "Smoke test helpers for automated validation"},
+            {"file": "p1ReplayRunner.ts", "purpose": "Priority-1 scenario replay for regression testing"},
+            {"file": "replayOrchestrator.ts", "purpose": "Test scenario orchestration and replay"}
+          ]
+        },
+        "deprecated": {
+          "purpose": "Dead services still in codebase",
+          "files": [
+            {"file": "autonomousPolicyRuntime.ts", "status": "DEPRECATED", "reason": "Agent/policy runtime — concept from Alfred integration, unused"},
+            {"file": "socialLayerService.ts", "status": "DEPRECATED", "reason": "Social features planned but not implemented. Still imported by profile.tsx"},
+            {"file": "aiWorkoutService.ts", "status": "DEPRECATED", "reason": "Legacy AI workout API. Still imported by coach/index.tsx"},
+            {"file": "syncService.ts", "status": "DEPRECATED", "reason": "Overlaps dataSyncService. Only imported by p1ReplayRunner (testing)"}
+          ]
+        }
+      }
+    },
+    "context": {
+      "path": "src/context/",
+      "fileCount": 4,
+      "status": "ACTIVE",
+      "purpose": "React Context providers — global app state via provider hierarchy",
+      "files": [
+        {"file": "ThemeContext.tsx", "purpose": "Dark/light/blackGold theme provider. Persists preference to app_state. Exposes useTheme()"},
+        {"file": "LanguageContext.tsx", "purpose": "15-language provider. Loads translations, preloads exercise data. Exposes useLanguage() → t()"},
+        {"file": "DatabaseContext.tsx", "purpose": "SQLite lifecycle: init → migrate → seed → recover. Exposes useDatabase() → db instance"},
+        {"file": "AuthContext.tsx", "purpose": "Biometric + passcode auth. Session management, lockout. Exposes useAuth()"}
+      ],
+      "providerHierarchy": "ThemeProvider → LanguageProvider → DatabaseProvider → AuthProvider → SubscriptionProvider → App"
+    },
+    "hooks": {
+      "path": "src/hooks/",
+      "fileCount": 6,
+      "status": "ACTIVE",
+      "purpose": "Custom React hooks for domain-specific state and behavior",
+      "files": [
+        {"file": "useFitQuestWorkout.ts", "purpose": "Full workout lifecycle: generate → start → exercise-by-exercise → complete → XP award"},
+        {"file": "useTimer.ts", "purpose": "Countdown/stopwatch timer with pause/resume/events"},
+        {"file": "usePedometer.ts", "purpose": "Step counting hook wrapping expo-sensors pedometer + accelerometer fallback"},
+        {"file": "useAudio.ts", "purpose": "TTS audio hook for workout coaching cues"},
+        {"file": "useCustom.ts", "purpose": "6 utility hooks: useDebounce, useInterval, useAppState, usePrevious, useTimeout, useForceUpdate"},
+        {"file": "useSystemState.ts", "purpose": "System state aggregation — battery, network, storage, memory"}
+      ]
+    },
+    "components": {
+      "path": "src/components/",
+      "fileCount": 41,
+      "status": "ACTIVE",
+      "purpose": "Shared themed UI components — glass morphism design system",
+      "categories": {
+        "glassUI": {
+          "file": "ui/GlassUI.tsx",
+          "exports": ["GlassCard", "GradientButton", "ProgressRing", "SectionHeader", "AnimatedListItem", "WeekCalendar", "AnimatedCounter", "PulseDot", "StatChip"]
+        },
+        "skeleton": {
+          "file": "ui/Skeleton.tsx",
+          "exports": ["Skeleton", "SkeletonCard", "SkeletonList"]
+        },
+        "textAccessibility": ["ThemedText.tsx", "SimpleMarkdown.tsx", "ScreenErrorBoundary.tsx", "ScreenTutorial.tsx", "ErrorBoundary.tsx"],
+        "accessControl": ["PremiumGate.tsx", "AuthGate.tsx"],
+        "workoutExercise": ["ExerciseImage.tsx", "ExerciseDetailSheet.tsx", "RestTimerOverlay.tsx", "GetReadyOverlay.tsx", "MindExerciseView.tsx", "ExerciseCompleteBadge.tsx", "CountdownRing.tsx"],
+        "rankingsProgress": ["RankDisplay.tsx", "ProgressBar.tsx", "WorkoutSummaryView.tsx"],
+        "charts": ["charts/ThemedChart.tsx", "charts/WorkoutTrendChart.tsx", "charts/MuscleDistributionChart.tsx", "charts/StepsChart.tsx", "charts/StreakCalendar.tsx", "charts/XPProgressChart.tsx", "charts/dateUtils.ts", "charts/types.ts", "charts/index.ts"],
+        "healthWidgets": ["health/HealthWidgets.tsx"],
+        "specialized": ["JogMap.tsx", "ConfettiBurst.tsx", "FQLogoMark.tsx", "FitQuestLogo.tsx", "LanguageSelector.tsx", "ThemeToggle.tsx", "DropdownMenu.tsx", "MedicalDisclaimer.tsx", "PdfViewer.tsx", "PdfViewer.native.tsx"],
+        "deprecated": ["Card.tsx", "DatabaseRecoveryScreen.tsx"]
+      }
+    },
+    "ai": {
+      "path": "src/ai/",
+      "fileCount": 10,
+      "status": "ACTIVE",
+      "purpose": "On-device ML models — intent classification, activity recognition, coach responses, semantic search",
+      "files": [
+        {"file": "ModelLoader.ts", "purpose": "ML model loading with caching and memory management"},
+        {"file": "TrainedIntentRouter.ts", "purpose": "SVC-based intent classification model"},
+        {"file": "TrainedFitCoach.ts", "purpose": "Template-based coaching response generator"},
+        {"file": "TrainedActivityClassifier.ts", "purpose": "Random Forest activity classification from sensor data"},
+        {"file": "sensors/DeepActivityClassifier.ts", "purpose": "CNN + BiLSTM deep activity classifier (experimental)"},
+        {"file": "professor/SemanticSearch.ts", "purpose": "MiniLM-based semantic search over documents"},
+        {"file": "professor/NeuralSummarizer.ts", "purpose": "BERT extractive text summarization"},
+        {"file": "professor/KnowledgeGraph.ts", "purpose": "Rule-based knowledge graph for document relationships"},
+        {"file": "TransformerRuntime.ts", "status": "DEPRECATED", "reason": "Shared transformer primitives — too heavy (48MB), still imported by professor/* files"},
+        {"file": "index.ts", "purpose": "Module re-exports"}
+      ]
+    },
+    "purchases": {
+      "path": "src/purchases/",
+      "fileCount": 4,
+      "status": "ACTIVE",
+      "purpose": "RevenueCat subscription management, trial system, premium gating",
+      "files": [
+        {"file": "SubscriptionManager.ts", "purpose": "RevenueCat integration with local fallback. 14-day trial, receipt validation, offline grace period"},
+        {"file": "TrialOnboarding.ts", "purpose": "Trial phase management — day tracking, feature unlocking, conversion nudges"},
+        {"file": "SubscriptionContext.tsx", "purpose": "React context wrapper — exposes subscription state to components"},
+        {"file": "index.ts", "purpose": "Module re-exports"}
+      ]
+    },
+    "i18n": {
+      "path": "src/i18n/",
+      "fileCount": 20,
+      "status": "ACTIVE",
+      "purpose": "Two-tier internationalization: UI strings (translations.ts) + exercise data (SQLite exercise_translations table)",
+      "languages": ["en", "af", "zu", "xh", "st", "es", "fr", "de", "pt", "zh", "ja", "ko", "ar", "hi", "sw"],
+      "uiStringKeys": 648,
+      "exercisesTranslated": 3312,
+      "exerciseTranslationsTotal": 46368,
+      "files": [
+        {"file": "translations.ts", "purpose": "20,120 lines — all 15 languages × 648 UI string keys. Single source of truth for UI text"},
+        {"file": "TranslationResolver.ts", "purpose": "Public API: cache → DB → fallback. Tracks fallback rates for telemetry"},
+        {"file": "TranslationRegistry.ts", "purpose": "LRU cache (10k entries), O(1) lookups, 14M ops/sec benchmarked"},
+        {"file": "BatchedTranslationEngine.ts", "purpose": "Batch translation loading for exercise catalogues — chunked DB inserts"},
+        {"file": "engine-i18n.ts", "purpose": "Engine-level translation helpers for workout generator output"},
+        {"file": "exercise-translation-seed.ts", "purpose": "Seeds exercise translations into SQLite exercise_translations table on first run"}
+      ],
+      "exerciseTranslationFiles": [
+        {"file": "translations/exercises-af.ts", "language": "Afrikaans", "lines": 50026, "coverage": "100%"},
+        {"file": "translations/exercises-ar.ts", "language": "Arabic", "lines": 49958, "coverage": "100%"},
+        {"file": "translations/exercises-de.ts", "language": "German", "lines": 55669, "coverage": "100%"},
+        {"file": "translations/exercises-es.ts", "language": "Spanish", "lines": 54935, "coverage": "100%"},
+        {"file": "translations/exercises-fr.ts", "language": "French", "lines": 53736, "coverage": "100%"},
+        {"file": "translations/exercises-hi.ts", "language": "Hindi", "lines": 52357, "coverage": "100%"},
+        {"file": "translations/exercises-ja.ts", "language": "Japanese", "lines": 51188, "coverage": "100%"},
+        {"file": "translations/exercises-ko.ts", "language": "Korean", "lines": 50736, "coverage": "100%"},
+        {"file": "translations/exercises-pt.ts", "language": "Portuguese", "lines": 53675, "coverage": "100%"},
+        {"file": "translations/exercises-st.ts", "language": "Sesotho", "lines": 54038, "coverage": "100%"},
+        {"file": "translations/exercises-sw.ts", "language": "Swahili", "lines": 51215, "coverage": "100%"},
+        {"file": "translations/exercises-xh.ts", "language": "isiXhosa", "lines": 53099, "coverage": "100%"},
+        {"file": "translations/exercises-zh.ts", "language": "Chinese", "lines": 41254, "coverage": "100%"},
+        {"file": "translations/exercises-zu.ts", "language": "isiZulu", "lines": 54065, "coverage": "100%"}
+      ]
+    },
+    "design": {
+      "path": "src/design/",
+      "fileCount": 1,
+      "status": "ACTIVE",
+      "purpose": "Theme tokens — canonical source of truth for colors, spacing, typography, border radius",
+      "files": [
+        {"file": "theme-system.ts", "purpose": "darkTheme (#0A0E17), lightTheme (#F4F5F7), blackGoldTheme. Numeric spacing keys, named border radius"}
+      ]
+    },
+    "platform": {
+      "path": "src/platform/",
+      "fileCount": 5,
+      "status": "PARTIAL",
+      "purpose": "Phase-based platform evolution stubs — mostly placeholder code",
+      "files": [
+        {"file": "phaseFoundation.ts", "purpose": "Platform foundation types and constants"},
+        {"file": "phase7Platformization.ts", "purpose": "Phase 7 platform features (translation pipeline) — IMPLEMENTED"},
+        {"file": "phase8AutonomousOperations.ts", "purpose": "Phase 8 autonomous ops — STUB"},
+        {"file": "phase9EcosystemFederation.ts", "purpose": "Phase 9 ecosystem federation — STUB"},
+        {"file": "phase10EnterpriseHardening.ts", "purpose": "Phase 10 enterprise hardening — STUB"}
+      ]
+    },
+    "fitmind": {
+      "path": "src/fitmind/",
+      "fileCount": 11,
+      "status": "DEPRECATED",
+      "purpose": "Cognitive fitness module — document library, reader, flashcards, spaced repetition. STRIPPED BEFORE SHIPPING",
+      "files": [
+        {"file": "schema.ts", "purpose": "FitMind tables + FitMindService static CRUD (tables still in DB schema)"},
+        {"file": "readerEngine.ts", "purpose": "Document reader engine — pagination, text analysis"},
+        {"file": "FSRSService.ts", "purpose": "Free Spaced Repetition Scheduler for flashcards (ts-fsrs)"},
+        {"file": "readerWebAssets.ts", "purpose": "Web-based reader HTML/CSS assets"},
+        {"file": "readers/ReaderFactory.ts", "purpose": "Reader component factory — PDF/EPUB/Article/Text"},
+        {"file": "readers/index.ts", "purpose": "Reader module re-exports"},
+        {"file": "readers/types.ts", "purpose": "Reader type definitions"},
+        {"file": "readers/PDFReader.tsx", "purpose": "PDF reader component"},
+        {"file": "readers/EPUBReader.tsx", "purpose": "EPUB reader component"},
+        {"file": "readers/ArticleReader.tsx", "purpose": "Article reader component"},
+        {"file": "readers/TextReader.tsx", "purpose": "Plain text reader component"}
+      ]
+    },
+    "utils": {
+      "path": "src/utils/",
+      "fileCount": 6,
+      "status": "ACTIVE",
+      "purpose": "Shared utilities — validation, formatting, haptics, responsive design, rate limiting, pricing",
+      "files": [
+        {"file": "validation.ts", "purpose": "Input validation with zod schemas — profile, workout, exercise forms"},
+        {"file": "formatMuscle.ts", "purpose": "Muscle name formatting with i18n support"},
+        {"file": "haptics.ts", "purpose": "Haptic feedback patterns using expo-haptics"},
+        {"file": "responsive.ts", "purpose": "Responsive dimension utilities — screen size breakpoints, scaling"},
+        {"file": "rateLimiter.ts", "purpose": "Function rate limiting and debouncing for API/DB calls"},
+        {"file": "regionalPricing.ts", "purpose": "Currency conversion and regional pricing for subscriptions"}
+      ]
+    }
+  },
+  "externalServices": [
+    {"name": "RevenueCat", "purpose": "Subscription management, receipt validation, entitlements", "package": "react-native-purchases", "status": "ACTIVE"},
+    {"name": "PostHog", "purpose": "Product analytics + session replay", "package": "posthog-react-native", "status": "ACTIVE"},
+    {"name": "Sentry", "purpose": "Crash reporting + error monitoring", "package": "@sentry/react-native", "status": "ACTIVE"},
+    {"name": "Grok/Groq/OpenRouter", "purpose": "AI chat providers (fallback chain)", "package": "custom (aiProvider.ts)", "status": "ACTIVE"},
+    {"name": "Apple HealthKit", "purpose": "iOS health data (steps, HR, sleep)", "package": "react-native-health", "status": "ACTIVE"},
+    {"name": "Android Health Connect", "purpose": "Android health data", "package": "react-native-health-connect", "status": "DISABLED"},
+    {"name": "expo-local-authentication", "purpose": "Biometric auth (Face ID, Touch ID, Fingerprint)", "package": "expo-local-authentication", "status": "ACTIVE"},
+    {"name": "expo-speech", "purpose": "Text-to-speech for workout coaching", "package": "expo-speech", "status": "ACTIVE"},
+    {"name": "expo-sensors", "purpose": "Accelerometer + Gyroscope for activity detection", "package": "expo-sensors", "status": "ACTIVE"},
+    {"name": "expo-location", "purpose": "GPS for jog tracking", "package": "expo-location", "status": "ACTIVE"}
+  ],
+  "premiumGatedFeatures": {
+    "totalGatedScreens": 5,
+    "screens": [
+      {"screen": "fitquest.tsx", "featureName": "AI Workout Generator"},
+      {"screen": "coach/index.tsx", "featureName": "AI Coach"},
+      {"screen": "health-dashboard.tsx", "featureName": "Health Dashboard"},
+      {"screen": "craft-my-body.tsx", "featureName": "Body Craft Algorithm"},
+      {"screen": "meal-prep.tsx", "featureName": "Meal Planning"}
+    ],
+    "trialDuration": "14 days",
+    "tiers": ["free", "premium"],
+    "accessStateMachine": "LOADING → TRIAL → FULL → LOCKED"
+  }
+}

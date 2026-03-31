@@ -854,7 +854,7 @@ class WriteAheadLogServiceImpl {
       await db.execAsync(CREATE_WAL_TABLE);
       await db.execAsync(CREATE_WAL_INDEX);
       this.initialized = true;
-      if (__DEV__) console.log('[WAL] Initialized');
+      if (__DEV__) console.warn('[WAL] Initialized');
     } catch (error) {
       captureException(error instanceof Error ? error : new Error(String(error)), {
         context: 'WAL.initialize',
@@ -973,7 +973,7 @@ class WriteAheadLogServiceImpl {
     const result: ReplayResult = { total: pending.length, replayed: 0, skipped: 0, failed: 0, entries: [] };
 
     if (pending.length === 0) return result;
-    if (__DEV__) console.log(`[WAL] Replaying ${pending.length} pending intents...`);
+    if (__DEV__) console.warn(`[WAL] Replaying ${pending.length} pending intents...`);
 
     for (const entry of pending) {
       const handler = REPLAY_HANDLERS[entry.operation];
@@ -1014,7 +1014,7 @@ class WriteAheadLogServiceImpl {
     }
 
     if (__DEV__)
-      console.log(
+      console.warn(
         `[WAL] Replay complete: ${result.replayed} replayed, ${result.skipped} skipped, ${result.failed} failed`,
       );
     return result;

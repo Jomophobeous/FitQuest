@@ -55,14 +55,14 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
     // First check if location services are enabled
     const servicesEnabled = await Location.hasServicesEnabledAsync();
     if (!servicesEnabled) {
-      if (__DEV__) console.log('[Location] Location services disabled on device');
+      if (__DEV__) console.warn('[Location] Location services disabled on device');
       // Return a default location for development/fallback
       return getDefaultLocation();
     }
 
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      if (__DEV__) console.log('[Location] Permission denied');
+      if (__DEV__) console.warn('[Location] Permission denied');
       return getDefaultLocation();
     }
 
@@ -80,7 +80,7 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
     const location = (await Promise.race([locationPromise, timeoutPromise])) as Location.LocationObject | null;
 
     if (!location) {
-      if (__DEV__) console.log('[Location] Location request timed out');
+      if (__DEV__) console.warn('[Location] Location request timed out');
       return getDefaultLocation();
     }
 

@@ -193,13 +193,16 @@ async function sectionB() {
     ['trust_degraded', 'ANOMALY_THRESHOLD_EXCEEDED', 'trust_soft_block'].includes(j2?.data?.alertType),
     `type=${j2?.data?.alertType}`);
 
-  // B3: Dedup — calling again within 1h should not create duplicate
-  const { json: j3 } = await post('/admin/check-thresholds', {
+  // B3: Dedup — calling again within 10min should not create duplicate
+  await new Promise(r => setTimeout(r, 2000)); // Small delay for DB commit
+  const { status: s3, json: j3 } = await post('/admin/check-thresholds', {
     admin_secret: ADMIN_SECRET,
     user_id: userId,
     device_id: deviceId,
   });
-  assert('B3 Dedup prevents duplicate alert', j3?.data?.alerted === false, JSON.stringify(j3?.data));
+  assert('B3 Dedup prevents duplicate alert',
+    j3?.data?.alerted === false,
+    `status=${s3} data=${JSON.stringify(j3?.data)?.slice(0, 200)}`);
 
   // B4: Verify alert exists via admin alerts endpoint
   const { json: j4 } = await post('/admin/alerts', {

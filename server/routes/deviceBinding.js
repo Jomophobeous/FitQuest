@@ -224,6 +224,35 @@ router.post('/device/register', async (req, res) => {
       });
     }
 
+    // If another concurrent request already cleaned up our token,
+    // return the surviving active token instead of our (now-revoked) one.
+    if (activeTokens && activeTokens.length === 1 && activeTokens[0].device_token !== deviceToken) {
+      return respond(res, 200, {
+        device_token: activeTokens[0].device_token,
+        is_new: false,
+      });
+    }
+
+    // If no active tokens remain (edge case: our token was revoked and no winner survived),
+    // re-query to find the current active token.
+    if (!activeTokens || activeTokens.length === 0) {
+      const { data: fallback } = await supabase
+        .from('device_tokens')
+        .select('device_token')
+        .eq('user_id', sanitizedUserId)
+        .eq('device_id', sanitizedDeviceId)
+        .eq('revoked', false)
+        .limit(1)
+        .maybeSingle();
+
+      if (fallback) {
+        return respond(res, 200, {
+          device_token: fallback.device_token,
+          is_new: false,
+        });
+      }
+    }
+
     logEvent(sanitizedUserId, sanitizedDeviceId, 'device_token_issued', ip, {
       is_new: true,
     });

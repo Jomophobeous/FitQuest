@@ -19,6 +19,17 @@
 const crypto = require('crypto');
 const path = require('path');
 
+// Global error handlers to catch silent crashes
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err.message);
+  console.error(err.stack);
+  process.exit(99);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('UNHANDLED REJECTION:', reason);
+  process.exit(98);
+});
+
 // Load root .env for API key
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
@@ -396,16 +407,49 @@ async function main() {
   // ════════════════════════════════════════════════════
   console.log('\nF. Multi-Device Limit (max 5)');
 
-  const multiUser = USER_ID; // Same user
+  // Use a fresh user so previous test tokens don't pollute the count
+  const MULTI_USER = `test-multi-user-${Date.now()}`;
+  const { status: muStatus } = await post('/user/create', {
+    id: MULTI_USER,
+    email: `${MULTI_USER}@test.fitquest.local`,
+  });
+  if (muStatus !== 200 && muStatus !== 201) throw new Error(`Failed to create multi-user: ${muStatus}`);
+
   const multiTokens = [];
   const multiDevices = [];
+
+  // Helper: register device for the multi-user
+  async function registerMultiDevice(deviceId) {
+    const { status: cs, json: cj } = await post('/auth/challenge', { user_id: MULTI_USER, device_id: deviceId });
+    if (cs !== 200 || !cj.data?.challenge_id) throw new Error(`Challenge failed: ${cs}`);
+    const cr = computeResponse(cj.data.nonce, deviceId, APP_VERSION);
+    const { status, json } = await post('/device/register', {
+      user_id: MULTI_USER, device_id: deviceId, app_version: APP_VERSION,
+      challenge_id: cj.data.challenge_id, challenge_response: cr,
+    });
+    if (status !== 200 || !json.data?.device_token) throw new Error(`Register failed: ${status}`);
+    return json.data.device_token;
+  }
+
+  // Helper: sync with token for multi-user
+  async function syncMulti(deviceId, deviceToken) {
+    const { status: cs, json: cj } = await post('/auth/challenge', { user_id: MULTI_USER, device_id: deviceId });
+    if (cs !== 200 || !cj.data?.challenge_id) throw new Error(`Challenge failed: ${cs}`);
+    const cr = computeResponse(cj.data.nonce, deviceId, APP_VERSION);
+    return post('/sync/batch', {
+      user_id: MULTI_USER, device_id: deviceId, device_token: deviceToken,
+      app_version: APP_VERSION, challenge_id: cj.data.challenge_id, challenge_response: cr,
+      actions: [{ action_id: `multi-${Date.now()}`, type: 'workout_complete',
+        payload: { completed_exercises: 1, total_exercises: 1, duration_minutes: 5, streak_days: 0 } }],
+    });
+  }
 
   // Register 6 unique devices
   for (let i = 1; i <= 6; i++) {
     const devId = `test-p26-multi-${Date.now()}-${i}`;
     multiDevices.push(devId);
     try {
-      const token = await registerDevice(devId);
+      const token = await registerMultiDevice(devId);
       multiTokens.push(token);
     } catch (e) {
       multiTokens.push(null);
@@ -415,15 +459,14 @@ async function main() {
   assert('F1. All 6 registrations succeeded', multiTokens.every(t => t !== null));
 
   // F2. 6th device active → oldest (1st) should be auto-revoked
-  // Test: try syncing with 1st device's token
   if (multiTokens[0]) {
-    const { status } = await syncWithToken(multiDevices[0], multiTokens[0]);
+    const { status } = await syncMulti(multiDevices[0], multiTokens[0]);
     assert('F2. 1st device token auto-revoked', status === 401 || status === 403, `status=${status}`);
   }
 
   // F3. 6th device's token should work
   if (multiTokens[5]) {
-    const { status } = await syncWithToken(multiDevices[5], multiTokens[5]);
+    const { status } = await syncMulti(multiDevices[5], multiTokens[5]);
     assert('F3. 6th device token works', status === 200, `status=${status}`);
   }
 

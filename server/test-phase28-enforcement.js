@@ -26,6 +26,8 @@ let pass = 0;
 let fail = 0;
 const results = [];
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 function assert(label, condition, detail) {
   if (condition) {
     pass++;
@@ -40,7 +42,7 @@ function assert(label, condition, detail) {
 
 async function post(path, body, opts = {}) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), opts.timeout || 30000);
+    const timeout = setTimeout(() => controller.abort(), opts.timeout || 60000);
   try {
     const resp = await fetch(BASE_URL + path, {
       method: 'POST',
@@ -52,18 +54,29 @@ async function post(path, body, opts = {}) {
       signal: controller.signal,
     });
     const json = await resp.json().catch(() => null);
+    // Auto-retry once on 429
+    if (resp.status === 429 && !opts._retried) {
+      clearTimeout(timeout);
+      await sleep(15000);
+      return post(path, body, { ...opts, _retried: true });
+    }
     return { status: resp.status, json };
   } finally {
     clearTimeout(timeout);
   }
 }
 
-async function get(path) {
+async function get(path, opts = {}) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+  const timeout = setTimeout(() => controller.abort(), 60000);
   try {
     const resp = await fetch(BASE_URL + path, { signal: controller.signal });
     const json = await resp.json().catch(() => null);
+    if (resp.status === 429 && !opts._retried) {
+      clearTimeout(timeout);
+      await sleep(15000);
+      return get(path, { _retried: true });
+    }
     return { status: resp.status, json };
   } finally {
     clearTimeout(timeout);
@@ -77,7 +90,15 @@ async function createTestUser(suffix) {
   const deviceId = `device-phase28-${suffix}-${Date.now()}`;
   const appVersion = '1.0.0';
 
-  const { status: userStatus } = await post('/user/create', { id: userId, email });
+  // Retry user creation if rate-limited
+  let userStatus;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const r = await post('/user/create', { id: userId, email });
+    userStatus = r.status;
+    if (userStatus !== 429) break;
+    console.log(`  ⏳ User create rate-limited, waiting 15s (attempt ${attempt + 1})…`);
+    await sleep(15000);
+  }
   if (userStatus !== 200 && userStatus !== 201) {
     console.log(`  ⚠️  User create returned ${userStatus} for ${userId}`);
   }
@@ -516,13 +537,40 @@ async function main() {
     process.exit(1);
   }
 
+  // Wake up Render free-tier server before running tests
+  console.log('\n  🔄 Waking server…');
+  try {
+    const wakeup = await get('/health');
+    console.log(`  ✅ Server awake (${wakeup.status})`);
+  } catch {
+    console.log('  ⚠️ Server slow — proceeding anyway');
+  }
+
   try {
     await sectionA();
+    console.log('  ⏳ Cooldown…');
+    await sleep(10000);
+    await get('/health'); // keepalive
     await sectionB();
+    console.log('  ⏳ Cooldown…');
+    await sleep(10000);
+    await get('/health');
     await sectionC();
+    console.log('  ⏳ Cooldown…');
+    await sleep(10000);
+    await get('/health');
     await sectionD();
+    console.log('  ⏳ Cooldown…');
+    await sleep(10000);
+    await get('/health');
     await sectionE();
+    console.log('  ⏳ Cooldown…');
+    await sleep(10000);
+    await get('/health');
     await sectionF();
+    console.log('  ⏳ Cooldown…');
+    await sleep(10000);
+    await get('/health');
     await sectionG();
   } catch (err) {
     console.error('\n💥 Unhandled error during tests:', err.message);

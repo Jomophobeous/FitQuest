@@ -1,0 +1,3 @@
+# Ignore generated pattern files (extracted at runtime)
+design_tokens.json
+pinterest_patterns.json

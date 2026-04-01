@@ -1,0 +1,6 @@
+# Ignore generated screenshots (captured during runs)
+current/*.png
+diff/*.png
+
+# Keep baseline screenshots tracked
+!baseline/

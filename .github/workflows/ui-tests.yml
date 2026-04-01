@@ -1,0 +1,68 @@
+name: UI Intelligence — Visual Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ui-intelligence/**'
+
+concurrency:
+  group: ui-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright Firefox
+        run: npx playwright install firefox
+
+      - name: Run UI flows
+        working-directory: ui-intelligence
+        env:
+          UI_TEST_BASE_URL: ${{ secrets.UI_TEST_BASE_URL }}
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          PINTEREST_TOKEN: ${{ secrets.PINTEREST_TOKEN }}
+        run: node uiRunner.js
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-screenshots
+          path: ui-intelligence/screenshots/current/
+          retention-days: 14
+
+      - name: Upload run results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-results
+          path: ui-intelligence/last-run.json
+          retention-days: 14
+
+      - name: Check results
+        working-directory: ui-intelligence
+        run: |
+          if [ -f last-run.json ]; then
+            FAILED=$(node -e "const r=require('./last-run.json'); console.log(r.failed)")
+            if [ "$FAILED" != "0" ]; then
+              echo "::error::$FAILED UI flow(s) failed"
+              cat last-run.json
+              exit 1
+            fi
+            echo "All UI flows passed"
+          fi

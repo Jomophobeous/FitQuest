@@ -1,0 +1,29 @@
+{
+  "name": "onboarding",
+  "description": "Test onboarding flow — start screen capture, simulated interaction",
+  "url": null,
+  "fullPage": true,
+  "steps": [
+    {
+      "type": "wait",
+      "ms": 2000
+    },
+    {
+      "type": "screenshot",
+      "name": "onboarding-initial"
+    },
+    {
+      "type": "scroll",
+      "direction": "down",
+      "amount": 400
+    },
+    {
+      "type": "wait",
+      "ms": 500
+    },
+    {
+      "type": "screenshot",
+      "name": "onboarding-scrolled"
+    }
+  ]
+}

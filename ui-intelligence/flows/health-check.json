@@ -1,0 +1,20 @@
+{
+  "name": "health-check",
+  "description": "Verify server health endpoint returns phase 30 active status",
+  "url": "https://fitq-56sj.onrender.com/health",
+  "fullPage": false,
+  "steps": [
+    {
+      "type": "wait",
+      "ms": 1000
+    },
+    {
+      "type": "assert_text",
+      "text": "operational"
+    },
+    {
+      "type": "screenshot",
+      "name": "health-check-response"
+    }
+  ]
+}

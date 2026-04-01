@@ -1,0 +1,25 @@
+{
+  "name": "login",
+  "description": "Test login screen rendering and form visibility",
+  "url": null,
+  "fullPage": true,
+  "steps": [
+    {
+      "type": "wait",
+      "ms": 2000
+    },
+    {
+      "type": "screenshot",
+      "name": "login-initial"
+    },
+    {
+      "type": "scroll",
+      "direction": "down",
+      "amount": 300
+    },
+    {
+      "type": "screenshot",
+      "name": "login-scrolled"
+    }
+  ]
+}

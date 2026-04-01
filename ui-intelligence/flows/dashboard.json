@@ -1,0 +1,29 @@
+{
+  "name": "dashboard",
+  "description": "Test dashboard layout — main screen capture after load",
+  "url": null,
+  "fullPage": true,
+  "steps": [
+    {
+      "type": "wait",
+      "ms": 3000
+    },
+    {
+      "type": "screenshot",
+      "name": "dashboard-loaded"
+    },
+    {
+      "type": "scroll",
+      "direction": "down",
+      "amount": 600
+    },
+    {
+      "type": "wait",
+      "ms": 500
+    },
+    {
+      "type": "screenshot",
+      "name": "dashboard-scrolled"
+    }
+  ]
+}

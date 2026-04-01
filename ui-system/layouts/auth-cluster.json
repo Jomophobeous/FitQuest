@@ -1,0 +1,168 @@
+{
+  "$schema": "ui-system/layouts",
+  "$version": "31.2",
+  "$description": "Auth Cluster — component specs + screen blueprints. DESIGN BEFORE CODE.",
+
+  "cluster": "auth",
+  "screens": ["Login", "Register", "ForgotPassword", "ResetPassword"],
+
+  "components": {
+    "InputField": {
+      "locked": true,
+      "props": {
+        "label": { "type": "string", "required": true },
+        "placeholder": { "type": "string", "required": true },
+        "value": { "type": "string", "required": true },
+        "onChangeText": { "type": "(text: string) => void", "required": true },
+        "error": { "type": "string | undefined", "description": "Inline error message below field" },
+        "secureEntry": { "type": "boolean", "default": false, "description": "Password toggle eye icon" },
+        "keyboardType": { "type": "KeyboardTypeOptions", "default": "default" },
+        "autoCapitalize": { "type": "'none' | 'sentences'", "default": "none" },
+        "icon": { "type": "string", "description": "Left icon glyph (MaterialCommunityIcons)" }
+      },
+      "states": {
+        "idle": {
+          "borderColor": "theme.colors.border",
+          "backgroundColor": "theme.colors.surface",
+          "labelColor": "theme.colors.textSecondary"
+        },
+        "focus": {
+          "borderColor": "theme.colors.accent",
+          "backgroundColor": "theme.colors.surface",
+          "labelColor": "theme.colors.accent"
+        },
+        "error": {
+          "borderColor": "theme.colors.error",
+          "backgroundColor": "theme.colors.surface",
+          "labelColor": "theme.colors.error",
+          "errorText": "theme.colors.error, caption variant, 4px below field"
+        },
+        "success": {
+          "borderColor": "theme.colors.success",
+          "backgroundColor": "theme.colors.surface",
+          "labelColor": "theme.colors.textSecondary"
+        }
+      },
+      "dimensions": {
+        "height": 56,
+        "borderRadius": "theme.borderRadius.lg (12)",
+        "borderWidth": 1,
+        "paddingHorizontal": "theme.spacing[4] (16)",
+        "labelMarginBottom": "theme.spacing[2] (8)",
+        "errorMarginTop": "theme.spacing[1] (4)",
+        "fieldGap": "theme.spacing[4] (16)"
+      }
+    },
+
+    "FormContainer": {
+      "locked": true,
+      "description": "Wraps auth form content with consistent spacing and safe-area alignment",
+      "props": {
+        "children": { "type": "ReactNode", "required": true },
+        "keyboardAvoiding": { "type": "boolean", "default": true }
+      },
+      "layout": {
+        "flex": 1,
+        "backgroundColor": "theme.colors.background",
+        "paddingHorizontal": "theme.spacing[6] (24)",
+        "justifyContent": "center"
+      }
+    },
+
+    "AuthHeader": {
+      "locked": true,
+      "description": "Title + subtitle pattern for auth screens",
+      "props": {
+        "title": { "type": "string", "required": true },
+        "subtitle": { "type": "string", "required": true }
+      },
+      "layout": {
+        "titleVariant": "h1",
+        "titleColor": "primary",
+        "subtitleVariant": "body",
+        "subtitleColor": "secondary",
+        "gap": "theme.spacing[2] (8)",
+        "marginBottom": "theme.spacing[8] (32)"
+      }
+    }
+  },
+
+  "button_hierarchy": {
+    "primary": "GradientButton size=lg, full width — main CTA (Login, Register, Send Reset)",
+    "secondary": "ThemedText caption/muted with onPress — navigation links (Sign up, Forgot password, Back to login)"
+  },
+
+  "form_spacing": {
+    "header_to_first_field": "theme.spacing[8] (32)",
+    "between_fields": "theme.spacing[4] (16)",
+    "last_field_to_button": "theme.spacing[6] (24)",
+    "button_to_secondary": "theme.spacing[4] (16)",
+    "screen_horizontal": "theme.spacing[6] (24)"
+  },
+
+  "error_pattern": {
+    "type": "inline",
+    "position": "below input field",
+    "variant": "caption",
+    "color": "theme.colors.error",
+    "animation": "none (instant)",
+    "rules": [
+      "NEVER use modal alerts for form errors",
+      "NEVER use toast for validation",
+      "Error text appears immediately on blur or submit"
+    ]
+  },
+
+  "navigation_flow": {
+    "stack": "AuthStack",
+    "routes": [
+      { "name": "Login", "initial": true },
+      { "name": "Register", "from": ["Login"] },
+      { "name": "ForgotPassword", "from": ["Login"] },
+      { "name": "ResetPassword", "from": ["ForgotPassword"] }
+    ],
+    "transitions": "slide_from_right (default stack)",
+    "back": "always available via header or gesture"
+  },
+
+  "screen_blueprints": {
+    "Login": {
+      "zones": [
+        { "component": "AuthHeader", "title": "Welcome Back", "subtitle": "Sign in to continue your journey" },
+        { "component": "InputField", "icon": "email-outline", "label": "Email", "keyboardType": "email-address" },
+        { "component": "InputField", "icon": "lock-outline", "label": "Password", "secureEntry": true },
+        { "component": "ThemedText", "text": "Forgot password?", "variant": "caption", "color": "accent", "align": "right" },
+        { "component": "GradientButton", "title": "Sign In", "size": "lg", "fullWidth": true },
+        { "component": "ThemedText", "text": "Don't have an account? Sign up", "variant": "caption", "color": "muted", "align": "center" }
+      ]
+    },
+    "Register": {
+      "zones": [
+        { "component": "AuthHeader", "title": "Create Account", "subtitle": "Start your fitness transformation" },
+        { "component": "InputField", "icon": "account-outline", "label": "Full Name" },
+        { "component": "InputField", "icon": "email-outline", "label": "Email", "keyboardType": "email-address" },
+        { "component": "InputField", "icon": "lock-outline", "label": "Password", "secureEntry": true },
+        { "component": "InputField", "icon": "lock-check-outline", "label": "Confirm Password", "secureEntry": true },
+        { "component": "GradientButton", "title": "Create Account", "size": "lg", "fullWidth": true },
+        { "component": "ThemedText", "text": "Already have an account? Sign in", "variant": "caption", "color": "muted", "align": "center" }
+      ]
+    },
+    "ForgotPassword": {
+      "zones": [
+        { "component": "AuthHeader", "title": "Reset Password", "subtitle": "Enter your email and we'll send you a reset link" },
+        { "component": "InputField", "icon": "email-outline", "label": "Email", "keyboardType": "email-address" },
+        { "component": "GradientButton", "title": "Send Reset Link", "size": "lg", "fullWidth": true },
+        { "component": "ThemedText", "text": "Back to sign in", "variant": "caption", "color": "muted", "align": "center" }
+      ]
+    },
+    "ResetPassword": {
+      "zones": [
+        { "component": "AuthHeader", "title": "New Password", "subtitle": "Enter your new password below" },
+        { "component": "InputField", "icon": "lock-outline", "label": "New Password", "secureEntry": true },
+        { "component": "InputField", "icon": "lock-check-outline", "label": "Confirm Password", "secureEntry": true },
+        { "component": "GradientButton", "title": "Reset Password", "size": "lg", "fullWidth": true },
+        { "component": "ThemedText", "text": "Back to sign in", "variant": "caption", "color": "muted", "align": "center" }
+      ]
+    }
+  }
+}

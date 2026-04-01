@@ -171,7 +171,7 @@ app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
     version: '5.0.0',
-    phase: 28,
+    phase: 29,
     status: 'operational',
     timestamp: new Date().toISOString(),
   });
@@ -186,7 +186,7 @@ app.use(require('./routes/deviceBinding'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/ai'));
 app.use(require('./routes/sync'));
-app.use(require('./routes/admin'));  // Phase 28: Enforcement + Admin dashboard
+app.use(require('./routes/admin'));  // Phase 29: Reputation + Recovery + Admin dashboard
 
 // ── 404 catch-all ──
 
@@ -214,7 +214,7 @@ const { startRetentionScheduler, stopRetentionScheduler } = require('./utils/ret
 let server;
 if (require.main === module) {
   server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v5.0.0 (Phase 28 — Enforcement Layer) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v5.0.0 (Phase 29 — Reputation & Recovery) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`[FitQuest Authority] Legacy HMAC: ${process.env.USE_LEGACY_SIGNATURE === 'true' ? 'ENABLED' : 'DISABLED'}`);
     // D1-D3: Start data retention scheduler (60s delay, then every 24h)

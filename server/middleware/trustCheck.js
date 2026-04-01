@@ -1,10 +1,15 @@
 /**
- * Trust scoring middleware — Phase 28 (Enforcement Layer).
+ * Trust scoring middleware — Phase 29 (Reputation & Recovery).
  *
  * Enforces trust thresholds + access profiles BEFORE endpoint logic executes.
  * Reads DB-persisted anomaly_score (set by anomalyEngine) — no per-request computation.
  *
  *   effective_score = trust_score - anomaly_score
+ *
+ * Phase 29 additions:
+ *   - Trust floor enforcement (repeat offenders capped)
+ *   - Premium user protection (paying users capped at SOFT_RESTRICT)
+ *   - Shadow mode logging (optional)
  *
  * Phase 28 access profiles:
  *   FULL:          >= 0.8  → full access
@@ -35,6 +40,13 @@ const {
   MAX_OFFLINE_WINDOW_HOURS,
   profileSeverity,
 } = require('../engines/enforcementEngine');
+const {
+  getTrustFloor,
+  applyPremiumProtection,
+  isShadowModeEnabled,
+  evaluateShadowMode,
+  getReputation,
+} = require('../engines/reputationEngine');
 
 // ── Thresholds (Phase 27 compat) ──
 const THRESHOLD_RESTRICTED = TRUST_THRESHOLDS.degraded;   // 0.6
@@ -160,6 +172,42 @@ async function trustCheck(req, res, next) {
           last_seen: device.last_seen,
           max_hours: MAX_OFFLINE_WINDOW_HOURS,
         });
+      }
+    }
+
+    // ── Phase 29: Trust floor enforcement ──
+    if (!overrideActive) {
+      const reputation = await getReputation(sanitizedUserId);
+      const floor = getTrustFloor(reputation);
+      if (floor.capped && effectiveTrust > floor.max_trust) {
+        // Don't change effectiveTrust on req (read-only), but downgrade profile
+        const flooredProfile = getAccessProfile(floor.max_trust);
+        if (profileSeverity(flooredProfile) > profileSeverity(accessProfile)) {
+          accessProfile = flooredProfile;
+        }
+      }
+
+      // Phase 29: Premium protection
+      const isPremium = await (async () => {
+        const { data: sub } = await supabase
+          .from('subscriptions')
+          .select('status')
+          .eq('user_id', sanitizedUserId)
+          .eq('status', 'active')
+          .maybeSingle();
+        return !!(sub && sub.status === 'active');
+      })();
+
+      if (isPremium) {
+        const prot = applyPremiumProtection(accessProfile, isPremium, userTrust);
+        if (prot.protected) {
+          accessProfile = prot.profile;
+        }
+      }
+
+      // Phase 29: Shadow mode
+      if (isShadowModeEnabled()) {
+        evaluateShadowMode(sanitizedUserId, accessProfile).catch(() => {});
       }
     }
 

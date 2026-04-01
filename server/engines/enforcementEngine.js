@@ -1,8 +1,9 @@
 /**
- * Enforcement Engine — Phase 28
+ * Enforcement Engine — Phase 29
  *
  * Converts trust scores + alerts into real access consequences.
- * Detection without consequence = exploitable system.
+ * Phase 29: Reputation-aware recovery — dynamic rates, severity delays,
+ * trust floors, premium protection, shadow mode.
  *
  * Trust Bands:
  *   SAFE:       ≥ 0.8  → FULL access
@@ -11,32 +12,26 @@
  *   CRITICAL:   0.2–0.39 → HARD_RESTRICT (block premium, increase verification)
  *   LOCKDOWN:   < 0.2    → LOCKDOWN (deny all privileged, force re-auth)
  *
- * Recovery:
- *   +0.02/hour clean activity, capped at 1.0
- *   Admin override with 24h cooldown (no decay, no alerts during cooldown)
+ * Recovery (Phase 29):
+ *   Dynamic rate based on reputation (alerts_7d, anomalies_24h)
+ *   Severity-based delay before recovery begins
+ *   Trust floor prevents abuse cycling
+ *   Premium protection caps restriction for paying users
  *
  * Adaptive penalty:
  *   decay = baseDecay * (1 + anomalyCount / 5)
  *   if recentAlerts > 3: decay *= 1.5
- *
- * Exports:
- *   TRUST_BANDS, ACCESS_PROFILES
- *   getAccessProfile(effectiveTrust)
- *   getEnforcementState(userId)
- *   applyAdaptivePenalty(baseDecay, anomalyCount, recentAlerts)
- *   revokeAllTokens(userId, reason)
- *   reinstateTokens(userId)
- *   forceProfile(userId, profile, reason)
- *   clearOverride(userId)
- *   getOverrideStatus(userId)
- *   applySoftRecovery(userId, hoursClean)
- *   checkOfflineWindow(lastSeen, maxHours)
- *   bridgeAlertToEnforcement(userId, alertSeverity)
  */
 'use strict';
 
 const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
+const {
+  getTrustFloor,
+  applyPremiumProtection,
+  evaluateShadowMode,
+  isShadowModeEnabled,
+} = require('./reputationEngine');
 
 // ── Trust Bands ──
 
@@ -193,6 +188,29 @@ async function getEnforcementState(userId) {
       accessProfile = ACCESS_PROFILES.HARD_RESTRICT;
     }
 
+    // Phase 29: Premium protection — cap restriction for paying users
+    let premiumProtected = false;
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('status')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .maybeSingle();
+    const isPremium = !!(sub && sub.status === 'active');
+
+    if (isPremium) {
+      const prot = applyPremiumProtection(accessProfile, isPremium, trustScore);
+      if (prot.protected) {
+        accessProfile = prot.profile;
+        premiumProtected = true;
+      }
+    }
+
+    // Phase 29: Shadow mode — log what Phase 29 would do
+    if (isShadowModeEnabled()) {
+      evaluateShadowMode(userId, accessProfile).catch(() => {});
+    }
+
     return {
       userId,
       accessProfile,
@@ -201,6 +219,7 @@ async function getEnforcementState(userId) {
       anomalyScore: Math.round(anomalyScore * 1000) / 1000,
       trustScore: Math.round(trustScore * 1000) / 1000,
       offlineEnforced,
+      premiumProtected,
     };
   } catch (err) {
     console.error('[enforcementEngine] getEnforcementState error:', err.message);

@@ -48,6 +48,17 @@ const {
   getFeatureGate,
   applyAdaptivePenalty,
 } = require('../engines/enforcementEngine');
+const {
+  getReputationSummary,
+  applyReputationRecovery,
+  resolveAsFalsePositive,
+  isShadowModeEnabled,
+  setShadowMode,
+  applyTrustFloor,
+  decayReputation,
+  SEVERITY_DELAYS,
+  TRUST_FLOOR_RULES,
+} = require('../engines/reputationEngine');
 
 // ── Admin auth: constant-time comparison ──
 const crypto = require('crypto');
@@ -563,7 +574,10 @@ router.post('/admin/config', async (req, res) => {
     alert_count_thresholds: ALERT_COUNT_THRESHOLDS,
     threat_score_thresholds: THREAT_SCORE_THRESHOLDS,
     threat_weights: THREAT_WEIGHTS,
-    phase: 28,
+    phase: 29,
+    shadow_mode: isShadowModeEnabled(),
+    severity_delays: SEVERITY_DELAYS,
+    trust_floor_rules: TRUST_FLOOR_RULES,
   });
 });
 
@@ -750,6 +764,157 @@ router.post('/admin/trigger-recovery', async (req, res) => {
     });
   } catch (err) {
     console.error('[admin] trigger-recovery error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ════════════════════════════════════════════════════════════════
+// Phase 29 — Reputation & Recovery Routes
+// ════════════════════════════════════════════════════════════════
+
+// ── POST /admin/reputation-status ──
+// Full reputation summary for a user
+router.post('/admin/reputation-status', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const summary = await getReputationSummary(user_id.trim().slice(0, 128));
+    if (!summary.success) {
+      return respond(res, 500, null, `Reputation query failed: ${summary.error}`);
+    }
+
+    return respond(res, 200, summary);
+  } catch (err) {
+    console.error('[admin] reputation-status error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/reputation-recovery ──
+// Reputation-aware trust recovery (replaces flat trigger-recovery for Phase 29)
+router.post('/admin/reputation-recovery', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, hours_clean } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const sanitizedId = user_id.trim().slice(0, 128);
+    const hours = Math.min(Math.max(1, Number(hours_clean) || 1), 720);
+
+    const result = await applyReputationRecovery(sanitizedId, hours);
+    if (!result.success) {
+      return respond(res, 500, null, `Recovery failed: ${result.error}`);
+    }
+
+    return respond(res, 200, { user_id: sanitizedId, ...result });
+  } catch (err) {
+    console.error('[admin] reputation-recovery error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/false-positive ──
+// Resolve an alert as false positive → reverse trust decay + remove impact
+router.post('/admin/false-positive', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, alert_id, notes } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+    if (!alert_id || typeof alert_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid alert_id.');
+    }
+
+    const result = await resolveAsFalsePositive(
+      user_id.trim().slice(0, 128),
+      alert_id.trim().slice(0, 128),
+      typeof notes === 'string' ? notes.slice(0, 500) : 'False positive',
+    );
+
+    if (!result.success) {
+      return respond(res, result.error === 'alert_not_found' ? 404 : 500, null, result.error);
+    }
+
+    return respond(res, 200, result);
+  } catch (err) {
+    console.error('[admin] false-positive error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/shadow-mode ──
+// Enable/disable shadow mode (log-only enforcement comparison)
+router.post('/admin/shadow-mode', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { enabled } = req.body;
+    if (typeof enabled !== 'boolean') {
+      return respond(res, 400, null, 'Missing or invalid enabled (boolean).');
+    }
+
+    const result = setShadowMode(enabled);
+    logEvent(null, null, 'shadow_mode_toggled', null, { enabled: result.shadow_mode });
+
+    return respond(res, 200, result);
+  } catch (err) {
+    console.error('[admin] shadow-mode error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/trust-floor ──
+// Apply trust floor for a user (caps trust based on reputation)
+router.post('/admin/trust-floor', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const result = await applyTrustFloor(user_id.trim().slice(0, 128));
+    if (!result.success) {
+      return respond(res, 500, null, `Trust floor failed: ${result.error}`);
+    }
+
+    return respond(res, 200, { user_id: user_id.trim().slice(0, 128), ...result });
+  } catch (err) {
+    console.error('[admin] trust-floor error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/reputation-decay ──
+// Apply weekly reputation decay (forgiveness over time)
+router.post('/admin/reputation-decay', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const result = await decayReputation(user_id.trim().slice(0, 128));
+    if (!result.success) {
+      return respond(res, 500, null, `Decay failed: ${result.error}`);
+    }
+
+    return respond(res, 200, { user_id: user_id.trim().slice(0, 128), ...result });
+  } catch (err) {
+    console.error('[admin] reputation-decay error:', err.message);
     return respond(res, 500, null, 'Internal server error.');
   }
 });

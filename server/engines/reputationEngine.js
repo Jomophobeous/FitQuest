@@ -371,8 +371,20 @@ async function decayReputation(userId) {
 
 async function resolveAsFalsePositive(userId, alertId, adminNotes) {
   try {
-    // 1. Mark the alert as resolved with false positive notes
-    const { data: alert, error: alertErr } = await supabase
+    // 1. Check alert exists first
+    const { data: existing, error: lookupErr } = await supabase
+      .from('trust_alerts')
+      .select('id, severity, trust_score_at_alert')
+      .eq('id', alertId)
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (lookupErr || !existing) {
+      return { success: false, error: 'alert_not_found' };
+    }
+
+    // 2. Mark the alert as resolved with false positive notes
+    const { error: updateErr } = await supabase
       .from('trust_alerts')
       .update({
         status: 'RESOLVED',
@@ -382,13 +394,13 @@ async function resolveAsFalsePositive(userId, alertId, adminNotes) {
         resolution_notes: adminNotes || 'False positive',
       })
       .eq('id', alertId)
-      .eq('user_id', userId)
-      .select('severity, trust_score_at_alert')
-      .maybeSingle();
+      .eq('user_id', userId);
 
-    if (alertErr || !alert) {
-      return { success: false, error: alertErr?.message || 'alert_not_found' };
+    if (updateErr) {
+      return { success: false, error: updateErr.message };
     }
+
+    const alert = existing;
 
     // 2. Reverse the trust decay — restore trust to score at time of alert
     const { data: user, error: userErr } = await supabase

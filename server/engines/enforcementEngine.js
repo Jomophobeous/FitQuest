@@ -1,7 +1,8 @@
 /**
- * Enforcement Engine — Phase 29
+ * Enforcement Engine — Phase 30
  *
  * Converts trust scores + alerts into real access consequences.
+ * Phase 30: Adaptive response integration — context-aware countermeasures.
  * Phase 29: Reputation-aware recovery — dynamic rates, severity delays,
  * trust floors, premium protection, shadow mode.
  *
@@ -32,6 +33,7 @@ const {
   evaluateShadowMode,
   isShadowModeEnabled,
 } = require('./reputationEngine');
+const { getActiveResponse } = require('./responseEngine');
 
 // ── Trust Bands ──
 
@@ -211,6 +213,14 @@ async function getEnforcementState(userId) {
       evaluateShadowMode(userId, accessProfile).catch(() => {});
     }
 
+    // Phase 30: Fetch active adaptive response
+    let activeResponse = null;
+    try {
+      activeResponse = await getActiveResponse(userId);
+    } catch (respErr) {
+      console.error('[enforcementEngine] Response lookup error:', respErr.message);
+    }
+
     return {
       userId,
       accessProfile,
@@ -220,6 +230,12 @@ async function getEnforcementState(userId) {
       trustScore: Math.round(trustScore * 1000) / 1000,
       offlineEnforced,
       premiumProtected,
+      adaptiveResponse: activeResponse ? {
+        response_type: activeResponse.response_type,
+        intensity: activeResponse.intensity,
+        active: activeResponse.active,
+        expires_at: activeResponse.end_time,
+      } : null,
     };
   } catch (err) {
     console.error('[enforcementEngine] getEnforcementState error:', err.message);

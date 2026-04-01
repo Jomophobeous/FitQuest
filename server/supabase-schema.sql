@@ -365,3 +365,38 @@ ALTER TABLE trust_alerts ADD COLUMN IF NOT EXISTS resolved BOOLEAN DEFAULT false
 ALTER TABLE trust_alerts ADD COLUMN IF NOT EXISTS resolved_by TEXT;
 ALTER TABLE trust_alerts ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMP;
 ALTER TABLE trust_alerts ADD COLUMN IF NOT EXISTS resolution_notes TEXT;
+
+
+-- ────────────────────────────────────────────────────────────
+-- 9. ADAPTIVE RESPONSES (Phase 30 — Adaptive Response Engine)
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS adaptive_responses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  response_type TEXT NOT NULL DEFAULT 'NONE'
+    CHECK (response_type IN ('NONE', 'FRICTION', 'SHADOW', 'ISOLATE', 'HARD_RESTRICT')),
+  intensity NUMERIC NOT NULL DEFAULT 0.0
+    CHECK (intensity >= 0 AND intensity <= 1),
+  duration_ms INTEGER NOT NULL DEFAULT 0,
+  reason TEXT,
+  features_affected JSONB DEFAULT '{}',
+  friction JSONB,
+  start_time TIMESTAMP NOT NULL DEFAULT now(),
+  end_time TIMESTAMP NOT NULL DEFAULT now(),
+  active BOOLEAN NOT NULL DEFAULT true,
+  trigger_source TEXT,
+  created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_adaptive_responses_user_active
+  ON adaptive_responses (user_id, active, end_time DESC);
+
+CREATE INDEX IF NOT EXISTS idx_adaptive_responses_user_history
+  ON adaptive_responses (user_id, start_time DESC);
+
+ALTER TABLE adaptive_responses ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS adaptive_responses_service_only ON adaptive_responses;
+CREATE POLICY adaptive_responses_service_only ON adaptive_responses
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');

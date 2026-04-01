@@ -1,5 +1,5 @@
 /**
- * Admin API Routes — Phase 28 (Enforcement Layer)
+ * Admin API Routes — Phase 30 (Adaptive Response Engine)
  *
  * Dashboard hooks for trust management:
  *   POST /admin/trust-scores   — List users with degraded/blocked trust
@@ -20,6 +20,11 @@
  *   POST /admin/revoke-tokens  — Revoke all device tokens (Phase 28)
  *   POST /admin/reinstate-tokens — Reinstate revoked tokens (Phase 28)
  *   POST /admin/trigger-recovery — Apply soft trust recovery (Phase 28)
+ *   POST /admin/response-status — Get adaptive response status (Phase 30)
+ *   POST /admin/evaluate-response — Trigger response evaluation (Phase 30)
+ *   POST /admin/clear-response — Clear active responses (Phase 30)
+ *   POST /admin/response-history — Get response history (Phase 30)
+ *   POST /admin/decay-response — Decay response intensity (Phase 30)
  *
  * Auth: Requires API_KEY (global middleware) + ADMIN_SECRET in request body.
  * ADMIN_SECRET defaults to DEVICE_SIGNING_SECRET if not set separately.
@@ -59,6 +64,15 @@ const {
   SEVERITY_DELAYS,
   TRUST_FLOOR_RULES,
 } = require('../engines/reputationEngine');
+const {
+  evaluateAndApply,
+  clearAllResponses,
+  getResponseSummary,
+  getResponseHistory,
+  decayResponseIntensity,
+  RESPONSE_TYPES,
+  RESPONSE_THRESHOLDS,
+} = require('../engines/responseEngine');
 
 // ── Admin auth: constant-time comparison ──
 const crypto = require('crypto');
@@ -915,6 +929,121 @@ router.post('/admin/reputation-decay', async (req, res) => {
     return respond(res, 200, { user_id: user_id.trim().slice(0, 128), ...result });
   } catch (err) {
     console.error('[admin] reputation-decay error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// Phase 30 — Adaptive Response Engine Admin Routes
+// ══════════════════════════════════════════════════════════
+
+// ── POST /admin/response-status ──
+// Get adaptive response status + summary for a user
+router.post('/admin/response-status', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const summary = await getResponseSummary(user_id.trim().slice(0, 128));
+    return respond(res, 200, {
+      user_id: user_id.trim().slice(0, 128),
+      ...summary,
+      response_types: RESPONSE_TYPES,
+      thresholds: RESPONSE_THRESHOLDS,
+    });
+  } catch (err) {
+    console.error('[admin] response-status error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/evaluate-response ──
+// Trigger adaptive response evaluation for a user
+router.post('/admin/evaluate-response', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const result = await evaluateAndApply(user_id.trim().slice(0, 128));
+    logEvent(user_id.trim().slice(0, 128), null, 'admin_response_evaluate', null, result);
+    return respond(res, 200, { user_id: user_id.trim().slice(0, 128), ...result });
+  } catch (err) {
+    console.error('[admin] evaluate-response error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/clear-response ──
+// Clear all active adaptive responses for a user
+router.post('/admin/clear-response', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const result = await clearAllResponses(user_id.trim().slice(0, 128));
+    if (!result.success) {
+      return respond(res, 500, null, `Clear failed: ${result.error}`);
+    }
+    logEvent(user_id.trim().slice(0, 128), null, 'admin_response_cleared', null, result);
+    return respond(res, 200, { user_id: user_id.trim().slice(0, 128), ...result });
+  } catch (err) {
+    console.error('[admin] clear-response error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/response-history ──
+// Get response history for a user
+router.post('/admin/response-history', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, limit } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const maxLimit = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+    const history = await getResponseHistory(user_id.trim().slice(0, 128), maxLimit);
+    return respond(res, 200, { user_id: user_id.trim().slice(0, 128), count: history.length, history });
+  } catch (err) {
+    console.error('[admin] response-history error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /admin/decay-response ──
+// Decay intensity of active response for a user
+router.post('/admin/decay-response', async (req, res) => {
+  if (!validateAdminSecret(req, res)) return;
+
+  try {
+    const { user_id, clean_hours } = req.body;
+    if (!user_id || typeof user_id !== 'string') {
+      return respond(res, 400, null, 'Missing or invalid user_id.');
+    }
+
+    const hours = Math.min(Math.max(parseFloat(clean_hours) || 1, 0.1), 168); // cap at 7 days
+    const result = await decayResponseIntensity(user_id.trim().slice(0, 128), hours);
+    if (!result.success) {
+      return respond(res, result.reason === 'no_active_response' ? 404 : 500, null,
+        result.reason || result.error || 'Decay failed.');
+    }
+    return respond(res, 200, { user_id: user_id.trim().slice(0, 128), ...result });
+  } catch (err) {
+    console.error('[admin] decay-response error:', err.message);
     return respond(res, 500, null, 'Internal server error.');
   }
 });

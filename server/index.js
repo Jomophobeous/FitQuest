@@ -1,7 +1,8 @@
 /**
- * FitQuest Backend Authority Server — Phase 27
+ * FitQuest Backend Authority Server — Phase 30
  *
- * Trust decay + alerting system (configurable thresholds, admin dashboard).
+ * Adaptive Response Engine — context-aware countermeasures.
+ * Trust decay + alerting + enforcement + reputation + recovery + adaptive responses.
  * Device binding & persistent trust (server-issued device_token).
  * Challenge-response authentication (no client-side secrets).
  * Legacy HMAC signature support behind USE_LEGACY_SIGNATURE flag.
@@ -171,8 +172,9 @@ app.get('/health', (_req, res) => {
   respond(res, 200, {
     service: 'fitquest-authority',
     version: '5.0.0',
-    phase: 29,
+    phase: 30,
     status: 'operational',
+    engines: ['trust_decay', 'anomaly', 'enforcement', 'reputation', 'adaptive_response'],
     timestamp: new Date().toISOString(),
   });
 });
@@ -186,7 +188,7 @@ app.use(require('./routes/deviceBinding'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/ai'));
 app.use(require('./routes/sync'));
-app.use(require('./routes/admin'));  // Phase 29: Reputation + Recovery + Admin dashboard
+app.use(require('./routes/admin'));  // Phase 30: Adaptive Response + Reputation + Enforcement
 
 // ── 404 catch-all ──
 
@@ -214,7 +216,7 @@ const { startRetentionScheduler, stopRetentionScheduler } = require('./utils/ret
 let server;
 if (require.main === module) {
   server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[FitQuest Authority] v5.0.0 (Phase 29 — Reputation & Recovery) listening on port ${PORT}`);
+    console.log(`[FitQuest Authority] v5.0.0 (Phase 30 — Adaptive Response Engine) listening on port ${PORT}`);
     console.log(`[FitQuest Authority] Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`[FitQuest Authority] Legacy HMAC: ${process.env.USE_LEGACY_SIGNATURE === 'true' ? 'ENABLED' : 'DISABLED'}`);
     // D1-D3: Start data retention scheduler (60s delay, then every 24h)

@@ -1,28 +1,21 @@
 /**
- * Trust scoring middleware — Phase 29 (Reputation & Recovery).
+ * Trust scoring middleware — Phase 30 (Adaptive Response).
  *
  * Enforces trust thresholds + access profiles BEFORE endpoint logic executes.
  * Reads DB-persisted anomaly_score (set by anomalyEngine) — no per-request computation.
  *
  *   effective_score = trust_score - anomaly_score
  *
- * Phase 29 additions:
- *   - Trust floor enforcement (repeat offenders capped)
- *   - Premium user protection (paying users capped at SOFT_RESTRICT)
- *   - Shadow mode logging (optional)
+ * Phase 30 additions:
+ *   - Adaptive response hook (friction, shadow, isolate, hard_restrict)
+ *   - Response-aware feature gating
  *
- * Phase 28 access profiles:
- *   FULL:          >= 0.8  → full access
- *   WATCH:         0.6–0.79 → increased logging, no restriction
- *   SOFT_RESTRICT: 0.4–0.59 → rate limits, disable non-essential, revalidation
- *   HARD_RESTRICT: 0.2–0.39 → block premium, block subscription endpoints
- *   LOCKDOWN:      < 0.2    → deny all privileged actions, force re-auth
- *
- * Backward compat preserved: req.restricted, req.degraded, req.softBlocked.
+ * Phase 29: Trust floor, premium protection, shadow mode
+ * Phase 28: Access profiles, feature gates, offline window
  *
  * Attaches: req.user, req.device, req.restricted, req.degraded, req.softBlocked,
  *           req.effectiveTrust, req.anomalyScore, req.backendVerified,
- *           req.accessProfile, req.featureGate.
+ *           req.accessProfile, req.featureGate, req.adaptiveResponse.
  */
 'use strict';
 
@@ -47,6 +40,7 @@ const {
   evaluateShadowMode,
   getReputation,
 } = require('../engines/reputationEngine');
+const { applyResponseToRequest } = require('../engines/responseEngine');
 
 // ── Thresholds (Phase 27 compat) ──
 const THRESHOLD_RESTRICTED = TRUST_THRESHOLDS.degraded;   // 0.6
@@ -224,6 +218,29 @@ async function trustCheck(req, res, next) {
 
     const featureGate = getFeatureGate(accessProfile);
 
+    // ── Phase 30: Adaptive response hook ──
+    let adaptiveResponse = { applied: false, response_type: 'NONE', friction: null, features: null };
+    try {
+      adaptiveResponse = await applyResponseToRequest(sanitizedUserId);
+      if (adaptiveResponse.applied) {
+        // Merge response-level feature isolation into featureGate
+        if (adaptiveResponse.features) {
+          for (const [key, allowed] of Object.entries(adaptiveResponse.features)) {
+            if (!allowed && featureGate[key] !== undefined) {
+              featureGate[key] = false;
+            }
+          }
+        }
+        logEvent(sanitizedUserId, sanitizedDeviceId, 'adaptive_response_applied', ip, {
+          response_type: adaptiveResponse.response_type,
+          intensity: adaptiveResponse.intensity,
+        });
+      }
+    } catch (respErr) {
+      // Non-blocking — response engine failure must not break request flow
+      console.error('[trustCheck] Adaptive response error:', respErr.message);
+    }
+
     // ── Backward compat flags (Phase 27) ──
     const softBlocked = effectiveTrust < THRESHOLD_SOFT_BLOCK;
     const degraded = effectiveTrust < THRESHOLD_RESTRICTED;
@@ -261,13 +278,21 @@ async function trustCheck(req, res, next) {
     req.accessProfile = accessProfile;     // Phase 28
     req.featureGate = featureGate;         // Phase 28
     req.overrideActive = overrideActive;   // Phase 28
+    req.adaptiveResponse = adaptiveResponse; // Phase 30
 
     logEvent(sanitizedUserId, sanitizedDeviceId, 'trust_check_passed', ip, {
       effective: effectiveTrust,
       anomaly_score: anomalyScore,
       access_profile: accessProfile,
       override: overrideActive,
+      adaptive_response: adaptiveResponse.response_type,
     });
+
+    // Phase 30: Apply friction delay (non-blocking latency injection)
+    if (adaptiveResponse.applied && adaptiveResponse.friction && adaptiveResponse.friction.latency_ms > 0) {
+      const delay = Math.min(adaptiveResponse.friction.latency_ms, 3000); // cap at 3s
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
 
     next();
   } catch (err) {

@@ -1,0 +1,83 @@
+{
+  "$schema": "ui-system/layouts",
+  "$version": "31.0",
+  "$description": "Onboarding screen blueprint — enforced component composition",
+
+  "screen": "onboarding",
+  "file": "app/onboarding.tsx",
+  "layout": "single-column-fullscreen",
+
+  "structure": [
+    {
+      "zone": "hero",
+      "component": "Carousel",
+      "config": {
+        "autoPlay": true,
+        "autoPlayInterval": 4000,
+        "showDots": true,
+        "loop": true
+      },
+      "content_per_slide": [
+        {
+          "order": 1,
+          "element": "image_or_icon",
+          "token": "centered, max 60% screen height"
+        },
+        {
+          "order": 2,
+          "element": "ThemedText",
+          "variant": "h2",
+          "color": "primary",
+          "alignment": "center"
+        },
+        {
+          "order": 3,
+          "element": "ThemedText",
+          "variant": "body",
+          "color": "secondary",
+          "alignment": "center"
+        }
+      ]
+    },
+    {
+      "zone": "pagination",
+      "component": "Carousel.dots",
+      "position": "below hero"
+    },
+    {
+      "zone": "cta",
+      "position": "bottom-fixed",
+      "padding": "theme.spacing[6]",
+      "components": [
+        {
+          "component": "Button",
+          "variant": "primary",
+          "size": "lg",
+          "title": "Get Started",
+          "fullWidth": true
+        },
+        {
+          "component": "ThemedText",
+          "variant": "caption",
+          "color": "muted",
+          "text": "Already have an account? Sign in",
+          "onPress": "navigate('login')"
+        }
+      ]
+    }
+  ],
+
+  "spacing_rules": {
+    "hero_to_dots": "theme.spacing[6] (24)",
+    "dots_to_cta": "theme.spacing[8] (32)",
+    "cta_button_to_link": "theme.spacing[3] (12)",
+    "screen_horizontal_padding": "theme.spacing[6] (24)"
+  },
+
+  "violations": [
+    "Placing CTA above fold (must be bottom-fixed)",
+    "Using more than 5 carousel slides (overwhelms user)",
+    "Text blocks longer than 2 lines per slide",
+    "Non-centered content in onboarding slides"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "$schema": "ui-system/layouts",
+  "$version": "31.0",
+  "$description": "Dashboard screen blueprint — enforced component composition",
+
+  "screen": "dashboard",
+  "file": "app/dashboard.tsx",
+  "layout": "scrollable-single-column",
+
+  "structure": [
+    {
+      "zone": "header",
+      "components": [
+        {
+          "component": "ThemedText",
+          "variant": "h2",
+          "color": "primary",
+          "content": "greeting + user name"
+        },
+        {
+          "component": "ThemedText",
+          "variant": "bodySmall",
+          "color": "muted",
+          "content": "date or motivational line"
+        }
+      ],
+      "padding": "theme.spacing[6] horizontal, theme.spacing[4] vertical"
+    },
+    {
+      "zone": "stats-grid",
+      "layout": "2-column-grid",
+      "gap": "theme.spacing[3] (12)",
+      "components": [
+        { "component": "StatBlock", "data": "steps", "icon": "walk", "compact": true },
+        { "component": "StatBlock", "data": "active_minutes", "icon": "timer-outline", "compact": true },
+        { "component": "StatBlock", "data": "calories", "icon": "fire", "compact": true },
+        { "component": "StatBlock", "data": "streak", "icon": "lightning-bolt", "compact": true }
+      ]
+    },
+    {
+      "zone": "progress-section",
+      "components": [
+        {
+          "component": "Card",
+          "children": [
+            { "component": "ThemedText", "variant": "h4", "text": "Today's Progress" },
+            { "component": "ProgressBar", "data": "daily_goal_fraction" },
+            { "component": "ThemedText", "variant": "caption", "color": "muted", "text": "X of Y completed" }
+          ]
+        }
+      ]
+    },
+    {
+      "zone": "quick-actions",
+      "layout": "horizontal-scroll",
+      "components": [
+        { "component": "Button", "title": "Start Workout", "variant": "primary", "icon": "play" },
+        { "component": "Button", "title": "Log Activity", "variant": "success", "icon": "plus" }
+      ]
+    },
+    {
+      "zone": "activity-feed",
+      "components": [
+        {
+          "component": "ThemedText",
+          "variant": "h4",
+          "text": "Recent Activity"
+        },
+        {
+          "component": "Card",
+          "repeat": "recent_sessions (max 3)",
+          "children": [
+            { "component": "ThemedText", "variant": "body", "text": "session name" },
+            { "component": "ThemedText", "variant": "caption", "color": "muted", "text": "time ago" },
+            { "component": "ProgressBar", "data": "session_completion" }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "spacing_rules": {
+    "section_gap": "theme.spacing[6] (24)",
+    "card_internal_gap": "theme.spacing[3] (12)",
+    "stats_grid_gap": "theme.spacing[3] (12)",
+    "screen_horizontal_padding": "theme.spacing[4] (16)"
+  },
+
+  "violations": [
+    "More than 4 StatBlocks above the fold",
+    "Activity feed showing more than 3 recent items (use 'See All')",
+    "Stat values without suffix/unit",
+    "Quick actions without icons",
+    "Non-Card containers for activity items"
+  ]
+}

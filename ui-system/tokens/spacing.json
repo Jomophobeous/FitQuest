@@ -1,0 +1,34 @@
+{
+  "$schema": "ui-system/tokens",
+  "$version": "31.0",
+  "$description": "FitQuest spacing + radius tokens. Numeric keys only. Derived from src/design/theme-system.ts",
+
+  "spacing": {
+    "px": 1,
+    "0": 0,
+    "1": 4,
+    "2": 8,
+    "3": 12,
+    "4": 16,
+    "5": 20,
+    "6": 24,
+    "8": 32,
+    "10": 40,
+    "12": 48
+  },
+
+  "radius": {
+    "none": 0,
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "xl": 16,
+    "full": 9999
+  },
+
+  "_rules": {
+    "SPACING_ACCESS": "theme.spacing[4] — NUMERIC keys only, never theme.spacing.md",
+    "RADIUS_ACCESS": "theme.borderRadius.lg — NAMED keys only",
+    "NEVER_USE": ["inline numeric values for spacing", "theme.spacing.md or theme.spacing.lg"]
+  }
+}

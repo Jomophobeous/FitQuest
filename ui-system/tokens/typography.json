@@ -1,0 +1,45 @@
+{
+  "$schema": "ui-system/tokens",
+  "$version": "31.0",
+  "$description": "FitQuest typography tokens. Derived from src/design/theme-system.ts",
+
+  "sizes": {
+    "h1": 32,
+    "h2": 24,
+    "h3": 20,
+    "h4": 18,
+    "body": 16,
+    "bodySmall": 14,
+    "label": 13,
+    "caption": 12
+  },
+
+  "weights": {
+    "regular": "400",
+    "medium": "500",
+    "semibold": "600",
+    "bold": "700"
+  },
+
+  "lineHeights": {
+    "tight": 1.2,
+    "normal": 1.5,
+    "relaxed": 1.75
+  },
+
+  "variants": {
+    "h1":      { "size": "h1", "weight": "bold", "lineHeight": "tight" },
+    "h2":      { "size": "h2", "weight": "bold", "lineHeight": "tight" },
+    "h3":      { "size": "h3", "weight": "semibold", "lineHeight": "tight" },
+    "h4":      { "size": "h4", "weight": "semibold", "lineHeight": "normal" },
+    "body":    { "size": "body", "weight": "regular", "lineHeight": "normal" },
+    "bodySmall": { "size": "bodySmall", "weight": "regular", "lineHeight": "normal" },
+    "label":   { "size": "label", "weight": "medium", "lineHeight": "normal" },
+    "caption": { "size": "caption", "weight": "regular", "lineHeight": "normal" }
+  },
+
+  "_rules": {
+    "ALWAYS_USE": "ThemedText component with variant prop — never raw <Text> with inline fontSize",
+    "IMPORT": "import ThemedText from 'src/components/ThemedText' — DEFAULT export, not named"
+  }
+}

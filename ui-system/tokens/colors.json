@@ -1,0 +1,61 @@
+{
+  "$schema": "ui-system/tokens",
+  "$version": "31.0",
+  "$description": "FitQuest color tokens — single source of truth. Derived from src/design/theme-system.ts",
+
+  "dark": {
+    "background": "#050507",
+    "surface": "#0E0E12",
+    "surfaceVariant": "#161619",
+    "text": "#F4F5F9",
+    "textSecondary": "#A8B0C0",
+    "textMuted": "#6B7590",
+    "border": "#1E1E24",
+    "divider": "#18181D",
+    "accent": "#10B981",
+    "error": "#EF4444",
+    "warning": "#F4A427",
+    "success": "#10B981",
+    "onAccent": "#FFFFFF",
+    "overlay": "rgba(0,0,0,0.65)"
+  },
+
+  "light": {
+    "background": "#F5F6F8",
+    "surface": "#FFFFFF",
+    "surfaceVariant": "#EBEDF2",
+    "text": "#111318",
+    "textSecondary": "#4A4F5C",
+    "textMuted": "#6D7385",
+    "border": "#D0D5DE",
+    "divider": "#DCE0E8",
+    "accent": "#10B981",
+    "error": "#DC2626",
+    "warning": "#F4A427",
+    "success": "#10B981",
+    "onAccent": "#FFFFFF",
+    "overlay": "rgba(0,0,0,0.60)"
+  },
+
+  "semantic": {
+    "primary": "#10B981",
+    "danger": "#EF4444",
+    "warning": "#F4A427",
+    "info": "#3B82F6",
+    "neutral": "#6B7590"
+  },
+
+  "category": {
+    "purple": "#8B5CF6",
+    "indigo": "#5F63FF",
+    "pink": "#EC4899",
+    "blue": "#3B82F6",
+    "orange": "#F97316",
+    "skyBlue": "#38BDF8"
+  },
+
+  "_rules": {
+    "NEVER_USE": ["#FFFFFF as background in dark mode", "#000000 as text in light mode", "any color not listed here"],
+    "ALWAYS_REFERENCE": "theme.colors.* — never hardcode hex values in components"
+  }
+}

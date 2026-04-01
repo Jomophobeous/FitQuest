@@ -1,0 +1,63 @@
+{
+  "$schema": "ui-system",
+  "$version": "31.0",
+  "$description": "Component Lock Registry — only these components are permitted in FitQuest screens",
+
+  "locked_components": {
+    "Button": {
+      "spec": "ui-system/components/Button.js",
+      "implementation": "src/components/ui/GlassUI.tsx → GradientButton",
+      "import": "import { GradientButton } from '@/components/ui/GlassUI'"
+    },
+    "Card": {
+      "spec": "ui-system/components/Card.js",
+      "implementation": "src/components/ui/GlassUI.tsx → GlassCard",
+      "import": "import { GlassCard } from '@/components/ui/GlassUI'"
+    },
+    "ProgressBar": {
+      "spec": "ui-system/components/ProgressBar.js",
+      "implementation": "custom — see spec",
+      "import": "TBD — to be built as ProgressBar.tsx"
+    },
+    "StatBlock": {
+      "spec": "ui-system/components/StatBlock.js",
+      "implementation": "GlassCard + AnimatedCounter composite",
+      "import": "Composite — uses GlassCard, AnimatedCounter, ThemedText"
+    },
+    "Carousel": {
+      "spec": "ui-system/components/Carousel.js",
+      "implementation": "FlatList-based — see spec",
+      "import": "TBD — to be built as Carousel.tsx"
+    }
+  },
+
+  "text": {
+    "ThemedText": {
+      "implementation": "src/components/ThemedText.tsx",
+      "import": "import ThemedText from '@/components/ThemedText'",
+      "note": "DEFAULT export — never use named import { ThemedText }"
+    }
+  },
+
+  "supporting_components": {
+    "AnimatedCounter": "src/components/ui/GlassUI.tsx",
+    "ProgressRing": "src/components/ui/GlassUI.tsx",
+    "WeekCalendar": "src/components/ui/GlassUI.tsx",
+    "SectionHeader": "src/components/ui/GlassUI.tsx",
+    "PulseDot": "src/components/ui/GlassUI.tsx"
+  },
+
+  "enforcement": {
+    "lint_command": "node ui-system/rules/lint.js",
+    "lint_file": "node ui-system/rules/lint.js --file <path>",
+    "on_violation": "BLOCK — do not merge code with UI lint errors"
+  },
+
+  "rules": [
+    "No new UI components without updating this registry",
+    "No freestyle styling — all values from tokens",
+    "No inline colors, spacing, or font sizes",
+    "All screens must follow layout blueprints",
+    "No third-party UI libraries unless registered here"
+  ]
+}

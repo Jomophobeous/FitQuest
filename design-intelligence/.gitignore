@@ -1,0 +1,8 @@
+# Cache files (fetched results)
+cache/*.json
+
+# Output files (generated patterns)
+output/patterns.json
+output/components.json
+output/color_tokens.json
+output/last-run.json

@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import Svg, { Defs, LinearGradient, Stop, Rect, Ellipse, Path, Circle, Line, Text as SvgText } from 'react-native-svg';
+import { useTheme } from '../context/ThemeContext';
 
 interface Props {
   /** Rendered width/height in dp (square) */
@@ -13,21 +14,22 @@ interface Props {
 }
 
 export default function FitQuestLogo({ size = 80, showText = false }: Props) {
+  const { theme } = useTheme();
   // SVG viewBox is 1024×1024 — scale everything proportionally
   return (
     <Svg width={size} height={size} viewBox="0 0 1024 1024">
       <Defs>
         <LinearGradient id="logoBg" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0%" stopColor="#0A0E17" />
-          <Stop offset="100%" stopColor="#050810" />
+          <Stop offset="0%" stopColor={theme.colors.background} />
+          <Stop offset="100%" stopColor={theme.colors.background} />
         </LinearGradient>
         <LinearGradient id="logoAccent" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0%" stopColor="#34D399" />
-          <Stop offset="100%" stopColor="#10B981" />
+          <Stop offset="0%" stopColor={theme.colors.accent} />
+          <Stop offset="100%" stopColor={theme.colors.accent} />
         </LinearGradient>
         <LinearGradient id="logoGlow" x1="0.5" y1="0" x2="0.5" y2="1">
-          <Stop offset="0%" stopColor="#10B981" stopOpacity={0.35} />
-          <Stop offset="100%" stopColor="#10B981" stopOpacity={0} />
+          <Stop offset="0%" stopColor={theme.colors.accent} stopOpacity={0.35} />
+          <Stop offset="100%" stopColor={theme.colors.accent} stopOpacity={0} />
         </LinearGradient>
       </Defs>
 
@@ -49,7 +51,7 @@ export default function FitQuestLogo({ size = 80, showText = false }: Props) {
       {/* Inner shield fill (subtle) */}
       <Path
         d="M512 190 C608 190, 718 226, 772 280 L772 515 C772 660, 662 772, 512 846 C362 772, 252 660, 252 515 L252 280 C306 226, 416 190, 512 190Z"
-        fill="#10B981"
+        fill={theme.colors.accent}
         fillOpacity={0.08}
       />
 
@@ -75,7 +77,7 @@ export default function FitQuestLogo({ size = 80, showText = false }: Props) {
           fontFamily="Arial Black, Arial, sans-serif"
           fontWeight="900"
           fontSize="96"
-          fill="#F4F5F9"
+          fill={theme.colors.text}
           letterSpacing={8}
         >
           FQ

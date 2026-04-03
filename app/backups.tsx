@@ -4,34 +4,26 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useToast } from '../src/context/ToastContext';
+import ThemedText from '../src/components/ThemedText';
 import {
-  deleteEncryptedBackup,
-  exportEncryptedBackup,
-  importEncryptedBackup,
-  listEncryptedBackups,
+  useBackupsViewModel,
   type BackupListItem,
-} from '../src/services/backupService';
-import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
-import {
-  deleteCloudBackup,
-  isCloudBackupConfigured,
-  listCloudBackups,
-  restoreCloudBackup,
-  uploadLocalBackupToCloud,
   type CloudBackupListItem,
-} from '../src/services/cloudBackupService';
-import { enqueueMutation } from '../src/services/mutationQueueService';
+} from '../src/viewmodels/useBackupsViewModel';
+import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -52,16 +44,11 @@ function formatDateTime(ts: number): string {
 export default function BackupsScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const router = useRouter();
+  const vm = useBackupsViewModel();
 
-  const [items, setItems] = useState<BackupListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
   const [passphrase, setPassphrase] = useState('');
-
-  const [cloudItems, setCloudItems] = useState<CloudBackupListItem[]>([]);
-  const [cloudLoading, setCloudLoading] = useState(false);
-  const cloudEnabled = isCloudBackupConfigured();
 
   const styles = useMemo(() => {
     return StyleSheet.create({
@@ -78,7 +65,7 @@ export default function BackupsScreen() {
         paddingBottom: theme.spacing[2],
       },
       headerTitle: {
-        fontSize: 18,
+        fontSize: typography.sizes.h4, 
         fontWeight: '800',
         color: theme.colors.text,
       },
@@ -87,7 +74,7 @@ export default function BackupsScreen() {
         paddingBottom: theme.spacing[10],
       },
       helperText: {
-        fontSize: 13,
+        fontSize: typography.sizes.label, 
         color: theme.colors.textMuted,
         lineHeight: 18,
       },
@@ -114,13 +101,13 @@ export default function BackupsScreen() {
         marginRight: theme.spacing[3],
       },
       backupName: {
-        fontSize: 14,
+        fontSize: typography.sizes.bodySmall, 
         fontWeight: '700',
         color: theme.colors.text,
       },
       backupSub: {
         marginTop: theme.spacing[1],
-        fontSize: 12,
+        fontSize: typography.sizes.caption, 
         color: theme.colors.textMuted,
       },
       iconBtn: {
@@ -138,66 +125,29 @@ export default function BackupsScreen() {
         alignItems: 'center',
       },
       emptyText: {
-        fontSize: 13,
+        fontSize: typography.sizes.label, 
         color: theme.colors.textMuted,
       },
     });
   }, [theme]);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      const next = await listEncryptedBackups();
-      setItems(next);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const refreshCloud = useCallback(async () => {
-    if (!cloudEnabled) return;
-    setCloudLoading(true);
-    try {
-      const next = await listCloudBackups();
-      setCloudItems(next);
-    } catch {
-      // Avoid noisy alerts on automatic refresh.
-      setCloudItems([]);
-    } finally {
-      setCloudLoading(false);
-    }
-  }, [cloudEnabled]);
-
-  useEffect(() => {
-    refresh();
-    void refreshCloud();
-  }, [refresh, refreshCloud]);
-
   const handleCreateBackup = useCallback(async () => {
-    if (busy) return;
-    setBusy(true);
+    if (vm.busy) return;
     try {
-      const result = await exportEncryptedBackup({
-        passphrase: passphrase.trim().length > 0 ? passphrase : undefined,
+      const result = await vm.createBackup(passphrase.trim());
+      showToast({
+        message: `${t('backup.created') || 'Backup created'} (${formatBytes(result.bytes)})`,
+        type: 'success',
       });
-
-      await refresh();
-
-      Alert.alert(
-        t('backup.created') || 'Backup created',
-        `${t('backup.helperText')?.slice(0, 30) || 'Saved encrypted backup'} (${formatBytes(result.bytes)}).`,
-      );
     } catch (e: any) {
-      Alert.alert(t('backup.failed') || 'Backup failed', e?.message ?? 'Unknown error');
-    } finally {
-      setBusy(false);
+      showToast({ message: e?.message ?? t('backup.failed') ?? 'Backup failed', type: 'error' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-  }, [busy, passphrase, refresh]);
+  }, [vm.busy, passphrase, vm]);
 
   const handleRestore = useCallback(
     (item: BackupListItem) => {
-      if (busy) return;
+      if (vm.busy) return;
       Alert.alert(
         t('backup.restoreConfirm') || 'Restore backup?',
         t('backup.restoreWarning') || 'This will replace your local database with the selected backup.',
@@ -207,18 +157,12 @@ export default function BackupsScreen() {
             text: t('common.restore') || 'Restore',
             style: 'destructive',
             onPress: async () => {
-              setBusy(true);
               try {
-                await importEncryptedBackup({
-                  backupUri: item.uri,
-                  passphrase: passphrase.trim().length > 0 ? passphrase : undefined,
-                });
+                await vm.restoreBackup(item.uri, passphrase.trim());
                 Alert.alert(t('backup.restoreComplete') || 'Restore complete', 'Backup imported successfully.');
                 router.canGoBack() ? router.back() : router.replace('/profile');
               } catch (e: any) {
-                Alert.alert(t('backup.restoreFailed') || 'Restore failed', e?.message ?? 'Unknown error');
-              } finally {
-                setBusy(false);
+                showToast({ message: e?.message ?? t('backup.restoreFailed') ?? 'Restore failed', type: 'error' });
               }
             },
           },
@@ -226,12 +170,12 @@ export default function BackupsScreen() {
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-    [busy, passphrase, router],
+    [vm.busy, passphrase, router, vm],
   );
 
   const handleDelete = useCallback(
     (item: BackupListItem) => {
-      if (busy) return;
+      if (vm.busy) return;
       Alert.alert(
         t('backup.deleteConfirm') || 'Delete backup?',
         t('backup.deleteWarning') || 'This cannot be undone.',
@@ -241,14 +185,10 @@ export default function BackupsScreen() {
             text: t('common.delete') || 'Delete',
             style: 'destructive',
             onPress: async () => {
-              setBusy(true);
               try {
-                await deleteEncryptedBackup(item.uri);
-                await refresh();
+                await vm.removeBackup(item.uri);
               } catch (e: any) {
-                Alert.alert(t('backup.deleteFailed') || 'Delete failed', e?.message ?? 'Unknown error');
-              } finally {
-                setBusy(false);
+                showToast({ message: e?.message ?? t('backup.deleteFailed') ?? 'Delete failed', type: 'error' });
               }
             },
           },
@@ -256,32 +196,23 @@ export default function BackupsScreen() {
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-    [busy, refresh],
+    [vm.busy, vm],
   );
 
   const handleUploadCloud = useCallback(async () => {
-    if (!cloudEnabled || busy) return;
-    setBusy(true);
+    if (!vm.cloudEnabled || vm.busy) return;
     try {
-      await uploadLocalBackupToCloud({
-        passphrase: passphrase.trim().length > 0 ? passphrase : undefined,
-      });
-      await refreshCloud();
-      Alert.alert(t('backup.uploaded') || 'Uploaded', 'Encrypted backup uploaded successfully.');
+      await vm.uploadCloud(passphrase.trim());
+      showToast({ message: t('backup.uploaded') || 'Backup uploaded successfully', type: 'success' });
     } catch (e: any) {
-      if (passphrase.trim().length === 0) {
-        await enqueueMutation('backup.upload_latest', {}, { dedupeKey: 'backup.upload_latest.manual' });
-      }
-      Alert.alert(t('backup.uploadFailed') || 'Upload failed', e?.message ?? 'Unknown error');
-    } finally {
-      setBusy(false);
+      showToast({ message: e?.message ?? t('backup.uploadFailed') ?? 'Upload failed', type: 'error' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-  }, [busy, cloudEnabled, passphrase, refreshCloud]);
+  }, [vm.busy, vm.cloudEnabled, passphrase, vm]);
 
   const handleRestoreCloud = useCallback(
     (item: CloudBackupListItem) => {
-      if (!cloudEnabled || busy) return;
+      if (!vm.cloudEnabled || vm.busy) return;
       Alert.alert(
         t('backup.restoreConfirm') || 'Restore cloud backup?',
         t('backup.restoreWarning') || 'This will replace your local database with the selected cloud backup.',
@@ -291,18 +222,12 @@ export default function BackupsScreen() {
             text: t('common.restore') || 'Restore',
             style: 'destructive',
             onPress: async () => {
-              setBusy(true);
               try {
-                await restoreCloudBackup({
-                  id: item.id,
-                  passphrase: passphrase.trim().length > 0 ? passphrase : undefined,
-                });
+                await vm.restoreCloud(item.id, passphrase.trim());
                 Alert.alert(t('backup.restoreComplete') || 'Restore complete', 'Cloud backup imported successfully.');
                 router.canGoBack() ? router.back() : router.replace('/profile');
               } catch (e: any) {
-                Alert.alert(t('backup.restoreFailed') || 'Restore failed', e?.message ?? 'Unknown error');
-              } finally {
-                setBusy(false);
+                showToast({ message: e?.message ?? t('backup.restoreFailed') ?? 'Restore failed', type: 'error' });
               }
             },
           },
@@ -310,12 +235,12 @@ export default function BackupsScreen() {
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-    [busy, cloudEnabled, passphrase, router],
+    [vm.busy, vm.cloudEnabled, passphrase, router, vm],
   );
 
   const handleDeleteCloud = useCallback(
     (item: CloudBackupListItem) => {
-      if (!cloudEnabled || busy) return;
+      if (!vm.cloudEnabled || vm.busy) return;
       Alert.alert(
         t('backup.deleteConfirm') || 'Delete cloud backup?',
         t('backup.deleteWarning') || 'This cannot be undone.',
@@ -325,14 +250,10 @@ export default function BackupsScreen() {
             text: t('common.delete') || 'Delete',
             style: 'destructive',
             onPress: async () => {
-              setBusy(true);
               try {
-                await deleteCloudBackup(item.id);
-                await refreshCloud();
+                await vm.removeCloud(item.id);
               } catch (e: any) {
-                Alert.alert(t('backup.deleteFailed') || 'Delete failed', e?.message ?? 'Unknown error');
-              } finally {
-                setBusy(false);
+                showToast({ message: e?.message ?? t('backup.deleteFailed') ?? 'Delete failed', type: 'error' });
               }
             },
           },
@@ -340,12 +261,12 @@ export default function BackupsScreen() {
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-    [busy, cloudEnabled, refreshCloud],
+    [vm.busy, vm.cloudEnabled, vm],
   );
 
   return (
     <ScreenErrorBoundary screenName="Backups" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={styles.container}>
+      <ScreenContainer>
         <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
@@ -353,17 +274,17 @@ export default function BackupsScreen() {
           >
             <MaterialCommunityIcons name="arrow-left" size={18} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('backup.title') || 'Backup & Restore'}</Text>
+          <ThemedText style={styles.headerTitle}>{t('backup.title') || 'Backup & Restore'}</ThemedText>
           <View style={{ width: theme.spacing[8] }} />
         </View>
 
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <GlassCard>
             <View style={{ gap: theme.spacing[3] }}>
-              <Text style={styles.helperText}>
+              <ThemedText style={styles.helperText}>
                 {t('backup.helperText') ||
                   'Creates an encrypted backup file of your local database. If you set a passphrase, you must use the same passphrase to restore.'}
-              </Text>
+              </ThemedText>
 
               <TextInput
                 value={passphrase}
@@ -374,14 +295,14 @@ export default function BackupsScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 style={styles.input}
-                editable={!busy}
+                editable={!vm.busy}
               />
 
               <GradientButton
-                title={busy ? t('backup.working') || 'Working…' : t('backup.createBackup') || 'Create Backup'}
+                title={vm.busy ? t('backup.working') || 'Working…' : t('backup.createBackup') || 'Create Backup'}
                 variant="success"
                 size="lg"
-                style={busy ? { opacity: 0.7 } : undefined}
+                style={vm.busy ? { opacity: 0.7 } : undefined}
                 onPress={() => {
                   void handleCreateBackup();
                 }}
@@ -393,35 +314,35 @@ export default function BackupsScreen() {
             <SectionHeader title={t('backup.availableBackups') || 'Available Backups'} />
           </View>
 
-          {loading ? (
+          {vm.loading ? (
             <View style={styles.empty}>
               <ActivityIndicator color={theme.colors.accent} />
             </View>
-          ) : items.length === 0 ? (
+          ) : vm.items.length === 0 ? (
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>{t('backup.noBackups') || 'No backups yet.'}</Text>
+              <ThemedText style={styles.emptyText}>{t('backup.noBackups') || 'No backups yet.'}</ThemedText>
             </View>
           ) : (
             <View style={{ gap: theme.spacing[3] }}>
-              {items.map((item) => (
+              {vm.items.map((item) => (
                 <GlassCard key={item.uri}>
                   <View style={styles.backupRow}>
                     <View style={styles.backupMeta}>
-                      <Text style={styles.backupName} numberOfLines={1}>
+                      <ThemedText style={styles.backupName} numberOfLines={1}>
                         {item.filename}
-                      </Text>
-                      <Text style={styles.backupSub}>
+                      </ThemedText>
+                      <ThemedText style={styles.backupSub}>
                         {formatDateTime(item.modified_at)} • {formatBytes(item.bytes)}
-                      </Text>
+                      </ThemedText>
                     </View>
 
-                    <TouchableOpacity style={styles.iconBtn} onPress={() => handleRestore(item)} disabled={busy}>
+                    <TouchableOpacity style={styles.iconBtn} onPress={() => handleRestore(item)} disabled={vm.busy}>
                       <MaterialCommunityIcons name="backup-restore" size={18} color={theme.colors.accent} />
                     </TouchableOpacity>
 
                     <View style={{ width: theme.spacing[2] }} />
 
-                    <TouchableOpacity style={styles.iconBtn} onPress={() => handleDelete(item)} disabled={busy}>
+                    <TouchableOpacity style={styles.iconBtn} onPress={() => handleDelete(item)} disabled={vm.busy}>
                       <MaterialCommunityIcons name="delete-outline" size={18} color={theme.colors.error} />
                     </TouchableOpacity>
                   </View>
@@ -430,7 +351,7 @@ export default function BackupsScreen() {
             </View>
           )}
 
-          {!!cloudEnabled && (
+          {!!vm.cloudEnabled && (
             <>
               <View style={styles.sectionGap}>
                 <SectionHeader title={t('backup.cloudBackups') || 'Cloud Backups'} />
@@ -438,18 +359,18 @@ export default function BackupsScreen() {
 
               <GlassCard>
                 <View style={{ gap: theme.spacing[3] }}>
-                  <Text style={styles.helperText}>
+                  <ThemedText style={styles.helperText}>
                     {t('backup.cloudHelper') ||
                       'Stores the encrypted backup blob on your backend. The server cannot decrypt your data.'}
-                  </Text>
+                  </ThemedText>
 
                   <View style={{ flexDirection: 'row', gap: theme.spacing[3] }}>
                     <View style={{ flex: 1 }}>
                       <GradientButton
-                        title={busy ? t('backup.working') || 'Working…' : t('backup.uploadBackup') || 'Upload Backup'}
+                        title={vm.busy ? t('backup.working') || 'Working…' : t('backup.uploadBackup') || 'Upload Backup'}
                         variant="primary"
                         size="md"
-                        style={busy ? { opacity: 0.7 } : undefined}
+                        style={vm.busy ? { opacity: 0.7 } : undefined}
                         onPress={() => {
                           void handleUploadCloud();
                         }}
@@ -457,12 +378,12 @@ export default function BackupsScreen() {
                     </View>
                     <TouchableOpacity
                       style={styles.iconBtn}
-                      disabled={busy || cloudLoading}
+                      disabled={vm.busy || vm.cloudLoading}
                       onPress={() => {
-                        void refreshCloud();
+                        void vm.refreshCloud();
                       }}
                     >
-                      {cloudLoading ? (
+                      {vm.cloudLoading ? (
                         <ActivityIndicator color={theme.colors.accent} />
                       ) : (
                         <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.text} />
@@ -472,26 +393,26 @@ export default function BackupsScreen() {
                 </View>
               </GlassCard>
 
-              {cloudItems.length === 0 ? (
+              {vm.cloudItems.length === 0 ? (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyText}>{t('backup.noCloudBackups') || 'No cloud backups yet.'}</Text>
+                  <ThemedText style={styles.emptyText}>{t('backup.noCloudBackups') || 'No cloud backups yet.'}</ThemedText>
                 </View>
               ) : (
                 <View style={{ gap: theme.spacing[3] }}>
-                  {cloudItems.map((item) => (
+                  {vm.cloudItems.map((item) => (
                     <GlassCard key={item.id}>
                       <View style={styles.backupRow}>
                         <View style={styles.backupMeta}>
-                          <Text style={styles.backupName} numberOfLines={1}>
+                          <ThemedText style={styles.backupName} numberOfLines={1}>
                             {item.id}
-                          </Text>
-                          <Text style={styles.backupSub}>{formatDateTime(item.createdAt)}</Text>
+                          </ThemedText>
+                          <ThemedText style={styles.backupSub}>{formatDateTime(item.createdAt)}</ThemedText>
                         </View>
 
                         <TouchableOpacity
                           style={styles.iconBtn}
                           onPress={() => handleRestoreCloud(item)}
-                          disabled={busy}
+                          disabled={vm.busy}
                         >
                           <MaterialCommunityIcons name="backup-restore" size={18} color={theme.colors.accent} />
                         </TouchableOpacity>
@@ -501,7 +422,7 @@ export default function BackupsScreen() {
                         <TouchableOpacity
                           style={styles.iconBtn}
                           onPress={() => handleDeleteCloud(item)}
-                          disabled={busy}
+                          disabled={vm.busy}
                         >
                           <MaterialCommunityIcons name="delete-outline" size={18} color={theme.colors.error} />
                         </TouchableOpacity>
@@ -513,7 +434,7 @@ export default function BackupsScreen() {
             </>
           )}
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }

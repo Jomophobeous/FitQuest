@@ -10,7 +10,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   Platform,
@@ -30,7 +29,7 @@ import Animated, {
   withRepeat,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import FQLogoMark from '../src/components/FQLogoMark';
@@ -41,9 +40,11 @@ import { useAuth } from '../src/context/AuthContext';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
+import ThemedText from '../src/components/ThemedText';
 import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
 import { rateLimiter, RATE_LIMITS, formatRetryAfter } from '../src/utils/rateLimiter';
 import { getApiBaseUrl } from '../src/services/apiBaseUrl';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -131,7 +132,7 @@ export default function LoginScreen() {
       if (biometricCapability?.isAvailable && biometricEnabled) {
         setMode('biometric');
         // Auto-prompt biometric on mount
-        timer = setTimeout(() => promptBiometric(), 500);
+        timer = setTimeout(() => promptBiometric(), 500); // debounce
       } else if (hasPc) {
         setMode('passcode');
       } else {
@@ -396,7 +397,7 @@ export default function LoginScreen() {
 
   return (
     <ScreenErrorBoundary screenName="Login" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         {/* Background glow */}
         <LinearGradient colors={[accentColor + '08', 'transparent', 'transparent']} style={styles.bgGlow} />
 
@@ -411,8 +412,8 @@ export default function LoginScreen() {
               <View style={[styles.logoBg, { backgroundColor: accentColor + '12' }]}>
                 <FQLogoMark size={64} showGlow={false} />
               </View>
-              <Text style={[styles.appName, { color: theme.colors.text }]}>FitQuest</Text>
-              <Text style={[styles.tagline, { color: theme.colors.textMuted }]}>{t('login.tagline')}</Text>
+              <ThemedText style={[styles.appName, { color: theme.colors.text }]}>FitQuest</ThemedText>
+              <ThemedText style={[styles.tagline, { color: theme.colors.textMuted }]}>{t('login.tagline')}</ThemedText>
             </Animated.View>
 
             {/* ── Biometric Mode ── */}
@@ -433,15 +434,15 @@ export default function LoginScreen() {
                     />
                   </Animated.View>
                 </TouchableOpacity>
-                <Text style={[styles.biometricLabel, { color: theme.colors.text }]}>
+                <ThemedText style={[styles.biometricLabel, { color: theme.colors.text }]}>
                   {Platform.OS === 'ios' ? t('login.tapToUnlockFaceId') : t('login.tapToUnlockFingerprint')}
-                </Text>
+                </ThemedText>
 
                 {failedAttempts > 0 && failedAttempts < 5 && (
                   <Animated.View entering={FadeIn.duration(150)}>
-                    <Text style={[styles.attemptsText, { color: theme.colors.warning }]}>
+                    <ThemedText style={[styles.attemptsText, { color: theme.colors.warning }]}>
                       {5 - failedAttempts} {t('login.attemptsRemaining')}
-                    </Text>
+                    </ThemedText>
                   </Animated.View>
                 )}
 
@@ -453,11 +454,13 @@ export default function LoginScreen() {
                         setError('');
                       }}
                       style={[styles.altBtn, { borderColor: theme.colors.border }]}
+                      accessibilityRole="button"
+                      accessibilityLabel="Switch to passcode login"
                     >
                       <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
                         {t('login.usePasscode')}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity
@@ -466,9 +469,11 @@ export default function LoginScreen() {
                       setError('');
                     }}
                     style={[styles.altBtn, { borderColor: theme.colors.border }]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Switch to email login"
                   >
                     <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</Text>
+                    <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</ThemedText>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -477,7 +482,7 @@ export default function LoginScreen() {
             {/* ── Passcode Mode ── */}
             {mode === 'passcode' && (
               <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-                <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.enterPasscode')}</Text>
+                <ThemedText style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.enterPasscode')}</ThemedText>
 
                 {/* Passcode dots */}
                 <Animated.View style={[styles.dotsRow, shakeStyle]}>
@@ -536,7 +541,7 @@ export default function LoginScreen() {
                               const next = passcode + String(digit);
                               setPasscode(next);
                               if (next.length === 4) {
-                                setTimeout(() => {
+                                setTimeout(() => { // debounce
                                   handlePasscode(next);
                                 }, 100);
                               }
@@ -544,7 +549,7 @@ export default function LoginScreen() {
                             accessibilityRole="button"
                             accessibilityLabel={`Digit ${digit}`}
                           >
-                            <Text style={[styles.numpadDigit, { color: theme.colors.text }]}>{digit}</Text>
+                            <ThemedText style={[styles.numpadDigit, { color: theme.colors.text }]}>{digit}</ThemedText>
                           </TouchableOpacity>
                         );
                       })}
@@ -560,9 +565,11 @@ export default function LoginScreen() {
                         setError('');
                       }}
                       style={[styles.altBtn, { borderColor: theme.colors.border }]}
+                      accessibilityRole="button"
+                      accessibilityLabel="Switch to biometric login"
                     >
                       <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</ThemedText>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity
@@ -571,9 +578,11 @@ export default function LoginScreen() {
                       setError('');
                     }}
                     style={[styles.altBtn, { borderColor: theme.colors.border }]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Switch to email login"
                   >
                     <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                    <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</Text>
+                    <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</ThemedText>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -582,7 +591,7 @@ export default function LoginScreen() {
             {/* ── Email Mode ── */}
             {mode === 'email' && (
               <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-                <Text style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.welcomeBack')}</Text>
+                <ThemedText style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.welcomeBack')}</ThemedText>
 
                 <Animated.View style={shakeStyle}>
                   <View
@@ -640,11 +649,11 @@ export default function LoginScreen() {
                   accessibilityLabel="Sign in"
                 >
                   {submitting ? (
-                    <ActivityIndicator color="#000" />
+                    <ActivityIndicator color={theme.colors.background} />
                   ) : (
-                    <Text style={[styles.emailBtnText, { color: theme.isDark ? theme.colors.background : '#000' }]}>
+                    <ThemedText style={[styles.emailBtnText, { color: theme.colors.background }]}>
                       {t('login.signIn')}
-                    </Text>
+                    </ThemedText>
                   )}
                 </TouchableOpacity>
 
@@ -665,9 +674,9 @@ export default function LoginScreen() {
                     accessibilityLabel="Continue offline"
                   >
                     <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
-                    <Text style={[styles.socialBtnText, { color: theme.colors.accent }]}>
+                    <ThemedText style={[styles.socialBtnText, { color: theme.colors.accent }]}>
                       {t('login.continueOffline')}
-                    </Text>
+                    </ThemedText>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -686,9 +695,9 @@ export default function LoginScreen() {
                     accessibilityLabel="Sign in with Google"
                   >
                     <MaterialCommunityIcons name="google" size={18} color={theme.colors.text} />
-                    <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>
+                    <ThemedText style={[styles.socialBtnText, { color: theme.colors.text }]}>
                       {t('login.continueGoogle')}
-                    </Text>
+                    </ThemedText>
                   </TouchableOpacity>
 
                   {Platform.OS === 'ios' && (
@@ -708,9 +717,9 @@ export default function LoginScreen() {
                       accessibilityLabel="Sign in with Apple"
                     >
                       <MaterialCommunityIcons name="apple" size={18} color={theme.colors.text} />
-                      <Text style={[styles.socialBtnText, { color: theme.colors.text }]}>
+                      <ThemedText style={[styles.socialBtnText, { color: theme.colors.text }]}>
                         {t('login.continueApple')}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   )}
 
@@ -723,11 +732,11 @@ export default function LoginScreen() {
                       },
                     ]}
                   >
-                    <Text style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>
+                    <ThemedText style={[styles.oauthDiagTitle, { color: theme.colors.textSecondary }]}>
                       {t('login.oauth.readiness')}
-                    </Text>
+                    </ThemedText>
                     {oauthChecks.map((item) => (
-                      <Text
+                      <ThemedText
                         key={item.label}
                         style={[
                           styles.oauthDiagLine,
@@ -737,15 +746,15 @@ export default function LoginScreen() {
                         ]}
                       >
                         {item.ok ? '✓' : '•'} {item.label}
-                      </Text>
+                      </ThemedText>
                     ))}
                   </View>
                 </View>
 
                 <View style={styles.registerRow}>
-                  <Text style={[styles.registerText, { color: theme.colors.textMuted }]}>{t('login.noAccount')} </Text>
+                  <ThemedText style={[styles.registerText, { color: theme.colors.textMuted }]}>{t('login.noAccount')} </ThemedText>
                   <TouchableOpacity onPress={() => router.push('/register')}>
-                    <Text style={[styles.registerLink, { color: accentColor }]}>{t('login.register')}</Text>
+                    <ThemedText style={[styles.registerLink, { color: accentColor }]}>{t('login.register')}</ThemedText>
                   </TouchableOpacity>
                 </View>
 
@@ -759,7 +768,7 @@ export default function LoginScreen() {
                       style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                     >
                       <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</Text>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</ThemedText>
                     </TouchableOpacity>
                   )}
                   {!!hasExistingPasscode && (
@@ -771,7 +780,7 @@ export default function LoginScreen() {
                       style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                     >
                       <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                      <Text style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.passcode')}</Text>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.passcode')}</ThemedText>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -782,12 +791,12 @@ export default function LoginScreen() {
             {error !== '' && (
               <Animated.View entering={FadeIn.duration(150)} style={styles.errorWrap}>
                 <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
-                <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
+                <ThemedText style={[styles.errorText, { color: theme.colors.error }]}>{error}</ThemedText>
               </Animated.View>
             )}
           </ScrollView>
         </KeyboardAvoidingView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -799,17 +808,17 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   bgGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: SCREEN_H * 0.4 },
-  scrollContent: { paddingHorizontal: 24, paddingBottom: 40, flexGrow: 1, justifyContent: 'center' },
+  scrollContent: { paddingHorizontal: spacing[6], paddingBottom: spacing[10], flexGrow: 1, justifyContent: 'center' },
 
   // Brand
-  brandSection: { alignItems: 'center', marginBottom: 40 },
-  logoBg: { width: 88, height: 88, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  appName: { fontSize: 36, fontWeight: '900', letterSpacing: -1 },
-  tagline: { fontSize: 14, fontWeight: '500', marginTop: 4, textTransform: 'uppercase', letterSpacing: 2 },
+  brandSection: { alignItems: 'center', marginBottom: spacing[10] },
+  logoBg: { width: 88, height: 88, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginBottom: spacing[4] },
+  appName: { fontSize: typography.sizes.display, fontWeight: '900', letterSpacing: -1 },
+  tagline: { fontSize: typography.sizes.bodySmall, fontWeight: '500', marginTop: spacing[1], textTransform: 'uppercase', letterSpacing: 2 },
 
   // Auth section
-  authSection: { alignItems: 'center', gap: 16 },
-  modeTitle: { fontSize: 24, fontWeight: '800', marginBottom: 8 },
+  authSection: { alignItems: 'center', gap: spacing[4] },
+  modeTitle: { fontSize: typography.sizes.h2, fontWeight: '800', marginBottom: spacing[2] },
 
   // Biometric
   biometricBtn: {
@@ -819,27 +828,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   biometricGlow: { ...StyleSheet.absoluteFillObject },
-  biometricLabel: { fontSize: 15, fontWeight: '600', textAlign: 'center' },
-  attemptsText: { fontSize: 13, fontWeight: '600', marginTop: 8 },
+  biometricLabel: { fontSize: typography.sizes.bodyMid, fontWeight: '600', textAlign: 'center' },
+  attemptsText: { fontSize: typography.sizes.label, fontWeight: '600', marginTop: spacing[2] },
 
   // Passcode dots
-  dotsRow: { flexDirection: 'row', gap: 16, marginVertical: 16 },
-  dot: { width: 16, height: 16, borderRadius: 8, borderWidth: 2 },
+  dotsRow: { flexDirection: 'row', gap: spacing[4], marginVertical: spacing[4] },
+  dot: { width: 16, height: 16, borderRadius: radius.md, borderWidth: 2 },
 
   // Numpad
-  numpad: { gap: 10, marginTop: 8 },
-  numpadRow: { flexDirection: 'row', gap: 12, justifyContent: 'center' },
+  numpad: { gap: spacing[2.5], marginTop: spacing[2] },
+  numpadRow: { flexDirection: 'row', gap: spacing[3], justifyContent: 'center' },
   numpadBtn: {
     width: 72,
     height: 56,
-    borderRadius: 16,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  numpadDigit: { fontSize: 24, fontWeight: '700' },
+  numpadDigit: { fontSize: typography.sizes.h2, fontWeight: '700' },
 
   // Email inputs
   inputWrap: {
@@ -847,71 +856,71 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 14,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    marginBottom: 12,
-    gap: 10,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[3.5],
+    marginBottom: spacing[3],
+    gap: spacing[2.5],
     width: '100%',
   },
-  input: { flex: 1, fontSize: 15, fontWeight: '500' },
+  input: { flex: 1, fontSize: typography.sizes.bodyMid, fontWeight: '500' },
   emailBtn: {
     width: '100%',
-    paddingVertical: 16,
+    paddingVertical: spacing[4],
     borderRadius: 14,
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: spacing[1],
   },
-  emailBtnText: { fontSize: 16, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
+  emailBtnText: { fontSize: typography.sizes.body, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
 
-  socialWrap: { width: '100%', gap: 10, marginTop: 8 },
+  socialWrap: { width: '100%', gap: spacing[2.5], marginTop: spacing[2] },
   socialBtn: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: spacing[2],
     borderRadius: 14,
     borderWidth: 1,
-    paddingVertical: 14,
+    paddingVertical: spacing[3.5],
   },
-  socialBtnText: { fontSize: 14, fontWeight: '700' },
+  socialBtnText: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
 
   oauthDiag: {
     width: '100%',
     borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginTop: 2,
-    gap: 4,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2.5],
+    marginTop: spacing[0.5],
+    gap: spacing[1],
   },
-  oauthDiagTitle: { fontSize: 12, fontWeight: '700' },
-  oauthDiagLine: { fontSize: 12, fontWeight: '600' },
+  oauthDiagTitle: { fontSize: typography.sizes.caption, fontWeight: '700' },
+  oauthDiagLine: { fontSize: typography.sizes.caption, fontWeight: '600' },
 
-  registerRow: { flexDirection: 'row', marginTop: 16 },
-  registerText: { fontSize: 14 },
-  registerLink: { fontSize: 14, fontWeight: '700' },
+  registerRow: { flexDirection: 'row', marginTop: spacing[4] },
+  registerText: { fontSize: typography.sizes.bodySmall },
+  registerLink: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
 
   // Alt auth
-  altAuthRow: { flexDirection: 'row', gap: 12, marginTop: 24 },
+  altAuthRow: { flexDirection: 'row', gap: spacing[3], marginTop: spacing[6] },
   altBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
+    gap: spacing[1.5],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2.5],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
-  altBtnText: { fontSize: 13, fontWeight: '600' },
+  altBtnText: { fontSize: typography.sizes.label, fontWeight: '600' },
 
   // Error
   errorWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing[1.5],
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: spacing[4],
   },
-  errorText: { fontSize: 13, fontWeight: '600' },
+  errorText: { fontSize: typography.sizes.label, fontWeight: '600' },
 });

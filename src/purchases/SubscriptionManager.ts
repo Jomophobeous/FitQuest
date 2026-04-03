@@ -51,6 +51,8 @@ const PRODUCT_MONTHLY = 'fitquest_monthly';
 const PRODUCT_ANNUAL = 'fitquest_annual';
 
 const RC_PUBLIC_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY;
+const BILLING_MODE = process.env.EXPO_PUBLIC_BILLING_MODE; // 'mock' | 'live'
+const MOCK_BILLING_STATE = process.env.EXPO_PUBLIC_MOCK_BILLING_STATE; // 'premium' | 'trial' | 'expired'
 const SUBSCRIPTION_CACHE_KEY = 'fitquest_subscription_cache_v1';
 const SUBSCRIPTION_LAST_VERIFIED_KEY = 'fitquest_subscription_last_verified_at';
 const CLOCK_CHECKPOINT_KEY = 'fitquest_clock_checkpoint';
@@ -65,6 +67,8 @@ export class SubscriptionManager {
   private listeners: Array<(state: SubscriptionState) => void> = [];
   private revenueCatAvailable = false;
   private purchaseInProgress = false;
+
+  private isMockMode = false;
 
   private constructor() {
     this.currentState = {
@@ -90,6 +94,17 @@ export class SubscriptionManager {
   // ── Initialization ──
 
   private async initialize(): Promise<void> {
+    // Mock billing mode — simulate subscription states without RevenueCat
+    if (BILLING_MODE === 'mock') {
+      this.isMockMode = true;
+      this.revenueCatAvailable = false;
+      const mockState = this.buildMockState(MOCK_BILLING_STATE || 'premium');
+      this.updateState(mockState);
+      safeWarn(`[SubscriptionManager] Mock billing mode: ${mockState.status}`);
+      void logEvent('subscription_mock_mode', { state: mockState.status });
+      return;
+    }
+
     // Try to initialize RevenueCat
     try {
       const Purchases = await this.getRevenueCatModule();
@@ -99,8 +114,8 @@ export class SubscriptionManager {
         // Never configure RevenueCat with a test key in production —
         // it causes a fatal SimulatedStoreErrorDialogActivity crash
         const isTestKey = apiKey?.startsWith('test_');
-        if (isTestKey && !__DEV__) {
-          safeWarn('[SubscriptionManager] Skipping RevenueCat: test key in production');
+        if (!apiKey || (isTestKey && !__DEV__)) {
+          safeWarn('[SubscriptionManager] Subscriptions disabled: ' + (!apiKey ? 'no API key' : 'test key in production') + '. App runs in trial/free mode.');
           this.revenueCatAvailable = false;
         } else if (apiKey && !apiKey.includes('your_key_here')) {
           // Guard: RevenueCat native SDK retains state across JS reloads (HMR).
@@ -139,7 +154,62 @@ export class SubscriptionManager {
 
   // ── Core State Management ──
 
+  private buildMockState(mode: string): SubscriptionState {
+    const now = Date.now();
+    switch (mode) {
+      case 'premium':
+        return {
+          status: 'ACTIVE',
+          isTrial: false,
+          trialEndDate: null,
+          expiresDate: null,
+          willRenew: true,
+          productIdentifier: PRODUCT_ANNUAL,
+          verificationSource: 'local',
+          lastVerifiedAt: now,
+        };
+      case 'expired':
+        return {
+          status: 'EXPIRED',
+          isTrial: false,
+          trialEndDate: now - TRIAL_DURATION_MS,
+          expiresDate: now - 1000,
+          willRenew: false,
+          productIdentifier: null,
+          verificationSource: 'local',
+          lastVerifiedAt: now,
+        };
+      case 'trial':
+      default:
+        return {
+          status: 'TRIAL',
+          isTrial: true,
+          trialEndDate: now + TRIAL_DURATION_MS,
+          expiresDate: now + TRIAL_DURATION_MS,
+          willRenew: false,
+          productIdentifier: null,
+          verificationSource: 'local',
+          lastVerifiedAt: now,
+        };
+    }
+  }
+
+  /**
+   * Switch mock billing state at runtime (for testing all paths).
+   * Only works when BILLING_MODE=mock.
+   */
+  setMockState(mode: 'premium' | 'trial' | 'expired'): void {
+    if (!this.isMockMode) {
+      safeWarn('[SubscriptionManager] setMockState ignored — not in mock mode');
+      return;
+    }
+    const state = this.buildMockState(mode);
+    this.updateState(state);
+    void logEvent('subscription_mock_switch', { to: mode });
+  }
+
   async refresh(): Promise<SubscriptionState> {
+    if (this.isMockMode) return this.currentState;
     if (this.revenueCatAvailable) {
       return this.refreshFromRevenueCat();
     }
@@ -400,6 +470,11 @@ export class SubscriptionManager {
   // ── Purchase Methods ──
 
   async purchaseMonthly(): Promise<boolean> {
+    if (this.isMockMode) {
+      this.setMockState('premium');
+      void logEvent('purchase_attempt', { plan: 'monthly', mock: true });
+      return true;
+    }
     if (this.purchaseInProgress) {
       safeWarn('[SubscriptionManager] Purchase already in progress, ignoring');
       return false;
@@ -416,6 +491,11 @@ export class SubscriptionManager {
   }
 
   async purchaseAnnual(): Promise<boolean> {
+    if (this.isMockMode) {
+      this.setMockState('premium');
+      void logEvent('purchase_attempt', { plan: 'annual', mock: true });
+      return true;
+    }
     if (this.purchaseInProgress) {
       safeWarn('[SubscriptionManager] Purchase already in progress, ignoring');
       return false;
@@ -490,6 +570,10 @@ export class SubscriptionManager {
   }
 
   async restorePurchases(): Promise<SubscriptionState> {
+    if (this.isMockMode) {
+      void logEvent('restore_attempt', { mock: true });
+      return this.currentState;
+    }
     if (this.purchaseInProgress) {
       safeWarn('[SubscriptionManager] Operation in progress, ignoring restore');
       return this.currentState;

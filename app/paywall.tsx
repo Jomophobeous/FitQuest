@@ -11,7 +11,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
@@ -19,15 +18,19 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useSubscription } from '../src/purchases/SubscriptionContext';
+import { useToast } from '../src/context/ToastContext';
+import ThemedText from '../src/components/ThemedText';
 import { getRegionalPricing } from '../src/utils/regionalPricing';
-import { logEvent } from '../src/services/telemetry';
+import { usePaywallViewModel } from '../src/viewmodels/usePaywallViewModel';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -67,8 +70,8 @@ const withAlpha = (hex: string, alpha: number): string => {
 };
 
 const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: string) => {
-  const closeSize = theme.spacing[8] + theme.spacing[1];
-  const heroGlowHeight = theme.spacing[10] * 3;
+  const closeSize = (theme.spacing[8] ?? 32) + (theme.spacing[1] ?? 4);
+  const heroGlowHeight = (theme.spacing[10] ?? 40) * 3;
   const heroGlowRadius = heroGlowHeight / 2;
 
   return StyleSheet.create({
@@ -104,8 +107,8 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       borderRadius: heroGlowRadius,
     },
     logoWrap: {
-      width: theme.spacing[10] * 2,
-      height: theme.spacing[10] * 2,
+      width: (theme.spacing[10] ?? 40) * 2,
+      height: (theme.spacing[10] ?? 40) * 2,
       borderRadius: theme.borderRadius.xl,
       justifyContent: 'center',
       alignItems: 'center',
@@ -113,7 +116,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       backgroundColor: withAlpha(accentColor, 0.12),
     },
     heroTitle: {
-      fontSize: 32,
+      fontSize: typography.sizes.h1, 
       fontWeight: '900',
       textAlign: 'center',
       letterSpacing: -0.5,
@@ -121,7 +124,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       color: theme.colors.text,
     },
     heroSub: {
-      fontSize: 15,
+      fontSize: typography.sizes.bodyMid, 
       fontWeight: '500',
       marginTop: theme.spacing[2],
       textAlign: 'center',
@@ -149,13 +152,13 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       backgroundColor: withAlpha(accentColor, 0.12),
     },
     featureText: { flex: 1 },
-    featureTitle: { fontSize: 14, fontWeight: '700', color: theme.colors.text },
-    featureDesc: { fontSize: 12, marginTop: theme.spacing[1], color: theme.colors.textMuted },
+    featureTitle: { fontSize: typography.sizes.bodySmall, fontWeight: '700', color: theme.colors.text },
+    featureDesc: { fontSize: typography.sizes.caption, marginTop: theme.spacing[1], color: theme.colors.textMuted },
 
     // Plans
     planSection: { paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[4] },
     planSectionTitle: {
-      fontSize: 20,
+      fontSize: typography.sizes.h3, 
       fontWeight: '800',
       marginBottom: theme.spacing[3],
       textAlign: 'center',
@@ -180,7 +183,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
     },
     badgeText: {
       color: theme.colors.background,
-      fontSize: 10,
+      fontSize: typography.sizes.xs, 
       fontWeight: '900',
       letterSpacing: 0.5,
     },
@@ -189,11 +192,11 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       alignItems: 'center',
     },
     planInfo: { flex: 1 },
-    planName: { fontSize: 18, fontWeight: '800', textTransform: 'uppercase', color: theme.colors.text },
-    planDetail: { fontSize: 12, fontWeight: '500', marginTop: theme.spacing[1], color: theme.colors.textMuted },
+    planName: { fontSize: typography.sizes.h4, fontWeight: '800', textTransform: 'uppercase', color: theme.colors.text },
+    planDetail: { fontSize: typography.sizes.caption, fontWeight: '500', marginTop: theme.spacing[1], color: theme.colors.textMuted },
     planPriceWrap: { alignItems: 'flex-end', marginRight: theme.spacing[3] },
-    planPrice: { fontSize: 22, fontWeight: '900', color: theme.colors.text },
-    planPeriod: { fontSize: 11, fontWeight: '500', color: theme.colors.textMuted },
+    planPrice: { fontSize: typography.sizes.h3, fontWeight: '900', color: theme.colors.text },
+    planPeriod: { fontSize: typography.sizes.captionSm, fontWeight: '500', color: theme.colors.textMuted },
     radio: {
       width: theme.spacing[6],
       height: theme.spacing[6],
@@ -215,7 +218,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       borderRadius: theme.borderRadius.full,
       backgroundColor: withAlpha(accentColor, 0.12),
     },
-    saveText: { fontSize: 12, fontWeight: '700', color: accentColor },
+    saveText: { fontSize: typography.sizes.caption, fontWeight: '700', color: accentColor },
 
     // CTA
     ctaSection: { paddingHorizontal: theme.spacing[4], marginTop: theme.spacing[2] },
@@ -225,10 +228,10 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme'], accentColor: 
       alignItems: 'center',
       backgroundColor: accentColor,
     },
-    ctaText: { fontSize: 16, fontWeight: '800', color: theme.colors.background },
-    terms: { fontSize: 12, textAlign: 'center', marginTop: theme.spacing[3], color: theme.colors.textMuted },
+    ctaText: { fontSize: typography.sizes.body, fontWeight: '800', color: theme.colors.background },
+    terms: { fontSize: typography.sizes.caption, textAlign: 'center', marginTop: theme.spacing[3], color: theme.colors.textMuted },
     restoreBtn: { alignSelf: 'center', marginTop: theme.spacing[2] },
-    restoreText: { fontSize: 13, fontWeight: '600', color: theme.colors.textSecondary },
+    restoreText: { fontSize: typography.sizes.label, fontWeight: '600', color: theme.colors.textSecondary },
   });
 };
 
@@ -245,6 +248,7 @@ const getRadioStyle = (theme: ReturnType<typeof useTheme>['theme'], accentColor:
 export default function PaywallScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const router = useRouter();
   const {
     state: subscriptionState,
@@ -256,12 +260,9 @@ export default function PaywallScreen() {
     accessState,
   } = useSubscription();
 
+  const vm = usePaywallViewModel();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [purchasing, setPurchasing] = useState(false);
-
-  useEffect(() => {
-    void logEvent('paywall_viewed');
-  }, []);
   const regionalPricing = useMemo(() => getRegionalPricing(), []);
 
   // Redirect if user already has full access (paid subscriber)
@@ -277,11 +278,11 @@ export default function PaywallScreen() {
       const success = selectedPlan === 'monthly' ? await purchaseMonthly() : await purchaseAnnual();
 
       if (success) {
-        void logEvent('subscription_purchased', { plan: selectedPlan });
+        vm.trackPurchase(selectedPlan);
         router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
     } catch (error) {
-      Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
+      showToast({ message: t('paywall.purchaseFailed') || 'Something went wrong. Please try again.', type: 'error' });
       if (__DEV__) console.error('[Paywall] Purchase error:', error);
     } finally {
       setPurchasing(false);
@@ -296,7 +297,7 @@ export default function PaywallScreen() {
         router.canGoBack() ? router.back() : router.replace('/dashboard');
       }
     } catch (error) {
-      Alert.alert('Restore Failed', 'Could not restore purchases. Please try again.');
+      showToast({ message: t('paywall.restoreFailed') || 'Could not restore purchases. Please try again.', type: 'error' });
       if (__DEV__) console.error('[Paywall] Restore error:', error);
     } finally {
       setPurchasing(false);
@@ -327,14 +328,17 @@ export default function PaywallScreen() {
 
   return (
     <ScreenErrorBoundary screenName="Paywall" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={styles.container}>
+      <ScreenContainer>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* ── Close Button (hidden when expired — user must subscribe) ── */}
           {accessState !== 'EXPIRED' && (
             <Animated.View entering={FadeIn.duration(150)}>
               <TouchableOpacity
                 style={styles.closeBtn}
-                onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+                onPress={() => {
+                  vm.trackDismiss();
+                  router.canGoBack() ? router.back() : router.replace('/dashboard');
+                }}
                 accessibilityRole="button"
                 accessibilityLabel="Close paywall"
               >
@@ -349,14 +353,14 @@ export default function PaywallScreen() {
             <View style={styles.logoWrap}>
               <MaterialCommunityIcons name="lightning-bolt" size={40} color={accentColor} />
             </View>
-            <Text style={styles.heroTitle}>{t('paywall.unlockTitle')}</Text>
-            <Text style={styles.heroSub}>
+            <ThemedText style={styles.heroTitle}>{t('paywall.unlockTitle')}</ThemedText>
+            <ThemedText style={styles.heroSub}>
               {accessState === 'TRIAL_ACTIVE'
                 ? `${trialDaysRemaining} ${t('paywall.trialDaysLeft')}`
                 : accessState === 'SUBSCRIBED'
                   ? ''
                   : t('paywall.trialEnded')}
-            </Text>
+            </ThemedText>
           </Animated.View>
 
           {/* ── Features Grid ── */}
@@ -372,10 +376,10 @@ export default function PaywallScreen() {
                     <MaterialCommunityIcons name={feat.icon} size={20} color={accentColor} />
                   </View>
                   <View style={styles.featureText}>
-                    <Text style={styles.featureTitle}>{feat.title}</Text>
-                    <Text style={styles.featureDesc} numberOfLines={1}>
+                    <ThemedText style={styles.featureTitle}>{feat.title}</ThemedText>
+                    <ThemedText style={styles.featureDesc} numberOfLines={1}>
                       {feat.desc}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </Animated.View>
               ))}
@@ -384,7 +388,7 @@ export default function PaywallScreen() {
 
           {/* ── Plan Selection ── */}
           <Animated.View entering={FadeInDown.delay(500).duration(150)} style={styles.planSection}>
-            <Text style={styles.planSectionTitle}>{t('paywall.choosePlan')}</Text>
+            <ThemedText style={styles.planSectionTitle}>{t('paywall.choosePlan')}</ThemedText>
 
             {/* Annual Plan */}
             <TouchableOpacity
@@ -397,19 +401,19 @@ export default function PaywallScreen() {
             >
               {/* Best Value badge */}
               <View style={styles.badge}>
-                <Text style={styles.badgeText}>{t('paywall.bestValue')}</Text>
+                <ThemedText style={styles.badgeText}>{t('paywall.bestValue')}</ThemedText>
               </View>
 
               <View style={styles.planRow}>
                 <View style={styles.planInfo}>
-                  <Text style={styles.planName}>{t('paywall.annual')}</Text>
-                  <Text style={styles.planDetail}>
+                  <ThemedText style={styles.planName}>{t('paywall.annual')}</ThemedText>
+                  <ThemedText style={styles.planDetail}>
                     {offerings.annual?.pricePerMonth ?? regionalPricing.monthlyPerMonth}/month
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.planPriceWrap}>
-                  <Text style={styles.planPrice}>{offerings.annual?.price ?? regionalPricing.annual}</Text>
-                  <Text style={styles.planPeriod}>{t('paywall.perYear')}</Text>
+                  <ThemedText style={styles.planPrice}>{offerings.annual?.price ?? regionalPricing.annual}</ThemedText>
+                  <ThemedText style={styles.planPeriod}>{t('paywall.perYear')}</ThemedText>
                 </View>
                 <View style={[styles.radio, annualRadioStyle]}>
                   {selectedPlan === 'annual' && (
@@ -419,7 +423,7 @@ export default function PaywallScreen() {
               </View>
 
               <View style={styles.saveBadge}>
-                <Text style={styles.saveText}>{t('paywall.save33')}</Text>
+                <ThemedText style={styles.saveText}>{t('paywall.save33')}</ThemedText>
               </View>
             </TouchableOpacity>
 
@@ -434,12 +438,12 @@ export default function PaywallScreen() {
             >
               <View style={styles.planRow}>
                 <View style={styles.planInfo}>
-                  <Text style={styles.planName}>{t('paywall.monthly')}</Text>
-                  <Text style={styles.planDetail}>{t('paywall.flexibleBilling')}</Text>
+                  <ThemedText style={styles.planName}>{t('paywall.monthly')}</ThemedText>
+                  <ThemedText style={styles.planDetail}>{t('paywall.flexibleBilling')}</ThemedText>
                 </View>
                 <View style={styles.planPriceWrap}>
-                  <Text style={styles.planPrice}>{offerings.monthly?.price ?? regionalPricing.monthly}</Text>
-                  <Text style={styles.planPeriod}>{t('paywall.perMonth')}</Text>
+                  <ThemedText style={styles.planPrice}>{offerings.monthly?.price ?? regionalPricing.monthly}</ThemedText>
+                  <ThemedText style={styles.planPeriod}>{t('paywall.perMonth')}</ThemedText>
                 </View>
                 <View style={[styles.radio, monthlyRadioStyle]}>
                   {selectedPlan === 'monthly' && (
@@ -463,13 +467,13 @@ export default function PaywallScreen() {
               {purchasing ? (
                 <ActivityIndicator color={theme.colors.background} />
               ) : (
-                <Text style={styles.ctaText}>
+                <ThemedText style={styles.ctaText}>
                   {trialDaysRemaining > 0 ? t('paywall.startSubscription') : t('paywall.continueAccess')}
-                </Text>
+                </ThemedText>
               )}
             </TouchableOpacity>
 
-            <Text style={styles.terms}>{t('paywall.cancelAnytime')}</Text>
+            <ThemedText style={styles.terms}>{t('paywall.cancelAnytime')}</ThemedText>
 
             {/* Restore Purchases */}
             <TouchableOpacity
@@ -478,11 +482,11 @@ export default function PaywallScreen() {
               accessibilityRole="button"
               accessibilityLabel="Restore purchases"
             >
-              <Text style={styles.restoreText}>{t('paywall.restorePurchases')}</Text>
+              <ThemedText style={styles.restoreText}>{t('paywall.restorePurchases')}</ThemedText>
             </TouchableOpacity>
           </Animated.View>
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }

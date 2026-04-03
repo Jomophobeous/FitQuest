@@ -12,6 +12,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeInUp, SlideInRight } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../ThemedText';
+import { typography, spacing } from '../../design/theme-system';
 
 // ============================================
 // TYPES
@@ -90,7 +91,7 @@ export function MetricRing({
         />
         <MaterialCommunityIcons name={icon as any} size={size * 0.3} color={color} />
       </View>
-      <ThemedText variant="caption" color="muted" style={{ marginTop: 4, textAlign: 'center' }}>
+      <ThemedText variant="caption" color="muted" style={{ marginTop: spacing[1], textAlign: 'center' }}>
         {label}
       </ThemedText>
       <ThemedText variant="body" style={{ color, fontWeight: '700', textAlign: 'center' }}>
@@ -144,12 +145,12 @@ export function AlertCard({ alert, theme, onDismiss }: AlertCardProps) {
               size={18}
               color={bgColor}
             />
-            <ThemedText variant="caption" style={{ color: bgColor, fontWeight: '700', marginLeft: 6, flex: 1 }}>
+            <ThemedText variant="caption" style={{ color: bgColor, fontWeight: '700', marginLeft: spacing[1.5], flex: 1 }}>
               {alert.severity} — {alert.type}
             </ThemedText>
             <MaterialCommunityIcons name="close" size={16} color={theme.colors.textMuted} />
           </View>
-          <ThemedText variant="caption" color="secondary" style={{ marginTop: 4 }}>
+          <ThemedText variant="caption" color="secondary" style={{ marginTop: spacing[1] }}>
             {alert.message}
           </ThemedText>
         </View>
@@ -188,7 +189,7 @@ export function TrendBar({ data, color, theme: _theme }: TrendBarProps) {
               ]}
             />
           </View>
-          <ThemedText variant="caption" color="muted" style={{ fontSize: 9, marginTop: 2 }}>
+          <ThemedText variant="caption" color="muted" style={{ fontSize: typography.sizes.micro, marginTop: spacing[0.5] }}>
             {point.label}
           </ThemedText>
         </View>
@@ -204,8 +205,8 @@ export function TrendBar({ data, color, theme: _theme }: TrendBarProps) {
 const styles = StyleSheet.create({
   alertCard: {
     borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
+    padding: spacing[3],
+    marginBottom: spacing[2],
   },
   alertHeader: {
     flexDirection: 'row',
@@ -216,12 +217,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     height: 80,
-    paddingHorizontal: 4,
+    paddingHorizontal: spacing[1],
   },
   trendBarWrapper: {
     flex: 1,
     alignItems: 'center',
-    marginHorizontal: 2,
+    marginHorizontal: spacing[0.5],
   },
   trendBarBg: {
     width: '100%',

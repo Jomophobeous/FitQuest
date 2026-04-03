@@ -308,7 +308,7 @@ function buildHeaders(): Record<string, string> {
 
 async function timedFetch(url: string, options: RequestInit): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS); // abort-timeout
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } finally {

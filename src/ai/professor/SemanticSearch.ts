@@ -246,7 +246,7 @@ class HNSWIndex {
 
   private randomLevel(): number {
     let level = 0;
-    while (Math.random() < 1 / this.M && level < 16) level++;
+    while (Math.random() < 1 / this.M && level < 16) level++; // non-security
     return level;
   }
 

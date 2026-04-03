@@ -7,7 +7,13 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity, Modal } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -22,22 +28,28 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Alert } from 'react-native';
+import {
+  Alert,
+} from 'react-native';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useFitQuestWorkout, WorkoutExerciseDisplay } from '../src/hooks/useFitQuestWorkout';
-import { audioService } from '../src/services/audioService';
+import { useWorkoutViewModel } from '../src/viewmodels/useWorkoutViewModel';
 import { useTimer } from '../src/hooks/useTimer';
 import { haptic } from '../src/utils/haptics';
+import { useToast } from '../src/context/ToastContext';
+import ThemedText from '../src/components/ThemedText';
 import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
 import ExerciseImage from '../src/components/ExerciseImage';
 import RestTimerOverlay from '../src/components/RestTimerOverlay';
 import MindExerciseView from '../src/components/MindExerciseView';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 import {
   GlassCard,
   GradientButton,
@@ -52,7 +64,9 @@ import {
 export default function WorkoutScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const router = useRouter();
+  const vm = useWorkoutViewModel();
   const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
   const {
     status,
@@ -80,6 +94,9 @@ export default function WorkoutScreen() {
   const prevExerciseIndexRef = useRef<number>(0);
   const [showAllInstructions, setShowAllInstructions] = useState(false);
   const [isResting, setIsResting] = useState(false);
+  const mountedRef = useRef(true);
+  const badgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => { return () => { mountedRef.current = false; if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current); }; }, []);
 
   // Pulse animation for active exercise
   const pulse = useSharedValue(1);
@@ -114,20 +131,15 @@ export default function WorkoutScreen() {
     return () => clearInterval(iv);
   }, [status]);
 
-  // Stop narration on unmount
-  useEffect(() => {
-    return () => {
-      audioService.stop();
-    };
-  }, []);
-
   // Load custom workout if sessionId is provided, otherwise redirect if idle
   useEffect(() => {
     if (sessionId && status === 'idle' && !workout) {
       loadCustomWorkout(sessionId);
     } else if (!sessionId && status === 'idle' && !workout) {
       // Delay briefly to avoid flash
-      const t = setTimeout(() => router.replace('/fitquest' as any), 200);
+      const t = setTimeout(() => {
+        if (mountedRef.current) router.replace('/fitquest' as any);
+      }, 200); // debounce
       return () => clearTimeout(t);
     }
   }, [status, workout, sessionId]);
@@ -147,7 +159,7 @@ export default function WorkoutScreen() {
       prevExerciseIndexRef.current = currentExerciseIndex;
       // Narrate exercise name
       if (currentExercise) {
-        audioService.speakNarration(
+        vm.speakNarration(
           `${currentExercise.name}. ${currentExercise.sets} sets, ${currentExercise.reps} reps.`,
         );
       }
@@ -183,12 +195,13 @@ export default function WorkoutScreen() {
   }, [isResting, restTimer.state]);
 
   const handleComplete = useCallback(async () => {
-    audioService.stop();
+    vm.stopAudio();
     setShowCompleteBadge(true);
     haptic('exerciseComplete');
     setShowAllInstructions(false);
     await completeExercise(4);
-    setTimeout(() => setShowCompleteBadge(false), 1300);
+    if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+    badgeTimerRef.current = setTimeout(() => setShowCompleteBadge(false), 1300);
     // Start rest timer if not the last exercise
     const exs = workout?.exercises ?? [];
     const isLast = currentExerciseIndex === exs.length - 1;
@@ -219,7 +232,8 @@ export default function WorkoutScreen() {
   );
 
   const handleSkip = useCallback(async () => {
-    audioService.stop();
+    haptic('phaseTransition');
+    vm.stopAudio();
     setIsResting(false);
     stopAll();
     setShowAllInstructions(false);
@@ -227,16 +241,18 @@ export default function WorkoutScreen() {
   }, [skipExercise, stopAll]);
 
   const handleFinish = useCallback(async () => {
-    audioService.stop();
+    haptic('workoutComplete');
+    vm.stopAudio();
     setIsResting(false);
     stopAll();
     sessionStartRef.current = null;
+    showToast({ message: t('workout.completed') ?? 'Workout complete!', type: 'success', vibrate: true });
     await finishWorkout();
     router.replace('/fitquest' as any);
-  }, [finishWorkout, router]);
+  }, [finishWorkout, router, showToast, t]);
 
   const handleCancel = useCallback(async () => {
-    audioService.stop();
+    vm.stopAudio();
     setIsResting(false);
     stopAll();
     setShowCancelConfirm(false);
@@ -264,23 +280,57 @@ export default function WorkoutScreen() {
       // Trigger haptic for workout complete
       haptic('workoutComplete');
       // Auto-finish after a short delay to show the completion visual
-      const timer = setTimeout(() => {
+      const timer = setTimeout(() => { // debounce
         handleFinish();
       }, 300);
       return () => clearTimeout(timer);
     }
   }, [isWorkoutComplete, workout, handleFinish]);
 
+  // ─── If generating workout, show loading ───
+
+  if (status === 'generating' || (sessionId && status === 'idle' && !workout)) {
+    return (
+      <ScreenContainer>
+        <View style={styles.centeredContent}>
+          <MaterialCommunityIcons name="loading" size={48} color={theme.colors.accent} />
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('workout.generating') ?? 'Generating workout…'}</ThemedText>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  // ─── If error from workout engine ───
+
+  if (error) {
+    return (
+      <ScreenContainer>
+        <View style={styles.centeredContent}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('common.error') ?? 'Something went wrong'}</ThemedText>
+          <ThemedText style={[styles.emptySub, { color: theme.colors.textMuted }]}>{error}</ThemedText>
+          <View style={{ marginTop: spacing[6], width: '60%' }}>
+            <GradientButton
+              title={t('common.retry') ?? 'Try Again'}
+              onPress={() => generateNewWorkout()}
+              variant="primary"
+            />
+          </View>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
   // ─── If waiting or no workout, show minimal state ───
 
   if (!workout || status === 'idle') {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centeredContent}>
           <MaterialCommunityIcons name="dumbbell" size={56} color={theme.colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('workout.noActive')}</Text>
-          <Text style={[styles.emptySub, { color: theme.colors.textMuted }]}>{t('workout.generateFromTrain')}</Text>
-          <View style={{ marginTop: 24, width: '60%' }}>
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('workout.noActive')}</ThemedText>
+          <ThemedText style={[styles.emptySub, { color: theme.colors.textMuted }]}>{t('workout.generateFromTrain')}</ThemedText>
+          <View style={{ marginTop: spacing[6], width: '60%' }}>
             <GradientButton
               title={t('workout.goToTrain')}
               onPress={() => router.replace('/fitquest' as any)}
@@ -288,7 +338,7 @@ export default function WorkoutScreen() {
             />
           </View>
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
@@ -303,7 +353,7 @@ export default function WorkoutScreen() {
         title="Workout Session"
         description="Follow along exercise by exercise. Swipe through sets, tap to complete, and rest between exercises. Your progress is saved automatically."
       />
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         {/* ── REST TIMER OVERLAY ── */}
         <RestTimerOverlay
           visible={isResting}
@@ -346,17 +396,17 @@ export default function WorkoutScreen() {
               </TouchableOpacity>
 
               <View style={styles.topBarCenter}>
-                <Text style={[styles.workoutName, { color: theme.colors.text }]} numberOfLines={1}>
+                <ThemedText style={[styles.workoutName, { color: theme.colors.text }]} numberOfLines={1}>
                   {workout.explanation || 'Active Workout'}
-                </Text>
+                </ThemedText>
                 <View style={styles.topBarMeta}>
                   <PulseDot color={theme.colors.success} size={6} />
-                  <Text style={[styles.metaText, { color: theme.colors.textMuted }]}>
+                  <ThemedText style={[styles.metaText, { color: theme.colors.textMuted }]}>
                     {formatElapsed(sessionElapsed)}
-                  </Text>
-                  <Text style={[styles.metaText, { color: theme.colors.accent }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.metaText, { color: theme.colors.accent }]}>
                     {completedCount}/{totalExercises}
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
 
@@ -366,14 +416,14 @@ export default function WorkoutScreen() {
                   { backgroundColor: (workout.isDeload ? theme.colors.accent3 : theme.colors.accent) + '20' },
                 ]}
               >
-                <Text
+                <ThemedText
                   style={[
                     styles.diffBadgeText,
                     { color: workout.isDeload ? theme.colors.accent3 : theme.colors.accent },
                   ]}
                 >
                   {workout.isDeload ? 'DELOAD' : 'ACTIVE'}
-                </Text>
+                </ThemedText>
               </View>
             </View>
           </LinearGradient>
@@ -384,10 +434,10 @@ export default function WorkoutScreen() {
           <Animated.View entering={ZoomIn.delay(100).duration(200)} style={styles.progressSection}>
             <Animated.View style={pulseStyle}>
               <ProgressRing progress={progress} size={140} color={theme.colors.accent} strokeWidth={8}>
-                <Text style={[styles.progressPercent, { color: theme.colors.text }]}>
+                <ThemedText style={[styles.progressPercent, { color: theme.colors.text }]}>
                   {Math.round(progress * 100)}%
-                </Text>
-                <Text style={[styles.progressLabel, { color: theme.colors.textMuted }]}>complete</Text>
+                </ThemedText>
+                <ThemedText style={[styles.progressLabel, { color: theme.colors.textMuted }]}>complete</ThemedText>
               </ProgressRing>
             </Animated.View>
           </Animated.View>
@@ -403,7 +453,8 @@ export default function WorkoutScreen() {
                 onComplete={() => {
                   haptic('exerciseComplete');
                   setShowCompleteBadge(true);
-                  setTimeout(() => setShowCompleteBadge(false), 1300);
+                  if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+                  badgeTimerRef.current = setTimeout(() => setShowCompleteBadge(false), 1300);
                   completeExercise(5);
                   const exs = workout?.exercises ?? [];
                   const isLast = currentExerciseIndex === exs.length - 1;
@@ -413,7 +464,7 @@ export default function WorkoutScreen() {
                   }
                 }}
                 onCancel={() => {
-                  audioService.stop();
+                  vm.stopAudio();
                   Alert.alert('End Mind Session?', 'Your progress for this exercise will be saved.', [
                     { text: 'Continue', style: 'cancel' },
                     { text: 'End', style: 'destructive', onPress: () => completeExercise(5) },
@@ -428,7 +479,7 @@ export default function WorkoutScreen() {
                   {/* Exercise Image */}
                   <Animated.View
                     entering={ZoomIn.duration(200)}
-                    style={{ alignItems: 'center', marginBottom: 16, width: '100%' }}
+                    style={{ alignItems: 'center', marginBottom: spacing[4], width: '100%' }}
                   >
                     <ExerciseImage
                       exerciseId={currentExercise.exerciseId}
@@ -439,12 +490,12 @@ export default function WorkoutScreen() {
                   </Animated.View>
 
                   {/* Exercise Name */}
-                  <Text
+                  <ThemedText
                     style={[styles.currentName, { color: theme.colors.text, textAlign: 'center' }]}
                     numberOfLines={2}
                   >
                     {currentExercise.name}
-                  </Text>
+                  </ThemedText>
 
                   {/* Prescription Row: sets / reps / rest */}
                   <View style={styles.prescriptionRow}>
@@ -458,8 +509,8 @@ export default function WorkoutScreen() {
                         entering={FadeInUp.delay(i * 60).duration(150)}
                         style={styles.prescriptionItem}
                       >
-                        <Text style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</Text>
-                        <Text style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>{p.label}</Text>
+                        <ThemedText style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</ThemedText>
+                        <ThemedText style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>{p.label}</ThemedText>
                       </Animated.View>
                     ))}
                   </View>
@@ -473,10 +524,10 @@ export default function WorkoutScreen() {
                         color={theme.colors.accent}
                         strokeWidth={8}
                       >
-                        <Text style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: 32 }]}>
+                        <ThemedText style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: typography.sizes.h1 }]}>
                           {exerciseTimer.formattedRemaining}
-                        </Text>
-                        <Text style={[styles.exerciseTimerLabel, { color: theme.colors.textMuted }]}>remaining</Text>
+                        </ThemedText>
+                        <ThemedText style={[styles.exerciseTimerLabel, { color: theme.colors.textMuted }]}>remaining</ThemedText>
                       </ProgressRing>
                     </View>
                   )}
@@ -485,41 +536,41 @@ export default function WorkoutScreen() {
                   {!!currentExercise.category && (
                     <View style={styles.targetRow}>
                       <View style={[styles.targetPill, { backgroundColor: theme.colors.accent2 + '15' }]}>
-                        <Text style={[styles.targetText, { color: theme.colors.accent2 }]}>
+                        <ThemedText style={[styles.targetText, { color: theme.colors.accent2 }]}>
                           {currentExercise.category.replace(/_/g, ' ')}
-                        </Text>
+                        </ThemedText>
                       </View>
                     </View>
                   )}
 
                   {/* Instructions card */}
                   {currentExercise.instructions && currentExercise.instructions.length > 0 && (
-                    <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ marginTop: 12 }}>
+                    <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ marginTop: spacing[3] }}>
                       <GlassCard>
-                        <Text style={[styles.instTitle, { color: theme.colors.text }]}>
+                        <ThemedText style={[styles.instTitle, { color: theme.colors.text }]}>
                           {t('fitquest.formTips') || 'Form Tips'}
-                        </Text>
+                        </ThemedText>
                         {currentExercise.instructions
                           .slice(0, showAllInstructions ? undefined : 3)
                           .map((inst: string, idx: number) => (
-                            <Text key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
+                            <ThemedText key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
                               {idx + 1}. {inst}
-                            </Text>
+                            </ThemedText>
                           ))}
                         {currentExercise.instructions.length > 3 && (
                           <TouchableOpacity
                             onPress={() => setShowAllInstructions(!showAllInstructions)}
-                            style={{ marginTop: 8 }}
+                            style={{ marginTop: spacing[2] }}
                             accessibilityRole="button"
                             accessibilityLabel={
                               showAllInstructions ? 'Show fewer instructions' : 'Show all instructions'
                             }
                           >
-                            <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600' }}>
+                            <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600' }}>
                               {showAllInstructions
                                 ? t('fitquest.showLess') || 'Show less'
                                 : `+${currentExercise.instructions.length - 3} ${t('fitquest.more') || 'more'}`}
-                            </Text>
+                            </ThemedText>
                           </TouchableOpacity>
                         )}
                       </GlassCard>
@@ -541,7 +592,7 @@ export default function WorkoutScreen() {
                       accessibilityLabel="Skip exercise"
                     >
                       <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.warning} />
-                      <Text style={[styles.skipText, { color: theme.colors.warning }]}>{t('common.skip')}</Text>
+                      <ThemedText style={[styles.skipText, { color: theme.colors.warning }]}>{t('common.skip')}</ThemedText>
                     </TouchableOpacity>
 
                     <View style={{ flex: 1 }}>
@@ -566,7 +617,7 @@ export default function WorkoutScreen() {
             const statusColor = isDone ? theme.colors.success : isActive ? theme.colors.accent : theme.colors.textMuted;
 
             return (
-              <AnimatedListItem key={ex.id || `ex-${i}`} index={i} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+              <AnimatedListItem key={ex.id || `ex-${i}`} index={i} style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}>
                 <View
                   style={[
                     styles.exListItem,
@@ -589,14 +640,14 @@ export default function WorkoutScreen() {
                     ) : isActive ? (
                       <PulseDot color={theme.colors.accent} size={8} />
                     ) : (
-                      <Text style={[styles.exNumber, { color: theme.colors.text }]}>{i + 1}</Text>
+                      <ThemedText style={[styles.exNumber, { color: theme.colors.text }]}>{i + 1}</ThemedText>
                     )}
                   </View>
 
                   <ExerciseImage exerciseId={ex.exerciseId} category={ex.category} variant="card" />
 
-                  <View style={[styles.exDetails, { marginLeft: 12 }]}>
-                    <Text
+                  <View style={[styles.exDetails, { marginLeft: spacing[3] }]}>
+                    <ThemedText
                       style={[
                         styles.exName,
                         { color: isDone ? theme.colors.textMuted : theme.colors.text },
@@ -605,11 +656,11 @@ export default function WorkoutScreen() {
                       numberOfLines={1}
                     >
                       {ex.name}
-                    </Text>
-                    <Text style={[styles.exSets, { color: theme.colors.textMuted }]}>
+                    </ThemedText>
+                    <ThemedText style={[styles.exSets, { color: theme.colors.textMuted }]}>
                       {ex.sets}×{ex.reps}
                       {ex.restSeconds ? ` · ${ex.restSeconds}s rest` : ''}
-                    </Text>
+                    </ThemedText>
                   </View>
 
                   <MaterialCommunityIcons
@@ -651,10 +702,10 @@ export default function WorkoutScreen() {
                 <View style={[styles.modalIconWrap, { backgroundColor: theme.colors.error + '18' }]}>
                   <MaterialCommunityIcons name="alert-circle-outline" size={40} color={theme.colors.error} />
                 </View>
-                <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Cancel Workout?</Text>
-                <Text style={[styles.modalDesc, { color: theme.colors.textMuted }]}>
+                <ThemedText style={[styles.modalTitle, { color: theme.colors.text }]}>Cancel Workout?</ThemedText>
+                <ThemedText style={[styles.modalDesc, { color: theme.colors.textMuted }]}>
                   You've completed {completedCount} of {totalExercises} exercises. Progress won't be saved.
-                </Text>
+                </ThemedText>
 
                 <View style={styles.modalActions}>
                   <TouchableOpacity
@@ -668,7 +719,7 @@ export default function WorkoutScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Keep going"
                   >
-                    <Text style={[styles.modalBtnText, { color: theme.colors.text }]}>Keep Going</Text>
+                    <ThemedText style={[styles.modalBtnText, { color: theme.colors.text }]}>Keep Going</ThemedText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={handleCancel}
@@ -676,14 +727,14 @@ export default function WorkoutScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Cancel workout and discard progress"
                   >
-                    <Text style={[styles.modalBtnText, { color: theme.colors.text }]}>Cancel</Text>
+                    <ThemedText style={[styles.modalBtnText, { color: theme.colors.text }]}>Cancel</ThemedText>
                   </TouchableOpacity>
                 </View>
               </View>
             </Animated.View>
           </View>
         </Modal>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -694,56 +745,56 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
-    gap: 8,
+    paddingHorizontal: spacing[8],
+    gap: spacing[2],
   },
-  emptyTitle: { fontSize: 22, fontWeight: '700', marginTop: 16 },
-  emptySub: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
-  topBar: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
-  topBarRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn: { width: 36, height: 36, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  emptyTitle: { fontSize: typography.sizes.h3, fontWeight: '700', marginTop: spacing[4] },
+  emptySub: { fontSize: typography.sizes.bodySmall, textAlign: 'center', lineHeight: 20 },
+  topBar: { paddingHorizontal: spacing[4], paddingTop: spacing[2], paddingBottom: spacing[3] },
+  topBarRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
+  backBtn: { width: 36, height: 36, borderRadius: radius.lg, justifyContent: 'center', alignItems: 'center' },
   topBarCenter: { flex: 1 },
-  workoutName: { fontSize: 17, fontWeight: '700' },
-  topBarMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
-  metaText: { fontSize: 12, fontWeight: '600', fontVariant: ['tabular-nums'] as any },
-  diffBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  diffBadgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
-  scrollContent: { paddingBottom: 32 },
-  progressSection: { alignItems: 'center', paddingVertical: 20 },
-  progressPercent: { fontSize: 28, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
-  progressLabel: { fontSize: 11, fontWeight: '500', marginTop: -2 },
-  currentCard: { marginHorizontal: 16, padding: 20 },
-  currentName: { fontSize: 20, fontWeight: '700', lineHeight: 24 },
-  targetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 14 },
-  targetPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  targetText: { fontSize: 11, fontWeight: '600', textTransform: 'capitalize' },
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
-  prescriptionRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 16, marginBottom: 4 },
+  workoutName: { fontSize: typography.sizes.h4, fontWeight: '700' },
+  topBarMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginTop: spacing[0.5] },
+  metaText: { fontSize: typography.sizes.caption, fontWeight: '600', fontVariant: ['tabular-nums'] as any },
+  diffBadge: { paddingHorizontal: spacing[2.5], paddingVertical: spacing[1], borderRadius: radius.md },
+  diffBadgeText: { fontSize: typography.sizes.xs, fontWeight: '700', letterSpacing: 0.5 },
+  scrollContent: { paddingBottom: spacing[8] },
+  progressSection: { alignItems: 'center', paddingVertical: spacing[5] },
+  progressPercent: { fontSize: typography.sizes.h1Sm, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
+  progressLabel: { fontSize: typography.sizes.captionSm, fontWeight: '500', marginTop: -2 },
+  currentCard: { marginHorizontal: spacing[4], padding: spacing[5] },
+  currentName: { fontSize: typography.sizes.h3, fontWeight: '700', lineHeight: 24 },
+  targetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[1.5], marginTop: spacing[3.5] },
+  targetPill: { paddingHorizontal: spacing[2.5], paddingVertical: spacing[1], borderRadius: radius.md },
+  targetText: { fontSize: typography.sizes.captionSm, fontWeight: '600', textTransform: 'capitalize' },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2.5], marginTop: spacing[4.5] },
+  prescriptionRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: spacing[4], marginBottom: spacing[1] },
   prescriptionItem: { alignItems: 'center', flex: 1 },
-  prescriptionVal: { fontSize: 22, fontWeight: '800' },
-  prescriptionLabel: { fontSize: 11, fontWeight: '500', marginTop: 2 },
-  exerciseTimerWrap: { alignItems: 'center', marginTop: 16, marginBottom: 8 },
-  exerciseTimerText: { fontSize: 22, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
-  exerciseTimerLabel: { fontSize: 10, fontWeight: '500', marginTop: -2 },
-  instTitle: { fontSize: 14, fontWeight: '700', marginBottom: 10 },
-  instStep: { fontSize: 13, lineHeight: 20, marginBottom: 4 },
+  prescriptionVal: { fontSize: typography.sizes.h3, fontWeight: '800' },
+  prescriptionLabel: { fontSize: typography.sizes.captionSm, fontWeight: '500', marginTop: spacing[0.5] },
+  exerciseTimerWrap: { alignItems: 'center', marginTop: spacing[4], marginBottom: spacing[2] },
+  exerciseTimerText: { fontSize: typography.sizes.h3, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
+  exerciseTimerLabel: { fontSize: typography.sizes.xs, fontWeight: '500', marginTop: -2 },
+  instTitle: { fontSize: typography.sizes.bodySmall, fontWeight: '700', marginBottom: spacing[2.5] },
+  instStep: { fontSize: typography.sizes.label, lineHeight: 20, marginBottom: spacing[1] },
   skipBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
+    gap: spacing[1],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
-  skipText: { fontSize: 14, fontWeight: '600' },
+  skipText: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
   exListItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
+    gap: spacing[3],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
   },
   exStatusDot: {
     width: 26,
@@ -752,12 +803,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  exNumber: { fontSize: 11, fontWeight: '700' },
+  exNumber: { fontSize: typography.sizes.captionSm, fontWeight: '700' },
   exDetails: { flex: 1 },
-  exName: { fontSize: 15, fontWeight: '600' },
+  exName: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
   exNameDone: { textDecorationLine: 'line-through', opacity: 0.6 },
-  exSets: { fontSize: 12, marginTop: 2 },
-  finishSection: { paddingHorizontal: 16, marginTop: 20 },
+  exSets: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
+  finishSection: { paddingHorizontal: spacing[4], marginTop: spacing[5] },
 
   // Modal
   modalOverlay: {
@@ -765,13 +816,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
   },
   modalContent: {
     width: '100%',
     maxWidth: 340,
     borderRadius: 24,
-    padding: 28,
+    padding: spacing[7],
     alignItems: 'center',
     overflow: 'hidden',
   },
@@ -788,16 +839,16 @@ const styles = StyleSheet.create({
     borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
-  modalTitle: { fontSize: 22, fontWeight: '800', marginBottom: 8 },
-  modalDesc: { fontSize: 14, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
-  modalActions: { flexDirection: 'row', gap: 10, width: '100%' },
+  modalTitle: { fontSize: typography.sizes.h3, fontWeight: '800', marginBottom: spacing[2] },
+  modalDesc: { fontSize: typography.sizes.bodySmall, textAlign: 'center', lineHeight: 20, marginBottom: spacing[6] },
+  modalActions: { flexDirection: 'row', gap: spacing[2.5], width: '100%' },
   modalBtn: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: spacing[3.5],
     borderRadius: 14,
     alignItems: 'center',
   },
-  modalBtnText: { fontSize: 15, fontWeight: '700' },
+  modalBtnText: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
 });

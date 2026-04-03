@@ -7,6 +7,7 @@
  */
 import React from 'react';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle, Line, G, Rect, RadialGradient } from 'react-native-svg';
+import { darkTheme as theme } from '../design/theme-system';
 
 interface Props {
   /** Rendered width/height in dp (square) */
@@ -23,27 +24,27 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant: _varia
       <Defs>
         {/* Primary accent gradient — neon green */}
         <LinearGradient id="fqAccent" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0%" stopColor="#00FF99" />
-          <Stop offset="100%" stopColor="#10B981" />
+          <Stop offset="0%" stopColor={theme.colors.accent} />
+          <Stop offset="100%" stopColor={theme.colors.accent} />
         </LinearGradient>
 
         {/* Secondary: faint cyan for depth lines */}
         <LinearGradient id="fqCyan" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0%" stopColor="#06B6D4" stopOpacity={0.3} />
-          <Stop offset="100%" stopColor="#22D3EE" stopOpacity={0.15} />
+          <Stop offset="0%" stopColor={theme.colors.info} stopOpacity={0.3} />
+          <Stop offset="100%" stopColor={theme.colors.skyBlue} stopOpacity={0.15} />
         </LinearGradient>
 
         {/* Glow radial behind the mark */}
         <RadialGradient id="fqGlow" cx="50%" cy="50%" r="50%">
-          <Stop offset="0%" stopColor="#00FF99" stopOpacity={0.12} />
-          <Stop offset="60%" stopColor="#00FF99" stopOpacity={0.04} />
-          <Stop offset="100%" stopColor="#00FF99" stopOpacity={0} />
+          <Stop offset="0%" stopColor={theme.colors.accent} stopOpacity={0.12} />
+          <Stop offset="60%" stopColor={theme.colors.accent} stopOpacity={0.04} />
+          <Stop offset="100%" stopColor={theme.colors.accent} stopOpacity={0} />
         </RadialGradient>
 
         {/* Subtle background fill */}
         <RadialGradient id="fqBg" cx="50%" cy="45%" r="55%">
-          <Stop offset="0%" stopColor="#0D1117" />
-          <Stop offset="100%" stopColor="#060609" />
+          <Stop offset="0%" stopColor={theme.colors.background} />
+          <Stop offset="100%" stopColor={theme.colors.background} />
         </RadialGradient>
       </Defs>
 
@@ -55,9 +56,9 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant: _varia
 
       {/* ─── Depth lines (faint cyan grid) ─── */}
       <G opacity={0.15}>
-        <Line x1="100" y1="160" x2="412" y2="160" stroke="#22D3EE" strokeWidth="1" />
-        <Line x1="100" y1="256" x2="412" y2="256" stroke="#22D3EE" strokeWidth="1" />
-        <Line x1="100" y1="352" x2="412" y2="352" stroke="#22D3EE" strokeWidth="1" />
+        <Line x1="100" y1="160" x2="412" y2="160" stroke={theme.colors.skyBlue} strokeWidth="1" />
+        <Line x1="100" y1="256" x2="412" y2="256" stroke={theme.colors.skyBlue} strokeWidth="1" />
+        <Line x1="100" y1="352" x2="412" y2="352" stroke={theme.colors.skyBlue} strokeWidth="1" />
       </G>
 
       {/*
@@ -112,12 +113,12 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant: _varia
 
         {/* ═══ ACCENT NODES ═══
             Small circles at key junction points — geometric precision. */}
-        <Circle cx="160" cy="120" r="6" fill="#00FF99" />
-        <Circle cx="280" cy="120" r="5" fill="#00FF99" opacity={0.8} />
-        <Circle cx="160" cy="240" r="5" fill="#00FF99" opacity={0.7} />
-        <Circle cx="260" cy="240" r="5" fill="#00FF99" opacity={0.7} />
-        <Circle cx="160" cy="392" r="6" fill="#00FF99" />
-        <Circle cx="420" cy="410" r="6" fill="#00FF99" />
+        <Circle cx="160" cy="120" r="6" fill={theme.colors.accent} />
+        <Circle cx="280" cy="120" r="5" fill={theme.colors.accent} opacity={0.8} />
+        <Circle cx="160" cy="240" r="5" fill={theme.colors.accent} opacity={0.7} />
+        <Circle cx="260" cy="240" r="5" fill={theme.colors.accent} opacity={0.7} />
+        <Circle cx="160" cy="392" r="6" fill={theme.colors.accent} />
+        <Circle cx="420" cy="410" r="6" fill={theme.colors.accent} />
 
         {/* ═══ FAINT STRUCTURE LINES ═══
             Ghost lines showing the underlying geometric grid — engineered feel */}
@@ -126,7 +127,7 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant: _varia
           y1="160"
           x2="290"
           y2="380"
-          stroke="#00FF99"
+          stroke={theme.colors.accent}
           strokeWidth="1"
           strokeDasharray="4,8"
           opacity={0.15}
@@ -136,7 +137,7 @@ export default function FQLogoMark({ size = 80, showGlow = true, variant: _varia
           y1="392"
           x2="420"
           y2="392"
-          stroke="#00FF99"
+          stroke={theme.colors.accent}
           strokeWidth="1"
           strokeDasharray="4,8"
           opacity={0.1}

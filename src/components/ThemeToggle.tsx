@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import ThemedText from './ThemedText';
 import Card from './Card';
+import { spacing } from '../design/theme-system';
 
 export default function ThemeToggle() {
   const { mode, toggleTheme, theme } = useTheme();
@@ -16,14 +17,14 @@ export default function ThemeToggle() {
             <MaterialCommunityIcons
               name={mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'moon-waning-crescent' : 'white-balance-sunny'}
               size={24}
-              color={mode === 'blackGold' ? '#D4AF37' : mode === 'dark' ? '#F4A427' : '#FFA500'}
+              color={mode === 'blackGold' ? theme.colors.accent : mode === 'dark' ? theme.colors.warning : theme.colors.orange}
             />
           </View>
           <View style={styles.textContainer}>
             <ThemedText variant="body" weight="600">
               {mode === 'blackGold' ? 'Black & Gold' : mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
             </ThemedText>
-            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 2 }}>
+            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: spacing[0.5] }}>
               {mode === 'blackGold' ? 'Luxury & elegance' : mode === 'dark' ? 'Focus & immersion' : 'Speed & clarity'}
             </ThemedText>
           </View>
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    marginRight: 16,
+    marginRight: spacing[4],
   },
   textContainer: {
     flex: 1,

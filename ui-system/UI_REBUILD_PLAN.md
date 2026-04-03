@@ -229,17 +229,70 @@ Layer 6: Integration ─────────── ⬜ (replace legacy scree
 
 ## Timeline Estimate
 
-| Phase | Clusters | Screens |
-|-------|----------|---------|
+| Phase | Clusters | Screens | Status |
+|-------|----------|---------|--------|
 | A (Foundations) | — | — | ✅ Done |
-| B (Primitives + Domain) | — | — |
-| C.1 (Onboarding) | 1 | 2 |
-| C.2 (Auth) | 1 | 2 |
-| C.3 (Dashboard) | 1 | 1 |
-| C.4 (Workout) | 1 | 4 |
-| C.5 (Exercises) | 1 | 2 |
-| C.6 (Health) | 1 | 3 |
-| C.7 (Profile) | 1 | 2 |
-| C.8-11 (P3 screens) | 4 | 10 |
-| D (Integration) | — | 30 |
-| E (Enforcement) | — | — |
+| B (Primitives + Domain) | — | — | ⬜ Not started |
+| C.1 (Onboarding) | 1 | 2 | ⬜ Not started |
+| C.2 (Auth) | 1 | 2 | ⬜ Not started |
+| C.3 (Dashboard) | 1 | 1 | ⬜ Not started |
+| C.4 (Workout) | 1 | 4 | ⬜ Not started |
+| C.5 (Exercises) | 1 | 2 | ⬜ Not started |
+| C.6 (Health) | 1 | 3 | ⬜ Not started |
+| C.7 (Profile) | 1 | 2 | ⬜ Not started |
+| C.8-11 (P3 screens) | 4 | 10 | ⬜ Not started |
+| D (Integration) | — | 30 | ⬜ Not started |
+| E (Enforcement) | — | — | ⬜ Not started |
+
+---
+
+## Audit Status (2026-04-01)
+
+### Full-Scale Audit Findings
+
+**Production app status**: All 30 screens FULLY IMPLEMENTED (28 functional + 2 deprecated redirects + 1 routing redirect). See `docs/FULL_SCALE_AUDIT_REPORT.md`.
+
+**Feature alignment**: 97% — only `workouts/[id].tsx` is minimal (86 lines). See `docs/FEATURE_ALIGNMENT_REPORT.md`.
+
+### Clean-Room Rebuild Progress (fitquest-ui-core)
+
+| Layer / Cluster | Status | Notes |
+|----------------|--------|-------|
+| Layer 0: Tokens | ✅ DONE | colors, spacing, typography |
+| Layer 1: Base Components | ✅ DONE | Button, Card, ProgressBar, StatBlock, Carousel |
+| Layer 2: Layout Primitives | ⬜ | ScreenContainer, Grid, Divider |
+| Layer 3: Domain Components | ⚠️ PARTIAL | ExerciseCard, TimerDisplay, WorkoutHeader (Cluster 5) |
+| Cluster 1-2: Onboarding/Auth | ✅ DONE | In fitquest-ui-core @ 9cc1d6e |
+| Cluster 3: Dashboard | ✅ DONE | In fitquest-ui-core |
+| Cluster 4: Workout | ✅ DONE | Extended FSM, ExerciseSelection, WorkoutSummary |
+| Cluster 5: Exercises/Movement | ✅ DONE | ExerciseCard, workout flow wiring |
+| Clusters 6-11 | ⬜ | Not started |
+| Phase D: Integration | ⬜ | No screens replaced in production yet |
+
+### Key Decision Needed
+
+**Option A**: Continue clean-room rebuild (Clusters 6-11 in fitquest-ui-core) → then Phase D integration  
+**Option B**: Lint-fix production screens directly (225 errors, 662 warnings) → skip clean-room for remaining clusters  
+**Option C**: Hybrid — lint-fix simple screens (legal, feedback) directly; clean-room complex ones (dashboard, workout)
+
+### Production Lint Baseline
+
+| Metric | Count | Target |
+|--------|-------|--------|
+| Lint errors | 225 | 0 |
+| Lint warnings | 662 | 0 |
+| Total violations | 887 | <50 |
+| Hardcoded colors | ~225 | 0 |
+| Inline fontSize | ~662 | 0 |
+| Screens on ui-system spec | 0/30 | 30/30 |
+
+### Gaps Identified
+
+1. `workouts/[id].tsx` — 86 lines, functional but minimal. Needs: per-exercise breakdown, set data, performance comparison
+2. No standalone post-workout summary screen (embedded in workout flow)
+3. FitMind module deprecated (code preserved in src/fitmind/)
+4. Professor AI consolidated into Coach (intentional)
+5. Test coverage <40% — screen tests virtually absent
+6. No CI/CD pipeline
+7. RevenueCat test key in use — production key needed
+8. No iOS signing/App Store configuration

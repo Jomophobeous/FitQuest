@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useCallback } from 'react';
-import { BackHandler, View, ActivityIndicator } from 'react-native';
+import { AppState, BackHandler, View, ActivityIndicator } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,12 +12,20 @@ import { AuthGate } from '../src/components/AuthGate';
 import { PostHogAnalyticsProvider } from '../src/services/posthogService';
 import { ConnectivityProvider } from '../src/context/ConnectivityContext';
 import OfflineBanner from '../src/components/OfflineBanner';
+import { ToastProvider } from '../src/context/ToastContext';
 
 import { DropdownMenu } from '../src/components/DropdownMenu';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
+import { AppGate } from '../src/components/AppGate';
 import { logEvent, logPerf } from '../src/services/telemetry';
 import { initializeCrashReporting } from '../src/services/crashReporting';
+import { startSession, endSession } from '../src/services/sessionTracker';
+import { resetFrictionState } from '../src/services/frictionLogger';
+import { logDailyReturn } from '../src/services/growthAnalytics';
+import { initAnalyticsOptOut } from '../src/services/analyticsOptOut';
 import { systemGuard } from '../src/services/SystemGuard';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 /**
  * Global access gate — resolves subscription state before rendering.
@@ -61,8 +69,8 @@ function ThemedTabs() {
       left: 12,
       right: 12,
       bottom: Math.max(8, insets.bottom + 2),
-      borderRadius: 16,
-      paddingTop: 6,
+      borderRadius: radius.xl,
+      paddingTop: spacing[1.5],
       paddingBottom: Math.max(8, insets.bottom - 2),
       height: 64 + Math.max(0, insets.bottom - 4),
     }),
@@ -97,7 +105,7 @@ function ThemedTabs() {
       headerTintColor: theme.colors.text,
       headerTitleStyle: {
         fontWeight: '600' as const,
-        fontSize: 18,
+        fontSize: typography.sizes.h4, 
       },
       headerRight,
       // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
@@ -108,10 +116,10 @@ function ThemedTabs() {
       tabBarActiveTintColor: theme.colors.accent,
       tabBarInactiveTintColor: theme.colors.textMuted,
       tabBarLabelStyle: {
-        fontSize: 11,
+        fontSize: typography.sizes.captionSm, 
         fontWeight: '500' as const,
-        marginTop: 2,
-        marginBottom: 4,
+        marginTop: spacing[0.5],
+        marginBottom: spacing[1],
       },
     }),
     [
@@ -381,20 +389,47 @@ function ThemedTabs() {
           title: 'FitMind Reader',
         }}
       />
+      <Tabs.Screen
+        name="dev/ui-preview"
+        options={{
+          href: null,
+          lazy: true,
+          title: 'UI Preview',
+        }}
+      />
     </Tabs>
   );
 }
 
 export default function RootLayout() {
   const appStartRef = useRef(Date.now());
+  const initializedRef = useRef(false);
 
   useEffect(() => {
+    // Guard: prevent duplicate init on Fast Refresh re-mount
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
     // Critical — must run immediately
     initializeCrashReporting();
+    void initAnalyticsOptOut();
 
     const durationMs = Date.now() - appStartRef.current;
     logPerf('app_launch', durationMs);
     logEvent('app_launch');
+
+    // ── Session + retention tracking (Block Y/W) ──
+    startSession();
+    resetFrictionState();
+    void logDailyReturn();
+    const appStateSub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        startSession();
+        resetFrictionState();
+      } else if (state === 'background' || state === 'inactive') {
+        void endSession();
+      }
+    });
 
     // Defer non-critical startup work — sequenced to avoid CPU spikes.
     // All deferred services are dynamically imported to keep the critical parse path lean.
@@ -412,52 +447,73 @@ export default function RootLayout() {
         await errorTelemetry.initialize();
       } catch {}
       if (cancelled) return;
+
+      // Feature flags MUST init before anything else — all Phase 2/3 depend on them
+      let flags: { isEnabled: (f: string) => boolean } | null = null;
       try {
         const { featureFlags } = await import('../src/services/featureFlags');
         await featureFlags.initialize();
+        flags = featureFlags;
       } catch {}
       if (cancelled) return;
-      try {
-        const { maybeAutoCloudBackupOncePerDay } = await import('../src/services/cloudBackupService');
-        void maybeAutoCloudBackupOncePerDay().catch((e) => {
-          if (__DEV__) console.warn('[Layout] cloud backup failed', e);
-        });
-      } catch {}
+
+      // Cloud backup — gated
+      if (flags?.isEnabled('CLOUD_BACKUP')) {
+        try {
+          const { maybeAutoCloudBackupOncePerDay } = await import('../src/services/cloudBackupService');
+          void maybeAutoCloudBackupOncePerDay().catch((e) => {
+            if (__DEV__) console.warn('[Layout] cloud backup failed', e);
+          });
+        } catch {}
+      }
 
       if (cancelled) return;
 
       // Phase 2: deferred mutations, notifications, analytics — after a frame yield
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100)); // debounce
       if (cancelled) return;
-      try {
-        const { runReplayIfDue } = await import('../src/services/replayOrchestrator');
-        void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch((e) => {
-          if (__DEV__) console.warn('[Layout] replay failed', e);
-        });
-      } catch {}
+
+      // Replay orchestrator — gated
+      if (flags?.isEnabled('REPLAY_ORCHESTRATOR')) {
+        try {
+          const { runReplayIfDue } = await import('../src/services/replayOrchestrator');
+          void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch((e) => {
+            if (__DEV__) console.warn('[Layout] replay failed', e);
+          });
+        } catch {}
+      }
+
+      // Notification reliability — always (lightweight, core UX)
       try {
         const { reconcileNotificationReliability } = await import('../src/services/notificationReliabilityService');
         void reconcileNotificationReliability('app_start').catch((e) => {
           if (__DEV__) console.warn('[Layout] notification reconcile failed', e);
         });
       } catch {}
-      try {
-        const { reconcileEngagementNotifications } = await import('../src/services/engagementNotificationService');
-        void reconcileEngagementNotifications().catch((e) => {
-          if (__DEV__) console.warn('[Layout] engagement notifications failed', e);
-        });
-      } catch {}
-      try {
-        const { tamperEngine } = await import('../src/services/security/tamperEngine');
-        tamperEngine.initialize();
-      } catch {}
 
-      // Phase 25A: Backend authority — challenge-response device verification (fire-and-forget)
-      try {
-        const { verifyDevice } = await import('../src/services/authorityClient');
-        void verifyDevice('user_local_001').catch(() => {});
-      } catch {}
+      // Engagement notifications — gated
+      if (flags?.isEnabled('ENGAGEMENT_NOTIFICATIONS')) {
+        try {
+          const { reconcileEngagementNotifications } = await import('../src/services/engagementNotificationService');
+          void reconcileEngagementNotifications().catch((e) => {
+            if (__DEV__) console.warn('[Layout] engagement notifications failed', e);
+          });
+        } catch {}
+      }
 
+      // Anti-piracy — gated
+      if (flags?.isEnabled('ANTI_PIRACY')) {
+        try {
+          const { tamperEngine } = await import('../src/services/security/tamperEngine');
+          tamperEngine.initialize();
+        } catch {}
+        try {
+          const { verifyDevice } = await import('../src/services/authorityClient');
+          void verifyDevice('user_local_001').catch(() => {});
+        } catch {}
+      }
+
+      // Analytics flush — always (lightweight, ensures queued events land)
       try {
         const { flushAnalyticsQueue } = await import('../src/services/analyticsIngestionService');
         void flushAnalyticsQueue().catch((e) => {
@@ -465,11 +521,24 @@ export default function RootLayout() {
         });
       } catch {}
 
+      // Metrics aggregator — gated
+      if (flags?.isEnabled('METRICS_AGGREGATOR')) {
+        try {
+          const { getMetricsSummary } = await import('../src/services/metricsAggregator');
+          void getMetricsSummary('user_local_001').then((metrics) => {
+            void logEvent('metrics_snapshot', metrics);
+          }).catch(() => {});
+        } catch {}
+      }
+
       // Phase 3: background health engine last — heaviest service (timers, DB queries, sensors)
-      // MUST wait for DB to be ready — these services depend on database.
-      // Use reactive subscription instead of setTimeout polling.
+      // Only starts if BACKGROUND_HEALTH flag is enabled
       if (cancelled) return;
-      const startBgHealth = async () => {
+      if (!flags?.isEnabled('BACKGROUND_HEALTH')) {
+        if (__DEV__) console.warn('[Layout] BackgroundHealthEngine skipped (ff_background_health disabled)');
+        return;
+      }
+      const startBgHealth = async (attempt = 0) => {
         if (cancelled) return;
         try {
           const { backgroundHealth } = await import('../src/engines/BackgroundHealthEngine');
@@ -480,7 +549,14 @@ export default function RootLayout() {
             enableAlerts: true,
           });
         } catch (e) {
-          if (__DEV__) console.warn('[BackgroundHealth] Failed to start:', e);
+          if (__DEV__) console.warn('[BackgroundHealth] Failed to start (attempt', attempt + 1, '):', e);
+          // Retry with exponential backoff: 2s, 4s, 8s — max 3 retries
+          if (attempt < 3 && !cancelled) {
+            const delay = Math.pow(2, attempt + 1) * 1000;
+            await new Promise((r) => setTimeout(r, delay));
+            return startBgHealth(attempt + 1);
+          }
+          if (__DEV__) console.error('[BackgroundHealth] All retry attempts exhausted — health monitoring disabled');
         }
       };
       if (systemGuard.isReady) {
@@ -505,7 +581,7 @@ export default function RootLayout() {
         deferStartup();
       });
     } else {
-      timeoutHandle = setTimeout(() => {
+      timeoutHandle = setTimeout(() => { // debounce
         deferStartup();
       }, 300);
     }
@@ -516,6 +592,8 @@ export default function RootLayout() {
       if (timeoutHandle) clearTimeout(timeoutHandle);
       bgHealthRef?.stop();
       cleanupFns.forEach((fn) => fn());
+      appStateSub.remove();
+      void endSession();
     };
   }, []);
 
@@ -526,16 +604,20 @@ export default function RootLayout() {
           <LanguageProvider>
             <AuthGate>
               <DatabaseProvider>
-                <AuthProvider>
-                  <SubscriptionProvider>
-                    <ConnectivityProvider>
-                      <AccessGate>
-                        <OfflineBanner />
-                        <ThemedTabs />
-                      </AccessGate>
-                    </ConnectivityProvider>
-                  </SubscriptionProvider>
-                </AuthProvider>
+                <AppGate>
+                  <AuthProvider>
+                    <SubscriptionProvider>
+                      <ConnectivityProvider>
+                        <ToastProvider>
+                          <AccessGate>
+                            <OfflineBanner />
+                            <ThemedTabs />
+                          </AccessGate>
+                        </ToastProvider>
+                      </ConnectivityProvider>
+                    </SubscriptionProvider>
+                  </AuthProvider>
+                </AppGate>
               </DatabaseProvider>
             </AuthGate>
           </LanguageProvider>

@@ -120,6 +120,8 @@ export function usePedometer(): UsePedometerReturn {
   const sensorFallbackRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const usingFallbackRef = useRef(false);
   const pedometerFiredRef = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => { return () => { mountedRef.current = false; }; }, []);
 
   // Check availability on mount
   useEffect(() => {
@@ -137,6 +139,7 @@ export function usePedometer(): UsePedometerReturn {
     try {
       const today = getTodayDateString();
       const result = await getDailyStepsForDate(DEFAULT_USER_ID, today);
+      if (!mountedRef.current) return;
       if (result) {
         setTodaySteps(result.steps);
         baseStepsRef.current = result.steps;
@@ -291,8 +294,8 @@ export function usePedometer(): UsePedometerReturn {
     // Start GPS tracking in the background — never block or crash the jog start
     jogUsingGPSRef.current = false;
     if (useGPS) {
-      // Use setTimeout(0) to let the UI settle before requesting GPS permission
-      setTimeout(async () => {
+      // Use setTimeout(0) to let the UI settle before requesting GPS permission // deferred-ui
+      setTimeout(async () => { // deferred-ui
         try {
           const gpsStarted = await distanceEngine.startTracking();
           if (gpsStarted) {

@@ -62,7 +62,10 @@ export interface AIContext {
     setsCompleted?: number;
     totalSets?: number;
     fatigueLevel?: number; // 0-100
+    fatigueHighMuscles?: string[]; // specific fatigued muscle names
     lastWorkoutDate?: string;
+    daysSinceLastWorkout?: number;
+    readinessStatus?: string; // formatted readiness summary from ReadinessEngine
   };
   readingContext?: {
     documentId?: string;
@@ -1014,7 +1017,7 @@ export class DualAIEngine {
 
     // If all templates were recently used, just pick randomly
     const pool = available.length > 0 ? available : arr;
-    const picked = pool[Math.floor(Math.random() * pool.length)]!;
+    const picked = pool[Math.floor(Math.random() * pool.length)]!; // non-security
 
     // Track this selection
     recent.push(picked);
@@ -1270,7 +1273,7 @@ export class DualAIEngine {
     let baseGreeting: string;
     if (context.personality === 'COACH') {
       // Use time-of-day specific greeting with 40% probability
-      const useTimeGreeting = Math.random() < 0.4;
+      const useTimeGreeting = Math.random() < 0.4; // non-security
       if (useTimeGreeting) {
         const timeCategory = `coach_greeting_${timeOfDay}`;
         const timeTemplates =
@@ -1302,7 +1305,7 @@ export class DualAIEngine {
       }
     } else {
       // Professor: use time-of-day greeting with 40% probability
-      const useTimeGreeting = Math.random() < 0.4;
+      const useTimeGreeting = Math.random() < 0.4; // non-security
       if (useTimeGreeting) {
         const timeCategory = `prof_greeting_${timeOfDay}`;
         const timeTemplates =
@@ -1414,6 +1417,11 @@ export class DualAIEngine {
         if (memory && memory.mentionedExercises.length > 0) {
           message += ` Remember how you crushed those ${memory.mentionedExercises[0]}s last time?`;
         }
+        // Adaptive: temper motivation if fatigue is high or readiness is low
+        const fatiguedMuscles = context.workoutContext?.fatigueHighMuscles;
+        if (fatiguedMuscles && fatiguedMuscles.length >= 3) {
+          message += `\n\n⚡ That said, ${fatiguedMuscles.length} muscle groups are fatigued right now. Channel that energy into a lighter mobility or technique session — smart training is still training!`;
+        }
         break;
       }
 
@@ -1436,8 +1444,17 @@ export class DualAIEngine {
             this.pickRandomAvoidingRepeats(COACH_TEMPLATES.fatigue_warning, 'coach_fatigue'),
             context,
           );
+          // Append muscle-specific guidance when available
+          const fatiguedMuscles = context.workoutContext.fatigueHighMuscles;
+          if (fatiguedMuscles && fatiguedMuscles.length > 0) {
+            message += `\n\n🎯 Specifically, your **${fatiguedMuscles.join(', ')}** ${fatiguedMuscles.length === 1 ? 'is' : 'are'} running hot. Avoid loading ${fatiguedMuscles.length === 1 ? 'that area' : 'those areas'} today.`;
+          }
         } else {
           message = this.fillTemplate(this.pickRandomAvoidingRepeats(COACH_TEMPLATES.rest_day, 'coach_rest'), context);
+        }
+        // Append readiness context when available
+        if (context.workoutContext?.readinessStatus) {
+          message += `\n\n📊 Your current readiness: ${context.workoutContext.readinessStatus}`;
         }
         if (memory && memory.userPreferences.some((p) => p.includes('injury'))) {
           const injuryPref = memory.userPreferences.find((p) => p.includes('injury'));
@@ -1485,7 +1502,7 @@ export class DualAIEngine {
           );
         } else {
           const hour = new Date().getHours();
-          const useTimeGreeting = Math.random() < 0.4;
+          const useTimeGreeting = Math.random() < 0.4; // non-security
           if (useTimeGreeting) {
             const timeTemplates =
               hour < 12
@@ -1828,7 +1845,7 @@ export class DualAIEngine {
             confidence = 0.75;
           } else {
             // Use devil's advocate or Feynman technique for deeper thinking
-            const useTechnique = Math.random() < 0.3;
+            const useTechnique = Math.random() < 0.3; // non-security
             if (useTechnique) {
               message = this.pickRandomAvoidingRepeats(PROFESSOR_TEMPLATES.devils_advocate, 'prof_devils');
             } else {
@@ -1844,13 +1861,13 @@ export class DualAIEngine {
           context,
         );
         // Offer flashcard creation
-        if (Math.random() < 0.4) {
+        if (Math.random() < 0.4) { // non-security
           message += `\n\n${this.pickRandomAvoidingRepeats(PROFESSOR_TEMPLATES.flashcard_encouragement, 'prof_flashcard')}`;
         }
       } else if (this.matchesIntent(lowerInput, ['hello', 'hi', 'start', 'reading'])) {
         // Time-of-day aware greeting
         const hour = new Date().getHours();
-        const useTimeGreeting = Math.random() < 0.4;
+        const useTimeGreeting = Math.random() < 0.4; // non-security
         if (useTimeGreeting) {
           const timeTemplates =
             hour < 12
@@ -1919,7 +1936,7 @@ export class DualAIEngine {
       if (memory.mentionedBooks.length > 0 && context.readingContext?.documentTitle) {
         const currentBook = context.readingContext.documentTitle.toLowerCase();
         const previousBooks = memory.mentionedBooks.filter((b) => !currentBook.includes(b.toLowerCase()));
-        if (previousBooks.length > 0 && Math.random() < 0.3) {
+        if (previousBooks.length > 0 && Math.random() < 0.3) { // non-security
           message += `\n\n💡 This reminds me of themes from "${previousBooks[0]}" that you read earlier.`;
         }
       }
@@ -1951,7 +1968,7 @@ export class DualAIEngine {
     const model = (options.model || 'gpt-4.1-mini').trim();
     const startTime = Date.now();
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), 15000); // abort-timeout
 
     const reading = context.readingContext;
     const systemPrompt = [
@@ -2073,7 +2090,7 @@ export class DualAIEngine {
         'Interesting topic! Let me share my thoughts.',
         'I appreciate you asking, {name}!',
       ];
-      parts.push(this.fillTemplate(openers[Math.floor(Math.random() * openers.length)]!, context));
+      parts.push(this.fillTemplate(openers[Math.floor(Math.random() * openers.length)]!, context)); // non-security
 
       // Add contextual insight based on user state
       if (context.workoutContext?.currentExercise) {
@@ -2105,7 +2122,7 @@ export class DualAIEngine {
           `We've been covering ${topics} — want me to go deeper on any of those, or is there something new on your mind?`,
         );
       }
-      if (memory.mentionedExercises.length > 0 && Math.random() > 0.7) {
+      if (memory.mentionedExercises.length > 0 && Math.random() > 0.7) { // non-security
         parts.push(
           `By the way, since you've been working on ${memory.mentionedExercises[0]} — keep at it, consistency is key!`,
         );
@@ -2121,7 +2138,7 @@ export class DualAIEngine {
         'Not sure what to ask? Try: "How should I eat today?", "Am I overtraining?", or "Help me break my plateau."',
         'I can talk exercises, macros, stretching, supplements, sleep, motivation — you name it. What interests you?',
       ];
-      parts.push(guides[Math.floor(Math.random() * guides.length)]!);
+      parts.push(guides[Math.floor(Math.random() * guides.length)]!); // non-security
     }
 
     return parts.join('\n\n');
@@ -2191,6 +2208,9 @@ export class DualAIEngine {
       if (workout?.fatigueLevel !== undefined && workout.fatigueLevel > 70) {
         suggestions.push({ text: 'Show recovery exercises', priority: 95, category: 'fatigue' });
         suggestions.push({ text: 'Take a longer rest', priority: 85, category: 'fatigue' });
+        if (workout.fatigueHighMuscles && workout.fatigueHighMuscles.length > 0) {
+          suggestions.push({ text: `Rest ${workout.fatigueHighMuscles[0]} today`, priority: 90, category: 'fatigue' });
+        }
       }
 
       if (workout?.fatigueLevel !== undefined && workout.fatigueLevel > 50 && workout.fatigueLevel <= 70) {
@@ -2586,7 +2606,7 @@ export class DualAIEngine {
 
     const options = blends[intentId];
     if (!options || options.length === 0) return null;
-    return options[Math.floor(Math.random() * options.length)] ?? null;
+    return options[Math.floor(Math.random() * options.length)] ?? null; // non-security
   }
 
   private detectMuscleGroup(input: string): string {
@@ -2679,6 +2699,9 @@ export class DualAIEngine {
         .replace(/{muscleGroup}/g, context.workoutContext?.muscleGroup || 'muscles')
         .replace(/{muscle}/g, context.workoutContext?.muscleGroup || 'that area')
         .replace(/{fatigueLevel}/g, String(context.workoutContext?.fatigueLevel || 0))
+        .replace(/{fatigueMuscles}/g, context.workoutContext?.fatigueHighMuscles?.join(', ') || 'none')
+        .replace(/{readiness}/g, context.workoutContext?.readinessStatus || 'unknown')
+        .replace(/{daysSinceWorkout}/g, String(context.workoutContext?.daysSinceLastWorkout ?? 0))
         .replace(/{documentTitle}/g, context.readingContext?.documentTitle || 'your book')
         .replace(/{text}/g, context.readingContext?.selectedText?.slice(0, 100) || 'this passage')
         .replace(/{pagesRead}/g, String(context.readingContext?.currentPage || 0))
@@ -2703,7 +2726,7 @@ export class DualAIEngine {
   }
 
   private pickRandom<T>(arr: T[]): T {
-    return arr[Math.floor(Math.random() * arr.length)]!;
+    return arr[Math.floor(Math.random() * arr.length)]!; // non-security
   }
 }
 

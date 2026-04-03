@@ -15,6 +15,7 @@ import { useSubscription } from '../purchases/SubscriptionContext';
 import { GradientButton } from './ui/GlassUI';
 import { logEvent } from '../services/telemetry';
 import { tamperEngine } from '../services/security/tamperEngine';
+import { typography, spacing } from '../design/theme-system';
 import {
   sentinelRecordPremiumAccess,
   sentinelVerifyEngine,
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: spacing[8],
   },
   iconWrap: {
     width: 96,
@@ -91,29 +92,29 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: spacing[6],
   },
   title: {
-    fontSize: 22,
+    fontSize: typography.sizes.h3, 
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   feature: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   desc: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     textAlign: 'center',
     lineHeight: 20,
-    marginBottom: 32,
+    marginBottom: spacing[8],
   },
   cta: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   hint: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
   },
 });

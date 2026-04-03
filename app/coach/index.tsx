@@ -4,31 +4,25 @@
  * Uses a rule-based coaching engine (no external API needed for offline-first)
  */
 
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   View,
   FlatList,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
   Platform,
   Dimensions,
-  BackHandler,
-  Share,
   Modal,
   Pressable,
-  Keyboard,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Clipboard from 'expo-clipboard';
 import SimpleMarkdown from '../../src/components/SimpleMarkdown';
 import Animated, {
   FadeIn,
@@ -45,97 +39,17 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useLanguage } from '../../src/context/LanguageContext';
-import { useDatabase } from '../../src/context/DatabaseContext';
-import {
-  getUserProgress,
-  getStreak,
-  getMuscleFatigue,
-  getUserProfile,
-  getExercises,
-  getAppState,
-  getUserInjuries,
-  getUserEquipment,
-} from '../../src/database/service';
-import { getActiveBodyCraftAlgorithm } from '../../src/database/bodyCraftService';
-import { getXPData } from '../../src/services/xpService';
-import { getCachedReadiness, formatStatusForAI } from '../../src/engines/ReadinessEngine';
 import { PulseDot } from '../../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../../src/components/ScreenTutorial';
 import PremiumGate from '../../src/components/PremiumGate';
-import { intentRouter } from '../../src/engines/IntentRouter';
-import { dualAI, type ConversationMemory } from '../../src/engines/DualAIEngine';
-import { encryptedDB } from '../../src/security/EncryptedDatabase';
-import { aiProvider, TIER_LABELS, type ModelTier } from '../../src/services/aiProvider';
-import {
-  isWorkoutCreationIntent,
-  extractWorkoutParams,
-  buildAIWorkoutContext,
-  parseAIWorkoutResponse,
-  createDirectWorkout,
-  type AIWorkoutResult,
-} from '../../src/services/aiWorkoutService';
+import { useCoachViewModel, TIER_LABELS, type ChatMessage, type ModelTier } from '../../src/viewmodels/useCoachViewModel';
 import { haptic } from '../../src/utils/haptics';
-import { getCurrentLocation, getDefaultLocation } from '../../src/services/locationService';
+import { typography, spacing, radius } from '../../src/design/theme-system';
+import ThemedText from '../../src/components/ThemedText';
+
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
-
-// ============================================
-// TYPES
-// ============================================
-
-interface ChatMessage {
-  id: string;
-  role: 'coach' | 'user';
-  text: string;
-  timestamp: Date;
-  modelLabel?: string;
-  reaction?: 'up' | 'down' | null;
-  responseTimeMs?: number;
-}
-
-interface CoachContext {
-  streak: number;
-  longestStreak: number;
-  totalWorkouts: number;
-  level: number;
-  totalXP: number;
-  fatigueHighMuscles: string[];
-  lastWorkoutDate: string | null;
-  daysSinceLastWorkout: number;
-  goal: string;
-  exerciseCount: number;
-  readinessStatus?: string;
-  userName: string;
-  experience: string;
-  weight?: number;
-  height?: number;
-  trainingDaysPerWeek: number;
-  sessionMinutes: number;
-  injuries: string;
-  equipment: string;
-  bodyCraftPlan?: string;
-  location?: {
-    city?: string;
-    region?: string;
-    country?: string;
-    isoCountryCode?: string;
-  };
-}
-
-// ============================================
-// COACHING ENGINE (Offline rule-based)
-// ============================================
-
-function getTimeGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
-}
-
-// TOPIC_RESPONSES & generateCoachResponse removed — all responses now routed through aiProvider
-// (cloud LLM when online, DualAI templates offline)
 
 // ============================================
 // TYPING INDICATOR COMPONENT
@@ -169,7 +83,7 @@ function PulsingDot({ delay, color }: { delay: number; color: string }) {
           height: 10,
           borderRadius: 5,
           backgroundColor: color,
-          marginHorizontal: 4,
+          marginHorizontal: spacing[1],
         },
         animStyle,
       ]}
@@ -203,8 +117,8 @@ function TypingIndicator({ modelName }: { modelName?: string }) {
         {
           backgroundColor: theme.colors.surfaceVariant,
           borderWidth: 1.5,
-          paddingVertical: 16,
-          paddingHorizontal: 18,
+          paddingVertical: spacing[4],
+          paddingHorizontal: spacing[4.5],
         },
         bubbleGlowStyle,
       ]}
@@ -213,10 +127,10 @@ function TypingIndicator({ modelName }: { modelName?: string }) {
         <Animated.Text
           entering={FadeIn.duration(300)}
           style={{
-            fontSize: 10,
+            fontSize: typography.sizes.xs, 
             fontWeight: '600',
             color: theme.colors.textMuted,
-            marginBottom: 8,
+            marginBottom: spacing[2],
             letterSpacing: 0.3,
           }}
         >
@@ -291,7 +205,7 @@ const MessageBubble = React.memo(
               >
                 <MaterialCommunityIcons name="robot-happy" size={12} color={theme.colors.onAccent} />
               </LinearGradient>
-              <Text style={[styles.coachLabel, { color: theme.colors.accent }]}>{t('coach.coachLabel')}</Text>
+              <ThemedText style={[styles.coachLabel, { color: theme.colors.accent }]}>{t('coach.coachLabel')}</ThemedText>
               {!!message.modelLabel &&
                 (() => {
                   const tierKey = message.modelLabel.split(' · ')[0]?.toLowerCase() as ModelTier | undefined;
@@ -299,9 +213,9 @@ const MessageBubble = React.memo(
                     tierKey && TIER_LABELS[tierKey] ? TIER_LABELS[tierKey].color : theme.colors.textMuted;
                   return (
                     <View style={[styles.modelLabelBadge, { backgroundColor: tierColor + '18' }]}>
-                      <Text style={{ color: tierColor, fontSize: 9, fontWeight: '700', letterSpacing: 0.3 }}>
+                      <ThemedText style={{ color: tierColor, fontSize: typography.sizes.micro, fontWeight: '700', letterSpacing: 0.3 }}>
                         {message.modelLabel}
-                      </Text>
+                      </ThemedText>
                     </View>
                   );
                 })()}
@@ -322,20 +236,20 @@ const MessageBubble = React.memo(
               end={{ x: 1, y: 1 }}
               style={styles.userBubbleGradient}
             >
-              <Text style={[styles.messageText, { color: theme.colors.text }]}>{message.text}</Text>
+              <ThemedText style={[styles.messageText, { color: theme.colors.text }]}>{message.text}</ThemedText>
             </LinearGradient>
           )}
           {/* Footer: timestamp + response time + reactions/edit */}
           <View style={styles.bubbleFooter}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={[styles.timestamp, { color: theme.colors.textMuted }]}>{timeStr}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
+              <ThemedText style={[styles.timestamp, { color: theme.colors.textMuted }]}>{timeStr}</ThemedText>
               {isCoach && !!message.responseTimeMs && (
-                <Text style={{ fontSize: 9, color: theme.colors.textMuted, fontWeight: '500' }}>
+                <ThemedText style={{ fontSize: typography.sizes.micro, color: theme.colors.textMuted, fontWeight: '500' }}>
                   ·{' '}
                   {message.responseTimeMs < 1000
                     ? `${message.responseTimeMs}ms`
                     : `${(message.responseTimeMs / 1000).toFixed(1)}s`}
-                </Text>
+                </ThemedText>
               )}
             </View>
             {!isCoach && (
@@ -428,7 +342,7 @@ const StreamingBubble = React.memo(function StreamingBubble({ text }: { text: st
         >
           <MaterialCommunityIcons name="robot-happy" size={12} color={theme.colors.onAccent} />
         </LinearGradient>
-        <Text style={[styles.coachLabel, { color: theme.colors.accent }]}>{t('coach.coachLabel')}</Text>
+        <ThemedText style={[styles.coachLabel, { color: theme.colors.accent }]}>{t('coach.coachLabel')}</ThemedText>
       </View>
       <View style={{ overflow: 'hidden', flexShrink: 1 }}>
         <SimpleMarkdown
@@ -477,9 +391,9 @@ function MessageActionSheet({
           style={[styles.actionSheet, { backgroundColor: theme.colors.surface }]}
         >
           <View style={[styles.actionSheetHandle, { backgroundColor: theme.colors.border }]} />
-          <Text style={[styles.actionSheetTitle, { color: theme.colors.textMuted }]} numberOfLines={1}>
+          <ThemedText style={[styles.actionSheetTitle, { color: theme.colors.textMuted }]} numberOfLines={1}>
             Message actions
-          </Text>
+          </ThemedText>
           {actions.map((action) => (
             <TouchableOpacity
               key={action.label}
@@ -491,7 +405,7 @@ function MessageActionSheet({
               activeOpacity={0.6}
             >
               <MaterialCommunityIcons name={action.icon} size={20} color={action.color} />
-              <Text style={[styles.actionSheetLabel, { color: action.color }]}>{action.label}</Text>
+              <ThemedText style={[styles.actionSheetLabel, { color: action.color }]}>{action.label}</ThemedText>
             </TouchableOpacity>
           ))}
         </Animated.View>
@@ -506,789 +420,11 @@ function MessageActionSheet({
 
 function CoachScreenInner() {
   const { theme } = useTheme();
-  const { t, language, languageName } = useLanguage();
-  const { isReady: dbReady } = useDatabase();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const scrollRef = useRef<FlatList>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const messagesRef = useRef<ChatMessage[]>([]); // mirror — lets callbacks read latest without re-creating
-  const [input, setInput] = useState('');
-  const [coachCtx, setCoachCtx] = useState<CoachContext | null>(null);
-  const coachCtxRef = useRef<CoachContext | null>(null);
-  const [isTyping, setIsTyping] = useState(false);
-  const [streamingText, setStreamingText] = useState<string | null>(null); // decoupled streaming state
-  const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
+  const vm = useCoachViewModel();
   const inputScale = useSharedValue(1);
-  const cachedMemoryRef = useRef<ConversationMemory | null>(null);
-  const languageRef = useRef({ language, languageName });
-
-  // ── New feature states ──
-  const [actionMessage, setActionMessage] = useState<ChatMessage | null>(null); // long-press menu target
-  const [showActions, setShowActions] = useState(false);
-  const [showScrollBtn, setShowScrollBtn] = useState(false);
-  const stopRequestedRef = useRef(false); // stop generation flag
-  const lastUserInputRef = useRef<string>(''); // for regenerate
-
-  const [typingModelName, setTypingModelName] = useState<string | undefined>();
-  const [lastWorkoutResult, setLastWorkoutResult] = useState<AIWorkoutResult | null>(null);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  // Track keyboard visibility for bottom padding
-  useEffect(() => {
-    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () =>
-      setKeyboardVisible(true),
-    );
-    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
-      setKeyboardVisible(false),
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
-  // Keep refs in sync — avoids re-creating useCallbacks when messages/ctx change
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-  useEffect(() => {
-    coachCtxRef.current = coachCtx;
-  }, [coachCtx]);
-  useEffect(() => {
-    languageRef.current = { language, languageName };
-  }, [language, languageName]);
-
-  // Scroll helper — debounced soft scroll
-  const scrollToBottom = useCallback(() => {
-    requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
-  }, []);
-
-  // Auto-scroll when keyboard opens so latest messages stay visible
-  useEffect(() => {
-    if (keyboardVisible) setTimeout(scrollToBottom, 100);
-  }, [keyboardVisible, scrollToBottom]);
-
-  useEffect(() => {
-    if (dbReady) loadCoachContext();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once on mount
-  }, [dbReady]);
-
-  // Handle Android hardware back button — navigate to dashboard tab
-  useEffect(() => {
-    const backAction = () => {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace('/dashboard');
-      }
-      return true; // Prevent default (which dispatches GO_BACK to navigator)
-    };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => backHandler.remove();
-  }, [router]);
-
-  const loadCoachContext = async () => {
-    try {
-      const [
-        progress,
-        streak,
-        fatigue,
-        xp,
-        profile,
-        exercises,
-        readinessSnap,
-        displayName,
-        injuries,
-        equipment,
-        bodyCraftAlgo,
-      ] = await Promise.all([
-        getUserProgress(),
-        getStreak('user_local_001'),
-        getMuscleFatigue('user_local_001'),
-        getXPData(),
-        getUserProfile('user_local_001'),
-        getExercises(),
-        getCachedReadiness('user_local_001').catch(() => null),
-        getAppState('user.display_name').catch(() => null),
-        getUserInjuries('user_local_001').catch(() => []),
-        getUserEquipment('user_local_001').catch(() => []),
-        getActiveBodyCraftAlgorithm('user_local_001').catch(() => null),
-      ]);
-
-      const fatigueHigh = fatigue.filter((f) => f.fatigue_level > 60).map((f) => f.muscle.replace(/_/g, ' '));
-
-      const daysSince = progress.last_workout_date
-        ? Math.floor((Date.now() - new Date(progress.last_workout_date).getTime()) / 86400000)
-        : 999;
-
-      const readinessStatus = readinessSnap ? formatStatusForAI(readinessSnap) : undefined;
-
-      const userName = displayName || 'Athlete';
-      const injuryStr =
-        injuries.length > 0 ? injuries.map((i) => `${i.muscle.replace(/_/g, ' ')} (${i.severity})`).join(', ') : 'none';
-      const equipmentStr = equipment.length > 0 ? equipment.join(', ') : 'bodyweight';
-
-      // Summarize body craft plan if exists
-      let bodyCraftSummary: string | undefined;
-      if (bodyCraftAlgo) {
-        bodyCraftSummary = `Body type: ${bodyCraftAlgo.body_type}, Goal: ${bodyCraftAlgo.goal_type}, Timeline: ${bodyCraftAlgo.timeline_months}mo, Split: ${bodyCraftAlgo.recommended_training_split}, ${bodyCraftAlgo.training_days_per_week}d/wk, Calories: ${bodyCraftAlgo.calories_target}, Protein: ${bodyCraftAlgo.protein_g}g, Cardio: ${bodyCraftAlgo.cardio_minutes_per_week}min/wk`;
-      }
-
-      const ctx: CoachContext = {
-        streak: streak.current,
-        longestStreak: streak.longest,
-        totalWorkouts: progress.total_workouts,
-        level: xp.level,
-        totalXP: xp.totalXP,
-        fatigueHighMuscles: fatigueHigh,
-        lastWorkoutDate: progress.last_workout_date,
-        daysSinceLastWorkout: daysSince,
-        goal: profile?.goal || 'body_control',
-        exerciseCount: exercises.length,
-        readinessStatus,
-        userName,
-        experience: profile?.experience || 'intermediate',
-        weight: profile?.weight_kg ?? undefined,
-        height: profile?.height_cm ?? undefined,
-        trainingDaysPerWeek: profile?.training_days_per_week || 3,
-        sessionMinutes: profile?.time_per_session_minutes || 30,
-        injuries: injuryStr,
-        equipment: equipmentStr,
-        bodyCraftPlan: bodyCraftSummary,
-      };
-
-      // Fetch location for diet recommendations (async, non-blocking)
-      try {
-        const loc = await getCurrentLocation();
-        if (loc) {
-          ctx.location = {
-            city: loc.city ?? undefined,
-            region: loc.region ?? undefined,
-            country: loc.country ?? undefined,
-            isoCountryCode: loc.isoCountryCode ?? undefined,
-          };
-        }
-      } catch {
-        try {
-          const fallback = getDefaultLocation();
-          ctx.location = {
-            country: fallback.country ?? undefined,
-            isoCountryCode: fallback.isoCountryCode ?? undefined,
-          };
-        } catch {
-          /* ignore */
-        }
-      }
-
-      setCoachCtx(ctx);
-
-      // Pre-cache conversation memory so DualAI queries skip DB reads
-      try {
-        const memory = await dualAI.loadConversationMemory('COACH', 5);
-        cachedMemoryRef.current = memory;
-      } catch {
-        // Continue without cached memory
-      }
-
-      // Generate context-aware greeting — language-aware via aiProvider for non-English
-      let greeting: string;
-      try {
-        // Check if user just completed a workout (within last 30 minutes)
-        const lastWorkoutRaw = await getAppState('last_completed_workout');
-        const lastWorkout = lastWorkoutRaw ? JSON.parse(lastWorkoutRaw) : null;
-        const isRecentWorkout = lastWorkout && Date.now() - lastWorkout.completedAt < 30 * 60 * 1000;
-
-        // Shared context for all greeting paths
-        const greetingCtx = {
-          personality: 'COACH' as const,
-          conversationHistory: [] as Array<{ role: 'user' | 'assistant'; content: string }>,
-          userProfile: {
-            name: userName,
-            fitnessLevel: ctx.experience,
-            goals: [ctx.goal],
-            streakDays: ctx.streak,
-            longestStreak: ctx.longestStreak,
-            level: ctx.level,
-            totalXP: ctx.totalXP,
-            weight: ctx.weight,
-            height: ctx.height,
-            trainingDaysPerWeek: ctx.trainingDaysPerWeek,
-            sessionMinutes: ctx.sessionMinutes,
-            injuries: ctx.injuries,
-            equipment: ctx.equipment,
-          },
-          workoutContext: {
-            fatigueLevel: ctx.fatigueHighMuscles.length > 0 ? 75 : 30,
-            lastWorkoutDate: ctx.lastWorkoutDate ?? undefined,
-          },
-          language,
-          languageName,
-          memory: cachedMemoryRef.current ?? undefined,
-        };
-
-        if (isRecentWorkout) {
-          if (language !== 'en') {
-            // Generate native-language post-workout greeting via cloud LLM
-            try {
-              const durationMin = Math.round(lastWorkout.durationSeconds / 60);
-              const resp = await aiProvider.generateResponse(
-                `I just finished a workout: ${lastWorkout.completedCount}/${lastWorkout.totalCount} exercises in ${durationMin} minutes, earned ${lastWorkout.xpEarned} XP, ${lastWorkout.streakDays}-day streak. Give a brief celebratory coach message (2-3 sentences, use emojis).`,
-                greetingCtx,
-              );
-              greeting = resp.message;
-            } catch {
-              greeting = dualAI.getPostWorkoutGreeting(lastWorkout);
-            }
-          } else {
-            greeting = dualAI.getPostWorkoutGreeting(lastWorkout);
-          }
-        } else {
-          let baseGreeting: string;
-
-          if (language !== 'en') {
-            // Generate native-language greeting via cloud LLM (system prompt injects language)
-            try {
-              const resp = await aiProvider.generateResponse(
-                'Give me a brief, motivational fitness coach greeting (2-3 sentences max). Mention my streak if I have one. Use emojis.',
-                greetingCtx,
-              );
-              baseGreeting = resp.message;
-            } catch {
-              // Cloud unavailable — fall back to English DualAI templates
-              baseGreeting = await dualAI.getGreeting(greetingCtx);
-            }
-          } else {
-            baseGreeting = await dualAI.getGreeting(greetingCtx);
-          }
-
-          // Prepend readiness status as first-message feedback
-          if (ctx.readinessStatus) {
-            greeting = `📊 **${language !== 'en' ? ctx.readinessStatus : 'Your Status: ' + ctx.readinessStatus}**\n\n${baseGreeting}`;
-          } else {
-            greeting = baseGreeting;
-          }
-        }
-      } catch (e) {
-        if (__DEV__) console.warn('[Coach] Greeting generation failed, using fallback:', e);
-        const greetings = [
-          'What can I help you with today?',
-          "Ready to crush it? What's on your mind?",
-          'Ask me anything about your training.',
-        ];
-        greeting = `${getTimeGreeting()}! 💪 ${greetings[Math.floor(Math.random() * greetings.length)]}`;
-      }
-
-      // Load past conversation history BEFORE the greeting so they appear above it
-      const initialMessages: ChatMessage[] = [];
-      try {
-        // Auto-renew: purge conversations older than 24 hours
-        await encryptedDB.cleanupOldConversations('COACH');
-        const history = await encryptedDB.getAIConversations('COACH', 5);
-        if (history.length > 0) {
-          for (const entry of history.reverse()) {
-            // Format raw JSON responses from older conversations
-            let responseText = entry.response;
-            if (responseText.trimStart().startsWith('{') && responseText.includes('"exercises"')) {
-              try {
-                const raw = JSON.parse(responseText.match(/\{[\s\S]*"exercises"[\s\S]*\}/)?.[0] || responseText);
-                if (raw?.exercises?.length) {
-                  const lines = raw.exercises
-                    .map((e: any, i: number) => `${i + 1}. **${e.name}** — ${e.sets}×${e.reps}`)
-                    .join('\n');
-                  responseText = `💪 **${raw.name || 'Your Workout'}**\n\n${lines}`;
-                }
-              } catch {
-                /* not valid JSON, show as-is */
-              }
-            }
-            initialMessages.push({
-              id: `hist_user_${entry.created_at}`,
-              role: 'user',
-              text: entry.query,
-              timestamp: new Date(entry.created_at),
-            });
-            initialMessages.push({
-              id: `hist_coach_${entry.created_at}`,
-              role: 'coach',
-              text: responseText,
-              timestamp: new Date(entry.created_at),
-            });
-          }
-        }
-      } catch (e) {
-        if (__DEV__) console.warn('[Coach] Failed to load conversation history:', e);
-      }
-
-      // Greeting appears AFTER history — it's the latest message the user sees
-      initialMessages.push({
-        id: 'greeting',
-        role: 'coach',
-        text: greeting,
-        timestamp: new Date(),
-      });
-
-      setMessages(initialMessages);
-    } catch (error) {
-      if (__DEV__) console.error('[Coach] Failed to load context:', error);
-      setMessages([
-        {
-          id: 'greeting',
-          role: 'coach',
-          text: "Hey! I'm your FitQuest coach. Ask me anything about training, nutrition, or recovery! 💪",
-          timestamp: new Date(),
-        },
-      ]);
-      setCoachCtx({
-        streak: 0,
-        longestStreak: 0,
-        totalWorkouts: 0,
-        level: 1,
-        totalXP: 0,
-        fatigueHighMuscles: [],
-        lastWorkoutDate: null,
-        daysSinceLastWorkout: 999,
-        goal: 'body_control',
-        exerciseCount: 200,
-        userName: 'Athlete',
-        experience: 'intermediate',
-        trainingDaysPerWeek: 3,
-        sessionMinutes: 30,
-        injuries: 'none',
-        equipment: 'bodyweight',
-      });
-    }
-  };
-
-  // Build DualAI context snapshot from refs (never triggers re-creation of callbacks)
-  const buildAIContext = useCallback((personality: 'COACH' | 'PROFESSOR' = 'COACH') => {
-    const ctx = coachCtxRef.current;
-    const msgs = messagesRef.current;
-    const recentHistory = msgs.slice(-10).map((m) => ({
-      role: (m.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-      content: m.text,
-    }));
-
-    return {
-      personality,
-      conversationHistory: recentHistory,
-      userProfile: ctx
-        ? {
-            name: ctx.userName,
-            fitnessLevel: ctx.experience,
-            goals: [ctx.goal],
-            streakDays: ctx.streak,
-            longestStreak: ctx.longestStreak,
-            level: ctx.level,
-            totalXP: ctx.totalXP,
-            weight: ctx.weight,
-            height: ctx.height,
-            trainingDaysPerWeek: ctx.trainingDaysPerWeek,
-            sessionMinutes: ctx.sessionMinutes,
-            injuries: ctx.injuries,
-            equipment: ctx.equipment,
-            bodyCraftPlan: ctx.bodyCraftPlan,
-          }
-        : undefined,
-      workoutContext: ctx
-        ? {
-            fatigueLevel: ctx.fatigueHighMuscles.length > 0 ? 75 : 30,
-            lastWorkoutDate: ctx.lastWorkoutDate ?? undefined,
-          }
-        : undefined,
-      memory: cachedMemoryRef.current || undefined,
-      totalWorkouts: ctx?.totalWorkouts || 0,
-      exerciseCount: ctx?.exerciseCount || 200,
-      language: languageRef.current.language,
-      languageName: languageRef.current.languageName,
-      location: ctx?.location,
-    };
-  }, []); // stable — reads from refs, no deps
-
-  // ── Streaming typewriter — writes to decoupled `streamingText` state ──
-  // The FlatList never re-renders during streaming; only StreamingBubble updates.
-  const streamResponseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const streamResponse = useCallback(
-    (fullText: string, onDone: () => void, modelLabel?: string, responseTimeMs?: number) => {
-      // Cancel any in-flight stream
-      if (streamResponseRef.current) clearTimeout(streamResponseRef.current);
-      stopRequestedRef.current = false;
-
-      const FIRST_CHUNK = 60; // chars shown instantly
-      const CHUNK_SIZE = 35; // chars per tick
-      const TICK_MS = 14; // ~70fps feel
-
-      let cursor = Math.min(FIRST_CHUNK, fullText.length);
-      setStreamingText(fullText.slice(0, cursor));
-      setIsTyping(false);
-      setTypingModelName(undefined);
-      scrollToBottom();
-
-      const commitMessage = (text: string) => {
-        setStreamingText(null);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `coach_${Date.now()}`,
-            role: 'coach' as const,
-            text,
-            timestamp: new Date(),
-            modelLabel,
-            responseTimeMs,
-          },
-        ]);
-        haptic('setComplete');
-        scrollToBottom();
-        onDone();
-      };
-
-      if (cursor >= fullText.length) {
-        commitMessage(fullText);
-        return;
-      }
-
-      const tick = () => {
-        // Check if stop was requested
-        if (stopRequestedRef.current) {
-          streamResponseRef.current = null;
-          commitMessage(fullText.slice(0, cursor) + '...');
-          return;
-        }
-
-        cursor = Math.min(cursor + CHUNK_SIZE, fullText.length);
-        setStreamingText(fullText.slice(0, cursor));
-        if (cursor < fullText.length) {
-          streamResponseRef.current = setTimeout(tick, TICK_MS);
-        } else {
-          streamResponseRef.current = null;
-          commitMessage(fullText);
-        }
-      };
-      streamResponseRef.current = setTimeout(tick, TICK_MS);
-    },
-    [scrollToBottom],
-  );
-
-  // Cleanup streaming on unmount
-  useEffect(
-    () => () => {
-      if (streamResponseRef.current) clearTimeout(streamResponseRef.current);
-    },
-    [],
-  );
-
-  // ── Unified message dispatch — INSTANT user message, async AI response ──
-  const dispatchMessage = useCallback(
-    (text: string) => {
-      const trimmed = text.trim();
-      if (!trimmed || !coachCtxRef.current) return;
-
-      // Track for regenerate
-      lastUserInputRef.current = trimmed;
-      haptic('buttonPress');
-
-      // 1. Immediately show user message + clear input (ZERO delay)
-      const userMsg: ChatMessage = {
-        id: `user_${Date.now()}`,
-        role: 'user' as const,
-        text: trimmed,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, userMsg]);
-      setInput('');
-      setIsTyping(true);
-      setActiveSuggestions([]);
-      scrollToBottom();
-
-      // 2. Generate AI response asynchronously (intent classification happens here, NOT blocking render)
-      (async () => {
-        const _ctx = coachCtxRef.current!;
-        let response: string;
-        let aiSuggestions: string[] | undefined;
-
-        // Intent classification happens AFTER the user message is rendered
-        const classified = intentRouter.classify(trimmed);
-
-        // Fast path: navigation intents
-        if (classified.category === 'NAVIGATION' && classified.entities.screens.length > 0) {
-          const screen = classified.entities.screens[0];
-          response = `Sure! Let me take you to the ${screen} screen. Use the navigation tabs or menu to get there.`;
-          setIsTyping(false);
-          setTypingModelName(undefined);
-          setMessages((prev) => [
-            ...prev,
-            { id: `coach_${Date.now()}`, role: 'coach' as const, text: response, timestamp: new Date() },
-          ]);
-          encryptedDB.storeAIConversation('COACH', trimmed, response).catch(() => {});
-          scrollToBottom();
-          return;
-        }
-
-        // Show which model is being queried
-        const currentModel = aiProvider.activeModel;
-        setTypingModelName(aiProvider.autoRoute ? undefined : currentModel?.displayName);
-
-        // Resolve personality — always COACH (Professor system disabled)
-        const personality = 'COACH' as const;
-
-        // Check if this is a workout creation request
-        const isWorkoutRequest = isWorkoutCreationIntent(trimmed);
-
-        let modelLabel: string | undefined;
-        let responseTimeMs: number | undefined;
-        try {
-          if (isWorkoutRequest) {
-            // Build workout-aware context for the AI
-            const workoutParams = extractWorkoutParams(trimmed);
-            const workoutContext = await buildAIWorkoutContext(workoutParams);
-            const aiCtx = buildAIContext(personality);
-            // Inject workout context as an extra system-level instruction
-            aiCtx.conversationHistory = [
-              ...(aiCtx.conversationHistory || []),
-              { role: 'user' as const, content: workoutContext },
-            ];
-
-            const aiResp = await aiProvider.generateResponse(trimmed, aiCtx);
-            responseTimeMs = aiResp.processingTimeMs;
-            response = aiResp.message;
-            aiSuggestions = aiResp.suggestions;
-            modelLabel = aiResp.model && aiResp.tier ? `${aiResp.tier} · ${aiResp.model}` : aiResp.model;
-
-            // Try to parse the AI response as a structured workout
-            let workoutResult = await parseAIWorkoutResponse(aiResp.message);
-            // Fallback: if AI didn't return valid JSON, create workout directly from DB
-            if (!workoutResult) {
-              workoutResult = await createDirectWorkout(workoutParams);
-            }
-            setLastWorkoutResult(workoutResult);
-            const exerciseLines = workoutResult.exercises
-              .map((e, i) => `${i + 1}. **${e.name}** — ${e.sets}×${e.reps}`)
-              .join('\n');
-            response = `💪 **${workoutResult.name}** created!\n\n${exerciseLines}\n\n⏱ ~${workoutResult.durationEstimate} min · ${workoutResult.exerciseCount} exercises`;
-          } else {
-            const aiResp = await aiProvider.generateResponse(trimmed, buildAIContext(personality));
-            responseTimeMs = aiResp.processingTimeMs;
-            response = aiResp.message;
-            aiSuggestions = aiResp.suggestions;
-            modelLabel = aiResp.model && aiResp.tier ? `${aiResp.tier} · ${aiResp.model}` : aiResp.model;
-          }
-        } catch (e) {
-          if (__DEV__) console.warn('[Coach] AI provider failed:', e);
-          if (isWorkoutRequest) {
-            // Even if AI failed, create workout directly from DB
-            try {
-              const workoutParams = extractWorkoutParams(trimmed);
-              const workoutResult = await createDirectWorkout(workoutParams);
-              setLastWorkoutResult(workoutResult);
-              const exerciseLines = workoutResult.exercises
-                .map((ex, i) => `${i + 1}. **${ex.name}** — ${ex.sets}×${ex.reps}`)
-                .join('\n');
-              response = `💪 **${workoutResult.name}** created!\n\n${exerciseLines}\n\n⏱ ~${workoutResult.durationEstimate} min · ${workoutResult.exerciseCount} exercises`;
-            } catch {
-              response =
-                "I couldn't create a workout right now. Try saying something like **Create an upper body workout** and I'll pull from the exercise library! 💪";
-            }
-          } else {
-            response = "Hmm, let me try a different approach. Ask me again and I'll use my offline knowledge! 💪";
-          }
-        }
-
-        // Safety: if response is raw JSON (AI returned structure instead of text), format it
-        if (response.trimStart().startsWith('{') && response.includes('"exercises"')) {
-          try {
-            const raw = JSON.parse(response.match(/\{[\s\S]*"exercises"[\s\S]*\}/)?.[0] || response);
-            if (raw?.exercises?.length) {
-              const lines = raw.exercises
-                .map((e: any, i: number) => `${i + 1}. **${e.name}** — ${e.sets}×${e.reps}`)
-                .join('\n');
-              response = `💪 **${raw.name || 'Your Workout'}**\n\n${lines}`;
-            }
-          } catch {
-            /* not valid JSON, stream as-is */
-          }
-        }
-
-        // Persist (formatted) conversation to encrypted DB
-        encryptedDB.storeAIConversation('COACH', trimmed, response).catch(() => {});
-
-        // Stream the response — FlatList stays frozen, only StreamingBubble updates
-        streamResponse(
-          response,
-          () => {
-            setActiveSuggestions(
-              aiSuggestions?.length ? aiSuggestions : dualAI.getSmartSuggestions(buildAIContext(), trimmed),
-            );
-          },
-          modelLabel,
-          responseTimeMs,
-        );
-      })();
-    },
-    [buildAIContext, streamResponse, scrollToBottom],
-  ); // stable deps — no messages/coachCtx
-
-  const sendMessage = useCallback(() => {
-    dispatchMessage(input);
-  }, [input, dispatchMessage]);
-
-  const handleSuggestion = useCallback(
-    (text: string) => {
-      dispatchMessage(text);
-    },
-    [dispatchMessage],
-  );
-
-  // ── Stop generation ──
-  const handleStopGeneration = useCallback(() => {
-    stopRequestedRef.current = true;
-    haptic('buttonPress');
-  }, []);
-
-  // ── Long-press message actions ──
-  const handleLongPress = useCallback((msg: ChatMessage) => {
-    setActionMessage(msg);
-    setShowActions(true);
-  }, []);
-
-  const handleCopyMessage = useCallback(async () => {
-    if (!actionMessage) return;
-    await Clipboard.setStringAsync(actionMessage.text);
-    haptic('setComplete');
-  }, [actionMessage]);
-
-  const handleShareMessage = useCallback(async () => {
-    if (!actionMessage) return;
-    try {
-      await Share.share({ message: actionMessage.text });
-    } catch {
-      /* user cancelled */
-    }
-  }, [actionMessage]);
-
-  // ── Regenerate last response ──
-  const handleRegenerate = useCallback(() => {
-    const lastInput = lastUserInputRef.current;
-    if (!lastInput || !coachCtxRef.current) return;
-
-    // Remove the last coach message
-    setMessages((prev) => {
-      const lastCoachIdx = prev.findLastIndex((m) => m.role === 'coach');
-      if (lastCoachIdx > 0) return [...prev.slice(0, lastCoachIdx)];
-      return prev;
-    });
-
-    // Re-dispatch with the same input
-    setIsTyping(true);
-    setActiveSuggestions([]);
-    haptic('buttonPress');
-
-    (async () => {
-      let response: string;
-      let aiSuggestions: string[] | undefined;
-      let modelLabel: string | undefined;
-      let responseTimeMs: number | undefined;
-
-      try {
-        const aiResp = await aiProvider.generateResponse(lastInput, buildAIContext('COACH'));
-        responseTimeMs = aiResp.processingTimeMs;
-        response = aiResp.message;
-        aiSuggestions = aiResp.suggestions;
-        modelLabel = aiResp.model && aiResp.tier ? `${aiResp.tier} · ${aiResp.model}` : aiResp.model;
-      } catch {
-        response = 'Let me try that again... 💪';
-      }
-
-      // Safety: format raw JSON workout responses
-      if (response.trimStart().startsWith('{') && response.includes('"exercises"')) {
-        try {
-          const raw = JSON.parse(response.match(/\{[\s\S]*"exercises"[\s\S]*\}/)?.[0] || response);
-          if (raw?.exercises?.length) {
-            const lines = raw.exercises
-              .map((e: any, i: number) => `${i + 1}. **${e.name}** — ${e.sets}×${e.reps}`)
-              .join('\n');
-            response = `💪 **${raw.name || 'Your Workout'}**\n\n${lines}`;
-          }
-        } catch {
-          /* not valid JSON, show as-is */
-        }
-      }
-
-      streamResponse(
-        response,
-        () => {
-          setActiveSuggestions(
-            aiSuggestions?.length ? aiSuggestions : dualAI.getSmartSuggestions(buildAIContext(), lastInput),
-          );
-        },
-        modelLabel,
-        responseTimeMs,
-      );
-    })();
-  }, [buildAIContext, streamResponse]);
-
-  // ── Message reactions ──
-  const handleReaction = useCallback((msgId: string, reaction: 'up' | 'down') => {
-    setMessages((prev) =>
-      prev.map((m) => {
-        if (m.id !== msgId) return m;
-        // Toggle: tap same reaction removes it
-        return { ...m, reaction: m.reaction === reaction ? null : reaction };
-      }),
-    );
-  }, []);
-
-  // ── Edit sent message ──
-  const inputRef = useRef<TextInput>(null);
-  const editingMsgIdRef = useRef<string | null>(null);
-
-  const handleEditMessage = useCallback((msg: ChatMessage) => {
-    if (msg.role !== 'user') return;
-    // Remove the user message and all subsequent messages (including coach response)
-    setMessages((prev) => {
-      const idx = prev.findIndex((m) => m.id === msg.id);
-      if (idx < 0) return prev;
-      return prev.slice(0, idx);
-    });
-    editingMsgIdRef.current = msg.id;
-    setInput(msg.text);
-    setActiveSuggestions([]);
-    haptic('buttonPress');
-    // Focus the input
-    setTimeout(() => inputRef.current?.focus(), 100);
-  }, []);
-
-  // ── New chat ──
-  const handleNewChat = useCallback(() => {
-    if (streamResponseRef.current) clearTimeout(streamResponseRef.current);
-    setStreamingText(null);
-    setIsTyping(false);
-    setActiveSuggestions([]);
-    setLastWorkoutResult(null);
-    // Clear cached conversation memory so DualAI doesn't carry over
-    cachedMemoryRef.current = null;
-    // Reset messages to fresh greeting
-    setMessages([
-      {
-        id: 'greeting',
-        role: 'coach',
-        text: `${getTimeGreeting()}! Fresh conversation started. What would you like to work on? 💪`,
-        timestamp: new Date(),
-      },
-    ]);
-    haptic('exerciseComplete');
-  }, []);
-
-  // ── Scroll-to-bottom tracking ──
-  const handleScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    const distanceFromBottom = contentSize.height - contentOffset.y - layoutMeasurement.height;
-    setShowScrollBtn(distanceFromBottom > 150);
-  }, []);
-
-  const sendAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: inputScale.value }],
-  }));
 
   const quickSuggestions = [
     { text: 'Design a workout for me', icon: 'dumbbell' as const },
@@ -1302,34 +438,27 @@ function CoachScreenInner() {
   ];
 
   const suggestionColors = [
-    theme.colors.indigo,
-    theme.colors.skyBlue,
-    theme.colors.error,
-    theme.colors.accent,
-    theme.colors.error,
-    theme.colors.warning,
-    theme.colors.purple,
-    theme.colors.pink,
-    theme.colors.orange,
-    theme.colors.blue,
-    theme.colors.accent,
-    theme.colors.purple,
-    theme.colors.skyBlue,
-    theme.colors.pink,
+    theme.colors.indigo, theme.colors.skyBlue, theme.colors.error, theme.colors.accent,
+    theme.colors.error, theme.colors.warning, theme.colors.purple, theme.colors.pink,
+    theme.colors.orange, theme.colors.blue, theme.colors.accent, theme.colors.purple,
+    theme.colors.skyBlue, theme.colors.pink,
   ];
 
-  // Stable FlatList helpers
-  const keyExtractorMsg = useCallback((item: ChatMessage) => item.id, []);
-  const renderMessage = useCallback(
-    ({ item }: { item: ChatMessage }) => (
-      <MessageBubble message={item} onLongPress={handleLongPress} onReact={handleReaction} onEdit={handleEditMessage} />
-    ),
-    [handleLongPress, handleReaction, handleEditMessage],
+  const keyExtractorMsg = useMemo(() => (item: ChatMessage) => item.id, []);
+  const renderMessage = useMemo(
+    () =>
+      ({ item }: { item: ChatMessage }) => (
+        <MessageBubble message={item} onLongPress={vm.handleLongPress} onReact={vm.handleReaction} onEdit={vm.handleEditMessage} />
+      ),
+    [vm.handleLongPress, vm.handleReaction, vm.handleEditMessage],
   );
 
+  const sendAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: inputScale.value }],
+  }));
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <ScreenContainer edges={['top']}>
         {/* ── HEADER ── */}
         <Animated.View entering={FadeInDown.duration(150)}>
           <LinearGradient
@@ -1365,17 +494,17 @@ function CoachScreenInner() {
                   <MaterialCommunityIcons name="robot-happy" size={22} color={theme.colors.onAccent} />
                 </LinearGradient>
                 <View>
-                  <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('coach.title')}</Text>
+                  <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>{t('coach.title')}</ThemedText>
                   <View style={styles.headerStatusRow}>
-                    <PulseDot color={aiProvider.cloudAvailable ? theme.colors.accent : theme.colors.warning} size={6} />
-                    <Text
+                    <PulseDot color={vm.cloudAvailable ? theme.colors.accent : theme.colors.warning} size={6} />
+                    <ThemedText
                       style={[
                         styles.headerStatus,
-                        { color: aiProvider.cloudAvailable ? theme.colors.accent : theme.colors.warning },
+                        { color: vm.cloudAvailable ? theme.colors.accent : theme.colors.warning },
                       ]}
                     >
-                      {aiProvider.cloudAvailable ? 'Online' : 'Offline'}
-                    </Text>
+                      {vm.cloudAvailable ? 'Online' : 'Offline'}
+                    </ThemedText>
                   </View>
                 </View>
               </View>
@@ -1386,14 +515,14 @@ function CoachScreenInner() {
             {/* New chat button row */}
             <View style={styles.headerActionsRow}>
               <TouchableOpacity
-                onPress={handleNewChat}
+                onPress={vm.handleNewChat}
                 style={[styles.headerActionBtn, { backgroundColor: theme.colors.surfaceVariant }]}
                 activeOpacity={0.7}
                 accessibilityRole="button"
                 accessibilityLabel="Start new chat"
               >
                 <MaterialCommunityIcons name="chat-plus-outline" size={16} color={theme.colors.accent} />
-                <Text style={{ color: theme.colors.accent, fontSize: 11, fontWeight: '600' }}>New chat</Text>
+                <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.captionSm, fontWeight: '600' }}>New chat</ThemedText>
               </TouchableOpacity>
             </View>
           </LinearGradient>
@@ -1406,8 +535,8 @@ function CoachScreenInner() {
         >
           {/* ── MESSAGES ── */}
           <FlatList
-            ref={scrollRef}
-            data={messages}
+            ref={vm.scrollRef}
+            data={vm.messages}
             keyExtractor={keyExtractorMsg}
             renderItem={renderMessage}
             style={styles.messagesContainer}
@@ -1417,7 +546,7 @@ function CoachScreenInner() {
             maxToRenderPerBatch={8}
             windowSize={5}
             removeClippedSubviews={true}
-            onScroll={handleScroll}
+            onScroll={vm.handleScroll}
             scrollEventThrottle={100}
             ListHeaderComponent={
               <Animated.View entering={FadeIn.delay(200)} style={styles.dateBadgeWrap}>
@@ -1429,23 +558,23 @@ function CoachScreenInner() {
                     },
                   ]}
                 >
-                  <Text style={[styles.dateBadgeText, { color: theme.colors.textMuted }]}>{t('common.today')}</Text>
+                  <ThemedText style={[styles.dateBadgeText, { color: theme.colors.textMuted }]}>{t('common.today')}</ThemedText>
                 </View>
               </Animated.View>
             }
             ListFooterComponent={
               <>
                 {/* Streaming bubble — decoupled from FlatList, only this updates during typewriting */}
-                {streamingText !== null && <StreamingBubble text={streamingText} />}
+                {vm.streamingText !== null && <StreamingBubble text={vm.streamingText} />}
 
-                {isTyping && <TypingIndicator modelName={typingModelName} />}
+                {vm.isTyping && <TypingIndicator modelName={vm.typingModelName} />}
 
                 {/* Quick Suggestions (show only after greeting) */}
-                {messages.length <= 1 && !isTyping && (
+                {vm.messages.length <= 1 && !vm.isTyping && (
                   <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.suggestionsWrap}>
-                    <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
+                    <ThemedText style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
                       {t('coach.tapToStart')}
-                    </Text>
+                    </ThemedText>
                     <ScrollView
                       horizontal
                       showsHorizontalScrollIndicator={false}
@@ -1462,7 +591,7 @@ function CoachScreenInner() {
                               },
                             ]}
                             activeOpacity={0.7}
-                            onPress={() => handleSuggestion(suggestion.text)}
+                            onPress={() => vm.handleSuggestion(suggestion.text)}
                           >
                             <View
                               style={[
@@ -1476,7 +605,7 @@ function CoachScreenInner() {
                                 color={suggestionColors[idx % suggestionColors.length]}
                               />
                             </View>
-                            <Text style={[styles.suggestionText, { color: theme.colors.text }]}>{suggestion.text}</Text>
+                            <ThemedText style={[styles.suggestionText, { color: theme.colors.text }]}>{suggestion.text}</ThemedText>
                           </TouchableOpacity>
                         </Animated.View>
                       ))}
@@ -1485,14 +614,14 @@ function CoachScreenInner() {
                 )}
 
                 {/* Workout result card — tap to navigate to the workout */}
-                {lastWorkoutResult && !isTyping && (
+                {vm.lastWorkoutResult && !vm.isTyping && (
                   <Animated.View
                     entering={FadeInUp.delay(100).duration(200)}
-                    style={{ paddingHorizontal: 16, marginTop: 4, marginBottom: 16 }}
+                    style={{ paddingHorizontal: spacing[4], marginTop: spacing[1], marginBottom: spacing[4] }}
                   >
                     <View
                       style={{
-                        borderRadius: 16,
+                        borderRadius: radius.xl,
                         overflow: 'hidden',
                         borderWidth: 1,
                         borderColor: theme.colors.accent + '40',
@@ -1502,49 +631,46 @@ function CoachScreenInner() {
                         colors={[theme.colors.accent + '20', theme.colors.indigo + '15'] as [string, string]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        style={{ padding: 18 }}
+                        style={{ padding: spacing[4.5] }}
                       >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginBottom: spacing[2.5] }}>
                           <MaterialCommunityIcons name="dumbbell" size={18} color={theme.colors.accent} />
-                          <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '700', flex: 1 }}>
-                            {lastWorkoutResult.name}
-                          </Text>
+                          <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '700', flex: 1 }}>
+                            {vm.lastWorkoutResult.name}
+                          </ThemedText>
                         </View>
-                        <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginBottom: 14 }}>
-                          {lastWorkoutResult.exerciseCount} exercises · ~{lastWorkoutResult.durationEstimate} min
-                        </Text>
+                        <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginBottom: spacing[3.5] }}>
+                          {vm.lastWorkoutResult.exerciseCount} exercises · ~{vm.lastWorkoutResult.durationEstimate} min
+                        </ThemedText>
                         <TouchableOpacity
                           activeOpacity={0.8}
-                          onPress={() => {
-                            router.push({ pathname: '/workout', params: { sessionId: lastWorkoutResult.sessionId } });
-                            setLastWorkoutResult(null);
-                          }}
+                          onPress={() => vm.navigateToWorkout(vm.lastWorkoutResult!.sessionId)}
                         >
                           <LinearGradient
                             colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={{
-                              paddingVertical: 12,
-                              paddingHorizontal: 20,
-                              borderRadius: 12,
+                              paddingVertical: spacing[3],
+                              paddingHorizontal: spacing[5],
+                              borderRadius: radius.lg,
                               alignItems: 'center',
                               flexDirection: 'row',
                               justifyContent: 'center',
-                              gap: 8,
+                              gap: spacing[2],
                             }}
                           >
                             <MaterialCommunityIcons name="arrow-right-circle" size={18} color={theme.colors.onAccent} />
-                            <Text
+                            <ThemedText
                               style={{
                                 color: theme.colors.onAccent,
-                                fontSize: 14,
+                                fontSize: typography.sizes.bodySmall, 
                                 fontWeight: '700',
                                 letterSpacing: 0.3,
                               }}
                             >
                               Take me there
-                            </Text>
+                            </ThemedText>
                           </LinearGradient>
                         </TouchableOpacity>
                       </LinearGradient>
@@ -1553,13 +679,13 @@ function CoachScreenInner() {
                 )}
 
                 {/* Follow-up suggestions after a response */}
-                {activeSuggestions.length > 0 && messages.length > 1 && !isTyping && (
+                {vm.activeSuggestions.length > 0 && vm.messages.length > 1 && !vm.isTyping && (
                   <Animated.View entering={FadeInUp.delay(100).duration(150)} style={styles.followUpWrap}>
-                    <Text style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
+                    <ThemedText style={[styles.suggestionsLabel, { color: theme.colors.textMuted }]}>
                       {t('coach.relatedTopics')}
-                    </Text>
+                    </ThemedText>
                     <View style={styles.followUpRow}>
-                      {activeSuggestions.map((s, _idx) => (
+                      {vm.activeSuggestions.map((s, _idx) => (
                         <TouchableOpacity
                           key={s}
                           style={[
@@ -1570,9 +696,9 @@ function CoachScreenInner() {
                             },
                           ]}
                           activeOpacity={0.7}
-                          onPress={() => handleSuggestion(s)}
+                          onPress={() => vm.handleSuggestion(s)}
                         >
-                          <Text style={[styles.followUpText, { color: theme.colors.accent }]}>{s}</Text>
+                          <ThemedText style={[styles.followUpText, { color: theme.colors.accent }]}>{s}</ThemedText>
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -1583,11 +709,11 @@ function CoachScreenInner() {
           />
 
           {/* ── SCROLL TO BOTTOM FAB ── */}
-          {showScrollBtn && !isTyping && streamingText === null && (
+          {vm.showScrollBtn && !vm.isTyping && vm.streamingText === null && (
             <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} style={styles.scrollFabWrap}>
               <TouchableOpacity
                 style={[styles.scrollFab, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-                onPress={scrollToBottom}
+                onPress={vm.scrollToBottom}
                 activeOpacity={0.7}
               >
                 <MaterialCommunityIcons name="chevron-double-down" size={20} color={theme.colors.accent} />
@@ -1605,7 +731,7 @@ function CoachScreenInner() {
                 borderTopColor: theme.colors.border,
                 // When keyboard hidden: account for floating tab bar (height + bottom offset)
                 // Tab bar: height = 64 + max(0, insets.bottom-4), bottom = max(8, insets.bottom+2)
-                paddingBottom: keyboardVisible
+                paddingBottom: vm.keyboardVisible
                   ? 12
                   : Math.max(12, Math.max(8, insets.bottom + 2) + 64 + Math.max(0, insets.bottom - 4) + 4),
               },
@@ -1621,21 +747,21 @@ function CoachScreenInner() {
               ]}
             >
               <TextInput
-                ref={inputRef}
+                ref={vm.inputRef}
                 style={[styles.textInput, { color: theme.colors.text, maxHeight: 100 }]}
                 placeholder={t('coach.placeholder')}
                 placeholderTextColor={theme.colors.textMuted}
-                value={input}
-                onChangeText={setInput}
-                onSubmitEditing={sendMessage}
+                value={vm.input}
+                onChangeText={vm.setInput}
+                onSubmitEditing={vm.sendMessage}
                 returnKeyType="send"
                 multiline
                 blurOnSubmit={false}
               />
               <Animated.View style={sendAnimatedStyle}>
-                {streamingText !== null || isTyping ? (
+                {vm.streamingText !== null || vm.isTyping ? (
                   <TouchableOpacity
-                    onPress={handleStopGeneration}
+                    onPress={vm.handleStopGeneration}
                     onPressIn={() => {
                       inputScale.value = withTiming(0.92, { duration: 120 });
                     }}
@@ -1657,8 +783,8 @@ function CoachScreenInner() {
                   </TouchableOpacity>
                 ) : (
                   <TouchableOpacity
-                    onPress={sendMessage}
-                    disabled={!input.trim()}
+                    onPress={vm.sendMessage}
+                    disabled={!vm.input.trim()}
                     onPressIn={() => {
                       inputScale.value = withTiming(0.92, { duration: 120 });
                     }}
@@ -1669,7 +795,7 @@ function CoachScreenInner() {
                   >
                     <LinearGradient
                       colors={
-                        input.trim()
+                        vm.input.trim()
                           ? ([theme.colors.accent, theme.colors.indigo] as [string, string])
                           : ([theme.colors.surfaceVariant, theme.colors.surface] as [string, string])
                       }
@@ -1683,21 +809,20 @@ function CoachScreenInner() {
             </View>
           </Animated.View>
         </KeyboardAvoidingView>
-      </SafeAreaView>
 
       {/* ── MESSAGE ACTION SHEET ── */}
       <MessageActionSheet
-        message={actionMessage}
-        visible={showActions}
-        onClose={() => setShowActions(false)}
-        onCopy={handleCopyMessage}
+        message={vm.actionMessage}
+        visible={vm.showActions}
+        onClose={vm.closeActions}
+        onCopy={vm.handleCopyMessage}
         onRegenerate={() => {
-          setShowActions(false);
-          handleRegenerate();
+          vm.closeActions();
+          vm.handleRegenerate();
         }}
-        onShare={handleShareMessage}
+        onShare={vm.handleShareMessage}
       />
-    </View>
+    </ScreenContainer>
   );
 }
 
@@ -1710,9 +835,9 @@ const styles = StyleSheet.create({
 
   // Header
   headerGradient: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[4],
   },
   headerRow: {
     flexDirection: 'row',
@@ -1722,14 +847,14 @@ const styles = StyleSheet.create({
   headerBackBtn: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerCenter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: spacing[2.5],
   },
   headerAvatar: {
     width: 40,
@@ -1739,18 +864,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: typography.sizes.h4, 
     fontWeight: '700',
     letterSpacing: 0.3,
   },
   headerStatusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    marginTop: 1,
+    gap: spacing[1.25],
+    marginTop: spacing['px'],
   },
   headerStatus: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '600',
   },
 
@@ -1759,37 +884,37 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesContent: {
-    padding: 16,
-    paddingBottom: 8,
+    padding: spacing[4],
+    paddingBottom: spacing[2],
   },
   dateBadgeWrap: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   dateBadge: {
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    borderRadius: 12,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[1.25],
+    borderRadius: radius.lg,
   },
   dateBadgeText: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '600',
   },
   messageBubble: {
     maxWidth: '88%',
-    marginBottom: 14,
+    marginBottom: spacing[3.5],
   },
   coachBubble: {
     alignSelf: 'flex-start',
-    padding: 16,
+    padding: spacing[4],
     borderRadius: 18,
     borderBottomLeftRadius: 6,
   },
   coachAvatarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 6,
+    gap: spacing[1.5],
+    marginBottom: spacing[1.5],
   },
   coachAvatarIcon: {
     width: 20,
@@ -1799,7 +924,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   coachLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '700',
     letterSpacing: 0.3,
   },
@@ -1807,17 +932,17 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   userBubbleGradient: {
-    padding: 14,
+    padding: spacing[3.5],
     borderRadius: 18,
     borderBottomRightRadius: 6,
   },
   messageText: {
-    fontSize: 14.5,
+    fontSize: typography.sizes.bodySmall,
     lineHeight: 21,
     fontWeight: '400',
   },
   timestamp: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
   },
 
   // Bubble footer (timestamp + reactions)
@@ -1825,57 +950,57 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 4,
+    marginTop: spacing[1],
   },
   reactionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: spacing[0.5],
   },
   reactionBtn: {
-    padding: 4,
-    borderRadius: 8,
+    padding: spacing[1],
+    borderRadius: radius.md,
   },
 
   // Header actions
   headerActionsRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 6,
-    gap: 8,
+    marginTop: spacing[1.5],
+    gap: spacing[2],
   },
   headerActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    gap: spacing[1],
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1.25],
     borderRadius: 10,
   },
 
   // Suggestions
   suggestionsWrap: {
-    marginTop: 12,
+    marginTop: spacing[3],
   },
   suggestionsLabel: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: spacing[2.5],
     letterSpacing: 0.3,
   },
   suggestionsScroll: {
     flexDirection: 'row',
-    gap: 8,
-    paddingRight: 16,
+    gap: spacing[2],
+    paddingRight: spacing[4],
   },
   suggestionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2.5],
     borderRadius: 20,
     borderWidth: 1,
-    gap: 8,
+    gap: spacing[2],
   },
   suggestionIcon: {
     width: 26,
@@ -1885,51 +1010,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   suggestionText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '500',
   },
 
   // Follow-up suggestions
   followUpWrap: {
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: spacing[2],
+    marginBottom: spacing[2],
   },
   followUpRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing[2],
   },
   followUpChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[2],
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   followUpText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '600',
   },
 
   // Input
   inputBarWrap: {
-    paddingHorizontal: 14,
-    paddingTop: 10,
+    paddingHorizontal: spacing[3.5],
+    paddingTop: spacing[2.5],
     paddingBottom: Platform.OS === 'ios' ? 28 : 16,
     borderTopWidth: 1,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 4,
+    paddingHorizontal: spacing[1.5],
+    paddingVertical: spacing[1],
     borderRadius: 24,
     borderWidth: 1,
   },
   textInput: {
     flex: 1,
-    fontSize: 15,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    fontSize: typography.sizes.bodyMid, 
+    paddingVertical: spacing[2.5],
+    paddingHorizontal: spacing[3.5],
     maxHeight: 100,
   },
   sendButton: {
@@ -1949,32 +1074,32 @@ const styles = StyleSheet.create({
   actionSheet: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-    paddingTop: 12,
+    paddingHorizontal: spacing[5],
+    paddingBottom: spacing[8],
+    paddingTop: spacing[3],
   },
   actionSheetHandle: {
     width: 36,
     height: 4,
     borderRadius: 2,
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   actionSheetTitle: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: spacing[3],
     letterSpacing: 0.3,
   },
   actionSheetBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 14,
+    gap: spacing[3],
+    paddingVertical: spacing[3.5],
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   actionSheetLabel: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '500',
   },
 
@@ -1999,10 +1124,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   modelLabelBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: spacing[1.5],
+    paddingVertical: spacing[0.5],
     borderRadius: 6,
-    marginLeft: 6,
+    marginLeft: spacing[1.5],
   },
 });
 

@@ -11,434 +11,80 @@
  * Glass-morphism UI with animated metric rings and trend charts.
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React from 'react';
 
 import {
   View,
-  ScrollView,
   StyleSheet,
   Dimensions,
   ActivityIndicator,
-  RefreshControl,
   TouchableOpacity,
-  Alert,
-  Text,
   Modal,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import { GlassCard, GradientButton, SectionHeader, AnimatedCounter, PulseDot } from '../src/components/ui/GlassUI';
-import { backgroundHealth } from '../src/engines/BackgroundHealthEngine';
-import { sleepEngine } from '../src/engines/SleepAnalysisEngine';
-import { encryptedDB } from '../src/security/EncryptedDatabase';
-import { getStepHistory, getWorkoutCountSince, getWorkoutStreakCurrent } from '../src/database/service';
-import { getHealthAdapter, initializeHealthIntegration, syncHealthData } from '../src/services/healthAdapters';
-import { captureHealthError } from '../src/services/errorTelemetry';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
-import { useDatabase } from '../src/context/DatabaseContext';
 import { useRouter } from 'expo-router';
-import { useDataSync } from '../src/services/dataSyncService';
+import { haptic } from '../src/utils/haptics';
 import {
   MetricRing,
   AlertCard,
   TrendBar,
-  type HealthAlert,
-  type TrendPoint,
 } from '../src/components/health/HealthWidgets';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
+import { typography, spacing, radius } from '../src/design/theme-system';
+import { useHealthDashboardViewModel } from '../src/viewmodels/useHealthDashboardViewModel';
+
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
-
-// ============================================
-// TYPES
-// ============================================
-
-interface HealthData {
-  healthScore: number;
-  steps: number;
-  stepsGoal: number;
-  activeMinutes: number;
-  activeMinutesGoal: number;
-  calories: number;
-  caloriesGoal: number;
-  heartRate: number | null;
-  sleepHours: number | null;
-  sleepQuality: number | null;
-  recoveryScore: number;
-  workoutsThisWeek: number;
-  workoutsGoal: number;
-  streakDays: number;
-  anomalyCount: number;
-  alerts: HealthAlert[];
-}
-
-// ============================================
-// MAIN SCREEN
-// ============================================
 
 function HealthDashboardScreenInner() {
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const { isReady: dbReady } = useDatabase();
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [healthActionBusy, setHealthActionBusy] = useState(false);
-  const [healthProviderCode, setHealthProviderCode] = useState<
-    'health_connect' | 'healthkit' | 'google_fit' | 'none' | 'unknown' | 'unavailable'
-  >('none');
-  const [healthLastSyncLabel, setHealthLastSyncLabel] = useState<string>('');
-  const [healthData, setHealthData] = useState<HealthData>({
-    healthScore: 0,
-    steps: 0,
-    stepsGoal: 10000,
-    activeMinutes: 0,
-    activeMinutesGoal: 30,
-    calories: 0,
-    caloriesGoal: 2000,
-    heartRate: null,
-    sleepHours: null,
-    sleepQuality: null,
-    recoveryScore: 0,
-    workoutsThisWeek: 0,
-    workoutsGoal: 4,
-    streakDays: 0,
-    anomalyCount: 0,
-    alerts: [],
-  });
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
-  const [stepsTrend, setStepsTrend] = useState<TrendPoint[]>([]);
-  const [sleepTrend, setSleepTrend] = useState<TrendPoint[]>([]);
+  const vm = useHealthDashboardViewModel();
 
-  // Sleep log modal state
-  const [showSleepModal, setShowSleepModal] = useState(false);
-  const [sleepBedHour, setSleepBedHour] = useState(22);
-  const [sleepBedMin, setSleepBedMin] = useState(0);
-  const [sleepWakeHour, setSleepWakeHour] = useState(6);
-  const [sleepWakeMin, setSleepWakeMin] = useState(30);
-  const [sleepSaving, setSleepSaving] = useState(false);
-
-  const isLoadingHealthRef = useRef(false);
-  const lastHealthLoadAt = useRef(0);
-  const HEALTH_LOAD_COOLDOWN_MS = 2000;
-  const healthLoadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const debouncedLoadHealth = useCallback(() => {
-    if (!dbReady) return;
-    if (healthLoadTimer.current) clearTimeout(healthLoadTimer.current);
-    healthLoadTimer.current = setTimeout(() => {
-      if (Date.now() - lastHealthLoadAt.current < HEALTH_LOAD_COOLDOWN_MS) return;
-      loadHealthData();
-    }, 300);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadHealthData intentionally omitted to prevent re-trigger
-  }, [dbReady]);
-
-  const loadHealthData = useCallback(async () => {
-    if (isLoadingHealthRef.current) {
-      if (__DEV__) console.warn('[HealthDashboard] loadHealthData:skipped (already loading)');
-      return;
-    }
-    isLoadingHealthRef.current = true;
-    lastHealthLoadAt.current = Date.now();
-    try {
-      try {
-        const adapter = await getHealthAdapter();
-        if (adapter) {
-          const status = await adapter.getStatus();
-          setHealthProviderCode((status.provider || 'unknown') as typeof healthProviderCode);
-          setHealthLastSyncLabel(
-            status.lastSyncTime ? status.lastSyncTime.toLocaleString() : t('health.lastSyncNever'),
-          );
-        } else {
-          setHealthProviderCode('none');
-          setHealthLastSyncLabel(t('health.lastSyncNever'));
-        }
-      } catch {
-        setHealthProviderCode('unavailable');
-      }
-
-      // Parallelize independent data fetches for faster loading
-      const weekStart = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      const [score, snapshot, sleepResult, alertsResult, workoutResult, trendsResult] = await Promise.all([
-        backgroundHealth.calculateHealthScore().catch(() => 0),
-        backgroundHealth
-          .getSnapshot()
-          .catch(() => ({ steps: 0, activeMinutes: 0, calories: 0, restingHeartRate: null, recoveryScore: 0 })),
-        sleepEngine.getAnalytics(7).catch(() => ({ avgDurationMs: 0, avgQualityScore: 0 })),
-        encryptedDB.getActiveAlerts().catch(() => [] as any[]),
-        Promise.all([
-          getWorkoutCountSince(weekStart).catch(() => 0),
-          getWorkoutStreakCurrent('user_local_001').catch(() => 0),
-        ]),
-        Promise.all([
-          getStepHistory('user_local_001', 7).catch(() => []),
-          encryptedDB.getRecentHealthData('sleep_session', 7).catch(() => []),
-        ]),
-      ]);
-
-      // Process sleep data
-      let sleepHrs: number | null = null;
-      let sleepQual: number | null = null;
-      if (sleepResult.avgDurationMs > 0) {
-        sleepHrs = Math.round((sleepResult.avgDurationMs / 3600000) * 10) / 10;
-        sleepQual = sleepResult.avgQualityScore;
-      }
-
-      // Process alerts
-      const alerts: HealthAlert[] = alertsResult.map((a: any) => ({
-        id: a.id ?? String(Date.now()),
-        type: a.alertType ?? 'health',
-        severity: a.severity ?? 'LOW',
-        message: String((a.data as any)?.message ?? t('health.alert')),
-        created_at: a.created_at ?? Date.now(),
-      }));
-      const anomalyCount = alerts.length;
-
-      // Unpack workout results
-      const [workoutsThisWeek, streakDays] = workoutResult;
-
-      // Build step trend (last 7 days)
-      const [rows, sleepData] = trendsResult;
-      const stepTrend: TrendPoint[] = [];
-      const sleepTrendPts: TrendPoint[] = [];
-      const dayNames = [
-        t('day.sun'),
-        t('day.mon'),
-        t('day.tue'),
-        t('day.wed'),
-        t('day.thu'),
-        t('day.fri'),
-        t('day.sat'),
-      ];
-      for (const row of ((rows as any[]) ?? []).reverse()) {
-        const d = new Date(row.date);
-        stepTrend.push({ label: dayNames[d.getDay()]!, value: row.steps });
-      }
-      for (const entry of (sleepData as any[]) ?? []) {
-        try {
-          const parsed = typeof entry === 'object' ? entry : JSON.parse(String(entry));
-          sleepTrendPts.push({
-            label: t('common.day'),
-            value: (parsed as any)?.qualityScore ?? 0,
-          });
-        } catch {
-          // skip malformed
-        }
-      }
-
-      setStepsTrend(stepTrend);
-      setSleepTrend(sleepTrendPts);
-
-      setHealthData({
-        healthScore: score,
-        steps: snapshot.steps ?? 0,
-        stepsGoal: 10000,
-        activeMinutes: snapshot.activeMinutes ?? 0,
-        activeMinutesGoal: 30,
-        calories: snapshot.calories ?? 0,
-        caloriesGoal: 2000,
-        heartRate: snapshot.restingHeartRate ?? null,
-        sleepHours: sleepHrs,
-        sleepQuality: sleepQual,
-        recoveryScore: snapshot.recoveryScore ?? 0,
-        workoutsThisWeek,
-        workoutsGoal: 4,
-        streakDays,
-        anomalyCount,
-        alerts,
-      });
-    } catch (error) {
-      if (__DEV__) console.error('[HealthDashboard] Failed to load data:', error);
-    } finally {
-      setLoading(false);
-      setHasLoadedOnce(true);
-      isLoadingHealthRef.current = false;
-      lastHealthLoadAt.current = Date.now();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
-  }, []);
-
-  useEffect(() => {
-    if (dbReady) loadHealthData();
-  }, [dbReady, loadHealthData]);
-
-  // Subscribe to health data events from other screens (debounced)
-  useDataSync('workout_completed', debouncedLoadHealth);
-  useDataSync('jog_completed', debouncedLoadHealth);
-  useDataSync('steps_updated', debouncedLoadHealth);
-  useDataSync('health_data_updated', debouncedLoadHealth);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await loadHealthData();
-    setRefreshing(false);
-  }, [loadHealthData]);
-
-  const dismissAlert = useCallback(async (alertId: string) => {
-    try {
-      await encryptedDB.acknowledgeAlert(alertId);
-      setHealthData((prev) => ({
-        ...prev,
-        alerts: prev.alerts.filter((a) => a.id !== alertId),
-        anomalyCount: Math.max(0, prev.anomalyCount - 1),
-      }));
-    } catch (e) {
-      if (__DEV__) console.error('[HealthDashboard] Failed to dismiss alert:', e);
-    }
-  }, []);
-
-  const handleConnectHealth = useCallback(async () => {
-    if (healthActionBusy) return;
-    setHealthActionBusy(true);
-    try {
-      const result = await initializeHealthIntegration();
-      if (!result.success) {
-        Alert.alert(t('health.connectProvider'), result.error || t('health.providerConnectFailed'));
-        return;
-      }
-      Alert.alert(t('health.connectProvider'), t('health.providerConnected'));
-      await loadHealthData();
-    } catch (error) {
-      let provider: 'health_connect' | 'healthkit' | 'google_fit' = 'health_connect';
-      try {
-        const adapter = await getHealthAdapter();
-        if (
-          adapter?.provider === 'health_connect' ||
-          adapter?.provider === 'healthkit' ||
-          adapter?.provider === 'google_fit'
-        ) {
-          provider = adapter.provider;
-        }
-      } catch {
-        // fallback provider stays default
-      }
-      await captureHealthError(error instanceof Error ? error : String(error), {
-        provider,
-        action: 'auth',
-      });
-      Alert.alert(t('health.connectProvider'), t('health.providerConnectFailed'));
-    } finally {
-      setHealthActionBusy(false);
-    }
-  }, [healthActionBusy, loadHealthData, t]);
-
-  const handleSyncHealth = useCallback(async () => {
-    if (healthActionBusy) return;
-    setHealthActionBusy(true);
-    try {
-      const result = await syncHealthData({
-        since: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        categories: ['steps', 'calories', 'heart_rate', 'sleep', 'workout'],
-      });
-      Alert.alert(
-        t('health.syncNow'),
-        `${t('health.synced')}: ${result.synced}\n${t('health.errors')}: ${result.errors}`,
-      );
-      await loadHealthData();
-    } catch (error) {
-      let provider: 'health_connect' | 'healthkit' | 'google_fit' = 'health_connect';
-      try {
-        const adapter = await getHealthAdapter();
-        if (
-          adapter?.provider === 'health_connect' ||
-          adapter?.provider === 'healthkit' ||
-          adapter?.provider === 'google_fit'
-        ) {
-          provider = adapter.provider;
-        }
-      } catch {
-        // fallback provider stays default
-      }
-      await captureHealthError(error instanceof Error ? error : String(error), {
-        provider,
-        action: 'sync',
-      });
-      Alert.alert(t('health.syncNow'), t('health.syncFailed'));
-    } finally {
-      setHealthActionBusy(false);
-    }
-  }, [healthActionBusy, loadHealthData, t]);
-
-  const handleSaveSleep = useCallback(async () => {
-    if (sleepSaving) return;
-    // Build Date objects: bedtime is "last night", wake is "this morning"
-    const now = new Date();
-    const bedtime = new Date(now);
-    bedtime.setHours(sleepBedHour, sleepBedMin, 0, 0);
-    const wakeTime = new Date(now);
-    wakeTime.setHours(sleepWakeHour, sleepWakeMin, 0, 0);
-    // If bedtime hour >= wake hour, bedtime was yesterday
-    if (bedtime.getTime() >= wakeTime.getTime()) {
-      bedtime.setDate(bedtime.getDate() - 1);
-    }
-    const durationMs = wakeTime.getTime() - bedtime.getTime();
-    if (durationMs <= 0) {
-      Alert.alert(t('health.logSleep'), t('health.sleepInvalidTimes'));
-      return;
-    }
-    if (durationMs > 24 * 60 * 60 * 1000) {
-      Alert.alert(t('health.logSleep'), t('health.sleepTooLong'));
-      return;
-    }
-    setSleepSaving(true);
-    try {
-      await sleepEngine.recordManualSession(bedtime, wakeTime);
-      setShowSleepModal(false);
-      Alert.alert(t('health.logSleep'), t('health.sleepSaved'));
-      await loadHealthData();
-    } catch (e) {
-      if (__DEV__) console.error('[HealthDashboard] Sleep log failed:', e);
-      Alert.alert(t('health.logSleep'), String(e));
-    } finally {
-      setSleepSaving(false);
-    }
-  }, [sleepBedHour, sleepBedMin, sleepWakeHour, sleepWakeMin, sleepSaving, loadHealthData, t]);
-
-  // Health score color
-  const hasAnyMetrics =
-    hasLoadedOnce &&
-    (healthData.healthScore > 0 ||
-      healthData.steps > 0 ||
-      healthData.activeMinutes > 0 ||
-      healthData.calories > 0 ||
-      healthData.workoutsThisWeek > 0);
-  const scoreColor = !hasAnyMetrics
+  // Health score color (pure UI derivation)
+  const scoreColor = !vm.hasAnyMetrics
     ? theme.colors.textMuted
-    : healthData.healthScore >= 80
+    : vm.healthData.healthScore >= 80
       ? theme.colors.accent
-      : healthData.healthScore >= 60
+      : vm.healthData.healthScore >= 60
         ? theme.colors.warning
-        : healthData.healthScore >= 40
-          ? theme.colors.error
-          : theme.colors.error;
-
-  if (loading) {
+        : theme.colors.error;
+  if (vm.loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={theme.colors.accent} />
-          <ThemedText variant="body" color="muted" style={{ marginTop: 16 }}>
+          <ThemedText variant="body" color="muted" style={{ marginTop: spacing[4] }}>
             {t('health.loading')}
           </ThemedText>
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
+    );
+  }
+
+  if (vm.loadError) {
+    return (
+      <ScreenContainer>
+        <View style={styles.centerContent}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+          <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{vm.loadError}</ThemedText>
+          <GradientButton title={t('common.retry') ?? 'Retry'} onPress={vm.retryLoad} style={{ marginTop: spacing[4] }} />
+        </View>
+      </ScreenContainer>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.accent} />
-        }
-      >
+    <ScreenContainer scroll onRefresh={vm.onRefresh} refreshing={vm.refreshing}>
         {/* ── MEDICAL DISCLAIMER ── */}
         <MedicalDisclaimer screen="health-dashboard" />
 
@@ -453,14 +99,14 @@ function HealthDashboardScreenInner() {
                 {t('health.subtitle')}
               </ThemedText>
               <ThemedText variant="caption" color="muted">
-                {`${t(`health.provider.${healthProviderCode}`)} · ${t('health.lastSync')}: ${healthLastSyncLabel || t('health.lastSyncNever')}`}
+                {`${t(`health.provider.${vm.healthProviderCode}`)} · ${t('health.lastSync')}: ${vm.healthLastSyncLabel || t('health.lastSyncNever')}`}
               </ThemedText>
             </View>
-            {healthData.anomalyCount > 0 && (
+            {vm.healthData.anomalyCount > 0 && (
               <View style={[styles.alertBadge, { backgroundColor: theme.colors.error + '20' }]}>
                 <PulseDot color={theme.colors.error} size={8} />
-                <ThemedText variant="caption" style={{ color: theme.colors.error, marginLeft: 4 }}>
-                  {healthData.anomalyCount} {healthData.anomalyCount > 1 ? t('health.alerts') : t('health.alert')}
+                <ThemedText variant="caption" style={{ color: theme.colors.error, marginLeft: spacing[1] }}>
+                  {vm.healthData.anomalyCount} {vm.healthData.anomalyCount > 1 ? t('health.alerts') : t('health.alert')}
                 </ThemedText>
               </View>
             )}
@@ -481,48 +127,48 @@ function HealthDashboardScreenInner() {
                     },
                   ]}
                 >
-                  {hasAnyMetrics ? (
+                  {vm.hasAnyMetrics ? (
                     <AnimatedCounter
-                      value={healthData.healthScore}
+                      value={vm.healthData.healthScore}
                       style={{
-                        fontSize: 36,
+                        fontSize: typography.sizes.display, 
                         fontWeight: '800',
                         color: scoreColor,
                       }}
                     />
                   ) : (
-                    <Text style={{ fontSize: 36, fontWeight: '800', color: scoreColor }}>—</Text>
+                    <ThemedText style={{ fontSize: typography.sizes.display, fontWeight: '800', color: scoreColor }}>—</ThemedText>
                   )}
                 </View>
-                <ThemedText variant="caption" color="muted" style={{ marginTop: 8 }}>
-                  {hasAnyMetrics ? t('health.healthScore') : t('health.noDataYet') || 'Start a workout to track'}
+                <ThemedText variant="caption" color="muted" style={{ marginTop: spacing[2] }}>
+                  {vm.hasAnyMetrics ? t('health.healthScore') : t('health.noDataYet') || 'Start a workout to track'}
                 </ThemedText>
               </View>
 
               <View style={styles.scoreDetails}>
                 <View style={styles.scoreDetailRow}>
                   <MaterialCommunityIcons name="shield-check" size={16} color={theme.colors.accent} />
-                  <ThemedText variant="caption" color="secondary" style={{ marginLeft: 6 }}>
-                    {t('health.recovery')}: {healthData.recoveryScore}%
+                  <ThemedText variant="caption" color="secondary" style={{ marginLeft: spacing[1.5] }}>
+                    {t('health.recovery')}: {vm.healthData.recoveryScore}%
                   </ThemedText>
                 </View>
                 <View style={styles.scoreDetailRow}>
                   <MaterialCommunityIcons name="fire" size={16} color={theme.colors.warning} />
-                  <ThemedText variant="caption" color="secondary" style={{ marginLeft: 6 }}>
-                    {t('health.streakDays')}: {healthData.streakDays}
+                  <ThemedText variant="caption" color="secondary" style={{ marginLeft: spacing[1.5] }}>
+                    {t('health.streakDays')}: {vm.healthData.streakDays}
                   </ThemedText>
                 </View>
                 <View style={styles.scoreDetailRow}>
                   <MaterialCommunityIcons name="dumbbell" size={16} color={theme.colors.accent} />
-                  <ThemedText variant="caption" color="secondary" style={{ marginLeft: 6 }}>
-                    {t('health.workoutsCount')}: {healthData.workoutsThisWeek}/{healthData.workoutsGoal}
+                  <ThemedText variant="caption" color="secondary" style={{ marginLeft: spacing[1.5] }}>
+                    {t('health.workoutsCount')}: {vm.healthData.workoutsThisWeek}/{vm.healthData.workoutsGoal}
                   </ThemedText>
                 </View>
-                {!!healthData.heartRate && (
+                {!!vm.healthData.heartRate && (
                   <View style={styles.scoreDetailRow}>
                     <MaterialCommunityIcons name="heart-pulse" size={16} color={theme.colors.error} />
-                    <ThemedText variant="caption" color="secondary" style={{ marginLeft: 6 }}>
-                      {t('health.heartRate')}: {healthData.heartRate} {t('health.bpm')}
+                    <ThemedText variant="caption" color="secondary" style={{ marginLeft: spacing[1.5] }}>
+                      {t('health.heartRate')}: {vm.healthData.heartRate} {t('health.bpm')}
                     </ThemedText>
                   </View>
                 )}
@@ -536,8 +182,8 @@ function HealthDashboardScreenInner() {
           <SectionHeader title={t('health.todaysProgress')} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.metricsRow}>
             <MetricRing
-              value={healthData.steps}
-              max={healthData.stepsGoal}
+              value={vm.healthData.steps}
+              max={vm.healthData.stepsGoal}
               color={theme.colors.blue}
               icon="shoe-print"
               label={t('health.steps')}
@@ -545,8 +191,8 @@ function HealthDashboardScreenInner() {
               theme={theme}
             />
             <MetricRing
-              value={healthData.activeMinutes}
-              max={healthData.activeMinutesGoal}
+              value={vm.healthData.activeMinutes}
+              max={vm.healthData.activeMinutesGoal}
               color={theme.colors.blue}
               icon="run"
               label={t('health.active')}
@@ -554,17 +200,17 @@ function HealthDashboardScreenInner() {
               theme={theme}
             />
             <MetricRing
-              value={healthData.calories}
-              max={healthData.caloriesGoal}
+              value={vm.healthData.calories}
+              max={vm.healthData.caloriesGoal}
               color={theme.colors.warning}
               icon="fire"
               label={t('health.calories')}
               unit=""
               theme={theme}
             />
-            {healthData.sleepHours !== null && (
+            {vm.healthData.sleepHours !== null && (
               <MetricRing
-                value={healthData.sleepHours}
+                value={vm.healthData.sleepHours}
                 max={9}
                 color={theme.colors.purple}
                 icon="moon-waning-crescent"
@@ -577,31 +223,31 @@ function HealthDashboardScreenInner() {
         </Animated.View>
 
         {/* ── ALERTS ── */}
-        {healthData.alerts.length > 0 && (
+        {vm.healthData.alerts.length > 0 && (
           <Animated.View entering={FadeInDown.delay(300).duration(300)}>
             <SectionHeader title={t('health.activeAlerts')} />
-            {healthData.alerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} theme={theme} onDismiss={dismissAlert} />
+            {vm.healthData.alerts.map((alert) => (
+              <AlertCard key={alert.id} alert={alert} theme={theme} onDismiss={vm.dismissAlert} />
             ))}
           </Animated.View>
         )}
 
         {/* ── STEPS TREND ── */}
-        {stepsTrend.length > 0 && (
+        {vm.stepsTrend.length > 0 && (
           <Animated.View entering={FadeInDown.delay(400).duration(300)}>
             <SectionHeader title={t('health.stepsLast7Days')} />
             <GlassCard style={styles.trendCard}>
-              <TrendBar data={stepsTrend} color={theme.colors.blue} theme={theme} />
+              <TrendBar data={vm.stepsTrend} color={theme.colors.blue} theme={theme} />
             </GlassCard>
           </Animated.View>
         )}
 
         {/* ── SLEEP TREND ── */}
-        {sleepTrend.length > 0 && (
+        {vm.sleepTrend.length > 0 && (
           <Animated.View entering={FadeInDown.delay(500).duration(300)}>
             <SectionHeader title={t('health.sleepQualityRecent')} />
             <GlassCard style={styles.trendCard}>
-              <TrendBar data={sleepTrend} color={theme.colors.purple} theme={theme} />
+              <TrendBar data={vm.sleepTrend} color={theme.colors.purple} theme={theme} />
             </GlassCard>
           </Animated.View>
         )}
@@ -610,14 +256,14 @@ function HealthDashboardScreenInner() {
         <Animated.View entering={FadeInDown.delay(600).duration(300)}>
           <SectionHeader title={t('health.recoverySleep')} />
           <View style={styles.detailGrid}>
-            <GlassCard style={{ ...styles.detailCard, flex: 1, marginRight: 8 }}>
+            <GlassCard style={{ ...styles.detailCard, flex: 1, marginRight: spacing[2] }}>
               <MaterialCommunityIcons
                 name="shield-check"
                 size={24}
                 color={
-                  hasAnyMetrics && healthData.recoveryScore > 70
+                  vm.hasAnyMetrics && vm.healthData.recoveryScore > 70
                     ? theme.colors.accent
-                    : hasAnyMetrics
+                    : vm.hasAnyMetrics
                       ? theme.colors.warning
                       : theme.colors.textMuted
                 }
@@ -625,43 +271,43 @@ function HealthDashboardScreenInner() {
               <ThemedText
                 variant="h3"
                 style={{
-                  marginTop: 8,
+                  marginTop: spacing[2],
                   color:
-                    hasAnyMetrics && healthData.recoveryScore > 70
+                    vm.hasAnyMetrics && vm.healthData.recoveryScore > 70
                       ? theme.colors.accent
-                      : hasAnyMetrics
+                      : vm.hasAnyMetrics
                         ? theme.colors.warning
                         : theme.colors.textMuted,
                 }}
               >
-                {hasAnyMetrics ? `${healthData.recoveryScore}%` : '—'}
+                {vm.hasAnyMetrics ? `${vm.healthData.recoveryScore}%` : '—'}
               </ThemedText>
               <ThemedText variant="caption" color="muted">
                 {t('dashboard.recovery')}
               </ThemedText>
-              <ThemedText variant="caption" color="muted" style={{ fontSize: 10, marginTop: 4 }}>
-                {!hasAnyMetrics
+              <ThemedText variant="caption" color="muted" style={{ fontSize: typography.sizes.xs, marginTop: spacing[1] }}>
+                {!vm.hasAnyMetrics
                   ? t('health.noDataYet') || 'No data yet'
-                  : healthData.recoveryScore > 80
+                  : vm.healthData.recoveryScore > 80
                     ? t('health.recoveryReady')
-                    : healthData.recoveryScore > 60
+                    : vm.healthData.recoveryScore > 60
                       ? t('health.recoveryModerate')
                       : t('health.recoveryRest')}
               </ThemedText>
             </GlassCard>
 
-            <TouchableOpacity onPress={() => setShowSleepModal(true)} activeOpacity={0.7}>
-              <GlassCard style={{ ...styles.detailCard, flex: 1, marginLeft: 8 }}>
+            <TouchableOpacity onPress={() => vm.openSleepModal()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Log sleep session">
+              <GlassCard style={{ ...styles.detailCard, flex: 1, marginLeft: spacing[2] }}>
                 <MaterialCommunityIcons name="moon-waning-crescent" size={24} color={theme.colors.purple} />
-                <ThemedText variant="h3" style={{ marginTop: 8, color: theme.colors.purple }}>
-                  {healthData.sleepQuality !== null ? `${healthData.sleepQuality}%` : '—'}
+                <ThemedText variant="h3" style={{ marginTop: spacing[2], color: theme.colors.purple }}>
+                  {vm.healthData.sleepQuality !== null ? `${vm.healthData.sleepQuality}%` : '—'}
                 </ThemedText>
                 <ThemedText variant="caption" color="muted">
                   {t('health.sleepQuality')}
                 </ThemedText>
-                <ThemedText variant="caption" color="muted" style={{ fontSize: 10, marginTop: 4 }}>
-                  {healthData.sleepHours !== null
-                    ? `${healthData.sleepHours}${t('health.avgThisWeek')}`
+                <ThemedText variant="caption" color="muted" style={{ fontSize: typography.sizes.xs, marginTop: spacing[1] }}>
+                  {vm.healthData.sleepHours !== null
+                    ? `${vm.healthData.sleepHours}${t('health.avgThisWeek')}`
                     : t('health.logSleep')}
                 </ThemedText>
               </GlassCard>
@@ -672,7 +318,7 @@ function HealthDashboardScreenInner() {
         {/* ── WEARABLE FEATURES — COMING SOON ── */}
         <Animated.View entering={FadeInDown.delay(700).duration(300)}>
           <SectionHeader title={t('common.comingSoon') || 'Coming Soon'} />
-          <GlassCard style={{ padding: 16, marginBottom: 16 }}>
+          <GlassCard style={{ padding: spacing[4], marginBottom: spacing[4] }}>
             {[
               {
                 icon: 'heart-pulse' as const,
@@ -692,7 +338,7 @@ function HealthDashboardScreenInner() {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingVertical: 12,
+                  paddingVertical: spacing[3],
                   borderTopWidth: idx > 0 ? 1 : 0,
                   borderTopColor: theme.colors.border,
                 }}
@@ -709,20 +355,20 @@ function HealthDashboardScreenInner() {
                 >
                   <MaterialCommunityIcons name={item.icon} size={20} color={item.color} />
                 </View>
-                <View style={{ flex: 1, marginLeft: 12 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <View style={{ flex: 1, marginLeft: spacing[3] }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
                     <ThemedText variant="bodySmall" weight="600" color="primary">
                       {item.label}
                     </ThemedText>
                     <View
                       style={{
                         backgroundColor: theme.colors.warning + '25',
-                        paddingHorizontal: 6,
-                        paddingVertical: 2,
-                        borderRadius: 4,
+                        paddingHorizontal: spacing[1.5],
+                        paddingVertical: spacing[0.5],
+                        borderRadius: radius.sm,
                       }}
                     >
-                      <Text style={{ color: theme.colors.warning, fontSize: 9, fontWeight: '700' }}>SOON</Text>
+                      <ThemedText style={{ color: theme.colors.warning, fontSize: typography.sizes.micro, fontWeight: '700' }}>SOON</ThemedText>
                     </View>
                   </View>
                   <ThemedText variant="caption" color="muted" numberOfLines={2}>
@@ -743,94 +389,85 @@ function HealthDashboardScreenInner() {
               icon="moon-waning-crescent"
               variant="primary"
               size="sm"
-              onPress={() => setShowSleepModal(true)}
-              style={{ flex: 1, marginRight: 4 }}
+              onPress={() => vm.openSleepModal()}
+              style={{ flex: 1, marginRight: spacing[2] }}
             />
             <GradientButton
-              title={healthActionBusy ? t('health.loading') : t('health.connectProvider')}
-              variant="primary"
+              title={vm.healthActionBusy ? t('health.loading') : t('health.syncNow')}
+              variant="success"
               size="sm"
               onPress={() => {
-                void handleConnectHealth();
+                void vm.handleSyncHealth();
               }}
-              style={{ flex: 1, marginHorizontal: 4 }}
-            />
-            <GradientButton
-              title={healthActionBusy ? t('health.loading') : t('health.syncNow')}
-              variant="primary"
-              size="sm"
-              onPress={() => {
-                void handleSyncHealth();
-              }}
-              style={{ flex: 1, marginLeft: 4 }}
+              style={{ flex: 1, marginLeft: spacing[2] }}
             />
           </View>
         </Animated.View>
 
-        {/* Bottom spacer */}
-        <View style={{ height: 100 }} />
-      </ScrollView>
-
       {/* ── SLEEP LOG MODAL ── */}
-      <Modal visible={showSleepModal} transparent animationType="fade" onRequestClose={() => setShowSleepModal(false)}>
+      <Modal visible={vm.showSleepModal} transparent animationType="fade" onRequestClose={() => vm.closeSleepModal()}>
         <View style={sleepModalStyles.overlay}>
           <View style={[sleepModalStyles.content, { backgroundColor: theme.colors.surface }]}>
             <View style={[sleepModalStyles.iconWrap, { backgroundColor: theme.colors.purple + '18' }]}>
               <MaterialCommunityIcons name="moon-waning-crescent" size={28} color={theme.colors.purple} />
             </View>
-            <Text style={[sleepModalStyles.title, { color: theme.colors.text }]}>{t('health.logSleep')}</Text>
+            <ThemedText style={[sleepModalStyles.title, { color: theme.colors.text }]}>{t('health.logSleep')}</ThemedText>
 
             {/* Bedtime picker */}
-            <Text style={[sleepModalStyles.label, { color: theme.colors.textSecondary }]}>
+            <ThemedText style={[sleepModalStyles.label, { color: theme.colors.textSecondary }]}>
               {t('health.sleepBedtime')}
-            </Text>
+            </ThemedText>
             <View style={sleepModalStyles.timeRow}>
-              <TimeWheel value={sleepBedHour} max={23} onChange={setSleepBedHour} theme={theme} />
-              <Text style={[sleepModalStyles.colon, { color: theme.colors.text }]}>:</Text>
-              <TimeWheel value={sleepBedMin} max={59} step={5} onChange={setSleepBedMin} theme={theme} />
+              <TimeWheel value={vm.sleepBedHour} max={23} onChange={vm.setSleepBedHour} theme={theme} />
+              <ThemedText style={[sleepModalStyles.colon, { color: theme.colors.text }]}>:</ThemedText>
+              <TimeWheel value={vm.sleepBedMin} max={59} step={5} onChange={vm.setSleepBedMin} theme={theme} />
             </View>
 
             {/* Wake time picker */}
-            <Text style={[sleepModalStyles.label, { color: theme.colors.textSecondary, marginTop: 16 }]}>
+            <ThemedText style={[sleepModalStyles.label, { color: theme.colors.textSecondary, marginTop: spacing[4] }]}>
               {t('health.sleepWakeTime')}
-            </Text>
+            </ThemedText>
             <View style={sleepModalStyles.timeRow}>
-              <TimeWheel value={sleepWakeHour} max={23} onChange={setSleepWakeHour} theme={theme} />
-              <Text style={[sleepModalStyles.colon, { color: theme.colors.text }]}>:</Text>
-              <TimeWheel value={sleepWakeMin} max={59} step={5} onChange={setSleepWakeMin} theme={theme} />
+              <TimeWheel value={vm.sleepWakeHour} max={23} onChange={vm.setSleepWakeHour} theme={theme} />
+              <ThemedText style={[sleepModalStyles.colon, { color: theme.colors.text }]}>:</ThemedText>
+              <TimeWheel value={vm.sleepWakeMin} max={59} step={5} onChange={vm.setSleepWakeMin} theme={theme} />
             </View>
 
             {/* Duration preview */}
             <SleepDurationPreview
-              bedHour={sleepBedHour}
-              bedMin={sleepBedMin}
-              wakeHour={sleepWakeHour}
-              wakeMin={sleepWakeMin}
+              bedHour={vm.sleepBedHour}
+              bedMin={vm.sleepBedMin}
+              wakeHour={vm.sleepWakeHour}
+              wakeMin={vm.sleepWakeMin}
               theme={theme}
             />
 
             {/* Actions */}
             <View style={sleepModalStyles.actions}>
               <TouchableOpacity
-                onPress={() => setShowSleepModal(false)}
+                onPress={() => vm.closeSleepModal()}
                 style={[sleepModalStyles.btn, { borderColor: theme.colors.border, borderWidth: 1 }]}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel sleep log"
               >
-                <Text style={[sleepModalStyles.btnText, { color: theme.colors.text }]}>{t('common.cancel')}</Text>
+                <ThemedText style={[sleepModalStyles.btnText, { color: theme.colors.text }]}>{t('common.cancel')}</ThemedText>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => void handleSaveSleep()}
-                disabled={sleepSaving}
-                style={[sleepModalStyles.btn, { backgroundColor: theme.colors.purple, opacity: sleepSaving ? 0.5 : 1 }]}
+                onPress={() => void vm.handleSaveSleep()}
+                disabled={vm.sleepSaving}
+                style={[sleepModalStyles.btn, { backgroundColor: theme.colors.purple, opacity: vm.sleepSaving ? 0.5 : 1 }]}
+                accessibilityRole="button"
+                accessibilityLabel="Save sleep log"
               >
-                <Text style={[sleepModalStyles.btnText, { color: theme.colors.onAccent }]}>
-                  {sleepSaving ? '...' : t('common.save')}
-                </Text>
+                <ThemedText style={[sleepModalStyles.btnText, { color: theme.colors.onAccent }]}>
+                  {vm.sleepSaving ? '...' : t('common.save')}
+                </ThemedText>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -863,22 +500,22 @@ function TimeWheel({
   const display = String(value).padStart(2, '0');
   return (
     <View style={{ alignItems: 'center' }}>
-      <TouchableOpacity onPress={inc} hitSlop={8} accessibilityLabel="Increase">
+      <TouchableOpacity onPress={() => { haptic('buttonPress'); inc(); }} hitSlop={8} accessibilityLabel="Increase">
         <MaterialCommunityIcons name="chevron-up" size={28} color={theme.colors.textSecondary} />
       </TouchableOpacity>
       <View
         style={{
           width: 56,
           height: 48,
-          borderRadius: 12,
+          borderRadius: radius.lg,
           backgroundColor: theme.colors.surfaceVariant,
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        <Text style={{ fontSize: 22, fontWeight: '700', color: theme.colors.text }}>{display}</Text>
+        <ThemedText style={{ fontSize: typography.sizes.h3, fontWeight: '700', color: theme.colors.text }}>{display}</ThemedText>
       </View>
-      <TouchableOpacity onPress={dec} hitSlop={8} accessibilityLabel="Decrease">
+      <TouchableOpacity onPress={() => { haptic('buttonPress'); dec(); }} hitSlop={8} accessibilityLabel="Decrease">
         <MaterialCommunityIcons name="chevron-down" size={28} color={theme.colors.textSecondary} />
       </TouchableOpacity>
     </View>
@@ -903,10 +540,10 @@ function SleepDurationPreview({
   const hrs = Math.floor(totalMin / 60);
   const mins = totalMin % 60;
   return (
-    <View style={{ alignItems: 'center', marginTop: 16 }}>
-      <Text style={{ fontSize: 14, color: theme.colors.textMuted }}>
+    <View style={{ alignItems: 'center', marginTop: spacing[4] }}>
+      <ThemedText style={{ fontSize: typography.sizes.bodySmall, color: theme.colors.textMuted }}>
         {hrs}h {mins > 0 ? `${mins}m` : ''}
-      </Text>
+      </ThemedText>
     </View>
   );
 }
@@ -917,13 +554,13 @@ const sleepModalStyles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
   },
   content: {
     width: '100%',
     maxWidth: 360,
     borderRadius: 20,
-    padding: 24,
+    padding: spacing[6],
     alignItems: 'center',
   },
   iconWrap: {
@@ -932,44 +569,44 @@ const sleepModalStyles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   title: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
-    marginBottom: 20,
+    marginBottom: spacing[5],
   },
   label: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '600',
     alignSelf: 'flex-start',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing[2],
   },
   colon: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
   actions: {
     flexDirection: 'row',
-    gap: 10,
+    gap: spacing[2.5],
     width: '100%',
-    marginTop: 24,
+    marginTop: spacing[6],
   },
   btn: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   btnText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '700',
   },
 });
@@ -988,26 +625,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[4],
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   alertBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1],
+    borderRadius: radius.lg,
     backgroundColor: 'transparent',
   },
   scoreCard: {
-    marginBottom: 16,
-    padding: 20,
+    marginBottom: spacing[4],
+    padding: spacing[5],
   },
   scoreRow: {
     flexDirection: 'row',
@@ -1026,9 +663,9 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   scoreDetails: {
-    marginLeft: 24,
+    marginLeft: spacing[6],
     flex: 1,
-    gap: 8,
+    gap: spacing[2],
   },
   scoreDetailRow: {
     flexDirection: 'row',
@@ -1036,25 +673,25 @@ const styles = StyleSheet.create({
   },
   metricsRow: {
     flexDirection: 'row',
-    gap: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    gap: spacing[4],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[1],
   },
   trendCard: {
-    padding: 16,
-    marginBottom: 16,
+    padding: spacing[4],
+    marginBottom: spacing[4],
   },
   detailGrid: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   detailCard: {
-    padding: 16,
+    padding: spacing[4],
     alignItems: 'center',
   },
   actionsRow: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
 });
 

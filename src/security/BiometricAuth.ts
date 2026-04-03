@@ -6,7 +6,7 @@
  * - Face ID / Touch ID / fingerprint as primary unlock
  * - 5-attempt lockout with exponential backoff
  * - 30-minute session expiry (re-authenticate after idle)
- * - Session tokens stored in SecureStore (not AsyncStorage)
+ * - Session tokens stored in SecureStore
  * - Graceful fallback when biometrics unavailable
  *
  * Usage:

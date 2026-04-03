@@ -1,0 +1,124 @@
+import React from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useTheme } from '../src/context/ThemeContext';
+import { useLanguage } from '../src/context/LanguageContext';
+import ThemedText from '../src/components/ThemedText';
+import { GlassCard } from '../src/components/ui/GlassUI';
+import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import { typography, spacing } from '../src/design/theme-system';
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  content: { paddingBottom: spacing[20] },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[2],
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  spacer: { width: 36 },
+  title: { fontSize: typography.sizes.h3, fontWeight: '800' },
+  card: { marginHorizontal: spacing[4], marginTop: spacing[2], padding: spacing[4], gap: spacing[2.5] },
+  sectionTitle: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
+  paragraph: { fontSize: typography.sizes.label, lineHeight: 20 },
+  bullet: { fontSize: typography.sizes.label, lineHeight: 20, marginLeft: spacing[2] },
+});
+
+export default function TermsOfServiceScreen() {
+  const { theme } = useTheme();
+  const { t } = useLanguage();
+  const router = useRouter();
+
+  return (
+    <ScreenErrorBoundary screenName="TermsOfService" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator>
+          <View style={styles.headerRow}>
+            <TouchableOpacity
+              style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
+              onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+            >
+              <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
+            </TouchableOpacity>
+            <ThemedText style={[styles.title, { color: theme.colors.text }]}>{t('legal.termsOfService')}</ThemedText>
+            <View style={styles.spacer} />
+          </View>
+
+          <GlassCard style={styles.card}>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textMuted }]}>
+              {t('legal.lastUpdated')} 2026-03-13
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.useTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.useBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.medicalTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.medicalBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.subscriptionTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.subscriptionBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.ipTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.ipBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.liabilityTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.liabilityBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.terminationTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.terminationBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              {t('legal.terms.sections.governingLawTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              {t('legal.terms.sections.governingLawBody')}
+            </ThemedText>
+
+            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+              • {t('legal.terms.bullets.compliance')}
+            </ThemedText>
+            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+              • {t('legal.terms.bullets.accountDelete')}
+            </ThemedText>
+          </GlassCard>
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenErrorBoundary>
+  );
+}

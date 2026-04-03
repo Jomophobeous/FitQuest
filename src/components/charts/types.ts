@@ -4,6 +4,8 @@
  * Shared type definitions for Victory-native based chart components.
  */
 
+import { darkTheme as theme } from '../../design/theme-system';
+
 // ============================================
 // DATA POINT TYPES
 // ============================================
@@ -82,22 +84,22 @@ export const DATE_RANGE_LABELS: Record<DateRangeOption, string> = {
 };
 
 export const HEART_RATE_ZONE_COLORS: Record<HeartRateZone, string> = {
-  rest: '#6B7280', // Gray
-  fat_burn: '#10B981', // Emerald
-  cardio: '#F59E0B', // Amber
-  peak: '#EF4444', // Red
-  max: '#DC2626', // Dark Red
+  rest: theme.colors.textMuted, // Gray
+  fat_burn: theme.colors.accent, // Emerald
+  cardio: theme.colors.warning, // Amber
+  peak: theme.colors.error, // Red
+  max: theme.colors.error, // Dark Red
 };
 
 export const MUSCLE_GROUP_COLORS: string[] = [
-  '#10B981', // Emerald
-  '#3B82F6', // Blue
-  '#8B5CF6', // Violet
-  '#F59E0B', // Amber
-  '#EC4899', // Pink
-  '#06B6D4', // Cyan
-  '#84CC16', // Lime
-  '#F97316', // Orange
+  theme.colors.accent, // Emerald
+  theme.colors.info, // Blue
+  theme.colors.purple, // Violet
+  theme.colors.warning, // Amber
+  theme.colors.pink, // Pink
+  theme.colors.info, // Cyan
+  theme.colors.accent, // Lime
+  theme.colors.orange, // Orange
 ];
 
 // ============================================
@@ -144,33 +146,33 @@ export interface ChartThemeColors {
 }
 
 export const DARK_CHART_THEME: ChartThemeColors = {
-  primary: '#10B981',
-  secondary: '#3B82F6',
-  accent: '#8B5CF6',
-  success: '#22C55E',
-  warning: '#F59E0B',
-  error: '#EF4444',
-  background: '#0A0E17',
-  surface: '#1A1F2E',
-  text: '#F9FAFB',
-  textMuted: '#9CA3AF',
+  primary: theme.colors.accent,
+  secondary: theme.colors.info,
+  accent: theme.colors.purple,
+  success: theme.colors.accent,
+  warning: theme.colors.warning,
+  error: theme.colors.error,
+  background: theme.colors.background,
+  surface: theme.colors.surface,
+  text: theme.colors.text,
+  textMuted: theme.colors.textSecondary,
   grid: 'rgba(255, 255, 255, 0.1)',
-  axis: '#6B7280',
+  axis: theme.colors.textMuted,
 };
 
 export const LIGHT_CHART_THEME: ChartThemeColors = {
-  primary: '#059669',
-  secondary: '#2563EB',
-  accent: '#7C3AED',
-  success: '#16A34A',
-  warning: '#D97706',
-  error: '#DC2626',
-  background: '#F4F5F7',
-  surface: '#FFFFFF',
-  text: '#111827',
-  textMuted: '#6B7280',
+  primary: theme.colors.accentDark,
+  secondary: theme.colors.info,
+  accent: theme.colors.purple,
+  success: theme.colors.accentDark,
+  warning: theme.colors.warning,
+  error: theme.colors.error,
+  background: theme.colors.text,
+  surface: theme.colors.onAccent,
+  text: theme.colors.background,
+  textMuted: theme.colors.textMuted,
   grid: 'rgba(0, 0, 0, 0.1)',
-  axis: '#9CA3AF',
+  axis: theme.colors.textSecondary,
 };
 
 // ============================================

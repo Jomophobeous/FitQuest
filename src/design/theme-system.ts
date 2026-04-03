@@ -37,6 +37,8 @@ export const colorSystem = {
     error: '#EF4444',
     warning: '#F4A427',
     success: '#10B981',
+    info: '#3B82F6',
+    accentDark: '#059669',
 
     // Backward compatibility aliases (use warning/success instead)
     accent2: '#F4A427', // → use warning
@@ -81,6 +83,8 @@ export const colorSystem = {
     error: '#DC2626',
     warning: '#F4A427',
     success: '#10B981',
+    info: '#3B82F6',
+    accentDark: '#059669',
 
     // Backward compatibility aliases (use warning/success instead)
     accent2: '#F4A427', // → use warning
@@ -125,6 +129,8 @@ export const colorSystem = {
     error: '#B83240',
     warning: '#C8943A',
     success: '#D4A843', // Gold for success in blackGold theme
+    info: '#5A8FBF',
+    accentDark: '#B8912C',
 
     // Backward compatibility aliases
     accent2: '#C8943A',
@@ -154,14 +160,25 @@ export const colorSystem = {
 
 export const typography = {
   sizes: {
+    mega: 120,
+    jumbo: 56,
+    hero: 48,
+    displayLg: 40,
+    display: 36,
     h1: 32,
+    h1Sm: 28,
     h2: 24,
     h3: 20,
     h4: 18,
     body: 16,
+    bodyMid: 15,
     bodySmall: 14,
     label: 13,
     caption: 12,
+    captionSm: 11,
+    xs: 10,
+    micro: 9,
+    xxs: 8,
   },
 
   weights: {
@@ -182,18 +199,31 @@ export const typography = {
 // SPACING
 // ============================================================================
 
-export const spacing = {
+export const spacing: Record<string | number, number> = {
   px: 1,
   0: 0,
+  0.5: 2,
+  0.75: 3,
   1: 4,
+  1.25: 5,
+  1.5: 6,
   2: 8,
+  2.5: 10,
   3: 12,
+  3.5: 14,
   4: 16,
+  4.5: 18,
   5: 20,
   6: 24,
+  7: 28,
   8: 32,
+  9: 36,
   10: 40,
   12: 48,
+  14: 56,
+  15: 60,
+  20: 80,
+  25: 100,
 };
 
 // ============================================================================

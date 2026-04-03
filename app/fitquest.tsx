@@ -8,15 +8,15 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  AppState,
   Vibration,
   useWindowDimensions,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp, FadeInRight, ZoomIn } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
@@ -25,8 +25,7 @@ import { useSubscription } from '../src/purchases/SubscriptionContext';
 import { useFitQuestWorkout, WorkoutExerciseDisplay, WorkoutCompletionData } from '../src/hooks/useFitQuestWorkout';
 import WorkoutSummaryView from '../src/components/WorkoutSummaryView';
 import { useTimer } from '../src/hooks/useTimer';
-import { audioService } from '../src/services/audioService';
-import { setAppState } from '../src/database/service';
+import { useFitquestViewModel } from '../src/viewmodels/useFitquestViewModel';
 import { GlassCard, GradientButton, PulseDot, SectionHeader } from '../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ExerciseImage from '../src/components/ExerciseImage';
@@ -34,12 +33,16 @@ import RestTimerOverlay from '../src/components/RestTimerOverlay';
 import GetReadyOverlay from '../src/components/GetReadyOverlay';
 import ConfettiBurst from '../src/components/ConfettiBurst';
 import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
+import { evaluatePostWorkoutReward } from '../src/services/microRewards';
+import { getUserProgress } from '../src/database/service';
 import MindExerciseView from '../src/components/MindExerciseView';
 import { haptic } from '../src/utils/haptics';
+import { useToast } from '../src/context/ToastContext';
+import ThemedText from '../src/components/ThemedText';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
-import { getTrialSnapshot, type TrialSnapshot } from '../src/engines/TrialProgressionEngine';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 // Module-level cooldown — survives unmount/remount across navigation cycles.
 // Prevents re-generation when user navigates away and back within 10 seconds.
@@ -69,13 +72,14 @@ function SessionClock({
   }, [active, startRef]);
   const m = Math.floor(elapsed / 60);
   const s = elapsed % 60;
-  return <Text style={style}>{`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`}</Text>;
+  return <ThemedText style={style}>{`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`}</ThemedText>;
 }
 
 function FitQuestScreenInner() {
   const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const { autostart } = useLocalSearchParams<{ autostart?: string }>();
   const router = useRouter();
   const { isReady, isLoading: dbLoading, error: dbError, userProfile, resetAll } = useDatabase();
@@ -91,6 +95,7 @@ function FitQuestScreenInner() {
     fatigueSnapshot,
     deloadStatus,
     generateNewWorkout,
+    recoverActiveSession,
     startWorkout,
     completeExercise,
     skipExercise,
@@ -103,7 +108,9 @@ function FitQuestScreenInner() {
   const [showCompleteBadge, setShowCompleteBadge] = useState(false);
   const [showInsight, setShowInsight] = useState(false);
   const [showMemory, setShowMemory] = useState(false);
-  const [trialSnapshot, setTrialSnapshot] = useState<TrialSnapshot | null>(null);
+
+  // ViewModel: audio management, trial gating, workout persistence
+  const vm = useFitquestViewModel();
 
   // Timer integration
   const {
@@ -116,9 +123,7 @@ function FitQuestScreenInner() {
     startSession,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     endSession,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     pauseAll,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     resumeAll,
     stopAll,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -127,97 +132,27 @@ function FitQuestScreenInner() {
 
   // Session clock (elapsed time)
   const sessionStartRef = useRef<number | null>(null);
-
-  // TTS state
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const lastSpokenExerciseRef = useRef<string | null>(null);
-  const speakCancelRef = useRef(0); // Cancellation token for async narration chains
-  const lastAnnouncedPhaseRef = useRef<string | null>(null); // Track phase transitions
   const isCompactScreen = width < 390;
 
-  // Initialize audio service
+  // Pause timers when app goes to background, resume on foreground
   useEffect(() => {
-    const initAudio = async () => {
-      try {
-        await audioService.initialize('user_local_001');
-        const settings = audioService.getSettings();
-        setVoiceEnabled(settings.voiceEnabled);
-      } catch (e) {
-        if (__DEV__) console.warn('[FitQuest] Audio init skipped:', e);
+    const sub = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        pauseAll();
+      } else if (nextState === 'active') {
+        resumeAll();
       }
-    };
-    initAudio();
+    });
+    return () => sub.remove();
+  }, [pauseAll, resumeAll]);
 
-    // Cleanup on unmount
-    return () => {
-      audioService.stop();
-    };
-  }, []);
-
-  // Speak exercise instructions when transitioning to new exercise
+  // Speak exercise instructions when transitioning to new exercise (VM handles narration chain)
   useEffect(() => {
-    if (status === 'in_progress' && currentExercise && voiceEnabled) {
-      // Avoid re-speaking the same exercise
-      if (lastSpokenExerciseRef.current !== currentExercise.id) {
-        lastSpokenExerciseRef.current = currentExercise.id;
-        // Increment cancellation token — any in-flight chain with an older token will abort
-        const token = ++speakCancelRef.current;
-
-        const speakExercise = async () => {
-          try {
-            setIsSpeaking(true);
-
-            // Phase transition announcement (warmup→main→cooldown)
-            const currentPhase = currentExercise.phase || 'main';
-            if (lastAnnouncedPhaseRef.current !== currentPhase) {
-              const fromPhase = lastAnnouncedPhaseRef.current as 'warmup' | 'main' | 'cooldown' | null;
-              lastAnnouncedPhaseRef.current = currentPhase;
-              await audioService.playPhaseTransition(fromPhase, currentPhase);
-              if (speakCancelRef.current !== token) return;
-              // Brief pause after phase announcement to let it land
-              await new Promise((resolve) => setTimeout(resolve, 800));
-              if (speakCancelRef.current !== token) return;
-            }
-
-            const audioData = {
-              intro: currentExercise.audioIntro,
-              setup: currentExercise.audioSetup,
-              execution: currentExercise.audioExecution,
-              transition: currentExercise.audioTransition,
-            };
-
-            // Full narration sequence with cancellation checks between each step
-            await audioService.playIntro(audioData);
-            if (speakCancelRef.current !== token) return;
-            await audioService.playSetup(audioData);
-            if (speakCancelRef.current !== token) return;
-            await new Promise((resolve) => setTimeout(resolve, 600));
-            if (speakCancelRef.current !== token) return;
-            await audioService.playExecution(audioData);
-            if (speakCancelRef.current !== token) return;
-            setIsSpeaking(false);
-          } catch (e) {
-            if (__DEV__) console.warn('[FitQuest] Narration error (non-fatal):', e);
-            setIsSpeaking(false);
-          }
-        };
-
-        speakExercise();
-      }
+    if (status === 'in_progress' && currentExercise && vm.voiceEnabled) {
+      vm.speakExercise(currentExercise);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- currentExercise narrowed to .id intentionally; full object would over-trigger
-  }, [status, currentExercise?.id, voiceEnabled]);
-
-  // Toggle voice
-  const toggleVoice = async () => {
-    const newValue = !voiceEnabled;
-    setVoiceEnabled(newValue);
-    await audioService.updateSettings('user_local_001', { voiceEnabled: newValue });
-    if (!newValue) {
-      audioService.stop();
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- currentExercise narrowed to .id intentionally
+  }, [status, currentExercise?.id, vm.voiceEnabled]);
 
   // Rest timer state
   const [isResting, setIsResting] = useState(false);
@@ -241,21 +176,22 @@ function FitQuestScreenInner() {
   const generateNewWorkoutRef = useRef(generateNewWorkout);
   generateNewWorkoutRef.current = generateNewWorkout;
   const autoGeneratedRef = useRef(false);
+  const badgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clear badge animation timer on unmount
+  useEffect(() => () => { if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current); }, []);
 
   // Load trial snapshot for feature gating
   const { accessState } = useSubscription();
   const isSubscribed = accessState === 'SUBSCRIBED';
   useEffect(() => {
     if (isReady) {
-      getTrialSnapshot('user_local_001', isSubscribed)
-        .then(setTrialSnapshot)
-        .catch((e) => {
-          if (__DEV__) console.warn('[FitQuest] trial snapshot failed', e);
-        });
+      vm.loadTrialSnapshot(isSubscribed);
     }
-  }, [isReady, isSubscribed]);
+  }, [isReady, isSubscribed, vm.loadTrialSnapshot]);
 
   // Auto-generate on mount if ready and idle (once per screen visit, with global cooldown)
+  // First attempts to recover an interrupted session; only generates fresh if no recovery.
   useEffect(() => {
     if (isReady && userProfile && status === 'idle' && !completionResult && !autoGeneratedRef.current) {
       // Global cooldown: prevent re-generation across navigation cycles
@@ -265,11 +201,22 @@ function FitQuestScreenInner() {
       }
       autoGeneratedRef.current = true;
       lastAutoGeneratedAt = Date.now();
-      if (__DEV__) console.warn('[FitQuest] Auto-generating workout (idle state, no completion result)');
-      const timer = setTimeout(() => generateNewWorkoutRef.current(), 500);
-      return () => clearTimeout(timer);
+
+      // Try to recover a crashed/interrupted session first
+      let cancelled = false;
+      recoverActiveSession().then((recovered) => {
+        if (cancelled) return;
+        if (!recovered) {
+          if (__DEV__) console.warn('[FitQuest] No session to recover — generating new workout');
+          const timer = setTimeout(() => generateNewWorkoutRef.current(), 500);
+          // Note: cleanup below only covers the outer effect; inner timeout is short-lived
+          return () => clearTimeout(timer);
+        }
+        if (__DEV__) console.warn('[FitQuest] Recovered interrupted session — skipping generation');
+      });
+      return () => { cancelled = true; };
     }
-  }, [isReady, userProfile, status, completionResult]);
+  }, [isReady, userProfile, status, completionResult, recoverActiveSession]);
 
   // Auto-start: when navigated from dashboard with ?autostart=1, immediately begin
   // the workout once it's been generated (status transitions idle → generated → in_progress)
@@ -291,11 +238,9 @@ function FitQuestScreenInner() {
   // Stop audio whenever we leave in_progress state (safety net)
   useEffect(() => {
     if (status !== 'in_progress') {
-      speakCancelRef.current++;
-      audioService.stop();
-      setIsSpeaking(false);
+      vm.cancelNarration();
     }
-  }, [status]);
+  }, [status, vm.cancelNarration]);
 
   const advanceAfterRest = useCallback(
     async (reason: 'timer' | 'skip') => {
@@ -368,12 +313,8 @@ function FitQuestScreenInner() {
 
   const handleFinish = useCallback(async () => {
     if (__DEV__) console.warn('[FitQuest] handleFinish called — processing workout completion');
-    // Cancel any in-flight narration chain AND stop current audio
-    speakCancelRef.current++;
-    audioService.stop();
-    lastSpokenExerciseRef.current = null;
-    lastAnnouncedPhaseRef.current = null;
-    setIsSpeaking(false);
+    vm.cancelNarration();
+    vm.resetNarrationState();
 
     let result: WorkoutCompletionData | null = null;
     try {
@@ -383,54 +324,60 @@ function FitQuestScreenInner() {
     }
 
     if (result) {
+      haptic('workoutComplete');
       if (__DEV__) console.warn('[FitQuest] Workout finished successfully — showing completion screen');
       setCompletionResult(result);
       setWorkoutRating(null);
 
+      // Toast XP gain + level up
+      const xpMsg = result.levelUp
+        ? `+${result.xpEarned} XP — Level ${result.newLevel}!`
+        : `+${result.xpEarned} XP`;
+      showToast({ message: xpMsg, type: 'success', vibrate: true, duration: 4000 });
+
+      // Micro-reward: milestone / streak / goal completion toast (non-blocking)
+      (async () => {
+        try {
+          const totalCompleted = (await getUserProgress().catch(() => null))?.completed_workouts ?? 0;
+          const reward = await evaluatePostWorkoutReward(
+            totalCompleted,
+            result.streak?.current ?? 0,
+          );
+          if (reward.type !== 'NONE' && reward.type !== 'WORKOUT_DONE') {
+            // Delay slightly so it doesn't overlap with XP toast
+            setTimeout(() => {
+              showToast({ message: reward.message, type: reward.variant === 'success' ? 'success' : 'info', duration: 5000 });
+            }, 4500);
+          }
+        } catch {}
+      })();
+
       // Narrator compliments the user with context-aware praise (non-blocking)
-      try {
-        audioService.playWorkoutCompliment({
-          completedCount: result.completedCount,
-          totalCount: result.totalCount,
-          durationSeconds: result.durationSeconds,
-          streakDays: result.streak?.current ?? 0,
-          xpEarned: result.xpEarned,
-          levelUp: result.levelUp,
-          newLevel: result.newLevel,
-          progressions: result.progressions,
-          exerciseNames: result.exerciseNames,
-        });
-      } catch (e) {
-        if (__DEV__) console.warn('[FitQuest] Compliment narration error (non-fatal):', e);
-      }
+      vm.playWorkoutCompliment({
+        completedCount: result.completedCount,
+        totalCount: result.totalCount,
+        durationSeconds: result.durationSeconds,
+        streakDays: result.streak?.current ?? 0,
+        xpEarned: result.xpEarned,
+        levelUp: result.levelUp,
+        newLevel: result.newLevel,
+        progressions: result.progressions,
+        exerciseNames: result.exerciseNames,
+      });
 
       // Store last workout summary so AI Coach can reference it
-      setAppState(
-        'last_completed_workout',
-        JSON.stringify({
-          completedCount: result.completedCount,
-          totalCount: result.totalCount,
-          durationSeconds: result.durationSeconds,
-          streakDays: result.streak?.current ?? 0,
-          xpEarned: result.xpEarned,
-          exerciseNames: result.exerciseNames,
-          completedAt: Date.now(),
-        }),
-      ).catch((e) => {
-        if (__DEV__) console.warn('[FitQuest] Failed to store last workout:', e);
-      });
+      vm.storeLastWorkout(result);
     } else {
       if (__DEV__) console.warn('[FitQuest] finishWorkout returned null — may have already been called');
     }
-  }, [finishWorkout]);
+  }, [finishWorkout, vm.cancelNarration, vm.resetNarrationState, vm.playWorkoutCompliment, vm.storeLastWorkout]);
 
   // Auto-trigger finish when workout reaches completed status
   const finishTriggeredRef = useRef(false);
   useEffect(() => {
     if (status === 'completed' && workout && !completionResult && !finishTriggeredRef.current) {
       finishTriggeredRef.current = true;
-      // Ensure audio is fully stopped before processing completion
-      audioService.stop();
+      vm.cancelNarration();
       handleFinish().finally(() => {
         finishTriggeredRef.current = false;
       });
@@ -448,7 +395,7 @@ function FitQuestScreenInner() {
   const handleNewWorkout = () => {
     setCompletionResult(null);
     setWorkoutRating(null);
-    lastAnnouncedPhaseRef.current = null;
+    vm.resetNarrationState();
     autoGeneratedRef.current = true; // Prevent auto-gen from also firing
     wantsNewWorkoutRef.current = true;
     cancelWorkout(); // Reset hook state to idle — triggers re-render with status='idle'
@@ -473,7 +420,7 @@ function FitQuestScreenInner() {
   // ===== LOADING STATE =====
   if (dbLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centered}>
           <Animated.View entering={ZoomIn.duration(150)}>
             <View style={[styles.loadingIcon, { backgroundColor: theme.colors.accent + '15' }]}>
@@ -487,20 +434,20 @@ function FitQuestScreenInner() {
             {t('fitquest.initializing')}
           </Animated.Text>
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== ERROR STATE =====
   if (dbError || error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centered}>
           <Animated.View entering={ZoomIn.duration(150)}>
             <MaterialCommunityIcons name="alert-circle" size={64} color={theme.colors.error} />
           </Animated.View>
-          <Text style={[styles.errorTitle, { color: theme.colors.text }]}>{t('fitquest.errorTitle')}</Text>
-          <Text style={[styles.errorSub, { color: theme.colors.textSecondary }]}>{dbError || error}</Text>
+          <ThemedText style={[styles.errorTitle, { color: theme.colors.text }]}>{t('fitquest.errorTitle')}</ThemedText>
+          <ThemedText style={[styles.errorSub, { color: theme.colors.textSecondary }]}>{dbError || error}</ThemedText>
           <GradientButton
             title={t('fitquest.resetAndRetry')}
             icon="refresh"
@@ -508,14 +455,14 @@ function FitQuestScreenInner() {
             colors={[theme.colors.error, theme.colors.error]}
           />
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== DB NOT READY YET (retry in progress) =====
   if (!isReady) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centered}>
           <Animated.View entering={ZoomIn.duration(150)}>
             <View style={[styles.loadingIcon, { backgroundColor: theme.colors.accent + '15' }]}>
@@ -529,7 +476,7 @@ function FitQuestScreenInner() {
             {t('fitquest.initializing')}
           </Animated.Text>
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
@@ -551,7 +498,7 @@ function FitQuestScreenInner() {
   // ===== GENERATING STATE =====
   if (status === 'generating') {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centered}>
           <Animated.View entering={ZoomIn.duration(150)}>
             <View style={[styles.loadingIcon, { backgroundColor: theme.colors.accent + '15' }]}>
@@ -571,14 +518,14 @@ function FitQuestScreenInner() {
             {t('fitquest.craftingSub')}
           </Animated.Text>
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== READY STATE (Preview) =====
   if (status === 'ready' && workout) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(150)}>
@@ -593,10 +540,10 @@ function FitQuestScreenInner() {
               ]}
             >
               <View style={styles.readyHeaderRow}>
-                <Text style={[styles.readyTitle, { color: theme.colors.text }]}>{t('fitquest.todaysWorkout')}</Text>
+                <ThemedText style={[styles.readyTitle, { color: theme.colors.text }]}>{t('fitquest.todaysWorkout')}</ThemedText>
                 {!!workout.isDeload && (
                   <View style={[styles.deloadBadge, { backgroundColor: theme.colors.warning }]}>
-                    <Text style={[styles.deloadBadgeText, { color: theme.colors.text }]}>{t('fitquest.deload')}</Text>
+                    <ThemedText style={[styles.deloadBadgeText, { color: theme.colors.text }]}>{t('fitquest.deload')}</ThemedText>
                   </View>
                 )}
               </View>
@@ -605,34 +552,36 @@ function FitQuestScreenInner() {
 
           {/* Explanation */}
           <Animated.View entering={FadeInDown.delay(100).duration(150)}>
-            <GlassCard style={{ marginHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <GlassCard style={{ marginHorizontal: spacing[4], flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}>
               <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '12' }]}>
                 <MaterialCommunityIcons name="lightbulb-outline" size={20} color={theme.colors.accent} />
               </View>
-              <Text style={[styles.explanationText, { color: theme.colors.textSecondary }]}>{workout.explanation}</Text>
+              <ThemedText style={[styles.explanationText, { color: theme.colors.textSecondary }]}>{workout.explanation}</ThemedText>
             </GlassCard>
           </Animated.View>
 
           {/* AI Workout Insight — expandable reasoning panel (gated by subscription) */}
-          {workout.aiInsight && trialSnapshot?.hasIntelligence !== false && (
+          {workout.aiInsight && vm.trialSnapshot?.hasIntelligence !== false && (
             <Animated.View entering={FadeInDown.delay(120).duration(150)}>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setShowInsight((v) => !v)}
-                style={{ marginHorizontal: 16, marginTop: 8 }}
+                style={{ marginHorizontal: spacing[4], marginTop: spacing[2] }}
+                accessibilityRole="button"
+                accessibilityLabel={`AI workout insight${showInsight ? ', expanded' : ''}`}
               >
-                <GlassCard style={{ padding: 0 }}>
+                <GlassCard style={{ padding: spacing[0] }}>
                   <View style={styles.insightHeader}>
                     <View style={[styles.hintIcon, { backgroundColor: theme.colors.blue + '15' }]}>
                       <MaterialCommunityIcons name="brain" size={18} color={theme.colors.blue} />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.insightTitle, { color: theme.colors.text }]}>
+                      <ThemedText style={[styles.insightTitle, { color: theme.colors.text }]}>
                         {t('fitquest.aiInsight') || 'AI Workout Intelligence'}
-                      </Text>
-                      <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
+                      </ThemedText>
+                      <ThemedText style={[styles.insightSub, { color: theme.colors.textMuted }]}>
                         {workout.aiInsight.session_reason}
-                      </Text>
+                      </ThemedText>
                     </View>
                     <MaterialCommunityIcons
                       name={showInsight ? 'chevron-up' : 'chevron-down'}
@@ -642,27 +591,29 @@ function FitQuestScreenInner() {
                   </View>
                   {/* Preview panel — locked AI Insight (post-trial, not subscribed) */}
                   {workout.aiInsight &&
-                    trialSnapshot &&
-                    !trialSnapshot.hasIntelligence &&
-                    trialSnapshot.previewAvailable && (
+                    vm.trialSnapshot &&
+                    !vm.trialSnapshot.hasIntelligence &&
+                    vm.trialSnapshot.previewAvailable && (
                       <Animated.View entering={FadeInDown.delay(120).duration(150)}>
                         <TouchableOpacity
                           activeOpacity={0.7}
                           onPress={() => router.push('/paywall')}
-                          style={{ marginHorizontal: 16, marginTop: 8 }}
+                          style={{ marginHorizontal: spacing[4], marginTop: spacing[2] }}
+                          accessibilityRole="button"
+                          accessibilityLabel="Unlock AI workout insight"
                         >
-                          <GlassCard style={{ padding: 12, opacity: 0.6 }}>
+                          <GlassCard style={{ padding: spacing[0] }}>
                             <View style={styles.insightHeader}>
                               <View style={[styles.hintIcon, { backgroundColor: theme.colors.blue + '15' }]}>
-                                <MaterialCommunityIcons name="brain" size={18} color={theme.colors.textMuted} />
+                                <MaterialCommunityIcons name="brain" size={18} color={theme.colors.blue} />
                               </View>
                               <View style={{ flex: 1 }}>
-                                <Text style={[styles.insightTitle, { color: theme.colors.textMuted }]}>
+                                <ThemedText style={[styles.insightTitle, { color: theme.colors.textMuted }]}>
                                   AI Workout Intelligence
-                                </Text>
-                                <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
+                                </ThemedText>
+                                <ThemedText style={[styles.insightSub, { color: theme.colors.textMuted }]}>
                                   Advanced intelligence requires subscription.
-                                </Text>
+                                </ThemedText>
                               </View>
                               <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textMuted} />
                             </View>
@@ -675,33 +626,33 @@ function FitQuestScreenInner() {
                       {/* Volume reasoning */}
                       <View style={styles.insightRow}>
                         <MaterialCommunityIcons name="chart-bar" size={16} color={theme.colors.accent} />
-                        <Text style={[styles.insightRowText, { color: theme.colors.textSecondary }]}>
+                        <ThemedText style={[styles.insightRowText, { color: theme.colors.textSecondary }]}>
                           {workout.aiInsight.volume_reason}
-                        </Text>
+                        </ThemedText>
                       </View>
                       {/* Per-exercise reasoning */}
                       {workout.aiInsight.exercise_reasons.map((er, idx) => (
                         <View key={er.exercise_id || idx} style={styles.insightRow}>
                           <MaterialCommunityIcons name="dumbbell" size={14} color={theme.colors.textMuted} />
                           <View style={{ flex: 1 }}>
-                            <Text style={[styles.insightExName, { color: theme.colors.text }]}>{er.exercise_name}</Text>
-                            <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>{er.reason}</Text>
+                            <ThemedText style={[styles.insightExName, { color: theme.colors.text }]}>{er.exercise_name}</ThemedText>
+                            <ThemedText style={[styles.insightExReason, { color: theme.colors.textMuted }]}>{er.reason}</ThemedText>
                             {er.score_breakdown && (
                               <View style={styles.insightChips}>
                                 <View style={[styles.insightChip, { backgroundColor: theme.colors.accent + '15' }]}>
-                                  <Text style={[styles.insightChipText, { color: theme.colors.accent }]}>
+                                  <ThemedText style={[styles.insightChipText, { color: theme.colors.accent }]}>
                                     {er.score_breakdown.freshness}
-                                  </Text>
+                                  </ThemedText>
                                 </View>
                                 <View style={[styles.insightChip, { backgroundColor: theme.colors.blue + '15' }]}>
-                                  <Text style={[styles.insightChipText, { color: theme.colors.blue }]}>
+                                  <ThemedText style={[styles.insightChipText, { color: theme.colors.blue }]}>
                                     {er.score_breakdown.goal_alignment}
-                                  </Text>
+                                  </ThemedText>
                                 </View>
                                 <View style={[styles.insightChip, { backgroundColor: theme.colors.warning + '15' }]}>
-                                  <Text style={[styles.insightChipText, { color: theme.colors.warning }]}>
+                                  <ThemedText style={[styles.insightChipText, { color: theme.colors.warning }]}>
                                     {er.score_breakdown.pattern_balance}
-                                  </Text>
+                                  </ThemedText>
                                 </View>
                               </View>
                             )}
@@ -712,7 +663,7 @@ function FitQuestScreenInner() {
                       {workout.aiInsight.general_notes.map((note, idx) => (
                         <View key={idx} style={styles.insightRow}>
                           <MaterialCommunityIcons name="information-outline" size={14} color={theme.colors.warning} />
-                          <Text style={[styles.insightRowText, { color: theme.colors.warning }]}>{note}</Text>
+                          <ThemedText style={[styles.insightRowText, { color: theme.colors.warning }]}>{note}</ThemedText>
                         </View>
                       ))}
                     </View>
@@ -724,25 +675,27 @@ function FitQuestScreenInner() {
 
           {/* Adaptive Memory — Session comparison + progression context (gated by subscription) */}
           {(workout.lastImpact?.hasHistory || workout.workoutDelta?.hasChanges) &&
-            trialSnapshot?.hasMemory !== false && (
+            vm.trialSnapshot?.hasMemory !== false && (
               <Animated.View entering={FadeInDown.delay(140).duration(150)}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => setShowMemory((v) => !v)}
-                  style={{ marginHorizontal: 16, marginTop: 8 }}
+                  style={{ marginHorizontal: spacing[4], marginTop: spacing[2] }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Session memory${showMemory ? ', expanded' : ''}`}
                 >
-                  <GlassCard style={{ padding: 0 }}>
+                  <GlassCard style={{ padding: spacing[0] }}>
                     <View style={styles.insightHeader}>
                       <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '15' }]}>
                         <MaterialCommunityIcons name="memory" size={18} color={theme.colors.accent} />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={[styles.insightTitle, { color: theme.colors.text }]}>
+                        <ThemedText style={[styles.insightTitle, { color: theme.colors.text }]}>
                           {t('fitquest.adaptiveMemory') || 'Session Memory'}
-                        </Text>
-                        <Text style={[styles.insightSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                        </ThemedText>
+                        <ThemedText style={[styles.insightSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
                           {workout.workoutDelta?.headline || workout.lastImpact?.headline || ''}
-                        </Text>
+                        </ThemedText>
                       </View>
                       <MaterialCommunityIcons
                         name={showMemory ? 'chevron-up' : 'chevron-down'}
@@ -758,14 +711,14 @@ function FitQuestScreenInner() {
                             <View style={styles.insightRow}>
                               <MaterialCommunityIcons name="history" size={15} color={theme.colors.accent} />
                               <View style={{ flex: 1 }}>
-                                <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>Last Session</Text>
-                                <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
+                                <ThemedText style={[styles.memoryLabel, { color: theme.colors.text }]}>Last Session</ThemedText>
+                                <ThemedText style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
                                   {workout.lastImpact.headline}
-                                </Text>
+                                </ThemedText>
                               </View>
-                              <Text style={[styles.memoryTime, { color: theme.colors.textMuted }]}>
+                              <ThemedText style={[styles.memoryTime, { color: theme.colors.textMuted }]}>
                                 {workout.lastImpact.timeSince}
-                              </Text>
+                              </ThemedText>
                             </View>
                             <View style={styles.insightRow}>
                               <MaterialCommunityIcons
@@ -785,9 +738,9 @@ function FitQuestScreenInner() {
                                       : theme.colors.textMuted
                                 }
                               />
-                              <Text style={[styles.insightRowText, { color: theme.colors.textSecondary }]}>
+                              <ThemedText style={[styles.insightRowText, { color: theme.colors.textSecondary }]}>
                                 {workout.lastImpact.trendStatement}
-                              </Text>
+                              </ThemedText>
                             </View>
                           </>
                         )}
@@ -796,10 +749,10 @@ function FitQuestScreenInner() {
                           <View style={styles.insightRow}>
                             <MaterialCommunityIcons name="swap-horizontal" size={15} color={theme.colors.blue} />
                             <View style={{ flex: 1 }}>
-                              <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>Changes</Text>
-                              <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
+                              <ThemedText style={[styles.memoryLabel, { color: theme.colors.text }]}>Changes</ThemedText>
+                              <ThemedText style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
                                 {workout.workoutDelta.headline}
-                              </Text>
+                              </ThemedText>
                               {workout.workoutDelta.removed.length > 0 && (
                                 <View style={styles.insightChips}>
                                   {workout.workoutDelta.removed.slice(0, 3).map((name, i) => (
@@ -807,9 +760,9 @@ function FitQuestScreenInner() {
                                       key={i}
                                       style={[styles.insightChip, { backgroundColor: theme.colors.error + '12' }]}
                                     >
-                                      <Text style={[styles.insightChipText, { color: theme.colors.error }]}>
+                                      <ThemedText style={[styles.insightChipText, { color: theme.colors.error }]}>
                                         - {name}
-                                      </Text>
+                                      </ThemedText>
                                     </View>
                                   ))}
                                 </View>
@@ -820,12 +773,12 @@ function FitQuestScreenInner() {
                         {/* Progression narratives — top 3 */}
                         {workout.progressionNarratives.length > 0 && (
                           <>
-                            <View style={[styles.insightRow, { marginTop: 4 }]}>
+                            <View style={[styles.insightRow, { marginTop: spacing[1] }]}>
                               <MaterialCommunityIcons name="chart-line" size={15} color={theme.colors.accent} />
-                              <Text style={[styles.memoryLabel, { color: theme.colors.text }]}>Progression</Text>
+                              <ThemedText style={[styles.memoryLabel, { color: theme.colors.text }]}>Progression</ThemedText>
                             </View>
                             {workout.progressionNarratives.slice(0, 4).map((pn) => (
-                              <View key={pn.exerciseId} style={[styles.insightRow, { paddingLeft: 8 }]}>
+                              <View key={pn.exerciseId} style={[styles.insightRow, { paddingLeft: spacing[2] }]}>
                                 <View
                                   style={[
                                     styles.momentumDot,
@@ -840,12 +793,12 @@ function FitQuestScreenInner() {
                                   ]}
                                 />
                                 <View style={{ flex: 1 }}>
-                                  <Text style={[styles.insightExName, { color: theme.colors.text }]}>
+                                  <ThemedText style={[styles.insightExName, { color: theme.colors.text }]}>
                                     {pn.exerciseName}
-                                  </Text>
-                                  <Text style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
+                                  </ThemedText>
+                                  <ThemedText style={[styles.insightExReason, { color: theme.colors.textMuted }]}>
                                     {pn.narrative}
-                                  </Text>
+                                  </ThemedText>
                                 </View>
                               </View>
                             ))}
@@ -860,25 +813,27 @@ function FitQuestScreenInner() {
 
           {/* Preview panel — locked Session Memory (post-trial, not subscribed) */}
           {(workout.lastImpact?.hasHistory || workout.workoutDelta?.hasChanges) &&
-            trialSnapshot &&
-            !trialSnapshot.hasMemory &&
-            trialSnapshot.previewAvailable && (
+            vm.trialSnapshot &&
+            !vm.trialSnapshot.hasMemory &&
+            vm.trialSnapshot.previewAvailable && (
               <Animated.View entering={FadeInDown.delay(140).duration(150)}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => router.push('/paywall')}
-                  style={{ marginHorizontal: 16, marginTop: 8 }}
+                  style={{ marginHorizontal: spacing[4], marginTop: spacing[2] }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Unlock session memory"
                 >
-                  <GlassCard style={{ padding: 12, opacity: 0.6 }}>
+                  <GlassCard style={{ padding: spacing[0] }}>
                     <View style={styles.insightHeader}>
                       <View style={[styles.hintIcon, { backgroundColor: theme.colors.accent + '15' }]}>
-                        <MaterialCommunityIcons name="memory" size={18} color={theme.colors.textMuted} />
+                        <MaterialCommunityIcons name="memory" size={18} color={theme.colors.accent} />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={[styles.insightTitle, { color: theme.colors.textMuted }]}>Session Memory</Text>
-                        <Text style={[styles.insightSub, { color: theme.colors.textMuted }]}>
+                        <ThemedText style={[styles.insightTitle, { color: theme.colors.textMuted }]}>Session Memory</ThemedText>
+                        <ThemedText style={[styles.insightSub, { color: theme.colors.textMuted }]}>
                           Advanced intelligence requires subscription.
-                        </Text>
+                        </ThemedText>
                       </View>
                       <MaterialCommunityIcons name="lock-outline" size={20} color={theme.colors.textMuted} />
                     </View>
@@ -894,11 +849,11 @@ function FitQuestScreenInner() {
               accessibilityRole="alert"
               accessibilityLabel="Workout warnings"
             >
-              <GlassCard style={{ marginHorizontal: 16, marginTop: 8 }}>
+              <GlassCard style={{ marginHorizontal: spacing[4], marginTop: spacing[2] }}>
                 {workout.warnings.map((warning: string, idx: number) => (
-                  <Text key={idx} style={[styles.warningText, { color: theme.colors.warning }]}>
+                  <ThemedText key={idx} style={[styles.warningText, { color: theme.colors.warning }]}>
                     ⚠️ {warning}
-                  </Text>
+                  </ThemedText>
                 ))}
               </GlassCard>
             </Animated.View>
@@ -908,7 +863,7 @@ function FitQuestScreenInner() {
           {!!deloadStatus && (
             <Animated.View entering={FadeInDown.delay(200).duration(150)}>
               <GlassCard
-                style={{ marginHorizontal: 16, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 12 }}
+                style={{ marginHorizontal: spacing[4], marginTop: spacing[2], flexDirection: 'row', alignItems: 'center', gap: spacing[3] }}
               >
                 <MaterialCommunityIcons
                   name={deloadStatus.needed ? 'battery-low' : 'battery-high'}
@@ -916,10 +871,10 @@ function FitQuestScreenInner() {
                   color={deloadStatus.needed ? theme.colors.warning : theme.colors.success}
                 />
                 <View>
-                  <Text style={[styles.recoveryLabel, { color: theme.colors.text }]}>
+                  <ThemedText style={[styles.recoveryLabel, { color: theme.colors.text }]}>
                     {t('fitquest.recoveryStatus')}
-                  </Text>
-                  <Text style={[styles.recoverySub, { color: theme.colors.textMuted }]}>{deloadStatus.reason}</Text>
+                  </ThemedText>
+                  <ThemedText style={[styles.recoverySub, { color: theme.colors.textMuted }]}>{deloadStatus.reason}</ThemedText>
                 </View>
               </GlassCard>
             </Animated.View>
@@ -936,20 +891,20 @@ function FitQuestScreenInner() {
             <>
               <Animated.View
                 entering={FadeInDown.delay(260).duration(150)}
-                style={{ paddingHorizontal: 16, marginBottom: 4 }}
+                style={{ paddingHorizontal: spacing[4], marginBottom: spacing[1] }}
               >
                 <View style={[styles.phaseTag, { backgroundColor: theme.colors.success + '18' }]}>
                   <MaterialCommunityIcons name="fire" size={16} color={theme.colors.success} />
-                  <Text style={[styles.phaseTagText, { color: theme.colors.success }]}>
+                  <ThemedText style={[styles.phaseTagText, { color: theme.colors.success }]}>
                     {t('fitquest.warmUp') || 'Warm Up'} · {workout.warmup.length} {t('library.exercises')}
-                  </Text>
+                  </ThemedText>
                 </View>
               </Animated.View>
               {workout.warmup.map((exercise: WorkoutExerciseDisplay, index: number) => (
                 <Animated.View
                   key={exercise.id}
                   entering={FadeInRight.delay(270 + index * 30).duration(120)}
-                  style={{ paddingHorizontal: 16, marginBottom: 8 }}
+                  style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}
                 >
                   <View
                     style={[
@@ -958,11 +913,11 @@ function FitQuestScreenInner() {
                     ]}
                   >
                     <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="thumbnail" />
-                    <View style={{ flex: 1, marginLeft: 12 }}>
-                      <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
-                      <Text style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
+                    <View style={{ flex: 1, marginLeft: spacing[3] }}>
+                      <ThemedText style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</ThemedText>
+                      <ThemedText style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
                         {exercise.sets}× ({exercise.reps})
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 </Animated.View>
@@ -974,13 +929,13 @@ function FitQuestScreenInner() {
           {workout.warmup && workout.warmup.length > 0 && (
             <Animated.View
               entering={FadeInDown.delay(300).duration(150)}
-              style={{ paddingHorizontal: 16, marginTop: 4, marginBottom: 4 }}
+              style={{ paddingHorizontal: spacing[4], marginTop: spacing[1], marginBottom: spacing[1] }}
             >
               <View style={[styles.phaseTag, { backgroundColor: theme.colors.accent + '18' }]}>
                 <MaterialCommunityIcons name="dumbbell" size={16} color={theme.colors.accent} />
-                <Text style={[styles.phaseTagText, { color: theme.colors.accent }]}>
+                <ThemedText style={[styles.phaseTagText, { color: theme.colors.accent }]}>
                   {t('fitquest.mainWorkout') || 'Main Workout'}
-                </Text>
+                </ThemedText>
               </View>
             </Animated.View>
           )}
@@ -992,7 +947,7 @@ function FitQuestScreenInner() {
               <Animated.View
                 key={exercise.id}
                 entering={FadeInRight.delay(250 + index * 40).duration(150)}
-                style={{ paddingHorizontal: 16, marginBottom: 8 }}
+                style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}
               >
                 <View
                   style={[
@@ -1004,11 +959,11 @@ function FitQuestScreenInner() {
                   ]}
                 >
                   <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="thumbnail" />
-                  <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
-                    <Text style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
+                  <View style={{ flex: 1, marginLeft: spacing[3] }}>
+                    <ThemedText style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</ThemedText>
+                    <ThemedText style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
                       {exercise.sets}× ({exercise.reps}) · {exercise.restSeconds}s
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               </Animated.View>
@@ -1019,20 +974,20 @@ function FitQuestScreenInner() {
             <>
               <Animated.View
                 entering={FadeInDown.delay(380).duration(150)}
-                style={{ paddingHorizontal: 16, marginTop: 4, marginBottom: 4 }}
+                style={{ paddingHorizontal: spacing[4], marginTop: spacing[1], marginBottom: spacing[1] }}
               >
                 <View style={[styles.phaseTag, { backgroundColor: theme.colors.blue + '18' }]}>
                   <MaterialCommunityIcons name="snowflake" size={16} color={theme.colors.blue} />
-                  <Text style={[styles.phaseTagText, { color: theme.colors.blue }]}>
+                  <ThemedText style={[styles.phaseTagText, { color: theme.colors.blue }]}>
                     {t('fitquest.coolDown') || 'Cool Down'} · {workout.cooldown.length} {t('library.exercises')}
-                  </Text>
+                  </ThemedText>
                 </View>
               </Animated.View>
               {workout.cooldown.map((exercise: WorkoutExerciseDisplay, index: number) => (
                 <Animated.View
                   key={exercise.id}
                   entering={FadeInRight.delay(390 + index * 30).duration(120)}
-                  style={{ paddingHorizontal: 16, marginBottom: 8 }}
+                  style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}
                 >
                   <View
                     style={[
@@ -1041,11 +996,11 @@ function FitQuestScreenInner() {
                     ]}
                   >
                     <ExerciseImage exerciseId={exercise.exerciseId} category={exercise.category} variant="thumbnail" />
-                    <View style={{ flex: 1, marginLeft: 12 }}>
-                      <Text style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</Text>
-                      <Text style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
+                    <View style={{ flex: 1, marginLeft: spacing[3] }}>
+                      <ThemedText style={[styles.exercisePreviewName, { color: theme.colors.text }]}>{exercise.name}</ThemedText>
+                      <ThemedText style={[styles.exercisePreviewMeta, { color: theme.colors.textMuted }]}>
                         {exercise.sets}× ({exercise.reps})
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 </Animated.View>
@@ -1054,7 +1009,7 @@ function FitQuestScreenInner() {
           )}
 
           {/* Start Button */}
-          <Animated.View entering={FadeInUp.delay(400).duration(150)} style={{ paddingHorizontal: 16, marginTop: 16 }}>
+          <Animated.View entering={FadeInUp.delay(400).duration(150)} style={{ paddingHorizontal: spacing[4], marginTop: spacing[4] }}>
             <GradientButton
               title={t('train.startWorkout')}
               icon="play"
@@ -1070,7 +1025,7 @@ function FitQuestScreenInner() {
           </Animated.View>
 
           {/* Regenerate */}
-          <Animated.View entering={FadeIn.delay(450).duration(150)} style={{ paddingHorizontal: 16, marginTop: 8 }}>
+          <Animated.View entering={FadeIn.delay(450).duration(150)} style={{ paddingHorizontal: spacing[4], marginTop: spacing[2] }}>
             <TouchableOpacity
               style={[styles.regenBtn, { borderColor: theme.colors.border }]}
               onPress={generateNewWorkout}
@@ -1078,13 +1033,13 @@ function FitQuestScreenInner() {
               accessibilityLabel={t('fitquest.regenerate')}
             >
               <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.text} />
-              <Text style={[styles.regenBtnText, { color: theme.colors.text }]}>{t('fitquest.regenerate')}</Text>
+              <ThemedText style={[styles.regenBtnText, { color: theme.colors.text }]}>{t('fitquest.regenerate')}</ThemedText>
             </TouchableOpacity>
           </Animated.View>
 
           <View style={{ height: 32 }} />
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
@@ -1093,7 +1048,7 @@ function FitQuestScreenInner() {
     const isLastExercise = currentExerciseIndex === workout.exercises.length - 1;
 
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         {/* ═══ REST TIMER OVERLAY (P2) ═══ */}
         <RestTimerOverlay
           visible={!!isResting}
@@ -1144,32 +1099,32 @@ function FitQuestScreenInner() {
 
           <View style={styles.clockCenter}>
             <TouchableOpacity
-              onPress={toggleVoice}
+              onPress={vm.toggleVoice}
               accessibilityRole="switch"
-              accessibilityLabel={voiceEnabled ? 'Disable voice guidance' : 'Enable voice guidance'}
-              accessibilityState={{ checked: voiceEnabled }}
+              accessibilityLabel={vm.voiceEnabled ? 'Disable voice guidance' : 'Enable voice guidance'}
+              accessibilityState={{ checked: vm.voiceEnabled }}
               style={[
                 styles.voiceToggle,
-                { backgroundColor: voiceEnabled ? theme.colors.accent + '15' : theme.colors.textMuted + '10' },
+                { backgroundColor: vm.voiceEnabled ? theme.colors.accent + '15' : theme.colors.textMuted + '10' },
               ]}
             >
               <MaterialCommunityIcons
-                name={voiceEnabled ? 'volume-high' : 'volume-off'}
+                name={vm.voiceEnabled ? 'volume-high' : 'volume-off'}
                 size={16}
-                color={voiceEnabled ? theme.colors.accent : theme.colors.textMuted}
+                color={vm.voiceEnabled ? theme.colors.accent : theme.colors.textMuted}
               />
-              {isSpeaking && <PulseDot color={theme.colors.success} size={4} active={true} />}
+              {vm.isSpeaking && <PulseDot color={theme.colors.success} size={4} active={true} />}
             </TouchableOpacity>
           </View>
 
-          <Text style={[styles.clockExerciseCount, { color: theme.colors.textMuted }]}>
+          <ThemedText style={[styles.clockExerciseCount, { color: theme.colors.textMuted }]}>
             {currentExerciseIndex + 1} / {workout.exercises.length}
             {currentExercise.phase === 'warmup'
               ? ' · Warm Up'
               : currentExercise.phase === 'cooldown'
                 ? ' · Cool Down'
                 : ''}
-          </Text>
+          </ThemedText>
         </View>
 
         {/* Segmented Progress Bar (warmup → main → cooldown) */}
@@ -1265,17 +1220,17 @@ function FitQuestScreenInner() {
           <MindExerciseView
             exerciseName={currentExercise.name}
             timeline={currentExercise.mindTimeline}
-            voiceEnabled={voiceEnabled}
+            voiceEnabled={vm.voiceEnabled}
             onComplete={() => {
               if (__DEV__) console.warn('[FitQuest] Mind exercise completed:', currentExercise.name);
               haptic('exerciseComplete');
               setShowCompleteBadge(true);
-              setTimeout(() => setShowCompleteBadge(false), 1300);
+              if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+              badgeTimerRef.current = setTimeout(() => setShowCompleteBadge(false), 1300);
               completeExercise(5);
             }}
             onCancel={() => {
-              speakCancelRef.current++;
-              audioService.stop();
+              vm.cancelNarration();
               Alert.alert('End Mind Session?', 'Your progress for this exercise will be saved.', [
                 { text: 'Continue', style: 'cancel' },
                 {
@@ -1299,14 +1254,14 @@ function FitQuestScreenInner() {
                 const warmups = workout.exercises.filter((e) => e.phase === 'warmup');
                 const posInPhase = warmups.findIndex((e) => e.id === currentExercise.id) + 1;
                 return (
-                  <Animated.View entering={FadeIn.duration(150)} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+                  <Animated.View entering={FadeIn.duration(150)} style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}>
                     <View
                       style={[styles.phaseTag, { backgroundColor: theme.colors.success + '18', alignSelf: 'center' }]}
                     >
                       <MaterialCommunityIcons name="fire" size={16} color={theme.colors.success} />
-                      <Text style={[styles.phaseTagText, { color: theme.colors.success }]}>
+                      <ThemedText style={[styles.phaseTagText, { color: theme.colors.success }]}>
                         {t('fitquest.warmUp') || 'Warm Up'} {posInPhase}/{warmups.length}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </Animated.View>
                 );
@@ -1316,12 +1271,12 @@ function FitQuestScreenInner() {
                 const cooldowns = workout.exercises.filter((e) => e.phase === 'cooldown');
                 const posInPhase = cooldowns.findIndex((e) => e.id === currentExercise.id) + 1;
                 return (
-                  <Animated.View entering={FadeIn.duration(150)} style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+                  <Animated.View entering={FadeIn.duration(150)} style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}>
                     <View style={[styles.phaseTag, { backgroundColor: theme.colors.blue + '18', alignSelf: 'center' }]}>
                       <MaterialCommunityIcons name="snowflake" size={16} color={theme.colors.blue} />
-                      <Text style={[styles.phaseTagText, { color: theme.colors.blue }]}>
+                      <ThemedText style={[styles.phaseTagText, { color: theme.colors.blue }]}>
                         {t('fitquest.coolDown') || 'Cool Down'} {posInPhase}/{cooldowns.length}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </Animated.View>
                 );
@@ -1330,7 +1285,7 @@ function FitQuestScreenInner() {
             {/* Current Exercise */}
             <Animated.View entering={FadeIn.duration(150)} style={styles.currentExercise}>
               {/* Exercise Image — auto-alternating between start/end position */}
-              <Animated.View entering={ZoomIn.duration(200)} style={{ alignItems: 'center', marginBottom: 16 }}>
+              <Animated.View entering={ZoomIn.duration(200)} style={{ alignItems: 'center', marginBottom: spacing[4] }}>
                 <ExerciseImage
                   exerciseId={currentExercise.exerciseId}
                   category={currentExercise.category}
@@ -1340,7 +1295,7 @@ function FitQuestScreenInner() {
               </Animated.View>
 
               <Animated.View entering={ZoomIn.duration(150)}>
-                <Text style={[styles.currentExName, { color: theme.colors.text }]}>{currentExercise.name}</Text>
+                <ThemedText style={[styles.currentExName, { color: theme.colors.text }]}>{currentExercise.name}</ThemedText>
               </Animated.View>
 
               <View style={styles.prescriptionRow}>
@@ -1354,36 +1309,36 @@ function FitQuestScreenInner() {
                     entering={FadeInUp.delay(i * 60).duration(150)}
                     style={styles.prescriptionItem}
                   >
-                    <Text style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</Text>
-                    <Text style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>{p.label}</Text>
+                    <ThemedText style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</ThemedText>
+                    <ThemedText style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>{p.label}</ThemedText>
                   </Animated.View>
                 ))}
               </View>
 
               {/* Instructions (show first 3, collapsible) */}
               {currentExercise.instructions.length > 0 && (
-                <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ width: '100%', marginTop: 24 }}>
+                <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ width: '100%', marginTop: spacing[6] }}>
                   <GlassCard>
-                    <Text style={[styles.instTitle, { color: theme.colors.text }]}>{t('fitquest.formTips')}</Text>
+                    <ThemedText style={[styles.instTitle, { color: theme.colors.text }]}>{t('fitquest.formTips')}</ThemedText>
                     {currentExercise.instructions
                       .slice(0, showAllInstructions ? undefined : 3)
                       .map((inst: string, idx: number) => (
-                        <Text key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
+                        <ThemedText key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
                           {idx + 1}. {inst}
-                        </Text>
+                        </ThemedText>
                       ))}
                     {currentExercise.instructions.length > 3 && (
                       <TouchableOpacity
                         onPress={() => setShowAllInstructions(!showAllInstructions)}
-                        style={{ marginTop: 8 }}
+                        style={{ marginTop: spacing[2] }}
                         accessibilityRole="button"
                         accessibilityLabel={showAllInstructions ? 'Show less instructions' : 'Show all instructions'}
                       >
-                        <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600' }}>
+                        <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600' }}>
                           {showAllInstructions
                             ? t('fitquest.showLess')
                             : `+${currentExercise.instructions.length - 3} ${t('fitquest.more')}`}
-                        </Text>
+                        </ThemedText>
                       </TouchableOpacity>
                     )}
                   </GlassCard>
@@ -1402,14 +1357,13 @@ function FitQuestScreenInner() {
                 accessibilityRole="button"
                 accessibilityLabel={t('train.skip')}
                 onPress={() => {
-                  speakCancelRef.current++;
-                  audioService.stop();
+                  vm.cancelNarration();
                   stopAll();
                   setShowAllInstructions(false);
                   skipExercise();
                 }}
               >
-                <Text style={{ color: theme.colors.textSecondary, fontWeight: '600' }}>{t('train.skip')}</Text>
+                <ThemedText style={{ color: theme.colors.textSecondary, fontWeight: '600' }}>{t('train.skip')}</ThemedText>
               </TouchableOpacity>
 
               <View style={{ flex: 1 }}>
@@ -1437,8 +1391,7 @@ function FitQuestScreenInner() {
                         total: workout.exercises.length,
                       });
                     }
-                    speakCancelRef.current++;
-                    audioService.stop();
+                    vm.cancelNarration();
                     stopAll();
                     setShowAllInstructions(false);
 
@@ -1448,8 +1401,7 @@ function FitQuestScreenInner() {
                       haptic('workoutComplete');
                       setShowConfetti(true);
                       // Stop ALL narration immediately — no yapping on completion
-                      speakCancelRef.current++;
-                      audioService.stop();
+                      vm.cancelNarration();
                       // Light completion: just vibration, no voice (user requested instant silence)
                       Vibration.vibrate([0, 100, 80, 100, 80, 200]);
                       if (__DEV__)
@@ -1464,7 +1416,8 @@ function FitQuestScreenInner() {
                       if (currentPhase === 'warmup' || currentPhase === 'cooldown') {
                         haptic(currentPhase === 'warmup' ? 'warmupComplete' : 'cooldownComplete');
                         setShowCompleteBadge(true);
-                        setTimeout(() => setShowCompleteBadge(false), 1300);
+                        if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+                        badgeTimerRef.current = setTimeout(() => setShowCompleteBadge(false), 1300);
 
                         // Detect phase boundary (warmup→main or main→cooldown)
                         const nextPhase = nextExercise?.phase || 'main';
@@ -1501,18 +1454,7 @@ function FitQuestScreenInner() {
                       } else {
                         // Main exercises: full rest timer with breathing guide
                         // Play transition narration (rich: "Well done! Rest for Xs. Up next: Y")
-                        audioService.stop(); // Stop any ongoing narration first
-                        const transitionAudio = {
-                          intro: currentExercise.audioIntro,
-                          setup: currentExercise.audioSetup,
-                          execution: currentExercise.audioExecution,
-                          transition: currentExercise.audioTransition,
-                        };
-                        try {
-                          await audioService.playTransition(transitionAudio);
-                        } catch (e) {
-                          if (__DEV__) console.warn('[FitQuest] Transition audio error (non-fatal):', e);
-                        }
+                        await vm.playTransitionAudio(currentExercise);
                         if (__DEV__) {
                           console.warn('[FitQuest] Set complete — entering rest overlay immediately', {
                             currentExercise: currentExercise.name,
@@ -1521,7 +1463,8 @@ function FitQuestScreenInner() {
                         }
                         haptic('exerciseComplete');
                         setShowCompleteBadge(true);
-                        setTimeout(() => setShowCompleteBadge(false), 1300);
+                        if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+                        badgeTimerRef.current = setTimeout(() => setShowCompleteBadge(false), 1300);
                         pendingExerciseAdvanceRef.current = true;
                         setIsResting(true);
                         const restDuration = currentExercise.restSeconds || 60;
@@ -1536,7 +1479,7 @@ function FitQuestScreenInner() {
 
             {/* Cancel */}
             <TouchableOpacity
-              style={{ marginTop: 24, alignItems: 'center' }}
+              style={{ marginTop: spacing[6], alignItems: 'center' }}
               onPress={() => {
                 Alert.alert(t('fitquest.cancelTitle'), t('fitquest.cancelBody'), [
                   { text: t('fitquest.keepGoing'), style: 'cancel' },
@@ -1544,42 +1487,43 @@ function FitQuestScreenInner() {
                     text: t('common.cancel'),
                     style: 'destructive',
                     onPress: () => {
-                      speakCancelRef.current++;
-                      audioService.stop();
+                      vm.cancelNarration();
                       stopAll();
                       cancelWorkout();
                     },
                   },
                 ]);
               }}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel workout"
             >
-              <Text style={{ color: theme.colors.textMuted, fontSize: 13 }}>{t('fitquest.cancelWorkout')}</Text>
+              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.label }}>{t('fitquest.cancelWorkout')}</ThemedText>
             </TouchableOpacity>
           </ScrollView>
         )}
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== COMPLETED STATE (before processing) =====
   if (status === 'completed' && workout) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.centered}>
           <Animated.View entering={ZoomIn.duration(150)}>
             <View style={[styles.loadingIcon, { backgroundColor: theme.colors.success + '15' }]}>
               <ActivityIndicator size="large" color={theme.colors.success} />
             </View>
           </Animated.View>
-          <Text style={[styles.genTitle, { color: theme.colors.text }]}>{t('fitquest.recordingProgress')}</Text>
+          <ThemedText style={[styles.genTitle, { color: theme.colors.text }]}>{t('fitquest.recordingProgress')}</ThemedText>
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== DEFAULT/IDLE STATE =====
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <ScreenContainer>
       <View style={styles.centered}>
         <Animated.View entering={ZoomIn.duration(150)}>
           <View style={[styles.idleIconWrap, { backgroundColor: theme.colors.accent + '12' }]}>
@@ -1601,129 +1545,129 @@ function FitQuestScreenInner() {
 
         {!!userProfile && (
           <Animated.View entering={FadeInDown.delay(400).duration(150)} style={{ width: '100%', maxWidth: 280 }}>
-            <GlassCard style={{ alignItems: 'center', padding: 16, marginTop: 20 }}>
-              <Text style={[styles.profileLabel, { color: theme.colors.textSecondary }]}>
+            <GlassCard style={{ alignItems: 'center', padding: spacing[4], marginTop: spacing[5] }}>
+              <ThemedText style={[styles.profileLabel, { color: theme.colors.textSecondary }]}>
                 {t('fitquest.currentProfile')}
-              </Text>
-              <Text style={[styles.profileGoal, { color: theme.colors.text }]}>{userProfile.goal}</Text>
-              <Text style={[styles.profileMeta, { color: theme.colors.textSecondary }]}>
+              </ThemedText>
+              <ThemedText style={[styles.profileGoal, { color: theme.colors.text }]}>{userProfile.goal}</ThemedText>
+              <ThemedText style={[styles.profileMeta, { color: theme.colors.textSecondary }]}>
                 {userProfile.experience} · {userProfile.time_per_session_minutes}
                 {t('fitquest.minShort')} {t('fitquest.sessions')}
-              </Text>
+              </ThemedText>
             </GlassCard>
           </Animated.View>
         )}
 
         <Animated.View
           entering={FadeInUp.delay(500).duration(150)}
-          style={{ marginTop: 24, width: '100%', maxWidth: 280 }}
+          style={{ marginTop: spacing[6], width: '100%', maxWidth: 280 }}
         >
           <GradientButton title={t('fitquest.generateWorkout')} icon="lightning-bolt" onPress={generateNewWorkout} />
         </Animated.View>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  scrollContent: { paddingBottom: 100 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing[6] },
+  scrollContent: { paddingBottom: spacing[25] },
   loadingIcon: { width: 80, height: 80, borderRadius: 24, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { marginTop: 16, fontSize: 14 },
-  errorTitle: { fontSize: 20, fontWeight: '600', marginTop: 16, textAlign: 'center' },
-  errorSub: { fontSize: 14, marginTop: 8, textAlign: 'center' },
-  genTitle: { fontSize: 18, fontWeight: '600', marginTop: 16, textAlign: 'center' },
-  genSub: { fontSize: 13, marginTop: 6, textAlign: 'center' },
-  readyHeader: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
+  loadingText: { marginTop: spacing[4], fontSize: typography.sizes.bodySmall },
+  errorTitle: { fontSize: typography.sizes.h3, fontWeight: '600', marginTop: spacing[4], textAlign: 'center' },
+  errorSub: { fontSize: typography.sizes.bodySmall, marginTop: spacing[2], textAlign: 'center' },
+  genTitle: { fontSize: typography.sizes.h4, fontWeight: '600', marginTop: spacing[4], textAlign: 'center' },
+  genSub: { fontSize: typography.sizes.label, marginTop: spacing[1.5], textAlign: 'center' },
+  readyHeader: { paddingHorizontal: spacing[5], paddingTop: spacing[3], paddingBottom: spacing[2] },
   readyHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  readyTitle: { fontSize: 24, fontWeight: '700' },
-  deloadBadge: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8 },
-  deloadBadgeText: { fontSize: 11, fontWeight: '700' },
+  readyTitle: { fontSize: typography.sizes.h2, fontWeight: '700' },
+  deloadBadge: { paddingHorizontal: spacing[3], paddingVertical: spacing[1.25], borderRadius: radius.md },
+  deloadBadgeText: { fontSize: typography.sizes.captionSm, fontWeight: '700' },
   hintIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  explanationText: { flex: 1, fontSize: 14, lineHeight: 21 },
-  warningText: { fontSize: 13, marginBottom: 4 },
-  recoveryLabel: { fontSize: 14, fontWeight: '500' },
-  recoverySub: { fontSize: 12, marginTop: 2, lineHeight: 17 },
+  explanationText: { flex: 1, fontSize: typography.sizes.bodySmall, lineHeight: 21 },
+  warningText: { fontSize: typography.sizes.label, marginBottom: spacing[1] },
+  recoveryLabel: { fontSize: typography.sizes.bodySmall, fontWeight: '500' },
+  recoverySub: { fontSize: typography.sizes.caption, marginTop: spacing[0.5], lineHeight: 17 },
   exercisePreviewCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: spacing[3.5],
     borderRadius: 14,
     borderWidth: 1,
   },
   exerciseNum: { width: 30, height: 30, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  exerciseNumText: { fontWeight: '700', fontSize: 14 },
-  exercisePreviewName: { fontSize: 15, fontWeight: '600' },
-  exercisePreviewMeta: { fontSize: 12, marginTop: 3, fontWeight: '400' },
-  catBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  catBadgeText: { fontSize: 10, fontWeight: '600' },
+  exerciseNumText: { fontWeight: '700', fontSize: typography.sizes.bodySmall },
+  exercisePreviewName: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
+  exercisePreviewMeta: { fontSize: typography.sizes.caption, marginTop: spacing[0.75], fontWeight: '400' },
+  catBadge: { paddingHorizontal: spacing[2], paddingVertical: spacing[1], borderRadius: 6 },
+  catBadgeText: { fontSize: typography.sizes.xs, fontWeight: '600' },
   regenBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: spacing[3.5],
+    borderRadius: radius.lg,
     borderWidth: 1,
-    gap: 8,
+    gap: spacing[2],
   },
-  regenBtnText: { fontSize: 15, fontWeight: '600' },
+  regenBtnText: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
   insightHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    padding: 14,
+    gap: spacing[3],
+    padding: spacing[3.5],
   },
-  insightTitle: { fontSize: 14, fontWeight: '600' },
-  insightSub: { fontSize: 12, marginTop: 2, lineHeight: 17 },
+  insightTitle: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
+  insightSub: { fontSize: typography.sizes.caption, marginTop: spacing[0.5], lineHeight: 17 },
   insightBody: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(128,128,128,0.15)',
-    paddingHorizontal: 14,
-    paddingTop: 10,
-    paddingBottom: 14,
-    gap: 10,
+    paddingHorizontal: spacing[3.5],
+    paddingTop: spacing[2.5],
+    paddingBottom: spacing[3.5],
+    gap: spacing[2.5],
   },
-  insightRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  insightRowText: { flex: 1, fontSize: 13, lineHeight: 19 },
-  insightExName: { fontSize: 13, fontWeight: '600' },
-  insightExReason: { fontSize: 12, lineHeight: 17, marginTop: 1 },
-  insightChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 4 },
-  insightChip: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6 },
-  insightChipText: { fontSize: 10, fontWeight: '600' },
-  memoryLabel: { fontSize: 13, fontWeight: '700' },
-  memoryTime: { fontSize: 11, fontWeight: '500' },
-  momentumDot: { width: 6, height: 6, borderRadius: 3, marginTop: 6 },
+  insightRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[2.5] },
+  insightRowText: { flex: 1, fontSize: typography.sizes.label, lineHeight: 19 },
+  insightExName: { fontSize: typography.sizes.label, fontWeight: '600' },
+  insightExReason: { fontSize: typography.sizes.caption, lineHeight: 17, marginTop: spacing['px'] },
+  insightChips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[1], marginTop: spacing[1] },
+  insightChip: { paddingHorizontal: spacing[2], paddingVertical: spacing[0.5], borderRadius: 6 },
+  insightChipText: { fontSize: typography.sizes.xs, fontWeight: '600' },
+  memoryLabel: { fontSize: typography.sizes.label, fontWeight: '700' },
+  memoryTime: { fontSize: typography.sizes.captionSm, fontWeight: '500' },
+  momentumDot: { width: 6, height: 6, borderRadius: 3, marginTop: spacing[1.5] },
   phaseTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    gap: spacing[1.5],
+    paddingVertical: spacing[1.5],
+    paddingHorizontal: spacing[2.5],
+    borderRadius: radius.md,
     alignSelf: 'flex-start',
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
-  phaseTagText: { fontSize: 13, fontWeight: '600' },
+  phaseTagText: { fontSize: typography.sizes.label, fontWeight: '600' },
   sessionClockBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2.5],
     borderBottomWidth: 1,
   },
-  clockLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  clockCenter: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  clockText: { fontSize: 20, fontWeight: '700', fontVariant: ['tabular-nums'] as any },
-  clockExerciseCount: { fontSize: 13, fontWeight: '500' },
+  clockLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  clockCenter: { flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] },
+  clockText: { fontSize: typography.sizes.h3, fontWeight: '700', fontVariant: ['tabular-nums'] as any },
+  clockExerciseCount: { fontSize: typography.sizes.label, fontWeight: '500' },
   voiceToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    gap: spacing[1],
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1.5],
+    borderRadius: radius.lg,
   },
   progressBarWrap: {
     height: 4,
@@ -1734,8 +1678,8 @@ const styles = StyleSheet.create({
   segmentedBarWrap: {
     flexDirection: 'row',
     height: 5,
-    gap: 2,
-    paddingHorizontal: 0,
+    gap: spacing[0.5],
+    paddingHorizontal: spacing[0],
   },
   segmentedBarSegment: {
     height: 5,
@@ -1756,27 +1700,27 @@ const styles = StyleSheet.create({
     height: 5,
     borderRadius: 3,
   },
-  exerciseContent: { padding: 16, paddingBottom: 100 },
-  exerciseContentCompact: { paddingBottom: 110 },
+  exerciseContent: { padding: spacing[4], paddingBottom: spacing[25] },
+  exerciseContentCompact: { paddingBottom: spacing[25] },
   // ═══ REST / GET-READY overlays are in separate components ═══
-  restTimerCard: { alignItems: 'center', padding: 24, marginBottom: 16, gap: 6 },
-  restTimerValue: { fontSize: 32, fontWeight: '700', fontVariant: ['tabular-nums'] as any },
-  restTimerLabel: { fontSize: 13 },
-  skipRestButton: { marginTop: 12, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 8, borderWidth: 1 },
-  currentExercise: { alignItems: 'center', marginTop: 24 },
-  currentExName: { fontSize: 24, fontWeight: '700', textAlign: 'center' },
-  prescriptionRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: 28 },
+  restTimerCard: { alignItems: 'center', padding: spacing[6], marginBottom: spacing[4], gap: spacing[1.5] },
+  restTimerValue: { fontSize: typography.sizes.h1, fontWeight: '700', fontVariant: ['tabular-nums'] as any },
+  restTimerLabel: { fontSize: typography.sizes.label },
+  skipRestButton: { marginTop: spacing[3], paddingHorizontal: spacing[5], paddingVertical: spacing[2], borderRadius: radius.md, borderWidth: 1 },
+  currentExercise: { alignItems: 'center', marginTop: spacing[6] },
+  currentExName: { fontSize: typography.sizes.h2, fontWeight: '700', textAlign: 'center' },
+  prescriptionRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: spacing[7] },
   prescriptionItem: { alignItems: 'center' },
-  prescriptionVal: { fontSize: 28, fontWeight: '700' },
-  prescriptionLabel: { fontSize: 12, marginTop: 4, fontWeight: '400' },
-  instTitle: { fontSize: 14, fontWeight: '600', marginBottom: 8 },
-  instStep: { fontSize: 14, marginBottom: 4, lineHeight: 20 },
-  diffPrompt: { textAlign: 'center', marginTop: 24, fontSize: 13 },
-  difficultyRow: { flexDirection: 'row', justifyContent: 'center', gap: 10, marginTop: 10 },
+  prescriptionVal: { fontSize: typography.sizes.h1Sm, fontWeight: '700' },
+  prescriptionLabel: { fontSize: typography.sizes.caption, marginTop: spacing[1], fontWeight: '400' },
+  instTitle: { fontSize: typography.sizes.bodySmall, fontWeight: '600', marginBottom: spacing[2] },
+  instStep: { fontSize: typography.sizes.bodySmall, marginBottom: spacing[1], lineHeight: 20 },
+  diffPrompt: { textAlign: 'center', marginTop: spacing[6], fontSize: typography.sizes.label },
+  difficultyRow: { flexDirection: 'row', justifyContent: 'center', gap: spacing[2.5], marginTop: spacing[2.5] },
   difficultyButton: { width: 46, height: 46, borderRadius: 23, justifyContent: 'center', alignItems: 'center' },
-  difficultyText: { fontWeight: '700', fontSize: 15 },
-  actionRow: { flexDirection: 'row', gap: 16, marginTop: 40, paddingHorizontal: 12 },
-  actionRowCompact: { flexDirection: 'column-reverse', gap: 10, marginTop: 28, paddingHorizontal: 0 },
+  difficultyText: { fontWeight: '700', fontSize: typography.sizes.bodyMid },
+  actionRow: { flexDirection: 'row', gap: spacing[4], marginTop: spacing[10], paddingHorizontal: spacing[3] },
+  actionRowCompact: { flexDirection: 'column-reverse', gap: spacing[2.5], marginTop: spacing[7], paddingHorizontal: spacing[0] },
   skipButton: {
     width: 80,
     height: 56,
@@ -1791,11 +1735,11 @@ const styles = StyleSheet.create({
     height: 48,
   },
   idleIconWrap: { width: 140, height: 140, borderRadius: 48, justifyContent: 'center', alignItems: 'center' },
-  idleTitle: { fontSize: 32, fontWeight: '800', marginTop: 24 },
-  idleSub: { fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 21 },
-  profileLabel: { fontSize: 12 },
-  profileGoal: { fontSize: 16, fontWeight: '600', marginTop: 4 },
-  profileMeta: { fontSize: 12, marginTop: 2 },
+  idleTitle: { fontSize: typography.sizes.h1, fontWeight: '800', marginTop: spacing[6] },
+  idleSub: { fontSize: typography.sizes.bodySmall, textAlign: 'center', marginTop: spacing[2], lineHeight: 21 },
+  profileLabel: { fontSize: typography.sizes.caption },
+  profileGoal: { fontSize: typography.sizes.body, fontWeight: '600', marginTop: spacing[1] },
+  profileMeta: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
 });
 
 export default function FitQuestScreen() {

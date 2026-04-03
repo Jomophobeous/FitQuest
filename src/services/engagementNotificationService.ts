@@ -267,3 +267,67 @@ export async function reconcileEngagementNotifications(): Promise<EngagementReco
 
   return { streakAlert, inactivityNudge, weeklySummary };
 }
+
+// ──────────────────────────────────────────────
+// MILESTONE TRIGGERS (Phase 17)
+// ──────────────────────────────────────────────
+
+const MILESTONE_KEY = `${PREFIX}last_milestone`;
+const MILESTONE_THRESHOLDS = [5, 10, 25, 50, 100] as const;
+
+const MILESTONE_MESSAGES: Record<number, string> = {
+  5: '5 workouts done! You\'re building a habit.',
+  10: '10 workouts complete — double digits! Keep it up.',
+  25: '25 sessions logged. Consistency pays off.',
+  50: 'Half-century! 50 workouts is no small feat.',
+  100: '100 workouts. You\'re in the top tier now.',
+};
+
+/**
+ * Check if a workout count milestone was just crossed.
+ * Returns the milestone number if achieved, null otherwise.
+ * Safe to call after every workout completion.
+ */
+export async function checkMilestone(totalWorkouts: number): Promise<number | null> {
+  const lastMilestoneStr = await getAppState(MILESTONE_KEY).catch(() => null);
+  const lastMilestone = lastMilestoneStr ? Number(lastMilestoneStr) : 0;
+
+  for (const threshold of MILESTONE_THRESHOLDS) {
+    if (totalWorkouts >= threshold && lastMilestone < threshold) {
+      await setAppState(MILESTONE_KEY, String(threshold));
+      return threshold;
+    }
+  }
+  return null;
+}
+
+/**
+ * Get the celebratory message for a milestone.
+ */
+export function getMilestoneMessage(milestone: number): string {
+  return MILESTONE_MESSAGES[milestone] ?? `${milestone} workouts complete!`;
+}
+
+// ──────────────────────────────────────────────
+// STREAK MILESTONES
+// ──────────────────────────────────────────────
+
+const STREAK_MILESTONE_KEY = `${PREFIX}last_streak_milestone`;
+const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100] as const;
+
+/**
+ * Check if a streak milestone was just crossed.
+ */
+export async function checkStreakMilestone(currentStreak: number): Promise<number | null> {
+  const lastStr = await getAppState(STREAK_MILESTONE_KEY).catch(() => null);
+  const last = lastStr ? Number(lastStr) : 0;
+
+  for (const threshold of STREAK_MILESTONES) {
+    if (currentStreak >= threshold && last < threshold) {
+      await setAppState(STREAK_MILESTONE_KEY, String(threshold));
+      return threshold;
+    }
+  }
+  return null;
+}
+

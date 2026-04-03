@@ -16,6 +16,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { darkTheme as theme, typography, spacing } from '../design/theme-system';
 
 interface Props {
   visible: boolean;
@@ -23,7 +24,7 @@ interface Props {
   color?: string;
 }
 
-export default function ExerciseCompleteBadge({ visible, message = 'Nice!', color = '#10B981' }: Props) {
+export default function ExerciseCompleteBadge({ visible, message = 'Nice!', color = theme.colors.accent }: Props) {
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(20);
@@ -68,14 +69,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    gap: spacing[2],
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[3],
     borderRadius: 24,
     zIndex: 100,
   },
   text: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '700',
   },
 });

@@ -36,6 +36,7 @@ const rules = [
       if (filePath.includes('ui-system/tokens/')) return null;
       if (filePath.includes('theme-system')) return null;
       if (filePath.includes('design-intelligence/')) return null;
+      if (filePath.includes('database/schema')) return null;
       if (line.trimStart().startsWith('//') || line.trimStart().startsWith('*')) return null;
       // Allow in imports/requires
       if (line.includes('require(') || line.includes('import ')) return null;
@@ -74,6 +75,7 @@ const rules = [
       if (filePath.includes('ui-system/')) return null;
       if (filePath.includes('theme-system')) return null;
       if (line.includes('// lint-ok')) return null;
+      if (line.includes('typography.sizes')) return null;
       return `${match} — use ThemedText variant prop instead`;
     },
   },
@@ -131,8 +133,22 @@ const rules = [
     test(match, line, filePath) {
       if (filePath.includes('design-intelligence/')) return null;
       if (filePath.includes('ui-system/')) return null;
-      if (line.includes('// animation') || line.includes('// debounce') || line.includes('// lint-ok')) return null;
+      if (line.includes('// animation') || line.includes('// debounce') || line.includes('// streaming-delay') || line.includes('// abort-timeout') || line.includes('// deferred-') || line.includes('// batch-') || line.includes('// backoff-delay') || line.includes('// retry-delay')) return null;
       return 'setTimeout detected — ensure this is not a timing hack; use state gates';
+    },
+  },
+
+  {
+    id: 'no-raw-spacing',
+    severity: 'warning',
+    description: 'Use theme.spacing[n] instead of raw spacing values',
+    pattern: /(margin|padding|gap|marginTop|marginBottom|marginLeft|marginRight|marginHorizontal|marginVertical|paddingTop|paddingBottom|paddingLeft|paddingRight|paddingHorizontal|paddingVertical):\s*\d+/g,
+    test(match, line, filePath) {
+      if (filePath.includes('GlassUI')) return null;
+      if (filePath.includes('ui-system/')) return null;
+      if (filePath.includes('theme-system')) return null;
+      if (line.includes('theme.spacing') || line.includes('spacing[')) return null;
+      return `${match} — use theme.spacing[n]`;
     },
   },
 

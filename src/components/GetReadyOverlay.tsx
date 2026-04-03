@@ -19,6 +19,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import ExerciseImage from './ExerciseImage';
 import { audioService } from '../services/audioService';
+import { typography, spacing } from '../design/theme-system';
+
 
 // ─── Types ────────────────────────────────────────────
 export interface GetReadyExercise {
@@ -45,7 +47,7 @@ interface GetReadyOverlayProps {
 }
 
 // ─── Component ────────────────────────────────────────
-export default function GetReadyOverlay({
+function GetReadyOverlay({
   visible,
   exercise,
   equipmentChanged = false,
@@ -113,7 +115,7 @@ export default function GetReadyOverlay({
   useEffect(() => {
     if (visible && count <= 0) {
       // Small delay so the "GO!" text renders briefly
-      const t = setTimeout(onReady, 400);
+      const t = setTimeout(onReady, 400); // animation
       return () => clearTimeout(t);
     }
   }, [visible, count, onReady]);
@@ -182,7 +184,7 @@ export default function GetReadyOverlay({
 // ─── Styles ───────────────────────────────────────────
 const styles = StyleSheet.create({
   bg: { flex: 1 },
-  safeArea: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 },
+  safeArea: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: spacing[6] },
 
   // Equipment banner
   equipBanner: {
@@ -190,26 +192,26 @@ const styles = StyleSheet.create({
     top: 60,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    gap: spacing[2],
+    paddingVertical: spacing[2.5],
+    paddingHorizontal: spacing[5],
     borderRadius: 12,
   },
-  equipText: { fontSize: 14, fontWeight: '600' },
+  equipText: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
 
   // Label
   label: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
     letterSpacing: 4,
     textTransform: 'uppercase',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
 
   // Countdown digit
-  countWrap: { marginBottom: 32 },
+  countWrap: { marginBottom: spacing[8] },
   countDigit: {
-    fontSize: 120,
+    fontSize: typography.sizes.mega, 
     fontWeight: '900',
     fontVariant: ['tabular-nums'] as any,
     textAlign: 'center',
@@ -217,17 +219,19 @@ const styles = StyleSheet.create({
 
   // Preview
   previewWrap: { alignItems: 'center', maxWidth: 300 },
-  exName: { fontSize: 22, fontWeight: '700', textAlign: 'center', marginTop: 16 },
-  exMeta: { fontSize: 14, marginTop: 6 },
+  exName: { fontSize: typography.sizes.h3, fontWeight: '700', textAlign: 'center', marginTop: spacing[4] },
+  exMeta: { fontSize: typography.sizes.bodySmall, marginTop: spacing[1.5] },
   cueBubble: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 8,
-    marginTop: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    gap: spacing[2],
+    marginTop: spacing[4],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
     borderRadius: 12,
     borderWidth: 1,
   },
-  cueText: { flex: 1, fontSize: 13, lineHeight: 19 },
+  cueText: { flex: 1, fontSize: typography.sizes.label, lineHeight: 19 },
 });
+
+export default React.memo(GetReadyOverlay);

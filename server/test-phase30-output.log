@@ -1,0 +1,86 @@
+nohup: ignoring input
+[dotenv@17.3.1] injecting env (11) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+╔════════════════════════════════════════════════╗
+║  Phase 30 — Adaptive Response Engine Tests    ║
+╠════════════════════════════════════════════════╣
+║  Target: https://fitq-56sj.onrender.com
+║  API_KEY: ✅ set
+║  ADMIN_SECRET: ✅ set
+╚════════════════════════════════════════════════╝
+
+  🔄 Waking server…
+  ✅ Server awake (200)
+
+── Section A: Health Check + Phase 30 ──
+  ✅ A1: Health returns 200
+  ✅ A2: Phase is 30
+  ✅ A3: Status is operational
+  ✅ A4: Engines list includes adaptive_response
+  ✅ A5: Service is fitquest-authority
+  ⏳ Cooldown…
+
+── Section B: Response Status — Clean User ──
+  ✅ B1: Status 200
+  ✅ B2: No active response
+  ✅ B3: Response types present
+  ✅ B4: Thresholds present
+  ⏳ Cooldown…
+
+── Section C: Evaluate Response — No Threat ──
+  ✅ C1: Status 200
+  ✅ C2: Has action field
+  ✅ C3: Clean user gets no action
+  ✅ C4: User ID echoed
+  ⏳ Cooldown…
+
+── Section D: Response History — Empty Baseline ──
+  ✅ D1: Status 200
+  ✅ D2: History is array
+  ✅ D3: History empty for new user
+  ⏳ Cooldown…
+
+── Section E: Clear Response — Clean User ──
+  ✅ E1: Status 200
+  ✅ E2: Success true
+  ✅ E3: Cleared 0
+  ⏳ Cooldown…
+
+── Section F: Decay Response — No Active Response ──
+  ✅ F1: Status 404 (no active response)
+  ✅ F2: Error message present
+  ✅ F3: Reason is no_active_response
+  ⏳ Cooldown…
+
+── Section G: Evaluate Response — With Anomalies ──
+  ✅ G1: Status 200
+  ✅ G2: User ID echoed
+  ✅ G3: Status endpoint returns 200
+  ✅ G4: History count >= 0
+  ✅ G5: History is array
+  ⏳ Cooldown…
+
+── Section H: Enforcement State + Response ──
+  ✅ H1: Status 200
+  ✅ H2: Has accessProfile
+  ✅ H3: Has effectiveTrust
+  ✅ H4: Has adaptiveResponse field
+  ⏳ Cooldown…
+
+── Section I: Clear Active Response ──
+  ✅ I1: Status 200
+  ✅ I2: Success true
+  ✅ I3: No active response after clear
+  ✅ I4: Status endpoint still works
+  ⏳ Cooldown…
+
+── Section J: Config Validation ──
+  ✅ J1: Has NONE type
+  ✅ J2: Has FRICTION type
+  ✅ J3: Has SHADOW type
+  ✅ J4: Has ISOLATE type
+  ✅ J5: Has HARD_RESTRICT type
+  ✅ J6: FRICTION threshold min=5
+
+╔════════════════════════════════════════════════╗
+║  Results: 41 passed, 0 failed (41 total)
+╚════════════════════════════════════════════════╝

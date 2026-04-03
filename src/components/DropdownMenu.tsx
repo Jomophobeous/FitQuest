@@ -29,6 +29,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 import { timerService } from '../services/timerService';
+import { typography, spacing } from '../design/theme-system';
+
 
 // ============================================
 // TYPES
@@ -281,7 +283,7 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
     (item: MenuItem) => {
       handleClose();
       if (timeoutRef.current) clearTimeout(timeoutRef.current); // Clear any pending action
-      timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => { // debounce
         if (item.action) item.action();
         else if (item.route) router.push(item.route as any);
       }, 200);
@@ -360,8 +362,8 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
 
 const styles = StyleSheet.create({
   trigger: {
-    padding: 8,
-    marginRight: 8,
+    padding: spacing[2],
+    marginRight: spacing[2],
   },
   backdrop: {
     flex: 1,
@@ -369,8 +371,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   menuContainer: {
-    marginTop: 56,
-    marginRight: 14,
+    marginTop: spacing[14],
+    marginRight: spacing[3.5],
     borderRadius: 16,
     borderWidth: 1,
     minWidth: 220,
@@ -383,38 +385,38 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   menuHeader: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
     borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   menuTitle: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '700',
   },
   workoutBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[0.75],
     borderRadius: 6,
   },
   workoutBadgeText: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '700',
   },
   menuList: {
     maxHeight: Dimensions.get('window').height * 0.55,
   },
   menuListContent: {
-    paddingVertical: 6,
+    paddingVertical: spacing[1.5],
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    gap: 10,
+    paddingVertical: spacing[2.5],
+    paddingHorizontal: spacing[3.5],
+    gap: spacing[2.5],
   },
   menuItemDisabled: {
     opacity: 0.4,
@@ -427,14 +429,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuItemLabel: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '500',
     flex: 1,
   },
   separator: {
     height: 1,
-    marginVertical: 4,
-    marginHorizontal: 14,
+    marginVertical: spacing[1],
+    marginHorizontal: spacing[3.5],
   },
 });
 

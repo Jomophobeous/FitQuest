@@ -4,13 +4,12 @@
  * and view nutritional totals (protein, estimated calories).
  */
 
-import React, { useState, useMemo, useCallback, useEffect, useRef, memo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 
 import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   TextInput,
   FlatList,
@@ -19,7 +18,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -38,10 +37,12 @@ import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { getAppState, setAppState } from '../src/database/service';
+import ThemedText from '../src/components/ThemedText';
+import { useNutritionCalculatorViewModel, REGIONAL_FOOD_DATABASE, type RegionalFoodItem, type RegionalFoodCategory } from '../src/viewmodels/useNutritionCalculatorViewModel';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
-import { REGIONAL_FOOD_DATABASE, RegionalFoodItem, RegionalFoodCategory } from '../src/services/foodDatabase';
 import ScreenTutorial from '../src/components/ScreenTutorial';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 // ============================================
 // TYPES
@@ -140,18 +141,20 @@ const FoodListItem = memo(function FoodListItem({
       ]}
       activeOpacity={0.7}
       onPress={() => onAdd(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`Add ${item.name}`}
     >
       <View style={[styles.foodIcon, { backgroundColor: meta.color + '18' }]}>
         <MaterialCommunityIcons name={meta.icon as any} size={18} color={meta.color} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.foodName, { color: colors.text }]} numberOfLines={1}>
+        <ThemedText style={[styles.foodName, { color: colors.text }]} numberOfLines={1}>
           {item.name}
-        </Text>
-        <Text style={[styles.foodDesc, { color: colors.textMuted }]} numberOfLines={1}>
+        </ThemedText>
+        <ThemedText style={[styles.foodDesc, { color: colors.textMuted }]} numberOfLines={1}>
           {item.protein_g}g protein · {meta.label}
           {item.local_name ? ` · ${item.local_name}` : ''}
-        </Text>
+        </ThemedText>
       </View>
       <View style={[styles.addBtn, { backgroundColor: colors.accent + '15' }]}>
         <MaterialCommunityIcons name="plus" size={18} color={colors.accent} />
@@ -171,44 +174,21 @@ export default function NutritionCalculatorScreen() {
   const categoryMeta = useMemo(() => getCategoryMeta(t, theme.colors), [t, theme.colors]);
   const filterOptions = useMemo(() => getFilterOptions(t), [t]);
   const router = useRouter();
+  const vm = useNutritionCalculatorViewModel();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<RegionalFoodCategory | 'all'>('all');
-  const [mealEntries, setMealEntries] = useState<MealEntry[]>([]);
   const [showSearch, setShowSearch] = useState(true);
-  const hasMounted = useRef(false);
 
   // Load persisted meals on mount
   useEffect(() => {
     if (!dbReady) return;
-    (async () => {
-      try {
-        const saved = await getAppState('nutrition.todayMeals');
-        if (saved) {
-          const parsed = JSON.parse(saved) as { date: string; entries: MealEntry[] };
-          // Only restore if same day
-          if (parsed.date === new Date().toISOString().split('T')[0]) {
-            setMealEntries(parsed.entries);
-          }
-        }
-      } catch (e) {
-        // No saved data or parse error — start fresh
-      } finally {
-        hasMounted.current = true;
-      }
-    })();
-  }, [dbReady]);
+    vm.loadMeals();
+  }, [dbReady, vm]);
 
   // Persist meals to SQLite whenever they change
   useEffect(() => {
-    if (!hasMounted.current || !dbReady) return;
-    const payload = JSON.stringify({
-      date: new Date().toISOString().split('T')[0],
-      entries: mealEntries,
-    });
-    setAppState('nutrition.todayMeals', payload).catch((e) => {
-      if (__DEV__) console.warn('[Nutrition] save failed', e);
-    });
-  }, [mealEntries]);
+    vm.persistMeals(vm.mealEntries);
+  }, [vm.mealEntries, vm]);
 
   // Search & filter foods
   const filteredFoods = useMemo(() => {
@@ -239,30 +219,30 @@ export default function NutritionCalculatorScreen() {
   const totals = useMemo(() => {
     let calories = 0;
     let protein = 0;
-    mealEntries.forEach((entry) => {
+    vm.mealEntries.forEach((entry) => {
       calories += estimateCalories(entry.food, entry.servings);
       protein += estimateProtein(entry.food, entry.servings);
     });
     return { calories: Math.round(calories), protein: Math.round(protein) };
-  }, [mealEntries]);
+  }, [vm.mealEntries]);
 
   const addFood = useCallback((food: RegionalFoodItem) => {
-    setMealEntries((prev) => [...prev, { id: `${food.name}_${Date.now()}`, food, servings: 1 }]);
+    vm.setMealEntries((prev) => [...prev, { id: `${food.name}_${Date.now()}`, food, servings: 1 }]);
   }, []);
 
   const removeEntry = useCallback((id: string) => {
-    setMealEntries((prev) => prev.filter((e) => e.id !== id));
+    vm.setMealEntries((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
   const updateServings = useCallback((id: string, servings: number) => {
     if (servings < 0.5) return;
-    setMealEntries((prev) => prev.map((e) => (e.id === id ? { ...e, servings } : e)));
+    vm.setMealEntries((prev) => prev.map((e) => (e.id === id ? { ...e, servings } : e)));
   }, []);
 
   const clearAll = useCallback(() => {
     Alert.alert(t('common.clearAll'), t('nutrition.clearAllConfirm'), [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('common.clearAll'), style: 'destructive', onPress: () => setMealEntries([]) },
+      { text: t('common.clearAll'), style: 'destructive', onPress: () => vm.setMealEntries([]) },
     ]);
   }, [t]);
 
@@ -293,27 +273,30 @@ export default function NutritionCalculatorScreen() {
       screenName="NutritionCalculator"
       onGoBack={() => (router.canGoBack() ? router.back() : undefined)}
     >
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer edges={['top']}>
         <ScreenTutorial
           screenKey="nutrition-calculator"
           icon="calculator"
           title="Nutrition Calculator"
           description="Calculate your daily calorie needs, macro breakdown, and find regional foods that fit your nutrition goals."
         />
-        <SafeAreaView edges={['top']} style={{ flex: 1 }}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(150)}>
             <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
               <TouchableOpacity
                 onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
                 style={styles.backBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
               >
                 <MaterialCommunityIcons name="arrow-left" size={22} color={theme.colors.text} />
               </TouchableOpacity>
-              <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('nutrition.title')}</Text>
+              <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>{t('nutrition.title')}</ThemedText>
               <TouchableOpacity
                 onPress={() => setShowSearch(!showSearch)}
                 style={[styles.toggleBtn, { backgroundColor: showSearch ? theme.colors.accent + '15' : 'transparent' }]}
+                accessibilityRole="button"
+                accessibilityLabel={showSearch ? 'Show nutrition calculator' : 'Search foods'}
               >
                 <MaterialCommunityIcons
                   name={showSearch ? 'food-apple' : 'magnify'}
@@ -332,18 +315,18 @@ export default function NutritionCalculatorScreen() {
             <GlassCard gradient style={styles.totalsCard}>
               <View style={styles.totalsRow}>
                 <View style={styles.totalItem}>
-                  <Text style={[styles.totalValue, { color: theme.colors.accent }]}>{totals.calories}</Text>
-                  <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>{t('nutrition.kcalEst')}</Text>
+                  <ThemedText style={[styles.totalValue, { color: theme.colors.accent }]}>{totals.calories}</ThemedText>
+                  <ThemedText style={[styles.totalLabel, { color: theme.colors.textMuted }]}>{t('nutrition.kcalEst')}</ThemedText>
                 </View>
                 <View style={[styles.totalDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.totalItem}>
-                  <Text style={[styles.totalValue, { color: theme.colors.error }]}>{totals.protein}g</Text>
-                  <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>{t('nutrition.protein')}</Text>
+                  <ThemedText style={[styles.totalValue, { color: theme.colors.error }]}>{totals.protein}g</ThemedText>
+                  <ThemedText style={[styles.totalLabel, { color: theme.colors.textMuted }]}>{t('nutrition.protein')}</ThemedText>
                 </View>
                 <View style={[styles.totalDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.totalItem}>
-                  <Text style={[styles.totalValue, { color: theme.colors.purple }]}>{mealEntries.length}</Text>
-                  <Text style={[styles.totalLabel, { color: theme.colors.textMuted }]}>{t('common.items')}</Text>
+                  <ThemedText style={[styles.totalValue, { color: theme.colors.purple }]}>{vm.mealEntries.length}</ThemedText>
+                  <ThemedText style={[styles.totalLabel, { color: theme.colors.textMuted }]}>{t('common.items')}</ThemedText>
                 </View>
               </View>
             </GlassCard>
@@ -379,7 +362,7 @@ export default function NutritionCalculatorScreen() {
                       autoCorrect={false}
                     />
                     {searchQuery.length > 0 && (
-                      <TouchableOpacity onPress={() => setSearchQuery('')}>
+                      <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityRole="button" accessibilityLabel="Clear search">
                         <MaterialCommunityIcons name="close-circle" size={18} color={theme.colors.textMuted} />
                       </TouchableOpacity>
                     )}
@@ -405,8 +388,10 @@ export default function NutritionCalculatorScreen() {
                         },
                       ]}
                       onPress={() => setCategoryFilter(opt.value)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${opt.label} filter${categoryFilter === opt.value ? ', selected' : ''}`}
                     >
-                      <Text
+                      <ThemedText
                         style={[
                           styles.filterLabel,
                           {
@@ -416,21 +401,21 @@ export default function NutritionCalculatorScreen() {
                         ]}
                       >
                         {opt.label}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
 
                 {/* Results Count */}
-                <Text style={[styles.resultCount, { color: theme.colors.textMuted }]}>
+                <ThemedText style={[styles.resultCount, { color: theme.colors.textMuted }]}>
                   {filteredFoods.length} {t('nutrition.foodsFound')}
-                </Text>
+                </ThemedText>
 
                 {/* Food Results */}
                 <FlatList
                   data={filteredFoods}
                   keyExtractor={keyExtractorFood}
-                  contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+                  contentContainerStyle={{ paddingHorizontal: spacing[4], paddingBottom: spacing[6] }}
                   showsVerticalScrollIndicator={false}
                   keyboardShouldPersistTaps="handled"
                   initialNumToRender={12}
@@ -447,9 +432,9 @@ export default function NutritionCalculatorScreen() {
                   ListEmptyComponent={
                     <View style={styles.emptyState}>
                       <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
-                      <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
+                      <ThemedText style={[styles.emptyText, { color: theme.colors.textMuted }]}>
                         {t('nutrition.noFoods')}
-                      </Text>
+                      </ThemedText>
                     </View>
                   }
                 />
@@ -457,34 +442,34 @@ export default function NutritionCalculatorScreen() {
             ) : (
               /* ——— MEAL TRACKER VIEW ——— */
               <ScrollView
-                contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
+                contentContainerStyle={{ paddingHorizontal: spacing[4], paddingBottom: spacing[8] }}
                 showsVerticalScrollIndicator={false}
               >
                 <SectionHeader
-                  title={`${t('nutrition.myMeal')} (${mealEntries.length} ${t('common.items')})`}
+                  title={`${t('nutrition.myMeal')} (${vm.mealEntries.length} ${t('common.items')})`}
                   delay={50}
                 />
 
-                {mealEntries.length === 0 ? (
+                {vm.mealEntries.length === 0 ? (
                   <Animated.View entering={FadeIn.duration(200)} style={styles.emptyMeal}>
                     <MaterialCommunityIcons name="food-variant-off" size={56} color={theme.colors.textMuted} />
-                    <Text style={[styles.emptyMealTitle, { color: theme.colors.text }]}>{t('nutrition.noItems')}</Text>
-                    <Text style={[styles.emptyMealSub, { color: theme.colors.textMuted }]}>
+                    <ThemedText style={[styles.emptyMealTitle, { color: theme.colors.text }]}>{t('nutrition.noItems')}</ThemedText>
+                    <ThemedText style={[styles.emptyMealSub, { color: theme.colors.textMuted }]}>
                       {t('nutrition.addPrompt')}
-                    </Text>
+                    </ThemedText>
                     <TouchableOpacity
                       style={[styles.switchBtn, { borderColor: theme.colors.accent }]}
                       onPress={() => setShowSearch(true)}
                     >
                       <MaterialCommunityIcons name="magnify" size={16} color={theme.colors.accent} />
-                      <Text style={{ color: theme.colors.accent, fontWeight: '600', marginLeft: 6 }}>
+                      <ThemedText style={{ color: theme.colors.accent, fontWeight: '600', marginLeft: spacing[1.5] }}>
                         {t('nutrition.searchFoods')}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   </Animated.View>
                 ) : (
                   <>
-                    {mealEntries.map((entry, idx) => {
+                    {vm.mealEntries.map((entry, idx) => {
                       const meta = categoryMeta[entry.food.category] || {
                         icon: 'food',
                         color: theme.colors.textMuted,
@@ -501,31 +486,35 @@ export default function NutritionCalculatorScreen() {
                                 <MaterialCommunityIcons name={meta.icon as any} size={18} color={meta.color} />
                               </View>
                               <View style={{ flex: 1 }}>
-                                <Text style={[styles.foodName, { color: theme.colors.text }]} numberOfLines={1}>
+                                <ThemedText style={[styles.foodName, { color: theme.colors.text }]} numberOfLines={1}>
                                   {entry.food.name}
-                                </Text>
-                                <Text style={[styles.foodDesc, { color: theme.colors.textMuted }]}>
+                                </ThemedText>
+                                <ThemedText style={[styles.foodDesc, { color: theme.colors.textMuted }]}>
                                   {Math.round(cal)} kcal · {Math.round(prot)}g {t('nutrition.protein')}
-                                </Text>
+                                </ThemedText>
                               </View>
-                              <TouchableOpacity onPress={() => removeEntry(entry.id)}>
+                              <TouchableOpacity onPress={() => removeEntry(entry.id)} accessibilityRole="button" accessibilityLabel={`Remove ${entry.food.name}`}>
                                 <MaterialCommunityIcons name="close-circle" size={20} color={theme.colors.textMuted} />
                               </TouchableOpacity>
                             </View>
                             <View style={styles.servingsRow}>
-                              <Text style={[styles.servingsLabel, { color: theme.colors.textMuted }]}>
+                              <ThemedText style={[styles.servingsLabel, { color: theme.colors.textMuted }]}>
                                 {t('nutrition.servings')}
-                              </Text>
+                              </ThemedText>
                               <TouchableOpacity
                                 style={[styles.servingBtn, { backgroundColor: theme.colors.accent + '15' }]}
                                 onPress={() => updateServings(entry.id, entry.servings - 0.5)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Decrease servings for ${entry.food.name}`}
                               >
                                 <MaterialCommunityIcons name="minus" size={16} color={theme.colors.accent} />
                               </TouchableOpacity>
-                              <Text style={[styles.servingValue, { color: theme.colors.text }]}>{entry.servings}</Text>
+                              <ThemedText style={[styles.servingValue, { color: theme.colors.text }]}>{entry.servings}</ThemedText>
                               <TouchableOpacity
                                 style={[styles.servingBtn, { backgroundColor: theme.colors.accent + '15' }]}
                                 onPress={() => updateServings(entry.id, entry.servings + 0.5)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Increase servings for ${entry.food.name}`}
                               >
                                 <MaterialCommunityIcons name="plus" size={16} color={theme.colors.accent} />
                               </TouchableOpacity>
@@ -537,7 +526,7 @@ export default function NutritionCalculatorScreen() {
 
                     {/* Nutrition Breakdown */}
                     <SectionHeader title={t('nutrition.breakdown')} delay={100} />
-                    <GlassCard gradient style={{ marginBottom: 16 }}>
+                    <GlassCard gradient style={{ marginBottom: spacing[4] }}>
                       <View style={styles.breakdownRow}>
                         <View style={styles.breakdownItem}>
                           <LinearGradient
@@ -546,19 +535,19 @@ export default function NutritionCalculatorScreen() {
                           >
                             <MaterialCommunityIcons name="fire" size={18} color={theme.colors.onAccent} />
                           </LinearGradient>
-                          <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>{totals.calories}</Text>
-                          <Text style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
+                          <ThemedText style={[styles.breakdownValue, { color: theme.colors.text }]}>{totals.calories}</ThemedText>
+                          <ThemedText style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
                             {t('nutrition.caloriesEst')}
-                          </Text>
+                          </ThemedText>
                         </View>
                         <View style={styles.breakdownItem}>
                           <View style={[styles.breakdownIcon, { backgroundColor: theme.colors.error }]}>
                             <MaterialCommunityIcons name="food-steak" size={18} color={theme.colors.onAccent} />
                           </View>
-                          <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>{totals.protein}g</Text>
-                          <Text style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
+                          <ThemedText style={[styles.breakdownValue, { color: theme.colors.text }]}>{totals.protein}g</ThemedText>
+                          <ThemedText style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
                             {t('nutrition.protein')}
-                          </Text>
+                          </ThemedText>
                         </View>
                         <View style={styles.breakdownItem}>
                           <View style={[styles.breakdownIcon, { backgroundColor: theme.colors.warning }]}>
@@ -568,12 +557,12 @@ export default function NutritionCalculatorScreen() {
                               color={theme.colors.onAccent}
                             />
                           </View>
-                          <Text style={[styles.breakdownValue, { color: theme.colors.text }]}>
-                            {mealEntries.length}
-                          </Text>
-                          <Text style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
+                          <ThemedText style={[styles.breakdownValue, { color: theme.colors.text }]}>
+                            {vm.mealEntries.length}
+                          </ThemedText>
+                          <ThemedText style={[styles.breakdownLabel, { color: theme.colors.textMuted }]}>
                             {t('common.items')}
-                          </Text>
+                          </ThemedText>
                         </View>
                       </View>
                     </GlassCard>
@@ -583,11 +572,13 @@ export default function NutritionCalculatorScreen() {
                       <TouchableOpacity
                         style={[styles.clearBtn, { borderColor: theme.colors.error + '40' }]}
                         onPress={clearAll}
+                        accessibilityRole="button"
+                        accessibilityLabel="Clear all meals"
                       >
                         <MaterialCommunityIcons name="delete-outline" size={16} color={theme.colors.error} />
-                        <Text style={{ color: theme.colors.error, fontWeight: '600', marginLeft: 6, fontSize: 13 }}>
+                        <ThemedText style={{ color: theme.colors.error, fontWeight: '600', marginLeft: spacing[1.5], fontSize: typography.sizes.label }}>
                           {t('common.clearAll')}
-                        </Text>
+                        </ThemedText>
                       </TouchableOpacity>
                       <View style={{ flex: 1 }}>
                         <GradientButton
@@ -604,8 +595,7 @@ export default function NutritionCalculatorScreen() {
               </ScrollView>
             )}
           </KeyboardAvoidingView>
-        </SafeAreaView>
-      </View>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -628,33 +618,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
     borderBottomWidth: 1,
   },
   backBtn: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '700',
     letterSpacing: 0.3,
   },
   toggleBtn: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   totalsCard: {
-    marginHorizontal: 16,
-    marginTop: 12,
-    marginBottom: 8,
+    marginHorizontal: spacing[4],
+    marginTop: spacing[3],
+    marginBottom: spacing[2],
   },
   totalsRow: {
     flexDirection: 'row',
@@ -666,71 +656,71 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   totalValue: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '700',
   },
   totalLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   totalDivider: {
     width: 1,
     height: 32,
   },
   searchWrap: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 4,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[1],
   },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 4,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[1],
     borderRadius: 14,
     borderWidth: 1,
-    gap: 8,
+    gap: spacing[2],
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    paddingVertical: 10,
+    fontSize: typography.sizes.bodyMid, 
+    paddingVertical: spacing[2.5],
   },
   filterScroll: {
     minHeight: 50,
   },
   filterContent: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 6,
-    gap: 8,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2.5],
+    paddingBottom: spacing[1.5],
+    gap: spacing[2],
   },
   filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[2.5],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   filterLabel: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     lineHeight: 16,
   },
   resultCount: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 6,
-    fontSize: 12,
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[1.5],
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
   },
   foodCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: spacing[3],
     borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 6,
-    gap: 12,
+    marginBottom: spacing[1.5],
+    gap: spacing[3],
   },
   foodIcon: {
     width: 36,
@@ -740,12 +730,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   foodName: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
   },
   foodDesc: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: typography.sizes.caption, 
+    marginTop: spacing[0.5],
   },
   addBtn: {
     width: 32,
@@ -756,24 +746,24 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 48,
-    gap: 12,
+    paddingVertical: spacing[12],
+    gap: spacing[3],
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     textAlign: 'center',
   },
   emptyMeal: {
     alignItems: 'center',
-    paddingVertical: 48,
-    gap: 12,
+    paddingVertical: spacing[12],
+    gap: spacing[3],
   },
   emptyMealTitle: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '600',
   },
   emptyMealSub: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     textAlign: 'center',
     maxWidth: 280,
     lineHeight: 20,
@@ -782,40 +772,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginTop: 8,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2.5],
+    borderRadius: radius.lg,
+    marginTop: spacing[2],
   },
   mealCard: {
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   mealCardTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing[3],
   },
   servingsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    paddingTop: 10,
-    gap: 10,
+    marginTop: spacing[2.5],
+    paddingTop: spacing[2.5],
+    gap: spacing[2.5],
   },
   servingsLabel: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '500',
     marginRight: 'auto' as any,
   },
   servingBtn: {
     width: 30,
     height: 30,
-    borderRadius: 8,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
   servingValue: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
     minWidth: 30,
     textAlign: 'center',
@@ -826,35 +816,35 @@ const styles = StyleSheet.create({
   },
   breakdownItem: {
     alignItems: 'center',
-    gap: 6,
+    gap: spacing[1.5],
   },
   breakdownIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
   breakdownValue: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '700',
   },
   breakdownLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginTop: 8,
+    gap: spacing[3],
+    marginTop: spacing[2],
   },
   clearBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
 });

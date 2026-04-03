@@ -15,6 +15,8 @@ import { View, Text, StyleSheet, ActivityIndicator, Platform } from 'react-nativ
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { GeoPoint } from '../engines/DistanceEngine';
+import { typography, spacing } from '../design/theme-system';
+
 
 // Lazy-import MapLibre — native module may not be registered on first run
 let MapView: any;
@@ -314,7 +316,7 @@ const JogMap = memo(function JogMap({
         )}
 
         {/* Route icon and status */}
-        <View style={{ alignItems: 'center', gap: 6 }}>
+        <View style={{ alignItems: 'center', gap: spacing[1.5] }}>
           <View style={[styles.fallbackIconCircle, { backgroundColor: theme.colors.accent + '20' }]}>
             <MaterialCommunityIcons
               name={isLive ? 'run-fast' : hasRoute ? 'map-marker-check' : 'map-marker-path'}
@@ -375,18 +377,18 @@ const JogMap = memo(function JogMap({
   }
 
   const defaultCenter: [number, number] = startPoint || [28.0473, -26.2041]; // Johannesburg fallback
-  const accentColor = theme.colors.accent; // #10B981
+  const accentColor = theme.colors.accent;
 
   const mapFallback = (
     <View style={[styles.emptyContainer, { height, backgroundColor: theme.colors.surfaceVariant }]}>
       <MaterialCommunityIcons name="map-marker-path" size={32} color={theme.colors.textMuted} />
-      <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 8 }]}>Map unavailable</Text>
+      <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: spacing[2] }]}>Map unavailable</Text>
       {distanceMeters != null && distanceMeters > 0 && (
-        <Text style={[styles.distanceText, { color: theme.colors.accent, marginTop: 8 }]}>
+        <Text style={[styles.distanceText, { color: theme.colors.accent, marginTop: spacing[2] }]}>
           {formatDistance(distanceMeters)}
         </Text>
       )}
-      {pace && <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: 4 }]}>{pace}</Text>}
+      {pace && <Text style={[styles.emptyText, { color: theme.colors.textMuted, marginTop: spacing[1] }]}>{pace}</Text>}
     </View>
   );
 
@@ -516,7 +518,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '500',
   },
 
@@ -554,20 +556,20 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 12,
     left: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1.5],
     borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing[2],
   },
   distanceText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
   },
   paceText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
   },
 
@@ -578,9 +580,9 @@ const styles = StyleSheet.create({
     right: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    gap: spacing[1.25],
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1.25],
     borderRadius: 8,
   },
   liveDot: {
@@ -591,7 +593,7 @@ const styles = StyleSheet.create({
   },
   liveText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '800',
     letterSpacing: 1,
   },
@@ -601,10 +603,10 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing[2],
   },
   loadingText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
   },
 
@@ -613,8 +615,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
-    gap: 12,
+    padding: spacing[4],
+    gap: spacing[3],
   },
   fallbackIconCircle: {
     width: 52,
@@ -626,28 +628,28 @@ const styles = StyleSheet.create({
   fallbackLiveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    gap: spacing[1.25],
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1],
     borderRadius: 8,
   },
   fallbackStatsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 24,
-    marginTop: 4,
+    gap: spacing[6],
+    marginTop: spacing[1],
   },
   fallbackStat: {
     alignItems: 'center',
-    gap: 2,
+    gap: spacing[0.5],
   },
   fallbackStatValue: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   fallbackStatLabel: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '600',
     letterSpacing: 0.3,
   },

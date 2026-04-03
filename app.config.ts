@@ -67,7 +67,7 @@ export default ({ config: _config }: ConfigContext): ExpoConfig => {
     splash: {
       image: './assets/splash-icon.png',
       resizeMode: 'contain',
-      backgroundColor: '#0A0E17',
+      backgroundColor: '#0B0B0F',
     },
 
     ios: {
@@ -94,7 +94,7 @@ export default ({ config: _config }: ConfigContext): ExpoConfig => {
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#0A0E17',
+        backgroundColor: '#0B0B0F',
       },
       package: 'com.hugelet.fitquest',
       permissions: [

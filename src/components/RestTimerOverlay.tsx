@@ -29,6 +29,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import CountdownRing from './CountdownRing';
 import ExerciseImage from './ExerciseImage';
+import { typography, spacing } from '../design/theme-system';
+
 
 // ─── Types ────────────────────────────────────────────
 export interface NextExerciseInfo {
@@ -62,7 +64,7 @@ const BREATHE_OUT_MS = 4000;
 const CYCLE_MS = BREATHE_IN_MS + HOLD_MS + BREATHE_OUT_MS; // 10 s
 
 // ─── Component ────────────────────────────────────────
-export default function RestTimerOverlay({
+function RestTimerOverlay({
   visible,
   progress,
   formattedRemaining,
@@ -241,7 +243,7 @@ export default function RestTimerOverlay({
 // ─── Styles ───────────────────────────────────────────
 const styles = StyleSheet.create({
   bg: { flex: 1 },
-  safeArea: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 },
+  safeArea: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: spacing[6] },
 
   // Breathing glow behind ring
   breatheCircle: {
@@ -249,42 +251,42 @@ const styles = StyleSheet.create({
   },
 
   // Ring
-  ringWrap: { marginBottom: 12 },
+  ringWrap: { marginBottom: spacing[3] },
   timerDigits: {
-    fontSize: 56,
+    fontSize: typography.sizes.jumbo, 
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
     letterSpacing: 2,
   },
   restLabel: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '600',
     letterSpacing: 3,
     textTransform: 'uppercase',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
 
   // Breathe
   breatheLabel: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '500',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: 20,
+    marginBottom: spacing[5],
   },
 
   // Extend
-  extendRow: { marginBottom: 24 },
+  extendRow: { marginBottom: spacing[6] },
   extendBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[2.5],
     borderRadius: 24,
     borderWidth: 1,
-    gap: 6,
+    gap: spacing[1.5],
   },
-  extendText: { fontSize: 14, fontWeight: '700' },
+  extendText: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
 
   // Next card
   nextCard: {
@@ -292,31 +294,33 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
-    marginBottom: 28,
+    padding: spacing[4],
+    marginBottom: spacing[7],
   },
   nextLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '600',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
-  nextRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  nextRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3.5] },
   nextInfo: { flex: 1 },
-  nextName: { fontSize: 16, fontWeight: '700' },
-  nextMeta: { fontSize: 13, marginTop: 4 },
+  nextName: { fontSize: typography.sizes.body, fontWeight: '700' },
+  nextMeta: { fontSize: typography.sizes.label, marginTop: spacing[1] },
 
   // Skip
   skipBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 36,
+    paddingVertical: spacing[3.5],
+    paddingHorizontal: spacing[9],
     borderRadius: 14,
     borderWidth: 1.5,
-    gap: 8,
+    gap: spacing[2],
   },
-  skipText: { fontSize: 15, fontWeight: '700' },
+  skipText: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
 });
+
+export default React.memo(RestTimerOverlay);

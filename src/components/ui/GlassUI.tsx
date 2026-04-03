@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect, memo } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, type StyleProp, ViewStyle, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator, type StyleProp, ViewStyle, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -29,7 +29,11 @@ import Animated, {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
-import { haptic } from '../../utils/haptics';
+import { usePressAnimation } from '../../hooks/usePressAnimation';
+import { Interaction } from '../../interactions/InteractionManager';
+import { spacing, radius } from '../../design/theme-system';
+import { MOTION } from '../../design/motion';
+import ThemedText from '../ThemedText';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -57,25 +61,14 @@ export const GlassCard = memo(function GlassCard({
   glowColor: _glowColor, // ignored
 }: GlassCardProps) {
   const { theme } = useTheme();
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withTiming(0.97, { duration: 120 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 120 });
-  };
+  const { animatedStyle, onPressIn, onPressOut } = usePressAnimation({ scaleTo: 0.97 });
 
   const cardContent = (
     <Animated.View
-      entering={FadeInDown.delay(delay).duration(150)}
+      entering={FadeInDown.delay(delay).duration(theme.motion.fast)}
       style={[
         styles.glassCard,
+        theme.shadows.sm !== 'none' && theme.shadows.sm,
         {
           backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.95)',
           borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
@@ -93,9 +86,13 @@ export const GlassCard = memo(function GlassCard({
       <Animated.View style={animatedStyle}>
         <TouchableOpacity
           activeOpacity={1}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          onPress={onPress}
+          onPressIn={onPressIn}
+          onPressOut={onPressOut}
+          onPress={() => {
+            Interaction.execute('glass_card', () => {
+              onPress();
+            }, { haptic: 'light' });
+          }}
           accessibilityRole="button"
         >
           {cardContent}
@@ -118,11 +115,11 @@ interface GradientHeaderProps {
   rightContent?: React.ReactNode;
 }
 
-export function GradientHeader({ title, subtitle, icon, rightContent }: GradientHeaderProps) {
+export const GradientHeader = memo(function GradientHeader({ title, subtitle, icon, rightContent }: GradientHeaderProps) {
   const { theme } = useTheme();
 
   return (
-    <Animated.View entering={FadeIn.duration(150)} accessibilityRole="header">
+    <Animated.View entering={FadeIn.duration(MOTION.fast)} accessibilityRole="header">
       <View
         style={[
           styles.gradientHeader,
@@ -140,9 +137,9 @@ export function GradientHeader({ title, subtitle, icon, rightContent }: Gradient
             </View>
           )}
           <View>
-            <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{title}</Text>
+            <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>{title}</ThemedText>
             {!!subtitle && (
-              <Text style={[styles.headerSubtitle, { color: theme.colors.textSecondary }]}>{subtitle}</Text>
+              <ThemedText style={[styles.headerSubtitle, { color: theme.colors.textSecondary }]}>{subtitle}</ThemedText>
             )}
           </View>
         </View>
@@ -150,14 +147,14 @@ export function GradientHeader({ title, subtitle, icon, rightContent }: Gradient
       </View>
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // PULSE DOT (Live indicator - only pulses when active)
 // ============================================
 
-export function PulseDot({
-  color = '#10B981',
+export const PulseDot = memo(function PulseDot({
+  color = theme.colors.accent,
   size = 8,
   active = true,
 }: {
@@ -212,7 +209,7 @@ export function PulseDot({
       />
     </View>
   );
-}
+});
 
 // ============================================
 // STAT CHIP (Compact stat - grayscale by default)
@@ -233,7 +230,7 @@ export const StatChip = memo(function StatChip({ icon, label, value, color, dela
 
   return (
     <Animated.View
-      entering={FadeInUp.delay(delay).duration(150)}
+      entering={FadeInUp.delay(delay).duration(MOTION.fast)}
       style={[
         styles.statChip,
         {
@@ -245,8 +242,8 @@ export const StatChip = memo(function StatChip({ icon, label, value, color, dela
       accessibilityRole="text"
     >
       <MaterialCommunityIcons name={icon} size={16} color={chipColor} />
-      <Text style={[styles.statChipValue, { color: theme.colors.text }]}>{value}</Text>
-      <Text style={[styles.statChipLabel, { color: theme.colors.textMuted }]}>{label}</Text>
+      <ThemedText style={[styles.statChipValue, { color: theme.colors.text }]}>{value}</ThemedText>
+      <ThemedText style={[styles.statChipLabel, { color: theme.colors.textMuted }]}>{label}</ThemedText>
     </Animated.View>
   );
 });
@@ -266,11 +263,11 @@ export const AnimatedCounter = memo(function AnimatedCounter({ value, suffix = '
 
   // Simple animated counter — displays the raw value with a zoom-in entrance
   return (
-    <Animated.View entering={ZoomIn.delay(200).duration(150)}>
-      <Text style={[styles.animatedCounter, { color: theme.colors.text }, style]}>
+    <Animated.View entering={ZoomIn.delay(MOTION.base).duration(MOTION.fast)}>
+      <ThemedText style={[styles.animatedCounter, { color: theme.colors.text }, style]}>
         {value}
         {suffix}
-      </Text>
+      </ThemedText>
     </Animated.View>
   );
 });
@@ -285,6 +282,7 @@ export interface GradientButtonProps {
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   colors?: string[];
   disabled?: boolean;
+  loading?: boolean;
   variant?: 'primary' | 'success' | 'warning';
   size?: 'sm' | 'md' | 'lg';
   style?: import('react-native').ViewStyle;
@@ -296,12 +294,13 @@ export const GradientButton = memo(function GradientButton({
   icon,
   colors,
   disabled = false,
+  loading = false,
   variant = 'primary',
   size = 'md',
   style: containerStyle,
 }: GradientButtonProps) {
   const { theme } = useTheme();
-  const scale = useSharedValue(1);
+  const { animatedStyle, onPressIn, onPressOut } = usePressAnimation({ scaleTo: 0.96 });
 
   // All variants use green as primary action color
   const variantColors: Record<string, string> = {
@@ -310,56 +309,48 @@ export const GradientButton = memo(function GradientButton({
     warning: theme.colors.warning,
   };
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withTiming(0.96, { duration: 120 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 120 });
-  };
-
+  const isDisabled = disabled || loading;
   const paddingY = size === 'sm' ? 10 : size === 'lg' ? 18 : 14;
   const fontSize = size === 'sm' ? 13 : size === 'lg' ? 17 : 15;
-  const bgColor = disabled ? theme.colors.surfaceVariant : colors?.[0] || variantColors[variant];
+  const bgColor = isDisabled ? theme.colors.surfaceVariant : colors?.[0] || variantColors[variant];
 
   return (
     <Animated.View style={[animatedStyle, containerStyle]}>
       <TouchableOpacity
         activeOpacity={1}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
         onPress={() => {
-          haptic('buttonPress');
-          onPress();
+          Interaction.execute('btn_' + title.replace(/\s+/g, '_').toLowerCase(), () => {
+            onPress();
+          }, { haptic: 'light' });
         }}
-        disabled={disabled}
+        disabled={isDisabled}
         accessibilityRole="button"
-        accessibilityLabel={title}
-        accessibilityState={{ disabled }}
+        accessibilityLabel={loading ? `${title}, loading` : title}
+        accessibilityState={{ disabled: isDisabled, busy: loading }}
       >
         <View
           style={[
             styles.gradientButton,
             {
               paddingVertical: paddingY,
-              opacity: disabled ? 0.5 : 1,
+              opacity: isDisabled ? 0.5 : 1,
               backgroundColor: bgColor,
             },
           ]}
         >
-          {!!icon && (
+          {loading ? (
+            <ActivityIndicator size="small" color={theme.colors.onAccent} style={{ marginRight: 8 }} />
+          ) : !!icon ? (
             <MaterialCommunityIcons
               name={icon}
               size={fontSize + 4}
               color={theme.colors.onAccent}
               style={{ marginRight: 8 }}
             />
-          )}
-          <Text style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>{title}</Text>
+          ) : null}
+          <ThemedText style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>{loading ? 'Loading…' : title}</ThemedText>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -376,7 +367,7 @@ interface WeekCalendarProps {
   onDatePress?: (date: Date) => void;
 }
 
-export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDatePress }: WeekCalendarProps) {
+export const WeekCalendar = memo(function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDatePress }: WeekCalendarProps) {
   const { theme } = useTheme();
   const today = new Date();
 
@@ -393,7 +384,7 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
   const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   return (
-    <Animated.View entering={FadeInDown.delay(100).duration(150)} style={styles.weekCalendar}>
+    <Animated.View entering={FadeInDown.delay(100).duration(MOTION.fast)} style={styles.weekCalendar}>
       {weekDays.map((day, i) => {
         const dateStr = day.toISOString().split('T')[0]!;
         const isToday = today.toISOString().split('T')[0] === dateStr;
@@ -417,12 +408,12 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
             accessibilityLabel={`${dayNames[i]}, ${day.getDate()}${isToday ? ', today' : ''}${hasWorkout ? ', workout completed' : ''}`}
             accessibilityState={{ selected: isActive }}
           >
-            <Text style={[styles.calendarDayName, { color: isActive ? '#fff' : theme.colors.textMuted }]}>
+            <ThemedText style={[styles.calendarDayName, { color: isActive ? theme.colors.onAccent : theme.colors.textMuted }]}>
               {dayNames[i]}
-            </Text>
-            <Text style={[styles.calendarDayNum, { color: isActive ? '#fff' : theme.colors.text }]}>
+            </ThemedText>
+            <ThemedText style={[styles.calendarDayNum, { color: isActive ? theme.colors.onAccent : theme.colors.text }]}>
               {day.getDate()}
-            </Text>
+            </ThemedText>
             {!!hasWorkout && (
               <View
                 style={[
@@ -436,7 +427,7 @@ export function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDat
       })}
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // ANIMATED PROGRESS RING
@@ -450,7 +441,7 @@ interface ProgressRingProps {
   children?: React.ReactNode;
 }
 
-export function ProgressRing({ progress, size = 80, strokeWidth = 6, color, children }: ProgressRingProps) {
+export const ProgressRing = memo(function ProgressRing({ progress, size = 80, strokeWidth = 6, color, children }: ProgressRingProps) {
   const { theme } = useTheme();
   const ringColor = color || theme.colors.accent;
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
@@ -461,7 +452,7 @@ export function ProgressRing({ progress, size = 80, strokeWidth = 6, color, chil
 
   return (
     <Animated.View
-      entering={ZoomIn.delay(200).duration(150)}
+      entering={ZoomIn.delay(MOTION.base).duration(MOTION.fast)}
       style={{ width: size, height: size }}
       accessibilityRole="progressbar"
       accessibilityLabel={`Progress: ${progressPercent}%`}
@@ -496,7 +487,7 @@ export function ProgressRing({ progress, size = 80, strokeWidth = 6, color, chil
       </View>
     </Animated.View>
   );
-}
+});
 
 // ============================================
 // SECTION HEADER
@@ -512,11 +503,11 @@ interface SectionHeaderProps {
 export const SectionHeader = memo(function SectionHeader({ title, action, onAction, delay = 0 }: SectionHeaderProps) {
   const { theme } = useTheme();
   return (
-    <Animated.View entering={FadeInLeft.delay(delay).duration(150)} style={styles.sectionHeader}>
-      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{title}</Text>
+    <Animated.View entering={FadeInLeft.delay(delay).duration(MOTION.fast)} style={styles.sectionHeader}>
+      <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>{title}</ThemedText>
       {action && onAction && (
         <TouchableOpacity onPress={onAction} accessibilityRole="button" accessibilityLabel={action}>
-          <Text style={[styles.sectionAction, { color: theme.colors.accent }]}>{action}</Text>
+          <ThemedText style={[styles.sectionAction, { color: theme.colors.accent }]}>{action}</ThemedText>
         </TouchableOpacity>
       )}
     </Animated.View>
@@ -537,7 +528,7 @@ interface AnimatedListItemProps {
   accessibilityHint?: string;
 }
 
-export function AnimatedListItem({
+export const AnimatedListItem = memo(function AnimatedListItem({
   children,
   index,
   style,
@@ -546,16 +537,11 @@ export function AnimatedListItem({
   accessibilityLabel,
   accessibilityHint,
 }: AnimatedListItemProps) {
-  const scale = useSharedValue(1);
+  const { animatedStyle, onPressIn, onPressOut } = usePressAnimation({ scaleTo: 0.98 });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  // Separate transform wrapper from layout animation to avoid Reanimated conflicts
   const content = (
     <Animated.View style={animatedStyle}>
-      <Animated.View entering={FadeIn.delay(Math.min(index * 30, 200)).duration(120)} style={style}>
+      <Animated.View entering={FadeIn.delay(Math.min(index * MOTION.stagger, MOTION.staggerCap)).duration(MOTION.fast)} style={style}>
         {children}
       </Animated.View>
     </Animated.View>
@@ -564,14 +550,14 @@ export function AnimatedListItem({
   if (onPress) {
     return (
       <TouchableOpacity
-        activeOpacity={0.85}
-        onPressIn={() => {
-          scale.value = withTiming(0.98, { duration: 120 });
+        activeOpacity={1}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={() => {
+          Interaction.execute('list_item_' + index, () => {
+            onPress();
+          }, { haptic: 'light' });
         }}
-        onPressOut={() => {
-          scale.value = withTiming(1, { duration: 120 });
-        }}
-        onPress={onPress}
         accessibilityRole={a11yRole || 'button'}
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
@@ -582,7 +568,7 @@ export function AnimatedListItem({
   }
 
   return content;
-}
+});
 
 // Re-export animation presets for easy use
 export const Animations = {
@@ -602,30 +588,30 @@ export const Animations = {
 
 const styles = StyleSheet.create({
   glassCard: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    padding: 16,
+    padding: spacing[4],
     overflow: 'hidden',
   },
   gradientHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderRadius: 16,
-    marginHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[4],
+    borderRadius: radius.xl,
+    marginHorizontal: spacing[4],
+    marginBottom: spacing[3],
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing[3],
   },
   headerIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: spacing[10],
+    height: spacing[10],
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -635,7 +621,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 13,
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   pulseDotContainer: {
     justifyContent: 'center',
@@ -644,11 +630,11 @@ const styles = StyleSheet.create({
   statChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    borderRadius: radius.full,
     borderWidth: 1,
-    gap: 6,
+    gap: spacing[1.5],
   },
   statChipValue: {
     fontSize: 14,
@@ -666,9 +652,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    borderRadius: 14,
-    gap: 8,
+    paddingHorizontal: spacing[6],
+    borderRadius: radius.xl,
+    gap: spacing[2],
   },
   gradientButtonText: {
     fontWeight: '700',
@@ -676,20 +662,20 @@ const styles = StyleSheet.create({
   weekCalendar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
   },
   calendarDay: {
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[2.5],
+    borderRadius: radius.lg,
     minWidth: 38,
   },
   calendarDayName: {
     fontSize: 11,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
   calendarDayNum: {
     fontSize: 15,
@@ -699,14 +685,14 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 2.5,
-    marginTop: 4,
+    marginTop: spacing[1],
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[3],
   },
   sectionTitle: {
     fontSize: 18,

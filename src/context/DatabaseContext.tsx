@@ -43,134 +43,135 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
   const initialize = useCallback(async () => {
     if (isInitializing.current) return;
     isInitializing.current = true;
-    let retryScheduled = false;
     try {
       setIsLoading(true);
       setError(null);
 
-      // Initialize database and seed exercises
-      if (__DEV__) console.warn('[FitQuest] Initializing database...');
-      await initializeDatabase();
-      if (__DEV__) console.warn('[FitQuest] Database initialized successfully');
-
-      // Run recovery check: integrity → WAL → snapshot restore if needed
-      const recovery = await recoveryService.run();
-      if (__DEV__) console.warn(`[FitQuest] Recovery: ${recovery.outcome} (${recovery.durationMs}ms)`);
-
-      // Initialize WAL table (idempotent)
-      await walService.initialize();
-
-      // Start periodic snapshots
-      snapshotService.startPeriodicSnapshots();
-
-      // Trigger snapshot on workout completion (critical data event)
-      dataSync.subscribe('workout_completed', () => {
-        snapshotService.createSnapshot('workout_complete').catch((e) => {
-          if (__DEV__) console.warn('[DB] snapshot failed', e);
-        });
-      });
-
-      // Trigger snapshot on profile mutation (user-critical data)
-      dataSync.subscribe('profile_updated', () => {
-        snapshotService.createSnapshot('profile_updated').catch((e) => {
-          if (__DEV__) console.warn('[DB] snapshot failed', e);
-        });
-      });
-
-      // Trigger snapshot on XP milestone (level up = significant state change)
-      dataSync.subscribe('level_up', () => {
-        snapshotService.createSnapshot('xp_milestone').catch((e) => {
-          if (__DEV__) console.warn('[DB] snapshot failed', e);
-        });
-      });
-
-      // Check for existing user profile
-      let profile = await getUserProfile(DEFAULT_USER_ID);
-
-      // Check if onboarding has been completed
-      const onboardingFlag = await getAppState('onboarding_complete');
-      const didOnboard = onboardingFlag === 'true';
-
-      if (!profile) {
-        if (__DEV__) console.warn('[FitQuest] Creating default user profile...');
-        await createUserProfile({
-          id: DEFAULT_USER_ID,
-          goal: 'body_control',
-          experience: 'intermediate',
-          training_days_per_week: 4,
-          time_per_session_minutes: 30,
-          locked: false,
-        });
-
-        // Lock the profile so the workout engine can generate workouts
-        await lockUserProfile(DEFAULT_USER_ID);
-
-        profile = await getUserProfile(DEFAULT_USER_ID);
-        if (__DEV__) console.warn('[FitQuest] Default profile created and locked');
-      }
-
-      // Ensure existing profiles are locked (fixes existing unlocked profiles)
-      if (profile && !profile.locked) {
-        await lockUserProfile(DEFAULT_USER_ID);
-        profile = await getUserProfile(DEFAULT_USER_ID);
-        if (__DEV__) console.warn('[FitQuest] Existing profile locked');
-      }
-
-      setUserProfile(profile);
-      setOnboardingComplete(didOnboard);
-      setIsReady(true);
-      retryCount.current = 0;
-      systemGuard.markReady();
-
-      // Identify user in PostHog with non-PII properties
-      if (profile) {
-        getPostHogClient()
-          .then((client) => {
-            if (client) {
-              client.identify(profile.id, {
-                goal: profile.goal,
-                experience: profile.experience,
-                training_days: profile.training_days_per_week,
-                onboarded: didOnboard,
-              });
-            }
-          })
-          .catch(() => {
-            /* best-effort */
-          });
-      }
-    } catch (err) {
-      if (__DEV__) console.error('[FitQuest] Database initialization failed:', err);
-      const msg = err instanceof Error ? err.message : 'Failed to initialize database';
-
-      // Auto-retry with backoff
-      if (retryCount.current < MAX_RETRIES) {
-        retryCount.current += 1;
-        const delay = retryCount.current * 1000;
-        if (__DEV__) console.warn(`[FitQuest] Retrying in ${delay}ms (attempt ${retryCount.current}/${MAX_RETRIES})`);
-        systemGuard.markRecovering(msg);
-        // Close the broken connection so retry gets a fresh native handle
+      // Retry loop — deterministic, no setTimeout gaps
+      let lastError: unknown = null;
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-          await closeDatabase();
-        } catch {
-          /* ignore close errors */
+          if (attempt > 0) {
+            const delay = attempt * 1000;
+            if (__DEV__) console.warn(`[FitQuest] Retrying in ${delay}ms (attempt ${attempt}/${MAX_RETRIES})`);
+            systemGuard.markRecovering(lastError instanceof Error ? lastError.message : 'Retrying');
+            // Close the broken connection so retry gets a fresh native handle
+            try { await closeDatabase(); } catch { /* ignore */ }
+            resetInitState();
+            await new Promise(r => setTimeout(r, delay));
+          }
+
+          if (__DEV__) console.warn('[FitQuest] Initializing database...');
+          await initializeDatabase();
+          if (__DEV__) console.warn('[FitQuest] Database initialized successfully');
+
+          // Run recovery check: integrity → WAL → snapshot restore if needed
+          const recovery = await recoveryService.run();
+          if (__DEV__) console.warn(`[FitQuest] Recovery: ${recovery.outcome} (${recovery.durationMs}ms)`);
+
+          // Initialize WAL table (idempotent)
+          await walService.initialize();
+
+          // Start periodic snapshots
+          snapshotService.startPeriodicSnapshots();
+
+          // Trigger snapshot on workout completion (critical data event)
+          dataSync.subscribe('workout_completed', () => {
+            snapshotService.createSnapshot('workout_complete').catch((e) => {
+              if (__DEV__) console.warn('[DB] snapshot failed', e);
+            });
+          });
+
+          // Trigger snapshot on profile mutation (user-critical data)
+          dataSync.subscribe('profile_updated', () => {
+            snapshotService.createSnapshot('profile_updated').catch((e) => {
+              if (__DEV__) console.warn('[DB] snapshot failed', e);
+            });
+          });
+
+          // Trigger snapshot on XP milestone (level up = significant state change)
+          dataSync.subscribe('level_up', () => {
+            snapshotService.createSnapshot('xp_milestone').catch((e) => {
+              if (__DEV__) console.warn('[DB] snapshot failed', e);
+            });
+          });
+
+          // Check for existing user profile
+          let profile = await getUserProfile(DEFAULT_USER_ID);
+
+          // Check if onboarding has been completed
+          const onboardingFlag = await getAppState('onboarding_complete');
+          const didOnboard = onboardingFlag === 'true';
+
+          if (!profile) {
+            if (__DEV__) console.warn('[FitQuest] Creating default user profile...');
+            await createUserProfile({
+              id: DEFAULT_USER_ID,
+              goal: 'body_control',
+              experience: 'intermediate',
+              training_days_per_week: 4,
+              time_per_session_minutes: 30,
+              locked: false,
+            });
+
+            // Lock the profile so the workout engine can generate workouts
+            await lockUserProfile(DEFAULT_USER_ID);
+
+            profile = await getUserProfile(DEFAULT_USER_ID);
+            if (__DEV__) console.warn('[FitQuest] Default profile created and locked');
+          }
+
+          // Ensure existing profiles are locked (fixes existing unlocked profiles)
+          if (profile && !profile.locked) {
+            await lockUserProfile(DEFAULT_USER_ID);
+            profile = await getUserProfile(DEFAULT_USER_ID);
+            if (__DEV__) console.warn('[FitQuest] Existing profile locked');
+          }
+
+          setUserProfile(profile);
+          setOnboardingComplete(didOnboard);
+          setIsReady(true);
+          retryCount.current = 0;
+          systemGuard.markReady();
+
+          // Identify user in PostHog with non-PII properties
+          if (profile) {
+            getPostHogClient()
+              .then((client) => {
+                if (client) {
+                  client.identify(profile.id, {
+                    goal: profile.goal,
+                    experience: profile.experience,
+                    training_days: profile.training_days_per_week,
+                    onboarded: didOnboard,
+                  });
+                }
+              })
+              .catch(() => {
+                /* best-effort */
+              });
+          }
+
+          // Success — exit retry loop
+          lastError = null;
+          break;
+        } catch (err) {
+          lastError = err;
+          if (attempt < MAX_RETRIES) {
+            if (__DEV__) console.warn('[FitQuest] Init attempt failed, will retry:', err instanceof Error ? err.message : err);
+          }
         }
-        resetInitState();
-        retryScheduled = true;
-        isInitializing.current = false;
-        setTimeout(() => {
-          initialize();
-        }, delay);
-        return;
       }
 
-      systemGuard.markFailed(msg);
-      setError(msg);
-    } finally {
-      // Only clear loading state when we're done (not when a retry is pending)
-      if (!retryScheduled) {
-        setIsLoading(false);
+      // All retries exhausted — surface the error
+      if (lastError) {
+        if (__DEV__) console.error('[FitQuest] Database initialization failed after all retries:', lastError);
+        const msg = lastError instanceof Error ? lastError.message : 'Failed to initialize database';
+        systemGuard.markFailed(msg);
+        setError(msg);
       }
+    } finally {
+      setIsLoading(false);
       isInitializing.current = false;
     }
   }, []);

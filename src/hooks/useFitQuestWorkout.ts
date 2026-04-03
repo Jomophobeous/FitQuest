@@ -45,6 +45,11 @@ import {
   updateStreak,
   getSessionExercises,
   getWorkoutSession,
+  getActiveWorkoutSession,
+  updateSessionExerciseProgress,
+  setAppState,
+  getAppState,
+  getUserProgress,
 } from '../database/service';
 
 import { awardWorkoutXP } from '../services/xpService';
@@ -53,6 +58,8 @@ import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsI
 import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
 import { notifyWorkoutCompleted } from '../services/dataSyncService';
 import { invalidateReadinessCache } from '../engines/ReadinessEngine';
+import { invalidateUserState } from '../engines/UserStateEngine';
+import { recordWorkoutPattern } from '../services/smartDefaults';
 import { logEvent } from '../services/telemetry';
 
 import type { TargetMuscle } from '../database/types';
@@ -170,6 +177,27 @@ export interface WorkoutCompletionData {
 }
 
 // ============================================
+// WORKOUT SESSION PERSISTENCE
+// ============================================
+
+const ACTIVE_WORKOUT_KEY = 'active_workout_state';
+
+/** Fire-and-forget write — never blocks UI, never throws */
+function persistWorkoutProgress(sessionId: string, exerciseIndex: number, startTime: string): void {
+  setAppState(ACTIVE_WORKOUT_KEY, JSON.stringify({ sessionId, exerciseIndex, startTime })).catch(() => {});
+}
+
+/** Fire-and-forget exercise persistence — update the DB row for a session_exercise */
+function persistExerciseCompletion(sessionExerciseId: string, sets: number, skipped: boolean): void {
+  updateSessionExerciseProgress(sessionExerciseId, sets, skipped).catch(() => {});
+}
+
+/** Clear active workout marker */
+function clearActiveWorkout(): void {
+  setAppState(ACTIVE_WORKOUT_KEY, '').catch(() => {});
+}
+
+// ============================================
 // HOOK
 // ============================================
 
@@ -178,6 +206,7 @@ export function useFitQuestWorkout() {
   const { t, language } = useLanguage();
   const finishingRef = useRef(false); // Prevent double-tap race condition on finish
   const generatingRef = useRef(false); // Prevent concurrent workout generation
+  const completingRef = useRef(false); // Prevent rapid-tap double-advance on exercise complete
   const mountedRef = useRef(true); // Guard async setState after unmount
   const [state, setState] = useState<WorkoutState>({
     status: 'idle',
@@ -197,6 +226,102 @@ export function useFitQuestWorkout() {
 
   const [fatigueSnapshot, setFatigueSnapshot] = useState<Map<TargetMuscle, number>>(new Map());
   const [deloadStatus, setDeloadStatus] = useState<{ needed: boolean; reason: string } | null>(null);
+  const recoveryAttemptedRef = useRef(false);
+
+  // ── Session Recovery ──
+  // On mount, check for an in-progress workout that was interrupted (app crash/kill).
+  // If found, rebuild the display from DB and restore position.
+  const recoverActiveSession = useCallback(async () => {
+    if (recoveryAttemptedRef.current) return false;
+    recoveryAttemptedRef.current = true;
+    try {
+      const raw = await getAppState(ACTIVE_WORKOUT_KEY);
+      if (!raw) return false;
+      const saved = JSON.parse(raw) as { sessionId: string; exerciseIndex: number; startTime: string };
+      if (!saved.sessionId) return false;
+
+      // Verify session still exists and is incomplete
+      const session = await getActiveWorkoutSession(DEFAULT_USER_ID);
+      if (!session || session.id !== saved.sessionId) {
+        clearActiveWorkout();
+        return false;
+      }
+
+      const sessionExercises = await getSessionExercises(saved.sessionId);
+      if (!sessionExercises || sessionExercises.length === 0) {
+        clearActiveWorkout();
+        return false;
+      }
+
+      // Rebuild exercise displays, restoring completion state from DB
+      const safeParseInstructions = (raw: string | null): string[] => {
+        if (!raw) return [];
+        try { const parsed = JSON.parse(raw); return Array.isArray(parsed) ? parsed : [raw]; }
+        catch { return raw ? [raw] : []; }
+      };
+
+      const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
+        const richAudio = generateRichAudio(
+          { name: se.name, category: se.category, instructions: safeParseInstructions(se.instructions), primaryMuscles: [], restSeconds: 60 },
+          sessionExercises[i + 1]?.name,
+          t,
+        );
+        return {
+          id: se.id,
+          exerciseId: se.exercise_id,
+          name: se.name,
+          category: se.category,
+          sets: se.prescribed_sets,
+          reps: se.prescribed_reps,
+          restSeconds: 60,
+          instructions: safeParseInstructions(se.instructions),
+          completed: se.completed_sets > 0 || (se.skipped ? true : false),
+          phase: 'main' as const,
+          audioIntro: se.audio_intro || richAudio.intro,
+          audioSetup: se.audio_setup || richAudio.setup,
+          audioExecution: se.audio_execution || richAudio.execution,
+          audioTransition: se.audio_transition || richAudio.transition,
+        };
+      });
+
+      const workout: GeneratedWorkoutDisplay = {
+        id: saved.sessionId,
+        exercises: exerciseDisplays,
+        totalDuration: session.duration_minutes || Math.round(sessionExercises.length * 3),
+        isDeload: false,
+        explanation: 'Recovered in-progress workout',
+        aiInsight: null,
+        lastImpact: null,
+        workoutDelta: null,
+        progressionNarratives: [],
+        warnings: [],
+        warmup: [],
+        cooldown: [],
+      };
+
+      // Clamp index to valid range
+      const restoredIndex = Math.min(saved.exerciseIndex, exerciseDisplays.length - 1);
+      const allComplete = restoredIndex >= exerciseDisplays.length;
+
+      if (!mountedRef.current) return false;
+
+      setState({
+        status: allComplete ? 'completed' : 'in_progress',
+        workout,
+        currentExerciseIndex: Math.max(0, restoredIndex),
+        startTime: saved.startTime ? new Date(saved.startTime) : new Date(),
+        error: null,
+      });
+
+      if (__DEV__) console.warn('[FitQuest] Recovered active session:', saved.sessionId, 'at exercise', restoredIndex);
+      return true;
+    } catch (err) {
+      if (__DEV__) console.warn('[FitQuest] Session recovery failed (non-fatal):', err);
+      clearActiveWorkout();
+      return false;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t]);
 
   /**
    * Generate a new workout using ENGINE 1
@@ -221,7 +346,7 @@ export function useFitQuestWorkout() {
 
     // Timeout to prevent infinite loading on weak devices
     const GENERATION_TIMEOUT_MS = 20_000;
-    const timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => { // deferred-cleanup
       if (generatingRef.current && mountedRef.current) {
         generatingRef.current = false;
         setState((prev: WorkoutState) => ({
@@ -297,7 +422,7 @@ export function useFitQuestWorkout() {
         );
 
         exerciseDisplays.push({
-          id: `ex_${i}_${Date.now()}`,
+          id: `${generated.session_id}_ex_${ex.order}`,
           exerciseId: ex.exercise.id,
           name: ex.exercise.name,
           category: ex.exercise.category,
@@ -619,6 +744,12 @@ export function useFitQuestWorkout() {
   const completeExercise = useCallback(
     (difficulty: number = 5) => {
       if (!state.workout) return;
+      if (completingRef.current) return;
+      completingRef.current = true;
+
+      // Capture current exercise for persistence BEFORE state update
+      const currentEx = state.workout.exercises[state.currentExerciseIndex];
+      const nextIdx = state.currentExerciseIndex + 1;
 
       setState((prev: WorkoutState) => {
         if (!prev.workout) return prev;
@@ -643,8 +774,18 @@ export function useFitQuestWorkout() {
           status: allComplete ? 'completed' : 'in_progress',
         };
       });
+
+      // Persist exercise completion + progress index (fire-and-forget)
+      if (currentEx) {
+        persistExerciseCompletion(currentEx.id, currentEx.sets, false);
+        persistWorkoutProgress(state.workout.id, nextIdx, state.startTime?.toISOString() ?? '');
+      }
+
+      // Release guard after state update commits — queueMicrotask runs after
+      // React\u2019s synchronous batch, before the next frame. Zero race window.
+      queueMicrotask(() => { completingRef.current = false; });
     },
-    [state.workout],
+    [state.workout, state.currentExerciseIndex, state.startTime],
   );
 
   /**
@@ -652,6 +793,10 @@ export function useFitQuestWorkout() {
    */
   const skipExercise = useCallback(() => {
     if (!state.workout) return;
+
+    // Capture for persistence before state update
+    const skippedEx = state.workout.exercises[state.currentExerciseIndex];
+    const nextIdx = state.currentExerciseIndex + 1;
 
     setState((prev: WorkoutState) => {
       if (!prev.workout) return prev;
@@ -671,7 +816,13 @@ export function useFitQuestWorkout() {
         status: allComplete ? 'completed' : 'in_progress',
       };
     });
-  }, [state.workout]);
+
+    // Persist skip + progress index (fire-and-forget)
+    if (skippedEx) {
+      persistExerciseCompletion(skippedEx.id, 0, true);
+      persistWorkoutProgress(state.workout.id, nextIdx, state.startTime?.toISOString() ?? '');
+    }
+  }, [state.workout, state.currentExerciseIndex, state.startTime]);
 
   /**
    * Finish and record the workout using ENGINE 2 & 3
@@ -725,6 +876,9 @@ export function useFitQuestWorkout() {
       const completedCount = mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).length;
       const isSuccess = mainOnly.length > 0 && completedCount >= mainOnly.length * 0.8;
       await completeWorkoutSession(state.workout.id, completedCount, isSuccess);
+
+      // Clear active workout marker — session is finalized
+      clearActiveWorkout();
 
       // Update streak
       const streak = await updateStreak(DEFAULT_USER_ID);
@@ -806,6 +960,13 @@ export function useFitQuestWorkout() {
 
       // Refresh readiness score immediately after workout completion
       invalidateReadinessCache();
+      invalidateUserState();
+
+      // Record pattern for smart defaults (non-blocking)
+      recordWorkoutPattern({
+        category: userProfile?.goal,
+        durationMinutes: Math.round(durationSeconds / 60),
+      }).catch(() => {});
 
       // Collect muscles worked from completed main exercises (reuse batch-loaded data)
       const musclesWorkedSet = new Set<string>();
@@ -872,6 +1033,7 @@ export function useFitQuestWorkout() {
     // Cancel any in-flight async operations
     generatingRef.current = false;
     finishingRef.current = false;
+    clearActiveWorkout();
     setState({
       status: 'idle',
       workout: null,
@@ -911,6 +1073,7 @@ export function useFitQuestWorkout() {
     // Actions
     generateNewWorkout,
     loadCustomWorkout,
+    recoverActiveSession,
     startWorkout,
     completeExercise,
     skipExercise,

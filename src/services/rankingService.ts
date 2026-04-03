@@ -21,6 +21,8 @@
 // TYPES
 // ============================================
 
+import { darkTheme as theme } from '../design/theme-system';
+
 export interface RankMilestone {
   level: number;
   rank: string;
@@ -60,31 +62,31 @@ export const RANK_TIERS: RankTier[] = [
     name: 'Foundation',
     levelRange: [1, 49],
     description: 'Building the base — every rep shapes the foundation of a stronger you.',
-    color: '#6B7280', // gray
+    color: theme.colors.textMuted, // gray
   },
   {
     name: 'Growth',
     levelRange: [50, 149],
     description: 'Momentum builds. Your body adapts, your mind sharpens.',
-    color: '#10B981', // green
+    color: theme.colors.accent, // green
   },
   {
     name: 'Mastery',
     levelRange: [150, 399],
     description: "Discipline becomes identity. You don't just train — you are the training.",
-    color: '#3B82F6', // blue
+    color: theme.colors.info, // blue
   },
   {
     name: 'Transcendence',
     levelRange: [400, 699],
     description: 'Beyond limits. Where body and mind merge into one unstoppable force.',
-    color: '#8B5CF6', // purple
+    color: theme.colors.purple, // purple
   },
   {
     name: 'Ascendancy',
     levelRange: [700, 999],
     description: 'The pinnacle. Fewer than 0.1% ever reach this domain.',
-    color: '#F59E0B', // gold
+    color: theme.colors.warning, // gold
   },
 ];
 
@@ -100,7 +102,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'The First Step',
     subtitle: 'Every journey begins with a single rep',
     icon: 'shoe-print',
-    color: '#9CA3AF',
+    color: theme.colors.textSecondary,
     xpMultiplier: 1.0,
     quote: '"The secret of getting ahead is getting started." — Mark Twain',
     badge: 'NOV',
@@ -111,7 +113,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Spark Ignited',
     subtitle: 'The flame of discipline has been lit',
     icon: 'fire',
-    color: '#F97316',
+    color: theme.colors.orange,
     xpMultiplier: 1.05,
     quote: '"We are what we repeatedly do. Excellence is not an act, but a habit." — Aristotle',
     badge: 'INI',
@@ -122,7 +124,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Mind Awakened',
     subtitle: 'Awareness transforms movement into purpose',
     icon: 'brain',
-    color: '#06B6D4',
+    color: theme.colors.info,
     xpMultiplier: 1.1,
     quote: '"The body achieves what the mind believes." — Napoleon Hill',
     badge: 'APR',
@@ -133,7 +135,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Iron Will',
     subtitle: 'Consistency has forged unbreakable resolve',
     icon: 'shield-check',
-    color: '#10B981',
+    color: theme.colors.accent,
     xpMultiplier: 1.15,
     quote: '"Strength does not come from the body. It comes from the will." — Gandhi',
     badge: 'PRC',
@@ -146,7 +148,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Century Strong',
     subtitle: 'One hundred levels of proof that you never quit',
     icon: 'sword-cross',
-    color: '#EF4444',
+    color: theme.colors.error,
     xpMultiplier: 1.2,
     quote: '"A warrior is not about perfection. It\'s about absolute vulnerability." — Brené Brown',
     badge: 'WAR',
@@ -157,7 +159,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Elite Pioneer',
     subtitle: 'Leading from the front — body and mind in perfect sync',
     icon: 'flag-variant',
-    color: '#3B82F6',
+    color: theme.colors.info,
     xpMultiplier: 1.25,
     quote: '"The only person you are destined to become is the one you decide to be." — Emerson',
     badge: 'VAN',
@@ -170,7 +172,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Guardian of Discipline',
     subtitle: 'Your consistency guards against every obstacle',
     icon: 'shield-star',
-    color: '#6366F1',
+    color: theme.colors.indigo,
     xpMultiplier: 1.3,
     quote: '"Mastery is not a function of genius but of time and intense focus." — Robert Greene',
     badge: 'SEN',
@@ -181,7 +183,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Wisdom in Motion',
     subtitle: 'Knowledge of body mechanics meets philosophical depth',
     icon: 'book-open-page-variant',
-    color: '#8B5CF6',
+    color: theme.colors.purple,
     xpMultiplier: 1.35,
     quote: '"No man is free who is not master of himself." — Epictetus',
     badge: 'SAG',
@@ -194,7 +196,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Apex Athlete',
     subtitle: 'Where raw power meets refined technique',
     icon: 'trophy',
-    color: '#F59E0B',
+    color: theme.colors.warning,
     xpMultiplier: 1.4,
     quote: '"Champions aren\'t made in gyms. They are made from something deep inside." — Muhammad Ali',
     badge: 'CHP',
@@ -205,7 +207,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Unshakeable Force',
     subtitle: 'An immovable pillar of strength and resilience',
     icon: 'diamond-stone',
-    color: '#EC4899',
+    color: theme.colors.pink,
     xpMultiplier: 1.45,
     quote: '"The iron never lies. Two hundred pounds will always be two hundred pounds." — Henry Rollins',
     badge: 'TIT',
@@ -216,7 +218,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Perfect Standard',
     subtitle: 'The living definition of peak human potential',
     icon: 'star-circle',
-    color: '#14B8A6',
+    color: theme.colors.skyBlue,
     xpMultiplier: 1.5,
     quote: '"What we face may look insurmountable. But what I learned is that we are always stronger." — Arnold',
     badge: 'PAR',
@@ -227,7 +229,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Beyond Mortal',
     subtitle: 'Stories will be told of this level of dedication',
     icon: 'crown',
-    color: '#D97706',
+    color: theme.colors.warning,
     xpMultiplier: 1.55,
     quote: '"Legends are not born. They are built — one day, one set, one choice at a time."',
     badge: 'LEG',
@@ -238,7 +240,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Sovereign of Self',
     subtitle: 'Complete dominion over body, mind, and spirit',
     icon: 'chess-king',
-    color: '#7C3AED',
+    color: theme.colors.purple,
     xpMultiplier: 1.6,
     quote: '"He who conquers himself is the mightiest warrior." — Confucius',
     badge: 'OVR',
@@ -251,7 +253,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Realm of Myths',
     subtitle: 'Where human potential enters the domain of legend',
     icon: 'lightning-bolt',
-    color: '#F43F5E',
+    color: theme.colors.error,
     xpMultiplier: 1.7,
     quote:
       '"I fear not the man who has practiced 10,000 kicks once, but the man who has practiced one kick 10,000 times." — Bruce Lee',
@@ -263,7 +265,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Timeless Discipline',
     subtitle: 'Your commitment transcends the boundaries of ordinary existence',
     icon: 'infinity',
-    color: '#C084FC',
+    color: theme.colors.purpleLight,
     xpMultiplier: 1.8,
     quote: '"The ultimate aim of martial arts is not having to use them." — Miyamoto Musashi',
     badge: 'IMM',
@@ -274,7 +276,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'Infinite Horizon',
     subtitle: 'The journey has no end — only deeper mastery',
     icon: 'atom-variant',
-    color: '#60A5FA',
+    color: theme.colors.info,
     xpMultiplier: 1.9,
     quote: '"There is no finish line." — Nike',
     badge: 'ETR',
@@ -285,7 +287,7 @@ export const RANK_MILESTONES: RankMilestone[] = [
     title: 'The Absolute',
     subtitle: 'Body and mind unified — the ultimate human expression',
     icon: 'star-four-points',
-    color: '#FBBF24',
+    color: theme.colors.warning,
     xpMultiplier: 2.0,
     quote: '"What is the meaning of life? To be the best version of yourself, at every given moment."',
     badge: 'TRN',

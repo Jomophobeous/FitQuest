@@ -13,19 +13,22 @@ import { useTheme } from '../context/ThemeContext';
 import type { ThemeMode } from '../design/theme-system';
 import { getUserRankInfo, getLevelQuote, type RankMilestone } from '../services/rankingService';
 import { GlassCard } from './ui/GlassUI';
+import { typography, spacing } from '../design/theme-system';
+
 
 /**
  * Get theme-aware color — replaces green with gold in blackGold mode
  */
 function getThemedColor(color: string, themeMode: ThemeMode): string {
   if (themeMode !== 'blackGold') return color;
-  // Map green variants to gold in blackGold theme
+  // Map green hex variants → gold hex equivalents for blackGold theme
   const greenToGoldMap: Record<string, string> = {
-    '#10B981': '#C9A84C', // emerald green → champagne gold
-    '#3D9E6F': '#C9A84C', // muted green → gold
-    '#059669': '#C9A84C', // darker green → gold
+    '#10B981': '#D4A843', // accent green → champagne gold
+    '#10b981': '#D4A843',
+    '#059669': '#B8912C', // accentDark green → darker gold
+    '#059669': '#B8912C',
   };
-  return greenToGoldMap[color.toUpperCase()] || greenToGoldMap[color] || color;
+  return greenToGoldMap[color] || greenToGoldMap[color.toUpperCase()] || color;
 }
 
 interface RankBadgeProps {
@@ -313,7 +316,7 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: spacing[1.25],
     borderRadius: 20,
     borderWidth: 1,
   },
@@ -326,14 +329,14 @@ const styles = StyleSheet.create({
 
   // Rank Card
   rankCard: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingVertical: spacing[5],
+    paddingHorizontal: spacing[4],
   },
   rankTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    marginBottom: 14,
+    gap: spacing[3.5],
+    marginBottom: spacing[3.5],
   },
   rankIconCircle: {
     width: 72,
@@ -346,20 +349,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rankName: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   rankTitle: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   rankSubtitle: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
 
   // Tier
@@ -367,37 +370,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
     borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 14,
+    marginBottom: spacing[3.5],
   },
   tierText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '700',
   },
   tierDesc: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
 
   // Progress
   progressSection: {
-    marginBottom: 14,
+    marginBottom: spacing[3.5],
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: spacing[1.5],
   },
   progressLabel: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
   progressLevels: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
   progressBar: {
@@ -412,11 +415,11 @@ const styles = StyleSheet.create({
 
   // Quote
   quote: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontStyle: 'italic',
     fontWeight: '500',
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: spacing[3.5],
     lineHeight: 16,
   },
 
@@ -424,7 +427,7 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     borderTopWidth: StyleSheet.hairlineWidth,
-    paddingTop: 14,
+    paddingTop: spacing[3.5],
   },
   statItem: {
     flex: 1,
@@ -435,18 +438,18 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   statValue: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '800',
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
 
   // Milestone List
   milestoneList: {
-    paddingVertical: 8,
+    paddingVertical: spacing[2],
   },
   milestoneRow: {
     flexDirection: 'row',
@@ -469,27 +472,27 @@ const styles = StyleSheet.create({
   },
   milestoneInfo: {
     flex: 1,
-    paddingLeft: 10,
-    paddingVertical: 4,
+    paddingLeft: spacing[2.5],
+    paddingVertical: spacing[1],
   },
   milestoneHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 6,
+    gap: spacing[1.5],
   },
   milestoneName: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
   },
   milestoneLevel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
   milestoneTitle: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
-    marginTop: 1,
+    marginTop: spacing['px'],
   },
 });
 
-export default RankBadge;
+export default React.memo(RankBadge);

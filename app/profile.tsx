@@ -1,28 +1,26 @@
 /**
  * FitQuest Profile Screen
  * Premium glass-morphism profile with live stats, settings, and theme toggle
+ *
+ * Architecture: Pure UI — all data/service access via useProfileViewModel.
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  Platform,
   Switch,
   Modal,
   Pressable,
-  Alert,
   Image,
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as FileSystem from 'expo-file-system/legacy';
-import * as ImagePicker from 'expo-image-picker';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -32,67 +30,19 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  Layout,
 } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
-import { useDatabase } from '../src/context/DatabaseContext';
+import ThemedText from '../src/components/ThemedText';
 import { LanguageSelector } from '../src/components/LanguageSelector';
-import {
-  getUserProgress,
-  getStreak,
-  getUserProfile,
-  updateUserProfile,
-  getAppState,
-  setAppState,
-  getUserEquipment,
-  setUserEquipment,
-  getRecentSessions,
-  getMuscleFatigue,
-  getStepHistory,
-  getAllProgressRecords,
-  getUserInjuries,
-  getMindXP,
-  deleteAllUserData,
-  getJogTotals,
-} from '../src/database/service';
-import { useRouter, useFocusEffect } from 'expo-router';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
-import { getXPData, XPData } from '../src/services/xpService';
-import { useDataSync } from '../src/services/dataSyncService';
 import { GlassCard, GradientButton, ProgressRing, SectionHeader } from '../src/components/ui/GlassUI';
 import { RankCard, RankBadge, MilestoneList } from '../src/components/RankDisplay';
-import { useAuth } from '../src/context/AuthContext';
-import { useSubscription } from '../src/purchases/SubscriptionContext';
-import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../src/services/adaptiveTrainingService';
-import {
-  getSocialLayerSettings,
-  setSocialLayerEnabled,
-  type SocialLayerSettings,
-} from '../src/services/socialLayerService';
-import { acceptCurrentPolicies, getConsentRecord } from '../src/services/legalService';
-import { getCached, setCached } from '../src/services/cacheStoreService';
-import { runReplayIfDue } from '../src/services/replayOrchestrator';
-import {
-  getHealthAdapter,
-  initializeHealthIntegration,
-  isHealthIntegrationAvailable,
-  syncHealthData,
-} from '../src/services/healthAdapters';
-import { captureHealthError, errorTelemetry, type ErrorEvent } from '../src/services/errorTelemetry';
-import {
-  disableDailyWorkoutReminder,
-  enableDailyWorkoutReminder,
-  formatReminderHourLabel,
-  getNotificationReliabilitySettings,
-  setNotificationReminderHour,
-  scheduleDailyWorkoutReminder,
-  type NotificationReliabilitySettings,
-} from '../src/services/notificationReliabilityService';
-import { BiometricAuthService } from '../src/security/BiometricAuth';
-import { getProfessionSchedule, saveProfessionSchedule, type ProfessionSchedule } from '../src/engines/ReadinessEngine';
-const bioAuth = BiometricAuthService.getInstance();
+import { useProfileViewModel, GOAL_LABELS, MEAL_REGION_VALUES, type MealRegionValue, type ProfileData, type StatsData } from '../src/viewmodels/useProfileViewModel';
+import { typography, spacing, radius } from '../src/design/theme-system';
+import { isAnalyticsEnabled, setAnalyticsEnabled } from '../src/services/analyticsOptOut';
+import { featureFlags as featureFlagsService } from '../src/services/featureFlags';
 
 // ============================================
 // THEMED PICKER MODAL
@@ -143,8 +93,8 @@ function ThemedPickerModal({
           ]}
           onPress={(e) => e.stopPropagation()}
         >
-          <Text style={[modalStyles.title, { color: theme.colors.text }]}>{title}</Text>
-          {!!subtitle && <Text style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>{subtitle}</Text>}
+          <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>{title}</ThemedText>
+          {!!subtitle && <ThemedText style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>{subtitle}</ThemedText>}
 
           <ScrollView style={modalStyles.optionsList} showsVerticalScrollIndicator={false} bounces={false}>
             {options.map((opt, i) => {
@@ -167,7 +117,7 @@ function ThemedPickerModal({
                     onSelect(opt.value);
                   }}
                 >
-                  <Text
+                  <ThemedText
                     style={[
                       modalStyles.optionText,
                       {
@@ -177,7 +127,7 @@ function ThemedPickerModal({
                     ]}
                   >
                     {opt.label}
-                  </Text>
+                  </ThemedText>
                 </TouchableOpacity>
               );
             })}
@@ -195,7 +145,7 @@ function ThemedPickerModal({
             accessibilityRole="button"
             accessibilityLabel="Cancel"
           >
-            <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.cancel')}</Text>
+            <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.cancel')}</ThemedText>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -209,103 +159,53 @@ const modalStyles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.65)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
   },
   content: {
     width: '100%',
     maxWidth: 340,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: radius.xl,
+    padding: spacing[5],
     borderWidth: 1,
     maxHeight: '80%',
   },
   title: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: spacing[1],
     letterSpacing: 0.3,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   optionsList: {
-    gap: 6,
-    marginBottom: 12,
+    gap: spacing[1.5],
+    marginBottom: spacing[3],
   },
   optionItem: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    paddingVertical: spacing[3.5],
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   optionText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     textAlign: 'center',
     letterSpacing: 0.2,
   },
   cancelBtn: {
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: spacing[3.5],
+    borderRadius: radius.lg,
     alignItems: 'center',
   },
   cancelText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '600',
   },
 });
-
-// ============================================
-// TYPES
-// ============================================
-
-interface ProfileData {
-  name: string;
-  goal: string;
-  experience: string;
-  trainingDays: number;
-  sessionMinutes: number;
-}
-
-interface StatsData {
-  totalWorkouts: number;
-  totalCalories: number;
-  streak: number;
-  longestStreak: number;
-  level: number;
-  totalXP: number;
-  xpForNext: number;
-  currentLevelXP: number;
-}
-
-interface ProfileCacheSnapshot {
-  profile: ProfileData;
-  stats: StatsData;
-  adaptiveProfile: AdaptiveTrainingProfile | null;
-  socialSettings: SocialLayerSettings | null;
-  mealRegionOverride: MealRegionValue;
-  consentTimestamp: number | null;
-  consentVersion: string | null;
-  consentSource: 'remote' | 'local' | null;
-  notifications: NotificationReliabilitySettings;
-}
-
-const GOAL_LABELS: Record<
-  string,
-  { icon: string; colorKey: keyof typeof import('../src/design/theme-system').colorSystem.dark }
-> = {
-  body_control: { icon: 'human-handsup', colorKey: 'indigo' },
-  posture: { icon: 'human-male-height', colorKey: 'accent' },
-  speed: { icon: 'lightning-bolt', colorKey: 'warning' },
-  mobility: { icon: 'yoga', colorKey: 'pink' },
-  focus: { icon: 'head-snowflake', colorKey: 'purple' },
-  strength: { icon: 'weight-lifter', colorKey: 'error' },
-};
-
-const MEAL_REGION_VALUES = ['AUTO', 'ZA', 'US', 'GB', 'IN', 'BR', 'AU'] as const;
-type MealRegionValue = (typeof MEAL_REGION_VALUES)[number];
 
 // ============================================
 // MENU ITEM COMPONENT
@@ -358,11 +258,11 @@ function MenuItem({
             <MaterialCommunityIcons name={icon as any} size={18} color={color} />
           </View>
           <View style={styles.menuTextWrap}>
-            <Text style={[styles.menuLabel, { color: theme.colors.text }]}>{label}</Text>
+            <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>{label}</ThemedText>
             {!!sublabel && (
-              <Text numberOfLines={3} style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+              <ThemedText numberOfLines={3} style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
                 {sublabel}
-              </Text>
+              </ThemedText>
             )}
           </View>
           {rightContent || <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />}
@@ -390,765 +290,59 @@ function adaptiveLabel(value: number): string {
 // ============================================
 
 export default function ProfileScreen() {
-  const { theme, mode, setMode } = useTheme();
-  const { t, languageName } = useLanguage();
-  const { refreshProfile, isReady: dbReady } = useDatabase();
-  const { signOut } = useAuth();
-  const { accessState, trialDaysRemaining } = useSubscription();
-  const router = useRouter();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [stats, setStats] = useState<StatsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [privacyBusy, setPrivacyBusy] = useState(false);
-  const [consentTimestamp, setConsentTimestamp] = useState<number | null>(null);
-  const [consentVersion, setConsentVersion] = useState<string | null>(null);
-  const [consentSource, setConsentSource] = useState<'remote' | 'local' | null>(null);
-  const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptiveTrainingProfile | null>(null);
-  const [socialSettings, setSocialSettings] = useState<SocialLayerSettings | null>(null);
-  const [socialBusy, setSocialBusy] = useState(false);
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const [showThemePicker, setShowThemePicker] = useState(false);
-  const [mealRegionOverride, setMealRegionOverride] = useState<MealRegionValue>('AUTO');
-  const [notificationSettings, setNotificationSettings] = useState<NotificationReliabilitySettings>({
-    enabled: false,
-    reminderHour: 20,
-    permission: 'unknown',
-    lastScheduledAt: null,
-    lastPromptAt: null,
-  });
-  const [biometricAvailable, setBiometricAvailable] = useState(false);
-  const [biometricEnabled, setBiometricEnabled] = useState(false);
-  const [healthProviderCode, setHealthProviderCode] = useState<
-    'health_connect' | 'healthkit' | 'google_fit' | 'none' | 'unknown' | 'unavailable'
-  >('none');
-  const [healthIntegrationReady, setHealthIntegrationReady] = useState(false);
-  const [healthBusy, setHealthBusy] = useState(false);
-  const [healthConnectEnabled, setHealthConnectEnabled] = useState(true);
-  const [healthSyncErrors, setHealthSyncErrors] = useState<ErrorEvent[]>([]);
-  const [equipmentLevel, setEquipmentLevel] = useState<'none' | 'minimal' | 'playground'>('none');
-  const [showAboutModal, setShowAboutModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
-  const [expandedAdaptive, setExpandedAdaptive] = useState<string | null>(null);
-  const [profilePicUri, setProfilePicUri] = useState<string | null>(null);
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editNameValue, setEditNameValue] = useState('');
-  const [totalSteps, setTotalSteps] = useState(0);
-  const [totalDistance, setTotalDistance] = useState(0);
-  const [recentDistance, setRecentDistance] = useState(0);
-  const [mindXP, setMindXP] = useState<{
-    total_mind_xp: number;
-    mind_level: number;
-    pages_read_total: number;
-    flashcards_reviewed_total: number;
-    documents_completed: number;
-  } | null>(null);
-  const [professionSchedule, setProfessionSchedule] = useState<ProfessionSchedule | null>(null);
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [scheduleEdit, setScheduleEdit] = useState({
-    startHour: 8,
-    endHour: 17,
-    shiftType: 'day' as 'day' | 'night' | 'rotating',
-    commute: 30,
-  });
+  const vm = useProfileViewModel();
+  const {
+    theme, mode, setMode, t, languageName, router, accessState,
+    profile, stats, loading, loadError, adaptiveProfile, socialSettings, socialBusy,
+    mealRegionOverride, notificationSettings, biometricAvailable, biometricEnabled,
+    healthProviderCode, healthIntegrationReady, healthBusy, healthConnectEnabled,
+    healthSyncErrors, equipmentLevel, profilePicUri, isEditingName, editNameValue,
+    totalSteps, totalDistance, recentDistance, mindXP, professionSchedule,
+    consentTimestamp, consentVersion, consentSource, privacyBusy,
+    showLanguageSelector, setShowLanguageSelector, showThemePicker, setShowThemePicker,
+    showAboutModal, setShowAboutModal, showHelpModal, setShowHelpModal,
+    showScheduleModal, setShowScheduleModal, expandedAdaptive, setExpandedAdaptive,
+    setIsEditingName, setEditNameValue, scheduleEdit, setScheduleEdit,
+    pickerModal, closePicker,
+    handleTrainingDays, handleSessionLength, handleWorkSchedule, handleExperience,
+    handleGoalChange, handleEquipmentLevel, handleMealRegion, handleNotifications,
+    handleHealthConnectSettings, handleSyncHealth, handleLogout, handleRecordConsent,
+    handleExportData, handleDeleteCloudData, handleSocialToggle, handlePickPhoto,
+    handleSaveName, handleSaveSchedule, handleBiometricTest, handleDismissHealthErrors,
+    retryLoad,
+    goalInfo, goalLabel, xpProgress, mealRegionLabel,
+    healthConnectSublabel, healthSyncSublabel, notificationSublabel, biometricSublabel,
+    scheduleLabel, subscriptionLabel, subscriptionSublabel, subscriptionIcon,
+  } = vm;
 
-  // Themed modal state
-  const [pickerModal, setPickerModal] = useState<{
-    visible: boolean;
-    title: string;
-    subtitle?: string;
-    options: PickerOption[];
-    onSelect: (value: string) => void;
-    destructiveIndex?: number;
-  }>({ visible: false, title: '', options: [], onSelect: () => {} });
-
-  const closePicker = () => setPickerModal((prev) => ({ ...prev, visible: false }));
-
-  const mealRegionLabel = useCallback(
-    (value: MealRegionValue) => {
-      const key = `profile.mealRegion.${value.toLowerCase()}`;
-      return t(key);
-    },
-    [t],
-  );
-
-  const healthProviderLabel = useCallback(
-    (value: typeof healthProviderCode) => {
-      return t(`profile.healthProvider.${value}`);
-    },
-    [t],
-  );
-
-  const handleTrainingDays = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.trainingDaysModalTitle'),
-      subtitle: t('profile.trainingDaysModalSub'),
-      options: [1, 2, 3, 4, 5, 6, 7].map((d) => ({
-        label: `${d} ${d > 1 ? t('common.days') : t('common.day')}`,
-        value: String(d),
-      })),
-      onSelect: async (val) => {
-        const d = Number(val);
-        if (__DEV__) console.warn('[Profile] Update training days', { value: d });
-        await updateUserProfile('user_local_001', { training_days_per_week: d });
-        setProfile((prev) => (prev ? { ...prev, trainingDays: d } : prev));
-        await refreshProfile();
-      },
-    });
+  // Analytics opt-out toggle (local to profile screen)
+  const [analyticsOn, setAnalyticsOn] = useState(isAnalyticsEnabled());
+  useEffect(() => { setAnalyticsOn(isAnalyticsEnabled()); }, []);
+  const handleAnalyticsToggle = (next: boolean) => {
+    setAnalyticsOn(next);
+    void setAnalyticsEnabled(next);
   };
-
-  const handleSessionLength = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.sessionLengthModalTitle'),
-      subtitle: t('profile.sessionLengthModalSub'),
-      options: [15, 20, 30, 45, 60, 90].map((m) => ({
-        label: `${m} ${t('common.minutes')}`,
-        value: String(m),
-      })),
-      onSelect: async (val) => {
-        const m = Number(val);
-        if (__DEV__) console.warn('[Profile] Update session length', { value: m });
-        await updateUserProfile('user_local_001', { time_per_session_minutes: m });
-        setProfile((prev) => (prev ? { ...prev, sessionMinutes: m } : prev));
-        await refreshProfile();
-      },
-    });
-  };
-
-  const handleWorkSchedule = () => {
-    setScheduleEdit({
-      startHour: professionSchedule?.work_start_hour ?? 8,
-      endHour: professionSchedule?.work_end_hour ?? 17,
-      shiftType: (professionSchedule?.shift_type as 'day' | 'night' | 'rotating') || 'day',
-      commute: professionSchedule?.commute_minutes ?? 30,
-    });
-    setShowScheduleModal(true);
-  };
-
-  const handleExperience = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.experienceModalTitle'),
-      subtitle: t('profile.experienceModalSub'),
-      options: [
-        { label: t('profile.level.beginner'), value: 'beginner' },
-        { label: t('profile.level.intermediate'), value: 'intermediate' },
-        { label: t('profile.level.advanced'), value: 'advanced' },
-      ],
-      onSelect: async (val) => {
-        if (__DEV__) console.warn('[Profile] Update experience', { value: val });
-        await updateUserProfile('user_local_001', { experience: val as any });
-        setProfile((prev) => (prev ? { ...prev, experience: val } : prev));
-        await refreshProfile();
-      },
-    });
-  };
-
-  const handleGoalChange = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.goalModalTitle'),
-      subtitle: t('profile.goalModalSub'),
-      options: [
-        { label: t('profile.goal.body_control'), value: 'body_control' },
-        { label: t('profile.goal.posture'), value: 'posture' },
-        { label: t('profile.goal.speed'), value: 'speed' },
-        { label: t('profile.goal.mobility'), value: 'mobility' },
-        { label: t('profile.goal.focus'), value: 'focus' },
-        { label: t('profile.goal.strength'), value: 'strength' },
-      ],
-      onSelect: async (val) => {
-        if (__DEV__) console.warn('[Profile] Update goal', { value: val });
-        await updateUserProfile('user_local_001', { goal: val as any });
-        setProfile((prev) => (prev ? { ...prev, goal: val } : prev));
-        await refreshProfile();
-      },
-    });
-  };
-
-  const handleEquipmentLevel = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.equipmentLevel'),
-      subtitle: t('profile.equipmentLevelSub'),
-      options: [
-        { label: `🏠 ${t('profile.equipment.none')}`, value: 'none' },
-        { label: `🎒 ${t('profile.equipment.minimal')}`, value: 'minimal' },
-        { label: `🏋️ ${t('profile.equipment.playground')}`, value: 'playground' },
-      ],
-      onSelect: async (val) => {
-        const level = val as 'none' | 'minimal' | 'playground';
-        if (__DEV__) console.warn('[Profile] Update equipment level', { value: level });
-        await setAppState('user.equipment_level', level);
-        setEquipmentLevel(level);
-      },
-    });
-  };
-
-  const handleMealRegion = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.mealRegion.title'),
-      subtitle: t('profile.mealRegion.subtitle'),
-      options: MEAL_REGION_VALUES.map((value) => ({
-        label: mealRegionLabel(value),
-        value,
-      })),
-      onSelect: async (val) => {
-        const next = MEAL_REGION_VALUES.includes(val as MealRegionValue) ? (val as MealRegionValue) : 'AUTO';
-        await setAppState('meal.region_override', next);
-        setMealRegionOverride(next);
-      },
-    });
-  };
-
-  const handleNotifications = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.notifications'),
-      subtitle: t('profile.notificationsSub'),
-      options: [
-        { label: t('profile.notificationsAction.enable'), value: 'enable' },
-        { label: t('profile.notificationsAction.disable'), value: 'disable' },
-        { label: t('profile.notificationsAction.setReminderTime'), value: 'set_hour' },
-      ],
-      onSelect: async (value) => {
-        if (value === 'enable') {
-          await enableDailyWorkoutReminder(notificationSettings.reminderHour, 'profile');
-        } else if (value === 'disable') {
-          await disableDailyWorkoutReminder('profile');
-        } else if (value === 'set_hour') {
-          setPickerModal({
-            visible: true,
-            title: t('profile.notificationsAction.setReminderTime'),
-            subtitle: t('profile.notificationsAction.pickTime') || 'Choose your preferred reminder time',
-            options: Array.from({ length: 24 }, (_, hour) => ({
-              label: `${String(hour).padStart(2, '0')}:00`,
-              value: String(hour),
-            })),
-            onSelect: async (hourValue) => {
-              const hour = Number(hourValue);
-              if (Number.isFinite(hour)) {
-                await setNotificationReminderHour(hour);
-                const current = await getNotificationReliabilitySettings();
-                if (current.enabled) {
-                  await scheduleDailyWorkoutReminder(hour, 'profile');
-                }
-              }
-              const refreshed = await getNotificationReliabilitySettings();
-              setNotificationSettings(refreshed);
-            },
-          });
-          return;
-        }
-
-        const refreshed = await getNotificationReliabilitySettings();
-        setNotificationSettings(refreshed);
-      },
-    });
-  };
-
-  const refreshHealthIntegrationStatus = useCallback(async () => {
-    try {
-      // Check if user has disabled HealthConnect
-      const enabledFlag = await getAppState('healthconnect.enabled');
-      const isEnabled = enabledFlag !== 'false';
-      setHealthConnectEnabled(isEnabled);
-
-      if (!isEnabled) {
-        setHealthProviderCode('none');
-        setHealthIntegrationReady(false);
-        return;
-      }
-
-      const available = await isHealthIntegrationAvailable();
-      if (!available) {
-        setHealthProviderCode('none');
-        setHealthIntegrationReady(false);
-        return;
-      }
-
-      const adapter = await getHealthAdapter();
-      if (!adapter) {
-        setHealthProviderCode('none');
-        setHealthIntegrationReady(false);
-        return;
-      }
-
-      const status = await adapter.getStatus();
-      setHealthProviderCode((status.provider || 'unknown') as typeof healthProviderCode);
-      setHealthIntegrationReady(status.available && status.initialized);
-    } catch {
-      setHealthProviderCode('unavailable');
-      setHealthIntegrationReady(false);
-    }
-  }, []);
-
-  const refreshHealthSyncErrors = useCallback(() => {
-    const recentErrors = errorTelemetry.getRecentErrors({
-      category: 'health_sync',
-      unresolvedOnly: true,
-      limit: 5,
-    });
-    setHealthSyncErrors(recentErrors);
-  }, []);
-
-  const getHealthTelemetryProvider = useCallback(async (): Promise<'health_connect' | 'healthkit' | 'google_fit'> => {
-    try {
-      const adapter = await getHealthAdapter();
-      if (
-        adapter?.provider === 'health_connect' ||
-        adapter?.provider === 'healthkit' ||
-        adapter?.provider === 'google_fit'
-      ) {
-        return adapter.provider;
-      }
-    } catch {
-      // fall through
-    }
-    return 'health_connect';
-  }, []);
-
-  const handleConnectHealth = useCallback(async () => {
-    if (healthBusy) return;
-    setHealthBusy(true);
-    try {
-      const result = await initializeHealthIntegration();
-      await refreshHealthIntegrationStatus();
-      if (!result.success) {
-        Alert.alert(t('profile.healthConnect'), result.error || t('profile.healthConnectFailed'));
-      } else {
-        Alert.alert(t('profile.healthConnect'), t('profile.healthConnectSuccess'));
-      }
-    } catch (error) {
-      const provider = await getHealthTelemetryProvider();
-      await captureHealthError(error instanceof Error ? error : String(error), {
-        provider,
-        action: 'auth',
-      });
-      Alert.alert(t('profile.healthConnect'), t('profile.healthConnectFailed'));
-    } finally {
-      setHealthBusy(false);
-    }
-  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
-
-  const handleSyncHealth = useCallback(async () => {
-    if (healthBusy) return;
-    setHealthBusy(true);
-    try {
-      const result = await syncHealthData({
-        since: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        categories: ['steps', 'calories', 'heart_rate', 'sleep', 'workout'],
-      });
-      await refreshHealthIntegrationStatus();
-      Alert.alert(
-        t('profile.healthSync'),
-        `${t('profile.healthSyncSummary')}: ${result.synced}\n${t('profile.healthSyncErrors')}: ${result.errors}`,
-      );
-    } catch (error) {
-      const provider = await getHealthTelemetryProvider();
-      await captureHealthError(error instanceof Error ? error : String(error), {
-        provider,
-        action: 'sync',
-      });
-      Alert.alert(t('profile.healthSync'), t('profile.healthSyncFailed'));
-    } finally {
-      setHealthBusy(false);
-    }
-  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
-
-  const handleHealthConnectSettings = useCallback(() => {
-    if (healthConnectEnabled && healthIntegrationReady) {
-      // Already connected — show connect/disconnect picker
-      setPickerModal({
-        visible: true,
-        title: t('profile.healthConnect'),
-        subtitle: t('profile.healthConnectManage') || 'Manage Health Connect integration',
-        options: [
-          { label: t('profile.healthSyncNow') || 'Sync Now', value: 'sync' },
-          { label: t('profile.healthReconnect') || 'Reconnect', value: 'reconnect' },
-          { label: t('profile.healthDisconnect') || 'Disconnect', value: 'disconnect' },
-        ],
-        destructiveIndex: 2,
-        onSelect: async (value: string) => {
-          if (value === 'disconnect') {
-            await setAppState('healthconnect.enabled', 'false');
-            setHealthConnectEnabled(false);
-            setHealthIntegrationReady(false);
-            setHealthProviderCode('none');
-          } else if (value === 'reconnect') {
-            await setAppState('healthconnect.enabled', 'true');
-            await setAppState('healthconnect.permissions_requested', '');
-            setHealthConnectEnabled(true);
-            void handleConnectHealth();
-          } else if (value === 'sync') {
-            void handleSyncHealth();
-          }
-        },
-      });
-    } else {
-      // Not connected — connect directly
-      void (async () => {
-        await setAppState('healthconnect.enabled', 'true');
-        setHealthConnectEnabled(true);
-        await handleConnectHealth();
-      })();
-    }
-  }, [healthConnectEnabled, healthIntegrationReady, handleConnectHealth, handleSyncHealth, t]);
-
-  const isLoadingProfileRef = useRef(false);
-  const lastProfileLoadAt = useRef(0);
-  const PROFILE_LOAD_COOLDOWN_MS = 2000;
-  const profileLoadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const debouncedLoadProfile = useCallback(() => {
-    if (!dbReady) return;
-    if (profileLoadTimer.current) clearTimeout(profileLoadTimer.current);
-    profileLoadTimer.current = setTimeout(() => {
-      if (Date.now() - lastProfileLoadAt.current < PROFILE_LOAD_COOLDOWN_MS) return;
-      loadData();
-    }, 300);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadData intentionally omitted to prevent re-trigger
-  }, [dbReady]);
-
-  useEffect(() => {
-    if (!dbReady) return;
-    void runReplayIfDue({ reason: 'profile_load', cooldownMs: 45 * 1000 });
-    void loadData();
-    void refreshHealthIntegrationStatus();
-    void refreshHealthSyncErrors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run once on mount when dbReady
-  }, [dbReady]);
-
-  // Refresh data when screen gains focus (e.g. navigating back from workout)
-  useFocusEffect(
-    useCallback(() => {
-      if (dbReady) debouncedLoadProfile();
-    }, [dbReady, debouncedLoadProfile]),
-  );
-
-  // Subscribe to data sync events for real-time updates (debounced)
-  useDataSync(
-    ['workout_completed', 'xp_awarded', 'level_up', 'streak_updated', 'profile_updated', 'rank_milestone_reached'],
-    debouncedLoadProfile,
-  );
-
-  const loadData = useCallback(async () => {
-    if (isLoadingProfileRef.current) {
-      if (__DEV__) console.warn('[Profile] loadData:skipped (already loading)');
-      return;
-    }
-    isLoadingProfileRef.current = true;
-    lastProfileLoadAt.current = Date.now();
-    try {
-      const cached = await getCached<ProfileCacheSnapshot>('profile', 'main');
-      if (cached.value) {
-        setProfile(cached.value.profile);
-        setStats(cached.value.stats);
-        setAdaptiveProfile(cached.value.adaptiveProfile);
-        setSocialSettings(cached.value.socialSettings);
-        setMealRegionOverride(cached.value.mealRegionOverride);
-        setConsentTimestamp(cached.value.consentTimestamp);
-        setConsentVersion(cached.value.consentVersion);
-        setConsentSource(cached.value.consentSource);
-        setNotificationSettings(cached.value.notifications);
-      }
-
-      const [
-        userProfile,
-        progress,
-        streak,
-        xp,
-        adaptive,
-        social,
-        savedMealRegion,
-        consentRecord,
-        notifications,
-        savedEquipmentLevel,
-        savedName,
-        savedProfilePic,
-        scheduleData,
-      ] = await Promise.all([
-        getUserProfile('user_local_001').catch(() => null),
-        getUserProgress().catch(() => ({ total_workouts: 0, completed_workouts: 0, weekly_xp: 0 })),
-        getStreak('user_local_001').catch(() => ({ current: 0, longest: 0 })),
-        getXPData().catch(() => ({ level: 1, totalXP: 0, xpToNextLevel: 500, currentLevelXP: 0 })),
-        getAdaptiveTrainingProfile('user_local_001').catch(() => null),
-        getSocialLayerSettings('user_local_001').catch(() => null),
-        getAppState('meal.region_override').catch(() => null),
-        getConsentRecord().catch(() => ({ timestamp: null, version: null, source: null as 'remote' | 'local' | null })),
-        getNotificationReliabilitySettings().catch(() => ({
-          enabled: false,
-          reminderHour: 20,
-          permission: 'unknown' as const,
-          lastScheduledAt: null,
-          lastPromptAt: null,
-        })),
-        getAppState('user.equipment_level').catch(() => null),
-        getAppState('user.display_name').catch(() => null),
-        getAppState('user.profile_pic').catch(() => null),
-        getProfessionSchedule('user_local_001').catch(() => null),
-      ]);
-
-      const eqLevel = (
-        ['none', 'minimal', 'playground'].includes(savedEquipmentLevel || '') ? savedEquipmentLevel : 'none'
-      ) as 'none' | 'minimal' | 'playground';
-      setEquipmentLevel(eqLevel);
-      if (scheduleData) setProfessionSchedule(scheduleData);
-
-      const displayName = savedName || 'Athlete';
-      if (savedProfilePic) setProfilePicUri(savedProfilePic);
-
-      // Load real step & distance data
-      try {
-        const stepsResult = await getStepHistory('user_local_001', 365);
-        const totalS = stepsResult.reduce((sum, d) => sum + (d.steps || 0), 0);
-        setTotalSteps(totalS);
-      } catch {
-        /* step data optional */
-      }
-
-      try {
-        const jogResult = await getJogTotals('user_local_001');
-        setTotalDistance(Math.round(((jogResult?.total || 0) / 1000) * 10) / 10);
-        setRecentDistance(Math.round(((jogResult?.longest || 0) / 1000) * 10) / 10);
-      } catch {
-        /* jog data optional */
-      }
-
-      // Calculate more realistic calories from workout sessions
-      let estimatedCalories = 0;
-      try {
-        const sessions = await getRecentSessions('user_local_001', 100);
-        estimatedCalories = sessions.reduce((sum, s) => sum + Math.round((s.duration_minutes || 0) * 6.5), 0);
-      } catch {
-        estimatedCalories = progress.total_workouts * 280;
-      }
-
-      // Use functional update to preserve existing name if no saved name found
-      setProfile((prev) => ({
-        name: savedName || prev?.name || 'Athlete',
-        goal: userProfile?.goal || 'body_control',
-        experience: userProfile?.experience || 'beginner',
-        trainingDays: userProfile?.training_days_per_week || 3,
-        sessionMinutes: userProfile?.time_per_session_minutes || 30,
-      }));
-
-      setStats({
-        totalWorkouts: progress.completed_workouts,
-        totalCalories: estimatedCalories,
-        streak: streak.current,
-        longestStreak: streak.longest,
-        level: xp.level,
-        totalXP: xp.totalXP,
-        xpForNext: xp.xpToNextLevel,
-        currentLevelXP: xp.currentLevelXP,
-      });
-
-      setAdaptiveProfile(adaptive);
-      setSocialSettings(social);
-      const normalizedMealRegion = MEAL_REGION_VALUES.includes((savedMealRegion || 'AUTO') as MealRegionValue)
-        ? ((savedMealRegion || 'AUTO') as MealRegionValue)
-        : 'AUTO';
-      setMealRegionOverride(normalizedMealRegion);
-      setConsentTimestamp(consentRecord.timestamp);
-      setConsentVersion(consentRecord.version);
-      setConsentSource(consentRecord.source);
-      setNotificationSettings(notifications);
-
-      await setCached('profile', 'main', {
-        profile: {
-          name: displayName,
-          goal: userProfile?.goal || 'body_control',
-          experience: userProfile?.experience || 'beginner',
-          trainingDays: userProfile?.training_days_per_week || 3,
-          sessionMinutes: userProfile?.time_per_session_minutes || 30,
-        },
-        stats: {
-          totalWorkouts: progress.completed_workouts,
-          totalCalories: estimatedCalories,
-          streak: streak.current,
-          longestStreak: streak.longest,
-          level: xp.level,
-          totalXP: xp.totalXP,
-          xpForNext: xp.xpToNextLevel,
-          currentLevelXP: xp.currentLevelXP,
-        },
-        adaptiveProfile: adaptive,
-        socialSettings: social,
-        mealRegionOverride: normalizedMealRegion,
-        consentTimestamp: consentRecord.timestamp,
-        consentVersion: consentRecord.version,
-        consentSource: consentRecord.source,
-        notifications,
-      } satisfies ProfileCacheSnapshot);
-
-      // Check biometric availability
-      try {
-        const capability = await bioAuth.initialize();
-        setBiometricAvailable(capability.isAvailable);
-        const sessionValid = await bioAuth.isSessionValid();
-        setBiometricEnabled(sessionValid);
-      } catch {
-        /* biometric detection optional */
-      }
-
-      // Load Mind XP data
-      try {
-        const mxp = await getMindXP('user_local_001');
-        if (mxp) setMindXP(mxp);
-      } catch {
-        /* mind xp optional */
-      }
-    } catch (err) {
-      if (__DEV__) console.error('[Profile] Load failed:', err);
-    } finally {
-      setLoading(false);
-      isLoadingProfileRef.current = false;
-      lastProfileLoadAt.current = Date.now();
-    }
-  }, []);
-
-  const goalMeta = GOAL_LABELS[profile?.goal || 'body_control'] ?? GOAL_LABELS['body_control']!;
-  const goalInfo = { icon: goalMeta.icon, color: (theme.colors as any)[goalMeta.colorKey] as string };
-  const goalLabel = t(`profile.goal.${profile?.goal || 'body_control'}`);
-  const xpProgress = stats && stats.xpForNext > 0 ? stats.currentLevelXP / stats.xpForNext : 0;
-
-  const handleLogout = () => {
-    setPickerModal({
-      visible: true,
-      title: t('profile.logout'),
-      subtitle: t('profile.logoutConfirm'),
-      options: [{ label: t('profile.logout'), value: 'logout' }],
-      destructiveIndex: 0,
-      onSelect: async () => {
-        await signOut();
-        router.replace('/login');
-      },
-    });
-  };
-
-  const handleRecordConsent = useCallback(async () => {
-    if (privacyBusy) return;
-    setPrivacyBusy(true);
-    try {
-      const result = await acceptCurrentPolicies();
-      setConsentTimestamp(result.timestamp);
-      setConsentVersion(result.version);
-      setConsentSource(result.source);
-      Alert.alert(
-        t('profile.alert.consentRecordedTitle'),
-        `${t('profile.alert.consentRecordedBody')}\n${t('profile.version')}: ${result.version}`,
-      );
-    } catch (e: any) {
-      Alert.alert(t('common.error'), e?.message ?? t('profile.alert.consentFailed'));
-    } finally {
-      setPrivacyBusy(false);
-    }
-  }, [privacyBusy, t]);
-
-  const handleExportData = useCallback(async () => {
-    if (privacyBusy) return;
-    setPrivacyBusy(true);
-    try {
-      // Gather all local SQLite data for export
-      const [profile, equipment, injuries, fatigue, sessions, streakData, progress, steps, xp] = await Promise.all([
-        getUserProfile('user_local_001'),
-        getUserEquipment('user_local_001'),
-        getUserInjuries('user_local_001'),
-        getMuscleFatigue('user_local_001'),
-        getRecentSessions('user_local_001', 100),
-        getStreak('user_local_001'),
-        getAllProgressRecords('user_local_001', 100),
-        getStepHistory('user_local_001', 90),
-        getXPData(),
-      ]);
-
-      const payload = {
-        _exportedAt: new Date().toISOString(),
-        _version: 'FitQuest 2.0 Local Export',
-        profile,
-        equipment,
-        injuries,
-        muscleFatigue: fatigue,
-        workoutSessions: sessions,
-        streak: streakData,
-        progressRecords: progress,
-        dailySteps: steps,
-        xpData: xp,
-      };
-
-      const exportDir = `${FileSystem.documentDirectory}exports/`;
-      const dirInfo = await FileSystem.getInfoAsync(exportDir);
-      if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(exportDir, { intermediates: true });
-      }
-
-      const outUri = `${exportDir}fitquest_user_export_${Date.now()}.json`;
-      await FileSystem.writeAsStringAsync(outUri, JSON.stringify(payload, null, 2), {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-
-      Alert.alert(t('profile.alert.exportCompleteTitle'), `${t('profile.alert.savedTo')}\n${outUri}`);
-    } catch (e: any) {
-      Alert.alert(t('profile.alert.exportFailedTitle'), e?.message ?? t('profile.alert.exportFailedBody'));
-    } finally {
-      setPrivacyBusy(false);
-    }
-  }, [privacyBusy, t]);
-
-  const handleDeleteCloudData = useCallback(() => {
-    if (privacyBusy) return;
-    Alert.alert(t('profile.menu.deleteCloudData'), t('profile.menu.deleteCloudDataConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('profile.menu.deletePermanently'),
-        style: 'destructive',
-        onPress: async () => {
-          setPrivacyBusy(true);
-          try {
-            await deleteAllUserData('user_local_001');
-            await signOut();
-            router.replace('/login');
-          } catch (e: any) {
-            Alert.alert(t('profile.alert.deleteFailedTitle'), e?.message ?? t('profile.alert.deleteFailedBody'));
-          } finally {
-            setPrivacyBusy(false);
-          }
-        },
-      },
-    ]);
-  }, [privacyBusy, signOut, router, t]);
-
-  const handleSocialToggle = useCallback(
-    async (enabled: boolean) => {
-      if (socialBusy) return;
-      setSocialBusy(true);
-      try {
-        const next = await setSocialLayerEnabled('user_local_001', enabled);
-        setSocialSettings(next);
-      } catch (e: any) {
-        Alert.alert(t('profile.alert.updateFailedTitle'), e?.message ?? t('profile.alert.updateSocialFailedBody'));
-      } finally {
-        setSocialBusy(false);
-      }
-    },
-    [socialBusy, t],
-  );
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' },
-        ]}
-      >
-        <Animated.View entering={ZoomIn}>
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <Animated.View entering={ZoomIn} style={{ alignItems: 'center' }}>
           <MaterialCommunityIcons name="account-circle" size={48} color={theme.colors.accent} />
+          <ThemedText variant="bodySmall" color="muted" style={{ marginTop: spacing[2] }}>
+            {t('profile.loading') || 'Loading profile...'}
+          </ThemedText>
         </Animated.View>
-      </View>
+      </ScreenContainer>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center', padding: spacing[6] }}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{loadError}</ThemedText>
+        <GradientButton title="Retry" onPress={retryLoad} style={{ marginTop: spacing[4] }} />
+      </ScreenContainer>
     );
   }
 
@@ -1157,7 +351,7 @@ export default function ProfileScreen() {
       screenName="Profile"
       onGoBack={() => (router.canGoBack() ? router.back() : router.replace('/dashboard' as any))}
     >
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <ScreenTutorial
           screenKey="profile"
           icon="account-circle"
@@ -1190,23 +384,7 @@ export default function ProfileScreen() {
                     style={styles.avatarGlowWrap}
                     accessibilityRole="button"
                     accessibilityLabel="Change profile photo"
-                    onPress={async () => {
-                      try {
-                        const result = await ImagePicker.launchImageLibraryAsync({
-                          mediaTypes: ['images'],
-                          allowsEditing: false,
-                          quality: 0.7,
-                        });
-                        if (!result.canceled && result.assets[0]?.uri) {
-                          const destUri = `${FileSystem.documentDirectory}profile_pic.jpg`;
-                          await FileSystem.copyAsync({ from: result.assets[0].uri, to: destUri });
-                          setProfilePicUri(destUri);
-                          await setAppState('user.profile_pic', destUri);
-                        }
-                      } catch (e) {
-                        if (__DEV__) console.warn('[Profile] Photo pick failed:', e);
-                      }
-                    }}
+                    onPress={handlePickPhoto}
                   >
                     <LinearGradient
                       colors={[theme.colors.accent, theme.colors.purple, theme.colors.pink] as [string, string, string]}
@@ -1220,9 +398,9 @@ export default function ProfileScreen() {
                             colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                             style={styles.avatarGradient}
                           >
-                            <Text style={[styles.avatarInitials, { color: theme.colors.text }]}>
+                            <ThemedText style={[styles.avatarInitials, { color: theme.colors.text }]}>
                               {(profile?.name || 'A').charAt(0).toUpperCase()}
-                            </Text>
+                            </ThemedText>
                           </LinearGradient>
                         )}
                       </View>
@@ -1235,7 +413,7 @@ export default function ProfileScreen() {
                   {/* Editable Name & goal */}
                   <Animated.View entering={FadeInDown.delay(50).duration(150)}>
                     {isEditingName ? (
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                         <TextInput
                           style={[
                             styles.profileName,
@@ -1245,7 +423,7 @@ export default function ProfileScreen() {
                               borderBottomColor: theme.colors.accent,
                               minWidth: 120,
                               textAlign: 'center',
-                              paddingBottom: 2,
+                              paddingBottom: spacing[0.5],
                             },
                           ]}
                           value={editNameValue}
@@ -1254,22 +432,8 @@ export default function ProfileScreen() {
                           maxLength={24}
                           accessibilityLabel="Profile name"
                           accessibilityHint="Edit your display name, up to 24 characters"
-                          onBlur={async () => {
-                            const trimmed = editNameValue.trim();
-                            if (trimmed) {
-                              setProfile((prev) => (prev ? { ...prev, name: trimmed } : prev));
-                              await setAppState('user.display_name', trimmed);
-                            }
-                            setIsEditingName(false);
-                          }}
-                          onSubmitEditing={async () => {
-                            const trimmed = editNameValue.trim();
-                            if (trimmed) {
-                              setProfile((prev) => (prev ? { ...prev, name: trimmed } : prev));
-                              await setAppState('user.display_name', trimmed);
-                            }
-                            setIsEditingName(false);
-                          }}
+                          onBlur={handleSaveName}
+                          onSubmitEditing={handleSaveName}
                         />
                       </View>
                     ) : (
@@ -1281,10 +445,10 @@ export default function ProfileScreen() {
                         accessibilityRole="button"
                         accessibilityLabel="Edit profile name"
                       >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <Text style={[styles.profileName, { color: theme.colors.text }]}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
+                          <ThemedText style={[styles.profileName, { color: theme.colors.text }]}>
                             {profile?.name || 'Athlete'}
-                          </Text>
+                          </ThemedText>
                           <MaterialCommunityIcons name="pencil-outline" size={16} color={theme.colors.textMuted} />
                         </View>
                       </TouchableOpacity>
@@ -1294,7 +458,7 @@ export default function ProfileScreen() {
                   <Animated.View entering={FadeInDown.delay(80).duration(150)}>
                     <View style={[styles.goalBadge, { backgroundColor: goalInfo.color + '20' }]}>
                       <MaterialCommunityIcons name={goalInfo.icon as any} size={14} color={goalInfo.color} />
-                      <Text style={[styles.goalBadgeText, { color: goalInfo.color }]}>{goalLabel}</Text>
+                      <ThemedText style={[styles.goalBadgeText, { color: goalInfo.color }]}>{goalLabel}</ThemedText>
                     </View>
                   </Animated.View>
 
@@ -1305,11 +469,11 @@ export default function ProfileScreen() {
                         style={[styles.levelBadge, { backgroundColor: theme.colors.accent + '25' }]}
                         accessibilityLabel={`Level ${stats?.level || 1}`}
                       >
-                        <Text style={[styles.levelText, { color: theme.colors.accent }]}>LVL {stats?.level || 1}</Text>
+                        <ThemedText style={[styles.levelText, { color: theme.colors.accent }]}>LVL {stats?.level || 1}</ThemedText>
                       </View>
-                      <Text style={[styles.xpLabel, { color: theme.colors.textMuted }]}>
+                      <ThemedText style={[styles.xpLabel, { color: theme.colors.textMuted }]}>
                         {stats?.currentLevelXP || 0} / {stats?.xpForNext || 100} XP
-                      </Text>
+                      </ThemedText>
                     </View>
                     <View
                       style={[
@@ -1344,8 +508,8 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
                   </LinearGradient>
-                  <Text style={[styles.statValue, { color: theme.colors.text }]}>{stats?.streak || 0}</Text>
-                  <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.streak')}</Text>
+                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>{stats?.streak || 0}</ThemedText>
+                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.streak')}</ThemedText>
                 </View>
                 <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.primaryStat}>
@@ -1355,8 +519,8 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="dumbbell" size={20} color={theme.colors.accent} />
                   </LinearGradient>
-                  <Text style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalWorkouts || 0}</Text>
-                  <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.workouts')}</Text>
+                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalWorkouts || 0}</ThemedText>
+                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.workouts')}</ThemedText>
                 </View>
                 <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.primaryStat}>
@@ -1366,8 +530,8 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="lightning-bolt" size={20} color={theme.colors.purple} />
                   </LinearGradient>
-                  <Text style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalXP || 0}</Text>
-                  <Text style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.xp')}</Text>
+                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalXP || 0}</ThemedText>
+                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.xp')}</ThemedText>
                 </View>
               </View>
 
@@ -1378,26 +542,26 @@ export default function ProfileScreen() {
               <View style={styles.secondaryStatsRow}>
                 <View style={styles.secondaryStat}>
                   <MaterialCommunityIcons name="shoe-print" size={16} color={theme.colors.blue} />
-                  <Text style={[styles.secondaryValue, { color: theme.colors.text }]}>
+                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>
                     {totalSteps > 1000 ? `${(totalSteps / 1000).toFixed(1)}k` : `${totalSteps}`}
-                  </Text>
-                  <Text style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
                     {t('profile.totalSteps') || 'Steps'}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.secondaryStat}>
                   <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.colors.skyBlue} />
-                  <Text style={[styles.secondaryValue, { color: theme.colors.text }]}>{totalDistance}km</Text>
-                  <Text style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
+                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>{totalDistance}km</ThemedText>
+                  <ThemedText style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
                     {t('profile.totalDistance') || 'Distance'}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.secondaryStat}>
                   <MaterialCommunityIcons name="run" size={16} color={theme.colors.orange} />
-                  <Text style={[styles.secondaryValue, { color: theme.colors.text }]}>{recentDistance}km</Text>
-                  <Text style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
+                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>{recentDistance}km</ThemedText>
+                  <ThemedText style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
                     {t('profile.bestRun') || 'Best Run'}
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
             </GlassCard>
@@ -1407,8 +571,8 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <SectionHeader title={t('profile.rank') || 'Rank & Progress'} delay={250} />
             <RankCard level={stats?.level || 1} totalXP={stats?.totalXP || 0} showQuote={true} />
-            <View style={{ marginTop: 8 }}>
-              <GlassCard style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
+            <View style={{ marginTop: spacing[2] }}>
+              <GlassCard style={{ paddingHorizontal: spacing[3], paddingVertical: spacing[2] }}>
                 <MilestoneList currentLevel={stats?.level || 1} maxVisible={5} />
               </GlassCard>
             </View>
@@ -1418,48 +582,48 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <SectionHeader title={'Mind XP'} delay={275} />
             <GlassCard gradient delay={280}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing[3] }}>
                 <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.purple + '18' }]}>
                   <MaterialCommunityIcons name="head-lightbulb-outline" size={22} color={theme.colors.purple} />
                 </View>
-                <View style={{ flex: 1, marginLeft: 12 }}>
-                  <Text style={[styles.menuLabel, { color: theme.colors.text, fontSize: 16 }]}>Craft My Mind</Text>
-                  <Text style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                <View style={{ flex: 1, marginLeft: spacing[3] }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text, fontSize: typography.sizes.body }]}>Craft My Mind</ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
                     {mindXP?.total_mind_xp || 0} Mind XP
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View
                   style={{
                     backgroundColor: theme.colors.warning + '25',
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
+                    paddingHorizontal: spacing[2],
+                    paddingVertical: spacing[0.75],
                     borderRadius: 6,
                   }}
                 >
-                  <Text style={{ color: theme.colors.warning, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>
+                  <ThemedText style={{ color: theme.colors.warning, fontSize: typography.sizes.xs, fontWeight: '700', letterSpacing: 0.5 }}>
                     COMING SOON
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
               <View style={{ opacity: 0.5 }}>
                 <View style={styles.achievementRow}>
                   <View style={styles.achievementItem}>
-                    <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                    <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                       {mindXP?.pages_read_total || 0}
-                    </Text>
-                    <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Pages Read</Text>
+                    </ThemedText>
+                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Pages Read</ThemedText>
                   </View>
                   <View style={styles.achievementItem}>
-                    <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                    <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                       {mindXP?.flashcards_reviewed_total || 0}
-                    </Text>
-                    <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Cards Reviewed</Text>
+                    </ThemedText>
+                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Cards Reviewed</ThemedText>
                   </View>
                   <View style={styles.achievementItem}>
-                    <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                    <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                       {mindXP?.documents_completed || 0}
-                    </Text>
-                    <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Books Done</Text>
+                    </ThemedText>
+                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Books Done</ThemedText>
                   </View>
                 </View>
               </View>
@@ -1480,12 +644,12 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="trophy" size={20} color={theme.colors.accent} />
                   </ProgressRing>
-                  <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                  <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                     {stats?.totalWorkouts || 0}/50
-                  </Text>
-                  <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
                     {t('dashboard.workouts')}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.achievementItem}>
                   <ProgressRing
@@ -1496,12 +660,12 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
                   </ProgressRing>
-                  <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                  <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                     {stats?.longestStreak || 0}/30
-                  </Text>
-                  <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
                     {t('profile.bestStreak')}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={styles.achievementItem}>
                   <ProgressRing
@@ -1512,8 +676,8 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="star" size={20} color={theme.colors.accent} />
                   </ProgressRing>
-                  <Text style={[styles.achievementLabel, { color: theme.colors.text }]}>LVL {stats?.level || 1}</Text>
-                  <Text style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('dashboard.level')}</Text>
+                  <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>LVL {stats?.level || 1}</ThemedText>
+                  <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('dashboard.level')}</ThemedText>
                 </View>
               </View>
             </GlassCard>
@@ -1523,27 +687,9 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <SectionHeader title={t('profile.subscription') || 'Subscription'} delay={350} />
             <MenuItem
-              icon={
-                accessState === 'SUBSCRIBED'
-                  ? 'check-decagram'
-                  : accessState === 'TRIAL_ACTIVE'
-                    ? 'clock-outline'
-                    : 'lock'
-              }
-              label={
-                accessState === 'SUBSCRIBED'
-                  ? t('profile.subscribed') || 'Subscribed'
-                  : accessState === 'TRIAL_ACTIVE'
-                    ? `${t('profile.trial') || 'Trial'} — ${trialDaysRemaining} ${t('paywall.trialDaysLeft') || 'days left'}`
-                    : t('profile.expired') || 'Expired'
-              }
-              sublabel={
-                accessState === 'SUBSCRIBED'
-                  ? t('profile.fullAccess') || 'Full access to every feature'
-                  : accessState === 'TRIAL_ACTIVE'
-                    ? t('profile.trialAccess') || 'Full access during trial'
-                    : t('profile.subscribeToUnlock') || 'Subscribe to unlock all features'
-              }
+              icon={subscriptionIcon}
+              label={subscriptionLabel}
+              sublabel={subscriptionSublabel}
               color={accessState === 'EXPIRED' ? theme.colors.error : theme.colors.accent}
               delay={370}
               onPress={accessState !== 'SUBSCRIBED' ? () => router.push('/paywall') : undefined}
@@ -1593,6 +739,7 @@ export default function ProfileScreen() {
               delay={510}
               onPress={handleEquipmentLevel}
             />
+            {featureFlagsService.isEnabled('BODY_CRAFT_MODULE') && (
             <MenuItem
               icon="human-edit"
               label={t('profile.craftMyBody')}
@@ -1601,14 +748,11 @@ export default function ProfileScreen() {
               delay={520}
               onPress={() => router.push('/craft-my-body')}
             />
+            )}
             <MenuItem
               icon="briefcase-clock-outline"
               label="Work Schedule"
-              sublabel={
-                professionSchedule
-                  ? `${professionSchedule.work_start_hour.toString().padStart(2, '0')}:00–${professionSchedule.work_end_hour.toString().padStart(2, '0')}:00 · ${professionSchedule.shift_type} shift`
-                  : 'Set your work hours for smarter scheduling'
-              }
+              sublabel={scheduleLabel}
               color={theme.colors.blue}
               delay={530}
               onPress={handleWorkSchedule}
@@ -1619,25 +763,27 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <SectionHeader title={t('profile.adaptiveTraining')} delay={530} />
             <GlassCard delay={560}>
-              <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginBottom: 12, lineHeight: 18 }}>
+              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginBottom: spacing[3], lineHeight: 18 }}>
                 {t('profile.adaptiveExplanation')}
-              </Text>
+              </ThemedText>
 
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setExpandedAdaptive(expandedAdaptive === 'fatigue' ? null : 'fatigue')}
+                accessibilityRole="button"
+                accessibilityLabel={`Fatigue sensitivity${expandedAdaptive === 'fatigue' ? ', expanded' : ''}`}
               >
                 <View style={styles.adaptiveRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                     <MaterialCommunityIcons name="heart-pulse" size={16} color={theme.colors.error} />
-                    <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
+                    <ThemedText style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
                       {t('profile.fatigueSensitivity')}
-                    </Text>
+                    </ThemedText>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
+                    <ThemedText style={[styles.adaptiveValue, { color: theme.colors.text }]}>
                       {adaptiveLabel(adaptiveProfile ? adaptiveProfile.fatigueSensitivity : 1)}
-                    </Text>
+                    </ThemedText>
                     <MaterialCommunityIcons
                       name={expandedAdaptive === 'fatigue' ? 'chevron-up' : 'chevron-down'}
                       size={14}
@@ -1647,28 +793,30 @@ export default function ProfileScreen() {
                 </View>
               </TouchableOpacity>
               {expandedAdaptive === 'fatigue' && (
-                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: 24, paddingBottom: 8 }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 18 }}>
+                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}>
                     {t('profile.fatigueSensitivityDesc')}
-                  </Text>
+                  </ThemedText>
                 </Animated.View>
               )}
 
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setExpandedAdaptive(expandedAdaptive === 'progression' ? null : 'progression')}
+                accessibilityRole="button"
+                accessibilityLabel={`Progression pace${expandedAdaptive === 'progression' ? ', expanded' : ''}`}
               >
                 <View style={styles.adaptiveRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                     <MaterialCommunityIcons name="trending-up" size={16} color={theme.colors.accent} />
-                    <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
+                    <ThemedText style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
                       {t('profile.progressionPace')}
-                    </Text>
+                    </ThemedText>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
+                    <ThemedText style={[styles.adaptiveValue, { color: theme.colors.text }]}>
                       {adaptiveLabel(adaptiveProfile ? adaptiveProfile.progressionAggressiveness : 1)}
-                    </Text>
+                    </ThemedText>
                     <MaterialCommunityIcons
                       name={expandedAdaptive === 'progression' ? 'chevron-up' : 'chevron-down'}
                       size={14}
@@ -1678,28 +826,30 @@ export default function ProfileScreen() {
                 </View>
               </TouchableOpacity>
               {expandedAdaptive === 'progression' && (
-                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: 24, paddingBottom: 8 }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 18 }}>
+                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}>
                     {t('profile.progressionPaceDesc')}
-                  </Text>
+                  </ThemedText>
                 </Animated.View>
               )}
 
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setExpandedAdaptive(expandedAdaptive === 'volume' ? null : 'volume')}
+                accessibilityRole="button"
+                accessibilityLabel={`Volume tolerance${expandedAdaptive === 'volume' ? ', expanded' : ''}`}
               >
                 <View style={styles.adaptiveRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                     <MaterialCommunityIcons name="weight-lifter" size={16} color={theme.colors.warning} />
-                    <Text style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
+                    <ThemedText style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
                       {t('profile.volumeTolerance')}
-                    </Text>
+                    </ThemedText>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={[styles.adaptiveValue, { color: theme.colors.text }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
+                    <ThemedText style={[styles.adaptiveValue, { color: theme.colors.text }]}>
                       {adaptiveLabel(adaptiveProfile ? adaptiveProfile.volumeTolerance : 1)}
-                    </Text>
+                    </ThemedText>
                     <MaterialCommunityIcons
                       name={expandedAdaptive === 'volume' ? 'chevron-up' : 'chevron-down'}
                       size={14}
@@ -1709,10 +859,10 @@ export default function ProfileScreen() {
                 </View>
               </TouchableOpacity>
               {expandedAdaptive === 'volume' && (
-                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: 24, paddingBottom: 8 }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12, lineHeight: 18 }}>
+                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}>
                     {t('profile.volumeToleranceDesc')}
-                  </Text>
+                  </ThemedText>
                 </Animated.View>
               )}
 
@@ -1727,14 +877,14 @@ export default function ProfileScreen() {
                   ]}
                 />
               </View>
-              <Text style={[styles.adaptiveConfidenceText, { color: theme.colors.textMuted }]}>
+              <ThemedText style={[styles.adaptiveConfidenceText, { color: theme.colors.textMuted }]}>
                 Learning your patterns ({adaptiveProfile?.samples ?? 0} workouts analyzed)
-              </Text>
+              </ThemedText>
 
               {adaptiveProfile?.rationale?.map((line, index) => (
-                <Text key={`${line}_${index}`} style={[styles.adaptiveReason, { color: theme.colors.textMuted }]}>
+                <ThemedText key={`${line}_${index}`} style={[styles.adaptiveReason, { color: theme.colors.textMuted }]}>
                   • {line}
-                </Text>
+                </ThemedText>
               ))}
             </GlassCard>
           </View>
@@ -1793,11 +943,7 @@ export default function ProfileScreen() {
             <MenuItem
               icon="bell-outline"
               label={t('profile.notifications')}
-              sublabel={
-                notificationSettings.enabled
-                  ? `${t('profile.notificationsStatus.enabled')} · ${formatReminderHourLabel(notificationSettings.reminderHour)}`
-                  : t('profile.notificationsStatus.disabled')
-              }
+              sublabel={notificationSublabel}
               color={theme.colors.pink}
               delay={600}
               onPress={handleNotifications}
@@ -1805,7 +951,7 @@ export default function ProfileScreen() {
             <MenuItem
               icon="heart-pulse"
               label={t('profile.healthConnect')}
-              sublabel={`${!healthConnectEnabled ? t('profile.statusDisabled') || 'Disabled' : healthIntegrationReady ? t('profile.statusConnected') : t('profile.statusNotConnected')} · ${healthProviderLabel(healthProviderCode)}`}
+              sublabel={healthConnectSublabel}
               color={healthConnectEnabled ? theme.colors.accent : theme.colors.textMuted}
               delay={605}
               onPress={handleHealthConnectSettings}
@@ -1813,7 +959,7 @@ export default function ProfileScreen() {
             <MenuItem
               icon="sync"
               label={t('profile.healthSync')}
-              sublabel={healthBusy ? t('profile.syncInProgress') : t('profile.healthSyncSub')}
+              sublabel={healthSyncSublabel}
               color={theme.colors.blue}
               delay={608}
               onPress={() => {
@@ -1832,36 +978,33 @@ export default function ProfileScreen() {
               >
                 <View style={styles.healthErrorsHeader}>
                   <MaterialCommunityIcons name="alert-circle-outline" size={16} color={theme.colors.error} />
-                  <Text style={[styles.healthErrorsTitle, { color: theme.colors.error }]}>
+                  <ThemedText style={[styles.healthErrorsTitle, { color: theme.colors.error }]}>
                     {t('profile.healthSyncIssues') || 'Recent Sync Issues'}
-                  </Text>
+                  </ThemedText>
                   <TouchableOpacity
-                    onPress={async () => {
-                      for (const err of healthSyncErrors) {
-                        await errorTelemetry.resolveError(err.id);
-                      }
-                      refreshHealthSyncErrors();
-                    }}
+                    onPress={handleDismissHealthErrors}
                     hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Dismiss sync errors"
                   >
-                    <Text style={[styles.healthErrorsDismiss, { color: theme.colors.textMuted }]}>
+                    <ThemedText style={[styles.healthErrorsDismiss, { color: theme.colors.textMuted }]}>
                       {t('common.dismiss') || 'Dismiss'}
-                    </Text>
+                    </ThemedText>
                   </TouchableOpacity>
                 </View>
                 {healthSyncErrors.slice(0, 3).map((err) => (
-                  <Text
+                  <ThemedText
                     key={err.id}
                     numberOfLines={1}
                     style={[styles.healthErrorItem, { color: theme.colors.textSecondary }]}
                   >
                     • {err.message}
-                  </Text>
+                  </ThemedText>
                 ))}
                 {healthSyncErrors.length > 3 && (
-                  <Text style={[styles.healthErrorMore, { color: theme.colors.textMuted }]}>
+                  <ThemedText style={[styles.healthErrorMore, { color: theme.colors.textMuted }]}>
                     +{healthSyncErrors.length - 3} {t('common.more') || 'more'}
-                  </Text>
+                  </ThemedText>
                 )}
               </Animated.View>
             )}
@@ -1869,43 +1012,10 @@ export default function ProfileScreen() {
             <MenuItem
               icon="fingerprint"
               label={t('profile.biometricLock') || 'Biometric Lock'}
-              sublabel={
-                biometricAvailable
-                  ? biometricEnabled
-                    ? t('profile.biometricActive') || 'Face ID / Fingerprint active'
-                    : t('profile.biometricAvailable') || 'Tap to enable Face ID / Fingerprint'
-                  : t('profile.biometricUnavailable') || 'Not available on this device'
-              }
+              sublabel={biometricSublabel}
               color={theme.colors.indigo}
               delay={610}
-              onPress={async () => {
-                if (!biometricAvailable) {
-                  Alert.alert(
-                    t('profile.security') || 'Security',
-                    t('profile.biometricUnavailable') || 'Biometric authentication is not available on this device.',
-                  );
-                  return;
-                }
-                try {
-                  const result = await bioAuth.authenticate();
-                  if (result.success) {
-                    setBiometricEnabled(true);
-                    Alert.alert(
-                      t('profile.security') || 'Security',
-                      t('profile.biometricVerified') || 'Biometric authentication verified successfully.',
-                    );
-                  } else if (result.error === 'user_cancel' || result.error === 'system_cancel') {
-                    // User cancelled — no error to show
-                  } else {
-                    Alert.alert(
-                      t('profile.security') || 'Security',
-                      t('profile.biometricFailed') || 'Authentication failed. Please try again.',
-                    );
-                  }
-                } catch (e) {
-                  if (__DEV__) console.warn('[Profile] Biometric test failed:', e);
-                }
-              }}
+              onPress={handleBiometricTest}
             />
           </View>
 
@@ -1941,6 +1051,25 @@ export default function ProfileScreen() {
               onPress={() => {
                 void handleRecordConsent();
               }}
+            />
+            <MenuItem
+              icon="chart-timeline-variant-shimmer"
+              label={t('profile.analytics') || 'Usage Analytics'}
+              sublabel={analyticsOn ? (t('profile.analyticsOn') || 'Sending anonymized usage data') : (t('profile.analyticsOff') || 'Usage data collection disabled')}
+              color={theme.colors.accent}
+              delay={655}
+              onPress={() => handleAnalyticsToggle(!analyticsOn)}
+              rightContent={
+                <Switch
+                  value={analyticsOn}
+                  onValueChange={handleAnalyticsToggle}
+                  trackColor={{ false: theme.colors.border, true: theme.colors.accent + '60' }}
+                  thumbColor={analyticsOn ? theme.colors.accent : theme.colors.surface}
+                  accessibilityRole="switch"
+                  accessibilityLabel="Usage analytics"
+                  accessibilityState={{ checked: analyticsOn }}
+                />
+              }
             />
             <MenuItem
               icon="file-export-outline"
@@ -2023,9 +1152,11 @@ export default function ProfileScreen() {
               ]}
               onPress={handleLogout}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Log out"
             >
               <MaterialCommunityIcons name="logout" size={18} color={theme.colors.error} />
-              <Text style={[styles.logoutText, { color: theme.colors.error }]}>{t('profile.logout')}</Text>
+              <ThemedText style={[styles.logoutText, { color: theme.colors.error }]}>{t('profile.logout')}</ThemedText>
             </TouchableOpacity>
           </Animated.View>
 
@@ -2073,25 +1204,25 @@ export default function ProfileScreen() {
               style={[modalStyles.content, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
               onPress={(e) => e.stopPropagation()}
             >
-              <Text style={[modalStyles.title, { color: theme.colors.text }]}>Work Schedule</Text>
-              <Text style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>
+              <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>Work Schedule</ThemedText>
+              <ThemedText style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>
                 Configure your work hours for optimal training suggestions
-              </Text>
+              </ThemedText>
 
               <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false} bounces={false}>
                 {/* Start Time */}
-                <Text
+                <ThemedText
                   style={{
                     color: theme.colors.textSecondary,
-                    fontSize: 12,
+                    fontSize: typography.sizes.caption, 
                     fontWeight: '600',
-                    marginBottom: 6,
-                    marginTop: 12,
+                    marginBottom: spacing[1.5],
+                    marginTop: spacing[3],
                   }}
                 >
                   START TIME
-                </Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                </ThemedText>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing[3] }}>
                   {Array.from({ length: 17 }, (_, i) => i + 5).map((h) => (
                     <TouchableOpacity
                       key={`start-${h}`}
@@ -2103,34 +1234,34 @@ export default function ProfileScreen() {
                         }))
                       }
                       style={{
-                        paddingHorizontal: 14,
-                        paddingVertical: 8,
-                        borderRadius: 12,
-                        marginRight: 6,
+                        paddingHorizontal: spacing[3.5],
+                        paddingVertical: spacing[2],
+                        borderRadius: radius.lg,
+                        marginRight: spacing[1.5],
                         backgroundColor:
                           scheduleEdit.startHour === h ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
                         borderWidth: scheduleEdit.startHour === h ? 1 : 0,
                         borderColor: theme.colors.accent,
                       }}
                     >
-                      <Text
+                      <ThemedText
                         style={{
                           color: scheduleEdit.startHour === h ? theme.colors.accent : theme.colors.text,
-                          fontSize: 13,
+                          fontSize: typography.sizes.label, 
                           fontWeight: '600',
                         }}
                       >
                         {h.toString().padStart(2, '0')}:00
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
 
                 {/* End Time */}
-                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6 }}>
+                <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.caption, fontWeight: '600', marginBottom: spacing[1.5] }}>
                   END TIME
-                </Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                </ThemedText>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing[3] }}>
                   {Array.from({ length: 17 }, (_, i) => i + 5)
                     .filter((h) => h > scheduleEdit.startHour)
                     .map((h) => (
@@ -2138,42 +1269,42 @@ export default function ProfileScreen() {
                         key={`end-${h}`}
                         onPress={() => setScheduleEdit((prev) => ({ ...prev, endHour: h }))}
                         style={{
-                          paddingHorizontal: 14,
-                          paddingVertical: 8,
-                          borderRadius: 12,
-                          marginRight: 6,
+                          paddingHorizontal: spacing[3.5],
+                          paddingVertical: spacing[2],
+                          borderRadius: radius.lg,
+                          marginRight: spacing[1.5],
                           backgroundColor:
                             scheduleEdit.endHour === h ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
                           borderWidth: scheduleEdit.endHour === h ? 1 : 0,
                           borderColor: theme.colors.accent,
                         }}
                       >
-                        <Text
+                        <ThemedText
                           style={{
                             color: scheduleEdit.endHour === h ? theme.colors.accent : theme.colors.text,
-                            fontSize: 13,
+                            fontSize: typography.sizes.label, 
                             fontWeight: '600',
                           }}
                         >
                           {h.toString().padStart(2, '0')}:00
-                        </Text>
+                        </ThemedText>
                       </TouchableOpacity>
                     ))}
                 </ScrollView>
 
                 {/* Shift Type */}
-                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6 }}>
+                <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.caption, fontWeight: '600', marginBottom: spacing[1.5] }}>
                   SHIFT TYPE
-                </Text>
-                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+                </ThemedText>
+                <View style={{ flexDirection: 'row', gap: spacing[2], marginBottom: spacing[3] }}>
                   {(['day', 'night', 'rotating'] as const).map((s) => (
                     <TouchableOpacity
                       key={s}
                       onPress={() => setScheduleEdit((prev) => ({ ...prev, shiftType: s }))}
                       style={{
                         flex: 1,
-                        paddingVertical: 10,
-                        borderRadius: 12,
+                        paddingVertical: spacing[2.5],
+                        borderRadius: radius.lg,
                         alignItems: 'center',
                         backgroundColor:
                           scheduleEdit.shiftType === s ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
@@ -2186,49 +1317,49 @@ export default function ProfileScreen() {
                         size={18}
                         color={scheduleEdit.shiftType === s ? theme.colors.accent : theme.colors.textMuted}
                       />
-                      <Text
+                      <ThemedText
                         style={{
                           color: scheduleEdit.shiftType === s ? theme.colors.accent : theme.colors.text,
-                          fontSize: 12,
+                          fontSize: typography.sizes.caption, 
                           fontWeight: '600',
-                          marginTop: 4,
+                          marginTop: spacing[1],
                         }}
                       >
                         {s.charAt(0).toUpperCase() + s.slice(1)}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   ))}
                 </View>
 
                 {/* Commute */}
-                <Text style={{ color: theme.colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 6 }}>
+                <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.caption, fontWeight: '600', marginBottom: spacing[1.5] }}>
                   COMMUTE (minutes)
-                </Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
+                </ThemedText>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing[4] }}>
                   {[0, 10, 15, 20, 30, 45, 60, 90].map((m) => (
                     <TouchableOpacity
                       key={`com-${m}`}
                       onPress={() => setScheduleEdit((prev) => ({ ...prev, commute: m }))}
                       style={{
-                        paddingHorizontal: 14,
-                        paddingVertical: 8,
-                        borderRadius: 12,
-                        marginRight: 6,
+                        paddingHorizontal: spacing[3.5],
+                        paddingVertical: spacing[2],
+                        borderRadius: radius.lg,
+                        marginRight: spacing[1.5],
                         backgroundColor:
                           scheduleEdit.commute === m ? theme.colors.accent + '25' : theme.colors.surfaceVariant,
                         borderWidth: scheduleEdit.commute === m ? 1 : 0,
                         borderColor: theme.colors.accent,
                       }}
                     >
-                      <Text
+                      <ThemedText
                         style={{
                           color: scheduleEdit.commute === m ? theme.colors.accent : theme.colors.text,
-                          fontSize: 13,
+                          fontSize: typography.sizes.label, 
                           fontWeight: '600',
                         }}
                       >
                         {m === 0 ? 'None' : `${m} min`}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -2238,19 +1369,7 @@ export default function ProfileScreen() {
               <GradientButton
                 title="Save Schedule"
                 variant="primary"
-                onPress={async () => {
-                  const schedule: ProfessionSchedule = {
-                    profession_type: professionSchedule?.profession_type || 'office',
-                    work_start_hour: scheduleEdit.startHour,
-                    work_end_hour: scheduleEdit.endHour,
-                    commute_minutes: scheduleEdit.commute,
-                    preferred_windows: scheduleEdit.startHour <= 8 ? ['AFTER_WORK'] : ['BEFORE_WORK', 'AFTER_WORK'],
-                    shift_type: scheduleEdit.shiftType,
-                  };
-                  await saveProfessionSchedule('user_local_001', schedule);
-                  setProfessionSchedule(schedule);
-                  setShowScheduleModal(false);
-                }}
+                onPress={handleSaveSchedule}
               />
             </Pressable>
           </Pressable>
@@ -2263,7 +1382,7 @@ export default function ProfileScreen() {
               style={[modalStyles.content, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
               onPress={(e) => e.stopPropagation()}
             >
-              <View style={{ alignItems: 'center', marginBottom: 16 }}>
+              <View style={{ alignItems: 'center', marginBottom: spacing[4] }}>
                 <View
                   style={{
                     width: 56,
@@ -2272,71 +1391,71 @@ export default function ProfileScreen() {
                     backgroundColor: theme.colors.warning + '20',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginBottom: 12,
+                    marginBottom: spacing[3],
                   }}
                 >
                   <MaterialCommunityIcons name="help-circle-outline" size={28} color={theme.colors.warning} />
                 </View>
-                <Text style={[modalStyles.title, { color: theme.colors.text }]}>{t('profile.helpSupport')}</Text>
+                <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>{t('profile.helpSupport')}</ThemedText>
               </View>
 
-              <View style={{ gap: 12, marginBottom: 16 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <View style={{ gap: spacing[3], marginBottom: spacing[4] }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="frequently-asked-questions" size={20} color={theme.colors.accent} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>
+                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
                       {t('help.faqTitle')}
-                    </Text>
-                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 2 }}>
+                    </ThemedText>
+                    <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
                       {t('help.faqDesc')}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.accent2} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>
+                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
                       {t('help.contactTitle')}
-                    </Text>
-                    <Text style={{ color: theme.colors.accent, fontSize: 12, marginTop: 2 }}>
+                    </ThemedText>
+                    <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
                       fitquestsupp0rt@gmail.com
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="bug-outline" size={20} color={theme.colors.error} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>
+                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
                       {t('help.bugTitle')}
-                    </Text>
-                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 2 }}>
+                    </ThemedText>
+                    <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
                       {t('help.bugDesc')}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="lightbulb-outline" size={20} color={theme.colors.warning} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: theme.colors.text, fontSize: 14, fontWeight: '600' }}>
+                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
                       {t('help.featureTitle')}
-                    </Text>
-                    <Text style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 2 }}>
+                    </ThemedText>
+                    <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
                       {t('help.featureDesc')}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               </View>
 
-              <Text style={{ color: theme.colors.textMuted, fontSize: 11, textAlign: 'center', marginBottom: 12 }}>
+              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.captionSm, textAlign: 'center', marginBottom: spacing[3] }}>
                 {t('help.responseTime')}
-              </Text>
+              </ThemedText>
 
               <TouchableOpacity
                 style={[modalStyles.cancelBtn, { backgroundColor: theme.colors.surfaceVariant }]}
                 onPress={() => setShowHelpModal(false)}
                 activeOpacity={0.7}
               >
-                <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</Text>
+                <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</ThemedText>
               </TouchableOpacity>
             </Pressable>
           </Pressable>
@@ -2354,76 +1473,76 @@ export default function ProfileScreen() {
               style={[modalStyles.content, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
               onPress={(e) => e.stopPropagation()}
             >
-              <View style={{ alignItems: 'center', marginBottom: 16 }}>
+              <View style={{ alignItems: 'center', marginBottom: spacing[4] }}>
                 <LinearGradient
                   colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                   style={{
                     width: 64,
                     height: 64,
-                    borderRadius: 16,
+                    borderRadius: radius.xl,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginBottom: 12,
+                    marginBottom: spacing[3],
                   }}
                 >
-                  <MaterialCommunityIcons name="lightning-bolt" size={32} color="#fff" />
+                  <MaterialCommunityIcons name="lightning-bolt" size={32} color={theme.colors.onAccent} />
                 </LinearGradient>
-                <Text style={[modalStyles.title, { color: theme.colors.text }]}>FitQuest 2.0</Text>
-                <Text style={{ color: theme.colors.textMuted, fontSize: 13, marginTop: 2 }}>
+                <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>FitQuest 2.0</ThemedText>
+                <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.label, marginTop: spacing[0.5] }}>
                   {t('profile.version')} 1.0.0
-                </Text>
+                </ThemedText>
               </View>
 
-              <Text
+              <ThemedText
                 style={{
                   color: theme.colors.textSecondary,
-                  fontSize: 13,
+                  fontSize: typography.sizes.label, 
                   textAlign: 'center',
                   lineHeight: 20,
-                  marginBottom: 16,
+                  marginBottom: spacing[4],
                 }}
               >
                 {t('about.description')}
-              </Text>
+              </ThemedText>
 
-              <View style={{ gap: 8, marginBottom: 16 }}>
+              <View style={{ gap: spacing[2], marginBottom: spacing[4] }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.platform')}</Text>
-                  <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>React Native / Expo</Text>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.platform')}</ThemedText>
+                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>React Native / Expo</ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.dataStorage')}</Text>
-                  <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.dataStorage')}</ThemedText>
+                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>
                     {t('about.onDevice')}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.encryption')}</Text>
-                  <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>AES-256-GCM</Text>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.encryption')}</ThemedText>
+                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>AES-256-GCM</ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>{t('about.security')}</Text>
-                  <Text style={{ color: theme.colors.text, fontSize: 12, fontWeight: '600' }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.security')}</ThemedText>
+                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>
                     {t('about.biometric')}
-                  </Text>
+                  </ThemedText>
                 </View>
               </View>
 
-              <Text style={{ color: theme.colors.textMuted, fontSize: 11, textAlign: 'center', marginBottom: 12 }}>
+              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.captionSm, textAlign: 'center', marginBottom: spacing[3] }}>
                 {t('about.madeWith')}
-              </Text>
+              </ThemedText>
 
               <TouchableOpacity
                 style={[modalStyles.cancelBtn, { backgroundColor: theme.colors.surfaceVariant }]}
                 onPress={() => setShowAboutModal(false)}
                 activeOpacity={0.7}
               >
-                <Text style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</Text>
+                <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</ThemedText>
               </TouchableOpacity>
             </Pressable>
           </Pressable>
         </Modal>
-      </View>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -2434,31 +1553,31 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { paddingBottom: 100 },
+  scrollContent: { paddingBottom: spacing[25] },
 
   // Header
   headerGradient: {
-    paddingBottom: 24,
+    paddingBottom: spacing[6],
   },
   headerContent: {
     alignItems: 'center',
-    paddingTop: 16,
-    paddingHorizontal: 24,
+    paddingTop: spacing[4],
+    paddingHorizontal: spacing[6],
   },
   avatarGlowWrap: {
-    marginBottom: 16,
+    marginBottom: spacing[4],
     position: 'relative',
   },
   avatarRing: {
     width: 96,
     height: 96,
     borderRadius: 32,
-    padding: 3,
+    padding: spacing[0.75],
   },
   avatarInner: {
     flex: 1,
     borderRadius: 30,
-    padding: 3,
+    padding: spacing[0.75],
     overflow: 'hidden',
   },
   avatarGradient: {
@@ -2480,29 +1599,29 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   avatarInitials: {
-    fontSize: 32,
+    fontSize: typography.sizes.h1, 
     fontWeight: '700',
     letterSpacing: 1,
   },
   profileName: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '700',
     letterSpacing: 0.3,
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   goalBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    gap: spacing[1.5],
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[1.5],
     borderRadius: 9999,
-    marginBottom: 16,
+    marginBottom: spacing[4],
     maxWidth: '80%',
   },
   goalBadgeText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
     letterSpacing: 0.3,
     flexShrink: 1,
@@ -2517,20 +1636,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: spacing[1.5],
   },
   levelBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 8,
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[0.75],
+    borderRadius: radius.md,
   },
   levelText: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   xpLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
   xpBarBg: {
@@ -2545,13 +1664,13 @@ const styles = StyleSheet.create({
 
   // Stats — Premium Grid
   statsContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing[4],
     marginTop: -8,
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   statsCard: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingVertical: spacing[5],
+    paddingHorizontal: spacing[4],
   },
   primaryStatsRow: {
     flexDirection: 'row',
@@ -2568,17 +1687,17 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   statValue: {
-    fontSize: 22,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   statUnit: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   statDivider: {
     width: 1,
@@ -2587,8 +1706,8 @@ const styles = StyleSheet.create({
   },
   statsFullDivider: {
     height: 1,
-    marginVertical: 16,
-    marginHorizontal: 10,
+    marginVertical: spacing[4],
+    marginHorizontal: spacing[2.5],
     opacity: 0.4,
   },
   secondaryStatsRow: {
@@ -2599,14 +1718,14 @@ const styles = StyleSheet.create({
   secondaryStat: {
     alignItems: 'center',
     flex: 1,
-    gap: 4,
+    gap: spacing[1],
   },
   secondaryValue: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
   },
   secondaryLabel: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '600',
   },
 
@@ -2614,36 +1733,36 @@ const styles = StyleSheet.create({
   achievementRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 8,
+    paddingVertical: spacing[2],
   },
   achievementItem: {
     alignItems: 'center',
-    gap: 6,
+    gap: spacing[1.5],
   },
   achievementLabel: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
   },
   achievementSub: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '400',
   },
 
   // Sections
   section: {
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[3],
   },
 
   // Menu items
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
+    padding: spacing[4],
+    borderRadius: radius.xl,
     borderWidth: 1,
-    marginBottom: 10,
-    gap: 12,
+    marginBottom: spacing[2.5],
+    gap: spacing[3],
   },
   menuIconWrap: {
     width: 38,
@@ -2656,14 +1775,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuLabel: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '600',
     letterSpacing: 0.2,
   },
   menuSublabel: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '400',
-    marginTop: 4,
+    marginTop: spacing[1],
     lineHeight: 18,
   },
 
@@ -2671,18 +1790,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   adaptiveLabel: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '500',
   },
   adaptiveValue: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
   },
   adaptiveConfidenceTrack: {
-    marginTop: 6,
+    marginTop: spacing[1.5],
     height: 6,
     borderRadius: 999,
     overflow: 'hidden',
@@ -2692,65 +1811,65 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   adaptiveConfidenceText: {
-    marginTop: 8,
-    fontSize: 12,
+    marginTop: spacing[2],
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
   },
   adaptiveReason: {
-    marginTop: 6,
-    fontSize: 12,
+    marginTop: spacing[1.5],
+    fontSize: typography.sizes.caption, 
     lineHeight: 16,
   },
 
   // Health Sync Errors
   healthErrorsContainer: {
-    marginHorizontal: 0,
-    marginTop: 8,
-    padding: 12,
-    borderRadius: 12,
+    marginHorizontal: spacing[0],
+    marginTop: spacing[2],
+    padding: spacing[3],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   healthErrorsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 6,
+    gap: spacing[1.5],
+    marginBottom: spacing[1.5],
   },
   healthErrorsTitle: {
     flex: 1,
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
   healthErrorsDismiss: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
   healthErrorItem: {
-    fontSize: 11,
-    marginBottom: 2,
+    fontSize: typography.sizes.captionSm, 
+    marginBottom: spacing[0.5],
   },
   healthErrorMore: {
-    fontSize: 10,
-    marginTop: 4,
+    fontSize: typography.sizes.xs, 
+    marginTop: spacing[1],
     fontStyle: 'italic',
   },
 
   // Logout
   logoutSection: {
-    paddingHorizontal: 16,
-    marginTop: 8,
+    paddingHorizontal: spacing[4],
+    marginTop: spacing[2],
   },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
-    borderRadius: 16,
+    gap: spacing[2],
+    paddingVertical: spacing[3.5],
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   logoutText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '500',
   },
 });

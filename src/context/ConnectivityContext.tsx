@@ -9,8 +9,15 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
-import * as Network from 'expo-network';
 import { AppState, AppStateStatus } from 'react-native';
+
+// Graceful fallback — expo-network requires native module not available in all environments
+let Network: { getNetworkStateAsync: () => Promise<{ isConnected?: boolean; isInternetReachable?: boolean }> } | null = null;
+try {
+  Network = require('expo-network');
+} catch {
+  // Native module unavailable (Expo Go / web) — assume online
+}
 
 // ── Types ──
 
@@ -54,6 +61,7 @@ export function ConnectivityProvider({ children }: { children: React.ReactNode }
   // Check network state
   const checkNetwork = useCallback(async () => {
     try {
+      if (!Network) return true; // Assume online when native module unavailable
       const state = await Network.getNetworkStateAsync();
       const online = !!(state.isConnected && state.isInternetReachable);
       setIsOnline((prev) => {

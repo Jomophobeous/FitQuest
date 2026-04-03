@@ -4,7 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 
 import type { TextStyle } from 'react-native';
 
-type Variant = 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'bodySmall' | 'label' | 'caption';
+type Variant = 'hero' | 'display' | 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'bodySmall' | 'label' | 'caption' | 'xs';
 type Color = 'primary' | 'secondary' | 'muted' | 'error' | 'accent' | 'accent2';
 type FontWeight = TextStyle['fontWeight'];
 
@@ -24,6 +24,8 @@ export default React.memo(function ThemedText({
   const { theme } = useTheme();
 
   const variantSizes = {
+    hero: theme.typography.sizes.hero,
+    display: theme.typography.sizes.display,
     h1: theme.typography.sizes.h1,
     h2: theme.typography.sizes.h2,
     h3: theme.typography.sizes.h3,
@@ -32,6 +34,7 @@ export default React.memo(function ThemedText({
     bodySmall: theme.typography.sizes.bodySmall,
     label: theme.typography.sizes.label,
     caption: theme.typography.sizes.caption,
+    xs: theme.typography.sizes.xs,
   };
 
   const colorMap = {
@@ -45,6 +48,8 @@ export default React.memo(function ThemedText({
 
   // Light mode should have slightly heavier weights
   const variantWeights: Record<Variant, FontWeight> = {
+    hero: '700',
+    display: '700',
     h1: '700',
     h2: '700',
     h3: '600',
@@ -53,6 +58,7 @@ export default React.memo(function ThemedText({
     bodySmall: '400',
     label: theme.isDark ? '500' : '600',
     caption: '400',
+    xs: '400',
   };
 
   return (

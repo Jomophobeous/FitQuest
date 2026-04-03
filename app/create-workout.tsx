@@ -3,32 +3,33 @@
  * Custom workout builder - users pick exercises to create their own workout
  */
 
-import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   Alert,
   TextInput,
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useToast } from '../src/context/ToastContext';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { getExercises, createWorkoutSession, addSessionExercise } from '../src/database/service';
-import { notifyCustomWorkoutCreated } from '../src/services/dataSyncService';
+import { useCreateWorkoutViewModel } from '../src/viewmodels/useCreateWorkoutViewModel';
+import { haptic } from '../src/utils/haptics';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
 import ThemedText from '../src/components/ThemedText';
 import Card from '../src/components/Card';
 import ExerciseImage from '../src/components/ExerciseImage';
-import { audioService } from '../src/services/audioService';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 // ============================================
 // MEMOIZED LIST ITEM
@@ -62,25 +63,25 @@ const ExerciseListItem = memo(function ExerciseListItem({
           },
         ]}
       >
-        {isSelected && <MaterialCommunityIcons name="check" size={14} color="#fff" />}
+        {isSelected && <MaterialCommunityIcons name="check" size={14} color={theme.colors.onAccent} />}
       </View>
       <ExerciseImage
         exerciseId={item.id}
         category={item.category}
         variant="thumbnail"
         animate={false}
-        style={{ marginLeft: 10 }}
+        style={{ marginLeft: spacing[2.5] }}
       />
-      <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text style={{ color: colors.text, fontWeight: '600', fontSize: 14 }}>{item.name}</Text>
-        <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 2 }}>
+      <View style={{ flex: 1, marginLeft: spacing[3] }}>
+        <ThemedText style={{ color: colors.text, fontWeight: '600', fontSize: typography.sizes.bodySmall }}>{item.name}</ThemedText>
+        <ThemedText style={{ color: colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
           {item.difficulty} • {item.primary_muscles.slice(0, 2).join(', ')}
-        </Text>
+        </ThemedText>
       </View>
       <View style={[styles.diffBadge, { backgroundColor: colors.surface }]}>
-        <Text style={{ color: colors.textMuted, fontSize: 10, textTransform: 'uppercase' }}>
+        <ThemedText style={{ color: colors.textMuted, fontSize: typography.sizes.xs, textTransform: 'uppercase' }}>
           {item.category.replace('_', ' ')}
-        </Text>
+        </ThemedText>
       </View>
     </TouchableOpacity>
   );
@@ -133,15 +134,16 @@ const getEquipmentLevels = (
 export default function CreateWorkoutScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const { isReady: dbReady } = useDatabase();
   const categories = useMemo(() => getCategories(t), [t]);
   const difficulties = useMemo(() => getDifficulties(t, theme.colors), [t, theme.colors]);
   const equipmentLevels = useMemo(() => getEquipmentLevels(t), [t]);
   const router = useRouter();
+  const vm = useCreateWorkoutViewModel();
 
   // State
   const [step, setStep] = useState<'select' | 'configure' | 'preview'>('select');
-  const [allExercises, setAllExercises] = useState<ExerciseWithDetails[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<ExerciseWithDetails[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
@@ -151,33 +153,19 @@ export default function CreateWorkoutScreen() {
   const [selected, setSelected] = useState<SelectedExercise[]>([]);
   const [workoutName, setWorkoutName] = useState('');
   const [expandedInstructions, setExpandedInstructions] = useState<Record<string, boolean>>({});
-  const [loading, setLoading] = useState(true);
 
   // Load exercises
   useEffect(() => {
-    if (dbReady) loadExercises();
-  }, [dbReady]);
+    if (dbReady) vm.loadExercises();
+  }, [dbReady, vm.loadExercises]);
 
   useEffect(() => {
     filterExercises();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- filterExercises is stable (useCallback)
-  }, [selectedCategory, selectedDifficulty, selectedEquipment, searchQuery, allExercises]);
-
-  const loadExercises = async () => {
-    try {
-      setLoading(true);
-      const exercises = await getExercises();
-      setAllExercises(exercises);
-      setFilteredExercises(exercises);
-    } catch (error) {
-      if (__DEV__) console.error('[CreateWorkout] Failed to load exercises:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [selectedCategory, selectedDifficulty, selectedEquipment, searchQuery, vm.allExercises]);
 
   const filterExercises = () => {
-    let filtered = allExercises;
+    let filtered = vm.allExercises;
     if (selectedCategory !== 'all') {
       filtered = filtered.filter((e) => e.category === selectedCategory);
     }
@@ -246,43 +234,12 @@ export default function CreateWorkoutScreen() {
 
   const handleSaveWorkout = async () => {
     if (selected.length === 0) {
-      Alert.alert(t('createWorkout.selectFirst'), t('createWorkout.noExercises'));
+      showToast({ message: t('createWorkout.noExercises'), type: 'info' });
       return;
     }
 
-    const name =
-      workoutName.trim() || `${t('createWorkout.customWorkout')} (${selected.length} ${t('createWorkout.exercises')})`;
-    const sessionId = `custom_${Date.now()}`;
-
-    try {
-      await createWorkoutSession({
-        id: sessionId,
-        user_id: 'user_local_001',
-        duration_minutes: Math.round(estimatedDuration),
-        total_exercises: selected.length,
-        completed_exercises: 0,
-        success: false,
-        notes: `Custom: ${name}`,
-      });
-
-      for (let i = 0; i < selected.length; i++) {
-        const s = selected[i];
-        if (!s) continue;
-        await addSessionExercise({
-          id: `${sessionId}_ex_${i}`,
-          session_id: sessionId,
-          exercise_id: s.exercise.id,
-          order_in_session: i + 1,
-          prescribed_sets: s.sets,
-          prescribed_reps: s.reps,
-          completed_sets: 0,
-          skipped: false,
-        });
-      }
-
-      // Notify other screens that a new custom workout was created
-      notifyCustomWorkoutCreated(sessionId);
-
+    const sessionId = await vm.saveWorkout({ selected, workoutName, estimatedDuration, t });
+    if (sessionId) {
       Alert.alert(t('createWorkout.saved'), t('createWorkout.savedDetail'), [
         {
           text: t('createWorkout.startNow') || 'Start Now',
@@ -295,9 +252,8 @@ export default function CreateWorkoutScreen() {
         },
         { text: t('common.ok'), onPress: () => (router.canGoBack() ? router.back() : router.replace('/dashboard')) },
       ]);
-    } catch (error) {
-      if (__DEV__) console.error('[CreateWorkout] Failed to save:', error);
-      Alert.alert(t('error.title'), t('createWorkout.saveFailed'));
+    } else {
+      showToast({ message: t('createWorkout.saveFailed'), type: 'error' });
     }
   };
 
@@ -325,35 +281,35 @@ export default function CreateWorkoutScreen() {
   );
 
   // ===== LOADING GATE =====
-  if (!dbReady || loading) {
+  if (!dbReady || vm.loading) {
     return (
-      <SafeAreaView
-        style={[
-          styles.container,
-          { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' },
-        ]}
-      >
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={theme.colors.accent} />
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== STEP 1: SELECT EXERCISES =====
   if (step === 'select') {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}>
+          <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))} accessibilityRole="button" accessibilityLabel="Go back">
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="h3">{t('createWorkout.title')}</ThemedText>
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => router.push('/saved-workouts' as any)}>
+            <TouchableOpacity onPress={() => router.push('/saved-workouts' as any)} accessibilityRole="button" accessibilityLabel="Saved workouts">
               <MaterialCommunityIcons name="folder-star" size={22} color={theme.colors.accent} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => (selected.length > 0 ? setStep('configure') : Alert.alert(t('createWorkout.selectFirst')))}
+              onPress={() => {
+                haptic('buttonPress');
+                selected.length > 0 ? setStep('configure') : showToast({ message: t('createWorkout.noExercises'), type: 'info' });
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={`Next, ${selected.length} exercises selected`}
             >
               <ThemedText variant="body" color="accent" weight="600">
                 {t('createWorkout.next')} ({selected.length})
@@ -396,7 +352,7 @@ export default function CreateWorkoutScreen() {
             />
             {activeFiltersCount > 0 && (
               <View style={[styles.filterBadge, { backgroundColor: theme.colors.error }]}>
-                <Text style={[styles.filterBadgeText, { color: theme.colors.text }]}>{activeFiltersCount}</Text>
+                <ThemedText style={[styles.filterBadgeText, { color: theme.colors.text }]}>{activeFiltersCount}</ThemedText>
               </View>
             )}
           </TouchableOpacity>
@@ -411,7 +367,7 @@ export default function CreateWorkoutScreen() {
               <ThemedText variant="body" weight="600">
                 {t('createWorkout.filters')}
               </ThemedText>
-              <TouchableOpacity onPress={clearFilters}>
+              <TouchableOpacity onPress={clearFilters} accessibilityRole="button" accessibilityLabel="Clear all filters">
                 <ThemedText variant="bodySmall" color="accent">
                   {t('createWorkout.clearAll')}
                 </ThemedText>
@@ -419,10 +375,10 @@ export default function CreateWorkoutScreen() {
             </View>
 
             {/* Difficulty Filter */}
-            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 12 }}>
+            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: spacing[3] }}>
               {t('createWorkout.difficulty')}
             </ThemedText>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: spacing[2] }}>
               {difficulties.map((diff) => (
                 <TouchableOpacity
                   key={diff.key}
@@ -434,25 +390,27 @@ export default function CreateWorkoutScreen() {
                     },
                   ]}
                   onPress={() => setSelectedDifficulty(diff.key)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${diff.label} difficulty${selectedDifficulty === diff.key ? ', selected' : ''}`}
                 >
-                  <Text
+                  <ThemedText
                     style={{
                       color: selectedDifficulty === diff.key ? theme.colors.onAccent : theme.colors.text,
-                      fontSize: 12,
+                      fontSize: typography.sizes.caption, 
                       fontWeight: '600',
                     }}
                   >
                     {diff.label}
-                  </Text>
+                  </ThemedText>
                 </TouchableOpacity>
               ))}
             </ScrollView>
 
             {/* Equipment Filter */}
-            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: 12 }}>
+            <ThemedText variant="bodySmall" color="secondary" style={{ marginTop: spacing[3] }}>
               {t('createWorkout.equipment')}
             </ThemedText>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: spacing[2] }}>
               {equipmentLevels.map((eq) => (
                 <TouchableOpacity
                   key={eq.key}
@@ -464,16 +422,18 @@ export default function CreateWorkoutScreen() {
                     },
                   ]}
                   onPress={() => setSelectedEquipment(eq.key)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${eq.label} equipment${selectedEquipment === eq.key ? ', selected' : ''}`}
                 >
-                  <Text
+                  <ThemedText
                     style={{
                       color: selectedEquipment === eq.key ? theme.colors.onAccent : theme.colors.text,
-                      fontSize: 12,
+                      fontSize: typography.sizes.caption, 
                       fontWeight: '600',
                     }}
                   >
                     {eq.label}
-                  </Text>
+                  </ThemedText>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -493,22 +453,24 @@ export default function CreateWorkoutScreen() {
                 },
               ]}
               onPress={() => setSelectedCategory(cat.key)}
+              accessibilityRole="button"
+              accessibilityLabel={`${cat.label} category${selectedCategory === cat.key ? ', selected' : ''}`}
             >
-              <Text
+              <ThemedText
                 style={{
                   color: selectedCategory === cat.key ? theme.colors.onAccent : theme.colors.text,
-                  fontSize: 12,
+                  fontSize: typography.sizes.caption, 
                   fontWeight: '600',
                 }}
               >
                 {cat.label}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
         {/* Exercise count */}
-        <ThemedText variant="bodySmall" color="secondary" style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+        <ThemedText variant="bodySmall" color="secondary" style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}>
           {filteredExercises.length} {t('createWorkout.exercisesAvailable')}
         </ThemedText>
 
@@ -517,27 +479,38 @@ export default function CreateWorkoutScreen() {
           data={filteredExercises}
           keyExtractor={keyExtractorExercise}
           renderItem={renderExerciseItem}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingHorizontal: spacing[4], paddingBottom: spacing[25] }}
           initialNumToRender={15}
           maxToRenderPerBatch={10}
           windowSize={5}
           removeClippedSubviews={true}
           getItemLayout={getExerciseItemLayout}
+          ListEmptyComponent={
+            <View style={{ alignItems: 'center', paddingTop: spacing[12] }}>
+              <MaterialCommunityIcons name="magnify-close" size={48} color={theme.colors.textMuted} />
+              <ThemedText variant="h4" color="secondary" style={{ marginTop: spacing[3] }}>
+                {t('exercises.noResults') || 'No exercises found'}
+              </ThemedText>
+              <ThemedText variant="bodySmall" color="muted" style={{ marginTop: spacing[1] }}>
+                {t('exercises.adjustFilters') || 'Try adjusting your search or filters'}
+              </ThemedText>
+            </View>
+          }
         />
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== STEP 2: CONFIGURE EXERCISES =====
   if (step === 'configure') {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => setStep('select')}>
+          <TouchableOpacity onPress={() => setStep('select')} accessibilityRole="button" accessibilityLabel="Back to exercise selection">
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="h3">{t('createWorkout.configure')}</ThemedText>
-          <TouchableOpacity onPress={() => setStep('preview')}>
+          <TouchableOpacity onPress={() => { haptic('buttonPress'); setStep('preview'); }} accessibilityRole="button" accessibilityLabel="Preview workout">
             <ThemedText variant="body" color="accent" weight="600">
               {t('createWorkout.preview')}
             </ThemedText>
@@ -556,7 +529,7 @@ export default function CreateWorkoutScreen() {
           />
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
+        <ScrollView contentContainerStyle={{ padding: spacing[4], paddingBottom: spacing[25] }}>
           {selected.map((item, index) => (
             <Card key={item.exercise.id} style={styles.configCard}>
               <View style={styles.configHeader}>
@@ -565,7 +538,7 @@ export default function CreateWorkoutScreen() {
                   category={item.exercise.category}
                   variant="thumbnail"
                   animate={false}
-                  style={{ marginRight: 12 }}
+                  style={{ marginRight: spacing[3] }}
                 />
                 <View style={{ flex: 1 }}>
                   <ThemedText variant="body" weight="600">
@@ -576,7 +549,7 @@ export default function CreateWorkoutScreen() {
                   </ThemedText>
                 </View>
                 <View style={styles.configActions}>
-                  <TouchableOpacity onPress={() => moveExercise(index, 'up')} disabled={index === 0}>
+                  <TouchableOpacity onPress={() => moveExercise(index, 'up')} disabled={index === 0} accessibilityRole="button" accessibilityLabel={`Move ${item.exercise.name} up`}>
                     <MaterialCommunityIcons
                       name="chevron-up"
                       size={20}
@@ -586,6 +559,8 @@ export default function CreateWorkoutScreen() {
                   <TouchableOpacity
                     onPress={() => moveExercise(index, 'down')}
                     disabled={index === selected.length - 1}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Move ${item.exercise.name} down`}
                   >
                     <MaterialCommunityIcons
                       name="chevron-down"
@@ -593,7 +568,7 @@ export default function CreateWorkoutScreen() {
                       color={index === selected.length - 1 ? theme.colors.textMuted : theme.colors.text}
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => removeExercise(item.exercise.id)}>
+                  <TouchableOpacity onPress={() => removeExercise(item.exercise.id)} accessibilityRole="button" accessibilityLabel={`Remove ${item.exercise.name}`}>
                     <MaterialCommunityIcons name="delete-outline" size={20} color={theme.colors.error} />
                   </TouchableOpacity>
                 </View>
@@ -608,14 +583,18 @@ export default function CreateWorkoutScreen() {
                   <View style={styles.stepper}>
                     <TouchableOpacity
                       onPress={() => updateExerciseConfig(item.exercise.id, 'sets', Math.max(1, item.sets - 1))}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Decrease sets for ${item.exercise.name}`}
                     >
                       <MaterialCommunityIcons name="minus-circle-outline" size={24} color={theme.colors.accent} />
                     </TouchableOpacity>
-                    <ThemedText variant="h4" style={{ marginHorizontal: 12 }}>
+                    <ThemedText variant="h4" style={{ marginHorizontal: spacing[3] }}>
                       {item.sets}
                     </ThemedText>
                     <TouchableOpacity
                       onPress={() => updateExerciseConfig(item.exercise.id, 'sets', Math.min(10, item.sets + 1))}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Increase sets for ${item.exercise.name}`}
                     >
                       <MaterialCommunityIcons name="plus-circle-outline" size={24} color={theme.colors.accent} />
                     </TouchableOpacity>
@@ -643,16 +622,20 @@ export default function CreateWorkoutScreen() {
                       onPress={() =>
                         updateExerciseConfig(item.exercise.id, 'restSeconds', Math.max(15, item.restSeconds - 15))
                       }
+                      accessibilityRole="button"
+                      accessibilityLabel={`Decrease rest time for ${item.exercise.name}`}
                     >
                       <MaterialCommunityIcons name="minus-circle-outline" size={24} color={theme.colors.accent} />
                     </TouchableOpacity>
-                    <ThemedText variant="h4" style={{ marginHorizontal: 8 }}>
+                    <ThemedText variant="h4" style={{ marginHorizontal: spacing[2] }}>
                       {item.restSeconds}
                     </ThemedText>
                     <TouchableOpacity
                       onPress={() =>
                         updateExerciseConfig(item.exercise.id, 'restSeconds', Math.min(180, item.restSeconds + 15))
                       }
+                      accessibilityRole="button"
+                      accessibilityLabel={`Increase rest time for ${item.exercise.name}`}
                     >
                       <MaterialCommunityIcons name="plus-circle-outline" size={24} color={theme.colors.accent} />
                     </TouchableOpacity>
@@ -669,15 +652,17 @@ export default function CreateWorkoutScreen() {
                     [item.exercise.id]: !prev[item.exercise.id],
                   }))
                 }
+                accessibilityRole="button"
+                accessibilityLabel={`${expandedInstructions[item.exercise.id] ? 'Hide' : 'Show'} instructions for ${item.exercise.name}`}
               >
                 <MaterialCommunityIcons
                   name={expandedInstructions[item.exercise.id] ? 'chevron-up' : 'text-box-outline'}
                   size={16}
                   color={theme.colors.accent}
                 />
-                <Text style={{ color: theme.colors.accent, fontSize: 13, fontWeight: '600', marginLeft: 6 }}>
+                <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.label, fontWeight: '600', marginLeft: spacing[1.5] }}>
                   {expandedInstructions[item.exercise.id] ? 'Hide Instructions' : 'Show Instructions'}
-                </Text>
+                </ThemedText>
               </TouchableOpacity>
 
               {expandedInstructions[item.exercise.id] && item.exercise.instructions.length > 0 && (
@@ -689,39 +674,39 @@ export default function CreateWorkoutScreen() {
                 >
                   {item.exercise.instructions.map((instruction, idx) => (
                     <View key={idx} style={styles.instructionStep}>
-                      <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '700', width: 20 }}>
+                      <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '700', width: 20 }}>
                         {idx + 1}.
-                      </Text>
-                      <Text style={{ color: theme.colors.textSecondary, fontSize: 13, flex: 1, lineHeight: 18 }}>
+                      </ThemedText>
+                      <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.label, flex: 1, lineHeight: 18 }}>
                         {instruction}
-                      </Text>
+                      </ThemedText>
                     </View>
                   ))}
                   <TouchableOpacity
                     style={[styles.narrateBtn, { backgroundColor: theme.colors.accent + '15' }]}
                     onPress={() => {
                       const text = `${item.exercise.name}. ${item.exercise.instructions.join('. ')}`;
-                      audioService.speakNarration(text);
+                      vm.speakNarration(text);
                     }}
                   >
                     <MaterialCommunityIcons name="volume-high" size={16} color={theme.colors.accent} />
-                    <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>
+                    <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600', marginLeft: spacing[1.5] }}>
                       Read Aloud
-                    </Text>
+                    </ThemedText>
                   </TouchableOpacity>
                 </View>
               )}
             </Card>
           ))}
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== STEP 3: PREVIEW =====
   return (
     <ScreenErrorBoundary screenName="CreateWorkout" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setStep('configure')}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
@@ -730,26 +715,26 @@ export default function CreateWorkoutScreen() {
           <View style={{ width: 24 }} />
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
+        <ScrollView contentContainerStyle={{ padding: spacing[4], paddingBottom: spacing[25] }}>
           {/* Summary */}
           <Card style={styles.summaryCard}>
             <ThemedText variant="h3">{workoutName.trim() || t('createWorkout.customWorkout')}</ThemedText>
             <View style={styles.summaryRow}>
               <View style={styles.summaryItem}>
                 <MaterialCommunityIcons name="dumbbell" size={20} color={theme.colors.accent} />
-                <ThemedText variant="body" style={{ marginLeft: 6 }}>
+                <ThemedText variant="body" style={{ marginLeft: spacing[1.5] }}>
                   {selected.length}
                 </ThemedText>
-                <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: 4 }}>
+                <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: spacing[1] }}>
                   {t('createWorkout.exercises')}
                 </ThemedText>
               </View>
               <View style={styles.summaryItem}>
                 <MaterialCommunityIcons name="clock-outline" size={20} color={theme.colors.accent} />
-                <ThemedText variant="body" style={{ marginLeft: 6 }}>
+                <ThemedText variant="body" style={{ marginLeft: spacing[1.5] }}>
                   ~{Math.round(estimatedDuration)}
                 </ThemedText>
-                <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: 4 }}>
+                <ThemedText variant="bodySmall" color="secondary" style={{ marginLeft: spacing[1] }}>
                   {t('createWorkout.min')}
                 </ThemedText>
               </View>
@@ -761,16 +746,16 @@ export default function CreateWorkoutScreen() {
             <Card key={item.exercise.id} style={styles.previewExercise}>
               <View style={styles.previewRow}>
                 <View style={[styles.orderBadge, { backgroundColor: theme.colors.accent }]}>
-                  <Text style={{ color: theme.colors.text, fontWeight: '700', fontSize: 12 }}>{index + 1}</Text>
+                  <ThemedText style={{ color: theme.colors.text, fontWeight: '700', fontSize: typography.sizes.caption }}>{index + 1}</ThemedText>
                 </View>
                 <ExerciseImage
                   exerciseId={item.exercise.id}
                   category={item.exercise.category}
                   variant="thumbnail"
                   animate={false}
-                  style={{ marginLeft: 10 }}
+                  style={{ marginLeft: spacing[2.5] }}
                 />
-                <View style={{ flex: 1, marginLeft: 12 }}>
+                <View style={{ flex: 1, marginLeft: spacing[3] }}>
                   <ThemedText variant="body" weight="600">
                     {item.exercise.name}
                   </ThemedText>
@@ -778,12 +763,12 @@ export default function CreateWorkoutScreen() {
                     {item.sets} sets × {item.reps} • {item.restSeconds}s rest
                   </ThemedText>
                   {item.exercise.instructions.length > 0 && (
-                    <Text
-                      style={{ color: theme.colors.textMuted, fontSize: 12, marginTop: 4, lineHeight: 16 }}
+                    <ThemedText
+                      style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[1], lineHeight: 16 }}
                       numberOfLines={2}
                     >
                       {item.exercise.instructions[0]}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
               </View>
@@ -795,11 +780,11 @@ export default function CreateWorkoutScreen() {
             style={[styles.saveButton, { backgroundColor: theme.colors.success }]}
             onPress={handleSaveWorkout}
           >
-            <MaterialCommunityIcons name="content-save" size={20} color="#fff" />
-            <Text style={[styles.saveButtonText, { color: theme.colors.text }]}>{t('createWorkout.saveWorkout')}</Text>
+            <MaterialCommunityIcons name="content-save" size={20} color={theme.colors.onAccent} />
+            <ThemedText style={[styles.saveButtonText, { color: theme.colors.text }]}>{t('createWorkout.saveWorkout')}</ThemedText>
           </TouchableOpacity>
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -814,27 +799,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing[4],
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: spacing[3.5],
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2.5],
     borderRadius: 10,
     borderWidth: 1,
   },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    gap: 10,
-    marginBottom: 12,
+    paddingHorizontal: spacing[4],
+    gap: spacing[2.5],
+    marginBottom: spacing[3],
   },
   filterButton: {
     width: 44,
@@ -855,14 +840,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterBadgeText: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '600',
   },
   filtersPanel: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    padding: 14,
-    borderRadius: 12,
+    marginHorizontal: spacing[4],
+    marginBottom: spacing[3],
+    padding: spacing[3.5],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   filterHeader: {
@@ -871,81 +856,81 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[2],
+    borderRadius: radius.md,
     borderWidth: 1,
-    marginRight: 8,
+    marginRight: spacing[2],
   },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
-    fontSize: 14,
+    marginLeft: spacing[2],
+    fontSize: typography.sizes.bodySmall, 
   },
   categoryScroll: {
     flexGrow: 0,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginBottom: 8,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    marginBottom: spacing[2],
   },
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2.5],
     borderRadius: 20,
     borderWidth: 1,
-    marginRight: 10,
+    marginRight: spacing[2.5],
     minWidth: 70,
     alignItems: 'center',
   },
   exerciseItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: spacing[3.5],
     borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   checkCircle: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
   diffBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[1],
     borderRadius: 6,
   },
   nameInput: {
-    marginHorizontal: 16,
-    marginBottom: 8,
+    marginHorizontal: spacing[4],
+    marginBottom: spacing[2],
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[3],
   },
   nameField: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
   },
   configCard: {
-    padding: 16,
-    marginBottom: 12,
+    padding: spacing[4],
+    marginBottom: spacing[3],
   },
   configHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   configActions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing[2],
   },
   configRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: spacing[3],
   },
   configField: {
     flex: 1,
@@ -954,36 +939,36 @@ const styles = StyleSheet.create({
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: spacing[1],
   },
   repsInput: {
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1.5],
     textAlign: 'center',
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: typography.sizes.bodySmall, 
+    marginTop: spacing[1],
     width: '100%',
   },
   summaryCard: {
-    padding: 20,
-    marginBottom: 16,
+    padding: spacing[5],
+    marginBottom: spacing[4],
     alignItems: 'center',
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 24,
-    marginTop: 12,
+    gap: spacing[6],
+    marginTop: spacing[3],
   },
   summaryItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   previewExercise: {
-    padding: 14,
-    marginBottom: 8,
+    padding: spacing[3.5],
+    marginBottom: spacing[2],
   },
   previewRow: {
     flexDirection: 'row',
@@ -1000,38 +985,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 18,
+    padding: spacing[4.5],
     borderRadius: 14,
-    marginTop: 16,
-    gap: 10,
+    marginTop: spacing[4],
+    gap: spacing[2.5],
   },
   saveButtonText: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '600',
   },
   instructionToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-    paddingTop: 10,
+    marginTop: spacing[3],
+    paddingTop: spacing[2.5],
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   instructionBox: {
-    marginTop: 10,
-    padding: 12,
+    marginTop: spacing[2.5],
+    padding: spacing[3],
     borderRadius: 10,
     borderWidth: 1,
   },
   instructionStep: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   narrateBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginTop: 8,
+    paddingVertical: spacing[2],
+    borderRadius: radius.md,
+    marginTop: spacing[2],
   },
 });

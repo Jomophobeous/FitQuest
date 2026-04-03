@@ -23,6 +23,7 @@
 
 import { dualAI, AIContext, AIResponse } from '../engines/DualAIEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
+import { darkTheme as theme } from '../design/theme-system';
 import { rateLimiter, RATE_LIMITS } from '../utils/rateLimiter';
 import { tamperEngine } from './security/tamperEngine';
 import { degradation } from './security/degradation';
@@ -187,10 +188,10 @@ interface CloudResponse {
 // ============================================
 
 export const TIER_LABELS: Record<ModelTier, { label: string; badge: string; color: string }> = {
-  elite: { label: 'Elite', badge: '\uD83D\uDC51', color: '#FFD700' }, // crown
-  strong: { label: 'Strong', badge: '\uD83D\uDCAA', color: '#10B981' }, // muscle
-  fast: { label: 'Fast', badge: '\u26A1', color: '#3B82F6' }, // bolt
-  free: { label: 'Free', badge: '\uD83C\uDD93', color: '#A855F7' }, // gift (legacy, kept for type compatibility)
+  elite: { label: 'Elite', badge: '\uD83D\uDC51', color: theme.colors.warning }, // crown
+  strong: { label: 'Strong', badge: '\uD83D\uDCAA', color: theme.colors.accent }, // muscle
+  fast: { label: 'Fast', badge: '\u26A1', color: theme.colors.info }, // bolt
+  free: { label: 'Free', badge: '\uD83C\uDD93', color: theme.colors.purple }, // gift (legacy, kept for type compatibility)
 };
 
 // ============================================
@@ -452,8 +453,15 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
     }
     if (workout?.currentExercise) parts.push(`- Currently doing: ${workout.currentExercise}`);
     if (workout?.muscleGroup) parts.push(`- Target muscle: ${workout.muscleGroup}`);
+    if (workout?.fatigueHighMuscles && workout.fatigueHighMuscles.length > 0) {
+      parts.push(`- Fatigued muscles: ${workout.fatigueHighMuscles.join(', ')}`);
+      parts.push('  → Avoid loading these muscle groups heavily. Suggest alternatives or active recovery.');
+    }
+    if (workout?.readinessStatus) {
+      parts.push(`- Readiness: ${workout.readinessStatus}`);
+    }
     if (workout?.lastWorkoutDate) {
-      const daysSince = Math.floor((Date.now() - new Date(workout.lastWorkoutDate).getTime()) / (1000 * 60 * 60 * 24));
+      const daysSince = workout.daysSinceLastWorkout ?? Math.floor((Date.now() - new Date(workout.lastWorkoutDate).getTime()) / (1000 * 60 * 60 * 24));
       if (daysSince >= 7)
         parts.push(`- Last workout: ${daysSince} days ago. Be encouraging about coming back, no judgment.`);
       else if (daysSince >= 3) parts.push(`- Last workout: ${daysSince} days ago (gently encourage comeback)`);
@@ -929,7 +937,7 @@ class AIProvider {
     context: AIContext,
   ): Promise<CloudResponse> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), provider.timeoutMs);
+    const timeout = setTimeout(() => controller.abort(), provider.timeoutMs); // abort-timeout
 
     const messages: Array<{ role: string; content: string }> = [
       { role: 'system', content: buildAdaptiveSystemPrompt(context, input) },
@@ -1044,7 +1052,7 @@ class AIProvider {
       if (status === 429) {
         const retryAfter = response.headers.get('retry-after');
         const waitMs = retryAfter ? Math.min(parseInt(retryAfter, 10) * 1000, 5000) : 2000;
-        await new Promise((r) => setTimeout(r, waitMs));
+        await new Promise((r) => setTimeout(r, waitMs)); // abort-timeout
         // Record extra failure to accelerate cooldown for this model
         this.recordFailure(model.id);
       }

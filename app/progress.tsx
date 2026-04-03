@@ -9,7 +9,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   Image,
   Alert,
@@ -18,109 +17,29 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useToast } from '../src/context/ToastContext';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { Paths, File, Directory } from 'expo-file-system';
+
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useRouter } from 'expo-router';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { getXPData, awardProgressPhotoXP, type XPData } from '../src/services/xpService';
-import { getAppState, setAppState, getUserProgress, getStreak } from '../src/database/service';
+import { useProgressViewModel, type XPData, type ProgressPhoto } from '../src/viewmodels/useProgressViewModel';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import ThemedText from '../src/components/ThemedText';
 import ProgressBar from '../src/components/ProgressBar';
-import { GlassCard, SectionHeader } from '../src/components/ui/GlassUI';
+import { GlassCard, SectionHeader, GradientButton } from '../src/components/ui/GlassUI';
 import { getCardWidth, getGridColumns, ms } from '../src/utils/responsive';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLS = getGridColumns();
 const PHOTO_SIZE = getCardWidth(GRID_COLS, 16, 12);
-
-// ============================================
-// TYPES
-// ============================================
-
-interface ProgressPhoto {
-  id: string;
-  uri: string;
-  date: string;
-  label?: string; // 'front' | 'side' | 'back'
-}
-
-// ============================================
-// PHOTO STORAGE
-// ============================================
-
-const PHOTOS_DIR_NAME = 'progress_photos';
-const PHOTOS_KEY = 'progress_photos_index';
-
-function getPhotosDir(): Directory {
-  return new Directory(Paths.document, PHOTOS_DIR_NAME);
-}
-
-async function ensurePhotosDir(): Promise<void> {
-  const dir = getPhotosDir();
-  if (!dir.exists) {
-    dir.create();
-  }
-}
-
-async function loadPhotoIndex(): Promise<ProgressPhoto[]> {
-  const data = await getAppState(PHOTOS_KEY);
-  if (!data) return [];
-  try {
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function savePhotoIndex(photos: ProgressPhoto[]): Promise<void> {
-  await setAppState(PHOTOS_KEY, JSON.stringify(photos));
-}
-
-async function savePhoto(uri: string, label?: string): Promise<ProgressPhoto> {
-  await ensurePhotosDir();
-  const id = `photo_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-  const ext = uri.split('.').pop() || 'jpg';
-  const destFile = new File(getPhotosDir(), `${id}.${ext}`);
-  const sourceFile = new File(uri);
-
-  try {
-    sourceFile.copy(destFile);
-  } catch (e) {
-    throw new Error(`Failed to save photo: ${e instanceof Error ? e.message : String(e)}`);
-  }
-
-  const photo: ProgressPhoto = {
-    id,
-    uri: destFile.uri,
-    date: new Date().toISOString().split('T')[0]!,
-    label,
-  };
-
-  const photos = await loadPhotoIndex();
-  photos.unshift(photo); // newest first
-  await savePhotoIndex(photos);
-
-  return photo;
-}
-
-async function deletePhoto(photoId: string): Promise<void> {
-  const photos = await loadPhotoIndex();
-  const photo = photos.find((p) => p.id === photoId);
-  if (photo) {
-    try {
-      const file = new File(photo.uri);
-      if (file.exists) file.delete();
-    } catch {}
-    await savePhotoIndex(photos.filter((p) => p.id !== photoId));
-  }
-}
 
 // ============================================
 // SCREEN
@@ -129,44 +48,23 @@ async function deletePhoto(photoId: string): Promise<void> {
 export default function ProgressScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const router = useRouter();
   const { isReady: dbReady } = useDatabase();
-  const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
-  const [xpData, setXPData] = useState<XPData | null>(null);
-  const [stats, setStats] = useState<{ workouts: number; streak: number; exercises: number }>({
-    workouts: 0,
-    streak: 0,
-    exercises: 0,
-  });
+  const vm = useProgressViewModel();
   const [selectedPhoto, setSelectedPhoto] = useState<ProgressPhoto | null>(null);
   const [compareMode, setCompareMode] = useState(false);
   const [comparePhotos, setComparePhotos] = useState<ProgressPhoto[]>([]);
 
   useEffect(() => {
-    if (dbReady) loadData();
-  }, [dbReady]);
-
-  const loadData = async () => {
-    const [photoList, xp, progress, streak] = await Promise.all([
-      loadPhotoIndex(),
-      getXPData(),
-      getUserProgress(),
-      getStreak('user_local_001'),
-    ]);
-    setPhotos(photoList);
-    setXPData(xp);
-    setStats({
-      workouts: progress.completed_workouts,
-      streak: streak.current,
-      exercises: progress.total_exercises_done,
-    });
-  };
+    if (dbReady) vm.loadData();
+  }, [dbReady, vm]);
 
   const handleTakePhoto = async () => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(t('progress.permissionNeeded'), t('progress.cameraRequired'));
+        showToast({ message: t('progress.cameraRequired'), type: 'warning' });
         return;
       }
 
@@ -183,7 +81,7 @@ export default function ProgressScreen() {
       }
     } catch (e) {
       if (__DEV__) console.warn('[Progress] Camera error:', e);
-      Alert.alert(t('common.error'), t('progress.cameraFailed'));
+      showToast({ message: t('progress.cameraFailed'), type: 'error' });
     }
   };
 
@@ -191,7 +89,7 @@ export default function ProgressScreen() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(t('progress.permissionNeeded'), t('progress.galleryRequired'));
+        showToast({ message: t('progress.galleryRequired'), type: 'warning' });
         return;
       }
 
@@ -208,7 +106,7 @@ export default function ProgressScreen() {
       }
     } catch (e) {
       if (__DEV__) console.warn('[Progress] Gallery error:', e);
-      Alert.alert(t('common.error'), t('progress.galleryFailed'));
+      showToast({ message: t('progress.galleryFailed'), type: 'error' });
     }
   };
 
@@ -223,13 +121,11 @@ export default function ProgressScreen() {
 
   const saveAndRefresh = async (uri: string, label?: string) => {
     try {
-      await savePhoto(uri, label);
-      const xpResult = await awardProgressPhotoXP();
-      Alert.alert(t('progress.photoSaved'), `+${xpResult.xpEarned} XP ${t('common.earned')}!`);
-      await loadData();
+      const xpResult = await vm.saveNewPhoto(uri, label);
+      showToast({ message: `+${xpResult.xpEarned} XP ${t('common.earned')}!`, type: 'success' });
     } catch (e) {
       if (__DEV__) console.warn('[Progress] Save failed:', e);
-      Alert.alert(t('common.error'), t('progress.saveFailed'));
+      showToast({ message: t('progress.saveFailed'), type: 'error' });
     }
   };
 
@@ -240,9 +136,8 @@ export default function ProgressScreen() {
         text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
-          await deletePhoto(photo.id);
+          await vm.deleteProgressPhoto(photo.id);
           setSelectedPhoto(null);
-          await loadData();
         },
       },
     ]);
@@ -261,7 +156,7 @@ export default function ProgressScreen() {
   // ===== COMPARE VIEW =====
   if (compareMode && comparePhotos.length === 2) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.compareHeader}>
           <TouchableOpacity
             onPress={() => {
@@ -280,14 +175,14 @@ export default function ProgressScreen() {
           {comparePhotos.map((photo, idx) => (
             <View key={photo.id} style={styles.comparePhotoWrap}>
               <Image source={{ uri: photo.uri }} style={styles.comparePhoto} />
-              <ThemedText variant="bodySmall" color="secondary" style={{ textAlign: 'center', marginTop: 4 }}>
+              <ThemedText variant="bodySmall" color="secondary" style={{ textAlign: 'center', marginTop: spacing[1] }}>
                 {photo.date} {photo.label ? `(${photo.label})` : ''}
               </ThemedText>
             </View>
           ))}
         </View>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.colors.accent, margin: 16 }]}
+          style={[styles.button, { backgroundColor: theme.colors.accent, margin: spacing[4] }]}
           onPress={() => {
             setCompareMode(false);
             setComparePhotos([]);
@@ -295,16 +190,16 @@ export default function ProgressScreen() {
           accessibilityRole="button"
           accessibilityLabel="Done comparing"
         >
-          <Text style={[styles.buttonText, { color: theme.colors.text }]}>Done</Text>
+          <ThemedText style={[styles.buttonText, { color: theme.colors.text }]}>Done</ThemedText>
         </TouchableOpacity>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== FULL PHOTO VIEW =====
   if (selectedPhoto) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.photoViewHeader}>
           <TouchableOpacity
             onPress={() => setSelectedPhoto(null)}
@@ -325,27 +220,37 @@ export default function ProgressScreen() {
           </TouchableOpacity>
         </View>
         <Image source={{ uri: selectedPhoto.uri }} style={styles.fullPhoto} resizeMode="contain" />
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   // ===== MAIN VIEW =====
   if (!dbReady) {
     return (
-      <SafeAreaView
+      <ScreenContainer
         style={[
           styles.container,
           { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' },
         ]}
       >
         <ActivityIndicator size="large" color={theme.colors.accent} />
-      </SafeAreaView>
+      </ScreenContainer>
+    );
+  }
+
+  if (vm.loadError) {
+    return (
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{vm.loadError}</ThemedText>
+        <GradientButton title={t('common.retry') ?? 'Retry'} onPress={() => { setLoadError(null); loadData(); }} style={{ marginTop: spacing[4] }} />
+      </ScreenContainer>
     );
   }
 
   return (
     <ScreenErrorBoundary screenName="Progress" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <ScreenTutorial
           screenKey="progress"
           icon="chart-line"
@@ -369,11 +274,11 @@ export default function ProgressScreen() {
                       string,
                     ])
               }
-              style={{ paddingTop: 8, paddingBottom: 16, borderRadius: 20, marginBottom: 4 }}
+              style={{ paddingTop: spacing[2], paddingBottom: spacing[4], borderRadius: 20, marginBottom: spacing[1] }}
             >
               <View style={styles.header}>
                 <ThemedText variant="h2">Progress</ThemedText>
-                {photos.length >= 2 && (
+                {vm.photos.length >= 2 && (
                   <TouchableOpacity
                     onPress={() => setCompareMode(!compareMode)}
                     accessibilityRole="button"
@@ -391,22 +296,22 @@ export default function ProgressScreen() {
           </Animated.View>
 
           {/* XP & Level Card */}
-          {!!xpData && (
+          {!!vm.xpData && (
             <Animated.View entering={FadeInDown.delay(100).duration(200)}>
               <GlassCard gradient glowColor={theme.colors.warning} style={styles.xpCard}>
                 <View style={styles.xpHeader}>
                   <MaterialCommunityIcons name="star" size={28} color={theme.colors.warning} />
-                  <View style={{ marginLeft: 12, flex: 1 }}>
-                    <ThemedText variant="h3">Level {xpData.level}</ThemedText>
+                  <View style={{ marginLeft: spacing[3], flex: 1 }}>
+                    <ThemedText variant="h3">Level {vm.xpData.level}</ThemedText>
                     <ThemedText variant="bodySmall" color="secondary">
-                      {xpData.currentLevelXP} / {xpData.xpToNextLevel} XP
+                      {vm.xpData.currentLevelXP} / {vm.xpData.xpToNextLevel} XP
                     </ThemedText>
                   </View>
                   <ThemedText variant="h4" color="accent">
-                    {xpData.totalXP} XP
+                    {vm.xpData.totalXP} XP
                   </ThemedText>
                 </View>
-                <ProgressBar progress={xpData.progressPercent} height={8} variant="progress" />
+                <ProgressBar progress={vm.xpData.progressPercent} height={8} variant="progress" />
               </GlassCard>
             </Animated.View>
           )}
@@ -416,7 +321,7 @@ export default function ProgressScreen() {
             <View style={styles.statsRow}>
               <GlassCard gradient glowColor={theme.colors.accent} style={styles.statCard}>
                 <ThemedText variant="h3" color="accent">
-                  {stats.workouts}
+                  {vm.stats.workouts}
                 </ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
                   Workouts
@@ -424,7 +329,7 @@ export default function ProgressScreen() {
               </GlassCard>
               <GlassCard gradient glowColor={theme.colors.warning} style={styles.statCard}>
                 <ThemedText variant="h3" color="accent">
-                  {stats.streak}
+                  {vm.stats.streak}
                 </ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
                   Streak
@@ -432,7 +337,7 @@ export default function ProgressScreen() {
               </GlassCard>
               <GlassCard gradient glowColor={theme.colors.purple} style={styles.statCard}>
                 <ThemedText variant="h3" color="accent">
-                  {stats.exercises}
+                  {vm.stats.exercises}
                 </ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
                   Exercises
@@ -461,7 +366,7 @@ export default function ProgressScreen() {
                 accessibilityLabel="Take photo"
               >
                 <MaterialCommunityIcons name="camera" size={20} color={theme.colors.onAccent} />
-                <Text style={[styles.buttonText, { color: theme.colors.onAccent }]}>Take Photo</Text>
+                <ThemedText style={[styles.buttonText, { color: theme.colors.onAccent }]}>Take Photo</ThemedText>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -473,24 +378,24 @@ export default function ProgressScreen() {
                 accessibilityLabel="Pick from gallery"
               >
                 <MaterialCommunityIcons name="image-plus" size={20} color={theme.colors.text} />
-                <Text style={[styles.buttonText, { color: theme.colors.text }]}>Gallery</Text>
+                <ThemedText style={[styles.buttonText, { color: theme.colors.text }]}>Gallery</ThemedText>
               </TouchableOpacity>
             </View>
 
             {/* Photo Grid */}
-            {photos.length === 0 ? (
+            {vm.photos.length === 0 ? (
               <GlassCard style={styles.emptyCard}>
                 <MaterialCommunityIcons name="image-multiple-outline" size={48} color={theme.colors.textMuted} />
-                <ThemedText variant="body" color="secondary" style={{ marginTop: 12, textAlign: 'center' }}>
+                <ThemedText variant="body" color="secondary" style={{ marginTop: spacing[3], textAlign: 'center' }}>
                   No progress photos yet
                 </ThemedText>
-                <ThemedText variant="bodySmall" color="muted" style={{ marginTop: 4, textAlign: 'center' }}>
+                <ThemedText variant="bodySmall" color="muted" style={{ marginTop: spacing[1], textAlign: 'center' }}>
                   Take your first photo to start tracking your transformation!
                 </ThemedText>
               </GlassCard>
             ) : (
               <View style={styles.photoGrid}>
-                {photos.map((photo) => {
+                {vm.photos.map((photo) => {
                   const isSelected = comparePhotos.find((p) => p.id === photo.id);
                   return (
                     <TouchableOpacity
@@ -502,8 +407,8 @@ export default function ProgressScreen() {
                     >
                       <Image source={{ uri: photo.uri }} style={styles.photoImage} />
                       <View style={[styles.photoOverlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
-                        <Text style={[styles.photoDate, { color: theme.colors.text }]}>{photo.date}</Text>
-                        {photo.label && <Text style={styles.photoLabel}>{photo.label}</Text>}
+                        <ThemedText style={[styles.photoDate, { color: theme.colors.text }]}>{photo.date}</ThemedText>
+                        {photo.label && <ThemedText style={styles.photoLabel}>{photo.label}</ThemedText>}
                       </View>
                     </TouchableOpacity>
                   );
@@ -512,7 +417,7 @@ export default function ProgressScreen() {
             )}
           </Animated.View>
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -523,65 +428,65 @@ export default function ProgressScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { padding: 16 },
+  scrollContent: { padding: spacing[4] },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
-  xpCard: { padding: 16, marginBottom: 12 },
+  xpCard: { padding: spacing[4], marginBottom: spacing[3] },
   xpHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
+    gap: spacing[2],
+    marginBottom: spacing[4],
   },
   statCard: {
     flex: 1,
-    padding: 12,
+    padding: spacing[3],
     alignItems: 'center',
   },
   compareInstr: {
-    padding: 12,
+    padding: spacing[3],
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   photoActions: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
+    gap: spacing[3],
+    marginBottom: spacing[4],
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    gap: 8,
+    paddingVertical: spacing[3.5],
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.lg,
+    gap: spacing[2],
   },
   buttonText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '600',
   },
   emptyCard: {
-    padding: 32,
+    padding: spacing[8],
     alignItems: 'center',
   },
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: spacing[3],
   },
   photoThumb: {
     width: PHOTO_SIZE,
     height: PHOTO_SIZE * 1.33,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     overflow: 'hidden',
   },
   photoImage: {
@@ -593,7 +498,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 8,
+    padding: spacing[2],
   },
   photoDate: {
     fontSize: ms(12),
@@ -608,7 +513,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing[4],
   },
   fullPhoto: {
     flex: 1,
@@ -618,13 +523,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: spacing[4],
   },
   compareContainer: {
     flex: 1,
     flexDirection: 'row',
-    gap: 8,
-    padding: 16,
+    gap: spacing[2],
+    padding: spacing[4],
   },
   comparePhotoWrap: {
     flex: 1,
@@ -632,6 +537,6 @@ const styles = StyleSheet.create({
   comparePhoto: {
     width: '100%',
     flex: 1,
-    borderRadius: 12,
+    borderRadius: radius.lg,
   },
 });

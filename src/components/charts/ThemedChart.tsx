@@ -8,6 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
+import { typography, spacing } from '../../design/theme-system';
 import {
   DateRangeOption,
   DATE_RANGE_LABELS,
@@ -84,7 +85,7 @@ export function DateRangeSelector({
             style={[
               styles.rangeButtonText,
               {
-                color: selected === range ? '#FFFFFF' : chartTheme.textMuted,
+                color: selected === range ? theme.colors.onAccent : chartTheme.textMuted,
                 fontWeight: selected === range ? '600' : '400',
               },
             ]}
@@ -242,90 +243,90 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
-    marginVertical: 8,
+    marginVertical: spacing[2],
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[4],
+    paddingBottom: spacing[2],
   },
   titleContainer: {
     flex: 1,
   },
   title: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '600',
   },
   subtitle: {
-    fontSize: 13,
-    marginTop: 2,
+    fontSize: typography.sizes.label, 
+    marginTop: spacing[0.5],
   },
   chartContainer: {
-    paddingHorizontal: 8,
-    paddingBottom: 16,
+    paddingHorizontal: spacing[2],
+    paddingBottom: spacing[4],
   },
   stateContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: spacing[5],
   },
   stateIcon: {
-    fontSize: 32,
-    marginBottom: 8,
+    fontSize: typography.sizes.h1, 
+    marginBottom: spacing[2],
   },
   stateText: {
-    fontSize: 14,
-    marginTop: 8,
+    fontSize: typography.sizes.bodySmall, 
+    marginTop: spacing[2],
   },
   rangeSelectorContainer: {
     flexDirection: 'row',
-    gap: 6,
+    gap: spacing[1.5],
   },
   rangeButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1.5],
     borderRadius: 8,
     borderWidth: 1,
   },
   rangeButtonText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
   },
   miniStatContainer: {
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing[3],
   },
   miniStatLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   miniStatValueRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginTop: 4,
+    marginTop: spacing[1],
   },
   miniStatValue: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '700',
   },
   miniStatUnit: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '400',
   },
   miniStatDelta: {
-    fontSize: 12,
-    marginLeft: 6,
+    fontSize: typography.sizes.caption, 
+    marginLeft: spacing[1.5],
   },
   legendContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingTop: 8,
+    gap: spacing[3],
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
   },
   legendVertical: {
     flexDirection: 'column',
@@ -334,7 +335,7 @@ const styles = StyleSheet.create({
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing[1.5],
   },
   legendDot: {
     width: 10,
@@ -342,10 +343,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   legendLabel: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
   },
   legendValue: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
 });

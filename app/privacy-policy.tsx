@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
@@ -8,17 +8,18 @@ import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard } from '../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingBottom: 80 },
+  content: { paddingBottom: spacing[20] },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[2],
   },
   backBtn: {
     width: 36,
@@ -28,11 +29,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   spacer: { width: 36 },
-  title: { fontSize: 20, fontWeight: '800' },
-  card: { marginHorizontal: 16, marginTop: 8, padding: 16, gap: 10 },
-  sectionTitle: { fontSize: 15, fontWeight: '700' },
-  paragraph: { fontSize: 13, lineHeight: 20 },
-  bullet: { fontSize: 13, lineHeight: 20, marginLeft: 8 },
+  title: { fontSize: typography.sizes.h3, fontWeight: '800' },
+  card: { marginHorizontal: spacing[4], marginTop: spacing[2], padding: spacing[4], gap: spacing[2.5] },
+  sectionTitle: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
+  paragraph: { fontSize: typography.sizes.label, lineHeight: 20 },
+  bullet: { fontSize: typography.sizes.label, lineHeight: 20, marginLeft: spacing[2] },
 });
 
 export default function PrivacyPolicyScreen() {
@@ -42,7 +43,7 @@ export default function PrivacyPolicyScreen() {
 
   return (
     <ScreenErrorBoundary screenName="PrivacyPolicy" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator>
           <View style={styles.headerRow}>
             <TouchableOpacity
@@ -215,6 +216,40 @@ export default function PrivacyPolicyScreen() {
             </ThemedText>
 
             <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Analytics & Usage Data
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              FitQuest collects anonymized usage analytics to improve the app experience. This includes:
+            </ThemedText>
+            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+              • Screen views, feature usage frequency, and navigation patterns
+            </ThemedText>
+            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+              • Workout completion rates and session durations (no exercise-level health data)
+            </ThemedText>
+            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+              • App performance metrics (launch time, error rates)
+            </ThemedText>
+            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+              • Analytics are processed by PostHog (privacy-focused, EU-hosted)
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              You can disable usage analytics at any time in Profile → Privacy & Legal → Usage Analytics. Critical
+              events (app crashes and launch diagnostics) are always recorded regardless of this setting to maintain
+              app stability.
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Behavioral Personalization
+            </ThemedText>
+            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+              FitQuest uses on-device behavioral analysis to personalize your experience. This includes consistency
+              scoring, engagement level assessment, and fatigue tracking. All personalization data is computed and
+              stored exclusively on your device — it is never uploaded to any server of ours. This analysis drives workout
+              recommendations, recovery guidance, and adaptive UI features.
+            </ThemedText>
+
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
               {t('legal.privacy.sections.contactTitle')}
             </ThemedText>
             <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
@@ -222,7 +257,7 @@ export default function PrivacyPolicyScreen() {
             </ThemedText>
           </GlassCard>
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }

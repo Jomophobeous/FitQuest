@@ -28,6 +28,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../context/ThemeContext';
 import { audioService } from '../services/audioService';
 import type { MindTimeline, MindPhase, MindPhaseType, BreathingPattern } from '../engines/MindSessionEngine';
+import { typography, spacing } from '../design/theme-system';
+
 
 // Grandmaster-style breathing narration — short, calm, varied
 const BREATH_CUES = {
@@ -65,7 +67,7 @@ interface MindExerciseViewProps {
   voiceEnabled: boolean;
 }
 
-export default function MindExerciseView({
+function MindExerciseView({
   exerciseName,
   timeline,
   onComplete,
@@ -173,7 +175,7 @@ export default function MindExerciseView({
 
     // Slight delay for bell phases
     const delay = currentPhase.bellAtStart ? 800 : 200;
-    const timer = setTimeout(() => {
+    const timer = setTimeout(() => { // debounce
       if (cancelToken !== speakCancelRef.current) return;
       if (currentPhase.narration) {
         audioService.speakNarration(currentPhase.narration);
@@ -474,21 +476,21 @@ export default function MindExerciseView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing[6],
   },
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingTop: spacing[6],
+    paddingBottom: spacing[4],
   },
 
   // Phase dots
   phaseDots: {
     flexDirection: 'row',
-    gap: 6,
-    marginBottom: 24,
+    gap: spacing[1.5],
+    marginBottom: spacing[6],
   },
   phaseDotWrap: {
     justifyContent: 'center',
@@ -502,11 +504,11 @@ const styles = StyleSheet.create({
   phaseHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 32,
+    gap: spacing[1.5],
+    marginBottom: spacing[8],
   },
   phaseLabel: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 2,
@@ -516,7 +518,7 @@ const styles = StyleSheet.create({
   circleContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 32,
+    marginBottom: spacing[8],
   },
   outerRing: {
     position: 'absolute',
@@ -535,42 +537,42 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   breathText: {
-    fontSize: 22,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
     letterSpacing: 1,
   },
   phaseTime: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '600',
-    marginTop: 6,
+    marginTop: spacing[1.5],
   },
 
   // Exercise info
   exerciseName: {
-    fontSize: 22,
+    fontSize: typography.sizes.h3, 
     fontWeight: '900',
     textAlign: 'center',
     letterSpacing: -0.5,
   },
   intentionText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: 8,
-    paddingHorizontal: 20,
+    marginTop: spacing[2],
+    paddingHorizontal: spacing[5],
     lineHeight: 18,
   },
 
   // Bottom section (fixed)
   bottomSection: {
-    paddingBottom: 24,
-    paddingTop: 8,
+    paddingBottom: spacing[6],
+    paddingTop: spacing[2],
   },
   bottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    gap: spacing[3],
+    marginBottom: spacing[3],
   },
   progressTrack: {
     flex: 1,
@@ -583,7 +585,7 @@ const styles = StyleSheet.create({
     borderRadius: 1.5,
   },
   elapsedText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
@@ -591,13 +593,15 @@ const styles = StyleSheet.create({
   // End button
   endButton: {
     alignSelf: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[2],
     borderRadius: 20,
     borderWidth: 1,
   },
   endButtonText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '600',
   },
 });
+
+export default React.memo(MindExerciseView);

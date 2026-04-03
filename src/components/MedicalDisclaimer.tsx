@@ -16,6 +16,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import ThemedText from './ThemedText';
 import { getAppState, setAppState } from '../database/service';
+import { spacing } from '../design/theme-system';
 
 const DISCLAIMER_STATE_KEY = 'medical.disclaimer.acknowledged';
 
@@ -127,17 +128,17 @@ export default function MedicalDisclaimer({ screen, compact = false }: MedicalDi
 
 const styles = StyleSheet.create({
   banner: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 14,
+    marginHorizontal: spacing[4],
+    marginVertical: spacing[2],
+    padding: spacing[3.5],
     borderRadius: 12,
     borderWidth: 1,
-    gap: 8,
+    gap: spacing[2],
   },
   bannerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: spacing[2.5],
   },
   iconWrap: {
     width: 32,
@@ -148,19 +149,19 @@ const styles = StyleSheet.create({
   },
   ackButton: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     borderRadius: 8,
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   compactBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginHorizontal: 16,
-    marginVertical: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    gap: spacing[2],
+    marginHorizontal: spacing[4],
+    marginVertical: spacing[1.5],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
     borderRadius: 8,
     borderWidth: 1,
   },

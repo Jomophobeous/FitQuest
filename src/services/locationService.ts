@@ -74,7 +74,7 @@ export async function getCurrentLocation(): Promise<UserLocation | null> {
     });
 
     const timeoutPromise = new Promise<null>((_, reject) =>
-      setTimeout(() => reject(new Error('Location timeout')), 10000),
+      setTimeout(() => reject(new Error('Location timeout')), 10000), // abort-timeout
     );
 
     const location = (await Promise.race([locationPromise, timeoutPromise])) as Location.LocationObject | null;

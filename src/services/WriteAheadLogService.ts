@@ -15,6 +15,7 @@ import { captureException } from './crashReporting';
 import { authService } from '../security/AuthService';
 import { encryptV3, decryptV3 } from '../security/AESEncryption';
 import * as Crypto from 'expo-crypto';
+import { darkTheme as theme } from '../design/theme-system';
 
 // ============================================
 // TYPES
@@ -585,7 +586,7 @@ async function replayAddFitMindDocument(
       Number(payload.word_count ?? 0),
       (payload.reading_level as string) ?? null,
       Number(payload.estimated_minutes ?? 0),
-      String(payload.cover_color ?? '#10B981'),
+      String(payload.cover_color ?? theme.colors.accent),
       Number(payload.created_at ?? now),
       Number(payload.updated_at ?? now),
     ],
@@ -673,7 +674,7 @@ async function replayAddFitMindAnnotation(
       Number(payload.page_number ?? 0),
       String(payload.type ?? 'NOTE'),
       String(payload.content ?? ''),
-      String(payload.color ?? '#10B981'),
+      String(payload.color ?? theme.colors.accent),
       (payload.position_start as number) ?? null,
       (payload.position_end as number) ?? null,
       Number(payload.created_at ?? now),
@@ -875,7 +876,7 @@ class WriteAheadLogServiceImpl {
   }): Promise<string> {
     await this.initialize();
     const db = await getDatabase();
-    const id = `wal_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const id = `wal_${Date.now()}_${Crypto.randomUUID().slice(0, 8)}`;
     const now = Date.now();
 
     const rawPayload = JSON.stringify(params.payload ?? {});
@@ -930,7 +931,7 @@ class WriteAheadLogServiceImpl {
   ): Promise<{ walId: string; result: T }> {
     await this.initialize();
     const db = await getDatabase();
-    const walId = `wal_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const walId = `wal_${Date.now()}_${Crypto.randomUUID().slice(0, 8)}`;
     const now = Date.now();
 
     const rawPayload = JSON.stringify(params.payload ?? {});

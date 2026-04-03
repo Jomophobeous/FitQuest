@@ -29,10 +29,15 @@ import {
 } from './recoveryEngine';
 import { getTrialSnapshot, type TrialPhase, type TrialSnapshot } from './TrialProgressionEngine';
 import { getDailySignal, type BehavioralSignal } from './BehavioralSignalEngine';
+import { getStreak, getRecentSessions } from '../database/service';
+import type { WorkoutSession } from '../database/types';
 
 // ============================================
 // TYPES
 // ============================================
+
+export type EngagementLevel = 'HIGH' | 'MEDIUM' | 'LOW';
+export type FatigueTier = 'LOW' | 'MEDIUM' | 'HIGH';
 
 /** Complete consolidated user state — everything the system knows about a user */
 export interface UserState {
@@ -57,6 +62,19 @@ export interface UserState {
   currentSignal: BehavioralSignal | null;
   /** Full consistency profile */
   consistency: ConsistencyProfile;
+  // ── Phase 17: Adaptive intelligence fields ──
+  /** Engagement level derived from frequency + completion */
+  engagementLevel: EngagementLevel;
+  /** Fatigue tier derived from average fatigue */
+  fatigueTier: FatigueTier;
+  /** Whether user is at risk of churning */
+  churnRisk: boolean;
+  /** Days since last completed workout (null if no history) */
+  daysSinceLastWorkout: number | null;
+  /** Current streak count */
+  streak: number;
+  /** Completed sessions in last 14 days */
+  recentSessionCount: number;
   /** When this state was last refreshed */
   refreshedAt: number;
 }
@@ -104,6 +122,8 @@ export async function getUserState(userId: string, isSubscribed = false, forceRe
     deloadStatus,
     trialSnapshot,
     currentSignal,
+    streakData,
+    recentSessions,
   ] = await Promise.all([
     classifyConsistency(userId).catch(() => defaultConsistency()),
     getProgressionProfile(userId).catch(() => defaultProgression()),
@@ -113,7 +133,28 @@ export async function getUserState(userId: string, isSubscribed = false, forceRe
     checkDeloadStatus(userId).catch(() => defaultDeload()),
     getTrialSnapshot(userId, isSubscribed).catch(() => defaultTrialSnapshot()),
     getDailySignal(userId).catch(() => null as BehavioralSignal | null),
+    getStreak(userId).catch(() => ({ current: 0, longest: 0 })),
+    getRecentSessions(userId, 14).catch(() => [] as WorkoutSession[]),
   ]);
+
+  // ── Phase 17: Derived adaptive fields ──
+  const streak = streakData.current;
+  const consistencyScore100 = Math.round(consistency.consistencyScore * 100);
+  const fourteenDaysAgo = Date.now() - 14 * 86400000;
+  const recentCompleted = recentSessions.filter(
+    (s) => s.completed_at && new Date(s.started_at).getTime() >= fourteenDaysAgo,
+  );
+  const recentSessionCount = recentCompleted.length;
+  const lastCompleted = recentSessions.find((s) => s.completed_at);
+  const daysSinceLastWorkout = lastCompleted?.completed_at
+    ? Math.floor((Date.now() - new Date(lastCompleted.completed_at).getTime()) / 86400000)
+    : null;
+  const fatigueTier: FatigueTier =
+    averageFatigue >= 65 ? 'HIGH' : averageFatigue >= 35 ? 'MEDIUM' : 'LOW';
+  const engagementLevel = deriveEngagement(consistencyScore100, recentSessionCount, consistency.avgCompletionRate);
+  const churnRisk =
+    (daysSinceLastWorkout !== null && daysSinceLastWorkout >= 5) ||
+    (consistencyScore100 < 25 && recentSessionCount <= 1);
 
   const state: UserState = {
     userId,
@@ -128,6 +169,12 @@ export async function getUserState(userId: string, isSubscribed = false, forceRe
     trialSnapshot,
     currentSignal,
     consistency,
+    engagementLevel,
+    fatigueTier,
+    churnRisk,
+    daysSinceLastWorkout,
+    streak,
+    recentSessionCount,
     refreshedAt: Date.now(),
   };
 
@@ -158,6 +205,20 @@ export function getCachedUserState(): UserState | null {
     return _cachedState;
   }
   return null;
+}
+
+// ============================================
+// DERIVED HELPERS
+// ============================================
+
+function deriveEngagement(
+  score100: number,
+  recentSessions: number,
+  avgCompletionRate: number,
+): EngagementLevel {
+  if (score100 >= 60 && recentSessions >= 4 && avgCompletionRate >= 0.7) return 'HIGH';
+  if (score100 < 30 || recentSessions < 2) return 'LOW';
+  return 'MEDIUM';
 }
 
 // ============================================

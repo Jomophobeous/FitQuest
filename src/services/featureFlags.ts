@@ -30,6 +30,22 @@ export const FEATURE_FLAGS = {
 
   // Deferred features (disabled until next version)
   HEALTH_SYNC: 'ff_health_sync', // Health Connect / HealthKit data sync
+
+  // ── Phase 20: Module Flags ─────────────────────────────────────
+  // Non-core modules gated for startup reduction.
+  // Core loop: dashboard → fitquest → workout → progress → profile
+  FITMIND_MODULE: 'ff_fitmind_module', // Document reader + flashcards
+  HEALTH_DASHBOARD_MODULE: 'ff_health_dashboard', // Health analytics + anomaly
+  BODY_CRAFT_MODULE: 'ff_body_craft', // Body transformation planner
+  MEAL_PREP_MODULE: 'ff_meal_prep', // Meal planner
+  NUTRITION_CALC_MODULE: 'ff_nutrition_calc', // Nutrition calculator
+  MOVE_MODULE: 'ff_move_module', // Step tracker + jogging
+  BACKGROUND_HEALTH: 'ff_background_health', // BackgroundHealthEngine startup
+  ANTI_PIRACY: 'ff_anti_piracy', // tamperEngine + authorityClient + deviceVerify
+  CLOUD_BACKUP: 'ff_cloud_backup', // Cloud backup service
+  ENGAGEMENT_NOTIFICATIONS: 'ff_engagement_notifs', // Engagement notification service
+  REPLAY_ORCHESTRATOR: 'ff_replay_orchestrator', // Replay orchestrator
+  METRICS_AGGREGATOR: 'ff_metrics_aggregator', // PostHog metrics snapshot
 } as const;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAGS;
@@ -44,6 +60,20 @@ const DEFAULT_FLAGS: Record<FeatureFlagId, boolean> = {
   [FEATURE_FLAGS.VERBOSE_TELEMETRY]: false,
   [FEATURE_FLAGS.SMOKE_TEST_MODE]: false,
   [FEATURE_FLAGS.HEALTH_SYNC]: false, // Deferred: HC crashes app, re-enable in v3
+
+  // ── Phase 20: Non-core modules OFF by default ──
+  [FEATURE_FLAGS.FITMIND_MODULE]: false,
+  [FEATURE_FLAGS.HEALTH_DASHBOARD_MODULE]: false,
+  [FEATURE_FLAGS.BODY_CRAFT_MODULE]: false,
+  [FEATURE_FLAGS.MEAL_PREP_MODULE]: false,
+  [FEATURE_FLAGS.NUTRITION_CALC_MODULE]: false,
+  [FEATURE_FLAGS.MOVE_MODULE]: true, // Keep: lightweight, popular feature
+  [FEATURE_FLAGS.BACKGROUND_HEALTH]: false,
+  [FEATURE_FLAGS.ANTI_PIRACY]: false,
+  [FEATURE_FLAGS.CLOUD_BACKUP]: false,
+  [FEATURE_FLAGS.ENGAGEMENT_NOTIFICATIONS]: false,
+  [FEATURE_FLAGS.REPLAY_ORCHESTRATOR]: false,
+  [FEATURE_FLAGS.METRICS_AGGREGATOR]: false,
 };
 
 const FLAGS_STORAGE_KEY = 'feature_flags_v1';

@@ -9,6 +9,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { GradientButton } from './ui/GlassUI';
+import { typography, spacing } from '../design/theme-system';
+
 
 interface Props {
   error: string | null;
@@ -61,43 +63,43 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: spacing[8],
   },
   content: {
     alignItems: 'center',
     maxWidth: 340,
   },
   icon: {
-    fontSize: 48,
-    marginBottom: 16,
+    fontSize: typography.sizes.hero, 
+    marginBottom: spacing[4],
   },
   title: {
-    fontSize: 22,
+    fontSize: typography.sizes.h3, 
     fontWeight: '700',
-    marginBottom: 12,
+    marginBottom: spacing[3],
     textAlign: 'center',
   },
   message: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     lineHeight: 22,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: spacing[8],
   },
   spinnerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing[3],
   },
   spinnerText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
   },
   buttons: {
     width: '100%',
     alignItems: 'center',
   },
   resetWarning: {
-    fontSize: 12,
-    marginTop: 12,
+    fontSize: typography.sizes.caption, 
+    marginTop: spacing[3],
     textAlign: 'center',
   },
 });

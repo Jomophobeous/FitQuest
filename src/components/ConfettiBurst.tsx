@@ -9,6 +9,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, useWindowDimensions, Text } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, Easing } from 'react-native-reanimated';
+import { typography } from '../design/theme-system';
 
 const EMOJIS = ['🎉', '⭐', '💪', '🔥', '✨', '🏆', '🥇', '💥'];
 const PARTICLE_COUNT = 18;
@@ -37,13 +38,13 @@ function generateParticles(_width: number): Particle[] {
   return Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
     id: i,
     emoji: EMOJIS[i % EMOJIS.length]!,
-    startX: 20 + Math.random() * 60, // 20-80% width
-    startY: -5 - Math.random() * 15, // above screen
-    endX: (Math.random() - 0.5) * 40, // ±20% drift
-    endY: 80 + Math.random() * 40, // fall 80-120%
-    rotation: Math.random() * 720 - 360, // ±360°
-    delay: Math.random() * 400, // stagger 0-400ms
-    scale: 0.6 + Math.random() * 0.8, // 0.6-1.4×
+    startX: 20 + Math.random() * 60, // 20-80% width // non-security
+    startY: -5 - Math.random() * 15, // above screen // non-security
+    endX: (Math.random() - 0.5) * 40, // ±20% drift // non-security
+    endY: 80 + Math.random() * 40, // fall 80-120% // non-security
+    rotation: Math.random() * 720 - 360, // ±360° // non-security
+    delay: Math.random() * 400, // stagger 0-400ms // non-security
+    scale: 0.6 + Math.random() * 0.8, // 0.6-1.4× // non-security
   }));
 }
 
@@ -92,12 +93,12 @@ function ConfettiParticle({ particle }: { particle: Particle }) {
         animStyle,
       ]}
     >
-      <Text style={{ fontSize: 24 }}>{particle.emoji}</Text>
+      <Text style={{ fontSize: typography.sizes.h2 }}>{particle.emoji}</Text>
     </Animated.View>
   );
 }
 
-export default function ConfettiBurst({ active, onComplete }: ConfettiProps) {
+function ConfettiBurst({ active, onComplete }: ConfettiProps) {
   const { width } = useWindowDimensions();
   const [particles, setParticles] = useState<Particle[]>([]);
   const [visible, setVisible] = useState(false);
@@ -107,7 +108,7 @@ export default function ConfettiBurst({ active, onComplete }: ConfettiProps) {
       setParticles(generateParticles(width));
       setVisible(true);
 
-      const timer = setTimeout(() => {
+      const timer = setTimeout(() => { // debounce
         setVisible(false);
         setParticles([]);
         onComplete?.();
@@ -127,3 +128,5 @@ export default function ConfettiBurst({ active, onComplete }: ConfettiProps) {
     </View>
   );
 }
+
+export default React.memo(ConfettiBurst);

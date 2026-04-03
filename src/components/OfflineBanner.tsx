@@ -10,6 +10,8 @@ import { View, StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { useConnectivity } from '../context/ConnectivityContext';
 import ThemedText from './ThemedText';
+import { typography, spacing } from '../design/theme-system';
+
 
 function OfflineBannerInner() {
   const { theme } = useTheme();
@@ -47,14 +49,14 @@ function OfflineBannerInner() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[3],
     alignItems: 'center',
     justifyContent: 'center',
   },
   text: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
 });

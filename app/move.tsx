@@ -8,22 +8,24 @@
  * Walking 10k steps must NOT affect the workout engine.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import React from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  ActivityIndicator,
+} from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp, FadeInRight, ZoomIn, SlideInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
-import { useDatabase } from '../src/context/DatabaseContext';
+import ThemedText from '../src/components/ThemedText';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
-import { usePedometer, DailySteps, JogSession } from '../src/hooks/usePedometer';
-import { useSensorFusion, type ActivityType } from '../src/engines/SensorFusionEngine';
-import { awardJogXP, awardStepXP } from '../src/services/xpService';
-import { logEvent } from '../src/services/telemetry';
-import { useDataSync, notifyStepsUpdated, notifyJogCompleted } from '../src/services/dataSyncService';
 import {
   GlassCard,
   GradientButton,
@@ -33,196 +35,42 @@ import {
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
 import JogMap from '../src/components/JogMap';
-import { getJogRoute } from '../src/database/service';
+import { typography, spacing, radius } from '../src/design/theme-system';
+import { useMoveViewModel, type ActivityType } from '../src/viewmodels/useMoveViewModel';
 
-const DAILY_STEP_GOAL = 10000;
-
-interface JogCompletionData {
-  distance: number;
-  duration: string;
-  calories: number;
-  xpEarned: number;
-}
 
 export default function MoveScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const { isReady: dbReady } = useDatabase();
-  const {
-    todaySteps,
-    isAvailable,
-    isTracking,
-    currentJog,
-    isJogging,
-    jogStats,
-    cadence,
-    estimatedDistance,
-    startTracking,
-    stopTracking,
-    startJog,
-    stopJog,
-    getStepHistory,
-    getJogHistory,
-  } = usePedometer();
+  const vm = useMoveViewModel();
 
-  const [stepHistory, setStepHistory] = useState<DailySteps[]>([]);
-  const [jogHistory, setJogHistory] = useState<JogSession[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const [jogElapsed, setJogElapsed] = useState('0:00');
-
-  // Sensor Fusion — activity detection
-  const { snapshot, isActive: sensorActive, start: startSensor, stop: stopSensor } = useSensorFusion();
-
-  // Jog completion modal state
-  const [showJogComplete, setShowJogComplete] = useState(false);
-  const [jogCompletionData, setJogCompletionData] = useState<JogCompletionData | null>(null);
-  const [jogError, setJogError] = useState<string | null>(null);
-
-  // Map state
-  const [showLiveMap, setShowLiveMap] = useState(true);
-  const [reviewJogId, setReviewJogId] = useState<string | null>(null);
-  const [reviewRoute, setReviewRoute] = useState<[number, number][] | null>(null);
-  const [reviewJog, setReviewJog] = useState<JogSession | null>(null);
-
-  // Load step and jog history from database
-  const loadHistory = useCallback(async () => {
-    const steps = await getStepHistory(7);
-    const jogs = await getJogHistory(10);
-    setStepHistory(steps);
-    setJogHistory(jogs);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- getStepHistory/getJogHistory are stable hook-returned functions
-  }, []);
-
-  // Live jog timer
-  useEffect(() => {
-    let iv: ReturnType<typeof setInterval>;
-    if (isJogging && currentJog) {
-      iv = setInterval(() => {
-        setJogElapsed(formatDuration(currentJog.startTime, new Date()));
-      }, 1000);
-    }
-    return () => clearInterval(iv);
-  }, [isJogging, currentJog]);
-
-  useEffect(() => {
-    if (dbReady) loadHistory();
-  }, [dbReady, loadHistory]);
-
-  // Subscribe to data sync events from other screens
-  useDataSync('workout_completed', loadHistory);
-  useDataSync('xp_awarded', loadHistory);
-
-  const handleStartTracking = async () => {
-    // Start tracking — uses native pedometer if available, SensorFusion fallback otherwise
-    await startTracking();
-    // XP is awarded when tracking stops (via the stop button), not on start
-  };
-
-  const handleStartJog = async () => {
-    if (!dbReady) {
-      setJogError('Database is still loading. Please wait a moment and try again.');
-      return;
-    }
-    setJogError(null);
-    setShowLiveMap(true); // Reset map visibility for new jog
-
-    try {
-      await startJog();
-      // Start step tracking if not already active (non-critical — wrap separately)
-      try {
-        if (!isTracking) await startTracking();
-      } catch (e) {
-        if (__DEV__) console.warn('[Move] Step tracking start failed (non-critical):', e);
-      }
-    } catch (error) {
-      if (__DEV__) console.warn('[Move] Failed to start jog:', error);
-      const msg = error instanceof Error ? error.message : String(error);
-      if (msg.includes('FOREIGN KEY') || msg.includes('user_profile')) {
-        setJogError('Profile not ready. Please complete onboarding first, then try again.');
-      } else if (msg.includes('permission') || msg.includes('location')) {
-        setJogError('Unable to start jog. Please ensure location permissions are granted and try again.');
-      } else {
-        setJogError('Unable to start jog session. Please try again.');
-      }
-    }
-  };
-
-  const handleStopJog = async () => {
-    try {
-      const session = await stopJog();
-      if (session) {
-        const xpResult = await awardJogXP(session.distanceMeters);
-        // Use glass modal instead of Alert
-        setJogCompletionData({
-          distance: session.distanceMeters / 1000,
-          duration: session.startTime && session.endTime ? formatDuration(session.startTime, session.endTime) : '0:00',
-          calories: session.caloriesEstimate || 0,
-          xpEarned: xpResult?.xpEarned || 0,
-        });
-        setShowJogComplete(true);
-
-        // Notify other screens about the jog completion
-        const durationSeconds =
-          session.startTime && session.endTime
-            ? Math.floor((session.endTime.getTime() - session.startTime.getTime()) / 1000)
-            : 0;
-        notifyJogCompleted(session.distanceMeters, durationSeconds);
-        void logEvent('jog_completed', {
-          distance_meters: session.distanceMeters,
-          duration_seconds: durationSeconds,
-          calories: session.caloriesEstimate || 0,
-        });
-
-        loadHistory();
-      }
-    } catch (error) {
-      if (__DEV__) console.warn('[Move] Failed to stop jog:', error);
-      setJogError('Something went wrong stopping your jog. Please try again.');
-    }
-  };
-
-  const formatDuration = (start: Date, end: Date): string => {
-    const seconds = Math.floor((end.getTime() - start.getTime()) / 1000);
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const formatPace = (secondsPerKm?: number): string => {
-    if (!secondsPerKm) return '--:--';
-    const mins = Math.floor(secondsPerKm / 60);
-    const secs = Math.floor(secondsPerKm % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')} /km`;
-  };
-
-  const stepProgress = Math.min(todaySteps / DAILY_STEP_GOAL, 1);
-  const distKm = (todaySteps * 0.0008).toFixed(1);
-  const calories = Math.round(todaySteps * 0.04);
-  const activeMin = Math.round(todaySteps / 100);
-
-  if (!dbReady) {
+  if (!vm.dbReady) {
     return (
-      <SafeAreaView
-        style={[
-          styles.container,
-          { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' },
-        ]}
-      >
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={theme.colors.accent} />
-      </SafeAreaView>
+      </ScreenContainer>
+    );
+  }
+
+  if (vm.loadError) {
+    return (
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{vm.loadError}</ThemedText>
+        <GradientButton title={t('common.retry') ?? 'Retry'} onPress={vm.retryLoad} style={{ marginTop: spacing[4] }} />
+      </ScreenContainer>
     );
   }
 
   return (
     <ScreenErrorBoundary screenName="Move" onGoBack={() => {}}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer scroll>
         <ScreenTutorial
           screenKey="move"
           icon="shoe-print"
           title="Move & Track"
           description="Track your daily steps, distance, and active minutes. Start a jog session to log your route and pace."
         />
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* ── HEADER ── */}
           <Animated.View entering={FadeIn.duration(150)}>
             <LinearGradient
@@ -234,15 +82,15 @@ export default function MoveScreen() {
               style={styles.headerGradient}
             >
               <View style={styles.headerRow}>
-                <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('tab.move')}</Text>
+                <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>{t('tab.move')}</ThemedText>
                 <TouchableOpacity
-                  onPress={() => setShowHistory(!showHistory)}
+                  onPress={() => vm.toggleHistory()}
                   accessibilityRole="button"
-                  accessibilityLabel={showHistory ? 'Hide history' : 'Show history'}
+                  accessibilityLabel={vm.showHistory ? 'Hide history' : 'Show history'}
                   style={[styles.historyToggle, { backgroundColor: theme.colors.accent + '12' }]}
                 >
                   <MaterialCommunityIcons
-                    name={showHistory ? 'chart-line' : 'history'}
+                    name={vm.showHistory ? 'chart-line' : 'history'}
                     size={18}
                     color={theme.colors.accent}
                   />
@@ -251,18 +99,15 @@ export default function MoveScreen() {
             </LinearGradient>
           </Animated.View>
 
-          {jogError && (
+          {vm.jogError && (
             <GlassCard style={styles.errorCard} glowColor={theme.colors.error} delay={150}>
-              <Text style={[styles.errorText, { color: theme.colors.error }]}>{jogError}</Text>
+              <ThemedText style={[styles.errorText, { color: theme.colors.error }]}>{vm.jogError}</ThemedText>
               <GradientButton
                 title={t('common.tryAgain')}
                 variant="warning"
                 size="sm"
-                onPress={() => {
-                  setJogError(null);
-                  handleStartJog();
-                }}
-                style={{ marginTop: 8 }}
+                onPress={vm.retryJog}
+                style={{ marginTop: spacing[2] }}
               />
             </GlassCard>
           )}
@@ -270,41 +115,41 @@ export default function MoveScreen() {
           {/* ── STEP COUNTER HERO ── */}
           <GlassCard style={styles.stepHero} gradient glowColor={theme.colors.accent3} delay={100}>
             <View style={styles.stepHeroInner}>
-              <ProgressRing progress={stepProgress} size={110} color={theme.colors.accent3} strokeWidth={7}>
+              <ProgressRing progress={vm.stepProgress} size={110} color={theme.colors.accent3} strokeWidth={7}>
                 <MaterialCommunityIcons name="shoe-print" size={28} color={theme.colors.accent3} />
               </ProgressRing>
 
               <View style={styles.stepDetails}>
                 <Animated.View entering={ZoomIn.delay(200).duration(150)}>
-                  <Text style={[styles.stepCount, { color: theme.colors.text }]}>{todaySteps.toLocaleString()}</Text>
+                  <ThemedText style={[styles.stepCount, { color: theme.colors.text }]}>{vm.todaySteps.toLocaleString()}</ThemedText>
                 </Animated.View>
-                <Text style={[styles.stepGoal, { color: theme.colors.textMuted }]}>
-                  / {DAILY_STEP_GOAL.toLocaleString()} {t('move.goal')}
-                </Text>
+                <ThemedText style={[styles.stepGoal, { color: theme.colors.textMuted }]}>
+                  / {vm.DAILY_STEP_GOAL.toLocaleString()} {t('move.goal')}
+                </ThemedText>
 
                 <View style={styles.stepMiniStats}>
                   <View style={[styles.miniStat, { backgroundColor: theme.colors.accent + '15' }]}>
                     <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.colors.accent} />
-                    <Text style={[styles.miniStatText, { color: theme.colors.accent }]}>{distKm} km</Text>
+                    <ThemedText style={[styles.miniStatText, { color: theme.colors.accent }]}>{vm.distKm} km</ThemedText>
                   </View>
                   <View style={[styles.miniStat, { backgroundColor: theme.colors.accent2 + '15' }]}>
                     <MaterialCommunityIcons name="fire" size={14} color={theme.colors.accent2} />
-                    <Text style={[styles.miniStatText, { color: theme.colors.accent2 }]}>{calories} cal</Text>
+                    <ThemedText style={[styles.miniStatText, { color: theme.colors.accent2 }]}>{vm.calories} cal</ThemedText>
                   </View>
                   <View style={[styles.miniStat, { backgroundColor: theme.colors.accent3 + '15' }]}>
                     <MaterialCommunityIcons name="clock-outline" size={14} color={theme.colors.accent3} />
-                    <Text style={[styles.miniStatText, { color: theme.colors.accent3 }]}>{activeMin} min</Text>
+                    <ThemedText style={[styles.miniStatText, { color: theme.colors.accent3 }]}>{vm.activeMin} min</ThemedText>
                   </View>
                 </View>
               </View>
             </View>
 
-            {!isTracking ? (
+            {!vm.isTracking ? (
               <View style={styles.trackingButtonWrap}>
                 <GradientButton
                   title={t('move.startTracking')}
                   icon="play"
-                  onPress={handleStartTracking}
+                  onPress={vm.handleStartTracking}
                   variant="success"
                 />
               </View>
@@ -312,20 +157,12 @@ export default function MoveScreen() {
               <Animated.View entering={FadeIn.delay(300).duration(150)} style={styles.trackingLiveRow}>
                 <View style={styles.trackingStatusRow}>
                   <PulseDot color={theme.colors.success} />
-                  <Text style={[styles.trackingText, { color: theme.colors.textSecondary }]}>
+                  <ThemedText style={[styles.trackingText, { color: theme.colors.textSecondary }]}>
                     {t('move.trackingActive')}
-                  </Text>
+                  </ThemedText>
                 </View>
                 <TouchableOpacity
-                  onPress={async () => {
-                    try {
-                      await stopTracking();
-                      await awardStepXP(todaySteps);
-                      notifyStepsUpdated(todaySteps);
-                    } catch (e) {
-                      if (__DEV__) console.warn('[Move] Stop tracking error:', e);
-                    }
-                  }}
+                  onPress={vm.handleStopTracking}
                   accessibilityRole="button"
                   accessibilityLabel="Stop step tracking"
                   style={[
@@ -334,7 +171,7 @@ export default function MoveScreen() {
                   ]}
                 >
                   <MaterialCommunityIcons name="stop" size={16} color={theme.colors.error} />
-                  <Text style={[styles.stopTrackingText, { color: theme.colors.error }]}>{t('move.stop')}</Text>
+                  <ThemedText style={[styles.stopTrackingText, { color: theme.colors.error }]}>{t('move.stop')}</ThemedText>
                 </TouchableOpacity>
               </Animated.View>
             )}
@@ -342,19 +179,19 @@ export default function MoveScreen() {
 
           {/* ── WEEKLY STEP TREND ── */}
           <Animated.View entering={FadeInDown.delay(150).duration(150)}>
-            <GlassCard style={{ marginHorizontal: 16, marginTop: 12, padding: 16 }}>
+            <GlassCard style={{ marginHorizontal: spacing[4], marginTop: spacing[3], padding: spacing[4] }}>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginBottom: 14,
+                  marginBottom: spacing[3.5],
                 }}
               >
-                <Text style={{ fontSize: 15, fontWeight: '700', color: theme.colors.text }}>This Week</Text>
-                <Text style={{ fontSize: 12, color: theme.colors.textMuted }}>
-                  {t('move.goal')}: {(DAILY_STEP_GOAL / 1000).toFixed(0)}k
-                </Text>
+                <ThemedText style={{ fontSize: typography.sizes.bodyMid, fontWeight: '700', color: theme.colors.text }}>This Week</ThemedText>
+                <ThemedText style={{ fontSize: typography.sizes.caption, color: theme.colors.textMuted }}>
+                  {t('move.goal')}: {(vm.DAILY_STEP_GOAL / 1000).toFixed(0)}k
+                </ThemedText>
               </View>
               <View style={styles.weeklyBars}>
                 {(() => {
@@ -363,21 +200,21 @@ export default function MoveScreen() {
                     const d = new Date();
                     d.setDate(d.getDate() - i);
                     const dateStr = d.toISOString().split('T')[0];
-                    const dayData = stepHistory.find((h) => h.date === dateStr);
+                    const dayData = vm.stepHistory.find((h) => h.date === dateStr);
                     days.push({
                       label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][d.getDay()],
                       steps: dayData?.steps || 0,
                       isToday: i === 0,
                     });
                   }
-                  const maxVal = Math.max(DAILY_STEP_GOAL, ...days.map((d) => d.steps));
-                  const goalPct = (DAILY_STEP_GOAL / maxVal) * 80;
+                  const maxVal = Math.max(vm.DAILY_STEP_GOAL, ...days.map((d) => d.steps));
+                  const goalPct = (vm.DAILY_STEP_GOAL / maxVal) * 80;
                   return days.map((day, idx) => {
                     const barH = Math.max(4, (day.steps / maxVal) * 80);
-                    const hitGoal = day.steps >= DAILY_STEP_GOAL;
+                    const hitGoal = day.steps >= vm.DAILY_STEP_GOAL;
                     return (
                       <View key={idx} style={styles.weeklyBarCol}>
-                        <Text
+                        <ThemedText
                           style={[
                             styles.weeklyBarCount,
                             {
@@ -390,7 +227,7 @@ export default function MoveScreen() {
                               ? (day.steps / 1000).toFixed(1) + 'k'
                               : String(day.steps)
                             : '–'}
-                        </Text>
+                        </ThemedText>
                         <View style={[styles.weeklyBarTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
                           <View
                             style={[
@@ -409,7 +246,7 @@ export default function MoveScreen() {
                             style={[styles.weeklyBarFill, { height: barH }]}
                           />
                         </View>
-                        <Text
+                        <ThemedText
                           style={[
                             styles.weeklyBarLabel,
                             {
@@ -419,7 +256,7 @@ export default function MoveScreen() {
                           ]}
                         >
                           {day.label}
-                        </Text>
+                        </ThemedText>
                       </View>
                     );
                   });
@@ -437,100 +274,100 @@ export default function MoveScreen() {
                     style={[
                       sensorStyles.activityIconWrap,
                       {
-                        backgroundColor: sensorActive ? theme.colors.accent + '18' : theme.colors.textMuted + '12',
+                        backgroundColor: vm.sensorActive ? theme.colors.accent + '18' : theme.colors.textMuted + '12',
                       },
                     ]}
                   >
                     <MaterialCommunityIcons
-                      name={getActivityIcon(snapshot.activity)}
+                      name={getActivityIcon(vm.sensorSnapshot.activity)}
                       size={22}
-                      color={sensorActive ? theme.colors.accent : theme.colors.textMuted}
+                      color={vm.sensorActive ? theme.colors.accent : theme.colors.textMuted}
                     />
                   </View>
                   <View>
-                    <Text style={[sensorStyles.activityType, { color: theme.colors.text }]}>
-                      {formatActivity(snapshot.activity, t)}
-                    </Text>
+                    <ThemedText style={[sensorStyles.activityType, { color: theme.colors.text }]}>
+                      {formatActivity(vm.sensorSnapshot.activity, t)}
+                    </ThemedText>
                     <View style={sensorStyles.confidenceRow}>
-                      {sensorActive && <PulseDot color={theme.colors.success} size={6} />}
-                      <Text style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                        {sensorActive
-                          ? `${Math.round(snapshot.confidence * 100)}% ${t('move.confidence')}`
+                      {vm.sensorActive && <PulseDot color={theme.colors.success} size={6} />}
+                      <ThemedText style={[sensorStyles.confidenceText, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                        {vm.sensorActive
+                          ? `${Math.round(vm.sensorSnapshot.confidence * 100)}% ${t('move.confidence')}`
                           : t('move.tapToEnable')}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 </View>
                 <TouchableOpacity
-                  onPress={sensorActive ? stopSensor : () => startSensor()}
+                  onPress={vm.sensorActive ? vm.stopSensor : () => vm.startSensor()}
                   accessibilityRole="button"
-                  accessibilityLabel={sensorActive ? 'Stop activity detection' : 'Start activity detection'}
+                  accessibilityLabel={vm.sensorActive ? 'Stop activity detection' : 'Start activity detection'}
                   style={[
                     sensorStyles.sensorToggle,
                     {
-                      backgroundColor: sensorActive ? theme.colors.error + '15' : theme.colors.accent + '15',
-                      borderColor: sensorActive ? theme.colors.error + '30' : theme.colors.accent + '30',
+                      backgroundColor: vm.sensorActive ? theme.colors.error + '15' : theme.colors.accent + '15',
+                      borderColor: vm.sensorActive ? theme.colors.error + '30' : theme.colors.accent + '30',
                     },
                   ]}
                 >
                   <MaterialCommunityIcons
-                    name={sensorActive ? 'stop' : 'radar'}
+                    name={vm.sensorActive ? 'stop' : 'radar'}
                     size={16}
-                    color={sensorActive ? theme.colors.error : theme.colors.accent}
+                    color={vm.sensorActive ? theme.colors.error : theme.colors.accent}
                   />
-                  <Text
+                  <ThemedText
                     style={[
                       sensorStyles.sensorToggleText,
                       {
-                        color: sensorActive ? theme.colors.error : theme.colors.accent,
+                        color: vm.sensorActive ? theme.colors.error : theme.colors.accent,
                       },
                     ]}
                   >
-                    {sensorActive ? t('move.stop') : t('move.detect')}
-                  </Text>
+                    {vm.sensorActive ? t('move.stop') : t('move.detect')}
+                  </ThemedText>
                 </TouchableOpacity>
               </View>
 
-              {sensorActive && snapshot.activity !== 'STATIONARY' && (
+              {vm.sensorActive && vm.sensorSnapshot.activity !== 'STATIONARY' && (
                 <Animated.View entering={FadeInDown.duration(150)} style={sensorStyles.metricsRow}>
                   <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                     <MaterialCommunityIcons name="speedometer" size={16} color={theme.colors.accent3} />
-                    <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
-                      {snapshot.intensity.toFixed(1)}
-                    </Text>
-                    <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
+                    <ThemedText style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
+                      {vm.sensorSnapshot.intensity.toFixed(1)}
+                    </ThemedText>
+                    <ThemedText style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
                       {t('move.intensity')}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                     <MaterialCommunityIcons name="metronome" size={16} color={theme.colors.accent} />
-                    <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
-                      {snapshot.currentCadence}
-                    </Text>
-                    <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
-                      {t('move.cadence')}
-                    </Text>
+                    <ThemedText style={[sensorStyles.metricValue, { color: theme.colors.text }]}>
+                      {vm.sensorSnapshot.currentCadence}
+                    </ThemedText>
+                    <ThemedText style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
+                      {t('move.vm.cadence')}
+                    </ThemedText>
                   </View>
-                  {snapshot.activity === 'EXERCISE' && (
+                  {vm.sensorSnapshot.activity === 'EXERCISE' && (
                     <View style={[sensorStyles.metricBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                       <MaterialCommunityIcons name="repeat" size={16} color={theme.colors.accent2} />
-                      <Text style={[sensorStyles.metricValue, { color: theme.colors.text }]}>{snapshot.repCount}</Text>
-                      <Text style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
+                      <ThemedText style={[sensorStyles.metricValue, { color: theme.colors.text }]}>{vm.sensorSnapshot.repCount}</ThemedText>
+                      <ThemedText style={[sensorStyles.metricLabel, { color: theme.colors.textMuted }]}>
                         {t('move.reps')}
-                      </Text>
+                      </ThemedText>
                     </View>
                   )}
                 </Animated.View>
               )}
-              {sensorActive && snapshot.activity === 'STATIONARY' && (
+              {vm.sensorActive && vm.sensorSnapshot.activity === 'STATIONARY' && (
                 <Animated.View entering={FadeIn.duration(150)} style={sensorStyles.metricsRow}>
-                  <Text
+                  <ThemedText
                     style={[
-                      { color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', flex: 1, paddingVertical: 8 },
+                      { color: theme.colors.textMuted, fontSize: typography.sizes.caption, textAlign: 'center', flex: 1, paddingVertical: spacing[2] },
                     ]}
                   >
                     {t('move.startMovingForMetrics')}
-                  </Text>
+                  </ThemedText>
                 </Animated.View>
               )}
             </GlassCard>
@@ -540,9 +377,9 @@ export default function MoveScreen() {
           <View>
             <GlassCard
               style={styles.jogCard}
-              gradient={isJogging}
-              gradientColors={isJogging ? [theme.colors.success + '20', theme.colors.success + '05'] : undefined}
-              glowColor={isJogging ? theme.colors.success : undefined}
+              gradient={vm.isJogging}
+              gradientColors={vm.isJogging ? [theme.colors.success + '20', theme.colors.success + '05'] : undefined}
+              glowColor={vm.isJogging ? theme.colors.success : undefined}
               delay={250}
             >
               <View style={styles.jogHeader}>
@@ -550,106 +387,106 @@ export default function MoveScreen() {
                   style={[
                     styles.jogIconWrap,
                     {
-                      backgroundColor: isJogging ? theme.colors.success + '20' : theme.colors.textMuted + '15',
+                      backgroundColor: vm.isJogging ? theme.colors.success + '20' : theme.colors.textMuted + '15',
                     },
                   ]}
                 >
                   <MaterialCommunityIcons
                     name="run-fast"
                     size={22}
-                    color={isJogging ? theme.colors.success : theme.colors.textMuted}
+                    color={vm.isJogging ? theme.colors.success : theme.colors.textMuted}
                   />
                 </View>
                 <View>
-                  <Text style={[styles.jogTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                  <ThemedText style={[styles.jogTitle, { color: theme.colors.text }]} numberOfLines={1}>
                     {t('move.jogWalk')}
-                  </Text>
-                  <Text style={[styles.jogSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
-                    {isJogging ? t('move.sessionActive') : t('move.tapToStart')}
-                  </Text>
+                  </ThemedText>
+                  <ThemedText style={[styles.jogSub, { color: theme.colors.textMuted }]} numberOfLines={1}>
+                    {vm.isJogging ? t('move.sessionActive') : t('move.tapToStart')}
+                  </ThemedText>
                 </View>
               </View>
 
-              {isJogging && currentJog ? (
+              {vm.isJogging && vm.currentJog ? (
                 <Animated.View entering={FadeInDown.duration(150)} style={styles.activeJog}>
                   <View style={styles.jogTimerDisplay}>
-                    <Text style={[styles.jogTimerText, { color: theme.colors.success }]}>{jogElapsed}</Text>
+                    <ThemedText style={[styles.jogTimerText, { color: theme.colors.success }]}>{vm.jogElapsed}</ThemedText>
                   </View>
 
                   <View style={styles.jogLiveStats}>
                     {/* Distance - prefer GPS when available */}
                     <View style={styles.jogStat}>
-                      <Text style={[styles.jogStatValue, { color: theme.colors.accent }]}>
-                        {jogStats
-                          ? (jogStats.totalDistanceMeters / 1000).toFixed(2)
-                          : (estimatedDistance / 1000).toFixed(2)}
-                      </Text>
-                      <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
+                      <ThemedText style={[styles.jogStatValue, { color: theme.colors.accent }]}>
+                        {vm.jogStats
+                          ? (vm.jogStats.totalDistanceMeters / 1000).toFixed(2)
+                          : (vm.estimatedDistance / 1000).toFixed(2)}
+                      </ThemedText>
+                      <ThemedText style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</ThemedText>
                     </View>
                     <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
 
                     {/* Pace - show when GPS available */}
-                    {jogStats?.currentPaceSecondsPerKm ? (
+                    {vm.jogStats?.currentPaceSecondsPerKm ? (
                       <View style={styles.jogStat}>
-                        <Text style={[styles.jogStatValue, { color: theme.colors.success }]}>
-                          {formatPace(jogStats.currentPaceSecondsPerKm)}
-                        </Text>
-                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.pace')}</Text>
+                        <ThemedText style={[styles.jogStatValue, { color: theme.colors.success }]}>
+                          {vm.formatPace(vm.jogStats.currentPaceSecondsPerKm)}
+                        </ThemedText>
+                        <ThemedText style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>{t('move.pace')}</ThemedText>
                       </View>
                     ) : (
                       <View style={styles.jogStat}>
-                        <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>{cadence}</Text>
-                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>
-                          {t('move.cadence')}
-                        </Text>
+                        <ThemedText style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>{vm.cadence}</ThemedText>
+                        <ThemedText style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>
+                          {t('move.vm.cadence')}
+                        </ThemedText>
                       </View>
                     )}
                     <View style={[styles.jogStatDivider, { backgroundColor: theme.colors.border }]} />
 
-                    {/* Elevation when GPS available, otherwise calories */}
-                    {jogStats?.elevationGainMeters && jogStats.elevationGainMeters > 0 ? (
+                    {/* Elevation when GPS available, otherwise vm.calories */}
+                    {vm.jogStats?.elevationGainMeters && vm.jogStats.elevationGainMeters > 0 ? (
                       <View style={styles.jogStat}>
-                        <Text style={[styles.jogStatValue, { color: theme.colors.accent3 }]}>
-                          {Math.round(jogStats.elevationGainMeters)}
-                        </Text>
-                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>↑m</Text>
+                        <ThemedText style={[styles.jogStatValue, { color: theme.colors.accent3 }]}>
+                          {Math.round(vm.jogStats.elevationGainMeters)}
+                        </ThemedText>
+                        <ThemedText style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>↑m</ThemedText>
                       </View>
                     ) : (
                       <View style={styles.jogStat}>
-                        <Text style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
-                          {Math.round((currentJog.distanceMeters ?? 0) * 0.06)}
-                        </Text>
-                        <Text style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>
+                        <ThemedText style={[styles.jogStatValue, { color: theme.colors.accent2 }]}>
+                          {Math.round((vm.currentJog.distanceMeters ?? 0) * 0.06)}
+                        </ThemedText>
+                        <ThemedText style={[styles.jogStatLabel, { color: theme.colors.textMuted }]}>
                           {t('meal.unit.cal')}
-                        </Text>
+                        </ThemedText>
                       </View>
                     )}
                   </View>
 
                   {/* GPS indicator */}
-                  {jogStats && (
+                  {vm.jogStats && (
                     <View style={[styles.gpsIndicator, { backgroundColor: theme.colors.success + '15' }]}>
                       <MaterialCommunityIcons name="satellite-variant" size={12} color={theme.colors.success} />
-                      <Text style={[styles.gpsIndicatorText, { color: theme.colors.success }]}>GPS Active</Text>
+                      <ThemedText style={[styles.gpsIndicatorText, { color: theme.colors.success }]}>GPS Active</ThemedText>
                     </View>
                   )}
 
                   {/* Live Map */}
-                  {jogStats && showLiveMap && (
+                  {vm.jogStats && vm.showLiveMap && (
                     <Animated.View entering={FadeIn.duration(200)}>
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          marginBottom: 8,
+                          marginBottom: spacing[2],
                         }}
                       >
-                        <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.textSecondary }}>
+                        <ThemedText style={{ fontSize: typography.sizes.label, fontWeight: '600', color: theme.colors.textSecondary }}>
                           Route Map
-                        </Text>
+                        </ThemedText>
                         <TouchableOpacity
-                          onPress={() => setShowLiveMap(false)}
+                          onPress={() => vm.toggleLiveMap(false)}
                           accessibilityRole="button"
                           accessibilityLabel="Hide map"
                           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -658,19 +495,19 @@ export default function MoveScreen() {
                         </TouchableOpacity>
                       </View>
                       <JogMap
-                        routePoints={jogStats.routePoints}
+                        routePoints={vm.jogStats.routePoints}
                         isLive
                         height={220}
-                        distanceMeters={jogStats.totalDistanceMeters}
+                        distanceMeters={vm.jogStats.totalDistanceMeters}
                         pace={
-                          jogStats.currentPaceSecondsPerKm ? formatPace(jogStats.currentPaceSecondsPerKm) : undefined
+                          vm.jogStats.currentPaceSecondsPerKm ? vm.formatPace(vm.jogStats.currentPaceSecondsPerKm) : undefined
                         }
                       />
                     </Animated.View>
                   )}
-                  {jogStats && !showLiveMap && (
+                  {vm.jogStats && !vm.showLiveMap && (
                     <TouchableOpacity
-                      onPress={() => setShowLiveMap(true)}
+                      onPress={() => vm.toggleLiveMap(true)}
                       accessibilityRole="button"
                       accessibilityLabel="Show map"
                       style={[
@@ -679,39 +516,39 @@ export default function MoveScreen() {
                       ]}
                     >
                       <MaterialCommunityIcons name="map-outline" size={16} color={theme.colors.accent} />
-                      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.accent }}>Show Map</Text>
+                      <ThemedText style={{ fontSize: typography.sizes.label, fontWeight: '600', color: theme.colors.accent }}>Show Map</ThemedText>
                     </TouchableOpacity>
                   )}
 
                   <GradientButton
                     title={t('move.stopSession')}
                     icon="stop"
-                    onPress={handleStopJog}
-                    colors={[theme.colors.error, (theme.colors as any).errorDark ?? '#B91C1C']}
+                    onPress={vm.handleStopJog}
+                    colors={[theme.colors.error, (theme.colors as any).errorDark ?? theme.colors.error]}
                   />
                 </Animated.View>
               ) : (
                 <View style={styles.jogStartButtonWrap}>
-                  <GradientButton title={t('move.startJog')} icon="play" onPress={handleStartJog} variant="success" />
+                  <GradientButton title={t('move.startJog')} icon="play" onPress={vm.handleStartJog} variant="success" />
                 </View>
               )}
             </GlassCard>
           </View>
 
           {/* ── HISTORY ── */}
-          {!!showHistory && (
+          {!!vm.showHistory && (
             <Animated.View entering={FadeInDown.duration(150)}>
-              <SectionHeader title={t('move.stepHistory')} delay={0} />
-              {stepHistory.length === 0 ? (
-                <GlassCard style={{ marginHorizontal: 16 }}>
-                  <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noStepHistory')}</Text>
+              <SectionHeader title={t('move.vm.stepHistory')} delay={0} />
+              {vm.stepHistory.length === 0 ? (
+                <GlassCard style={{ marginHorizontal: spacing[4] }}>
+                  <ThemedText style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noStepHistory')}</ThemedText>
                 </GlassCard>
               ) : (
-                stepHistory.map((day, i) => {
-                  const pct = Math.min(100, (day.steps / DAILY_STEP_GOAL) * 100);
-                  const hitGoal = day.steps >= DAILY_STEP_GOAL;
+                vm.stepHistory.map((day, i) => {
+                  const pct = Math.min(100, (day.steps / vm.DAILY_STEP_GOAL) * 100);
+                  const hitGoal = day.steps >= vm.DAILY_STEP_GOAL;
                   return (
-                    <AnimatedListItem key={day.date} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
+                    <AnimatedListItem key={day.date} index={i} style={styles.historyItemWrap}>
                       <View
                         style={[
                           styles.historyRow,
@@ -721,17 +558,17 @@ export default function MoveScreen() {
                           },
                         ]}
                       >
-                        <View style={{ flex: 1 }}>
-                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-                            <Text style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</Text>
-                            <Text
+                        <View style={styles.historyInner}>
+                          <View style={styles.historyTopRow}>
+                            <ThemedText style={[styles.historyDate, { color: theme.colors.text }]}>{day.date}</ThemedText>
+                            <ThemedText
                               style={[
                                 styles.historySteps,
                                 { color: hitGoal ? theme.colors.accent3 : theme.colors.accent },
                               ]}
                             >
                               {day.steps.toLocaleString()} {t('move.steps').toLowerCase()}
-                            </Text>
+                            </ThemedText>
                           </View>
                           <View style={[styles.historyProgressTrack, { backgroundColor: theme.colors.border }]}>
                             <LinearGradient
@@ -751,7 +588,7 @@ export default function MoveScreen() {
                             name="check-circle"
                             size={18}
                             color={theme.colors.accent3}
-                            style={{ marginLeft: 10 }}
+                            style={{ marginLeft: spacing[2.5] }}
                           />
                         )}
                       </View>
@@ -760,26 +597,17 @@ export default function MoveScreen() {
                 })
               )}
 
-              <SectionHeader title={t('move.jogHistory')} delay={100} />
-              {jogHistory.length === 0 ? (
-                <GlassCard style={{ marginHorizontal: 16 }}>
-                  <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noJogHistory')}</Text>
+              <SectionHeader title={t('move.vm.jogHistory')} delay={100} />
+              {vm.jogHistory.length === 0 ? (
+                <GlassCard style={{ marginHorizontal: spacing[4] }}>
+                  <ThemedText style={[styles.emptyText, { color: theme.colors.textMuted }]}>{t('move.noJogHistory')}</ThemedText>
                 </GlassCard>
               ) : (
-                jogHistory.map((jog, i) => (
-                  <AnimatedListItem key={jog.id} index={i} style={{ paddingHorizontal: 16, marginBottom: 6 }}>
+                vm.jogHistory.map((jog, i) => (
+                  <AnimatedListItem key={jog.id} index={i} style={{ paddingHorizontal: spacing[4], marginBottom: spacing[1.5] }}>
                     <TouchableOpacity
                       activeOpacity={0.7}
-                      onPress={async () => {
-                        try {
-                          setReviewJog(jog);
-                          const route = await getJogRoute(jog.id);
-                          setReviewRoute(route);
-                          setReviewJogId(jog.id);
-                        } catch (e) {
-                          if (__DEV__) console.warn('[Move] Failed to load jog route:', e);
-                        }
-                      }}
+                      onPress={() => vm.handleReviewJog(jog)}
                       accessibilityRole="button"
                       accessibilityLabel={`Jog on ${jog.startTime.toLocaleDateString()}, ${(jog.distanceMeters / 1000).toFixed(2)} km`}
                       accessibilityHint="Double tap to view route"
@@ -793,17 +621,17 @@ export default function MoveScreen() {
                     >
                       <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <Text style={[styles.historyDate, { color: theme.colors.text }]}>
+                          <ThemedText style={[styles.historyDate, { color: theme.colors.text }]}>
                             {jog.startTime.toLocaleDateString()}
-                          </Text>
-                          <Text style={[styles.historySteps, { color: theme.colors.accent2 }]}>
+                          </ThemedText>
+                          <ThemedText style={[styles.historySteps, { color: theme.colors.accent2 }]}>
                             ~{jog.caloriesEstimate} cal
-                          </Text>
+                          </ThemedText>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                          <Text style={[{ fontSize: 11, color: theme.colors.textMuted }]}>
-                            {(jog.distanceMeters / 1000).toFixed(2)} km · {formatPace(jog.avgPacePerKm)}
-                          </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5], marginTop: spacing[0.5] }}>
+                          <ThemedText style={[{ fontSize: typography.sizes.captionSm, color: theme.colors.textMuted }]}>
+                            {(jog.distanceMeters / 1000).toFixed(2)} km · {vm.formatPace(jog.avgPacePerKm)}
+                          </ThemedText>
                           <MaterialCommunityIcons name="map-marker-path" size={12} color={theme.colors.accent + '80'} />
                         </View>
                       </View>
@@ -819,70 +647,59 @@ export default function MoveScreen() {
           <Animated.View entering={FadeInUp.delay(400).duration(150)}>
             <GlassCard style={styles.infoCard} delay={500}>
               <MaterialCommunityIcons name="information-outline" size={18} color={theme.colors.accent} />
-              <Text style={[styles.infoText, { color: theme.colors.textMuted }]}>{t('move.infoXpAndFatigue')}</Text>
+              <ThemedText style={[styles.infoText, { color: theme.colors.textMuted }]}>{t('move.infoXpAndFatigue')}</ThemedText>
             </GlassCard>
           </Animated.View>
 
-          <View style={{ height: 32 }} />
-        </ScrollView>
-
         {/* ── ROUTE REVIEW MODAL ── */}
         <Modal
-          visible={reviewJogId !== null}
+          visible={vm.reviewJogId !== null}
           transparent
           animationType="slide"
-          onRequestClose={() => {
-            setReviewJogId(null);
-            setReviewRoute(null);
-            setReviewJog(null);
-          }}
+          onRequestClose={vm.closeRouteReview}
         >
           <View style={[styles.routeModalContainer, { backgroundColor: theme.colors.background }]}>
             {/* Header */}
             <SafeAreaView edges={['top']}>
               <View style={styles.routeModalHeader}>
                 <TouchableOpacity
-                  onPress={() => {
-                    setReviewJogId(null);
-                    setReviewRoute(null);
-                    setReviewJog(null);
-                  }}
+                  onPress={vm.closeRouteReview}
                   accessibilityRole="button"
                   accessibilityLabel="Close route review"
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 >
                   <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
                 </TouchableOpacity>
-                <Text style={[styles.routeModalTitle, { color: theme.colors.text }]}>Route Review</Text>
+                <ThemedText style={[styles.routeModalTitle, { color: theme.colors.text }]}>Route Review</ThemedText>
                 <View style={{ width: 24 }} />
               </View>
             </SafeAreaView>
 
             {/* Map */}
             <View style={{ flex: 1 }}>
-              {reviewRoute && reviewRoute.length > 0 ? (
+              {vm.reviewRoute && vm.reviewRoute.length > 0 ? (
                 <JogMap
-                  routePoints={reviewRoute}
+                  routePoints={vm.reviewRoute}
                   isLive={false}
                   height={400}
-                  distanceMeters={reviewJog?.distanceMeters}
-                  pace={reviewJog?.avgPacePerKm ? formatPace(reviewJog.avgPacePerKm) : undefined}
+                  distanceMeters={vm.reviewJog?.distanceMeters}
+                  pace={vm.reviewJog?.avgPacePerKm ? vm.formatPace(vm.reviewJog.avgPacePerKm) : undefined}
                 />
               ) : (
                 <View style={[styles.noRouteContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
                   <MaterialCommunityIcons name="map-marker-off" size={40} color={theme.colors.textMuted} />
-                  <Text style={[styles.noRouteText, { color: theme.colors.textMuted }]}>
+                  <ThemedText style={[styles.noRouteText, { color: theme.colors.textMuted }]}>
                     No route recorded for this jog
-                  </Text>
-                  <Text style={[styles.noRouteHint, { color: theme.colors.textMuted }]}>
+                  </ThemedText>
+                  <ThemedText style={[styles.noRouteHint, { color: theme.colors.textMuted }]}>
                     Routes are saved when GPS is active during a jog
-                  </Text>
+                  </ThemedText>
                 </View>
               )}
             </View>
 
             {/* Stats Footer */}
-            {reviewJog && (
+            {vm.reviewJog && (
               <View
                 style={[
                   styles.routeStatsFooter,
@@ -891,32 +708,32 @@ export default function MoveScreen() {
               >
                 <View style={styles.routeStatItem}>
                   <MaterialCommunityIcons name="map-marker-distance" size={18} color={theme.colors.accent} />
-                  <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                    {(reviewJog.distanceMeters / 1000).toFixed(2)} km
-                  </Text>
+                  <ThemedText style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                    {(vm.reviewJog.distanceMeters / 1000).toFixed(2)} km
+                  </ThemedText>
                 </View>
                 <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.routeStatItem}>
                   <MaterialCommunityIcons name="speedometer" size={18} color={theme.colors.success} />
-                  <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                    {formatPace(reviewJog.avgPacePerKm)}
-                  </Text>
+                  <ThemedText style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                    {vm.formatPace(vm.reviewJog.avgPacePerKm)}
+                  </ThemedText>
                 </View>
                 <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.routeStatItem}>
                   <MaterialCommunityIcons name="fire" size={18} color={theme.colors.accent2} />
-                  <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                    {reviewJog.caloriesEstimate ?? 0} cal
-                  </Text>
+                  <ThemedText style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                    {vm.reviewJog.caloriesEstimate ?? 0} cal
+                  </ThemedText>
                 </View>
-                {reviewJog.endTime && (
+                {vm.reviewJog.endTime && (
                   <>
                     <View style={[styles.routeStatDivider, { backgroundColor: theme.colors.border }]} />
                     <View style={styles.routeStatItem}>
                       <MaterialCommunityIcons name="timer-outline" size={18} color={theme.colors.accent3} />
-                      <Text style={[styles.routeStatValue, { color: theme.colors.text }]}>
-                        {formatDuration(reviewJog.startTime, reviewJog.endTime)}
-                      </Text>
+                      <ThemedText style={[styles.routeStatValue, { color: theme.colors.text }]}>
+                        {vm.formatDuration(vm.reviewJog.startTime, vm.reviewJog.endTime)}
+                      </ThemedText>
                     </View>
                   </>
                 )}
@@ -927,10 +744,10 @@ export default function MoveScreen() {
 
         {/* ── JOG COMPLETION MODAL ── */}
         <Modal
-          visible={showJogComplete}
+          visible={vm.showJogComplete}
           transparent
           animationType="fade"
-          onRequestClose={() => setShowJogComplete(false)}
+          onRequestClose={vm.dismissJogComplete}
         >
           <View style={styles.modalOverlay}>
             <Animated.View entering={ZoomIn.duration(150)}>
@@ -946,38 +763,38 @@ export default function MoveScreen() {
                   <MaterialCommunityIcons name="run" size={48} color={theme.colors.success} />
                 </LinearGradient>
 
-                <Text style={[styles.modalTitle, { color: theme.colors.text }]}>{t('move.jogComplete')}</Text>
+                <ThemedText style={[styles.modalTitle, { color: theme.colors.text }]}>{t('move.jogComplete')}</ThemedText>
 
-                {!!jogCompletionData && (
+                {!!vm.jogCompletionData && (
                   <View style={styles.statsGrid}>
                     <View style={[styles.statBox, { backgroundColor: theme.colors.accent + '12' }]}>
                       <MaterialCommunityIcons name="map-marker-distance" size={20} color={theme.colors.accent} />
-                      <Text style={[styles.statValue, { color: theme.colors.accent }]}>
-                        {jogCompletionData.distance.toFixed(2)}
-                      </Text>
-                      <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</Text>
+                      <ThemedText style={[styles.statValue, { color: theme.colors.accent }]}>
+                        {vm.jogCompletionData.distance.toFixed(2)}
+                      </ThemedText>
+                      <ThemedText style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.km')}</ThemedText>
                     </View>
 
                     <View style={[styles.statBox, { backgroundColor: theme.colors.accent2 + '12' }]}>
                       <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.accent2} />
-                      <Text style={[styles.statValue, { color: theme.colors.accent2 }]}>
-                        {jogCompletionData.duration}
-                      </Text>
-                      <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.time')}</Text>
+                      <ThemedText style={[styles.statValue, { color: theme.colors.accent2 }]}>
+                        {vm.jogCompletionData.duration}
+                      </ThemedText>
+                      <ThemedText style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('move.time')}</ThemedText>
                     </View>
 
                     <View style={[styles.statBox, { backgroundColor: theme.colors.warning + '12' }]}>
                       <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
-                      <Text style={[styles.statValue, { color: theme.colors.warning }]}>
-                        {jogCompletionData.calories}
-                      </Text>
-                      <Text style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</Text>
+                      <ThemedText style={[styles.statValue, { color: theme.colors.warning }]}>
+                        {vm.jogCompletionData.vm.calories}
+                      </ThemedText>
+                      <ThemedText style={[styles.statLabel, { color: theme.colors.textMuted }]}>{t('meal.unit.cal')}</ThemedText>
                     </View>
                   </View>
                 )}
 
                 {/* XP Earned */}
-                {jogCompletionData && jogCompletionData.xpEarned > 0 && (
+                {vm.jogCompletionData && vm.jogCompletionData.xpEarned > 0 && (
                   <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.xpBadge}>
                     <LinearGradient
                       colors={[theme.colors.accent, theme.colors.indigo]}
@@ -986,142 +803,142 @@ export default function MoveScreen() {
                       style={styles.xpGradient}
                     >
                       <MaterialCommunityIcons name="star" size={16} color={theme.colors.onAccent} />
-                      <Text style={[styles.xpText, { color: theme.colors.text }]}>
-                        +{jogCompletionData.xpEarned} XP
-                      </Text>
+                      <ThemedText style={[styles.xpText, { color: theme.colors.text }]}>
+                        +{vm.jogCompletionData.xpEarned} XP
+                      </ThemedText>
                     </LinearGradient>
                   </Animated.View>
                 )}
 
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: theme.colors.success }]}
-                  onPress={() => {
-                    setShowJogComplete(false);
-                    setJogCompletionData(null);
-                  }}
+                  onPress={vm.dismissJogComplete}
                   accessibilityRole="button"
                   accessibilityLabel="Dismiss jog completion"
                 >
-                  <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>{t('move.awesome')}</Text>
+                  <ThemedText style={[styles.modalButtonText, { color: theme.colors.text }]}>{t('move.awesome')}</ThemedText>
                 </TouchableOpacity>
               </View>
             </Animated.View>
           </View>
         </Modal>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { paddingBottom: 100 },
-  headerGradient: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
+  scrollContent: { paddingBottom: spacing[25] },
+  headerGradient: { paddingHorizontal: spacing[5], paddingTop: spacing[3], paddingBottom: spacing[2] },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  headerTitle: { fontSize: 28, fontWeight: '800' },
-  historyToggle: { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  stepHero: { marginHorizontal: 16, padding: 20 },
-  stepHeroInner: { flexDirection: 'row', alignItems: 'center', gap: 20 },
-  errorCard: { marginHorizontal: 16, padding: 16, borderRadius: 16, marginTop: 12 },
-  errorText: { fontSize: 13, fontWeight: '600', textAlign: 'center' },
+  headerTitle: { fontSize: typography.sizes.h1Sm, fontWeight: '800' },
+  historyToggle: { width: 38, height: 38, borderRadius: radius.lg, justifyContent: 'center', alignItems: 'center' },
+  stepHero: { marginHorizontal: spacing[4], padding: spacing[5] },
+  stepHeroInner: { flexDirection: 'row', alignItems: 'center', gap: spacing[5] },
+  errorCard: { marginHorizontal: spacing[4], padding: spacing[4], borderRadius: radius.xl, marginTop: spacing[3] },
+  errorText: { fontSize: typography.sizes.label, fontWeight: '600', textAlign: 'center' },
   stepDetails: { flex: 1 },
-  stepCount: { fontSize: 34, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
-  stepGoal: { fontSize: 13, marginTop: 2 },
-  stepMiniStats: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+  stepCount: { fontSize: typography.sizes.display, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
+  stepGoal: { fontSize: typography.sizes.label, marginTop: spacing[0.5] },
+  stepMiniStats: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], marginTop: spacing[3] },
   miniStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    gap: spacing[1],
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[1],
+    borderRadius: radius.md,
   },
-  miniStatText: { fontSize: 12, fontWeight: '600' },
-  trackingButtonWrap: { marginTop: 16, minHeight: 48 },
+  miniStatText: { fontSize: typography.sizes.caption, fontWeight: '600' },
+  trackingButtonWrap: { marginTop: spacing[4], minHeight: 48 },
   trackingLiveRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: spacing[4],
     minHeight: 48,
   },
-  trackingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  trackingText: { fontSize: 13, fontWeight: '500' },
+  trackingStatusRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  trackingText: { fontSize: typography.sizes.label, fontWeight: '500' },
   stopTrackingBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    gap: spacing[1],
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[2],
     borderRadius: 10,
     borderWidth: 1,
   },
-  stopTrackingText: { fontSize: 13, fontWeight: '600' },
-  jogCard: { marginHorizontal: 16, marginTop: 12, padding: 18 },
-  jogHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  jogIconWrap: { width: 42, height: 42, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  jogTitle: { fontSize: 17, fontWeight: '700' },
-  jogSub: { fontSize: 12, marginTop: 1 },
-  activeJog: { marginTop: 16, gap: 16 },
-  jogStartButtonWrap: { marginTop: 14, minHeight: 48 },
+  stopTrackingText: { fontSize: typography.sizes.label, fontWeight: '600' },
+  jogCard: { marginHorizontal: spacing[4], marginTop: spacing[3], padding: spacing[4.5] },
+  jogHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
+  jogIconWrap: { width: 42, height: 42, borderRadius: radius.lg, justifyContent: 'center', alignItems: 'center' },
+  jogTitle: { fontSize: typography.sizes.h4, fontWeight: '700' },
+  jogSub: { fontSize: typography.sizes.caption, marginTop: spacing['px'] },
+  activeJog: { marginTop: spacing[4], gap: spacing[4] },
+  jogStartButtonWrap: { marginTop: spacing[3.5], minHeight: 48 },
   jogTimerDisplay: { alignItems: 'center' },
-  jogTimerText: { fontSize: 40, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
-  jogLiveStats: { flexDirection: 'row', justifyContent: 'center', gap: 24 },
+  jogTimerText: { fontSize: typography.sizes.displayLg, fontWeight: '800', fontVariant: ['tabular-nums'] as any },
+  jogLiveStats: { flexDirection: 'row', justifyContent: 'center', gap: spacing[6] },
   jogStat: { alignItems: 'center' },
-  jogStatValue: { fontSize: 22, fontWeight: '700' },
-  jogStatLabel: { fontSize: 12, marginTop: 2 },
+  jogStatValue: { fontSize: typography.sizes.h3, fontWeight: '700' },
+  jogStatLabel: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
   jogStatDivider: { width: 1, height: 30 },
   gpsIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing[1],
     alignSelf: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: 4,
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1],
+    borderRadius: radius.lg,
+    marginBottom: spacing[1],
   },
-  gpsIndicatorText: { fontSize: 11, fontWeight: '600' },
+  gpsIndicatorText: { fontSize: typography.sizes.captionSm, fontWeight: '600' },
   showMapBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 10,
+    gap: spacing[1.5],
+    paddingVertical: spacing[2.5],
     borderRadius: 10,
     borderWidth: 1,
   },
-  emptyText: { textAlign: 'center', fontSize: 13 },
+  emptyText: { textAlign: 'center', fontSize: typography.sizes.label },
   historyRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
-  historyDate: { fontSize: 14, fontWeight: '500' },
-  historySteps: { fontSize: 14, fontWeight: '700' },
+  historyDate: { fontSize: typography.sizes.bodySmall, fontWeight: '500' },
+  historySteps: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
   historyProgressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
   historyProgressFill: { height: 4, borderRadius: 2 },
+  historyItemWrap: { paddingHorizontal: spacing[4], marginBottom: spacing[1.5] },
+  historyInner: { flex: 1 },
+  historyTopRow: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, marginBottom: spacing[1.5] },
   infoCard: {
-    marginHorizontal: 16,
-    marginTop: 16,
+    marginHorizontal: spacing[4],
+    marginTop: spacing[4],
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
-    padding: 14,
+    gap: spacing[2.5],
+    padding: spacing[3.5],
   },
-  infoText: { flex: 1, fontSize: 12, lineHeight: 18 },
+  infoText: { flex: 1, fontSize: typography.sizes.caption, lineHeight: 18 },
 
   // Weekly trend styles
-  weeklyBars: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 6 },
-  weeklyBarCol: { flex: 1, alignItems: 'center', gap: 4 },
+  weeklyBars: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: spacing[1.5] },
+  weeklyBarCol: { flex: 1, alignItems: 'center', gap: spacing[1] },
   weeklyBarTrack: { width: '100%', height: 80, borderRadius: 6, overflow: 'hidden', justifyContent: 'flex-end' },
   weeklyBarFill: { width: '100%', borderRadius: 6 },
-  weeklyBarCount: { fontSize: 10, fontWeight: '600' },
-  weeklyBarLabel: { fontSize: 11 },
+  weeklyBarCount: { fontSize: typography.sizes.xs, fontWeight: '600' },
+  weeklyBarLabel: { fontSize: typography.sizes.captionSm },
   weeklyGoalMark: { position: 'absolute', left: 0, right: 0, height: 1 },
 
   // Modal styles
@@ -1130,13 +947,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.65)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
   },
   modalContent: {
     width: '100%',
     maxWidth: 340,
     borderRadius: 24,
-    padding: 28,
+    padding: spacing[7],
     alignItems: 'center',
     overflow: 'hidden',
   },
@@ -1153,58 +970,58 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '800',
-    marginBottom: 20,
+    marginBottom: spacing[5],
     textAlign: 'center',
   },
   statsGrid: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 20,
+    gap: spacing[2.5],
+    marginBottom: spacing[5],
   },
   statBox: {
     flex: 1,
-    paddingVertical: 14,
-    paddingHorizontal: 8,
+    paddingVertical: spacing[3.5],
+    paddingHorizontal: spacing[2],
     borderRadius: 14,
     alignItems: 'center',
-    gap: 4,
+    gap: spacing[1],
   },
   statValue: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
   xpBadge: {
-    marginBottom: 20,
+    marginBottom: spacing[5],
   },
   xpGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    gap: spacing[1.5],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     borderRadius: 20,
   },
   xpText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '700',
   },
   modalButton: {
-    paddingHorizontal: 48,
-    paddingVertical: 14,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[3.5],
     borderRadius: 14,
   },
   modalButtonText: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
   },
 
@@ -1216,45 +1033,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3],
   },
   routeModalTitle: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '700',
   },
   noRouteContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 16,
-    borderRadius: 16,
-    gap: 12,
-    padding: 32,
+    margin: spacing[4],
+    borderRadius: radius.xl,
+    gap: spacing[3],
+    padding: spacing[8],
   },
   noRouteText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '600',
     textAlign: 'center',
   },
   noRouteHint: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     textAlign: 'center',
   },
   routeStatsFooter: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[3],
     borderTopWidth: 1,
   },
   routeStatItem: {
     alignItems: 'center',
-    gap: 4,
+    gap: spacing[1],
   },
   routeStatValue: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
   },
   routeStatDivider: {
@@ -1290,31 +1107,31 @@ function formatActivity(activity: ActivityType, t: (key: string) => string): str
 }
 
 const sensorStyles = StyleSheet.create({
-  activityCard: { marginHorizontal: 16, marginTop: 12, padding: 16 },
+  activityCard: { marginHorizontal: spacing[4], marginTop: spacing[3], padding: spacing[4] },
   activityHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  activityLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
-  activityIconWrap: { width: 42, height: 42, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  activityType: { fontSize: 17, fontWeight: '700' },
-  confidenceRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
-  confidenceText: { fontSize: 12, fontWeight: '500' },
+  activityLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], flex: 1 },
+  activityIconWrap: { width: 42, height: 42, borderRadius: radius.lg, justifyContent: 'center', alignItems: 'center' },
+  activityType: { fontSize: typography.sizes.h4, fontWeight: '700' },
+  confidenceRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[1.5], marginTop: spacing[0.5] },
+  confidenceText: { fontSize: typography.sizes.caption, fontWeight: '500' },
   sensorToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    gap: spacing[1],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
     borderRadius: 10,
     borderWidth: 1,
   },
-  sensorToggleText: { fontSize: 13, fontWeight: '600' },
-  metricsRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
+  sensorToggleText: { fontSize: typography.sizes.label, fontWeight: '600' },
+  metricsRow: { flexDirection: 'row', gap: spacing[2], marginTop: spacing[3.5] },
   metricBox: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
-    gap: 4,
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
+    gap: spacing[1],
   },
-  metricValue: { fontSize: 18, fontWeight: '800' },
-  metricLabel: { fontSize: 10, fontWeight: '600' },
+  metricValue: { fontSize: typography.sizes.h4, fontWeight: '800' },
+  metricLabel: { fontSize: typography.sizes.xs, fontWeight: '600' },
 });

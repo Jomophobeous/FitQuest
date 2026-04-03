@@ -13,23 +13,23 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   TextInput,
   Alert,
   ActivityIndicator,
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
+import { useToast } from '../src/context/ToastContext';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import MedicalDisclaimer from '../src/components/MedicalDisclaimer';
 import {
-  generateBodyCraftAlgorithm,
+  useCraftMyBodyViewModel,
   type BodyCraftAlgorithm,
   type BodyCraftInputs,
   type BodyType,
@@ -38,13 +38,14 @@ import {
   type ActivityLevel,
   type MusclePriority,
   type TimelineMonths,
-} from '../src/engines/bodyCraftEngine';
-import { saveBodyCraftAlgorithm, applyAlgorithmToProfile } from '../src/database/bodyCraftService';
-import { getUserProfile } from '../src/database/service';
+} from '../src/viewmodels/useCraftMyBodyViewModel';
 import { useDatabase } from '../src/context/DatabaseContext';
+import ThemedText from '../src/components/ThemedText';
 import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 // ============================================
 // CONSTANTS
@@ -157,8 +158,10 @@ const getPriorityConfig = (
 export default function CraftMyBodyScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const router = useRouter();
   const { isReady: dbReady } = useDatabase();
+  const vm = useCraftMyBodyViewModel();
 
   // Wizard state
   const [stepIndex, setStepIndex] = useState(0);
@@ -185,22 +188,23 @@ export default function CraftMyBodyScreen() {
 
   // Step 5: Result
   const [algorithm, setAlgorithm] = useState<BodyCraftAlgorithm | null>(null);
-  const [applied, setApplied] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Pre-fill height/weight/sex from user profile
   useEffect(() => {
     if (!dbReady) return;
-    getUserProfile('user_local_001')
-      .then((profile) => {
-        if (!profile) return;
-        if (profile.height_cm && !heightCm) setHeightCm(String(Math.round(profile.height_cm)));
-        if (profile.weight_kg && !weightKg) setWeightKg(String(Math.round(profile.weight_kg)));
-        if (profile.sex && (profile.sex === 'male' || profile.sex === 'female')) setSex(profile.sex);
-      })
-      .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- recalculate only on step change
+    vm.loadProfilePrefill();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbReady]);
+
+  // Apply prefill values when available
+  useEffect(() => {
+    if (!vm.profilePrefill) return;
+    if (vm.profilePrefill.heightCm && !heightCm) setHeightCm(vm.profilePrefill.heightCm);
+    if (vm.profilePrefill.weightKg && !weightKg) setWeightKg(vm.profilePrefill.weightKg);
+    if (vm.profilePrefill.sex) setSex(vm.profilePrefill.sex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vm.profilePrefill]);
 
   // ========== Navigation ==========
 
@@ -245,7 +249,7 @@ export default function CraftMyBodyScreen() {
         muscle_priorities: musclePriorities,
         timeline_months: timeline,
       };
-      const algo = generateBodyCraftAlgorithm(inputs, 'user_local_001');
+      const algo = vm.generate(inputs);
       setAlgorithm(algo);
       setStepIndex(4);
       return;
@@ -281,16 +285,13 @@ export default function CraftMyBodyScreen() {
 
   const handleApply = useCallback(async () => {
     if (!algorithm) return;
-    try {
-      await saveBodyCraftAlgorithm(algorithm);
-      await applyAlgorithmToProfile('user_local_001', algorithm);
-      setApplied(true);
-      Alert.alert(t('craftBody.appliedAlert'), t('craftBody.appliedDetail'));
-    } catch (e) {
-      if (__DEV__) console.error('[CraftMyBody] Failed to apply algorithm:', e);
-      Alert.alert(t('craftBody.errorAlert'), t('craftBody.errorDetail'));
+    const success = await vm.applyAlgorithm(algorithm);
+    if (success) {
+      showToast({ message: t('craftBody.appliedAlert') || 'Algorithm applied!', type: 'success' });
+    } else {
+      showToast({ message: t('craftBody.errorDetail') || 'Failed to apply algorithm', type: 'error' });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- t omitted: language dep handles re-creation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [algorithm]);
 
   // ========== Styles ==========
@@ -332,16 +333,16 @@ export default function CraftMyBodyScreen() {
                   },
                 ]}
               >
-                {isDone && <MaterialCommunityIcons name="check" size={10} color="#fff" />}
+                {isDone && <MaterialCommunityIcons name="check" size={10} color={theme.colors.onAccent} />}
               </View>
-              <Text
+              <ThemedText
                 style={[
                   styles.progressLabel,
                   { color: isActive ? colors.accent : colors.textMuted, fontWeight: isActive ? '700' : '400' },
                 ]}
               >
                 {label}
-              </Text>
+              </ThemedText>
             </View>
           );
         })}
@@ -365,7 +366,7 @@ export default function CraftMyBodyScreen() {
 
       {/* Sex */}
       <GlassCard style={styles.card}>
-        <Text style={[styles.label, { color: colors.text }]}>Sex</Text>
+        <ThemedText style={[styles.label, { color: colors.text }]}>Sex</ThemedText>
         <View style={styles.chipRow}>
           {(['male', 'female'] as const).map((s) => (
             <TouchableOpacity
@@ -387,9 +388,9 @@ export default function CraftMyBodyScreen() {
                 size={18}
                 color={sex === s ? colors.onAccent : colors.textMuted}
               />
-              <Text style={[styles.chipText, { color: sex === s ? colors.onAccent : colors.text }]}>
+              <ThemedText style={[styles.chipText, { color: sex === s ? colors.onAccent : colors.text }]}>
                 {s === 'male' ? 'Male' : 'Female'}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           ))}
         </View>
@@ -397,10 +398,10 @@ export default function CraftMyBodyScreen() {
 
       {/* Height / Weight / Age */}
       <GlassCard style={styles.card}>
-        <Text style={[styles.label, { color: colors.text }]}>Measurements</Text>
+        <ThemedText style={[styles.label, { color: colors.text }]}>Measurements</ThemedText>
         <View style={styles.inputRow}>
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.heightLabel')}</Text>
+            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.heightLabel')}</ThemedText>
             <TextInput
               style={inputStyle}
               value={heightCm}
@@ -414,11 +415,11 @@ export default function CraftMyBodyScreen() {
               placeholderTextColor={colors.textMuted}
             />
             {!!fieldErrors.heightCm && (
-              <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.heightCm}</Text>
+              <ThemedText style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>{fieldErrors.heightCm}</ThemedText>
             )}
           </View>
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.weightLabel')}</Text>
+            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.weightLabel')}</ThemedText>
             <TextInput
               style={inputStyle}
               value={weightKg}
@@ -432,11 +433,11 @@ export default function CraftMyBodyScreen() {
               placeholderTextColor={colors.textMuted}
             />
             {!!fieldErrors.weightKg && (
-              <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.weightKg}</Text>
+              <ThemedText style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>{fieldErrors.weightKg}</ThemedText>
             )}
           </View>
           <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.ageLabel')}</Text>
+            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.ageLabel')}</ThemedText>
             <TextInput
               style={inputStyle}
               value={age}
@@ -450,7 +451,7 @@ export default function CraftMyBodyScreen() {
               placeholderTextColor={colors.textMuted}
             />
             {!!fieldErrors.age && (
-              <Text style={{ color: colors.error, fontSize: 11, marginTop: 2 }}>{fieldErrors.age}</Text>
+              <ThemedText style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>{fieldErrors.age}</ThemedText>
             )}
           </View>
         </View>
@@ -458,7 +459,7 @@ export default function CraftMyBodyScreen() {
 
       {/* Body Type */}
       <GlassCard style={styles.card}>
-        <Text style={[styles.label, { color: colors.text }]}>Body Type</Text>
+        <ThemedText style={[styles.label, { color: colors.text }]}>Body Type</ThemedText>
         {BODY_TYPES.map((bt) => (
           <TouchableOpacity
             key={bt.key}
@@ -481,8 +482,8 @@ export default function CraftMyBodyScreen() {
               color={bodyType === bt.key ? colors.accent : colors.textMuted}
             />
             <View style={styles.optionText}>
-              <Text style={[styles.optionTitle, { color: colors.text }]}>{bt.label}</Text>
-              <Text style={[styles.optionDesc, { color: colors.textMuted }]}>{bt.desc}</Text>
+              <ThemedText style={[styles.optionTitle, { color: colors.text }]}>{bt.label}</ThemedText>
+              <ThemedText style={[styles.optionDesc, { color: colors.textMuted }]}>{bt.desc}</ThemedText>
             </View>
             {bodyType === bt.key && <MaterialCommunityIcons name="check-circle" size={20} color={colors.accent} />}
           </TouchableOpacity>
@@ -491,7 +492,7 @@ export default function CraftMyBodyScreen() {
 
       {/* Fitness Level */}
       <GlassCard style={styles.card}>
-        <Text style={[styles.label, { color: colors.text }]}>Fitness Level</Text>
+        <ThemedText style={[styles.label, { color: colors.text }]}>Fitness Level</ThemedText>
         <View style={styles.chipRow}>
           {FITNESS_LEVELS.map((fl) => (
             <TouchableOpacity
@@ -509,9 +510,9 @@ export default function CraftMyBodyScreen() {
                 },
               ]}
             >
-              <Text style={[styles.chipText, { color: fitnessLevel === fl.key ? colors.onAccent : colors.text }]}>
+              <ThemedText style={[styles.chipText, { color: fitnessLevel === fl.key ? colors.onAccent : colors.text }]}>
                 {fl.label}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           ))}
         </View>
@@ -519,7 +520,7 @@ export default function CraftMyBodyScreen() {
 
       {/* Activity Level */}
       <GlassCard style={styles.card}>
-        <Text style={[styles.label, { color: colors.text }]}>Activity Level</Text>
+        <ThemedText style={[styles.label, { color: colors.text }]}>Activity Level</ThemedText>
         {ACTIVITY_LEVELS.map((al) => (
           <TouchableOpacity
             key={al.key}
@@ -534,8 +535,8 @@ export default function CraftMyBodyScreen() {
             ]}
           >
             <View style={styles.optionText}>
-              <Text style={[styles.optionTitle, { color: colors.text }]}>{al.label}</Text>
-              <Text style={[styles.optionDesc, { color: colors.textMuted }]}>{al.desc}</Text>
+              <ThemedText style={[styles.optionTitle, { color: colors.text }]}>{al.label}</ThemedText>
+              <ThemedText style={[styles.optionDesc, { color: colors.textMuted }]}>{al.desc}</ThemedText>
             </View>
             {activityLevel === al.key && <MaterialCommunityIcons name="check-circle" size={20} color={colors.accent} />}
           </TouchableOpacity>
@@ -569,8 +570,8 @@ export default function CraftMyBodyScreen() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.goalTitle, { color: colors.text }]}>{g.label}</Text>
-              <Text style={[styles.goalDesc, { color: colors.textMuted }]}>{g.desc}</Text>
+              <ThemedText style={[styles.goalTitle, { color: colors.text }]}>{g.label}</ThemedText>
+              <ThemedText style={[styles.goalDesc, { color: colors.textMuted }]}>{g.desc}</ThemedText>
             </View>
             {goalType === g.key && <MaterialCommunityIcons name="check-circle" size={22} color={colors.accent} />}
           </View>
@@ -583,7 +584,7 @@ export default function CraftMyBodyScreen() {
   const renderFocusAreas = () => (
     <Animated.View entering={FadeInDown.duration(150)} key="step-focus">
       <SectionHeader title={t('craftBody.focusAreas')} />
-      <Text style={[styles.focusHint, { color: colors.textMuted }]}>Tap to cycle: Maintain → Priority → Ignore</Text>
+      <ThemedText style={[styles.focusHint, { color: colors.textMuted }]}>Tap to cycle: Maintain → Priority → Ignore</ThemedText>
       <View style={styles.muscleGrid}>
         {MUSCLE_GROUPS.map((mg) => {
           const priority: MusclePriority = musclePriorities[mg.key] ?? 'maintain';
@@ -600,9 +601,9 @@ export default function CraftMyBodyScreen() {
                 style={{ ...styles.muscleCard, borderColor: cfg.color, borderWidth: priority === 'priority' ? 2 : 1 }}
               >
                 <MaterialCommunityIcons name={mg.icon as any} size={28} color={cfg.color} />
-                <Text style={[styles.muscleLabel, { color: colors.text }]}>{mg.label}</Text>
+                <ThemedText style={[styles.muscleLabel, { color: colors.text }]}>{mg.label}</ThemedText>
                 <View style={[styles.priorityBadge, { backgroundColor: cfg.color }]}>
-                  <Text style={[styles.priorityText, { color: colors.text }]}>{cfg.label}</Text>
+                  <ThemedText style={[styles.priorityText, { color: colors.text }]}>{cfg.label}</ThemedText>
                 </View>
               </GlassCard>
             </TouchableOpacity>
@@ -640,8 +641,8 @@ export default function CraftMyBodyScreen() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.goalTitle, { color: colors.text }]}>{t.label}</Text>
-              <Text style={[styles.goalDesc, { color: colors.textMuted }]}>{t.desc}</Text>
+              <ThemedText style={[styles.goalTitle, { color: colors.text }]}>{t.label}</ThemedText>
+              <ThemedText style={[styles.goalDesc, { color: colors.textMuted }]}>{t.desc}</ThemedText>
             </View>
             {timeline === t.months && <MaterialCommunityIcons name="check-circle" size={22} color={colors.accent} />}
           </View>
@@ -667,12 +668,12 @@ export default function CraftMyBodyScreen() {
         <GlassCard style={styles.card}>
           <View style={styles.resultHeader}>
             <MaterialCommunityIcons name="calendar-week" size={22} color={colors.accent} />
-            <Text style={[styles.resultTitle, { color: colors.text }]}>Training Split</Text>
+            <ThemedText style={[styles.resultTitle, { color: colors.text }]}>Training Split</ThemedText>
           </View>
-          <Text style={[styles.resultValue, { color: colors.accent }]}>{algorithm.recommended_training_split}</Text>
-          <Text style={[styles.resultSub, { color: colors.textMuted }]}>
+          <ThemedText style={[styles.resultValue, { color: colors.accent }]}>{algorithm.recommended_training_split}</ThemedText>
+          <ThemedText style={[styles.resultSub, { color: colors.textMuted }]}>
             {algorithm.training_days_per_week} days/week
-          </Text>
+          </ThemedText>
 
           <View style={styles.scheduleRow}>
             {algorithm.weekly_schedule.map((day, i) => {
@@ -691,17 +692,17 @@ export default function CraftMyBodyScreen() {
                     },
                   ]}
                 >
-                  <Text style={[styles.scheduleDayLabel, { color: colors.textMuted }]}>
+                  <ThemedText style={[styles.scheduleDayLabel, { color: colors.textMuted }]}>
                     {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]}
-                  </Text>
-                  <Text
+                  </ThemedText>
+                  <ThemedText
                     style={[
                       styles.scheduleDayText,
                       { color: isRest ? colors.textMuted : colors.accent, fontWeight: isRest ? '400' : '600' },
                     ]}
                   >
                     {day}
-                  </Text>
+                  </ThemedText>
                 </View>
               );
             })}
@@ -712,24 +713,24 @@ export default function CraftMyBodyScreen() {
         <GlassCard style={styles.card}>
           <View style={styles.resultHeader}>
             <MaterialCommunityIcons name="food-apple-outline" size={22} color={colors.accent} />
-            <Text style={[styles.resultTitle, { color: colors.text }]}>Daily Nutrition</Text>
+            <ThemedText style={[styles.resultTitle, { color: colors.text }]}>Daily Nutrition</ThemedText>
           </View>
-          <Text style={[styles.caloriesBig, { color: colors.text }]}>
-            {algorithm.calories_target} <Text style={{ fontSize: 16, color: colors.textMuted }}>kcal/day</Text>
-          </Text>
+          <ThemedText style={[styles.caloriesBig, { color: colors.text }]}>
+            {algorithm.calories_target} <ThemedText style={{ fontSize: typography.sizes.body, color: colors.textMuted }}>kcal/day</ThemedText>
+          </ThemedText>
 
           <View style={styles.macroRow}>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: colors.error }]}>{algorithm.protein_g}g</Text>
-              <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Protein ({proteinPct}%)</Text>
+              <ThemedText style={[styles.macroValue, { color: colors.error }]}>{algorithm.protein_g}g</ThemedText>
+              <ThemedText style={[styles.macroLabel, { color: colors.textMuted }]}>Protein ({proteinPct}%)</ThemedText>
             </View>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: colors.warning }]}>{algorithm.carbs_g}g</Text>
-              <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Carbs ({carbsPct}%)</Text>
+              <ThemedText style={[styles.macroValue, { color: colors.warning }]}>{algorithm.carbs_g}g</ThemedText>
+              <ThemedText style={[styles.macroLabel, { color: colors.textMuted }]}>Carbs ({carbsPct}%)</ThemedText>
             </View>
             <View style={styles.macroItem}>
-              <Text style={[styles.macroValue, { color: colors.purple }]}>{algorithm.fats_g}g</Text>
-              <Text style={[styles.macroLabel, { color: colors.textMuted }]}>Fats ({fatsPct}%)</Text>
+              <ThemedText style={[styles.macroValue, { color: colors.purple }]}>{algorithm.fats_g}g</ThemedText>
+              <ThemedText style={[styles.macroLabel, { color: colors.textMuted }]}>Fats ({fatsPct}%)</ThemedText>
             </View>
           </View>
 
@@ -759,23 +760,23 @@ export default function CraftMyBodyScreen() {
         <GlassCard style={styles.card}>
           <View style={styles.resultHeader}>
             <MaterialCommunityIcons name="target" size={22} color={colors.accent} />
-            <Text style={[styles.resultTitle, { color: colors.text }]}>Daily Targets</Text>
+            <ThemedText style={[styles.resultTitle, { color: colors.text }]}>Daily Targets</ThemedText>
           </View>
           <View style={styles.targetRow}>
             <View style={styles.targetItem}>
               <MaterialCommunityIcons name="water" size={24} color={colors.skyBlue} />
-              <Text style={[styles.targetValue, { color: colors.text }]}>{algorithm.daily_water_liters}L</Text>
-              <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Water</Text>
+              <ThemedText style={[styles.targetValue, { color: colors.text }]}>{algorithm.daily_water_liters}L</ThemedText>
+              <ThemedText style={[styles.targetLabel, { color: colors.textMuted }]}>Water</ThemedText>
             </View>
             <View style={styles.targetItem}>
               <MaterialCommunityIcons name="weather-night" size={24} color={colors.purpleLight} />
-              <Text style={[styles.targetValue, { color: colors.text }]}>{algorithm.sleep_hours}h</Text>
-              <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Sleep</Text>
+              <ThemedText style={[styles.targetValue, { color: colors.text }]}>{algorithm.sleep_hours}h</ThemedText>
+              <ThemedText style={[styles.targetLabel, { color: colors.textMuted }]}>Sleep</ThemedText>
             </View>
             <View style={styles.targetItem}>
               <MaterialCommunityIcons name="run" size={24} color={colors.pinkLight} />
-              <Text style={[styles.targetValue, { color: colors.text }]}>{algorithm.cardio_minutes_per_week}m</Text>
-              <Text style={[styles.targetLabel, { color: colors.textMuted }]}>Cardio/wk</Text>
+              <ThemedText style={[styles.targetValue, { color: colors.text }]}>{algorithm.cardio_minutes_per_week}m</ThemedText>
+              <ThemedText style={[styles.targetLabel, { color: colors.textMuted }]}>Cardio/wk</ThemedText>
             </View>
           </View>
         </GlassCard>
@@ -784,7 +785,7 @@ export default function CraftMyBodyScreen() {
         <GlassCard style={styles.card}>
           <View style={styles.resultHeader}>
             <MaterialCommunityIcons name="lightbulb-on-outline" size={22} color={colors.accent} />
-            <Text style={[styles.resultTitle, { color: colors.text }]}>Nutrition Tips</Text>
+            <ThemedText style={[styles.resultTitle, { color: colors.text }]}>Nutrition Tips</ThemedText>
           </View>
           {algorithm.nutrition_tips.map((tip, i) => (
             <View key={i} style={styles.tipRow}>
@@ -792,9 +793,9 @@ export default function CraftMyBodyScreen() {
                 name="check-circle-outline"
                 size={16}
                 color={colors.accent}
-                style={{ marginTop: 2 }}
+                style={{ marginTop: spacing[0.5] }}
               />
-              <Text style={[styles.tipText, { color: colors.text }]}>{tip}</Text>
+              <ThemedText style={[styles.tipText, { color: colors.text }]}>{tip}</ThemedText>
             </View>
           ))}
         </GlassCard>
@@ -802,10 +803,10 @@ export default function CraftMyBodyScreen() {
         {/* Apply Button */}
         <View style={styles.applyContainer}>
           <GradientButton
-            title={applied ? t('craftBody.applied') : t('craftBody.applyToTraining')}
+            title={vm.applied ? t('craftBody.applied') : t('craftBody.applyToTraining')}
             onPress={handleApply}
-            icon={applied ? 'check-circle' : 'rocket-launch'}
-            disabled={applied}
+            icon={vm.applied ? 'check-circle' : 'rocket-launch'}
+            disabled={vm.applied}
           />
         </View>
       </Animated.View>
@@ -827,7 +828,7 @@ export default function CraftMyBodyScreen() {
   return (
     <ScreenErrorBoundary screenName="CraftMyBody" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
       <PremiumGate featureName="Body Craft Algorithm">
-        <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['bottom']}>
+        <ScreenContainer edges={['bottom']}>
           <ScreenTutorial
             screenKey="craft-my-body"
             icon="human-male-board"
@@ -856,19 +857,19 @@ export default function CraftMyBodyScreen() {
                   styles.navBtn,
                   {
                     backgroundColor: colors.surfaceVariant,
-                    paddingHorizontal: 16,
-                    paddingVertical: 10,
-                    borderRadius: 12,
+                    paddingHorizontal: spacing[4],
+                    paddingVertical: spacing[2.5],
+                    borderRadius: radius.lg,
                   },
                 ]}
               >
                 <MaterialCommunityIcons name="arrow-left" size={20} color={colors.textMuted} />
-                <Text style={[styles.navBtnText, { color: colors.text }]}>Back</Text>
+                <ThemedText style={[styles.navBtnText, { color: colors.text }]}>Back</ThemedText>
               </TouchableOpacity>
 
-              <Text style={[styles.stepIndicator, { color: colors.textMuted }]}>
+              <ThemedText style={[styles.stepIndicator, { color: colors.textMuted }]}>
                 {stepIndex + 1} / {STEPS.length}
-              </Text>
+              </ThemedText>
 
               <TouchableOpacity
                 onPress={goNext}
@@ -879,23 +880,23 @@ export default function CraftMyBodyScreen() {
                   styles.navBtn,
                   {
                     backgroundColor: canGoNext() ? colors.accent + '20' : colors.surfaceVariant,
-                    paddingHorizontal: 16,
-                    paddingVertical: 10,
-                    borderRadius: 12,
+                    paddingHorizontal: spacing[4],
+                    paddingVertical: spacing[2.5],
+                    borderRadius: radius.lg,
                     borderWidth: 1,
                     borderColor: canGoNext() ? colors.accent : colors.border,
                     opacity: canGoNext() ? 1 : 0.6,
                   },
                 ]}
               >
-                <Text
+                <ThemedText
                   style={[
                     styles.navBtnText,
                     { color: canGoNext() ? colors.accent : colors.textMuted, fontWeight: '700' },
                   ]}
                 >
                   {stepIndex === 3 ? 'Generate' : 'Next'}
-                </Text>
+                </ThemedText>
                 <MaterialCommunityIcons
                   name={stepIndex === 3 ? 'creation' : 'arrow-right'}
                   size={20}
@@ -916,14 +917,14 @@ export default function CraftMyBodyScreen() {
                   styles.navBtn,
                   {
                     backgroundColor: colors.surfaceVariant,
-                    paddingHorizontal: 16,
-                    paddingVertical: 10,
-                    borderRadius: 12,
+                    paddingHorizontal: spacing[4],
+                    paddingVertical: spacing[2.5],
+                    borderRadius: radius.lg,
                   },
                 ]}
               >
                 <MaterialCommunityIcons name="arrow-left" size={20} color={colors.text} />
-                <Text style={[styles.navBtnText, { color: colors.text }]}>Edit</Text>
+                <ThemedText style={[styles.navBtnText, { color: colors.text }]}>Edit</ThemedText>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -932,20 +933,20 @@ export default function CraftMyBodyScreen() {
                   styles.navBtn,
                   {
                     backgroundColor: colors.accent + '20',
-                    paddingHorizontal: 16,
-                    paddingVertical: 10,
-                    borderRadius: 12,
+                    paddingHorizontal: spacing[4],
+                    paddingVertical: spacing[2.5],
+                    borderRadius: radius.lg,
                     borderWidth: 1,
                     borderColor: colors.accent,
                   },
                 ]}
               >
-                <Text style={[styles.navBtnText, { color: colors.accent, fontWeight: '700' }]}>Done</Text>
+                <ThemedText style={[styles.navBtnText, { color: colors.accent, fontWeight: '700' }]}>Done</ThemedText>
                 <MaterialCommunityIcons name="check" size={20} color={colors.accent} />
               </TouchableOpacity>
             </Animated.View>
           )}
-        </SafeAreaView>
+        </ScreenContainer>
       </PremiumGate>
     </ScreenErrorBoundary>
   );
@@ -958,127 +959,127 @@ export default function CraftMyBodyScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   scroll: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: 100 },
+  scrollContent: { padding: spacing[4], paddingBottom: spacing[25] },
 
   // Progress bar
-  progressContainer: { marginBottom: 24 },
-  progressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+  progressContainer: { marginBottom: spacing[6] },
+  progressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing[2] },
   progressStep: { alignItems: 'center', flex: 1 },
   progressDot: {
     width: 16,
     height: 16,
-    borderRadius: 8,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
-  progressLabel: { fontSize: 10, textAlign: 'center' },
-  progressLine: { height: 3, borderRadius: 2, marginHorizontal: 32 },
+  progressLabel: { fontSize: typography.sizes.xs, textAlign: 'center' },
+  progressLine: { height: 3, borderRadius: 2, marginHorizontal: spacing[8] },
   progressLineFill: { height: 3, borderRadius: 2 },
 
   // Cards
-  card: { marginBottom: 16, padding: 16 },
+  card: { marginBottom: spacing[4], padding: spacing[4] },
 
   // Labels
-  label: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
-  inputLabel: { fontSize: 12, fontWeight: '500', marginBottom: 4 },
+  label: { fontSize: typography.sizes.body, fontWeight: '700', marginBottom: spacing[2] },
+  inputLabel: { fontSize: typography.sizes.caption, fontWeight: '500', marginBottom: spacing[1] },
 
   // Inputs
-  inputRow: { flexDirection: 'row', gap: 8 },
+  inputRow: { flexDirection: 'row', gap: spacing[2] },
   inputGroup: { flex: 1 },
   textInput: {
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 16,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    fontSize: typography.sizes.body, 
     fontWeight: '600',
   },
 
   // Chips
-  chipRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  chipRow: { flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    gap: spacing[1.5],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     borderRadius: 24,
     borderWidth: 1,
   },
-  chipText: { fontSize: 14, fontWeight: '500' },
+  chipText: { fontSize: typography.sizes.bodySmall, fontWeight: '500' },
 
   // Option rows
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    padding: 12,
-    borderRadius: 8,
+    gap: spacing[3],
+    padding: spacing[3],
+    borderRadius: radius.md,
     borderWidth: 1,
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   optionText: { flex: 1 },
-  optionTitle: { fontSize: 15, fontWeight: '600' },
-  optionDesc: { fontSize: 12, marginTop: 2 },
+  optionTitle: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
+  optionDesc: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
 
   // Goal rows
-  goalRow: { flexDirection: 'row', alignItems: 'center', gap: 16, borderRadius: 8, borderWidth: 1, padding: 8 },
+  goalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[4], borderRadius: radius.md, borderWidth: 1, padding: spacing[2] },
   goalIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  goalTitle: { fontSize: 16, fontWeight: '700' },
-  goalDesc: { fontSize: 12, marginTop: 2 },
+  goalTitle: { fontSize: typography.sizes.body, fontWeight: '700' },
+  goalDesc: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
 
   // Focus areas
-  focusHint: { fontSize: 13, marginBottom: 16, textAlign: 'center' },
-  muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'space-between' },
-  muscleCard: { width: '47%' as any, alignItems: 'center', padding: 16, borderRadius: 12, minWidth: 150 },
-  muscleLabel: { fontSize: 13, fontWeight: '600', marginTop: 8, marginBottom: 8 },
-  priorityBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-  priorityText: { fontSize: 10, fontWeight: '700' },
+  focusHint: { fontSize: typography.sizes.label, marginBottom: spacing[4], textAlign: 'center' },
+  muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], justifyContent: 'space-between' },
+  muscleCard: { width: '47%' as any, alignItems: 'center', padding: spacing[4], borderRadius: radius.lg, minWidth: 150 },
+  muscleLabel: { fontSize: typography.sizes.label, fontWeight: '600', marginTop: spacing[2], marginBottom: spacing[2] },
+  priorityBadge: { paddingHorizontal: spacing[2], paddingVertical: spacing[0.5], borderRadius: radius.md },
+  priorityText: { fontSize: typography.sizes.xs, fontWeight: '700' },
 
   // Results
-  resultHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  resultTitle: { fontSize: 16, fontWeight: '700' },
-  resultValue: { fontSize: 22, fontWeight: '700', marginBottom: 4 },
-  resultSub: { fontSize: 13, marginBottom: 16 },
+  resultHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginBottom: spacing[2] },
+  resultTitle: { fontSize: typography.sizes.body, fontWeight: '700' },
+  resultValue: { fontSize: typography.sizes.h3, fontWeight: '700', marginBottom: spacing[1] },
+  resultSub: { fontSize: typography.sizes.label, marginBottom: spacing[4] },
 
   // Schedule
-  scheduleRow: { flexDirection: 'row', gap: 4, marginTop: 8 },
-  scheduleDay: { flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 8 },
-  scheduleDayLabel: { fontSize: 9, fontWeight: '500', marginBottom: 2 },
-  scheduleDayText: { fontSize: 10, fontWeight: '600' },
+  scheduleRow: { flexDirection: 'row', gap: spacing[1], marginTop: spacing[2] },
+  scheduleDay: { flex: 1, alignItems: 'center', paddingVertical: spacing[2], borderRadius: radius.md },
+  scheduleDayLabel: { fontSize: typography.sizes.micro, fontWeight: '500', marginBottom: spacing[0.5] },
+  scheduleDayText: { fontSize: typography.sizes.xs, fontWeight: '600' },
 
   // Macros
-  caloriesBig: { fontSize: 32, fontWeight: '700', marginBottom: 16 },
-  macroRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
+  caloriesBig: { fontSize: typography.sizes.h1, fontWeight: '700', marginBottom: spacing[4] },
+  macroRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing[4] },
   macroItem: { alignItems: 'center', flex: 1 },
-  macroValue: { fontSize: 20, fontWeight: '700' },
-  macroLabel: { fontSize: 11, marginTop: 2 },
-  macroBar: { height: 8, borderRadius: 4, flexDirection: 'row', overflow: 'hidden' },
+  macroValue: { fontSize: typography.sizes.h3, fontWeight: '700' },
+  macroLabel: { fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] },
+  macroBar: { height: 8, borderRadius: radius.sm, flexDirection: 'row', overflow: 'hidden' },
 
   // Targets
-  targetRow: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8 },
-  targetItem: { alignItems: 'center', gap: 4 },
-  targetValue: { fontSize: 18, fontWeight: '700' },
-  targetLabel: { fontSize: 11 },
+  targetRow: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: spacing[2] },
+  targetItem: { alignItems: 'center', gap: spacing[1] },
+  targetValue: { fontSize: typography.sizes.h4, fontWeight: '700' },
+  targetLabel: { fontSize: typography.sizes.captionSm },
 
   // Tips
-  tipRow: { flexDirection: 'row', gap: 8, marginBottom: 8, alignItems: 'flex-start' },
-  tipText: { flex: 1, fontSize: 13, lineHeight: 18 },
+  tipRow: { flexDirection: 'row', gap: spacing[2], marginBottom: spacing[2], alignItems: 'flex-start' },
+  tipText: { flex: 1, fontSize: typography.sizes.label, lineHeight: 18 },
 
   // Apply
-  applyContainer: { marginTop: 8, marginBottom: 32 },
+  applyContainer: { marginTop: spacing[2], marginBottom: spacing[8] },
 
   // Bottom bar
   bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[3.5],
     borderTopWidth: 1,
   },
-  navBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  navBtnText: { fontSize: 15, fontWeight: '600' },
-  stepIndicator: { fontSize: 13, fontWeight: '500' },
+  navBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
+  navBtnText: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
+  stepIndicator: { fontSize: typography.sizes.label, fontWeight: '500' },
 });

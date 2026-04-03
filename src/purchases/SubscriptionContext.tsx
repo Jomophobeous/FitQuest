@@ -16,6 +16,7 @@ import { SubscriptionManager, type SubscriptionState, type SubscriptionOfferings
 import { useDatabase } from '../context/DatabaseContext';
 import { verifySubscription } from '../services/authorityClient';
 import { getStableDeviceId } from '../services/deviceSignature';
+import { ensureDeviceRegistered } from '../services/deviceTokenService';
 
 // ============================================
 // TYPES
@@ -142,12 +143,14 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setOfferings(currentOfferings);
         });
 
-        // Phase 24A: Backend authority verification — fire-and-forget.
-        // Server cross-references local subscription state with ground truth.
+        // Phase 24A + 26: Backend authority verification — fire-and-forget.
+        // Ensure device is registered (gets/caches device_token) THEN verify subscription.
         // Non-blocking: result applied via tamper engine bridge.
-        getStableDeviceId()
-          .then((deviceId) => {
-            verifySubscription('user_local_001', deviceId).catch(() => {});
+        ensureDeviceRegistered()
+          .then(async (deviceToken) => {
+            if (!deviceToken) return; // Can't verify without token — degrade gracefully
+            const deviceId = await getStableDeviceId();
+            return verifySubscription('user_local_001', deviceId, deviceToken);
           })
           .catch(() => {});
       } catch (error) {

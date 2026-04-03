@@ -1,43 +1,22 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React from 'react';
 import {
   View,
-  Text,
-  ScrollView,
   StyleSheet,
   useWindowDimensions,
   TouchableOpacity,
-  RefreshControl,
 } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp, useSharedValue, withTiming } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useFocusEffect } from 'expo-router';
+import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
-import { spacing, radius } from '../src/design/theme-system';
+import { spacing, radius, typography } from '../src/design/theme-system';
+import { MOTION, HIERARCHY } from '../src/design/motion';
 import { useLanguage } from '../src/context/LanguageContext';
-import { useSubscription } from '../src/purchases/SubscriptionContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../src/components/ThemedText';
 import FQLogoMark from '../src/components/FQLogoMark';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { SkeletonDashboard } from '../src/components/ui/Skeleton';
-import { useDatabase } from '../src/context/DatabaseContext';
-import {
-  getUserProgress,
-  getMuscleFatigue,
-  getRecentSessions,
-  getStreak,
-  getDailyStepsForDate,
-  getAppState,
-} from '../src/database/service';
-import { getCachedReadiness, getStatusDisplay, type ReadinessSnapshot } from '../src/engines/ReadinessEngine';
-import { getDailySignal, type BehavioralSignal } from '../src/engines/BehavioralSignalEngine';
-import { getLastSessionImpact, type LastSessionImpact } from '../src/engines/AdaptiveMemoryEngine';
-import { getTrialSnapshot, type TrialSnapshot } from '../src/engines/TrialProgressionEngine';
-import { classifyConsistency, type ConsistencyProfile } from '../src/engines/ConsistencyClassifier';
-import { getXPData } from '../src/services/xpService';
 import { RankBadge } from '../src/components/RankDisplay';
-import { useDataSync } from '../src/services/dataSyncService';
 import {
   GlassCard,
   WeekCalendar,
@@ -47,310 +26,116 @@ import {
   PulseDot,
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
-
-// Spacing uses canonical theme tokens: spacing[2]=8, [4]=16, [6]=24, [8]=32
-
-interface RecentWorkout {
-  id: string;
-  name: string;
-  date: string;
-  duration: number;
-  caloriesBurned: number;
-  exercises: number;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-}
+import { ScreenContainer, Spacer } from '../src/components/ui/primitives';
+import { EmptyState } from '../src/components/ui/FeedbackStates';
+import { useInteraction } from '../src/interactions/InteractionManager';
+import { useNavigationGuard } from '../src/navigation/NavigationGuard';
+import { useDashboardViewModel } from '../src/viewmodels/useDashboardViewModel';
+import { usePrefetch } from '../src/hooks/usePrefetch';
 
 export default function DashboardScreen() {
   const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const router = useRouter();
-  const { isReady: dbReady } = useDatabase();
-  const { accessState } = useSubscription();
-  const isSubscribed = accessState === 'SUBSCRIBED';
+  const nav = useNavigationGuard();
   const isCompactScreen = width < 420;
-  const [loading, setLoading] = useState(true);
-  const [userProgress, setUserProgress] = useState<any>(null);
-  const [fatigueLevel, setFatigueLevel] = useState<number | null>(null); // null = no data
-  const [readiness, setReadiness] = useState<ReadinessSnapshot | null>(null);
-  const [behavioralSignal, setBehavioralSignal] = useState<BehavioralSignal | null>(null);
-  const [lastImpact, setLastImpact] = useState<LastSessionImpact | null>(null);
-  const [trialSnapshot, setTrialSnapshot] = useState<TrialSnapshot | null>(null);
-  const [consistencyProfile, setConsistencyProfile] = useState<ConsistencyProfile | null>(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [recentWorkout, setRecentWorkout] = useState<RecentWorkout | null>(null);
-  const [workoutDates, setWorkoutDates] = useState<string[]>([]);
-  const [totalCalories, setTotalCalories] = useState(0);
-  const [totalMinutes, setTotalMinutes] = useState(0);
-  const [todaySteps, setTodaySteps] = useState(0);
-  const [todayActiveMinutes, setTodayActiveMinutes] = useState(0);
-  const [completionRate, setCompletionRate] = useState(0);
-  const [refreshing, setRefreshing] = useState(false);
-  const [todayExercisesDone, setTodayExercisesDone] = useState(0);
-  const [todayExercisesTarget, setTodayExercisesTarget] = useState(0);
-  const [realLevel, setRealLevel] = useState(1);
-  const [realXP, setRealXP] = useState(0);
-  const [displayName, setDisplayName] = useState<string>('Athlete');
-  const [levelUpShown, setLevelUpShown] = useState(false);
-  const prevLevelRef = useRef<number>(0);
+  const exec = useInteraction();
+  const vm = useDashboardViewModel();
 
-  // Animated values
-  const headerOpacity = useSharedValue(0);
+  // Warm caches for adjacent screens (non-blocking)
+  usePrefetch(vm.isSubscribed);
 
-  useEffect(() => {
-    headerOpacity.value = withTiming(1, { duration: 300 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- headerOpacity is a Reanimated shared value
-  }, []);
-
-  // Debounce loadProgress to prevent triple-calls from focus + sync events
-  const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isLoadingRef = useRef(false);
-  const lastLoadedAt = useRef(0);
-  const LOAD_COOLDOWN_MS = 2000; // min 2s between loads
-  const debouncedLoad = useCallback(() => {
-    if (!dbReady) return;
-    if (loadTimer.current) clearTimeout(loadTimer.current);
-    loadTimer.current = setTimeout(() => {
-      // Skip if we loaded recently (prevents repeated loads from multiple event sources)
-      if (Date.now() - lastLoadedAt.current < LOAD_COOLDOWN_MS) return;
-      loadProgress();
-    }, 300);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadProgress identity stable via ref guard
-  }, [dbReady]);
-
-  // Reload data every time screen gains focus (e.g. after completing a workout)
-  useFocusEffect(
-    useCallback(() => {
-      debouncedLoad();
-    }, [debouncedLoad]),
-  );
-
-  // Also reload when data sync events fire (workout completed, XP awarded, etc.)
-  useDataSync(['workout_completed', 'xp_awarded', 'steps_updated', 'streak_updated', 'level_up'], debouncedLoad);
-
-  const loadProgress = async () => {
-    if (isLoadingRef.current) {
-      if (__DEV__) console.warn('[Dashboard] loadProgress:skipped (already loading)');
-      return;
-    }
-    isLoadingRef.current = true;
-    lastLoadedAt.current = Date.now(); // Stamp BEFORE load — closes cooldown window
-    if (__DEV__) console.warn('[Dashboard] loadProgress:start');
-    try {
-      // Parallel data loading — all independent queries at once
-      const [
-        savedName,
-        progress,
-        streakData,
-        fatigue,
-        sessions,
-        stepsData,
-        xpData,
-        readinessSnap,
-        signal,
-        impact,
-        trialSnap,
-        consistencySnap,
-      ] = await Promise.all([
-        getAppState('user.display_name').catch(() => null as string | null),
-        getUserProgress().catch(() => null),
-        getStreak('user_local_001').catch(() => null),
-        getMuscleFatigue('user_local_001').catch(() => []),
-        getRecentSessions('user_local_001', 5).catch(() => []),
-        getDailyStepsForDate('user_local_001', new Date().toISOString().split('T')[0]!).catch(() => null),
-        getXPData().catch(() => ({ level: 1, totalXP: 0 })),
-        getCachedReadiness('user_local_001').catch(() => null),
-        getDailySignal('user_local_001').catch(() => null as BehavioralSignal | null),
-        getLastSessionImpact('user_local_001').catch(() => null as LastSessionImpact | null),
-        getTrialSnapshot('user_local_001', isSubscribed).catch(() => null as TrialSnapshot | null),
-        classifyConsistency('user_local_001').catch(() => null as ConsistencyProfile | null),
-      ]);
-
-      if (savedName) setDisplayName(savedName);
-
-      // Progress
-      const prog = progress ?? { weekly_xp: 0, total_workouts: 0, completed_workouts: 0 };
-      if (streakData) {
-        setUserProgress({ ...prog, current_streak: streakData.current, longest_streak: streakData.longest });
-      } else {
-        setUserProgress(prog);
-      }
-
-      // Fatigue
-      if (fatigue && fatigue.length > 0) {
-        const avgFatigue = fatigue.reduce((sum: number, m: any) => sum + (m.fatigue_level || 0), 0) / fatigue.length;
-        setFatigueLevel(Math.round(avgFatigue));
-      } else {
-        setFatigueLevel(null);
-      }
-
-      // Sessions
-      if (sessions && sessions.length > 0) {
-        const latest = sessions[0]!;
-        const sessionDate = new Date(latest.started_at);
-        const isToday = sessionDate.toDateString() === new Date().toDateString();
-        const isYesterday = sessionDate.toDateString() === new Date(Date.now() - 86400000).toDateString();
-        const dateLabel = isToday
-          ? t('common.today')
-          : isYesterday
-            ? t('common.yesterday')
-            : sessionDate.toLocaleDateString();
-
-        setRecentWorkout({
-          id: latest.id,
-          name:
-            latest.completed_exercises > 0
-              ? `${latest.completed_exercises} ${t('dashboard.of')} ${latest.total_exercises} ${t('library.exercises').toLowerCase()}`
-              : t('dashboard.incompleteSession'),
-          date: dateLabel,
-          duration: latest.duration_minutes || 0,
-          caloriesBurned:
-            latest.completed_exercises > 0
-              ? Math.round((latest.duration_minutes || 0) * 5 + (latest.completed_exercises || 0) * 8)
-              : 0,
-          exercises: latest.completed_exercises || 0,
-          icon: 'arm-flex' as any,
-        });
-
-        const todaySessions = sessions.filter((s) => {
-          const d = new Date(s.started_at);
-          return d.toDateString() === new Date().toDateString() && (s.completed_exercises || 0) > 0;
-        });
-        setTotalCalories(
-          todaySessions.reduce(
-            (sum, s) => sum + Math.round((s.duration_minutes || 0) * 5 + (s.completed_exercises || 0) * 8),
-            0,
-          ),
-        );
-        setTotalMinutes(todaySessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0));
-
-        const todayDone = todaySessions.reduce((sum, s) => sum + (s.completed_exercises || 0), 0);
-        const allTodaySessions = sessions.filter(
-          (s) => new Date(s.started_at).toDateString() === new Date().toDateString(),
-        );
-        const fullTarget = allTodaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
-        setTodayExercisesDone(todayDone);
-        setTodayExercisesTarget(fullTarget);
-
-        const completedCount = allTodaySessions.filter((s) => s.completed_at).length;
-        setCompletionRate(
-          allTodaySessions.length > 0 ? Math.round((completedCount / allTodaySessions.length) * 100) : 0,
-        );
-        const dates = sessions.map((s) => s.started_at.split('T')[0]!);
-        setWorkoutDates([...new Set(dates)]);
-      }
-
-      // Steps
-      if (stepsData) {
-        setTodaySteps(stepsData.steps);
-        setTodayActiveMinutes(stepsData.active_minutes);
-      }
-
-      // XP
-      if (prevLevelRef.current > 0 && xpData.level > prevLevelRef.current) {
-        setLevelUpShown(true);
-        setTimeout(() => setLevelUpShown(false), 3500);
-      }
-      // Prime ref so first load doesn't trigger false level-up
-      if (prevLevelRef.current === 0) prevLevelRef.current = xpData.level;
-      else prevLevelRef.current = xpData.level;
-      setRealLevel(xpData.level);
-      setRealXP(xpData.totalXP);
-
-      // Readiness
-      if (readinessSnap) setReadiness(readinessSnap);
-
-      // Behavioral intelligence
-      if (signal) setBehavioralSignal(signal);
-      if (impact) setLastImpact(impact);
-
-      // Trial + consistency
-      if (trialSnap) setTrialSnapshot(trialSnap);
-      if (consistencySnap) setConsistencyProfile(consistencySnap);
-    } catch (error) {
-      if (__DEV__) console.error('[Dashboard] Failed to load progress:', error);
-    } finally {
-      setLoading(false);
-      isLoadingRef.current = false;
-      lastLoadedAt.current = Date.now();
-      if (__DEV__) console.warn('[Dashboard] loadProgress:complete');
-    }
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    // Route through cooldown-protected path instead of raw loadProgress()
-    debouncedLoad();
-    // Clear refreshing after a short delay since debouncedLoad is async
-    setTimeout(() => setRefreshing(false), 600);
-  };
-
-  // State-driven UI: use readiness engine when available, fatigue-based fallback only if fatigue data exists.
-  // null = no data → don't show readiness section at all.
-  const readinessScore: number | null = readiness?.score ?? (fatigueLevel != null ? 100 - fatigueLevel : null);
-  const hasReadinessData = readinessScore != null;
-  const isRecoveryBad = hasReadinessData && readinessScore < 30;
-  const isRecoveryGood = hasReadinessData && readinessScore >= 65;
-  const recoveryPercent = readinessScore ?? 0;
-  const statusDisplay = readiness ? getStatusDisplay(readiness) : null;
+  // Destructure ViewModel for render
+  const {
+    loading, loadError, refreshing, displayName, readiness,
+    behavioralSignal, lastImpact, trialSnapshot, consistencyProfile,
+    recentWorkout, workoutDates, totalCalories, totalMinutes,
+    todaySteps, todayActiveMinutes, completionRate, realLevel, realXP,
+    levelUpShown, selectedDate, streak, todayProgress, hasReadinessData,
+    isRecoveryBad, isRecoveryGood, recoveryPercent, statusDisplay,
+    statPillWarning, statPillAccent, statPillSurface, signalCardBg,
+    exploreTiles, handleRefresh, setSelectedDate, retryLoad,
+    hasInterruptedSession, goalProgress, userState,
+  } = vm;
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <SkeletonDashboard />
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
-  const streak = userProgress?.current_streak ?? 0;
+  if (loadError) {
+    return (
+      <ScreenContainer>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing[6] }}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+          <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{loadError}</ThemedText>
+          <GradientButton title={t('common.retry') ?? 'Retry'} onPress={retryLoad} style={{ marginTop: spacing[4] }} />
+        </View>
+      </ScreenContainer>
+    );
+  }
 
-  // Today's progress: based on actual exercises completed today (not weekly XP)
-  // If no workouts today, check if any minutes/steps activity exists for a small baseline
-  const todayProgress =
-    todayExercisesTarget > 0
-      ? Math.min(1, todayExercisesDone / todayExercisesTarget)
-      : totalMinutes > 0
-        ? Math.min(1, totalMinutes / 30)
-        : 0; // fallback: 30min as full goal
   const level = realLevel;
 
   return (
-    <ScreenErrorBoundary screenName="Dashboard" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <ScreenErrorBoundary screenName="Dashboard" onGoBack={() => nav.back()}>
+      <ScreenContainer scroll onRefresh={handleRefresh} refreshing={refreshing}>
         <ScreenTutorial
           screenKey="dashboard"
           icon="view-dashboard"
           title="Your Dashboard"
           description="Track your daily progress, workout streaks, steps, and XP all in one place. Pull down to refresh your stats."
         />
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.accent} />
-          }
-        >
+        <Animated.View entering={FadeIn.duration(MOTION.base)}>
           {/* ── LEVEL UP CELEBRATION ── */}
           {levelUpShown && (
             <Animated.View
-              entering={FadeInDown.duration(300)}
+              entering={FadeInDown.duration(MOTION.slow)}
               style={[styles.levelUpBanner, { backgroundColor: theme.colors.accent }]}
             >
               <MaterialCommunityIcons name="arrow-up-bold-circle" size={22} color={theme.colors.onAccent} />
-              <View style={{ marginLeft: 12, flex: 1 }}>
-                <Text style={[styles.levelUpTitle, { color: theme.colors.onAccent }]}>Level Up!</Text>
-                <Text style={[styles.levelUpSub, { color: theme.colors.onAccent + 'CC' }]}>
+              <View style={{ marginLeft: spacing[3], flex: 1 }}>
+                <ThemedText variant="body" weight="800" style={{ color: theme.colors.onAccent }}>Level Up!</ThemedText>
+                <ThemedText variant="caption" weight="500" style={{ color: theme.colors.onAccent + 'CC', marginTop: spacing['px'] }}>
                   You reached Level {realLevel} 🎉
-                </Text>
+                </ThemedText>
               </View>
             </Animated.View>
           )}
 
+          {/* ── RESUME INTERRUPTED SESSION ── */}
+          {hasInterruptedSession && (
+            <Animated.View entering={FadeInDown.duration(MOTION.fast)}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => exec('dash_resume_session', () => nav.push('/fitquest'), { haptic: 'light' })}
+                style={[
+                  styles.resumeBanner,
+                  { backgroundColor: theme.colors.warning + '15', borderColor: theme.colors.warning + '40' },
+                ]}
+              >
+                <MaterialCommunityIcons name="play-circle-outline" size={22} color={theme.colors.warning} />
+                <View style={{ marginLeft: spacing[3], flex: 1 }}>
+                  <ThemedText variant="bodySmall" weight="700" style={{ color: theme.colors.warning }}>
+                    {t('dashboard.resumeWorkout') || 'Resume Workout'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                    {t('dashboard.resumeWorkoutSub') || 'You have an unfinished session'}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.warning} />
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+
           {/* ── COMPACT HEADER ── */}
-          <Animated.View entering={FadeIn.duration(150)}>
+          <Animated.View entering={FadeIn.duration(MOTION.fast)}>
             <View style={[styles.heroHeader, { backgroundColor: theme.colors.background }]}>
               <View style={styles.heroTop}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <FQLogoMark size={36} showGlow={false} />
                   <View>
                     <ThemedText variant="caption" color="secondary" style={styles.greeting}>
@@ -368,7 +153,7 @@ export default function DashboardScreen() {
                 </View>
                 {/* Stats row: Numbers visually heavier than labels */}
                 <View style={styles.headerStats}>
-                  <View style={[styles.statPill, { backgroundColor: theme.colors.warning + '15' }]}>
+                  <View style={[styles.statPill, statPillWarning]}>
                     <ThemedText
                       variant="bodySmall"
                       weight="800"
@@ -380,10 +165,10 @@ export default function DashboardScreen() {
                       🔥
                     </ThemedText>
                   </View>
-                  <View style={[styles.statPill, { backgroundColor: theme.colors.accent + '15' }]}>
+                  <View style={[styles.statPill, statPillAccent]}>
                     <RankBadge level={level} size="sm" />
                   </View>
-                  <View style={[styles.statPill, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <View style={[styles.statPill, statPillSurface]}>
                     <ThemedText
                       variant="bodySmall"
                       weight="800"
@@ -403,8 +188,8 @@ export default function DashboardScreen() {
           {/* ══════════════════════════════════════════════════════════════════
             PRIORITY 1: TODAY'S GOAL - LARGEST CARD, MOST PROMINENT
         ══════════════════════════════════════════════════════════════════ */}
-          <Animated.View entering={FadeInDown.delay(100).duration(150)}>
-            <GlassCard style={styles.todayGoalCard} delay={100}>
+          <Animated.View entering={FadeInDown.delay(MOTION.stagger * 2).duration(MOTION.fast)}>
+            <GlassCard style={styles.todayGoalCard} delay={MOTION.stagger * 2}>
               <View style={[styles.todayGoalInner, isCompactScreen && styles.todayGoalInnerCompact]}>
                 <View style={styles.todayGoalLeft}>
                   <ProgressRing progress={todayProgress} size={120} color={theme.colors.accent}>
@@ -459,7 +244,7 @@ export default function DashboardScreen() {
                       icon="lightning-bolt"
                       onPress={() => {
                         if (__DEV__) console.warn('[Dashboard] CTA:startNow → fitquest?autostart=1');
-                        router.push('/fitquest?autostart=1');
+                        exec('dash_start_workout', () => nav.push('/fitquest?autostart=1'), { haptic: 'medium' });
                       }}
                       variant="primary"
                       style={styles.primaryButton}
@@ -475,7 +260,7 @@ export default function DashboardScreen() {
             Only shown when real data exists (workouts, fatigue records).
         ══════════════════════════════════════════════════════════════════ */}
           {hasReadinessData && (
-            <Animated.View entering={FadeInDown.delay(200).duration(150)}>
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
               <View
                 style={[
                   styles.recoveryCard,
@@ -517,7 +302,7 @@ export default function DashboardScreen() {
                         {statusDisplay?.label || t('dashboard.recovery')}
                       </ThemedText>
                       {readiness?.timeSinceLastWorkoutMinutes != null && (
-                        <ThemedText variant="caption" color="muted" style={{ marginLeft: 8 }}>
+                        <ThemedText variant="caption" color="muted" style={{ marginLeft: spacing[2] }}>
                           {readiness.timeSinceLastWorkoutMinutes < 60
                             ? `Last trained ${readiness.timeSinceLastWorkoutMinutes}m ago`
                             : readiness.timeSinceLastWorkoutMinutes < 1440
@@ -571,7 +356,7 @@ export default function DashboardScreen() {
             SYSTEM SIGNAL — Behavioral intelligence + last session impact
         ══════════════════════════════════════════════════════════════════ */}
           {behavioralSignal && (
-            <Animated.View entering={FadeInDown.delay(180).duration(150)}>
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 3.5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
               <View
                 style={[
                   styles.signalCard,
@@ -600,7 +385,7 @@ export default function DashboardScreen() {
                     >
                       {behavioralSignal.headline}
                     </ThemedText>
-                    <ThemedText variant="caption" color="muted" style={{ marginTop: 1 }}>
+                    <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
                       {behavioralSignal.subtext}
                     </ThemedText>
                   </View>
@@ -637,14 +422,16 @@ export default function DashboardScreen() {
             TRIAL MESSAGE — Progressive trial messaging + consistency status
         ══════════════════════════════════════════════════════════════════ */}
           {trialSnapshot?.message.type !== 'NONE' && trialSnapshot?.message.headline ? (
-            <Animated.View entering={FadeInDown.delay(220).duration(150)}>
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
               <TouchableOpacity
                 activeOpacity={trialSnapshot.message.actionRoute ? 0.7 : 1}
-                onPress={() => {
+                onPress={() => exec('dash_trial_action', () => {
                   if (trialSnapshot.message.actionRoute) {
-                    router.push(trialSnapshot.message.actionRoute as any);
+                    nav.push(trialSnapshot.message.actionRoute as string);
                   }
-                }}
+                })}
+                accessibilityRole="button"
+                accessibilityLabel={trialSnapshot.message.headline}
               >
                 <View
                   style={[
@@ -656,7 +443,7 @@ export default function DashboardScreen() {
                     },
                   ]}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                     <View style={[styles.trialIconWrap, { backgroundColor: theme.colors.accent + '14' }]}>
                       <MaterialCommunityIcons
                         name={
@@ -674,7 +461,7 @@ export default function DashboardScreen() {
                       <ThemedText variant="bodySmall" weight="600" color="primary">
                         {trialSnapshot.message.headline}
                       </ThemedText>
-                      <ThemedText variant="caption" color="muted" style={{ marginTop: 1 }}>
+                      <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
                         {trialSnapshot.message.subtext}
                       </ThemedText>
                     </View>
@@ -689,9 +476,9 @@ export default function DashboardScreen() {
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        gap: 6,
-                        marginTop: 8,
-                        paddingTop: 8,
+                        gap: spacing[1.5],
+                        marginTop: spacing[2],
+                        paddingTop: spacing[2],
                         borderTopWidth: StyleSheet.hairlineWidth,
                         borderTopColor: theme.colors.border,
                       }}
@@ -710,7 +497,7 @@ export default function DashboardScreen() {
               </TouchableOpacity>
             </Animated.View>
           ) : consistencyProfile ? (
-            <Animated.View entering={FadeInDown.delay(220).duration(150)}>
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
               <View
                 style={[
                   styles.trialCard,
@@ -720,7 +507,7 @@ export default function DashboardScreen() {
                   },
                 ]}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                   <MaterialCommunityIcons
                     name={consistencyProfile.mode === 'DISCIPLINED' ? 'chart-line' : 'tune-vertical'}
                     size={16}
@@ -738,9 +525,89 @@ export default function DashboardScreen() {
           <WeekCalendar activeDate={selectedDate} workoutDates={workoutDates} onDatePress={setSelectedDate} />
 
           {/* ══════════════════════════════════════════════════════════════════
+            WEEKLY GOAL PROGRESS — Derived from goalTracker
+        ══════════════════════════════════════════════════════════════════ */}
+          {goalProgress && goalProgress.overallProgress > 0 && (
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.8).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
+              <View style={[styles.goalCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+                <View style={styles.goalHeader}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
+                    <MaterialCommunityIcons name="target" size={16} color={theme.colors.accent} />
+                    <ThemedText variant="bodySmall" weight="700" color="primary">
+                      {t('dashboard.weeklyGoal') || 'Weekly Goal'}
+                    </ThemedText>
+                  </View>
+                  <ThemedText variant="bodySmall" weight="800" style={{ color: theme.colors.accent }}>
+                    {Math.round(goalProgress.overallProgress * 100)}%
+                  </ThemedText>
+                </View>
+                <View style={[styles.goalBarBg, { backgroundColor: theme.colors.border }]}>
+                  <View
+                    style={[
+                      styles.goalBarFill,
+                      {
+                        backgroundColor: theme.colors.accent,
+                        width: `${Math.min(100, Math.round(goalProgress.overallProgress * 100))}%`,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.goalDetails}>
+                  <ThemedText variant="caption" color="muted">
+                    {goalProgress.workoutsDone}/{goalProgress.goals.workoutsTarget} {t('dashboard.workouts') || 'workouts'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted">
+                    {goalProgress.activeMinutesDone}/{goalProgress.goals.activeMinutesTarget} {t('fitquest.minShort') || 'min'}
+                  </ThemedText>
+                </View>
+              </View>
+            </Animated.View>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════════
+            ADAPTIVE NUDGE — Churn risk or high fatigue guidance
+        ══════════════════════════════════════════════════════════════════ */}
+          {userState?.churnRisk && !hasInterruptedSession && (
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => exec('dash_quick_start', () => nav.push('/fitquest?autostart=1'), { haptic: 'light' })}
+                style={[styles.nudgeCard, { backgroundColor: theme.colors.accent + '10', borderColor: theme.colors.accent + '30' }]}
+              >
+                <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme.colors.accent} />
+                <View style={{ flex: 1, marginLeft: spacing[2] }}>
+                  <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.accent }}>
+                    {t('dashboard.quickStartNudge') || 'Quick 10-min session?'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                    {t('dashboard.quickStartSub') || 'A short workout keeps your momentum going'}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.accent} />
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+
+          {userState?.fatigueTier === 'HIGH' && !isRecoveryBad && (
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
+              <View style={[styles.nudgeCard, { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '30' }]}>
+                <MaterialCommunityIcons name="sleep" size={18} color={theme.colors.warning} />
+                <View style={{ flex: 1, marginLeft: spacing[2] }}>
+                  <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.warning }}>
+                    {t('dashboard.recoveryDay') || 'Recovery recommended'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                    {t('dashboard.recoverySub') || 'Your muscles need rest — try a mobility session'}
+                  </ThemedText>
+                </View>
+              </View>
+            </Animated.View>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════════
             DAILY ACTIVITY STATS — Steps, Active Mins, Completion Rate
         ══════════════════════════════════════════════════════════════════ */}
-          <Animated.View entering={FadeInUp.delay(250).duration(150)}>
+          <Animated.View entering={FadeInUp.delay(MOTION.stagger * 5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
             <View style={styles.dailyStatsRow}>
               <View
                 style={[
@@ -749,7 +616,7 @@ export default function DashboardScreen() {
                 ]}
               >
                 <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
-                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: 4 }}>
+                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: spacing[1] }}>
                   {todaySteps > 0 ? todaySteps.toLocaleString() : '0'}
                 </ThemedText>
                 <ThemedText variant="caption" color="muted">
@@ -763,7 +630,7 @@ export default function DashboardScreen() {
                 ]}
               >
                 <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
-                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: 4 }}>
+                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: spacing[1] }}>
                   {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '0'}
                 </ThemedText>
                 <ThemedText variant="caption" color="muted">
@@ -777,7 +644,7 @@ export default function DashboardScreen() {
                 ]}
               >
                 <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
-                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.success, marginTop: 4 }}>
+                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.success, marginTop: spacing[1] }}>
                   {completionRate > 0 ? `${completionRate}%` : '0%'}
                 </ThemedText>
                 <ThemedText variant="caption" color="muted">
@@ -790,10 +657,10 @@ export default function DashboardScreen() {
           {/* ══════════════════════════════════════════════════════════════════
             PRIORITY 3: LAST WORKOUT - Summary only (reduced)
         ══════════════════════════════════════════════════════════════════ */}
-          <SectionHeader title={t('dashboard.lastWorkout')} delay={300} />
+          <SectionHeader title={t('dashboard.lastWorkout')} delay={MOTION.stagger * 6} />
           {recentWorkout ? (
             <AnimatedListItem key={recentWorkout.id} index={0} style={styles.workoutItem}>
-              <GlassCard onPress={() => router.push('/saved-workouts')} style={styles.workoutCard}>
+              <GlassCard onPress={() => nav.push('/saved-workouts')} style={styles.workoutCard}>
                 <View style={styles.workoutRow}>
                   <View style={[styles.workoutIcon, { backgroundColor: theme.colors.accent + '15' }]}>
                     <MaterialCommunityIcons name={recentWorkout.icon} size={18} color={theme.colors.accent} />
@@ -813,14 +680,12 @@ export default function DashboardScreen() {
               </GlassCard>
             </AnimatedListItem>
           ) : (
-            <View style={[styles.workoutItem, { paddingHorizontal: spacing[4] }]}>
-              <GlassCard style={[styles.workoutCard, { alignItems: 'center', paddingVertical: spacing[6] }]}>
-                <MaterialCommunityIcons name="dumbbell" size={32} color={theme.colors.textMuted} />
-                <ThemedText variant="caption" color="muted" style={{ marginTop: 8, textAlign: 'center' }}>
-                  {t('dashboard.noWorkoutsYet')}
-                </ThemedText>
-              </GlassCard>
-            </View>
+            <EmptyState
+              icon="dumbbell"
+              message={t('dashboard.noWorkoutsYet') || 'No workouts yet'}
+              action={t('dashboard.startNow') || 'Start First Session'}
+              onAction={() => exec('dash_empty_start', () => nav.push('/fitquest?autostart=1'), { haptic: 'light' })}
+            />
           )}
 
           {/* ══════════════════════════════════════════════════════════════════
@@ -830,7 +695,7 @@ export default function DashboardScreen() {
             <GradientButton
               title={t('dashboard.createCustom')}
               icon="playlist-plus"
-              onPress={() => router.push('/create-workout' as any)}
+              onPress={() => nav.push('/create-workout')}
               variant="success"
               style={styles.secondaryButton}
             />
@@ -839,49 +704,17 @@ export default function DashboardScreen() {
           {/* ══════════════════════════════════════════════════════════════════
             QUICK ACCESS TILES — Key features at a glance
         ══════════════════════════════════════════════════════════════════ */}
-          <SectionHeader title={t('dashboard.explore') || 'Explore'} delay={350} />
-          <Animated.View entering={FadeInUp.delay(350).duration(150)}>
+          <SectionHeader title={t('dashboard.explore') || 'Explore'} delay={MOTION.stagger * 7} />
+          <Animated.View entering={FadeInUp.delay(MOTION.stagger * 7).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
             <View style={styles.exploreGrid}>
-              {[
-                {
-                  label: t('dashboard.health') || 'Health',
-                  desc: t('dashboard.healthDesc') || 'Track vitals & wellness',
-                  icon: 'heart-pulse' as const,
-                  color: theme.colors.error,
-                  route: '/health-dashboard',
-                },
-                {
-                  label: t('dashboard.analytics') || 'Analytics',
-                  desc: t('dashboard.analyticsDesc') || 'Progress insights',
-                  icon: 'chart-bar' as const,
-                  color: theme.colors.blue,
-                  route: '/analytics',
-                },
-                {
-                  label: t('dashboard.coach') || 'Coach',
-                  desc: t('dashboard.coachDesc') || 'AI fitness guidance',
-                  icon: 'robot-happy' as const,
-                  color: theme.colors.purple,
-                  route: '/coach',
-                },
-                {
-                  label: t('dashboard.mealPrep') || 'Meal Prep',
-                  desc: t('dashboard.mealPrepDesc') || 'Nutrition planning',
-                  icon: 'food-variant' as const,
-                  color: theme.colors.accent,
-                  route: '/meal-prep',
-                },
-              ].map((tile, idx) => (
+              {exploreTiles.map((tile, idx) => (
                 <AnimatedListItem key={tile.route} index={idx} style={styles.exploreTileWrap}>
                   <TouchableOpacity
                     activeOpacity={0.7}
                     accessibilityRole="button"
                     accessibilityLabel={tile.label}
                     accessibilityHint={tile.desc}
-                    onPress={() => {
-                      if (__DEV__) console.warn('[Dashboard] Explore:open', { route: tile.route, label: tile.label });
-                      router.push(tile.route as any);
-                    }}
+                    onPress={() => exec('dash_tile_' + tile.route, () => nav.push(tile.route))}
                     style={[
                       styles.exploreTile,
                       {
@@ -910,9 +743,9 @@ export default function DashboardScreen() {
             </View>
           </Animated.View>
 
-          <View style={{ height: spacing[8] }} />
-        </ScrollView>
-      </SafeAreaView>
+          <Spacer size="xl" />
+        </Animated.View>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -920,7 +753,7 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scrollContent: { paddingBottom: 100 },
+  scrollContent: { paddingBottom: spacing[25] },
 
   // ── LEVEL UP BANNER ──
   levelUpBanner: {
@@ -933,8 +766,59 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     borderRadius: radius.lg,
   },
-  levelUpTitle: { fontSize: 16, fontWeight: '800' } as const,
-  levelUpSub: { fontSize: 12, fontWeight: '500', marginTop: 1 } as const,
+  resumeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: spacing[4],
+    marginTop: spacing[2],
+    marginBottom: spacing[2],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.lg,
+    borderWidth: 1,
+  },
+
+  // ── GOAL CARD ──
+  goalCard: {
+    marginHorizontal: spacing[4],
+    marginTop: spacing[3],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.lg,
+    borderWidth: 1,
+  },
+  goalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing[2],
+  },
+  goalBarBg: {
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden' as const,
+  },
+  goalBarFill: {
+    height: 6,
+    borderRadius: 3,
+  },
+  goalDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing[2],
+  },
+
+  // ── ADAPTIVE NUDGE ──
+  nudgeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: spacing[4],
+    marginTop: spacing[2],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.lg,
+    borderWidth: 1,
+  },
 
   // ── HEADER (Compact) ──
   heroHeader: {
@@ -947,8 +831,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  greeting: { fontSize: 12, fontWeight: '500', marginBottom: 2 },
-  heroTitle: { fontSize: 24, fontWeight: '700' },
+  greeting: { fontSize: typography.sizes.caption, fontWeight: '500', marginBottom: spacing[0.5] },
+  heroTitle: { fontSize: typography.sizes.h2, fontWeight: '700' },
 
   // Stats in header - Numbers heavier than labels
   headerStats: {
@@ -958,18 +842,18 @@ const styles = StyleSheet.create({
   statPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing[1],
     paddingHorizontal: spacing[2],
     paddingVertical: spacing[1],
     borderRadius: radius.md,
   },
   statValue: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '500',
   },
 
@@ -1000,16 +884,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   todayGoalPercent: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '800',
   },
   todayGoalTitle: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '700',
   },
   todayGoalSub: {
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: typography.sizes.bodySmall, 
+    marginTop: spacing[1],
     lineHeight: 20,
   },
   todayGoalMeta: {
@@ -1022,11 +906,11 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   metaValue: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
   },
   metaLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '400',
   },
   primaryActionContainer: {
@@ -1044,7 +928,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[4],
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   recoveryInner: {
@@ -1061,21 +945,21 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   recoveryTitle: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
   },
   recoveryValue: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   recoveryLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   recoveryWarning: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
     marginTop: spacing[2],
     paddingTop: spacing[2],
@@ -1107,7 +991,7 @@ const styles = StyleSheet.create({
   signalImpact: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing[1.5],
     marginTop: spacing[2],
     paddingTop: spacing[2],
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -1124,7 +1008,7 @@ const styles = StyleSheet.create({
   trialIconWrap: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1147,15 +1031,15 @@ const styles = StyleSheet.create({
   workoutIcon: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
   workoutInfo: { flex: 1 },
-  workoutName: { fontSize: 14, fontWeight: '600' },
-  workoutMeta: { fontSize: 11, marginTop: 2 },
+  workoutName: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
+  workoutMeta: { fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] },
   workoutCalValue: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '700',
   },
 
@@ -1179,10 +1063,10 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
-    borderRadius: 12,
+    borderRadius: radius.lg,
   },
   liveText: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
 
@@ -1198,7 +1082,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingVertical: spacing[3],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
 
@@ -1208,7 +1092,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[4],
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -1240,25 +1124,25 @@ const styles = StyleSheet.create({
   exploreTileIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing[4],
   },
   exploreTileContent: {
     flex: 1,
-    gap: 2,
+    gap: spacing[0.5],
   },
   exploreTileArrowRow: {
     marginLeft: spacing[2],
     alignItems: 'center',
   },
   exploreTileLabel: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '700',
   },
   exploreTileDesc: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
     lineHeight: 15,
   },
@@ -1285,7 +1169,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[1],
   },
   quickTileLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '600',
     textAlign: 'center',
   },

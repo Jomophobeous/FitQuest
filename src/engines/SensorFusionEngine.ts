@@ -260,7 +260,7 @@ export class SensorFusionEngine {
     // Auto-pause sensors when app moves to background (debounced to prevent churn from rapid flickers)
     this.appStateSub = AppState.addEventListener('change', (nextState) => {
       if (this.appStateDebounceTimer) clearTimeout(this.appStateDebounceTimer);
-      this.appStateDebounceTimer = setTimeout(() => {
+      this.appStateDebounceTimer = setTimeout(() => { // debounce
         if (nextState === 'background' || nextState === 'inactive') {
           if (this.running && !this.pausedByBackground) {
             this.accelSub?.remove();

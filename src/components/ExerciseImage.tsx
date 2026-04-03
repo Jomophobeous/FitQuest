@@ -20,7 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { Category } from '../database/types';
-import { categoryTheme, defaultCategoryTheme } from '../design/theme-system';
+import { categoryTheme, defaultCategoryTheme, spacing } from '../design/theme-system';
 import { resolveExerciseImageFolder } from '../services/exerciseImageMap';
 
 // ─── Constants ───
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 3,
+    gap: spacing[0.75],
   },
   frameDot: {
     width: 4,
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: spacing[0.5],
   },
   dualFrame: {
     flex: 1,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 4,
     borderRadius: 8,
-    paddingHorizontal: 2,
-    paddingVertical: 1,
+    paddingHorizontal: spacing[0.5],
+    paddingVertical: spacing['px'],
   },
 });

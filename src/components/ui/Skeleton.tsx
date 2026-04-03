@@ -12,6 +12,7 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
+import { spacing } from '../../design/theme-system';
 
 // ============================================
 // BASE SKELETON BONE
@@ -86,8 +87,8 @@ export function SkeletonCard({ style }: { style?: any }) {
       ]}
     >
       <Skeleton width="60%" height={16} radius="sm" />
-      <Skeleton width="90%" height={12} radius="sm" style={{ marginTop: 10 }} />
-      <Skeleton width="40%" height={12} radius="sm" style={{ marginTop: 6 }} />
+      <Skeleton width="90%" height={12} radius="sm" style={{ marginTop: spacing[2.5] }} />
+      <Skeleton width="40%" height={12} radius="sm" style={{ marginTop: spacing[1.5] }} />
     </View>
   );
 }
@@ -114,7 +115,7 @@ export function SkeletonList({ count = 4 }: { count?: number }) {
           <Skeleton width={40} height={40} radius="full" />
           <View style={skeletonStyles.listRowContent}>
             <Skeleton width="65%" height={14} radius="sm" />
-            <Skeleton width="40%" height={10} radius="sm" style={{ marginTop: 6 }} />
+            <Skeleton width="40%" height={10} radius="sm" style={{ marginTop: spacing[1.5] }} />
           </View>
         </View>
       ))}
@@ -133,7 +134,7 @@ export function SkeletonDashboard() {
       <View style={skeletonStyles.dashboardHeader}>
         <View>
           <Skeleton width={100} height={12} radius="sm" />
-          <Skeleton width={140} height={24} radius="sm" style={{ marginTop: 6 }} />
+          <Skeleton width={140} height={24} radius="sm" style={{ marginTop: spacing[1.5] }} />
         </View>
         <View style={skeletonStyles.headerPills}>
           <Skeleton width={48} height={28} radius={10} />
@@ -143,10 +144,10 @@ export function SkeletonDashboard() {
       </View>
 
       {/* Main card */}
-      <SkeletonCard style={{ marginHorizontal: 16, marginTop: 12, minHeight: 160 }} />
+      <SkeletonCard style={{ marginHorizontal: spacing[4], marginTop: spacing[3], minHeight: 160 }} />
 
       {/* Recovery bar */}
-      <Skeleton width="90%" height={48} radius="lg" style={{ alignSelf: 'center', marginTop: 16 }} />
+      <Skeleton width="90%" height={48} radius="lg" style={{ alignSelf: 'center', marginTop: spacing[4] }} />
 
       {/* Week strip */}
       <View style={skeletonStyles.weekStrip}>
@@ -156,8 +157,8 @@ export function SkeletonDashboard() {
       </View>
 
       {/* Section */}
-      <Skeleton width={140} height={18} radius="sm" style={{ marginLeft: 20, marginTop: 16 }} />
-      <SkeletonCard style={{ marginHorizontal: 16, marginTop: 8 }} />
+      <Skeleton width={140} height={18} radius="sm" style={{ marginLeft: spacing[5], marginTop: spacing[4] }} />
+      <SkeletonCard style={{ marginHorizontal: spacing[4], marginTop: spacing[2] }} />
     </View>
   );
 }
@@ -170,36 +171,36 @@ const skeletonStyles = StyleSheet.create({
   card: {
     borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
+    padding: spacing[4],
   },
   listRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
     borderBottomWidth: 1,
-    gap: 12,
+    gap: spacing[3],
   },
   listRowContent: {
     flex: 1,
   },
   dashboard: {
-    paddingTop: 8,
+    paddingTop: spacing[2],
   },
   dashboardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing[4],
   },
   headerPills: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing[2],
   },
   weekStrip: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginTop: 16,
+    paddingHorizontal: spacing[4],
+    marginTop: spacing[4],
   },
 });

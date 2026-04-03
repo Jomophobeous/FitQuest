@@ -356,7 +356,7 @@ export async function dispatchBridgeVerification(
     if (!baseUrl) return null;
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), BRIDGE_TIMEOUT_MS);
+    const timeout = setTimeout(() => controller.abort(), BRIDGE_TIMEOUT_MS); // abort-timeout
     try {
       const res = await fetch(`${baseUrl}/verify/subscription`, {
         method: 'POST',

@@ -149,7 +149,7 @@ async function authorityFetch<T>(path: string, body?: Record<string, unknown>): 
   if (!baseUrl) return null;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS); // abort-timeout
   const startTime = Date.now();
 
   try {
@@ -277,7 +277,7 @@ function unwrapResult<T>(result: AuthorityResult<T>): T | null {
  * Returns null on network failure (caller should degrade gracefully).
  * Throttled to max once per 5 minutes.
  */
-export async function verifySubscription(userId: string, deviceId: string): Promise<SubscriptionVerification | null> {
+export async function verifySubscription(userId: string, deviceId: string, deviceToken?: string): Promise<SubscriptionVerification | null> {
   const state = getState();
   const now = Date.now();
 
@@ -286,9 +286,13 @@ export async function verifySubscription(userId: string, deviceId: string): Prom
     return state.lastSubscriptionResult;
   }
 
+  // Server requires device_token — skip if not registered
+  if (!deviceToken) return null;
+
   const result = await authorityFetch<SubscriptionVerification>('/verify/subscription', {
     user_id: userId,
     device_id: deviceId,
+    device_token: deviceToken,
   });
 
   const data = unwrapResult(result);
@@ -433,7 +437,7 @@ export async function requestAI(userId: string, deviceId: string, prompt: string
   if (!baseUrl) return null;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS); // abort-timeout
   const startTime = Date.now();
 
   try {

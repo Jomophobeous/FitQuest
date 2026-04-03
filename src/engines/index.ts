@@ -121,7 +121,7 @@ export {
 } from './FailureAnalysisEngine';
 
 // USER STATE ENGINE (single source of truth)
-export { getUserState, invalidateUserState, getCachedUserState, type UserState } from './UserStateEngine';
+export { getUserState, invalidateUserState, getCachedUserState, type UserState, type EngagementLevel, type FatigueTier } from './UserStateEngine';
 
 // STATE SIMULATION ENGINE
 export {

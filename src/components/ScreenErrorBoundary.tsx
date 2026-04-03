@@ -11,6 +11,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { logCrash } from '../services/telemetry';
+import { typography, spacing } from '../design/theme-system';
+
 
 interface ScreenErrorBoundaryProps {
   children: React.ReactNode;
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
+    padding: spacing[8],
   },
   iconWrap: {
     width: 72,
@@ -123,45 +125,45 @@ const styles = StyleSheet.create({
     borderRadius: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   title: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
-    marginBottom: 8,
+    marginBottom: spacing[2],
     textAlign: 'center',
   },
   message: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: spacing[6],
     lineHeight: 18,
   },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3.5],
     borderRadius: 14,
-    gap: 8,
+    gap: spacing[2],
     width: '100%',
     maxWidth: 240,
   },
   primaryBtnText: {
     color: '#fff',
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '700',
   },
   secondaryBtn: {
-    marginTop: 12,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    marginTop: spacing[3],
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3],
     borderRadius: 14,
     borderWidth: 1,
   },
   secondaryBtnText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
   },
 });

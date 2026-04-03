@@ -27,6 +27,7 @@ import {
 } from 'react-native';
 import { authService } from '../security/AuthService';
 import { BiometricAuthService } from '../security/BiometricAuth';
+import { darkTheme as theme, typography, spacing } from '../design/theme-system';
 
 // ============================================
 // CONSTANTS
@@ -184,7 +185,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const backoffMs = BASE_BACKOFF_MS * Math.pow(2, failedAttempts - 1);
       // Enforce a brief delay before processing (non-blocking UX: disable button)
       setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, Math.min(backoffMs, 30_000)));
+      await new Promise((r) => setTimeout(r, Math.min(backoffMs, 30_000))); // debounce
     }
 
     setIsProcessing(true);
@@ -220,7 +221,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   if (gateState === 'INITIALIZING') {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#10B981" />
+        <ActivityIndicator size="large" color={theme.colors.accent} />
       </View>
     );
   }
@@ -240,7 +241,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         <TextInput
           style={styles.input}
           placeholder="Password (min 6 characters)"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={theme.colors.textMuted}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -251,7 +252,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         <TextInput
           style={styles.input}
           placeholder="Confirm Password"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={theme.colors.textMuted}
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
@@ -266,7 +267,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           onPress={handleSetupPassword}
           disabled={isProcessing}
         >
-          {isProcessing ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Set Password</Text>}
+          {isProcessing ? <ActivityIndicator color={theme.colors.onAccent} /> : <Text style={styles.buttonText}>Set Password</Text>}
         </TouchableOpacity>
       </View>
     );
@@ -281,7 +282,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="#64748B"
+        placeholderTextColor={theme.colors.textMuted}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -297,7 +298,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         onPress={handlePasswordUnlock}
         disabled={isProcessing || lockoutUntil > Date.now()}
       >
-        {isProcessing ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Unlock</Text>}
+        {isProcessing ? <ActivityIndicator color={theme.colors.onAccent} /> : <Text style={styles.buttonText}>Unlock</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.biometricButton} onPress={attemptBiometricUnlock}>
@@ -317,37 +318,37 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0E17',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: spacing[8],
   },
   title: {
-    fontSize: 28,
+    fontSize: typography.sizes.h1Sm, 
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   subtitle: {
-    fontSize: 14,
-    color: '#94A3B8',
+    fontSize: typography.sizes.bodySmall, 
+    color: '#9BA1B0',
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: spacing[8],
     lineHeight: 20,
   },
   input: {
     width: '100%',
     height: 52,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#131720',
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing[4],
     color: '#FFFFFF',
-    fontSize: 16,
-    marginBottom: 16,
+    fontSize: typography.sizes.body, 
+    marginBottom: spacing[4],
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#1A1F2E',
   },
   error: {
     color: '#EF4444',
-    fontSize: 13,
-    marginBottom: 12,
+    fontSize: typography.sizes.label, 
+    marginBottom: spacing[3],
     textAlign: 'center',
   },
   button: {
@@ -357,23 +358,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing[2],
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '600',
   },
   biometricButton: {
-    marginTop: 24,
-    padding: 12,
+    marginTop: spacing[6],
+    padding: spacing[3],
   },
   biometricText: {
     color: '#10B981',
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '500',
   },
 });

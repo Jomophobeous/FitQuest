@@ -9,6 +9,8 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
 import { ThemedChartWrapper, useChartTheme, MiniStat } from './ThemedChart';
 import type { StepsChartProps, StepDataPoint } from './types';
+import { typography, spacing } from '../../design/theme-system';
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -179,14 +181,14 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 12,
+    paddingVertical: spacing[3],
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   chartContainer: {
-    paddingLeft: 40,
-    paddingRight: 8,
+    paddingLeft: spacing[10],
+    paddingRight: spacing[2],
     position: 'relative',
   },
   barsContainer: {
@@ -194,8 +196,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-around',
-    gap: 2,
-    paddingBottom: 20,
+    gap: spacing[0.5],
+    paddingBottom: spacing[5],
   },
   barColumn: {
     alignItems: 'center',
@@ -205,8 +207,8 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barLabel: {
-    fontSize: 9,
-    marginTop: 4,
+    fontSize: typography.sizes.micro, 
+    marginTop: spacing[1],
     textAlign: 'center',
   },
   goalLine: {
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: -14,
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '500',
   },
   yAxisLabels: {
@@ -232,10 +234,10 @@ const styles = StyleSheet.create({
     width: 36,
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingRight: 4,
+    paddingRight: spacing[1],
   },
   yLabel: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
   },
 });
 

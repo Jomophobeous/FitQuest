@@ -23,6 +23,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { ExerciseWithDetails } from '../database/types';
 import ExerciseImage from './ExerciseImage';
+import { typography, spacing } from '../design/theme-system';
+
 
 // ─── Muscle → Icon mapping ───
 
@@ -164,7 +166,7 @@ export function ExerciseDetailSheet({ exercise, visible, onClose, onAddToWorkout
               category={exercise.category}
               variant="detail"
               animate={true}
-              style={{ alignSelf: 'center', marginBottom: 16, borderRadius: 16 }}
+              style={{ alignSelf: 'center', marginBottom: spacing[4], borderRadius: 16 }}
             />
           </Animated.View>
 
@@ -473,8 +475,8 @@ const styles = StyleSheet.create({
   },
   handleRow: {
     alignItems: 'center',
-    paddingTop: 12,
-    paddingBottom: 4,
+    paddingTop: spacing[3],
+    paddingBottom: spacing[1],
   },
   handle: {
     width: 40,
@@ -482,44 +484,44 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[2],
   },
 
   // Header
   headerSection: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 16,
+    gap: spacing[3],
+    marginBottom: spacing[4],
   },
   exerciseName: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '800',
     lineHeight: 30,
     letterSpacing: -0.3,
   },
   headerTags: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 10,
+    gap: spacing[2],
+    marginTop: spacing[2.5],
   },
   categoryTag: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1.25],
     borderRadius: 10,
   },
   categoryText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
   diffTag: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1.25],
     borderRadius: 10,
   },
   diffTagText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
   closeBtn: {
@@ -528,15 +530,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: spacing[1],
   },
 
   // Difficulty bar
   difficultyBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 20,
+    gap: spacing[1.5],
+    marginBottom: spacing[5],
   },
   diffDot: {
     width: 28,
@@ -544,28 +546,28 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   diffLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
-    marginLeft: 8,
+    marginLeft: spacing[2],
   },
 
   // Stats
   statsRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 24,
+    gap: spacing[2],
+    marginBottom: spacing[6],
   },
   statPill: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    gap: spacing[1.5],
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[2.5],
     borderRadius: 12,
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
     flexShrink: 1,
   },
@@ -574,20 +576,20 @@ const styles = StyleSheet.create({
   muscleGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 24,
+    gap: spacing[2],
+    marginBottom: spacing[6],
   },
   muscleChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    gap: spacing[1.5],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
     borderRadius: 10,
     borderWidth: 1,
   },
   muscleText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     textTransform: 'capitalize',
   },
   primaryDot: {
@@ -598,26 +600,26 @@ const styles = StyleSheet.create({
 
   // Equipment
   equipmentList: {
-    gap: 10,
-    marginBottom: 24,
+    gap: spacing[2.5],
+    marginBottom: spacing[6],
   },
   equipRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: spacing[2.5],
   },
   equipText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '500',
     flex: 1,
   },
   requiredBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[0.75],
     borderRadius: 6,
   },
   requiredText: {
-    fontSize: 10,
+    fontSize: typography.sizes.xs, 
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -625,25 +627,25 @@ const styles = StyleSheet.create({
   noEquipCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    gap: spacing[2.5],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[3.5],
     borderRadius: 14,
-    marginBottom: 24,
+    marginBottom: spacing[6],
   },
   noEquipText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '500',
   },
 
   // Instructions
   instructionsList: {
-    gap: 14,
-    marginBottom: 24,
+    gap: spacing[3.5],
+    marginBottom: spacing[6],
   },
   instructionRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing[3],
     alignItems: 'flex-start',
   },
   stepNumber: {
@@ -652,15 +654,15 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 1,
+    marginTop: spacing['px'],
   },
   stepNumText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '700',
   },
   instructionText: {
     flex: 1,
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     lineHeight: 22,
     fontWeight: '400',
   },
@@ -669,23 +671,23 @@ const styles = StyleSheet.create({
   trainingGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 24,
+    gap: spacing[2],
+    marginBottom: spacing[6],
   },
   trainingChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[2.5],
     borderRadius: 12,
-    gap: 6,
+    gap: spacing[1.5],
   },
   trainingLabel: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   effectivenessBar: {
     flexDirection: 'row',
-    gap: 3,
+    gap: spacing[0.75],
   },
   effectDot: {
     width: 8,
@@ -697,33 +699,33 @@ const styles = StyleSheet.create({
   sectionTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 14,
+    gap: spacing[2],
+    marginBottom: spacing[3.5],
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
     letterSpacing: -0.2,
   },
 
   // Actions
   actionsSection: {
-    marginTop: 8,
-    paddingBottom: 8,
+    marginTop: spacing[2],
+    paddingBottom: spacing[2],
   },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
+    gap: spacing[2],
+    paddingVertical: spacing[4],
     borderRadius: 16,
     borderWidth: 1,
   },
   addBtnText: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
   },
 });
 
-export default ExerciseDetailSheet;
+export default React.memo(ExerciseDetailSheet);

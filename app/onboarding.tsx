@@ -5,12 +5,11 @@
  * Saves preferences to SQLite user_profile. Figma-inspired UI with lime accent.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   Dimensions,
   FlatList,
@@ -19,30 +18,30 @@ import {
   Alert,
   KeyboardAvoidingView,
 } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInRight, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInRight, FadeOutLeft, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
-import {
-  createUserProfile,
-  setUserEquipment,
-  updateUserProfile,
-  getUserProfile,
-  lockUserProfile,
-  setAppState,
-  setUserInterests,
-  addUserPersonalGoal,
-} from '../src/database/service';
-import { EquipmentItem, PersonalDevelopmentTopic } from '../src/database/types';
+import { useToast } from '../src/context/ToastContext';
 import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
-import { logEvent } from '../src/services/telemetry';
+import ThemedText from '../src/components/ThemedText';
+import { useOnboardingViewModel, EquipmentItem, PersonalDevelopmentTopic, OnboardingData } from '../src/viewmodels/useOnboardingViewModel';
+import { typography, spacing, radius } from '../src/design/theme-system';
+import {
+  logOnboardingStepViewed,
+  logOnboardingStepCompleted,
+  logOnboardingDropOff,
+  logOnboardingCompleted,
+} from '../src/services/growthAnalytics';
+import { logFlowAbandoned } from '../src/services/frictionLogger';
+
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -50,19 +49,6 @@ const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 type Goal = 'body_control' | 'posture' | 'speed' | 'mobility' | 'focus' | 'strength';
 // Must match SQLite CHECK constraint: ('beginner','intermediate','advanced')
 type Experience = 'beginner' | 'intermediate' | 'advanced';
-
-interface OnboardingData {
-  goal: Goal | null;
-  experience: Experience | null;
-  trainingDays: number;
-  sessionMinutes: number;
-  weightKg: string;
-  heightCm: string;
-  sex: 'male' | 'female' | null;
-  equipment: EquipmentItem[];
-  interests: PersonalDevelopmentTopic[];
-  personalGoal: string;
-}
 
 const TOTAL_STEPS = 11;
 
@@ -84,9 +70,11 @@ const INTEREST_OPTIONS: { id: PersonalDevelopmentTopic; icon: string; label: str
 export default function OnboardingScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { refreshProfile } = useDatabase();
+  const vm = useOnboardingViewModel();
   const isDark = theme.isDark;
 
   const GOALS: { id: Goal; label: string; icon: string; desc: string }[] = [
@@ -158,12 +146,29 @@ export default function OnboardingScreen() {
     interests: [],
     personalGoal: '',
   });
-  const [saving, setSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [permissionsGranted, setPermissionsGranted] = useState<Record<string, boolean>>({});
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [dataConsentAccepted, setDataConsentAccepted] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+
+  // ── Onboarding Analytics (Block U) ──
+  const onboardingStartRef = useRef(Date.now());
+  const onboardingCompletedRef = useRef(false);
+
+  useEffect(() => {
+    logOnboardingStepViewed(step);
+  }, [step]);
+
+  useEffect(() => {
+    return () => {
+      if (!onboardingCompletedRef.current) {
+        logOnboardingDropOff(step);
+        logFlowAbandoned('onboarding', step, TOTAL_STEPS);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const canAdvance = (): boolean => {
     switch (step) {
@@ -202,6 +207,7 @@ export default function OnboardingScreen() {
   };
 
   const next = () => {
+    logOnboardingStepCompleted(step);
     if (step < TOTAL_STEPS - 1) setStep(step + 1);
     else finishOnboarding();
   };
@@ -211,120 +217,21 @@ export default function OnboardingScreen() {
   };
 
   const finishOnboarding = async () => {
-    // Validate optional numeric body stats
-    const errors: Record<string, string> = {};
-    let parsedWeight: number | undefined;
-    let parsedHeight: number | undefined;
-
-    if (data.weightKg.trim()) {
-      const wv = validateNumeric(data.weightKg, BODY_RANGES.weightKg, false);
-      if (!wv.valid) {
-        errors.weightKg = wv.error!;
-      } else {
-        parsedWeight = wv.value || undefined;
-      }
-    }
-    if (data.heightCm.trim()) {
-      const hv = validateNumeric(data.heightCm, BODY_RANGES.heightCm, false);
-      if (!hv.valid) {
-        errors.heightCm = hv.error!;
-      } else {
-        parsedHeight = hv.value || undefined;
-      }
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
+    const result = await vm.saveProfile(data, refreshProfile);
+    if (result.errors) {
+      setFieldErrors(result.errors);
       return;
     }
     setFieldErrors({});
-
-    setSaving(true);
-    try {
-      const existingProfile = await getUserProfile('user_local_001');
-      if (existingProfile) {
-        // Profile already created by DatabaseContext — update it
-        await updateUserProfile('user_local_001', {
-          sex: data.sex ?? undefined,
-          weight_kg: parsedWeight,
-          height_cm: parsedHeight,
-          goal: data.goal ?? 'body_control',
-          experience: data.experience ?? 'beginner',
-          training_days_per_week: data.trainingDays,
-          time_per_session_minutes: data.sessionMinutes,
-        });
-      } else {
-        await createUserProfile({
-          id: 'user_local_001',
-          sex: data.sex ?? undefined,
-          weight_kg: parsedWeight,
-          height_cm: parsedHeight,
-          goal: data.goal ?? 'body_control',
-          experience: data.experience ?? 'beginner',
-          training_days_per_week: data.trainingDays,
-          time_per_session_minutes: data.sessionMinutes,
-          locked: false,
-        } as any);
-      }
-
-      // Ensure profile is locked (required for workout generation)
-      await lockUserProfile('user_local_001');
-
-      if (data.equipment.length > 0) {
-        await setUserEquipment('user_local_001', data.equipment);
-      }
-
-      // Derive equipment_level from selected equipment items
-      const GYM_ITEMS: string[] = ['BARBELL', 'CABLE_MACHINE', 'BENCH'];
-      const MINIMAL_ITEMS: string[] = ['DUMBBELLS', 'RESISTANCE_BANDS', 'KETTLEBELL', 'PULL_UP_BAR'];
-      const hasGym = data.equipment.some((e) => GYM_ITEMS.includes(e));
-      const hasMinimal = data.equipment.some((e) => MINIMAL_ITEMS.includes(e));
-      const equipLevel = hasGym ? 'playground' : hasMinimal ? 'minimal' : 'none';
-      await setAppState('user.equipment_level', equipLevel);
-
-      // Save user interests
-      if (data.interests.length > 0) {
-        await setUserInterests(
-          'user_local_001',
-          data.interests.map((topic, i) => ({
-            user_id: 'user_local_001',
-            topic,
-            priority: Math.max(1, 5 - i), // First selected = highest priority
-            created_at: Date.now(),
-          })),
-        );
-      }
-
-      // Save personal goal
-      if (data.personalGoal.trim()) {
-        await addUserPersonalGoal('user_local_001', data.personalGoal.trim(), 'fitness');
-      }
-
-      // Refresh profile in DatabaseContext so all screens see the updated profile
-      await refreshProfile();
-
-      // Mark onboarding as complete
-      await setAppState('onboarding_complete', 'true');
-      await setAppState('age_verified_13_plus', 'true');
-      await setAppState('data_consent_accepted', String(Date.now()));
-      await setAppState('medical_disclaimer_accepted', String(Date.now()));
-      void logEvent('onboarding_completed', {
-        goal: data.goal,
-        experience: data.experience,
-        training_days: data.trainingDays,
-        equipment_count: data.equipment.length,
+    if (!result.success) {
+      showToast({
+        message: t('onboarding.saveError') || 'Failed to save your profile. Please try again.',
+        type: 'error',
       });
-    } catch (e) {
-      if (__DEV__) console.warn('[Onboarding] Profile save error:', e);
-      setSaving(false);
-      Alert.alert(
-        t('common.error') || 'Error',
-        t('onboarding.saveError') || 'Failed to save your profile. Please try again.',
-        [{ text: t('common.ok') || 'OK' }],
-      );
       return;
     }
-    setSaving(false);
+    onboardingCompletedRef.current = true;
+    logOnboardingCompleted(Date.now() - onboardingStartRef.current);
     router.replace('/dashboard');
   };
 
@@ -348,22 +255,22 @@ export default function OnboardingScreen() {
             <View style={[styles.consentIconWrap, { backgroundColor: theme.colors.accent + '15' }]}>
               <MaterialCommunityIcons name="account-check" size={48} color={theme.colors.accent} />
             </View>
-            <Text style={[styles.welcomeTitle, { color: theme.colors.text, marginTop: 24 }]}>
+            <ThemedText style={[styles.welcomeTitle, { color: theme.colors.text, marginTop: spacing[6] }]}>
               {t('onboarding.ageGate.title')}
-            </Text>
-            <Text
+            </ThemedText>
+            <ThemedText
               style={[
                 styles.welcomeDesc,
-                { color: theme.colors.textMuted, marginTop: 12, textAlign: 'center', paddingHorizontal: 20 },
+                { color: theme.colors.textMuted, marginTop: spacing[3], textAlign: 'center', paddingHorizontal: spacing[5] },
               ]}
             >
               {t('onboarding.ageGate.description')}
-            </Text>
+            </ThemedText>
 
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setAgeConfirmed(!ageConfirmed)}
-              style={[styles.consentCheckRow, { marginTop: 32 }]}
+              style={[styles.consentCheckRow, { marginTop: spacing[8] }]}
               accessibilityRole="checkbox"
               accessibilityLabel={t('onboarding.ageGate.confirm')}
               accessibilityState={{ checked: ageConfirmed }}
@@ -379,9 +286,9 @@ export default function OnboardingScreen() {
               >
                 {ageConfirmed && <MaterialCommunityIcons name="check" size={16} color={theme.colors.onAccent} />}
               </View>
-              <Text style={[styles.consentCheckText, { color: theme.colors.text }]}>
+              <ThemedText style={[styles.consentCheckText, { color: theme.colors.text }]}>
                 {t('onboarding.ageGate.confirm')}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           </Animated.View>
         );
@@ -395,12 +302,12 @@ export default function OnboardingScreen() {
             >
               <MaterialCommunityIcons name="shield-lock" size={48} color={theme.colors.accent} />
             </View>
-            <Text style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: 20 }]}>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: spacing[5] }]}>
               {t('onboarding.consent.title')}
-            </Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
               {t('onboarding.consent.subtitle')}
-            </Text>
+            </ThemedText>
 
             <View
               style={[styles.consentCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
@@ -415,7 +322,7 @@ export default function OnboardingScreen() {
                 <Animated.View key={i} entering={FadeInRight.delay(i * 60).duration(200)}>
                   <View style={styles.consentItem}>
                     <MaterialCommunityIcons name={item.icon} size={20} color={theme.colors.accent} />
-                    <Text style={[styles.consentItemText, { color: theme.colors.text }]}>{item.text}</Text>
+                    <ThemedText style={[styles.consentItemText, { color: theme.colors.text }]}>{item.text}</ThemedText>
                   </View>
                 </Animated.View>
               ))}
@@ -424,7 +331,7 @@ export default function OnboardingScreen() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setDataConsentAccepted(!dataConsentAccepted)}
-              style={[styles.consentCheckRow, { marginTop: 20 }]}
+              style={[styles.consentCheckRow, { marginTop: spacing[5] }]}
               accessibilityRole="checkbox"
               accessibilityLabel={t('onboarding.consent.accept')}
               accessibilityState={{ checked: dataConsentAccepted }}
@@ -440,18 +347,18 @@ export default function OnboardingScreen() {
               >
                 {dataConsentAccepted && <MaterialCommunityIcons name="check" size={16} color={theme.colors.onAccent} />}
               </View>
-              <Text style={[styles.consentCheckText, { color: theme.colors.text }]}>
+              <ThemedText style={[styles.consentCheckText, { color: theme.colors.text }]}>
                 {t('onboarding.consent.accept')}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => router.push('/privacy-policy')}
-              style={{ marginTop: 12, alignSelf: 'center' }}
+              style={{ marginTop: spacing[3], alignSelf: 'center' }}
             >
-              <Text style={{ color: theme.colors.accent, fontSize: 13, textDecorationLine: 'underline' }}>
+              <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.label, textDecorationLine: 'underline' }}>
                 {t('onboarding.consent.readPolicy')}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           </Animated.View>
         );
@@ -465,12 +372,12 @@ export default function OnboardingScreen() {
             >
               <MaterialCommunityIcons name="medical-bag" size={48} color={theme.colors.warning} />
             </View>
-            <Text style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: 20 }]}>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: spacing[5] }]}>
               {t('onboarding.disclaimer.title')}
-            </Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
               {t('onboarding.disclaimer.subtitle')}
-            </Text>
+            </ThemedText>
 
             <View
               style={[styles.consentCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
@@ -485,7 +392,7 @@ export default function OnboardingScreen() {
                 <Animated.View key={i} entering={FadeInRight.delay(i * 60).duration(200)}>
                   <View style={styles.consentItem}>
                     <MaterialCommunityIcons name={item.icon} size={20} color={theme.colors.warning} />
-                    <Text style={[styles.consentItemText, { color: theme.colors.text }]}>{item.text}</Text>
+                    <ThemedText style={[styles.consentItemText, { color: theme.colors.text }]}>{item.text}</ThemedText>
                   </View>
                 </Animated.View>
               ))}
@@ -494,7 +401,7 @@ export default function OnboardingScreen() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setDisclaimerAccepted(!disclaimerAccepted)}
-              style={[styles.consentCheckRow, { marginTop: 20 }]}
+              style={[styles.consentCheckRow, { marginTop: spacing[5] }]}
               accessibilityRole="checkbox"
               accessibilityLabel={t('onboarding.disclaimer.accept')}
               accessibilityState={{ checked: disclaimerAccepted }}
@@ -510,9 +417,9 @@ export default function OnboardingScreen() {
               >
                 {disclaimerAccepted && <MaterialCommunityIcons name="check" size={16} color={theme.colors.onAccent} />}
               </View>
-              <Text style={[styles.consentCheckText, { color: theme.colors.text }]}>
+              <ThemedText style={[styles.consentCheckText, { color: theme.colors.text }]}>
                 {t('onboarding.disclaimer.accept')}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           </Animated.View>
         );
@@ -531,8 +438,8 @@ export default function OnboardingScreen() {
               />
               <MaterialCommunityIcons name="lightning-bolt" size={64} color={theme.colors.accent} />
             </View>
-            <Text style={[styles.welcomeTitle, { color: theme.colors.text }]}>{t('onboarding.welcome')}</Text>
-            <Text style={[styles.welcomeDesc, { color: theme.colors.textMuted }]}>{t('onboarding.tagline')}</Text>
+            <ThemedText style={[styles.welcomeTitle, { color: theme.colors.text }]}>{t('onboarding.welcome')}</ThemedText>
+            <ThemedText style={[styles.welcomeDesc, { color: theme.colors.textMuted }]}>{t('onboarding.tagline')}</ThemedText>
 
             {/* 3 Pillars */}
             <View style={styles.pillarsRow}>
@@ -569,8 +476,8 @@ export default function OnboardingScreen() {
                   <View style={[styles.pillarIconWrap, { backgroundColor: p.color + '18' }]}>
                     <MaterialCommunityIcons name={p.icon} size={22} color={p.color} />
                   </View>
-                  <Text style={[styles.pillarTitle, { color: theme.colors.text }]}>{p.title}</Text>
-                  <Text style={[styles.pillarSub, { color: theme.colors.textMuted }]}>{p.sub}</Text>
+                  <ThemedText style={[styles.pillarTitle, { color: theme.colors.text }]}>{p.title}</ThemedText>
+                  <ThemedText style={[styles.pillarSub, { color: theme.colors.textMuted }]}>{p.sub}</ThemedText>
                 </View>
               ))}
             </View>
@@ -581,10 +488,10 @@ export default function OnboardingScreen() {
       case 4:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{'What interests you?'}</Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{'What interests you?'}</ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
               {"Select topics you want to explore. We'll recommend content tailored to your growth."}
-            </Text>
+            </ThemedText>
             <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false}>
               <View style={styles.equipGrid}>
                 {INTEREST_OPTIONS.map((opt, i) => {
@@ -611,11 +518,11 @@ export default function OnboardingScreen() {
                           size={28}
                           color={selected ? theme.colors.accent : theme.colors.textMuted}
                         />
-                        <Text
+                        <ThemedText
                           style={[styles.equipLabel, { color: selected ? theme.colors.accent : theme.colors.text }]}
                         >
                           {opt.label}
-                        </Text>
+                        </ThemedText>
                         {selected && (
                           <View style={[styles.equipCheck, { backgroundColor: theme.colors.accent }]}>
                             <MaterialCommunityIcons name="check" size={14} color={theme.colors.onAccent} />
@@ -628,18 +535,18 @@ export default function OnboardingScreen() {
               </View>
             </ScrollView>
 
-            <View style={{ marginTop: 20 }}>
-              <Text style={[styles.stepTitle, { color: theme.colors.text, fontSize: 18 }]}>{'Your personal goal'}</Text>
-              <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+            <View style={{ marginTop: spacing[5] }}>
+              <ThemedText style={[styles.stepTitle, { color: theme.colors.text, fontSize: typography.sizes.h4 }]}>{'Your personal goal'}</ThemedText>
+              <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
                 {'What do you want to achieve with FitQuest? Our AI coach will keep this in mind.'}
-              </Text>
+              </ThemedText>
               <View
                 style={[
                   styles.metricInput,
                   {
                     backgroundColor: isDark ? theme.colors.surfaceVariant : theme.colors.surface,
                     borderColor: theme.colors.border,
-                    marginTop: 8,
+                    marginTop: spacing[2],
                   },
                 ]}
               >
@@ -661,8 +568,8 @@ export default function OnboardingScreen() {
       case 5:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.goalTitle')}</Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.goalSub')}</Text>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.goalTitle')}</ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.goalSub')}</ThemedText>
             <View style={styles.optionsList}>
               {GOALS.map((g, i) => (
                 <Animated.View key={g.id} entering={FadeInRight.delay(i * 60).duration(200)}>
@@ -697,8 +604,8 @@ export default function OnboardingScreen() {
                       />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.optionLabel, { color: theme.colors.text }]}>{g.label}</Text>
-                      <Text style={[styles.optionDesc, { color: theme.colors.textMuted }]}>{g.desc}</Text>
+                      <ThemedText style={[styles.optionLabel, { color: theme.colors.text }]}>{g.label}</ThemedText>
+                      <ThemedText style={[styles.optionDesc, { color: theme.colors.textMuted }]}>{g.desc}</ThemedText>
                     </View>
                     {data.goal === g.id && (
                       <MaterialCommunityIcons name="check-circle" size={22} color={theme.colors.accent} />
@@ -714,8 +621,8 @@ export default function OnboardingScreen() {
       case 6:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.experienceTitle')}</Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.experienceSub')}</Text>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.experienceTitle')}</ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.experienceSub')}</ThemedText>
             <View style={styles.optionsList}>
               {EXPERIENCE_LEVELS.map((e, i) => (
                 <Animated.View key={e.id} entering={FadeInRight.delay(i * 80).duration(200)}>
@@ -750,8 +657,8 @@ export default function OnboardingScreen() {
                       />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.optionLabel, { color: theme.colors.text }]}>{e.label}</Text>
-                      <Text style={[styles.optionDesc, { color: theme.colors.textMuted }]}>{e.desc}</Text>
+                      <ThemedText style={[styles.optionLabel, { color: theme.colors.text }]}>{e.label}</ThemedText>
+                      <ThemedText style={[styles.optionDesc, { color: theme.colors.textMuted }]}>{e.desc}</ThemedText>
                     </View>
                     {data.experience === e.id && (
                       <MaterialCommunityIcons name="check-circle" size={22} color={theme.colors.accent} />
@@ -767,8 +674,8 @@ export default function OnboardingScreen() {
       case 7:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.bodyProfileTitle')}</Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.bodyProfileSub')}</Text>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.bodyProfileTitle')}</ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.bodyProfileSub')}</ThemedText>
             <View style={styles.optionsList}>
               <View style={styles.inputRow}>
                 <View
@@ -793,9 +700,9 @@ export default function OnboardingScreen() {
                     }}
                   />
                   {!!fieldErrors.weightKg && (
-                    <Text style={{ color: theme.colors.error, fontSize: 11, marginTop: 2 }}>
+                    <ThemedText style={{ color: theme.colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>
                       {fieldErrors.weightKg}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
                 <View
@@ -820,9 +727,9 @@ export default function OnboardingScreen() {
                     }}
                   />
                   {!!fieldErrors.heightCm && (
-                    <Text style={{ color: theme.colors.error, fontSize: 11, marginTop: 2 }}>
+                    <ThemedText style={{ color: theme.colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>
                       {fieldErrors.heightCm}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
               </View>
@@ -854,11 +761,11 @@ export default function OnboardingScreen() {
                       size={22}
                       color={data.sex === s ? theme.colors.accent : theme.colors.textMuted}
                     />
-                    <Text
+                    <ThemedText
                       style={[styles.sexLabel, { color: data.sex === s ? theme.colors.accent : theme.colors.text }]}
                     >
                       {s.charAt(0).toUpperCase() + s.slice(1)}
-                    </Text>
+                    </ThemedText>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -870,13 +777,13 @@ export default function OnboardingScreen() {
       case 8:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.scheduleTitle')}</Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.scheduleSub')}</Text>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.scheduleTitle')}</ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.scheduleSub')}</ThemedText>
 
-            <Text style={[styles.sliderLabel, { color: theme.colors.text }]}>
+            <ThemedText style={[styles.sliderLabel, { color: theme.colors.text }]}>
               {t('onboarding.daysPerWeek')}{' '}
-              <Text style={{ color: theme.colors.accent, fontWeight: '900' }}>{data.trainingDays}</Text>
-            </Text>
+              <ThemedText style={{ color: theme.colors.accent, fontWeight: '900' }}>{data.trainingDays}</ThemedText>
+            </ThemedText>
             <View style={styles.daysRow}>
               {[2, 3, 4, 5, 6, 7].map((d) => (
                 <TouchableOpacity
@@ -893,22 +800,22 @@ export default function OnboardingScreen() {
                   accessibilityLabel={`${d} days per week`}
                   accessibilityState={{ selected: data.trainingDays === d }}
                 >
-                  <Text
+                  <ThemedText
                     style={[
                       styles.dayBtnText,
                       { color: data.trainingDays === d ? theme.colors.onAccent : theme.colors.text },
                     ]}
                   >
                     {d}
-                  </Text>
+                  </ThemedText>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={[styles.sliderLabel, { color: theme.colors.text, marginTop: 28 }]}>
+            <ThemedText style={[styles.sliderLabel, { color: theme.colors.text, marginTop: spacing[7] }]}>
               {t('onboarding.minutesPerSession')}{' '}
-              <Text style={{ color: theme.colors.accent, fontWeight: '900' }}>{data.sessionMinutes}</Text>
-            </Text>
+              <ThemedText style={{ color: theme.colors.accent, fontWeight: '900' }}>{data.sessionMinutes}</ThemedText>
+            </ThemedText>
             <View style={styles.daysRow}>
               {[20, 30, 45, 60, 90].map((m) => (
                 <TouchableOpacity
@@ -919,21 +826,21 @@ export default function OnboardingScreen() {
                     styles.dayBtn,
                     {
                       backgroundColor: data.sessionMinutes === m ? theme.colors.accent : theme.colors.surfaceVariant,
-                      paddingHorizontal: 14,
+                      paddingHorizontal: spacing[3.5],
                     },
                   ]}
                   accessibilityRole="radio"
                   accessibilityLabel={`${m} minutes per session`}
                   accessibilityState={{ selected: data.sessionMinutes === m }}
                 >
-                  <Text
+                  <ThemedText
                     style={[
                       styles.dayBtnText,
                       { color: data.sessionMinutes === m ? theme.colors.onAccent : theme.colors.text },
                     ]}
                   >
                     {m}
-                  </Text>
+                  </ThemedText>
                 </TouchableOpacity>
               ))}
             </View>
@@ -944,8 +851,8 @@ export default function OnboardingScreen() {
       case 9:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.equipmentTitle')}</Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.equipmentSub')}</Text>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.equipmentTitle')}</ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.equipmentSub')}</ThemedText>
             <View style={styles.equipGrid}>
               {EQUIPMENT_OPTIONS.map((eq, i) => {
                 const selected = data.equipment.includes(eq.id);
@@ -971,9 +878,9 @@ export default function OnboardingScreen() {
                         size={28}
                         color={selected ? theme.colors.accent : theme.colors.textMuted}
                       />
-                      <Text style={[styles.equipLabel, { color: selected ? theme.colors.accent : theme.colors.text }]}>
+                      <ThemedText style={[styles.equipLabel, { color: selected ? theme.colors.accent : theme.colors.text }]}>
                         {eq.label}
-                      </Text>
+                      </ThemedText>
                       {!!selected && (
                         <View style={[styles.equipCheck, { backgroundColor: theme.colors.accent }]}>
                           <MaterialCommunityIcons name="check" size={14} color={theme.colors.onAccent} />
@@ -1088,13 +995,13 @@ export default function OnboardingScreen() {
 
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <Text style={[styles.stepTitle, { color: theme.colors.text }]}>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
               {t('onboarding.permTitle') || 'Enable Permissions'}
-            </Text>
-            <Text style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
               {t('onboarding.permSub') ||
                 'These help FitQuest track your health and fitness accurately. You can change them anytime in Settings.'}
-            </Text>
+            </ThemedText>
 
             {/* Allow All button */}
             <TouchableOpacity
@@ -1108,10 +1015,10 @@ export default function OnboardingScreen() {
               accessibilityLabel="Allow all permissions"
             >
               <MaterialCommunityIcons name="shield-check" size={18} color={theme.colors.accent} />
-              <Text style={{ color: theme.colors.accent, fontSize: 14, fontWeight: '700' }}>Allow All</Text>
+              <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.bodySmall, fontWeight: '700' }}>Allow All</ThemedText>
             </TouchableOpacity>
 
-            <View style={{ gap: 10, marginTop: 12 }}>
+            <View style={{ gap: spacing[2.5], marginTop: spacing[3] }}>
               {PERMISSION_ITEMS.map((perm, i) => {
                 const granted = permissionsGranted[perm.id];
                 return (
@@ -1141,18 +1048,18 @@ export default function OnboardingScreen() {
                         />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={[styles.permTitle, { color: granted ? theme.colors.accent : theme.colors.text }]}>
+                        <ThemedText style={[styles.permTitle, { color: granted ? theme.colors.accent : theme.colors.text }]}>
                           {perm.title}
-                        </Text>
-                        <Text style={[styles.permDesc, { color: theme.colors.textMuted }]} numberOfLines={2}>
+                        </ThemedText>
+                        <ThemedText style={[styles.permDesc, { color: theme.colors.textMuted }]} numberOfLines={2}>
                           {perm.desc}
-                        </Text>
+                        </ThemedText>
                       </View>
                       {!granted && (
                         <View style={[styles.permAction, { backgroundColor: theme.colors.accent + '15' }]}>
-                          <Text style={{ color: theme.colors.accent, fontSize: 12, fontWeight: '600' }}>
+                          <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600' }}>
                             {t('onboarding.perm.allow') || 'Allow'}
-                          </Text>
+                          </ThemedText>
                         </View>
                       )}
                     </TouchableOpacity>
@@ -1160,9 +1067,9 @@ export default function OnboardingScreen() {
                 );
               })}
             </View>
-            <Text style={[styles.permSkipNote, { color: theme.colors.textMuted }]}>
+            <ThemedText style={[styles.permSkipNote, { color: theme.colors.textMuted }]}>
               {t('onboarding.perm.skipNote') || 'You can skip this — permissions can be enabled later in your profile.'}
-            </Text>
+            </ThemedText>
           </Animated.View>
         );
       }
@@ -1174,7 +1081,7 @@ export default function OnboardingScreen() {
 
   return (
     <ScreenErrorBoundary screenName="Onboarding" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         {/* Background gradient */}
         <LinearGradient colors={[theme.colors.accent + '06', 'transparent', 'transparent']} style={styles.bgGlow} />
 
@@ -1198,9 +1105,9 @@ export default function OnboardingScreen() {
               ]}
             />
           </View>
-          <Text style={[styles.stepIndicator, { color: theme.colors.textMuted }]}>
+          <ThemedText style={[styles.stepIndicator, { color: theme.colors.textMuted }]}>
             {step + 1}/{TOTAL_STEPS}
-          </Text>
+          </ThemedText>
         </View>
 
         {/* Content */}
@@ -1211,7 +1118,9 @@ export default function OnboardingScreen() {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
-            {renderStep()}
+            <Animated.View key={step} exiting={FadeOutLeft.duration(150)}>
+              {renderStep()}
+            </Animated.View>
           </ScrollView>
         </KeyboardAvoidingView>
 
@@ -1226,16 +1135,16 @@ export default function OnboardingScreen() {
               },
             ]}
             onPress={next}
-            disabled={!canAdvance() || saving}
+            disabled={!canAdvance() || vm.saving}
             activeOpacity={0.9}
           >
-            <Text style={[styles.ctaBtnText, { color: canAdvance() ? theme.colors.onAccent : theme.colors.textMuted }]}>
+            <ThemedText style={[styles.ctaBtnText, { color: canAdvance() ? theme.colors.onAccent : theme.colors.textMuted }]}>
               {step === TOTAL_STEPS - 1
-                ? saving
+                ? vm.saving
                   ? t('onboarding.saving')
                   : t('onboarding.getStarted')
                 : t('onboarding.continue')}
-            </Text>
+            </ThemedText>
             {step < TOTAL_STEPS - 1 && (
               <MaterialCommunityIcons
                 name="arrow-right"
@@ -1248,20 +1157,18 @@ export default function OnboardingScreen() {
           {step === 3 && (
             <TouchableOpacity
               onPress={async () => {
-                await setAppState('onboarding_complete', 'true');
-                await setAppState('age_verified_13_plus', 'true');
-                await setAppState('data_consent_accepted', String(Date.now()));
-                await setAppState('medical_disclaimer_accepted', String(Date.now()));
-                await refreshProfile();
+                onboardingCompletedRef.current = true;
+                logOnboardingDropOff(step);
+                await vm.skipOnboarding(refreshProfile);
                 router.replace('/dashboard');
               }}
-              style={{ marginTop: 12 }}
+              style={{ marginTop: spacing[3] }}
             >
-              <Text style={[styles.skipText, { color: theme.colors.textMuted }]}>{t('onboarding.skip')}</Text>
+              <ThemedText style={[styles.skipText, { color: theme.colors.textMuted }]}>{t('onboarding.skip')}</ThemedText>
             </TouchableOpacity>
           )}
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -1274,19 +1181,19 @@ const styles = StyleSheet.create({
   progressRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 4,
-    gap: 10,
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[1],
+    gap: spacing[2.5],
   },
-  backBtn: { padding: 4 },
+  backBtn: { padding: spacing[1] },
   progressTrack: { flex: 1, height: 4, borderRadius: 2, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 2 },
-  stepIndicator: { fontSize: 13, fontWeight: '700', minWidth: 30, textAlign: 'right' },
+  stepIndicator: { fontSize: typography.sizes.label, fontWeight: '700', minWidth: 30, textAlign: 'right' },
 
   // Content
-  scrollContent: { paddingHorizontal: 24, paddingBottom: 40, flexGrow: 1 },
-  stepContainer: { paddingTop: 32 },
+  scrollContent: { paddingHorizontal: spacing[6], paddingBottom: spacing[10], flexGrow: 1 },
+  stepContainer: { paddingTop: spacing[8] },
 
   // Welcome
   welcomeIconWrap: {
@@ -1297,32 +1204,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    marginBottom: 32,
+    marginBottom: spacing[8],
   },
   welcomeGlow: { ...StyleSheet.absoluteFillObject },
   welcomeTitle: {
-    fontSize: 36,
+    fontSize: typography.sizes.display, 
     fontWeight: '900',
     textAlign: 'center',
     letterSpacing: -1,
     lineHeight: 42,
   },
   welcomeDesc: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: 12,
+    marginTop: spacing[3],
     lineHeight: 24,
   },
 
   // Pillars
-  pillarsRow: { flexDirection: 'row', gap: 10, marginTop: 32, paddingHorizontal: 4 },
+  pillarsRow: { flexDirection: 'row', gap: spacing[2.5], marginTop: spacing[8], paddingHorizontal: spacing[1] },
   pillarCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 8,
-    borderRadius: 16,
+    paddingVertical: spacing[4.5],
+    paddingHorizontal: spacing[2],
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   pillarIconWrap: {
@@ -1331,60 +1238,60 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
-  pillarTitle: { fontSize: 13, fontWeight: '800', textAlign: 'center' },
-  pillarSub: { fontSize: 10, fontWeight: '500', textAlign: 'center', marginTop: 3, lineHeight: 14 },
+  pillarTitle: { fontSize: typography.sizes.label, fontWeight: '800', textAlign: 'center' },
+  pillarSub: { fontSize: typography.sizes.xs, fontWeight: '500', textAlign: 'center', marginTop: spacing[0.75], lineHeight: 14 },
 
   // Steps
-  stepTitle: { fontSize: 26, fontWeight: '900', letterSpacing: -0.5 },
-  stepDesc: { fontSize: 14, fontWeight: '500', marginTop: 4, marginBottom: 20 },
+  stepTitle: { fontSize: typography.sizes.h2, fontWeight: '900', letterSpacing: -0.5 },
+  stepDesc: { fontSize: typography.sizes.bodySmall, fontWeight: '500', marginTop: spacing[1], marginBottom: spacing[5] },
 
   // Options
-  optionsList: { gap: 10 },
+  optionsList: { gap: spacing[2.5] },
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
-    borderRadius: 16,
-    gap: 12,
+    padding: spacing[3.5],
+    borderRadius: radius.xl,
+    gap: spacing[3],
   },
   optionIcon: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
-  optionLabel: { fontSize: 16, fontWeight: '800' },
-  optionDesc: { fontSize: 12, fontWeight: '500', marginTop: 1 },
+  optionLabel: { fontSize: typography.sizes.body, fontWeight: '800' },
+  optionDesc: { fontSize: typography.sizes.caption, fontWeight: '500', marginTop: spacing['px'] },
 
   // Metrics
-  inputRow: { flexDirection: 'row', gap: 12 },
-  metricInput: { flex: 1, borderRadius: 14, borderWidth: 1, paddingHorizontal: 14, paddingVertical: 12 },
-  metricField: { fontSize: 15, fontWeight: '600' },
-  sexRow: { flexDirection: 'row', gap: 12 },
+  inputRow: { flexDirection: 'row', gap: spacing[3] },
+  metricInput: { flex: 1, borderRadius: 14, borderWidth: 1, paddingHorizontal: spacing[3.5], paddingVertical: spacing[3] },
+  metricField: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
+  sexRow: { flexDirection: 'row', gap: spacing[3] },
   sexBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
+    gap: spacing[2],
+    paddingVertical: spacing[3.5],
     borderRadius: 14,
   },
-  sexLabel: { fontSize: 15, fontWeight: '700' },
+  sexLabel: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
 
   // Schedule
-  sliderLabel: { fontSize: 16, fontWeight: '700', marginBottom: 14 },
-  daysRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  dayBtn: { paddingVertical: 12, paddingHorizontal: 18, borderRadius: 14, minWidth: 48, alignItems: 'center' },
-  dayBtnText: { fontSize: 16, fontWeight: '800' },
+  sliderLabel: { fontSize: typography.sizes.body, fontWeight: '700', marginBottom: spacing[3.5] },
+  daysRow: { flexDirection: 'row', gap: spacing[2.5], flexWrap: 'wrap' },
+  dayBtn: { paddingVertical: spacing[3], paddingHorizontal: spacing[4.5], borderRadius: 14, minWidth: 48, alignItems: 'center' },
+  dayBtnText: { fontSize: typography.sizes.body, fontWeight: '800' },
 
   // Equipment
-  equipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  equipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2.5] },
   equipCard: {
     width: (SCREEN_W - 58) / 2,
     alignItems: 'center',
-    paddingVertical: 20,
-    borderRadius: 16,
+    paddingVertical: spacing[5],
+    borderRadius: radius.xl,
     position: 'relative',
   },
-  equipLabel: { fontSize: 13, fontWeight: '700', marginTop: 8 },
+  equipLabel: { fontSize: typography.sizes.label, fontWeight: '700', marginTop: spacing[2] },
   equipCheck: {
     position: 'absolute',
     top: 8,
@@ -1397,52 +1304,52 @@ const styles = StyleSheet.create({
   },
 
   // CTA
-  ctaRow: { paddingHorizontal: 24, paddingBottom: 28, paddingTop: 8, alignItems: 'center' },
+  ctaRow: { paddingHorizontal: spacing[6], paddingBottom: spacing[7], paddingTop: spacing[2], alignItems: 'center' },
   ctaBtn: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 16,
-    borderRadius: 16,
-    gap: 8,
+    paddingVertical: spacing[4],
+    borderRadius: radius.xl,
+    gap: spacing[2],
   },
-  ctaBtnText: { fontSize: 16, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
-  skipText: { fontSize: 14, fontWeight: '600' },
+  ctaBtnText: { fontSize: typography.sizes.body, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
+  skipText: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
 
   // Permissions step
   permCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: spacing[3.5],
     borderRadius: 14,
-    gap: 12,
+    gap: spacing[3],
   },
   permAllBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    borderRadius: 12,
+    gap: spacing[2],
+    paddingVertical: spacing[3],
+    borderRadius: radius.lg,
     borderWidth: 1,
-    marginTop: 8,
+    marginTop: spacing[2],
   },
   permIcon: {
     width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  permTitle: { fontSize: 15, fontWeight: '700' },
-  permDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
+  permTitle: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
+  permDesc: { fontSize: typography.sizes.caption, fontWeight: '500', marginTop: spacing[0.5] },
   permAction: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1.5],
+    borderRadius: radius.md,
   },
-  permSkipNote: { fontSize: 12, fontWeight: '500', textAlign: 'center', marginTop: 24 },
+  permSkipNote: { fontSize: typography.sizes.caption, fontWeight: '500', textAlign: 'center', marginTop: spacing[6] },
 
   // Consent & Age Gate
   consentIconWrap: {
@@ -1453,19 +1360,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   consentCard: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    padding: 16,
-    marginTop: 16,
-    gap: 14,
+    padding: spacing[4],
+    marginTop: spacing[4],
+    gap: spacing[3.5],
   },
   consentItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing[3],
   },
   consentItemText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
     flex: 1,
     lineHeight: 20,
@@ -1473,8 +1380,8 @@ const styles = StyleSheet.create({
   consentCheckRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 4,
+    gap: spacing[3],
+    paddingHorizontal: spacing[1],
   },
   consentCheckbox: {
     width: 24,
@@ -1485,7 +1392,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   consentCheckText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
     flex: 1,
     lineHeight: 20,

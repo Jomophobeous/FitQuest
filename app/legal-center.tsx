@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
@@ -9,26 +9,24 @@ import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
+import { useToast } from '../src/context/ToastContext';
 import {
+  useLegalCenterViewModel,
   LEGAL_POLICY_VERSION,
-  acceptCurrentPolicies,
-  getConsentRecord,
-  getLegalLinks,
-  withdrawConsentLocally,
   type ConsentRecord,
-} from '../src/services/legalService';
-import { runReplayIfDue } from '../src/services/replayOrchestrator';
+} from '../src/viewmodels/useLegalCenterViewModel';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingBottom: 32 },
+  content: { paddingBottom: spacing[8] },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[2],
   },
   backBtn: {
     width: 36,
@@ -38,99 +36,87 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   spacer: { width: 36 },
-  title: { fontSize: 22, fontWeight: '800' },
-  summaryCard: { marginHorizontal: 16, marginTop: 8, padding: 16, gap: 8 },
-  summaryRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  statusText: { fontSize: 13, lineHeight: 19 },
-  linksSection: { paddingHorizontal: 16, marginTop: 8 },
+  title: { fontSize: typography.sizes.h3, fontWeight: '800' },
+  summaryCard: { marginHorizontal: spacing[4], marginTop: spacing[2], padding: spacing[4], gap: spacing[2] },
+  summaryRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  statusText: { fontSize: typography.sizes.label, lineHeight: 19 },
+  linksSection: { paddingHorizontal: spacing[4], marginTop: spacing[2] },
   linkCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 14,
+    padding: spacing[3.5],
     borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 8,
-    gap: 10,
+    marginBottom: spacing[2],
+    gap: spacing[2.5],
   },
-  linkLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
-  linkTitle: { fontSize: 14, fontWeight: '700' },
-  linkSub: { fontSize: 12, marginTop: 2 },
-  actionsSection: { paddingHorizontal: 16, marginTop: 8, gap: 10 },
-  noteCard: { marginHorizontal: 16, marginTop: 8, padding: 14, gap: 8 },
-  noteText: { fontSize: 12, lineHeight: 18 },
+  linkLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing[2.5], flex: 1 },
+  linkTitle: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
+  linkSub: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
+  actionsSection: { paddingHorizontal: spacing[4], marginTop: spacing[2], gap: spacing[2.5] },
+  noteCard: { marginHorizontal: spacing[4], marginTop: spacing[2], padding: spacing[3.5], gap: spacing[2] },
+  noteText: { fontSize: typography.sizes.caption, lineHeight: 18 },
 });
 
 export default function LegalCenterScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const { isReady: dbReady } = useDatabase();
   const router = useRouter();
-  const [consent, setConsent] = useState<ConsentRecord>({ timestamp: null, version: null, source: null });
-  const [saving, setSaving] = useState(false);
-
-  const links = getLegalLinks();
-
-  const loadConsent = useCallback(async () => {
-    const record = await getConsentRecord();
-    setConsent(record);
-  }, []);
+  const vm = useLegalCenterViewModel();
 
   useEffect(() => {
     if (!dbReady) return;
-    void runReplayIfDue({ reason: 'legal_center_load', cooldownMs: 45 * 1000 });
-    void loadConsent();
-  }, [dbReady, loadConsent]);
+    vm.triggerReplay();
+    void vm.loadConsent();
+  }, [dbReady, vm]);
 
   const openUrl = useCallback(
     async (url: string) => {
       try {
         const canOpen = await Linking.canOpenURL(url);
         if (!canOpen) {
-          Alert.alert(t('common.error'), t('legal.cannotOpenLink'));
+          showToast({ message: t('legal.cannotOpenLink'), type: 'error' });
           return;
         }
         await Linking.openURL(url);
       } catch {
-        Alert.alert(t('common.error'), t('legal.cannotOpenLink'));
+        showToast({ message: t('legal.cannotOpenLink'), type: 'error' });
       }
     },
     [t],
   );
 
   const handleAccept = useCallback(async () => {
-    setSaving(true);
     try {
-      const result = await acceptCurrentPolicies();
-      await loadConsent();
-      Alert.alert(
-        t('legal.acceptSuccessTitle'),
-        `${t('legal.acceptSuccessBody')}\n${new Date(result.timestamp).toLocaleString()}\n${t('legal.version')}: ${result.version}`,
-      );
+      await vm.acceptPolicies();
+      showToast({
+        message: `${t('legal.acceptSuccessBody')}`,
+        type: 'success',
+      });
     } catch (error: any) {
-      Alert.alert(t('common.error'), error?.message ?? t('legal.acceptFailed'));
-    } finally {
-      setSaving(false);
+      showToast({ message: error?.message ?? t('legal.acceptFailed'), type: 'error' });
     }
-  }, [loadConsent, t]);
+  }, [vm, t]);
 
   const handleWithdraw = useCallback(async () => {
     try {
-      await withdrawConsentLocally();
-      await loadConsent();
-      Alert.alert(t('legal.withdrawSuccessTitle'), t('legal.withdrawSuccessBody'));
+      await vm.withdrawConsent();
+      showToast({ message: t('legal.withdrawSuccessBody'), type: 'success' });
     } catch (error: any) {
-      Alert.alert(t('common.error'), error?.message ?? t('legal.withdrawFailed'));
+      showToast({ message: error?.message ?? t('legal.withdrawFailed'), type: 'error' });
     }
-  }, [loadConsent, t]);
+  }, [vm, t]);
 
-  const consentStatus = consent.timestamp
-    ? `${t('legal.acceptedOn')} ${new Date(consent.timestamp).toLocaleString()}\n${t('legal.version')}: ${consent.version || '-'} · ${t(`legal.source.${consent.source || 'local'}`)}`
+  const consentStatus = vm.consent.timestamp
+    ? `${t('legal.acceptedOn')} ${new Date(vm.consent.timestamp).toLocaleString()}\n${t('legal.version')}: ${vm.consent.version || '-'} · ${t(`legal.source.${vm.consent.source || 'local'}`)}`
     : t('legal.notAcceptedYet');
 
   return (
     <ScreenErrorBoundary screenName="LegalCenter" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.headerRow}>
             <TouchableOpacity
@@ -214,7 +200,7 @@ export default function LegalCenterScreen() {
                     {t('legal.privacyPolicyExternal')}
                   </ThemedText>
                   <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
-                    {links.privacyPolicyUrl}
+                    {vm.links.privacyPolicyUrl}
                   </ThemedText>
                 </View>
               </View>
@@ -235,7 +221,7 @@ export default function LegalCenterScreen() {
                     {t('legal.termsOfServiceExternal')}
                   </ThemedText>
                   <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
-                    {links.termsOfServiceUrl}
+                    {vm.links.termsOfServiceUrl}
                   </ThemedText>
                 </View>
               </View>
@@ -246,10 +232,10 @@ export default function LegalCenterScreen() {
           <SectionHeader title={t('legal.actions')} delay={150} />
           <View style={styles.actionsSection}>
             <GradientButton
-              title={saving ? t('common.loading') : t('legal.acceptPolicies')}
+              title={vm.saving ? t('common.loading') : t('legal.acceptPolicies')}
               icon="check-decagram"
               onPress={() => {
-                if (!saving) {
+                if (!vm.saving) {
                   void handleAccept();
                 }
               }}
@@ -274,7 +260,7 @@ export default function LegalCenterScreen() {
             </ThemedText>
           </GlassCard>
         </ScrollView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }

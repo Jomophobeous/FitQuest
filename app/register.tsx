@@ -10,7 +10,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -29,15 +28,17 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useAuth } from '../src/context/AuthContext';
 import { useLanguage } from '../src/context/LanguageContext';
+import ThemedText from '../src/components/ThemedText';
 import { GradientButton } from '../src/components/ui/GlassUI';
 import { validateEmail, validatePassword, validateName } from '../src/utils/validation';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const { width } = Dimensions.get('window');
 
@@ -143,7 +144,7 @@ export default function RegisterScreen() {
 
   return (
     <ScreenErrorBoundary screenName="Register" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
           <ScrollView
             contentContainerStyle={styles.scrollContent}
@@ -169,8 +170,8 @@ export default function RegisterScreen() {
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(200).duration(200)}>
-              <Text style={[styles.title, { color: theme.colors.text }]}>{t('register.title')}</Text>
-              <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>{t('register.subtitle')}</Text>
+              <ThemedText style={[styles.title, { color: theme.colors.text }]}>{t('register.title')}</ThemedText>
+              <ThemedText style={[styles.subtitle, { color: theme.colors.textMuted }]}>{t('register.subtitle')}</ThemedText>
             </Animated.View>
 
             {/* Error message */}
@@ -179,7 +180,7 @@ export default function RegisterScreen() {
                 <Animated.View style={shakeStyle}>
                   <View style={[styles.errorBanner, { backgroundColor: theme.colors.error + '15' }]}>
                     <MaterialCommunityIcons name="alert-circle" size={16} color={theme.colors.error} />
-                    <Text style={[styles.errorText, { color: theme.colors.error }]}>{errorMsg}</Text>
+                    <ThemedText style={[styles.errorText, { color: theme.colors.error }]}>{errorMsg}</ThemedText>
                   </View>
                 </Animated.View>
               </Animated.View>
@@ -189,7 +190,7 @@ export default function RegisterScreen() {
             <Animated.View entering={FadeInUp.delay(300).duration(200)} style={styles.form}>
               {/* Name */}
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.fullName')}</Text>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.fullName')}</ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="account-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -209,7 +210,7 @@ export default function RegisterScreen() {
 
               {/* Email */}
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.email')}</Text>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.email')}</ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -231,7 +232,7 @@ export default function RegisterScreen() {
 
               {/* Password */}
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.password')}</Text>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.password')}</ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -247,7 +248,7 @@ export default function RegisterScreen() {
                     returnKeyType="next"
                     onSubmitEditing={() => confirmRef.current?.focus()}
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>
                     <MaterialCommunityIcons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={18}
@@ -264,16 +265,16 @@ export default function RegisterScreen() {
                         style={[styles.strengthFill, { backgroundColor: strength.color, width: strength.width as any }]}
                       />
                     </View>
-                    <Text style={[styles.strengthLabel, { color: strength.color }]}>{strength.label}</Text>
+                    <ThemedText style={[styles.strengthLabel, { color: strength.color }]}>{strength.label}</ThemedText>
                   </Animated.View>
                 )}
               </View>
 
               {/* Confirm Password */}
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>
                   {t('register.confirmPassword')}
-                </Text>
+                </ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="lock-check-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -307,25 +308,25 @@ export default function RegisterScreen() {
 
             {/* Footer */}
             <Animated.View entering={FadeInUp.delay(400).duration(200)} style={styles.footer}>
-              <Text style={[styles.footerText, { color: theme.colors.textMuted }]}>
+              <ThemedText style={[styles.footerText, { color: theme.colors.textMuted }]}>
                 {t('register.alreadyHaveAccount')}{' '}
-              </Text>
+              </ThemedText>
               <Link href="/login" asChild>
                 <TouchableOpacity>
-                  <Text style={[styles.footerLink, { color: theme.colors.accent }]}>{t('register.signIn')}</Text>
+                  <ThemedText style={[styles.footerLink, { color: theme.colors.accent }]}>{t('register.signIn')}</ThemedText>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
           </ScrollView>
         </KeyboardAvoidingView>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
+  scrollContent: { paddingHorizontal: spacing[6], paddingBottom: spacing[10] },
   bgGradient: {
     position: 'absolute',
     top: 0,
@@ -333,7 +334,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: 300,
   },
-  logoSection: { alignItems: 'center', marginTop: 32, marginBottom: 20 },
+  logoSection: { alignItems: 'center', marginTop: spacing[8], marginBottom: spacing[5] },
   logoCircle: {
     width: 80,
     height: 80,
@@ -341,36 +342,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: { fontSize: 28, fontWeight: '800', textAlign: 'center' },
-  subtitle: { fontSize: 14, textAlign: 'center', marginTop: 6, marginBottom: 24 },
+  title: { fontSize: typography.sizes.h1Sm, fontWeight: '800', textAlign: 'center' },
+  subtitle: { fontSize: typography.sizes.bodySmall, textAlign: 'center', marginTop: spacing[1.5], marginBottom: spacing[6] },
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginBottom: 16,
+    gap: spacing[2],
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[2.5],
+    borderRadius: radius.lg,
+    marginBottom: spacing[4],
   },
-  errorText: { fontSize: 13, fontWeight: '500', flex: 1 },
-  form: { gap: 16 },
+  errorText: { fontSize: typography.sizes.label, fontWeight: '500', flex: 1 },
+  form: { gap: spacing[4] },
   inputGroup: {},
-  label: { fontSize: 13, fontWeight: '600', marginBottom: 6, marginLeft: 2 },
+  label: { fontSize: typography.sizes.label, fontWeight: '600', marginBottom: spacing[1.5], marginLeft: spacing[0.5] },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 14,
+    gap: spacing[2.5],
+    paddingHorizontal: spacing[3.5],
     paddingVertical: Platform.OS === 'ios' ? 14 : 10,
     borderRadius: 14,
     borderWidth: 1,
   },
-  input: { flex: 1, fontSize: 15 },
+  input: { flex: 1, fontSize: typography.sizes.bodyMid },
   strengthWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
+    gap: spacing[2],
+    marginTop: spacing[2],
   },
   strengthTrack: {
     flex: 1,
@@ -379,14 +380,14 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   strengthFill: { height: '100%', borderRadius: 2 },
-  strengthLabel: { fontSize: 11, fontWeight: '600' },
-  submitWrap: { marginTop: 8 },
+  strengthLabel: { fontSize: typography.sizes.captionSm, fontWeight: '600' },
+  submitWrap: { marginTop: spacing[2] },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 28,
+    marginTop: spacing[7],
   },
-  footerText: { fontSize: 14 },
-  footerLink: { fontSize: 14, fontWeight: '700' },
+  footerText: { fontSize: typography.sizes.bodySmall },
+  footerLink: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
 });

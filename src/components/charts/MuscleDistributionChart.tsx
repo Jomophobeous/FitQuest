@@ -7,6 +7,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
+import { darkTheme as theme, typography, spacing } from '../../design/theme-system';
 import type { MuscleDistributionChartProps, MuscleGroupDataPoint } from './types';
 import { formatMuscleName } from '../../utils/formatMuscle';
 
@@ -17,16 +18,16 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // ============================================
 
 const CHART_COLORS = [
-  '#10B981', // Emerald
-  '#3B82F6', // Blue
-  '#8B5CF6', // Violet
-  '#F59E0B', // Amber
-  '#EC4899', // Pink
-  '#06B6D4', // Cyan
-  '#84CC16', // Lime
-  '#F97316', // Orange
-  '#14B8A6', // Teal
-  '#A855F7', // Purple
+  theme.colors.accent, // Emerald
+  theme.colors.info, // Blue
+  theme.colors.purple, // Violet
+  theme.colors.warning, // Amber
+  theme.colors.pink, // Pink
+  theme.colors.info, // Cyan
+  theme.colors.accent, // Lime
+  theme.colors.orange, // Orange
+  theme.colors.skyBlue, // Teal
+  theme.colors.purple, // Purple
 ];
 
 // ============================================
@@ -187,23 +188,23 @@ export function MuscleDistributionChart({
 
 const styles = StyleSheet.create({
   horizontalBarsContainer: {
-    paddingVertical: 8,
-    gap: 8,
+    paddingVertical: spacing[2],
+    gap: spacing[2],
   },
   horizontalBarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: spacing[2],
   },
   muscleLabel: {
     width: 80,
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '500',
   },
   barWrapper: {
     flex: 1,
     height: 16,
-    marginHorizontal: 8,
+    marginHorizontal: spacing[2],
   },
   horizontalBar: {
     height: '100%',
@@ -211,14 +212,14 @@ const styles = StyleSheet.create({
   },
   setsLabel: {
     width: 70,
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     textAlign: 'right',
   },
   pieContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginVertical: 16,
+    marginVertical: spacing[4],
   },
   pieSegment: {
     position: 'absolute',
@@ -232,26 +233,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pieCenterText: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '700',
   },
   pieCenterLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
   },
   pieLegend: {
     position: 'absolute',
     top: '100%',
-    marginTop: 12,
+    marginTop: spacing[3],
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 8,
+    gap: spacing[2],
     width: SCREEN_WIDTH - 80,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing[1],
   },
   legendDot: {
     width: 8,
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendText: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
   },
 });
 

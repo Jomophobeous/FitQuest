@@ -59,7 +59,10 @@ export async function initializeDatabase(): Promise<void> {
     if (initialized) return; // Double-check after acquiring lock
 
     try {
-      const db = await getDatabase();
+      // Acquire handle — triggers schema init + migrations.
+      // IMPORTANT: Do NOT cache this handle in a local var for later use.
+      // Always re-acquire via getDatabase() to survive close/reopen cycles.
+      await getDatabase();
       await seedExercises();
 
       // Initialize new module schemas (idempotent — safe to call every start)
@@ -80,7 +83,8 @@ export async function initializeDatabase(): Promise<void> {
         if (__DEV__) console.warn('[FitQuest DB] Exercise image init skipped:', imgErr);
       }
 
-      // Diagnostic: verify seeding worked (single query instead of 3)
+      // Diagnostic: verify seeding worked — re-acquire handle (never use stale ref)
+      const db = await getDatabase();
       const counts = await db.getFirstAsync<{ ex: number; mu: number; tt: number }>(`
       SELECT
         (SELECT COUNT(*) FROM exercises) as ex,
@@ -93,13 +97,14 @@ export async function initializeDatabase(): Promise<void> {
       // If junction tables are empty but exercises exist, force a re-seed
       if ((counts?.ex ?? 0) > 0 && ((counts?.mu ?? 0) === 0 || (counts?.tt ?? 0) === 0)) {
         if (__DEV__) console.warn('[FitQuest DB] Junction tables empty — forcing re-seed');
-        await db.execAsync(
+        const freshDb = await getDatabase();
+        await freshDb.execAsync(
           'DELETE FROM exercise_images; DELETE FROM exercise_training_types; DELETE FROM exercise_equipment; DELETE FROM exercise_muscles; DELETE FROM exercises;',
         );
         await seedExercises();
         await seedExternalExercises();
-        const recount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercises');
-        if (__DEV__) console.warn(`[FitQuest DB] After re-seed: ${recount?.count} exercises`);
+        const recount = (await getDatabase()).getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercises');
+        if (__DEV__) console.warn(`[FitQuest DB] After re-seed: ${(await recount)?.count} exercises`);
       } else {
         // Defer external exercise seeding — don't block app startup
         // Core exercises are seeded above; external 868 seed in background

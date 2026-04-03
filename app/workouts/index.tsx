@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../../src/components/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
@@ -11,6 +11,7 @@ import { analyzeWorkoutGeneration, type WorkoutGenerationDiagnostics } from '../
 import ThemedText from '../../src/components/ThemedText';
 import { GlassCard, GradientButton, SectionHeader } from '../../src/components/ui/GlassUI';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { spacing, radius } from '../../src/design/theme-system';
 
 interface WorkoutSession {
   id: string;
@@ -101,17 +102,17 @@ export default function WorkoutsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <View style={styles.center}>
           <ActivityIndicator size="large" color={theme.colors.accent} />
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     );
   }
 
   return (
     <ScreenErrorBoundary screenName="WorkoutList" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <SectionHeader title="My Workouts" delay={0} />
 
         <ScrollView contentContainerStyle={styles.listContent}>
@@ -187,7 +188,7 @@ export default function WorkoutsScreen() {
             onPress={() => router.push('/fitquest')}
           />
         </View>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -195,19 +196,19 @@ export default function WorkoutsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  listContent: { paddingHorizontal: 16, paddingBottom: 100 },
-  diagnosticsCard: { marginBottom: 16, padding: 12 },
-  diagnosticsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  diagnosticsActions: { gap: 8, marginBottom: 12 },
-  diagnosticsLoading: { paddingVertical: 8 },
-  diagnosticsError: { marginTop: 4 },
-  diagnosticsBody: { gap: 6 },
-  diagnosticRow: { paddingVertical: 2 },
-  workoutCard: { marginBottom: 8, padding: 10 },
-  workoutRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  workoutIcon: { width: 36, height: 36, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  listContent: { paddingHorizontal: spacing[4], paddingBottom: spacing[25] },
+  diagnosticsCard: { marginBottom: spacing[4], padding: spacing[3] },
+  diagnosticsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing[3] },
+  diagnosticsActions: { gap: spacing[2], marginBottom: spacing[3] },
+  diagnosticsLoading: { paddingVertical: spacing[2] },
+  diagnosticsError: { marginTop: spacing[1] },
+  diagnosticsBody: { gap: spacing[1.5] },
+  diagnosticRow: { paddingVertical: spacing[0.5] },
+  workoutCard: { marginBottom: spacing[2], padding: spacing[2.5] },
+  workoutRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  workoutIcon: { width: 36, height: 36, borderRadius: radius.md, justifyContent: 'center', alignItems: 'center' },
   workoutInfo: { flex: 1 },
-  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 12 },
-  emptyText: { textAlign: 'center', marginTop: 8 },
+  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: spacing[15], gap: spacing[3] },
+  emptyText: { textAlign: 'center', marginTop: spacing[2] },
   fabWrap: { position: 'absolute', bottom: 32, left: 16, right: 16 },
 });

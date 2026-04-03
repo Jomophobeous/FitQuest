@@ -9,6 +9,7 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import ThemedText from './ThemedText';
 import { useTheme } from '../context/ThemeContext';
+import { spacing } from '../design/theme-system';
 
 interface PdfViewerSource {
   uri: string;
@@ -50,12 +51,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
     borderRadius: 12,
   },
   fallbackText: {
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   fallbackHint: {
     textAlign: 'center',

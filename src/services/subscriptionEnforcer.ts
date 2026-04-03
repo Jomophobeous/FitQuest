@@ -145,7 +145,7 @@ async function verifyWithServer(): Promise<ServerSubscriptionResult | null> {
 
     const deviceId = await getStableDeviceId();
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS); // abort-timeout
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

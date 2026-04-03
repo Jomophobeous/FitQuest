@@ -6,47 +6,37 @@
  * Falls back to zero states when no data is present.
  */
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
-  RefreshControl,
   Modal,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
-import { useDataSync } from '../src/services/dataSyncService';
-import { GlassCard, SectionHeader, ProgressRing, AnimatedListItem } from '../src/components/ui/GlassUI';
 import {
-  BarData,
-  MuscleGroupData,
-  StepStats,
-  JogStats,
-  PersonalRecord,
-  StreakData,
-  DaySession,
-  fetchWorkoutBars,
-  fetchXPData,
-  fetchMuscleGroups,
-  fetchStepStats,
-  fetchJogStats,
-  fetchActiveDays,
-  fetchPersonalRecords,
-  fetchStreakData,
-  fetchDaySessions,
-} from '../src/services/analyticsDataService';
-import { useDatabase } from '../src/context/DatabaseContext';
+  useAnalyticsViewModel,
+  type BarData,
+  type MuscleGroupData,
+  type StepStats,
+  type JogStats,
+  type PersonalRecord,
+  type StreakData,
+  type DaySession,
+} from '../src/viewmodels/useAnalyticsViewModel';
+import { GlassCard, SectionHeader, ProgressRing, AnimatedListItem, GradientButton } from '../src/components/ui/GlassUI';
+import ThemedText from '../src/components/ThemedText';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 // ─── SCREEN WIDTH ──────────────────────────────────────────────
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -63,32 +53,11 @@ export default function AnalyticsScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
-  const { isReady: dbReady } = useDatabase();
-  const [range, setRange] = useState<'weekly' | 'monthly'>('weekly');
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const [workoutBars, setWorkoutBars] = useState<BarData[]>([]);
-  const [xpData, setXPData] = useState<number[]>([]);
-  const [muscleGroups, setMuscleGroups] = useState<MuscleGroupData[]>([]);
-  const [stepStats, setStepStats] = useState<StepStats>({ steps: 0, distance: 0, calories: 0, avgDaily: 0 });
-  const [jogStats, setJogStats] = useState<JogStats>({ runs: 0, totalKm: 0, avgPace: '--:--', longestRun: 0 });
-  const [activeDays, setActiveDays] = useState<number[]>([]);
-  const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
-  const [streakData, setStreakData] = useState<StreakData>({
-    currentStreak: 0,
-    longestStreak: 0,
-    totalWorkouts: 0,
-    consistencyPct: 0,
-    thisWeek: 0,
-    thisMonth: 0,
-  });
+  const vm = useAnalyticsViewModel();
 
   // Calendar day detail state
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [daySessions, setDaySessions] = useState<DaySession[]>([]);
   const [dayModalVisible, setDayModalVisible] = useState(false);
-  const [dayLoading, setDayLoading] = useState(false);
 
   const now = new Date();
   const year = now.getFullYear();
@@ -96,114 +65,35 @@ export default function AnalyticsScreen() {
   const today = now.getDate();
   const { daysInMonth, startWeekday } = useMemo(() => getMonthCalendar(year, month), [year, month]);
 
-  const isLoadingAnalyticsRef = useRef(false);
-  const lastAnalyticsLoadAt = useRef(0);
-  const ANALYTICS_LOAD_COOLDOWN_MS = 2000;
-  const analyticsLoadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const loadData = useCallback(async () => {
-    if (isLoadingAnalyticsRef.current) {
-      if (__DEV__) console.warn('[Analytics] loadData:skipped (already loading)');
-      return;
-    }
-    isLoadingAnalyticsRef.current = true;
-    lastAnalyticsLoadAt.current = Date.now();
-    setLoading(true);
-    try {
-      const [bars, xp, muscles, steps, jogs, active, prs, streak] = await Promise.all([
-        fetchWorkoutBars(range),
-        fetchXPData(range),
-        fetchMuscleGroups(),
-        fetchStepStats(range),
-        fetchJogStats(range),
-        fetchActiveDays(),
-        fetchPersonalRecords(),
-        fetchStreakData(),
-      ]);
-      setWorkoutBars(bars);
-      setXPData(xp);
-      setMuscleGroups(muscles);
-      setStepStats(steps);
-      setJogStats(jogs);
-      setActiveDays(active);
-      setPersonalRecords(prs);
-      setStreakData(streak);
-    } catch (e) {
-      if (__DEV__) console.warn('[Analytics] Data load error:', e);
-    } finally {
-      setLoading(false);
-      isLoadingAnalyticsRef.current = false;
-      lastAnalyticsLoadAt.current = Date.now();
-    }
-  }, [range]);
-
-  const debouncedLoadAnalytics = useCallback(() => {
-    if (!dbReady) return;
-    if (analyticsLoadTimer.current) clearTimeout(analyticsLoadTimer.current);
-    analyticsLoadTimer.current = setTimeout(() => {
-      if (Date.now() - lastAnalyticsLoadAt.current < ANALYTICS_LOAD_COOLDOWN_MS) return;
-      loadData();
-    }, 300);
-  }, [dbReady, loadData]);
-
-  useEffect(() => {
-    if (dbReady) loadData();
-  }, [dbReady, loadData]);
-
-  // Reload data when screen gains focus (e.g. after completing a workout)
-  useFocusEffect(
-    useCallback(() => {
-      if (dbReady) debouncedLoadAnalytics();
-    }, [dbReady, debouncedLoadAnalytics]),
-  );
-
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await loadData();
-    setRefreshing(false);
-  }, [loadData]);
-
-  // Subscribe to data sync events for real-time updates (debounced)
-  useDataSync(
-    ['workout_completed', 'xp_awarded', 'jog_completed', 'steps_updated', 'streak_updated'],
-    debouncedLoadAnalytics,
-  );
-
   const handleDayPress = useCallback(
     async (day: number) => {
       setSelectedDay(day);
       setDayModalVisible(true);
-      setDayLoading(true);
-      try {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const sessions = await fetchDaySessions(dateStr);
-        setDaySessions(sessions);
-      } catch (e) {
-        if (__DEV__) console.warn('[Analytics] Day sessions load error:', e);
-        setDaySessions([]);
-      } finally {
-        setDayLoading(false);
-      }
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      await vm.loadDaySessions(dateStr);
     },
-    [year, month],
+    [year, month, vm],
   );
 
-  const maxBarCount = Math.max(...workoutBars.map((b) => b.count), 1);
-  const maxXP = Math.max(...xpData, 1);
-  const maxMuscleSessions = Math.max(...muscleGroups.map((g) => g.sessions), 1);
+  const maxBarCount = Math.max(...vm.workoutBars.map((b) => b.count), 1);
+  const maxXP = Math.max(...vm.xpData, 1);
+  const maxMuscleSessions = Math.max(...vm.muscleGroups.map((g) => g.sessions), 1);
 
   const s = styles(theme);
 
+  if (vm.loadError && !vm.loading) {
+    return (
+      <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{vm.loadError}</ThemedText>
+        <GradientButton title={t('common.retry') ?? 'Retry'} onPress={() => { vm.loadData(); }} style={{ marginTop: spacing[4] }} />
+      </ScreenContainer>
+    );
+  }
+
   return (
     <ScreenErrorBoundary screenName="Analytics" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 16 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.accent} />
-          }
-        >
+      <ScreenContainer scroll padded onRefresh={vm.handleRefresh} refreshing={vm.refreshing}>
           {/* ─── HERO HEADER ─────────────────────────────── */}
           <Animated.View entering={FadeInDown.delay(50).duration(200)}>
             <LinearGradient
@@ -220,71 +110,71 @@ export default function AnalyticsScreen() {
                       string,
                     ])
               }
-              style={{ paddingTop: 8, paddingBottom: 20, borderRadius: 20, marginBottom: 4 }}
+              style={{ paddingTop: spacing[2], paddingBottom: spacing[5], borderRadius: 20, marginBottom: spacing[1] }}
             >
-              <Text style={s.heroTitle} numberOfLines={1} adjustsFontSizeToFit>
+              <ThemedText style={s.heroTitle} numberOfLines={1} adjustsFontSizeToFit>
                 {t('analytics.title')}
-              </Text>
-              <Text style={s.heroSub} numberOfLines={2}>
+              </ThemedText>
+              <ThemedText style={s.heroSub} numberOfLines={2}>
                 {t('analytics.subtitle')}
-              </Text>
+              </ThemedText>
 
               {/* Quick Stats Summary */}
-              {!loading && (
+              {!vm.loading && (
                 <View style={s.heroStatsRow}>
                   <View style={s.heroStatItem}>
                     <View style={[s.heroStatIcon, { backgroundColor: theme.colors.warning + '20' }]}>
                       <MaterialCommunityIcons name="fire" size={18} color={theme.colors.warning} />
                     </View>
-                    <Text style={[s.heroStatValue, { color: theme.colors.text }]}>{streakData.currentStreak}</Text>
-                    <Text
+                    <ThemedText style={[s.heroStatValue, { color: theme.colors.text }]}>{vm.streakData.currentStreak}</ThemedText>
+                    <ThemedText
                       style={[s.heroStatLabel, { color: theme.colors.textMuted }]}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                     >
                       {t('analytics.dayStreak')}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={s.heroStatItem}>
                     <View style={[s.heroStatIcon, { backgroundColor: theme.colors.accent + '20' }]}>
                       <MaterialCommunityIcons name="dumbbell" size={18} color={theme.colors.accent} />
                     </View>
-                    <Text style={[s.heroStatValue, { color: theme.colors.text }]}>{streakData.totalWorkouts}</Text>
-                    <Text
+                    <ThemedText style={[s.heroStatValue, { color: theme.colors.text }]}>{vm.streakData.totalWorkouts}</ThemedText>
+                    <ThemedText
                       style={[s.heroStatLabel, { color: theme.colors.textMuted }]}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                     >
                       {t('analytics.totalWorkouts')}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={s.heroStatItem}>
                     <View style={[s.heroStatIcon, { backgroundColor: theme.colors.purple + '20' }]}>
                       <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme.colors.purple} />
                     </View>
-                    <Text style={[s.heroStatValue, { color: theme.colors.text }]}>
-                      {xpData.reduce((a, b) => a + b, 0).toLocaleString()}
-                    </Text>
-                    <Text
+                    <ThemedText style={[s.heroStatValue, { color: theme.colors.text }]}>
+                      {vm.xpData.reduce((a, b) => a + b, 0).toLocaleString()}
+                    </ThemedText>
+                    <ThemedText
                       style={[s.heroStatLabel, { color: theme.colors.textMuted }]}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                     >
                       {t('analytics.totalXP')}
-                    </Text>
+                    </ThemedText>
                   </View>
                   <View style={s.heroStatItem}>
                     <View style={[s.heroStatIcon, { backgroundColor: theme.colors.blue + '20' }]}>
                       <MaterialCommunityIcons name="percent" size={18} color={theme.colors.blue} />
                     </View>
-                    <Text style={[s.heroStatValue, { color: theme.colors.text }]}>{streakData.consistencyPct}%</Text>
-                    <Text
+                    <ThemedText style={[s.heroStatValue, { color: theme.colors.text }]}>{vm.streakData.consistencyPct}%</ThemedText>
+                    <ThemedText
                       style={[s.heroStatLabel, { color: theme.colors.textMuted }]}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                     >
                       {t('analytics.consistency')}
-                    </Text>
+                    </ThemedText>
                   </View>
                 </View>
               )}
@@ -298,56 +188,59 @@ export default function AnalyticsScreen() {
                 <TouchableOpacity
                   key={r}
                   activeOpacity={0.7}
-                  onPress={() => setRange(r)}
+                  onPress={() => vm.setRange(r)}
+                  accessibilityRole="button"
+                  accessibilityLabel={r === 'weekly' ? 'Weekly view' : 'Monthly view'}
+                  accessibilityState={{ selected: vm.range === r }}
                   style={[
                     s.toggleBtn,
                     {
-                      backgroundColor: range === r ? theme.colors.accent : 'transparent',
-                      borderColor: range === r ? theme.colors.accent : theme.colors.border,
+                      backgroundColor: vm.range === r ? theme.colors.accent : 'transparent',
+                      borderColor: vm.range === r ? theme.colors.accent : theme.colors.border,
                     },
                   ]}
                 >
-                  <Text
+                  <ThemedText
                     style={[
                       s.toggleLabel,
                       {
-                        color: range === r ? theme.colors.onAccent : theme.colors.textMuted,
-                        fontWeight: range === r ? '700' : '600',
+                        color: vm.range === r ? theme.colors.onAccent : theme.colors.textMuted,
+                        fontWeight: vm.range === r ? '700' : '600',
                       },
                     ]}
                   >
                     {r === 'weekly' ? t('analytics.weekly') : t('analytics.monthly')}
-                  </Text>
+                  </ThemedText>
                 </TouchableOpacity>
               ))}
             </View>
           </Animated.View>
 
-          {!!loading && (
-            <View style={{ alignItems: 'center', paddingVertical: 32 }}>
+          {!!vm.loading && (
+            <View style={{ alignItems: 'center', paddingVertical: spacing[8] }}>
               <ActivityIndicator size="large" color={theme.colors.accent} />
             </View>
           )}
 
-          {!loading && (
+          {!vm.loading && (
             <>
               {/* ─── WORKOUT FREQUENCY BAR CHART ─────── */}
               <SectionHeader title={t('analytics.workoutFrequency')} delay={150} />
               <Animated.View entering={FadeInDown.delay(200).duration(150)}>
                 <GlassCard gradient glowColor={theme.colors.accent} style={s.chartCard}>
                   <View style={s.barRow}>
-                    {workoutBars.map((bar, i) => {
+                    {vm.workoutBars.map((bar, i) => {
                       const pct = bar.count / maxBarCount;
                       return (
                         <View key={`${bar.day}-${i}`} style={s.barCol}>
-                          <Text
+                          <ThemedText
                             style={[
                               s.barValue,
                               { color: bar.count > 0 ? theme.colors.accent : theme.colors.textMuted },
                             ]}
                           >
                             {bar.count}
-                          </Text>
+                          </ThemedText>
                           <View style={s.barTrack}>
                             <Animated.View entering={FadeInUp.delay(250 + i * 60).duration(200)}>
                               <LinearGradient
@@ -362,7 +255,7 @@ export default function AnalyticsScreen() {
                               />
                             </Animated.View>
                           </View>
-                          <Text style={[s.barLabel, { color: theme.colors.textMuted }]}>{bar.day}</Text>
+                          <ThemedText style={[s.barLabel, { color: theme.colors.textMuted }]}>{bar.day}</ThemedText>
                         </View>
                       );
                     })}
@@ -376,9 +269,9 @@ export default function AnalyticsScreen() {
                 <GlassCard gradient glowColor={theme.colors.accent3} style={s.chartCard}>
                   <View style={s.trendContainer}>
                     <View style={s.trendYAxis}>
-                      <Text style={[s.axisLabel, { color: theme.colors.textMuted }]}>{maxXP}</Text>
-                      <Text style={[s.axisLabel, { color: theme.colors.textMuted }]}>{Math.round(maxXP / 2)}</Text>
-                      <Text style={[s.axisLabel, { color: theme.colors.textMuted }]}>0</Text>
+                      <ThemedText style={[s.axisLabel, { color: theme.colors.textMuted }]}>{maxXP}</ThemedText>
+                      <ThemedText style={[s.axisLabel, { color: theme.colors.textMuted }]}>{Math.round(maxXP / 2)}</ThemedText>
+                      <ThemedText style={[s.axisLabel, { color: theme.colors.textMuted }]}>0</ThemedText>
                     </View>
                     <View style={s.trendChart}>
                       {[0, 1, 2].map((idx) => (
@@ -388,7 +281,7 @@ export default function AnalyticsScreen() {
                         />
                       ))}
                       <View style={s.trendPointsRow}>
-                        {xpData.map((val, i) => {
+                        {vm.xpData.map((val, i) => {
                           const pct = val / maxXP;
                           return (
                             <View key={i} style={s.trendCol}>
@@ -401,19 +294,19 @@ export default function AnalyticsScreen() {
                                   ]}
                                 />
                               </View>
-                              <Text style={[s.trendLabel, { color: theme.colors.textMuted }]}>
-                                {range === 'weekly'
+                              <ThemedText style={[s.trendLabel, { color: theme.colors.textMuted }]}>
+                                {vm.range === 'weekly'
                                   ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'][
                                       new Date(Date.now() - (6 - i) * 86400000).getDay()
                                     ]
                                   : `W${i + 1}`}
-                              </Text>
+                              </ThemedText>
                             </View>
                           );
                         })}
                       </View>
                       <View style={s.trendAreaRow} pointerEvents="none">
-                        {xpData.map((val, i) => {
+                        {vm.xpData.map((val, i) => {
                           const pct = val / maxXP;
                           return (
                             <View key={i} style={s.trendAreaCol}>
@@ -435,22 +328,22 @@ export default function AnalyticsScreen() {
                   </View>
                   <View style={s.xpSummaryRow}>
                     <View style={s.xpSummaryItem}>
-                      <Text style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
-                        {xpData.reduce((a, b) => a + b, 0).toLocaleString()}
-                      </Text>
-                      <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>
+                      <ThemedText style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
+                        {vm.xpData.reduce((a, b) => a + b, 0).toLocaleString()}
+                      </ThemedText>
+                      <ThemedText style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>
                         {t('analytics.totalXP')}
-                      </Text>
+                      </ThemedText>
                     </View>
                     <View style={s.xpSummaryItem}>
-                      <Text style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
-                        {xpData.length > 0
-                          ? Math.round(xpData.reduce((a, b) => a + b, 0) / xpData.length).toLocaleString()
+                      <ThemedText style={[s.xpSummaryValue, { color: theme.colors.accent3 }]}>
+                        {vm.xpData.length > 0
+                          ? Math.round(vm.xpData.reduce((a, b) => a + b, 0) / vm.xpData.length).toLocaleString()
                           : '0'}
-                      </Text>
-                      <Text style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>
+                      </ThemedText>
+                      <ThemedText style={[s.xpSummaryLabel, { color: theme.colors.textMuted }]}>
                         {t('analytics.avgPerWorkout')}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
                 </GlassCard>
@@ -459,9 +352,9 @@ export default function AnalyticsScreen() {
               {/* ─── MUSCLE GROUP HEATMAP ───────────── */}
               <SectionHeader title={t('analytics.muscleHeatmap')} delay={450} />
               <Animated.View entering={FadeInDown.delay(500).duration(150)}>
-                <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: 16 }}>
+                <GlassCard gradient glowColor={theme.colors.accent2} style={{ paddingVertical: spacing[4] }}>
                   <View style={s.muscleGrid}>
-                    {muscleGroups.map((mg, i) => {
+                    {vm.muscleGroups.map((mg, i) => {
                       const intensity = maxMuscleSessions > 0 ? mg.sessions / maxMuscleSessions : 0;
                       const bgColor =
                         intensity >= 0.8
@@ -486,13 +379,13 @@ export default function AnalyticsScreen() {
                             <MaterialCommunityIcons
                               name={mg.icon as any}
                               size={22}
-                              color="#fff"
+                              color={theme.colors.onAccent}
                               style={{ opacity: 0.5 + intensity * 0.5 }}
                             />
-                            <Text style={s.muscleName}>{mg.name}</Text>
-                            <Text style={[s.muscleCount, { color: '#fff', opacity: 0.7 + intensity * 0.3 }]}>
+                            <ThemedText style={s.muscleName}>{mg.name}</ThemedText>
+                            <ThemedText style={[s.muscleCount, { color: theme.colors.onAccent, opacity: 0.7 + intensity * 0.3 }]}>
                               {mg.sessions}×
-                            </Text>
+                            </ThemedText>
                           </LinearGradient>
                         </AnimatedListItem>
                       );
@@ -507,7 +400,7 @@ export default function AnalyticsScreen() {
                     ].map((l) => (
                       <View key={l.label} style={s.legendItem}>
                         <View style={[s.legendDot, { backgroundColor: l.color }]} />
-                        <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{l.label}</Text>
+                        <ThemedText style={[s.legendLabel, { color: theme.colors.textMuted }]}>{l.label}</ThemedText>
                       </View>
                     ))}
                   </View>
@@ -520,46 +413,46 @@ export default function AnalyticsScreen() {
                 <View style={s.statsRow}>
                   <GlassCard gradient glowColor={theme.colors.success} style={s.statCard}>
                     <MaterialCommunityIcons name="shoe-print" size={26} color={theme.colors.success} />
-                    <Text style={[s.statHero, { color: theme.colors.text }]}>{stepStats.steps.toLocaleString()}</Text>
-                    <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>{t('analytics.totalSteps')}</Text>
+                    <ThemedText style={[s.statHero, { color: theme.colors.text }]}>{vm.stepStats.steps.toLocaleString()}</ThemedText>
+                    <ThemedText style={[s.statLabel, { color: theme.colors.textMuted }]}>{t('analytics.totalSteps')}</ThemedText>
                     <View style={s.statDivider} />
                     <View style={s.miniStatRow}>
                       <View style={s.miniStat}>
-                        <Text style={[s.miniStatVal, { color: theme.colors.success }]}>{stepStats.distance} km</Text>
-                        <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>
+                        <ThemedText style={[s.miniStatVal, { color: theme.colors.success }]}>{vm.stepStats.distance} km</ThemedText>
+                        <ThemedText style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>
                           {t('analytics.distance')}
-                        </Text>
+                        </ThemedText>
                       </View>
                       <View style={s.miniStat}>
-                        <Text style={[s.miniStatVal, { color: theme.colors.accent2 }]}>
-                          {stepStats.calories.toLocaleString()}
-                        </Text>
-                        <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>kcal</Text>
+                        <ThemedText style={[s.miniStatVal, { color: theme.colors.accent2 }]}>
+                          {vm.stepStats.calories.toLocaleString()}
+                        </ThemedText>
+                        <ThemedText style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>kcal</ThemedText>
                       </View>
                     </View>
-                    <Text style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
-                      {t('analytics.avg')} {stepStats.avgDaily.toLocaleString()} / {t('common.day')}
-                    </Text>
+                    <ThemedText style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
+                      {t('analytics.avg')} {vm.stepStats.avgDaily.toLocaleString()} / {t('common.day')}
+                    </ThemedText>
                   </GlassCard>
 
                   <GlassCard gradient glowColor={theme.colors.accent} style={s.statCard}>
                     <MaterialCommunityIcons name="run-fast" size={26} color={theme.colors.accent} />
-                    <Text style={[s.statHero, { color: theme.colors.text }]}>{jogStats.runs}</Text>
-                    <Text style={[s.statLabel, { color: theme.colors.textMuted }]}>{t('analytics.runs')}</Text>
+                    <ThemedText style={[s.statHero, { color: theme.colors.text }]}>{vm.jogStats.runs}</ThemedText>
+                    <ThemedText style={[s.statLabel, { color: theme.colors.textMuted }]}>{t('analytics.runs')}</ThemedText>
                     <View style={s.statDivider} />
                     <View style={s.miniStatRow}>
                       <View style={s.miniStat}>
-                        <Text style={[s.miniStatVal, { color: theme.colors.accent }]}>{jogStats.totalKm} km</Text>
-                        <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Total</Text>
+                        <ThemedText style={[s.miniStatVal, { color: theme.colors.accent }]}>{vm.jogStats.totalKm} km</ThemedText>
+                        <ThemedText style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>Total</ThemedText>
                       </View>
                       <View style={s.miniStat}>
-                        <Text style={[s.miniStatVal, { color: theme.colors.accent3 }]}>{jogStats.avgPace}</Text>
-                        <Text style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>{t('analytics.avgPace')}</Text>
+                        <ThemedText style={[s.miniStatVal, { color: theme.colors.accent3 }]}>{vm.jogStats.avgPace}</ThemedText>
+                        <ThemedText style={[s.miniStatLbl, { color: theme.colors.textMuted }]}>{t('analytics.avgPace')}</ThemedText>
                       </View>
                     </View>
-                    <Text style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
-                      {t('analytics.longestRun')}: {jogStats.longestRun} km
-                    </Text>
+                    <ThemedText style={[s.avgLabel, { color: theme.colors.textSecondary }]}>
+                      {t('analytics.longestRun')}: {vm.jogStats.longestRun} km
+                    </ThemedText>
                   </GlassCard>
                 </View>
               </Animated.View>
@@ -582,7 +475,7 @@ export default function AnalyticsScreen() {
                       t('day.sat'),
                     ].map((d) => (
                       <View key={d} style={s.calendarCell}>
-                        <Text style={[s.calDayHeader, { color: theme.colors.textMuted }]}>{d}</Text>
+                        <ThemedText style={[s.calDayHeader, { color: theme.colors.textMuted }]}>{d}</ThemedText>
                       </View>
                     ))}
                   </View>
@@ -599,7 +492,7 @@ export default function AnalyticsScreen() {
                           cells.push(<View key={col} style={s.calendarCell} />);
                         } else {
                           const d = dayNum;
-                          const isActive = activeDays.includes(d);
+                          const isActive = vm.activeDays.includes(d);
                           const isToday = d === today;
                           cells.push(
                             <TouchableOpacity
@@ -607,6 +500,8 @@ export default function AnalyticsScreen() {
                               style={s.calendarCell}
                               onPress={() => handleDayPress(d)}
                               activeOpacity={0.7}
+                              accessibilityRole="button"
+                              accessibilityLabel={`Day ${d}${isActive ? ', workout completed' : ''}${isToday ? ', today' : ''}`}
                             >
                               <View
                                 style={[
@@ -622,17 +517,17 @@ export default function AnalyticsScreen() {
                                   },
                                 ]}
                               >
-                                <Text
+                                <ThemedText
                                   style={[
                                     s.calDayText,
                                     {
-                                      color: isActive ? '#fff' : theme.colors.textMuted,
+                                      color: isActive ? theme.colors.onAccent : theme.colors.textMuted,
                                       fontWeight: isToday ? '800' : '600',
                                     },
                                   ]}
                                 >
                                   {d}
-                                </Text>
+                                </ThemedText>
                               </View>
                             </TouchableOpacity>,
                           );
@@ -647,14 +542,14 @@ export default function AnalyticsScreen() {
                     }
                     return rows;
                   })()}
-                  <View style={[s.legendRow, { marginTop: 12 }]}>
+                  <View style={[s.legendRow, { marginTop: spacing[3] }]}>
                     <View style={s.legendItem}>
                       <View style={[s.legendDot, { backgroundColor: theme.colors.surfaceVariant }]} />
-                      <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('analytics.rest')}</Text>
+                      <ThemedText style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('analytics.rest')}</ThemedText>
                     </View>
                     <View style={s.legendItem}>
                       <View style={[s.legendDot, { backgroundColor: theme.colors.success + '90' }]} />
-                      <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('analytics.active')}</Text>
+                      <ThemedText style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('analytics.active')}</ThemedText>
                     </View>
                     <View style={s.legendItem}>
                       <View
@@ -663,7 +558,7 @@ export default function AnalyticsScreen() {
                           { backgroundColor: theme.colors.success, borderWidth: 2, borderColor: theme.colors.text },
                         ]}
                       />
-                      <Text style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('common.today')}</Text>
+                      <ThemedText style={[s.legendLabel, { color: theme.colors.textMuted }]}>{t('common.today')}</ThemedText>
                     </View>
                   </View>
                 </GlassCard>
@@ -671,27 +566,27 @@ export default function AnalyticsScreen() {
 
               {/* ─── PERSONAL RECORDS ───────────────── */}
               <SectionHeader title={t('analytics.personalRecords')} delay={750} />
-              {personalRecords.length === 0 && (
-                <GlassCard style={{ paddingVertical: 24, alignItems: 'center' }}>
+              {vm.personalRecords.length === 0 && (
+                <GlassCard style={{ paddingVertical: spacing[6], alignItems: 'center' }}>
                   <MaterialCommunityIcons name="trophy-outline" size={32} color={theme.colors.textMuted} />
-                  <Text style={{ color: theme.colors.textMuted, marginTop: 8, fontSize: 14, fontWeight: '600' }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, marginTop: spacing[2], fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
                     {t('analytics.completeWorkoutsForRecords')}
-                  </Text>
+                  </ThemedText>
                 </GlassCard>
               )}
-              {personalRecords.map((pr, i) => (
+              {vm.personalRecords.map((pr, i) => (
                 <AnimatedListItem key={pr.exercise} index={i}>
                   <GlassCard glowColor={i === 0 ? theme.colors.warning : undefined} style={s.prCard}>
                     <View style={s.prLeft}>
                       <View style={[s.prIconWrap, { backgroundColor: theme.colors.accent + '20' }]}>
                         <MaterialCommunityIcons name={pr.icon as any} size={22} color={theme.colors.accent} />
                       </View>
-                      <View style={{ marginLeft: 12, flex: 1 }}>
-                        <Text style={[s.prExercise, { color: theme.colors.text }]}>{pr.exercise}</Text>
-                        <Text style={[s.prDate, { color: theme.colors.textMuted }]}>{pr.date}</Text>
+                      <View style={{ marginLeft: spacing[3], flex: 1 }}>
+                        <ThemedText style={[s.prExercise, { color: theme.colors.text }]}>{pr.exercise}</ThemedText>
+                        <ThemedText style={[s.prDate, { color: theme.colors.textMuted }]}>{pr.date}</ThemedText>
                       </View>
                     </View>
-                    <Text style={[s.prValue, { color: theme.colors.warning }]}>{pr.value}</Text>
+                    <ThemedText style={[s.prValue, { color: theme.colors.warning }]}>{pr.value}</ThemedText>
                   </GlassCard>
                 </AnimatedListItem>
               ))}
@@ -703,24 +598,24 @@ export default function AnalyticsScreen() {
                 <GlassCard
                   gradient
                   glowColor={theme.colors.warning}
-                  style={{ paddingVertical: 28, paddingHorizontal: 20 }}
+                  style={{ paddingVertical: spacing[7], paddingHorizontal: spacing[5] }}
                 >
                   {/* Top row: Streak fire + Consistency ring */}
                   <View style={s.streakHeroRow}>
                     {/* Current Streak - Hero element with ring */}
                     <View style={s.streakHeroItem}>
                       <ProgressRing
-                        progress={Math.min(streakData.currentStreak / Math.max(streakData.longestStreak, 7), 1)}
+                        progress={Math.min(vm.streakData.currentStreak / Math.max(vm.streakData.longestStreak, 7), 1)}
                         size={90}
                         color={theme.colors.warning}
                         strokeWidth={5}
                       >
                         <MaterialCommunityIcons name="fire" size={28} color={theme.colors.warning} />
-                        <Text style={[s.streakNumber, { color: theme.colors.text }]}>{streakData.currentStreak}</Text>
+                        <ThemedText style={[s.streakNumber, { color: theme.colors.text }]}>{vm.streakData.currentStreak}</ThemedText>
                       </ProgressRing>
-                      <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>
+                      <ThemedText style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>
                         {t('analytics.dayStreak')}
-                      </Text>
+                      </ThemedText>
                     </View>
 
                     {/* Divider */}
@@ -729,16 +624,16 @@ export default function AnalyticsScreen() {
                     {/* Consistency Ring */}
                     <View style={s.streakHeroItem}>
                       <ProgressRing
-                        progress={streakData.consistencyPct / 100}
+                        progress={vm.streakData.consistencyPct / 100}
                         size={80}
                         color={theme.colors.accent}
                         strokeWidth={6}
                       >
-                        <Text style={[s.ringValue, { color: theme.colors.accent }]}>{streakData.consistencyPct}%</Text>
+                        <ThemedText style={[s.ringValue, { color: theme.colors.accent }]}>{vm.streakData.consistencyPct}%</ThemedText>
                       </ProgressRing>
-                      <Text style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>
+                      <ThemedText style={[s.streakHeroLabel, { color: theme.colors.textSecondary }]}>
                         {t('analytics.consistency')}
-                      </Text>
+                      </ThemedText>
                     </View>
                   </View>
 
@@ -752,28 +647,28 @@ export default function AnalyticsScreen() {
                     {[
                       {
                         label: t('analytics.longest'),
-                        value: streakData.longestStreak,
-                        unit: streakData.longestStreak === 1 ? t('common.day') : t('common.days'),
+                        value: vm.streakData.longestStreak,
+                        unit: vm.streakData.longestStreak === 1 ? t('common.day') : t('common.days'),
                         icon: 'trophy' as const,
                         color: theme.colors.warning,
                       },
                       {
                         label: t('analytics.totalWorkouts'),
-                        value: streakData.totalWorkouts,
+                        value: vm.streakData.totalWorkouts,
                         unit: '',
                         icon: 'dumbbell' as const,
                         color: theme.colors.accent,
                       },
                       {
                         label: t('analytics.thisWeek'),
-                        value: streakData.thisWeek,
+                        value: vm.streakData.thisWeek,
                         unit: '',
                         icon: 'calendar-week' as const,
                         color: theme.colors.blue,
                       },
                       {
                         label: t('analytics.thisMonth'),
-                        value: streakData.thisMonth,
+                        value: vm.streakData.thisMonth,
                         unit: '',
                         icon: 'calendar-month' as const,
                         color: theme.colors.purple,
@@ -793,11 +688,11 @@ export default function AnalyticsScreen() {
                           <MaterialCommunityIcons name={stat.icon} size={16} color={stat.color} />
                         </View>
                         <View style={s.streakStatText}>
-                          <Text style={[s.tileLabel, { color: theme.colors.textMuted }]}>{stat.label}</Text>
-                          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 3 }}>
-                            <Text style={[s.tileValue, { color: theme.colors.text }]}>{stat.value}</Text>
+                          <ThemedText style={[s.tileLabel, { color: theme.colors.textMuted }]}>{stat.label}</ThemedText>
+                          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: spacing[0.75] }}>
+                            <ThemedText style={[s.tileValue, { color: theme.colors.text }]}>{stat.value}</ThemedText>
                             {!!stat.unit && (
-                              <Text style={[s.tileUnit, { color: theme.colors.textMuted }]}>{stat.unit}</Text>
+                              <ThemedText style={[s.tileUnit, { color: theme.colors.textMuted }]}>{stat.unit}</ThemedText>
                             )}
                           </View>
                         </View>
@@ -808,7 +703,6 @@ export default function AnalyticsScreen() {
               </Animated.View>
             </>
           )}
-        </ScrollView>
 
         {/* ─── DAY SESSION DETAIL MODAL ───────────────── */}
         <Modal
@@ -820,54 +714,54 @@ export default function AnalyticsScreen() {
           <View style={s.modalOverlay}>
             <View style={[s.modalContent, { backgroundColor: theme.colors.surface }]}>
               <View style={s.modalHeader}>
-                <Text style={[s.modalTitle, { color: theme.colors.text }]}>
+                <ThemedText style={[s.modalTitle, { color: theme.colors.text }]}>
                   {selectedDay != null
                     ? `${selectedDay} ${[t('month.january'), t('month.february'), t('month.march'), t('month.april'), t('month.may'), t('month.june'), t('month.july'), t('month.august'), t('month.september'), t('month.october'), t('month.november'), t('month.december')][month]} ${year}`
                     : ''}
-                </Text>
-                <TouchableOpacity onPress={() => setDayModalVisible(false)} hitSlop={12}>
+                </ThemedText>
+                <TouchableOpacity onPress={() => setDayModalVisible(false)} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
                   <MaterialCommunityIcons name="close" size={24} color={theme.colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
-              {dayLoading ? (
-                <ActivityIndicator size="small" color={theme.colors.accent} style={{ marginVertical: 32 }} />
-              ) : daySessions.length === 0 ? (
+              {vm.dayLoading ? (
+                <ActivityIndicator size="small" color={theme.colors.accent} style={{ marginVertical: spacing[8] }} />
+              ) : vm.daySessions.length === 0 ? (
                 <View style={s.modalEmpty}>
                   <MaterialCommunityIcons name="calendar-blank" size={48} color={theme.colors.textMuted} />
-                  <Text style={[s.modalEmptyText, { color: theme.colors.textMuted }]}>{t('analytics.noWorkouts')}</Text>
+                  <ThemedText style={[s.modalEmptyText, { color: theme.colors.textMuted }]}>{t('analytics.noWorkouts')}</ThemedText>
                 </View>
               ) : (
                 <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
-                  {daySessions.map((session) => (
+                  {vm.daySessions.map((session) => (
                     <View key={session.id} style={[s.sessionCard, { backgroundColor: theme.colors.surfaceVariant }]}>
                       <View style={s.sessionRow}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                           <MaterialCommunityIcons
                             name={session.success ? 'check-circle' : 'circle-outline'}
                             size={20}
                             color={session.success ? theme.colors.success : theme.colors.textMuted}
                           />
-                          <Text style={[s.sessionTime, { color: theme.colors.text }]}>
+                          <ThemedText style={[s.sessionTime, { color: theme.colors.text }]}>
                             {new Date(session.started_at).toLocaleTimeString([], {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
-                          </Text>
+                          </ThemedText>
                         </View>
-                        <Text style={[s.sessionDuration, { color: theme.colors.textSecondary }]}>
+                        <ThemedText style={[s.sessionDuration, { color: theme.colors.textSecondary }]}>
                           {session.duration_minutes} {t('analytics.minAbbrev')}
-                        </Text>
+                        </ThemedText>
                       </View>
-                      <Text style={[s.sessionExCount, { color: theme.colors.textSecondary }]}>
+                      <ThemedText style={[s.sessionExCount, { color: theme.colors.textSecondary }]}>
                         {session.completed_exercises}/{session.total_exercises} {t('analytics.exercises').toLowerCase()}
-                      </Text>
+                      </ThemedText>
                       {session.exercises.length > 0 && (
                         <View style={s.sessionExList}>
                           {session.exercises.map((ex, i) => (
-                            <Text key={i} style={[s.sessionExName, { color: theme.colors.textMuted }]}>
+                            <ThemedText key={i} style={[s.sessionExName, { color: theme.colors.textMuted }]}>
                               • {ex}
-                            </Text>
+                            </ThemedText>
                           ))}
                         </View>
                       )}
@@ -878,7 +772,7 @@ export default function AnalyticsScreen() {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -886,10 +780,10 @@ export default function AnalyticsScreen() {
 // ─── STYLES ────────────────────────────────────────────────────
 const styles = (theme: any) =>
   StyleSheet.create({
-    header: { marginTop: 8, marginBottom: 16 },
-    heroTitle: { fontSize: 28, fontWeight: '800', color: theme.colors.text, letterSpacing: -0.5 },
-    heroSub: { fontSize: 14, fontWeight: '500', color: theme.colors.textMuted, marginTop: 2 },
-    heroStatsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, paddingHorizontal: 4 },
+    header: { marginTop: spacing[2], marginBottom: spacing[4] },
+    heroTitle: { fontSize: typography.sizes.h1Sm, fontWeight: '800', color: theme.colors.text, letterSpacing: -0.5 },
+    heroSub: { fontSize: typography.sizes.bodySmall, fontWeight: '500', color: theme.colors.textMuted, marginTop: spacing[0.5] },
+    heroStatsRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing[5], paddingHorizontal: spacing[1] },
     heroStatItem: { alignItems: 'center', flex: 1 },
     heroStatIcon: {
       width: 38,
@@ -897,19 +791,19 @@ const styles = (theme: any) =>
       borderRadius: 19,
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 6,
+      marginBottom: spacing[1.5],
     },
-    heroStatValue: { fontSize: 18, fontWeight: '800', letterSpacing: -0.3 },
-    heroStatLabel: { fontSize: 10, fontWeight: '600', marginTop: 2 },
+    heroStatValue: { fontSize: typography.sizes.h4, fontWeight: '800', letterSpacing: -0.3 },
+    heroStatLabel: { fontSize: typography.sizes.xs, fontWeight: '600', marginTop: spacing[0.5] },
 
-    toggleRow: { flexDirection: 'row', padding: 4, borderRadius: 14, marginBottom: 8, gap: 6 },
-    toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center', borderWidth: 1 },
-    toggleLabel: { fontSize: 13, fontWeight: '600' },
+    toggleRow: { flexDirection: 'row', padding: spacing[1], borderRadius: 14, marginBottom: spacing[2], gap: spacing[1.5] },
+    toggleBtn: { flex: 1, paddingVertical: spacing[2.5], borderRadius: radius.lg, alignItems: 'center', borderWidth: 1 },
+    toggleLabel: { fontSize: typography.sizes.label, fontWeight: '600' },
 
-    chartCard: { paddingVertical: 18, paddingHorizontal: 14 },
+    chartCard: { paddingVertical: spacing[4.5], paddingHorizontal: spacing[3.5] },
     barRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 150 },
     barCol: { alignItems: 'center', flex: 1 },
-    barValue: { fontSize: 13, fontWeight: '800', marginBottom: 6 },
+    barValue: { fontSize: typography.sizes.label, fontWeight: '800', marginBottom: spacing[1.5] },
     barTrack: {
       width: 28,
       height: 110,
@@ -919,117 +813,117 @@ const styles = (theme: any) =>
       overflow: 'hidden',
     },
     barFill: { width: '100%', borderRadius: 14 },
-    barLabel: { fontSize: 11, fontWeight: '700', marginTop: 8 },
+    barLabel: { fontSize: typography.sizes.captionSm, fontWeight: '700', marginTop: spacing[2] },
 
     trendContainer: { flexDirection: 'row', height: 140 },
     trendYAxis: {
       width: 36,
       justifyContent: 'space-between',
       alignItems: 'flex-end',
-      paddingRight: 6,
-      paddingVertical: 2,
+      paddingRight: spacing[1.5],
+      paddingVertical: spacing[0.5],
     },
-    axisLabel: { fontSize: 9, fontWeight: '600' },
+    axisLabel: { fontSize: typography.sizes.micro, fontWeight: '600' },
     trendChart: { flex: 1, position: 'relative' },
     gridLine: { position: 'absolute', left: 0, right: 0, height: StyleSheet.hairlineWidth },
     trendPointsRow: { flexDirection: 'row', flex: 1, zIndex: 2 },
     trendCol: { flex: 1, alignItems: 'center' },
     trendDot: { width: 10, height: 10, borderRadius: 5 },
-    trendLabel: { fontSize: 11, fontWeight: '600', marginTop: 4 },
-    trendAreaRow: { ...StyleSheet.absoluteFillObject, flexDirection: 'row', zIndex: 1, paddingBottom: 18 },
-    trendAreaCol: { flex: 1, paddingHorizontal: 2 },
-    xpSummaryRow: { flexDirection: 'row', marginTop: 14, justifyContent: 'space-around' },
+    trendLabel: { fontSize: typography.sizes.captionSm, fontWeight: '600', marginTop: spacing[1] },
+    trendAreaRow: { ...StyleSheet.absoluteFillObject, flexDirection: 'row', zIndex: 1, paddingBottom: spacing[4.5] },
+    trendAreaCol: { flex: 1, paddingHorizontal: spacing[0.5] },
+    xpSummaryRow: { flexDirection: 'row', marginTop: spacing[3.5], justifyContent: 'space-around' },
     xpSummaryItem: { alignItems: 'center' },
-    xpSummaryValue: { fontSize: 18, fontWeight: '800' },
-    xpSummaryLabel: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+    xpSummaryValue: { fontSize: typography.sizes.h4, fontWeight: '800' },
+    xpSummaryLabel: { fontSize: typography.sizes.captionSm, fontWeight: '600', marginTop: spacing[0.5] },
 
-    muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, paddingHorizontal: 8 },
-    muscleBadge: { width: (SCREEN_W - 80) / 4, marginBottom: 4 },
-    muscleBadgeInner: { alignItems: 'center', paddingVertical: 10, borderRadius: 14 },
-    muscleName: { fontSize: 11, fontWeight: '700', color: theme.colors.text, marginTop: 4 },
-    muscleCount: { fontSize: 12, fontWeight: '800', marginTop: 2 },
-    legendRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 8 },
-    legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing[2], paddingHorizontal: spacing[2] },
+    muscleBadge: { width: (SCREEN_W - 80) / 4, marginBottom: spacing[1] },
+    muscleBadgeInner: { alignItems: 'center', paddingVertical: spacing[2.5], borderRadius: 14 },
+    muscleName: { fontSize: typography.sizes.captionSm, fontWeight: '700', color: theme.colors.text, marginTop: spacing[1] },
+    muscleCount: { fontSize: typography.sizes.caption, fontWeight: '800', marginTop: spacing[0.5] },
+    legendRow: { flexDirection: 'row', justifyContent: 'center', gap: spacing[4], marginTop: spacing[2] },
+    legendItem: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
     legendDot: { width: 10, height: 10, borderRadius: 5 },
-    legendLabel: { fontSize: 10, fontWeight: '600' },
+    legendLabel: { fontSize: typography.sizes.xs, fontWeight: '600' },
 
-    statsRow: { flexDirection: 'row', gap: 10 },
-    statCard: { flex: 1, alignItems: 'center', paddingVertical: 16 },
-    statHero: { fontSize: 24, fontWeight: '800', marginTop: 8 },
-    statLabel: { fontSize: 12, fontWeight: '600', marginTop: 2 },
+    statsRow: { flexDirection: 'row', gap: spacing[2.5] },
+    statCard: { flex: 1, alignItems: 'center', paddingVertical: spacing[4] },
+    statHero: { fontSize: typography.sizes.h2, fontWeight: '800', marginTop: spacing[2] },
+    statLabel: { fontSize: typography.sizes.caption, fontWeight: '600', marginTop: spacing[0.5] },
     statDivider: {
       width: '60%',
       height: StyleSheet.hairlineWidth,
       backgroundColor: theme.colors.border,
-      marginVertical: 10,
+      marginVertical: spacing[2.5],
     },
-    miniStatRow: { flexDirection: 'row', gap: 14 },
+    miniStatRow: { flexDirection: 'row', gap: spacing[3.5] },
     miniStat: { alignItems: 'center' },
-    miniStatVal: { fontSize: 14, fontWeight: '700' },
-    miniStatLbl: { fontSize: 10, fontWeight: '600', marginTop: 1 },
-    avgLabel: { fontSize: 11, fontWeight: '500', marginTop: 8 },
+    miniStatVal: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
+    miniStatLbl: { fontSize: typography.sizes.xs, fontWeight: '600', marginTop: spacing['px'] },
+    avgLabel: { fontSize: typography.sizes.captionSm, fontWeight: '500', marginTop: spacing[2] },
 
-    calendarCard: { paddingVertical: 14, paddingHorizontal: 8 },
+    calendarCard: { paddingVertical: spacing[3.5], paddingHorizontal: spacing[2] },
     calendarRow: { flexDirection: 'row' },
-    calendarCell: { flex: 1, alignItems: 'center', paddingVertical: 3 },
-    calDayHeader: { fontSize: 10, fontWeight: '700', marginBottom: 4 },
+    calendarCell: { flex: 1, alignItems: 'center', paddingVertical: spacing[0.75] },
+    calDayHeader: { fontSize: typography.sizes.xs, fontWeight: '700', marginBottom: spacing[1] },
     calDay: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-    calDayText: { fontSize: 12 },
+    calDayText: { fontSize: typography.sizes.caption },
 
     prCard: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 14,
-      paddingHorizontal: 14,
-      marginBottom: 6,
+      paddingVertical: spacing[3.5],
+      paddingHorizontal: spacing[3.5],
+      marginBottom: spacing[1.5],
     },
     prLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-    prIconWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-    prExercise: { fontSize: 14, fontWeight: '700' },
-    prDate: { fontSize: 11, fontWeight: '500', marginTop: 2 },
-    prValue: { fontSize: 18, fontWeight: '800' },
+    prIconWrap: { width: 40, height: 40, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
+    prExercise: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
+    prDate: { fontSize: typography.sizes.captionSm, fontWeight: '500', marginTop: spacing[0.5] },
+    prValue: { fontSize: typography.sizes.h4, fontWeight: '800' },
 
-    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginBottom: 24 },
+    streakHeroRow: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginBottom: spacing[6] },
     streakHeroItem: { alignItems: 'center', flex: 1 },
     streakDivider: { width: StyleSheet.hairlineWidth, height: 60 },
-    ringValue: { fontSize: 16, fontWeight: '800' },
-    streakNumber: { fontSize: 18, fontWeight: '800', marginTop: -4 },
-    streakHeroLabel: { fontSize: 12, fontWeight: '600', marginTop: 10 },
+    ringValue: { fontSize: typography.sizes.body, fontWeight: '800' },
+    streakNumber: { fontSize: typography.sizes.h4, fontWeight: '800', marginTop: -4 },
+    streakHeroLabel: { fontSize: typography.sizes.caption, fontWeight: '600', marginTop: spacing[2.5] },
     streakStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 14, borderWidth: 1, overflow: 'hidden' },
     streakStatItem: {
       width: '50%',
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: 14,
-      paddingHorizontal: 14,
-      gap: 10,
+      paddingVertical: spacing[3.5],
+      paddingHorizontal: spacing[3.5],
+      gap: spacing[2.5],
     },
     streakStatIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     streakStatText: { flex: 1 },
-    tileValue: { fontSize: 18, fontWeight: '800' },
-    tileLabel: { fontSize: 10, fontWeight: '600', textAlign: 'left' },
-    tileUnit: { fontSize: 11, fontWeight: '500' },
+    tileValue: { fontSize: typography.sizes.h4, fontWeight: '800' },
+    tileLabel: { fontSize: typography.sizes.xs, fontWeight: '600', textAlign: 'left' },
+    tileUnit: { fontSize: typography.sizes.captionSm, fontWeight: '500' },
 
     // Day session detail modal
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
     modalContent: {
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
-      paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 40,
+      paddingHorizontal: spacing[5],
+      paddingTop: spacing[5],
+      paddingBottom: spacing[10],
       maxHeight: '70%',
     },
-    modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    modalTitle: { fontSize: 18, fontWeight: '800' },
-    modalEmpty: { alignItems: 'center', paddingVertical: 40, gap: 12 },
-    modalEmptyText: { fontSize: 14, fontWeight: '600' },
-    sessionCard: { borderRadius: 14, padding: 14, marginBottom: 10 },
+    modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing[5] },
+    modalTitle: { fontSize: typography.sizes.h4, fontWeight: '800' },
+    modalEmpty: { alignItems: 'center', paddingVertical: spacing[10], gap: spacing[3] },
+    modalEmptyText: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
+    sessionCard: { borderRadius: 14, padding: spacing[3.5], marginBottom: spacing[2.5] },
     sessionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    sessionTime: { fontSize: 15, fontWeight: '700' },
-    sessionDuration: { fontSize: 13, fontWeight: '600' },
-    sessionExCount: { fontSize: 12, fontWeight: '600', marginTop: 6 },
-    sessionExList: { marginTop: 8, gap: 2 },
-    sessionExName: { fontSize: 12, fontWeight: '500' },
+    sessionTime: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
+    sessionDuration: { fontSize: typography.sizes.label, fontWeight: '600' },
+    sessionExCount: { fontSize: typography.sizes.caption, fontWeight: '600', marginTop: spacing[1.5] },
+    sessionExList: { marginTop: spacing[2], gap: spacing[0.5] },
+    sessionExName: { fontSize: typography.sizes.caption, fontWeight: '500' },
   });

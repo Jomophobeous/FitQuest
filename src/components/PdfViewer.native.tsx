@@ -5,6 +5,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { darkTheme as theme, typography, spacing } from '../design/theme-system';
 
 interface PdfViewerSource {
   uri: string;
@@ -74,25 +75,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#1a1f2e',
+    padding: spacing[6],
+    backgroundColor: '#131720',
   },
   fallbackTitle: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '600',
     color: '#fff',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   fallbackMessage: {
-    fontSize: 14,
-    color: '#9ca3af',
+    fontSize: typography.sizes.bodySmall, 
+    color: '#9BA1B0',
     textAlign: 'center',
     lineHeight: 22,
   },
   errorDetail: {
-    fontSize: 12,
-    color: '#ef4444',
-    marginTop: 16,
+    fontSize: typography.sizes.caption, 
+    color: '#EF4444',
+    marginTop: spacing[4],
     fontFamily: 'monospace',
   },
 });

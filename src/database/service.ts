@@ -962,6 +962,34 @@ export async function getWorkoutSession(sessionId: string): Promise<WorkoutSessi
   return db.getFirstAsync<WorkoutSession>(`SELECT * FROM workout_sessions WHERE id = ?`, [sessionId]);
 }
 
+/**
+ * Get the most recent active (incomplete) workout session for a user.
+ * Returns null if no active session exists.
+ */
+export async function getActiveWorkoutSession(userId: string): Promise<WorkoutSession | null> {
+  const db = await getDatabase();
+  return db.getFirstAsync<WorkoutSession>(
+    `SELECT * FROM workout_sessions WHERE user_id = ? AND completed_at IS NULL ORDER BY started_at DESC LIMIT 1`,
+    [userId],
+  );
+}
+
+/**
+ * Update a session_exercise row to mark it completed or skipped.
+ * Used for incremental persistence during active workouts.
+ */
+export async function updateSessionExerciseProgress(
+  sessionExerciseId: string,
+  completedSets: number,
+  skipped: boolean,
+): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    `UPDATE session_exercises SET completed_sets = ?, skipped = ? WHERE id = ?`,
+    [completedSets, skipped ? 1 : 0, sessionExerciseId],
+  );
+}
+
 // ============================================
 // PROGRESS TRACKING QUERIES
 // ============================================

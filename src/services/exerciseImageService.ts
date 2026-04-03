@@ -169,7 +169,7 @@ async function deployAndroidAssetImages(): Promise<number> {
 
     // Yield to UI thread between batches
     if (i + BATCH_SIZE < rows.length) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10)); // batch-yield
     }
   }
 

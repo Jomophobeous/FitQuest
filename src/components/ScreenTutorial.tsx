@@ -11,6 +11,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getAppState, setAppState } from '../database/service';
+import { typography, spacing } from '../design/theme-system';
+
 
 interface ScreenTutorialProps {
   /** Unique key for this screen (e.g. 'dashboard', 'exercises') */
@@ -68,7 +70,7 @@ export default function ScreenTutorial({ screenKey, icon, title, description }: 
           style={[
             styles.card,
             {
-              backgroundColor: isDark ? colors.surface : '#FFFFFF',
+              backgroundColor: isDark ? colors.surface : theme.colors.onAccent,
               borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
             },
           ]}
@@ -93,14 +95,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: spacing[8],
   },
   card: {
     width: '100%',
     maxWidth: 340,
     borderRadius: 20,
     borderWidth: 1,
-    padding: 28,
+    padding: spacing[7],
     alignItems: 'center',
   },
   iconCircle: {
@@ -109,27 +111,27 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
   title: {
-    fontSize: 20,
+    fontSize: typography.sizes.h3, 
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   description: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     lineHeight: 21,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: spacing[6],
   },
   button: {
-    paddingHorizontal: 32,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[3],
     borderRadius: 24,
   },
   buttonText: {
-    fontSize: 15,
+    fontSize: typography.sizes.bodyMid, 
     fontWeight: '700',
   },
 });

@@ -9,6 +9,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SUPPORTED_LANGUAGES, LanguageInfo } from '../i18n/translations';
+import { typography, spacing } from '../design/theme-system';
+
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -124,6 +126,8 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            initialNumToRender={10}
+            windowSize={3}
           />
         </View>
       </View>
@@ -143,65 +147,65 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     borderWidth: 1,
     borderBottomWidth: 0,
-    paddingTop: 16,
+    paddingTop: spacing[4],
     paddingBottom: Platform.OS === 'ios' ? 32 : 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    marginBottom: 16,
+    paddingHorizontal: spacing[6],
+    marginBottom: spacing[4],
   },
   title: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4, 
     fontWeight: '700',
     letterSpacing: 0.3,
   },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 16,
-    marginBottom: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    marginHorizontal: spacing[4],
+    marginBottom: spacing[2],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
     borderRadius: 12,
     borderWidth: 1,
-    gap: 8,
+    gap: spacing[2],
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '400',
-    padding: 0,
+    padding: spacing[0],
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[2],
   },
   langItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: spacing[3.5],
     borderRadius: 16,
     borderWidth: 1,
-    marginBottom: 8,
-    gap: 12,
+    marginBottom: spacing[2],
+    gap: spacing[3],
   },
   flag: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
   },
   langTextWrap: {
     flex: 1,
   },
   langName: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     letterSpacing: 0.2,
   },
   langCode: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '400',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
 });

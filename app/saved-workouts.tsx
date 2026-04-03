@@ -5,28 +5,35 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, FlatList, StyleSheet, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  RefreshControl,
+} from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn, SlideInRight } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { getRecentSessions, deleteWorkoutSession, getSessionExercises } from '../src/database/service';
-import type { WorkoutSession } from '../src/database/types';
-import { useDataSync } from '../src/services/dataSyncService';
+import { useSavedWorkoutsViewModel, type WorkoutSession } from '../src/viewmodels/useSavedWorkoutsViewModel';
+import { useToast } from '../src/context/ToastContext';
+import ThemedText from '../src/components/ThemedText';
 import ExerciseImage from '../src/components/ExerciseImage';
 import { GlassCard, GradientButton, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
 import ScreenTutorial from '../src/components/ScreenTutorial';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 // ============================================
 // CONSTANTS
 // ============================================
-
-const USER_ID = 'user_local_001';
 
 // ============================================
 // HELPERS
@@ -76,56 +83,22 @@ function formatDuration(minutes: number): string {
 export default function SavedWorkoutsScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const { isReady: dbReady } = useDatabase();
   const router = useRouter();
+  const vm = useSavedWorkoutsViewModel();
 
-  const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [expandedExercises, setExpandedExercises] = useState<
-    Record<
-      string,
-      Array<{ exercise_id: string; name: string; category: string; prescribed_sets: number; prescribed_reps: string }>
-    >
-  >({});
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  // ------------------------------------------
-  // DATA LOADING
-  // ------------------------------------------
-
-  const loadWorkouts = useCallback(async () => {
-    try {
-      const sessions = await getRecentSessions(USER_ID, 50);
-      const custom = sessions.filter((s) => s.id.startsWith('custom_') || s.notes?.startsWith('Custom:'));
-      setWorkouts(custom);
-    } catch (err) {
-      if (__DEV__) console.warn('[SavedWorkouts] Failed to load:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
 
   useEffect(() => {
-    if (dbReady) loadWorkouts();
-  }, [dbReady, loadWorkouts]);
+    if (dbReady) vm.loadWorkouts();
+  }, [dbReady, vm]);
 
-  // Refresh when the screen gains focus (e.g. after creating a workout)
   useFocusEffect(
     useCallback(() => {
-      if (dbReady) loadWorkouts();
-    }, [dbReady, loadWorkouts]),
+      if (dbReady) vm.loadWorkouts();
+    }, [dbReady, vm]),
   );
-
-  // Subscribe to workout events from other screens
-  useDataSync('workout_completed', loadWorkouts);
-  useDataSync('custom_workout_created', loadWorkouts);
-
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    loadWorkouts();
-  }, [loadWorkouts]);
 
   // ------------------------------------------
   // ACTIONS
@@ -140,11 +113,10 @@ export default function SavedWorkoutsScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            await deleteWorkoutSession(session.id);
-            setWorkouts((prev) => prev.filter((w) => w.id !== session.id));
+            await vm.deleteWorkout(session.id);
             if (expandedId === session.id) setExpandedId(null);
           } catch (err) {
-            Alert.alert(t('error.title'), t('savedWorkouts.deleteError'));
+            showToast({ message: t('savedWorkouts.deleteError'), type: 'error' });
           }
         },
       },
@@ -164,15 +136,7 @@ export default function SavedWorkoutsScreen() {
       return;
     }
     setExpandedId(id);
-    // Load exercises for this session if not already loaded
-    if (!expandedExercises[id]) {
-      try {
-        const exercises = await getSessionExercises(id);
-        setExpandedExercises((prev) => ({ ...prev, [id]: exercises }));
-      } catch {
-        // Session exercises might not be available
-      }
-    }
+    await vm.loadSessionExercises(id);
   };
 
   // ------------------------------------------
@@ -189,10 +153,10 @@ export default function SavedWorkoutsScreen() {
             </View>
           </Animated.View>
 
-          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('savedWorkouts.emptyTitle')}</Text>
-          <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('savedWorkouts.emptyTitle')}</ThemedText>
+          <ThemedText style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
             {t('savedWorkouts.emptySubtitle')}
-          </Text>
+          </ThemedText>
 
           <View style={styles.emptyFeatures}>
             {[
@@ -208,12 +172,12 @@ export default function SavedWorkoutsScreen() {
                 <View style={[styles.emptyFeatureIcon, { backgroundColor: theme.colors.accent + '14' }]}>
                   <MaterialCommunityIcons name={f.icon} size={18} color={theme.colors.accent} />
                 </View>
-                <Text style={[styles.emptyFeatureText, { color: theme.colors.textSecondary }]}>{f.text}</Text>
+                <ThemedText style={[styles.emptyFeatureText, { color: theme.colors.textSecondary }]}>{f.text}</ThemedText>
               </Animated.View>
             ))}
           </View>
 
-          <View style={{ marginTop: 24, width: '100%' }}>
+          <View style={{ marginTop: spacing[6], width: '100%' }}>
             <GradientButton
               title={t('savedWorkouts.createFirst')}
               icon="plus"
@@ -243,8 +207,8 @@ export default function SavedWorkoutsScreen() {
       // Accent colour per card for visual variety
       const cardAccents = [
         theme.colors.accent,
-        theme.colors.accent2 ?? '#7C3AED',
-        theme.colors.accent3 ?? '#10B981',
+        theme.colors.accent2 ?? theme.colors.purple,
+        theme.colors.accent3 ?? theme.colors.accent,
         theme.colors.success,
         theme.colors.warning,
       ];
@@ -266,17 +230,17 @@ export default function SavedWorkoutsScreen() {
               </View>
 
               <View style={styles.cardTitleArea}>
-                <Text style={[styles.cardTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                <ThemedText style={[styles.cardTitle, { color: theme.colors.text }]} numberOfLines={1}>
                   {name}
-                </Text>
-                <Text style={[styles.cardDate, { color: theme.colors.textMuted }]}>{dateLabel}</Text>
+                </ThemedText>
+                <ThemedText style={[styles.cardDate, { color: theme.colors.textMuted }]}>{dateLabel}</ThemedText>
               </View>
 
               {/* Status badge */}
               {!!wasSuccessful && (
                 <View style={[styles.statusBadge, { backgroundColor: theme.colors.success + '18' }]}>
                   <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.success} />
-                  <Text style={[styles.statusText, { color: theme.colors.success }]}>Done</Text>
+                  <ThemedText style={[styles.statusText, { color: theme.colors.success }]}>Done</ThemedText>
                 </View>
               )}
 
@@ -331,21 +295,21 @@ export default function SavedWorkoutsScreen() {
                 <View style={styles.expandedDetails}>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons name="calendar-clock" size={16} color={theme.colors.textMuted} />
-                    <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>Created {dateLabel}</Text>
+                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>Created {dateLabel}</ThemedText>
                   </View>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons name="timer-sand" size={16} color={theme.colors.textMuted} />
-                    <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>Estimated {duration}</Text>
+                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>Estimated {duration}</ThemedText>
                   </View>
                 </View>
 
                 {/* Exercise list with images */}
                 {(() => {
-                  const exList = expandedExercises[session.id];
+                  const exList = vm.expandedExercises[session.id];
                   if (!exList || exList.length === 0) return null;
                   return (
                     <View style={styles.expandedExerciseList}>
-                      <Text style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>Exercises</Text>
+                      <ThemedText style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>Exercises</ThemedText>
                       {exList.map((ex, idx) => (
                         <View
                           key={ex.exercise_id + idx}
@@ -357,13 +321,13 @@ export default function SavedWorkoutsScreen() {
                             variant="thumbnail"
                             animate={false}
                           />
-                          <View style={{ flex: 1, marginLeft: 10 }}>
-                            <Text style={[styles.exerciseRowName, { color: theme.colors.text }]} numberOfLines={1}>
+                          <View style={{ flex: 1, marginLeft: spacing[2.5] }}>
+                            <ThemedText style={[styles.exerciseRowName, { color: theme.colors.text }]} numberOfLines={1}>
                               {ex.name}
-                            </Text>
-                            <Text style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
+                            </ThemedText>
+                            <ThemedText style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
                               {ex.prescribed_sets} sets × {ex.prescribed_reps}
-                            </Text>
+                            </ThemedText>
                           </View>
                         </View>
                       ))}
@@ -413,7 +377,7 @@ export default function SavedWorkoutsScreen() {
       );
     },
 
-    [expandedId, expandedExercises, theme, t, confirmDelete, handleStartWorkout, toggleExpand],
+    [expandedId, vm.expandedExercises, theme, t, confirmDelete, handleStartWorkout, toggleExpand],
   );
 
   const renderWorkoutItem = useCallback(
@@ -428,7 +392,7 @@ export default function SavedWorkoutsScreen() {
 
   return (
     <ScreenErrorBoundary screenName="SavedWorkouts" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
+      <ScreenContainer>
         <ScreenTutorial
           screenKey="saved-workouts"
           icon="content-save-all"
@@ -457,12 +421,12 @@ export default function SavedWorkoutsScreen() {
             </TouchableOpacity>
 
             <View style={styles.headerTextArea}>
-              <Text style={[styles.heroTitle, { color: theme.colors.text }]}>Saved Workouts</Text>
-              <Text style={[styles.heroSubtitle, { color: theme.colors.textMuted }]}>
-                {workouts.length > 0
-                  ? `${workouts.length} custom workout${workouts.length !== 1 ? 's' : ''}`
+              <ThemedText style={[styles.heroTitle, { color: theme.colors.text }]}>Saved Workouts</ThemedText>
+              <ThemedText style={[styles.heroSubtitle, { color: theme.colors.textMuted }]}>
+                {vm.workouts.length > 0
+                  ? `${vm.workouts.length} custom workout${vm.workouts.length !== 1 ? 's' : ''}`
                   : 'Your personal collection'}
-              </Text>
+              </ThemedText>
             </View>
 
             <View style={[styles.headerIconWrap, { backgroundColor: theme.colors.accent + '18' }]}>
@@ -472,16 +436,22 @@ export default function SavedWorkoutsScreen() {
         </Animated.View>
 
         {/* Body */}
-        {loading ? (
+        {vm.loading ? (
           <Animated.View entering={FadeIn.duration(150)} style={styles.loadingContainer}>
             <MaterialCommunityIcons name="loading" size={36} color={theme.colors.accent} />
-            <Text style={[styles.loadingText, { color: theme.colors.textMuted }]}>Loading workouts…</Text>
+            <ThemedText style={[styles.loadingText, { color: theme.colors.textMuted }]}>{t('savedWorkouts.loading') || 'Loading workouts…'}</ThemedText>
           </Animated.View>
-        ) : workouts.length === 0 ? (
+        ) : vm.loadError ? (
+          <View style={[styles.loadingContainer, { alignItems: 'center' }]}>
+            <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
+            <ThemedText style={[styles.loadingText, { color: theme.colors.error, textAlign: 'center', marginTop: spacing[4] }]}>{vm.loadError}</ThemedText>
+            <GradientButton title="Retry" onPress={() => { vm.loadWorkouts(); }} style={{ marginTop: spacing[4] }} />
+          </View>
+        ) : vm.workouts.length === 0 ? (
           renderEmptyState()
         ) : (
           <FlatList
-            data={workouts}
+            data={vm.workouts}
             keyExtractor={keyExtractorWorkout}
             renderItem={renderWorkoutItem}
             style={styles.scroll}
@@ -494,8 +464,8 @@ export default function SavedWorkoutsScreen() {
             scrollEventThrottle={100}
             refreshControl={
               <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
+                refreshing={vm.refreshing}
+                onRefresh={vm.handleRefresh}
                 tintColor={theme.colors.accent}
                 colors={[theme.colors.accent]}
               />
@@ -506,21 +476,21 @@ export default function SavedWorkoutsScreen() {
         )}
 
         {/* Floating Action Button */}
-        {!loading && (
+        {!vm.loading && (
           <Animated.View entering={ZoomIn.delay(100).duration(150)} style={styles.fabContainer}>
-            <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/create-workout')}>
+            <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/create-workout')} accessibilityRole="button" accessibilityLabel="Create new workout">
               <LinearGradient
-                colors={[theme.colors.accent, '#4338CA'] as [string, string]}
+                colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.fab}
               >
-                <MaterialCommunityIcons name="plus" size={28} color="#fff" />
+                <MaterialCommunityIcons name="plus" size={28} color={theme.colors.onAccent} />
               </LinearGradient>
             </TouchableOpacity>
           </Animated.View>
         )}
-      </SafeAreaView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }
@@ -542,8 +512,8 @@ function StatPill({ icon, value, label, color, textColor, bgColor }: StatPillPro
   return (
     <View style={[styles.statPill, { backgroundColor: bgColor }]}>
       <MaterialCommunityIcons name={icon} size={14} color={color} />
-      <Text style={[styles.statPillValue, { color }]}>{value}</Text>
-      {label ? <Text style={[styles.statPillLabel, { color: textColor }]}>{label}</Text> : null}
+      <ThemedText style={[styles.statPillValue, { color }]}>{value}</ThemedText>
+      {label ? <ThemedText style={[styles.statPillLabel, { color: textColor }]}>{label}</ThemedText> : null}
     </View>
   );
 }
@@ -559,35 +529,35 @@ const styles = StyleSheet.create({
 
   /* Header */
   headerContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[1],
   },
   headerGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[4.5],
     borderRadius: 18,
   },
   backBtn: {
     width: 38,
     height: 38,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 14,
+    marginRight: spacing[3.5],
   },
   headerTextArea: {
     flex: 1,
   },
   heroTitle: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '800',
   },
   heroSubtitle: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   headerIconWrap: {
     width: 46,
@@ -602,28 +572,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: spacing[25],
   },
 
   /* Loading */
   loadingContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 80,
-    gap: 12,
+    paddingTop: spacing[20],
+    gap: spacing[3],
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
   },
 
   /* Empty state */
   emptyContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[6],
   },
   emptyCard: {
-    padding: 28,
+    padding: spacing[7],
   },
   emptyContent: {
     alignItems: 'center',
@@ -634,30 +604,30 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: spacing[5],
   },
   emptyTitle: {
-    fontSize: 22,
+    fontSize: typography.sizes.h3, 
     fontWeight: '800',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: spacing[2.5],
   },
   emptySubtitle: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '500',
     textAlign: 'center',
     lineHeight: 21,
-    paddingHorizontal: 8,
-    marginBottom: 20,
+    paddingHorizontal: spacing[2],
+    marginBottom: spacing[5],
   },
   emptyFeatures: {
     alignSelf: 'stretch',
-    gap: 12,
+    gap: spacing[3],
   },
   emptyFeatureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing[3],
   },
   emptyFeatureIcon: {
     width: 36,
@@ -667,27 +637,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyFeatureText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
   },
 
   /* Workout Card */
   cardOuter: {
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[3],
   },
   workoutCard: {
-    padding: 16,
+    padding: spacing[4],
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing[3],
   },
   cardIconWrap: {
     width: 42,
     height: 42,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -695,105 +665,105 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: typography.sizes.body, 
     fontWeight: '700',
   },
   cardDate: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: spacing[0.5],
   },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    gap: spacing[1],
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[1],
+    borderRadius: radius.md,
   },
   statusText: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '700',
   },
   deleteBtn: {
-    padding: 6,
+    padding: spacing[1.5],
   },
 
   /* Stats */
   statsRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
+    gap: spacing[2],
+    marginTop: spacing[3],
     flexWrap: 'wrap',
   },
   statPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    gap: spacing[1.25],
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1.5],
     borderRadius: 20,
   },
   statPillValue: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '700',
   },
   statPillLabel: {
-    fontSize: 11,
+    fontSize: typography.sizes.captionSm, 
     fontWeight: '500',
   },
 
   /* Expanded */
   expandedArea: {
-    marginTop: 12,
+    marginTop: spacing[3],
   },
   expandedDivider: {
     height: 1,
-    marginBottom: 14,
+    marginBottom: spacing[3.5],
     opacity: 0.3,
   },
   expandedDetails: {
-    gap: 10,
-    marginBottom: 16,
+    gap: spacing[2.5],
+    marginBottom: spacing[4],
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: spacing[2.5],
   },
   detailText: {
-    fontSize: 13,
+    fontSize: typography.sizes.label, 
     fontWeight: '500',
   },
   expandedExerciseList: {
-    marginBottom: 16,
-    gap: 8,
+    marginBottom: spacing[4],
+    gap: spacing[2],
   },
   exerciseListHeader: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
   exerciseRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: spacing[1.5],
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   exerciseRowName: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
     fontWeight: '600',
   },
   exerciseRowMeta: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: typography.sizes.caption, 
+    marginTop: spacing[0.5],
   },
   expandedActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: spacing[2.5],
   },
   deleteActionBtn: {
     width: 48,
@@ -807,7 +777,7 @@ const styles = StyleSheet.create({
   /* Chevron */
   chevronRow: {
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing[2],
   },
 
   /* FAB */
@@ -822,7 +792,7 @@ const styles = StyleSheet.create({
     borderRadius: 29,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#5F63FF',
+    shadowColor: '#7B7FCC',
     shadowOpacity: 0.4,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },

@@ -8,6 +8,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { formatDate, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, parseISO } from './dateUtils';
 import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
+import { darkTheme as theme, typography, spacing } from '../../design/theme-system';
 import type { StreakCalendarProps, StreakDay } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -128,7 +129,7 @@ function CalendarGrid({
                   style={[
                     styles.dayNumber,
                     { color: isFuture ? mutedColor : textColor },
-                    isCompleted && { color: '#FFFFFF', fontWeight: '600' },
+                    isCompleted && { color: theme.colors.onAccent, fontWeight: '600' },
                   ]}
                 >
                   {date.getDate()}
@@ -282,20 +283,20 @@ export function StreakCalendar({ data, month, year, onDayPress }: StreakCalendar
 
 const styles = StyleSheet.create({
   calendarContainer: {
-    paddingHorizontal: 8,
-    paddingTop: 8,
+    paddingHorizontal: spacing[2],
+    paddingTop: spacing[2],
   },
   dayLabelsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
   dayLabelCell: {
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: spacing[1],
   },
   dayLabel: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
   },
   weekRow: {
@@ -306,13 +307,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    margin: 2,
+    margin: spacing[0.5],
   },
   todayCell: {
     borderWidth: 2,
   },
   dayNumber: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall, 
   },
   checkmark: {
     position: 'absolute',
@@ -320,15 +321,15 @@ const styles = StyleSheet.create({
     right: 2,
   },
   checkmarkText: {
-    fontSize: 8,
+    fontSize: typography.sizes.xxs, 
     color: '#FFFFFF',
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 12,
-    marginBottom: 8,
+    paddingVertical: spacing[3],
+    marginBottom: spacing[2],
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
@@ -337,12 +338,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    fontSize: 24,
+    fontSize: typography.sizes.h2, 
     fontWeight: '700',
   },
   statLabel: {
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: typography.sizes.captionSm, 
+    marginTop: spacing[0.5],
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

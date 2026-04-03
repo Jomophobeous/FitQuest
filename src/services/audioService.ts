@@ -682,9 +682,9 @@ function generateCompletionCompliment(
   const perfectKeys = ['audio.perfect.1', 'audio.perfect.2', 'audio.perfect.3'];
 
   if (data.completedCount === data.totalCount && data.totalCount > 0) {
-    parts.push(tr(perfectKeys[Math.floor(Math.random() * perfectKeys.length)]!));
+    parts.push(tr(perfectKeys[Math.floor(Math.random() * perfectKeys.length)]!)); // non-security
   } else {
-    parts.push(tr(complimentKeys[Math.floor(Math.random() * complimentKeys.length)]!));
+    parts.push(tr(complimentKeys[Math.floor(Math.random() * complimentKeys.length)]!)); // non-security
   }
 
   // Duration callout
@@ -709,7 +709,7 @@ function generateCompletionCompliment(
   // Level up
   if (data.levelUp && data.newLevel) {
     const levelUpKeys = ['audio.levelUp.1', 'audio.levelUp.2'];
-    parts.push(tr(levelUpKeys[Math.floor(Math.random() * levelUpKeys.length)]!, { level: data.newLevel }));
+    parts.push(tr(levelUpKeys[Math.floor(Math.random() * levelUpKeys.length)]!, { level: data.newLevel })); // non-security
   }
 
   // Streak milestone

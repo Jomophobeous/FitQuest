@@ -33,6 +33,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { GlassCard, GradientButton } from '../components/ui/GlassUI';
 import type { WorkoutCompletionData } from '../hooks/useFitQuestWorkout';
 import { formatMuscleName } from '../utils/formatMuscle';
+import { typography, spacing } from '../design/theme-system';
+
 
 // ─── Types ────────────────────────────────────────────
 interface WorkoutSummaryViewProps {
@@ -68,7 +70,7 @@ function AnimatedXPCounter({ target, color }: { target: number; color: string })
 }
 
 // ─── Component ────────────────────────────────────────
-export default function WorkoutSummaryView({ data, rating, onRate, onNewWorkout }: WorkoutSummaryViewProps) {
+function WorkoutSummaryView({ data, rating, onRate, onNewWorkout }: WorkoutSummaryViewProps) {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
@@ -242,7 +244,7 @@ export default function WorkoutSummaryView({ data, rating, onRate, onNewWorkout 
           <GlassCard style={styles.streakCard}>
             <View style={styles.streakRow}>
               <MaterialCommunityIcons name="fire" size={32} color={theme.colors.warning} />
-              <View style={{ marginLeft: 12 }}>
+              <View style={{ marginLeft: spacing[3] }}>
                 <Text style={[styles.streakValue, { color: theme.colors.text }]}>
                   {data.streak.current} {t('fitquest.dayStreak') ?? 'Day Streak'}
                 </Text>
@@ -363,10 +365,10 @@ function PhaseRow({
 // ─── Styles ───────────────────────────────────────────
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scroll: { alignItems: 'center', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 },
+  scroll: { alignItems: 'center', paddingHorizontal: spacing[5], paddingTop: spacing[4], paddingBottom: spacing[10] },
 
   // Trophy
-  trophyWrap: { marginBottom: 4 },
+  trophyWrap: { marginBottom: spacing[1] },
   trophyGlow: {
     width: 130,
     height: 130,
@@ -374,26 +376,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: { fontSize: 28, fontWeight: '700', textAlign: 'center', marginBottom: 16 },
+  title: { fontSize: typography.sizes.h1Sm, fontWeight: '700', textAlign: 'center', marginBottom: spacing[4] },
 
   // Level-up
   levelUpBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    gap: spacing[2.5],
+    paddingVertical: spacing[2.5],
+    paddingHorizontal: spacing[5],
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: spacing[4],
   },
-  levelUpText: { fontSize: 18, fontWeight: '800', letterSpacing: 1 },
+  levelUpText: { fontSize: typography.sizes.h4, fontWeight: '800', letterSpacing: 1 },
 
   // XP card
-  xpCard: { alignItems: 'center', paddingVertical: 20, width: '100%', marginBottom: 12 },
-  xpValue: { fontSize: 48, fontWeight: '900', fontVariant: ['tabular-nums'] as any },
-  xpLabel: { fontSize: 14, fontWeight: '600', marginTop: 2 },
-  levelBadge: { marginTop: 10, paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20 },
-  levelBadgeText: { fontSize: 13, fontWeight: '700' },
+  xpCard: { alignItems: 'center', paddingVertical: spacing[5], width: '100%', marginBottom: spacing[3] },
+  xpValue: { fontSize: typography.sizes.hero, fontWeight: '900', fontVariant: ['tabular-nums'] as any },
+  xpLabel: { fontSize: typography.sizes.bodySmall, fontWeight: '600', marginTop: spacing[0.5] },
+  levelBadge: { marginTop: spacing[2.5], paddingHorizontal: spacing[3.5], paddingVertical: spacing[1.25], borderRadius: 20 },
+  levelBadgeText: { fontSize: typography.sizes.label, fontWeight: '700' },
 
   // Stat grid
   statGrid: {
@@ -401,21 +403,21 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '100%',
-    gap: 8,
-    marginBottom: 12,
+    gap: spacing[2],
+    marginBottom: spacing[3],
   },
-  statTile: { width: '48%', alignItems: 'center', paddingVertical: 16, gap: 6 },
-  statValue: { fontSize: 20, fontWeight: '700' },
-  statLabel: { fontSize: 11, fontWeight: '500' },
+  statTile: { width: '48%', alignItems: 'center', paddingVertical: spacing[4], gap: spacing[1.5] },
+  statValue: { fontSize: typography.sizes.h3, fontWeight: '700' },
+  statLabel: { fontSize: typography.sizes.captionSm, fontWeight: '500' },
 
   // Phase breakdown
-  phaseCard: { width: '100%', padding: 16, marginBottom: 12, gap: 12 },
-  phaseRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  phaseLabel: { fontSize: 13, fontWeight: '600', width: 72 },
+  phaseCard: { width: '100%', padding: spacing[4], marginBottom: spacing[3], gap: spacing[3] },
+  phaseRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] },
+  phaseLabel: { fontSize: typography.sizes.label, fontWeight: '600', width: 72 },
   phaseBar: { flex: 1, height: 6, borderRadius: 3, overflow: 'hidden' as const },
   phaseBarFill: { height: 6, borderRadius: 3 },
   phaseCount: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption, 
     fontWeight: '600',
     fontVariant: ['tabular-nums'] as any,
     width: 30,
@@ -423,23 +425,25 @@ const styles = StyleSheet.create({
   },
 
   // Muscles
-  musclesCard: { width: '100%', padding: 16, marginBottom: 12 },
-  sectionLabel: { fontSize: 15, fontWeight: '700', marginBottom: 12 },
-  tagCloud: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  muscleTag: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
-  muscleTagText: { fontSize: 12, fontWeight: '600' },
+  musclesCard: { width: '100%', padding: spacing[4], marginBottom: spacing[3] },
+  sectionLabel: { fontSize: typography.sizes.bodyMid, fontWeight: '700', marginBottom: spacing[3] },
+  tagCloud: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+  muscleTag: { paddingHorizontal: spacing[3], paddingVertical: spacing[1.5], borderRadius: 20, borderWidth: 1 },
+  muscleTagText: { fontSize: typography.sizes.caption, fontWeight: '600' },
 
   // Streak
-  streakCard: { width: '100%', padding: 16, marginBottom: 12 },
+  streakCard: { width: '100%', padding: spacing[4], marginBottom: spacing[3] },
   streakRow: { flexDirection: 'row', alignItems: 'center' },
-  streakValue: { fontSize: 20, fontWeight: '700' },
-  streakBest: { fontSize: 13, marginTop: 2 },
+  streakValue: { fontSize: typography.sizes.h3, fontWeight: '700' },
+  streakBest: { fontSize: typography.sizes.label, marginTop: spacing[0.5] },
 
   // Rating
-  ratingCard: { width: '100%', alignItems: 'center', padding: 16, marginBottom: 16 },
-  starsRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
-  ratingFeedback: { marginTop: 10, fontSize: 14, fontWeight: '600' },
+  ratingCard: { width: '100%', alignItems: 'center', padding: spacing[4], marginBottom: spacing[4] },
+  starsRow: { flexDirection: 'row', gap: spacing[2.5], marginTop: spacing[2] },
+  ratingFeedback: { marginTop: spacing[2.5], fontSize: typography.sizes.bodySmall, fontWeight: '600' },
 
   // CTA
-  ctaWrap: { width: '100%', marginTop: 8 },
+  ctaWrap: { width: '100%', marginTop: spacing[2] },
 });
+
+export default React.memo(WorkoutSummaryView);

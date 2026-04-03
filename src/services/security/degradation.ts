@@ -154,7 +154,7 @@ class DegradationEngine {
     const finalDelay = Math.max(0, Math.round(delay * jitter));
 
     if (finalDelay > 0) {
-      await new Promise<void>((resolve) => setTimeout(resolve, finalDelay));
+      await new Promise<void>((resolve) => setTimeout(resolve, finalDelay)); // backoff-delay
     }
   }
 

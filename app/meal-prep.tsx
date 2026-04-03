@@ -4,42 +4,30 @@
  */
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
-import { getAppState } from '../src/database/service';
-import { getCached, setCached } from '../src/services/cacheStoreService';
+import ThemedText from '../src/components/ThemedText';
+import { useMealPrepViewModel, getMealSuggestionsFromFoods, type UserLocation, type FoodItem } from '../src/viewmodels/useMealPrepViewModel';
 import { GlassCard, SectionHeader } from '../src/components/ui/GlassUI';
-import {
-  getCurrentLocation,
-  getFoodsByLocation,
-  getMealSuggestionsFromFoods,
-  type UserLocation,
-  type FoodItem,
-} from '../src/services/locationService';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
+import { typography, spacing, radius } from '../src/design/theme-system';
+
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'pre-workout' | 'post-workout' | 'snack';
-type MealRegionOverride = 'AUTO' | 'ZA' | 'US' | 'GB' | 'IN' | 'BR' | 'AU';
-
-const REGION_OVERRIDE_LOCATION: Record<
-  Exclude<MealRegionOverride, 'AUTO'>,
-  Pick<UserLocation, 'country' | 'isoCountryCode' | 'city' | 'region'>
-> = {
-  ZA: { country: 'South Africa', isoCountryCode: 'ZA', city: 'Unknown', region: undefined },
-  US: { country: 'United States', isoCountryCode: 'US', city: 'Unknown', region: undefined },
-  GB: { country: 'United Kingdom', isoCountryCode: 'GB', city: 'Unknown', region: undefined },
-  IN: { country: 'India', isoCountryCode: 'IN', city: 'Unknown', region: undefined },
-  BR: { country: 'Brazil', isoCountryCode: 'BR', city: 'Unknown', region: undefined },
-  AU: { country: 'Australia', isoCountryCode: 'AU', city: 'Unknown', region: undefined },
-};
 
 const MEAL_TABS: { key: MealType; icon: string }[] = [
   { key: 'breakfast', icon: 'weather-sunset-up' },
@@ -81,7 +69,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       paddingBottom: theme.spacing[3],
     },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    headerTitle: { fontSize: 24, fontWeight: '800', color: theme.colors.text },
+    headerTitle: { fontSize: typography.sizes.h2, fontWeight: '800', color: theme.colors.text },
     headerSpacer: { width: theme.spacing[6] },
     locationBadge: {
       flexDirection: 'row',
@@ -94,7 +82,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       borderWidth: 1,
       alignSelf: 'flex-start',
     },
-    locationText: { fontSize: 12, fontWeight: '500', color: theme.colors.textSecondary },
+    locationText: { fontSize: typography.sizes.caption, fontWeight: '500', color: theme.colors.textSecondary },
     mealTabs: {
       flexGrow: 0,
       paddingHorizontal: theme.spacing[4],
@@ -111,14 +99,14 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       borderWidth: 1,
       marginRight: theme.spacing[2],
     },
-    mealTabText: { fontSize: 12 },
+    mealTabText: { fontSize: typography.sizes.caption },
     tipCard: { marginHorizontal: theme.spacing[4], marginTop: theme.spacing[3], padding: theme.spacing[4] },
     tipRow: { flexDirection: 'row', alignItems: 'flex-start', gap: theme.spacing[3] },
-    tipText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 19, color: theme.colors.text },
+    tipText: { flex: 1, fontSize: typography.sizes.label, fontWeight: '500', lineHeight: 19, color: theme.colors.text },
     emptyCard: { marginHorizontal: theme.spacing[4], padding: theme.spacing[6], alignItems: 'center' },
     emptyText: {
       textAlign: 'center',
-      fontSize: 13,
+      fontSize: typography.sizes.label, 
       marginTop: theme.spacing[3],
       lineHeight: 20,
       color: theme.colors.textMuted,
@@ -139,12 +127,12 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       alignItems: 'center',
     },
     foodInfo: { flex: 1 },
-    foodName: { fontSize: 14, fontWeight: '600', color: theme.colors.text },
-    foodDesc: { fontSize: 11, marginTop: theme.spacing[1], lineHeight: 15, color: theme.colors.textMuted },
-    foodLocal: { fontSize: 11, marginTop: theme.spacing[1], fontStyle: 'italic', color: theme.colors.accent },
+    foodName: { fontSize: typography.sizes.bodySmall, fontWeight: '600', color: theme.colors.text },
+    foodDesc: { fontSize: typography.sizes.captionSm, marginTop: theme.spacing[1], lineHeight: 15, color: theme.colors.textMuted },
+    foodLocal: { fontSize: typography.sizes.captionSm, marginTop: theme.spacing[1], fontStyle: 'italic', color: theme.colors.accent },
     foodNutrition: { alignItems: 'flex-end' },
-    foodCal: { fontSize: 12, fontWeight: '700', color: theme.colors.warning },
-    foodProtein: { fontSize: 10, fontWeight: '500', marginTop: theme.spacing[1], color: theme.colors.accent2 },
+    foodCal: { fontSize: typography.sizes.caption, fontWeight: '700', color: theme.colors.warning },
+    foodProtein: { fontSize: typography.sizes.xs, fontWeight: '500', marginTop: theme.spacing[1], color: theme.colors.accent2 },
     compactFoodRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -155,9 +143,9 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       gap: theme.spacing[3],
     },
     categoryDot: { width: theme.spacing[2], height: theme.spacing[2], borderRadius: theme.borderRadius.full },
-    compactFoodName: { flex: 1, fontSize: 13, fontWeight: '600', color: theme.colors.text },
-    compactFoodCategory: { fontSize: 11, textTransform: 'capitalize', color: theme.colors.textMuted },
-    compactFoodCal: { fontSize: 11, fontWeight: '600', color: theme.colors.textSecondary },
+    compactFoodName: { flex: 1, fontSize: typography.sizes.label, fontWeight: '600', color: theme.colors.text },
+    compactFoodCategory: { fontSize: typography.sizes.captionSm, textTransform: 'capitalize', color: theme.colors.textMuted },
+    compactFoodCal: { fontSize: typography.sizes.captionSm, fontWeight: '600', color: theme.colors.textSecondary },
     locationInfo: {
       marginHorizontal: theme.spacing[4],
       marginTop: theme.spacing[4],
@@ -166,7 +154,7 @@ const createStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
       gap: theme.spacing[3],
       padding: theme.spacing[4],
     },
-    locationInfoText: { flex: 1, fontSize: 12, lineHeight: 17, color: theme.colors.textMuted },
+    locationInfoText: { flex: 1, fontSize: typography.sizes.caption, lineHeight: 17, color: theme.colors.textMuted },
     foodItemSpacing: { paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[2] },
     compactItemSpacing: { paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[2] },
     bottomSpacer: { height: theme.spacing[8] },
@@ -176,11 +164,8 @@ export default function MealPrepScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
+  const vm = useMealPrepViewModel();
   const [selectedMeal, setSelectedMeal] = useState<MealType>('breakfast');
-  const [location, setLocation] = useState<UserLocation | null>(null);
-  const [manualRegionOverride, setManualRegionOverride] = useState<MealRegionOverride>('AUTO');
-  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
-  const [allFoods, setAllFoods] = useState<FoodItem[]>(() => getFoodsByLocation(null));
   const [showAllFoods, setShowAllFoods] = useState(false);
   const [showMoreMeal, setShowMoreMeal] = useState(false);
 
@@ -192,8 +177,8 @@ export default function MealPrepScreen() {
 
   // Derive meal suggestions for the ACTIVE tab only (not all 6 tabs)
   const currentMealSuggestions = useMemo(
-    () => getMealSuggestionsFromFoods(selectedMeal, allFoods),
-    [selectedMeal, allFoods],
+    () => getMealSuggestionsFromFoods(selectedMeal, vm.allFoods),
+    [selectedMeal, vm.allFoods],
   );
 
   // Limit meal suggestion display to 15 initially
@@ -203,84 +188,13 @@ export default function MealPrepScreen() {
   );
 
   // Limit "all foods" list to 30 items until user expands
-  const visibleFoods = useMemo(() => (showAllFoods ? allFoods : allFoods.slice(0, 30)), [allFoods, showAllFoods]);
+  const visibleFoods = useMemo(() => (showAllFoods ? vm.allFoods : vm.allFoods.slice(0, 30)), [vm.allFoods, showAllFoods]);
 
+  // Reset expand states when location changes
   useEffect(() => {
-    loadLocation();
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    // Reset expand states when location changes to prevent layout corruption
     setShowAllFoods(false);
     setShowMoreMeal(false);
-    const loadFoods = async () => {
-      const regionCode = String(location?.isoCountryCode || 'GLOBAL').toUpperCase();
-      const cacheId = `foods_${regionCode}`;
-      const cached = await getCached<FoodItem[]>('meal', cacheId);
-      if (active && cached.value && cached.value.length > 0) {
-        setAllFoods(cached.value);
-      }
-
-      const freshFoods = getFoodsByLocation(location);
-      if (active) {
-        setAllFoods(freshFoods);
-        // Write cache in background — don't block UI
-        void setCached('meal', cacheId, freshFoods);
-      }
-    };
-
-    void loadFoods();
-    return () => {
-      active = false;
-    };
-  }, [location]);
-
-  const loadLocation = useCallback(async () => {
-    setIsLoadingLocation(true);
-    try {
-      // Parallelize override check + cache read
-      const [savedOverride, cachedAutoLocation] = await Promise.all([
-        getAppState('meal.region_override').catch(() => null) as Promise<MealRegionOverride | null>,
-        getCached<UserLocation | null>('meal', 'auto_location'),
-      ]);
-
-      const activeOverride: MealRegionOverride =
-        savedOverride && (savedOverride in REGION_OVERRIDE_LOCATION || savedOverride === 'AUTO')
-          ? savedOverride
-          : 'AUTO';
-      setManualRegionOverride(activeOverride);
-
-      if (activeOverride !== 'AUTO') {
-        const overrideLocation = REGION_OVERRIDE_LOCATION[activeOverride as Exclude<MealRegionOverride, 'AUTO'>];
-        const overrideResolvedLocation = {
-          latitude: 0,
-          longitude: 0,
-          city: overrideLocation.city,
-          region: overrideLocation.region,
-          country: overrideLocation.country,
-          isoCountryCode: overrideLocation.isoCountryCode,
-        };
-        setLocation(overrideResolvedLocation);
-        void setCached('meal', 'auto_location', overrideResolvedLocation, 24 * 60 * 60 * 1000);
-        return;
-      }
-
-      if (cachedAutoLocation.value) {
-        setLocation(cachedAutoLocation.value);
-        return;
-      }
-
-      const loc = await getCurrentLocation();
-      setLocation(loc);
-      void setCached('meal', 'auto_location', loc, 24 * 60 * 60 * 1000);
-    } catch (e) {
-      if (__DEV__) console.warn('[MealPrep] Failed to load location:', e);
-      setLocation(null);
-    } finally {
-      setIsLoadingLocation(false);
-    }
-  }, []);
+  }, [vm.location]);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -406,18 +320,18 @@ export default function MealPrepScreen() {
     };
   }, [theme, selectedMeal, mealTabColors, categoryColors, selectedTabColor]);
 
-  const areaName = location
-    ? location.city && location.city !== 'Unknown'
-      ? location.city
-      : location.country && location.country !== 'Global'
-        ? location.country
+  const areaName = vm.location
+    ? vm.location.city && vm.location.city !== 'Unknown'
+      ? vm.location.city
+      : vm.location.country && vm.location.country !== 'Global'
+        ? vm.location.country
         : t('meal.location.yourArea').toLowerCase()
     : t('meal.location.yourArea').toLowerCase();
 
   return (
     <ScreenErrorBoundary screenName="MealPrep" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
       <PremiumGate featureName="Meal Planning">
-        <SafeAreaView style={styles.container}>
+        <ScreenContainer>
           <ScreenTutorial
             screenKey="meal-prep"
             icon="food-apple"
@@ -428,47 +342,47 @@ export default function MealPrepScreen() {
             <Animated.View entering={FadeIn.duration(150)}>
               <LinearGradient colors={dynamicStyles.headerGradientColors} style={styles.headerGradient}>
                 <View style={styles.headerRow}>
-                  <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}>
+                  <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))} accessibilityRole="button" accessibilityLabel="Go back">
                     <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
                   </TouchableOpacity>
-                  <Text style={styles.headerTitle}>{t('meal.title')}</Text>
+                  <ThemedText style={styles.headerTitle}>{t('meal.title')}</ThemedText>
                   <View style={styles.headerSpacer} />
                 </View>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
-                  <TouchableOpacity onPress={loadLocation} style={[styles.locationBadge, dynamicStyles.locationBadge]}>
+                  <TouchableOpacity onPress={vm.loadLocation} style={[styles.locationBadge, dynamicStyles.locationBadge]} accessibilityRole="button" accessibilityLabel="Detect location for regional foods">
                     <MaterialCommunityIcons
-                      name={location ? 'map-marker-check' : 'map-marker-question'}
+                      name={vm.location ? 'map-marker-check' : 'map-marker-question'}
                       size={14}
-                      color={location ? theme.colors.success : theme.colors.textMuted}
+                      color={vm.location ? theme.colors.success : theme.colors.textMuted}
                     />
-                    {isLoadingLocation ? (
+                    {vm.isLoadingLocation ? (
                       <ActivityIndicator size="small" color={theme.colors.accent} />
                     ) : (
-                      <Text style={styles.locationText}>
-                        {location
-                          ? location.city && location.city !== 'Unknown'
-                            ? `${location.city}${location.country && location.country !== 'Global' ? `, ${location.country}` : ''}`
-                            : location.country && location.country !== 'Global'
-                              ? location.country
+                      <ThemedText style={styles.locationText}>
+                        {vm.location
+                          ? vm.location.city && vm.location.city !== 'Unknown'
+                            ? `${vm.location.city}${vm.location.country && vm.location.country !== 'Global' ? `, ${vm.location.country}` : ''}`
+                            : vm.location.country && vm.location.country !== 'Global'
+                              ? vm.location.country
                               : t('meal.location.yourArea')
                           : t('meal.location.tapEnable')}
-                        {manualRegionOverride !== 'AUTO' ? ` · ${t('meal.location.manual')}` : ''}
-                      </Text>
+                        {vm.manualRegionOverride !== 'AUTO' ? ` · ${t('meal.location.manual')}` : ''}
+                      </ThemedText>
                     )}
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     onPress={() => {
-                      // Force-refresh: clear cache then reload
-                      void setCached('meal', 'auto_location', null, 0);
-                      loadLocation();
+                      vm.forceRefreshLocation();
                     }}
                     style={{
                       padding: theme.spacing[2],
                       borderRadius: theme.borderRadius.full,
                       backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Refresh location"
                   >
                     <MaterialCommunityIcons name="refresh" size={16} color={theme.colors.textSecondary} />
                   </TouchableOpacity>
@@ -486,15 +400,17 @@ export default function MealPrepScreen() {
                       key={tab.key}
                       onPress={() => handleMealChange(tab.key)}
                       style={[styles.mealTab, dynamicStyles.mealTabStyle[tab.key]]}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${mealTabLabelByType[tab.key]}${isActive ? ', selected' : ''}`}
                     >
                       <MaterialCommunityIcons
                         name={tab.icon as any}
                         size={18}
                         color={isActive ? tabColor : theme.colors.textMuted}
                       />
-                      <Text style={[styles.mealTabText, dynamicStyles.mealTabText[tab.key]]}>
+                      <ThemedText style={[styles.mealTabText, dynamicStyles.mealTabText[tab.key]]}>
                         {mealTabLabelByType[tab.key]}
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
                   );
                 })}
@@ -504,7 +420,7 @@ export default function MealPrepScreen() {
             <GlassCard style={styles.tipCard} delay={200} glowColor={selectedTabColor}>
               <View style={styles.tipRow}>
                 <MaterialCommunityIcons name="lightbulb-outline" size={20} color={selectedTabColor} />
-                <Text style={styles.tipText}>{mealTipByType[selectedMeal] || currentMealSuggestions.tip}</Text>
+                <ThemedText style={styles.tipText}>{mealTipByType[selectedMeal] || currentMealSuggestions.tip}</ThemedText>
               </View>
             </GlassCard>
 
@@ -513,11 +429,11 @@ export default function MealPrepScreen() {
             {currentMealSuggestions.foods.length === 0 ? (
               <GlassCard style={styles.emptyCard}>
                 <MaterialCommunityIcons name="food-off" size={48} color={theme.colors.textMuted} />
-                <Text style={styles.emptyText}>
+                <ThemedText style={styles.emptyText}>
                   {t('meal.empty.noFoods')}
                   {'\n'}
                   {t('meal.empty.tryAnother')}
-                </Text>
+                </ThemedText>
               </GlassCard>
             ) : (
               visibleMealFoods.map((food, idx) => {
@@ -534,24 +450,24 @@ export default function MealPrepScreen() {
                         />
                       </View>
                       <View style={styles.foodInfo}>
-                        <Text style={styles.foodName}>{food.name}</Text>
-                        <Text style={styles.foodDesc}>{food.description}</Text>
+                        <ThemedText style={styles.foodName}>{food.name}</ThemedText>
+                        <ThemedText style={styles.foodDesc}>{food.description}</ThemedText>
                         {hasLocalName ? (
-                          <Text style={styles.foodLocal}>
+                          <ThemedText style={styles.foodLocal}>
                             {t('meal.localPrefix')}: {String(food.local_name)}
-                          </Text>
+                          </ThemedText>
                         ) : null}
                       </View>
                       <View style={styles.foodNutrition}>
                         {food.calories_per_serving != null ? (
-                          <Text style={styles.foodCal}>
+                          <ThemedText style={styles.foodCal}>
                             {food.calories_per_serving} {t('meal.unit.cal')}
-                          </Text>
+                          </ThemedText>
                         ) : null}
                         {food.protein_g != null ? (
-                          <Text style={styles.foodProtein}>
+                          <ThemedText style={styles.foodProtein}>
                             {food.protein_g}g {t('meal.unit.protein')}
-                          </Text>
+                          </ThemedText>
                         ) : null}
                       </View>
                     </View>
@@ -564,10 +480,12 @@ export default function MealPrepScreen() {
               <TouchableOpacity
                 onPress={() => setShowMoreMeal(true)}
                 style={{ alignItems: 'center', paddingVertical: theme.spacing[3] }}
+                accessibilityRole="button"
+                accessibilityLabel={`Show all ${currentMealSuggestions.foods.length} ${selectedMeal} foods`}
               >
-                <Text style={{ color: selectedTabColor, fontWeight: '600', fontSize: 13 }}>
+                <ThemedText style={{ color: selectedTabColor, fontWeight: '600', fontSize: typography.sizes.label }}>
                   {`Show all ${currentMealSuggestions.foods.length} ${selectedMeal} foods`}
-                </Text>
+                </ThemedText>
               </TouchableOpacity>
             )}
 
@@ -577,40 +495,42 @@ export default function MealPrepScreen() {
               <View key={`all-${food.name}-${idx}`} style={styles.compactItemSpacing}>
                 <View style={[styles.compactFoodRow, dynamicStyles.compactFoodRow]}>
                   <View style={[styles.categoryDot, dynamicStyles.categoryDot[food.category]]} />
-                  <Text style={styles.compactFoodName}>{food.name}</Text>
-                  <Text style={styles.compactFoodCategory}>{food.category}</Text>
+                  <ThemedText style={styles.compactFoodName}>{food.name}</ThemedText>
+                  <ThemedText style={styles.compactFoodCategory}>{food.category}</ThemedText>
                   {food.calories_per_serving != null ? (
-                    <Text style={styles.compactFoodCal}>
+                    <ThemedText style={styles.compactFoodCal}>
                       {food.calories_per_serving} {t('meal.unit.cal')}
-                    </Text>
+                    </ThemedText>
                   ) : null}
                 </View>
               </View>
             ))}
 
-            {!showAllFoods && allFoods.length > 30 && (
+            {!showAllFoods && vm.allFoods.length > 30 && (
               <TouchableOpacity
                 onPress={() => setShowAllFoods(true)}
                 style={{ alignItems: 'center', paddingVertical: theme.spacing[4] }}
+                accessibilityRole="button"
+                accessibilityLabel="Show all foods"
               >
-                <Text style={{ color: theme.colors.accent, fontWeight: '600', fontSize: 14 }}>
-                  {t('meal.showMore') || `Show all ${allFoods.length} foods`}
-                </Text>
+                <ThemedText style={{ color: theme.colors.accent, fontWeight: '600', fontSize: typography.sizes.bodySmall }}>
+                  {t('meal.showMore') || `Show all ${vm.allFoods.length} foods`}
+                </ThemedText>
               </TouchableOpacity>
             )}
 
             <GlassCard style={styles.locationInfo} delay={500}>
               <MaterialCommunityIcons name="information-outline" size={16} color={theme.colors.accent} />
-              <Text style={styles.locationInfoText}>
-                {location
+              <ThemedText style={styles.locationInfoText}>
+                {vm.location
                   ? `${t('meal.location.infoPrefix')} ${areaName}${t('meal.location.infoSuffix')}`
                   : t('meal.location.infoNoLocation')}
-              </Text>
+              </ThemedText>
             </GlassCard>
 
             <View style={styles.bottomSpacer} />
           </ScrollView>
-        </SafeAreaView>
+        </ScreenContainer>
       </PremiumGate>
     </ScreenErrorBoundary>
   );

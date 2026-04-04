@@ -737,7 +737,9 @@ async function migrateCategoryRename(database: SQLite.SQLiteDatabase): Promise<v
   await database.execAsync('DROP TABLE IF EXISTS exercises_new');
   await database.execAsync('DROP TABLE IF EXISTS user_profile_new');
 
-  await database.execAsync('BEGIN TRANSACTION');
+  // NOTE: No BEGIN TRANSACTION here — this function is called from
+  // runMigrationSandboxed() which already wraps it in a SAVEPOINT.
+  // Nesting BEGIN TRANSACTION inside SAVEPOINT crashes expo-sqlite.
 
   try {
     // --- 1. Recreate exercises table with new CHECK constraint ---
@@ -834,21 +836,14 @@ async function migrateCategoryRename(database: SQLite.SQLiteDatabase): Promise<v
         END
     `);
 
-    await database.execAsync('COMMIT');
-
-    // Re-enable FK enforcement
-    await database.execAsync('PRAGMA foreign_keys = ON');
-
     // Log result
     const categories = await database.getAllAsync<{ category: string; count: number }>(
       `SELECT category, COUNT(*) as count FROM exercises GROUP BY category ORDER BY count DESC`,
     );
     if (__DEV__) console.warn(`[FitQuest DB] Category rename complete:`, JSON.stringify(categories));
-  } catch (error) {
-    await database.execAsync('ROLLBACK');
+  } finally {
+    // Re-enable FK enforcement regardless of success/failure
     await database.execAsync('PRAGMA foreign_keys = ON');
-    if (__DEV__) console.error('[FitQuest DB] Category rename migration failed:', error);
-    throw error;
   }
 }
 

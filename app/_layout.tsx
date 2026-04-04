@@ -359,6 +359,22 @@ function ThemedTabs() {
           title: t('nav.termsOfService'),
         }}
       />
+      <Tabs.Screen
+        name="feedback"
+        options={{
+          href: null,
+          lazy: true,
+          title: t('nav.feedback'),
+        }}
+      />
+      <Tabs.Screen
+        name="dev/debug-panel"
+        options={{
+          href: null,
+          lazy: true,
+          title: 'Debug Panel',
+        }}
+      />
     </Tabs>
   );
 }

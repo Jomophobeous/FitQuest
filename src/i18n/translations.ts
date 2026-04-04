@@ -1170,6 +1170,7 @@ const en = {
   'nav.legalCenter': 'Legal Center',
   'nav.privacyPolicy': 'Privacy Policy',
   'nav.termsOfService': 'Terms of Service',
+  'nav.feedback': 'Feedback',
   'nav.autonomousCenter': 'Autonomous Center',
   'nav.federationHub': 'Federation Hub',
   'nav.enterpriseHardening': 'Enterprise Hardening',

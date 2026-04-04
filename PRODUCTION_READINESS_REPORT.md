@@ -219,4 +219,71 @@ UI components   NONE      ░░░░░░░░░░  LOW
 3. **Add Maestro to CI** — run 4 device flows on emulator in GitHub Actions
 4. **Lower lint threshold** — 250 → 175 (matches current actual)
 5. **Remove `__smoke__.test.ts`** — diagnostic artifact, no longer needed
+
+---
+
+## ChatGPT Roadmap Critique (Phases 4-8)
+
+The following evaluates the ChatGPT-generated roadmap that drove Phases 4-8. Assessed on three axes: **relevance** (does it address real gaps?), **accuracy** (does it understand our codebase?), **value** (did execution move the needle?).
+
+### Phase 4: Runtime Safety — PARTIALLY RELEVANT
+
+**What ChatGPT said**: Add ErrorBoundary, wire Sentry crash reporting, write runtime safety tests.
+
+**Reality**: ErrorBoundary already existed and was wired in `_layout.tsx`. Sentry was already fully integrated in `crashReporting.ts`. The "add ErrorBoundary" instruction was a complete miss — it didn't check existing code.
+
+**What we actually did**: Refactored `crashReporting.ts` from `require()` to `import()` for vitest testability, then wrote 10 runtime safety tests. The refactor was genuine value; the directive was ~30% accurate.
+
+**Verdict**: ChatGPT assumed this was missing. It wasn't. The test-writing part was useful, but the instructions burned time on discovery that should have been done before prescribing.
+
+### Phase 5: E2E (Maestro) — PARTIALLY RELEVANT
+
+**What ChatGPT said**: Configure Maestro, add E2E flows for critical paths.
+
+**Reality**: Maestro was already configured with 3 flows (onboarding, workout generation, cold launch). ChatGPT didn't know this.
+
+**What we actually did**: Added 1 new flow (biometric unlock), bringing total to 4. Useful, but the "configure Maestro from scratch" framing was wrong.
+
+**Verdict**: ~25% accurate. The additional flow had value. The setup instructions were wasted.
+
+### Phase 6: Sensor Fusion Tests — HIGHLY RELEVANT
+
+**What ChatGPT said**: Test SensorFusionEngine — accelerometer, step detection, activity classification.
+
+**Reality**: This was a genuine gap. Zero tests existed for the sensor engine. 30 tests now cover initialization, accelerometer handling, step detection, activity classification, rep counting, and callback error isolation.
+
+**Verdict**: 100% accurate. This was the single highest-value directive in the entire roadmap.
+
+### Phase 7: UI Stability Layer — RELEVANT (wrong approach)
+
+**What ChatGPT said**: Write component render tests for screens.
+
+**Reality**: Full component render tests are impractical in this codebase — too many React Native/Expo primitives require mocking in happy-dom. We pivoted to ViewModel hook tests, which provide equivalent confidence for loading/error/populated states without the mock mountain.
+
+**Verdict**: Right problem, wrong solution. The ViewModel approach was better. 16 dashboard VM tests provide the same stability guarantee ChatGPT wanted, with 1/10th the mocking complexity.
+
+### Phase 8: Structural Cleanup — PARTIALLY RELEVANT
+
+**What ChatGPT said**: Remove Apollo, narrow `any` types, dead code audit.
+
+**Reality**: Apollo was already removed (Phase 2B). Dead code audit was already done. The only genuinely remaining work was `any` narrowing.
+
+**What we actually did**: Removed 34 `any` casts across 6 files. Of the original ~162 `any` patterns, ~128 remain — but these are structural (expo-router casts, RN icon props, catch blocks, lazy imports) and cannot be removed without external changes (typed route generation, library type updates).
+
+**Verdict**: ~33% accurate. Apollo removal instruction was completely wrong. `any` narrowing was valuable but hit diminishing returns fast.
+
+### Overall Assessment
+
+| Metric | Score | Notes |
+|---|---|---|
+| **Relevance** | 5/10 | Phases 4, 5, 8 prescribed work that was already done |
+| **Accuracy** | 3/10 | Did not analyze existing codebase before prescribing; assumed gaps that didn't exist |
+| **Value delivered** | 7/10 | Despite wrong framing, execution produced real value: 56 new tests, 34 any casts removed, 1 Maestro flow |
+| **Time efficiency** | 4/10 | ~40% of investigation time was spent discovering that prescribed work was already complete |
+
+### Key Takeaway
+
+ChatGPT is good at generating **plausible-sounding roadmaps** but bad at **understanding existing state**. It prescribed from a template, not from actual codebase analysis. The most valuable directive (Phase 6: sensor fusion tests) was the one that happened to align with a real gap. The least valuable (Phase 4: "add ErrorBoundary", Phase 8: "remove Apollo") prescribed things that were already done.
+
+**For future roadmaps**: Feed ChatGPT the actual codebase state (test inventory, file list, existing infrastructure) before asking for recommendations. Without that context, it generates generic advice that wastes 40-60% of execution time on rediscovery.
 6. **UI component render tests** — if ViewModel coverage proves insufficient for visual bugs

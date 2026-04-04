@@ -9,15 +9,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, ScrollView, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -45,7 +37,7 @@ import { validateNumeric, BODY_RANGES } from '../src/utils/validation';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
 import { typography, spacing, radius } from '../src/design/theme-system';
-
+import { craftMyBodyStyles as styles } from '../src/components/craft-my-body/styles';
 
 // ============================================
 // CONSTANTS
@@ -401,7 +393,9 @@ export default function CraftMyBodyScreen() {
         <ThemedText style={[styles.label, { color: colors.text }]}>Measurements</ThemedText>
         <View style={styles.inputRow}>
           <View style={styles.inputGroup}>
-            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.heightLabel')}</ThemedText>
+            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>
+              {t('craftBody.heightLabel')}
+            </ThemedText>
             <TextInput
               style={inputStyle}
               value={heightCm}
@@ -415,11 +409,17 @@ export default function CraftMyBodyScreen() {
               placeholderTextColor={colors.textMuted}
             />
             {!!fieldErrors.heightCm && (
-              <ThemedText style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>{fieldErrors.heightCm}</ThemedText>
+              <ThemedText
+                style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}
+              >
+                {fieldErrors.heightCm}
+              </ThemedText>
             )}
           </View>
           <View style={styles.inputGroup}>
-            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>{t('craftBody.weightLabel')}</ThemedText>
+            <ThemedText style={[styles.inputLabel, { color: colors.textMuted }]}>
+              {t('craftBody.weightLabel')}
+            </ThemedText>
             <TextInput
               style={inputStyle}
               value={weightKg}
@@ -433,7 +433,11 @@ export default function CraftMyBodyScreen() {
               placeholderTextColor={colors.textMuted}
             />
             {!!fieldErrors.weightKg && (
-              <ThemedText style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>{fieldErrors.weightKg}</ThemedText>
+              <ThemedText
+                style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}
+              >
+                {fieldErrors.weightKg}
+              </ThemedText>
             )}
           </View>
           <View style={styles.inputGroup}>
@@ -451,7 +455,11 @@ export default function CraftMyBodyScreen() {
               placeholderTextColor={colors.textMuted}
             />
             {!!fieldErrors.age && (
-              <ThemedText style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>{fieldErrors.age}</ThemedText>
+              <ThemedText
+                style={{ color: colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}
+              >
+                {fieldErrors.age}
+              </ThemedText>
             )}
           </View>
         </View>
@@ -584,7 +592,9 @@ export default function CraftMyBodyScreen() {
   const renderFocusAreas = () => (
     <Animated.View entering={FadeInDown.duration(150)} key="step-focus">
       <SectionHeader title={t('craftBody.focusAreas')} />
-      <ThemedText style={[styles.focusHint, { color: colors.textMuted }]}>Tap to cycle: Maintain → Priority → Ignore</ThemedText>
+      <ThemedText style={[styles.focusHint, { color: colors.textMuted }]}>
+        Tap to cycle: Maintain → Priority → Ignore
+      </ThemedText>
       <View style={styles.muscleGrid}>
         {MUSCLE_GROUPS.map((mg) => {
           const priority: MusclePriority = musclePriorities[mg.key] ?? 'maintain';
@@ -670,7 +680,9 @@ export default function CraftMyBodyScreen() {
             <MaterialCommunityIcons name="calendar-week" size={22} color={colors.accent} />
             <ThemedText style={[styles.resultTitle, { color: colors.text }]}>Training Split</ThemedText>
           </View>
-          <ThemedText style={[styles.resultValue, { color: colors.accent }]}>{algorithm.recommended_training_split}</ThemedText>
+          <ThemedText style={[styles.resultValue, { color: colors.accent }]}>
+            {algorithm.recommended_training_split}
+          </ThemedText>
           <ThemedText style={[styles.resultSub, { color: colors.textMuted }]}>
             {algorithm.training_days_per_week} days/week
           </ThemedText>
@@ -716,7 +728,8 @@ export default function CraftMyBodyScreen() {
             <ThemedText style={[styles.resultTitle, { color: colors.text }]}>Daily Nutrition</ThemedText>
           </View>
           <ThemedText style={[styles.caloriesBig, { color: colors.text }]}>
-            {algorithm.calories_target} <ThemedText style={{ fontSize: typography.sizes.body, color: colors.textMuted }}>kcal/day</ThemedText>
+            {algorithm.calories_target}{' '}
+            <ThemedText style={{ fontSize: typography.sizes.body, color: colors.textMuted }}>kcal/day</ThemedText>
           </ThemedText>
 
           <View style={styles.macroRow}>
@@ -765,7 +778,9 @@ export default function CraftMyBodyScreen() {
           <View style={styles.targetRow}>
             <View style={styles.targetItem}>
               <MaterialCommunityIcons name="water" size={24} color={colors.skyBlue} />
-              <ThemedText style={[styles.targetValue, { color: colors.text }]}>{algorithm.daily_water_liters}L</ThemedText>
+              <ThemedText style={[styles.targetValue, { color: colors.text }]}>
+                {algorithm.daily_water_liters}L
+              </ThemedText>
               <ThemedText style={[styles.targetLabel, { color: colors.textMuted }]}>Water</ThemedText>
             </View>
             <View style={styles.targetItem}>
@@ -775,7 +790,9 @@ export default function CraftMyBodyScreen() {
             </View>
             <View style={styles.targetItem}>
               <MaterialCommunityIcons name="run" size={24} color={colors.pinkLight} />
-              <ThemedText style={[styles.targetValue, { color: colors.text }]}>{algorithm.cardio_minutes_per_week}m</ThemedText>
+              <ThemedText style={[styles.targetValue, { color: colors.text }]}>
+                {algorithm.cardio_minutes_per_week}m
+              </ThemedText>
               <ThemedText style={[styles.targetLabel, { color: colors.textMuted }]}>Cardio/wk</ThemedText>
             </View>
           </View>
@@ -951,135 +968,3 @@ export default function CraftMyBodyScreen() {
     </ScreenErrorBoundary>
   );
 }
-
-// ============================================
-// STYLES
-// ============================================
-
-const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  scroll: { flex: 1 },
-  scrollContent: { padding: spacing[4], paddingBottom: spacing[25] },
-
-  // Progress bar
-  progressContainer: { marginBottom: spacing[6] },
-  progressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing[2] },
-  progressStep: { alignItems: 'center', flex: 1 },
-  progressDot: {
-    width: 16,
-    height: 16,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing[1],
-  },
-  progressLabel: { fontSize: typography.sizes.xs, textAlign: 'center' },
-  progressLine: { height: 3, borderRadius: 2, marginHorizontal: spacing[8] },
-  progressLineFill: { height: 3, borderRadius: 2 },
-
-  // Cards
-  card: { marginBottom: spacing[4], padding: spacing[4] },
-
-  // Labels
-  label: { fontSize: typography.sizes.body, fontWeight: '700', marginBottom: spacing[2] },
-  inputLabel: { fontSize: typography.sizes.caption, fontWeight: '500', marginBottom: spacing[1] },
-
-  // Inputs
-  inputRow: { flexDirection: 'row', gap: spacing[2] },
-  inputGroup: { flex: 1 },
-  textInput: {
-    borderWidth: 1,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
-    fontSize: typography.sizes.body, 
-    fontWeight: '600',
-  },
-
-  // Chips
-  chipRow: { flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[1.5],
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    borderRadius: 24,
-    borderWidth: 1,
-  },
-  chipText: { fontSize: typography.sizes.bodySmall, fontWeight: '500' },
-
-  // Option rows
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[3],
-    padding: spacing[3],
-    borderRadius: radius.md,
-    borderWidth: 1,
-    marginBottom: spacing[2],
-  },
-  optionText: { flex: 1 },
-  optionTitle: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
-  optionDesc: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
-
-  // Goal rows
-  goalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[4], borderRadius: radius.md, borderWidth: 1, padding: spacing[2] },
-  goalIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  goalTitle: { fontSize: typography.sizes.body, fontWeight: '700' },
-  goalDesc: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
-
-  // Focus areas
-  focusHint: { fontSize: typography.sizes.label, marginBottom: spacing[4], textAlign: 'center' },
-  muscleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], justifyContent: 'space-between' },
-  muscleCard: { width: '47%' as any, alignItems: 'center', padding: spacing[4], borderRadius: radius.lg, minWidth: 150 },
-  muscleLabel: { fontSize: typography.sizes.label, fontWeight: '600', marginTop: spacing[2], marginBottom: spacing[2] },
-  priorityBadge: { paddingHorizontal: spacing[2], paddingVertical: spacing[0.5], borderRadius: radius.md },
-  priorityText: { fontSize: typography.sizes.xs, fontWeight: '700' },
-
-  // Results
-  resultHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginBottom: spacing[2] },
-  resultTitle: { fontSize: typography.sizes.body, fontWeight: '700' },
-  resultValue: { fontSize: typography.sizes.h3, fontWeight: '700', marginBottom: spacing[1] },
-  resultSub: { fontSize: typography.sizes.label, marginBottom: spacing[4] },
-
-  // Schedule
-  scheduleRow: { flexDirection: 'row', gap: spacing[1], marginTop: spacing[2] },
-  scheduleDay: { flex: 1, alignItems: 'center', paddingVertical: spacing[2], borderRadius: radius.md },
-  scheduleDayLabel: { fontSize: typography.sizes.micro, fontWeight: '500', marginBottom: spacing[0.5] },
-  scheduleDayText: { fontSize: typography.sizes.xs, fontWeight: '600' },
-
-  // Macros
-  caloriesBig: { fontSize: typography.sizes.h1, fontWeight: '700', marginBottom: spacing[4] },
-  macroRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing[4] },
-  macroItem: { alignItems: 'center', flex: 1 },
-  macroValue: { fontSize: typography.sizes.h3, fontWeight: '700' },
-  macroLabel: { fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] },
-  macroBar: { height: 8, borderRadius: radius.sm, flexDirection: 'row', overflow: 'hidden' },
-
-  // Targets
-  targetRow: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: spacing[2] },
-  targetItem: { alignItems: 'center', gap: spacing[1] },
-  targetValue: { fontSize: typography.sizes.h4, fontWeight: '700' },
-  targetLabel: { fontSize: typography.sizes.captionSm },
-
-  // Tips
-  tipRow: { flexDirection: 'row', gap: spacing[2], marginBottom: spacing[2], alignItems: 'flex-start' },
-  tipText: { flex: 1, fontSize: typography.sizes.label, lineHeight: 18 },
-
-  // Apply
-  applyContainer: { marginTop: spacing[2], marginBottom: spacing[8] },
-
-  // Bottom bar
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing[5],
-    paddingVertical: spacing[3.5],
-    borderTopWidth: 1,
-  },
-  navBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
-  navBtnText: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
-  stepIndicator: { fontSize: typography.sizes.label, fontWeight: '500' },
-});

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
@@ -82,6 +82,33 @@ export default function DashboardScreen() {
     goalProgress,
     userState,
   } = vm;
+
+  // ── Typewriter greeting animation (hooks must be before early returns) ──
+  const greetingText = (() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t('dashboard.goodMorning') || 'Good morning';
+    if (hour < 18) return t('dashboard.goodAfternoon') || 'Good afternoon';
+    return t('dashboard.goodEvening') || 'Good evening';
+  })();
+
+  const [typedGreeting, setTypedGreeting] = useState('');
+  const typingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setTypedGreeting('');
+    let index = 0;
+    const type = () => {
+      if (index <= greetingText.length) {
+        setTypedGreeting(greetingText.slice(0, index));
+        index++;
+        typingRef.current = setTimeout(type, 45);
+      }
+    };
+    typingRef.current = setTimeout(type, 300); // initial delay
+    return () => {
+      if (typingRef.current) clearTimeout(typingRef.current);
+    };
+  }, [greetingText]);
 
   if (loading) {
     return (
@@ -172,12 +199,16 @@ export default function DashboardScreen() {
                   <FQLogoMark size={36} showGlow={false} />
                   <View>
                     <ThemedText variant="caption" color="secondary" style={styles.greeting}>
-                      {(() => {
-                        const hour = new Date().getHours();
-                        if (hour < 12) return t('dashboard.goodMorning') || 'Good morning';
-                        if (hour < 18) return t('dashboard.goodAfternoon') || 'Good afternoon';
-                        return t('dashboard.goodEvening') || 'Good evening';
-                      })()}
+                      {typedGreeting}
+                      <ThemedText
+                        variant="caption"
+                        style={{
+                          color: theme.colors.accent,
+                          opacity: typedGreeting.length < greetingText.length ? 1 : 0,
+                        }}
+                      >
+                        |
+                      </ThemedText>
                     </ThemedText>
                     <ThemedText variant="h2" color="primary" style={styles.heroTitle}>
                       {displayName}

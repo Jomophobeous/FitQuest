@@ -244,11 +244,13 @@ class AudioService {
   /**
    * Set TTS language from app language code.
    * Call this whenever the app language changes.
-   * Also selects the best quality voice for the locale.
+   * Also selects the best quality voice for the locale and resets the
+   * circuit breaker so TTS gets a fresh chance in the new language.
    */
   setLanguage(appLangCode: string): void {
     this.settings.language = APP_LANG_TO_TTS_LOCALE[appLangCode] ?? 'en-US';
     this.preferredVoiceId = undefined; // reset — will be picked on next speak
+    this.consecutiveSpeechFailures = 0; // reset circuit breaker on language change
     this.selectBestVoice();
   }
 
@@ -353,7 +355,7 @@ class AudioService {
       // Narration types benefit from a slightly slower, more natural pace
       const isNarration = type === 'intro' || type === 'setup' || type === 'execution' || type === 'transition';
       const rate = isNarration
-        ? Math.max(0.75, this.settings.speechRate * 0.9) // 10% slower for narration
+        ? Math.max(0.75, this.settings.speechRate * 0.97) // 3% slower for narration
         : this.settings.speechRate;
 
       // Context-aware pitch for dynamic, human-like voice

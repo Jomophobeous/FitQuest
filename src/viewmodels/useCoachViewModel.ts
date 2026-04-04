@@ -833,8 +833,17 @@ export const useCoachViewModel = createViewModel(() => {
     [router],
   );
 
-  // ── Cloud status ──
-  const cloudAvailable = aiProvider.cloudAvailable;
+  // ── Cloud status (reactive — resolves after provider init) ──
+  const [cloudAvailable, setCloudAvailable] = useState(aiProvider.cloudAvailable);
+  useEffect(() => {
+    let cancelled = false;
+    aiProvider.checkCloudAvailable().then((available) => {
+      if (!cancelled) setCloudAvailable(available);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return {
     // Refs (for component to attach to UI elements)

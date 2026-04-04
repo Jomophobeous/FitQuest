@@ -4,11 +4,16 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { I18nManager } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import * as Updates from 'expo-updates';
 import { translations, SUPPORTED_LANGUAGES } from '../i18n/translations';
 import { audioService } from '../services/audioService';
 
 const LANGUAGE_STORAGE_KEY = 'fitquest.language';
+
+/** Languages that use right-to-left script */
+const RTL_LANGUAGES = new Set(['ar', 'he', 'fa', 'ur']);
 
 interface LanguageContextType {
   language: string;
@@ -30,6 +35,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         const saved = await SecureStore.getItemAsync(LANGUAGE_STORAGE_KEY);
         if (saved && translations[saved]) {
           setLanguageState(saved);
+          // Ensure RTL is correct for restored language
+          const needsRTL = RTL_LANGUAGES.has(saved);
+          if (I18nManager.isRTL !== needsRTL) {
+            I18nManager.allowRTL(true);
+            I18nManager.forceRTL(needsRTL);
+          }
         }
       } catch (e) {
         if (__DEV__) console.warn('Failed to load language preference:', e);
@@ -44,6 +55,20 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       await SecureStore.setItemAsync(LANGUAGE_STORAGE_KEY, code);
     } catch (e) {
       if (__DEV__) console.warn('Failed to save language preference:', e);
+    }
+
+    // Handle RTL layout direction change
+    const needsRTL = RTL_LANGUAGES.has(code);
+    if (I18nManager.isRTL !== needsRTL) {
+      I18nManager.allowRTL(true);
+      I18nManager.forceRTL(needsRTL);
+      // React Native requires an app reload for RTL to take effect
+      try {
+        await Updates.reloadAsync();
+      } catch {
+        // In dev mode or if updates unavailable — user must restart manually
+        if (__DEV__) console.warn('[i18n] RTL change requires app restart');
+      }
     }
   }, []);
 

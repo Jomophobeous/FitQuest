@@ -636,6 +636,12 @@ class AIProvider {
     return this.getAvailableModels().length > 0;
   }
 
+  /** Initialize and return cloud availability (for UI that needs async check) */
+  async checkCloudAvailable(): Promise<boolean> {
+    await this.initialize();
+    return this.getAvailableModels().length > 0;
+  }
+
   // ─── Controls ───
 
   /** Lock a specific model (disables auto-routing) */

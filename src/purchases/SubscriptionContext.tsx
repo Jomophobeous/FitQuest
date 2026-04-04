@@ -14,6 +14,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { unstable_batchedUpdates } from 'react-native';
 import { SubscriptionManager, type SubscriptionState, type SubscriptionOfferings } from './SubscriptionManager';
 import { useDatabase } from '../context/DatabaseContext';
+import { verifySubscription } from '../services/authorityClient';
 
 // ============================================
 // TYPES
@@ -140,7 +141,10 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setOfferings(currentOfferings);
         });
 
-        // Server verification removed — offline-only mode
+        // Server verification (fire-and-forget — does not block UI)
+        verifySubscription('user_local_001', 'device_default').catch(() => {
+          // Non-fatal: backend may be unreachable or device not registered
+        });
       } catch (error) {
         if (__DEV__) console.warn('[SubscriptionProvider] Init failed:', error);
       } finally {

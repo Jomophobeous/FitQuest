@@ -157,8 +157,6 @@ export const useProfileViewModel = createViewModel(() => {
   const [adaptiveProfile, setAdaptiveProfile] = useState<AdaptiveTrainingProfile | null>(null);
   const [socialSettings, setSocialSettings] = useState<SocialLayerSettings | null>(null);
   const [socialBusy, setSocialBusy] = useState(false);
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const [showThemePicker, setShowThemePicker] = useState(false);
   const [mealRegionOverride, setMealRegionOverride] = useState<MealRegionValue>('AUTO');
   const [notificationSettings, setNotificationSettings] = useState<NotificationReliabilitySettings>({
     enabled: false,
@@ -1043,10 +1041,6 @@ export const useProfileViewModel = createViewModel(() => {
     privacyBusy,
 
     // UI state
-    showLanguageSelector,
-    setShowLanguageSelector,
-    showThemePicker,
-    setShowThemePicker,
     showAboutModal,
     setShowAboutModal,
     showHelpModal,

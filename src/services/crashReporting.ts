@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 
 let initialized = false;
 let sessionErrorCount = 0;
+let Sentry: any = null;
 
 function getSentryDsn(): string | null {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -10,7 +11,7 @@ function getSentryDsn(): string | null {
   return dsn.trim();
 }
 
-export function initializeCrashReporting(): void {
+export async function initializeCrashReporting(): Promise<void> {
   if (initialized) return;
   initialized = true;
   sessionErrorCount = 0;
@@ -22,7 +23,7 @@ export function initializeCrashReporting(): void {
   }
 
   try {
-    const Sentry = require('@sentry/react-native');
+    Sentry = await import('@sentry/react-native');
     const appVersion = Constants.expoConfig?.version ?? '0.0.0';
     const appEnv = Constants.expoConfig?.extra?.appEnv || (__DEV__ ? 'development' : 'production');
     Sentry.init({
@@ -49,8 +50,8 @@ export function initializeCrashReporting(): void {
 
 /** Set Sentry user context when profile becomes available. */
 export function setSentryUserContext(userId: string, traits?: Record<string, string>): void {
+  if (!Sentry) return;
   try {
-    const Sentry = require('@sentry/react-native');
     Sentry.setUser({ id: userId, ...traits });
   } catch {
     // no-op
@@ -64,8 +65,8 @@ export function getSessionErrorCount(): number {
 
 export function captureException(error: unknown, context?: Record<string, unknown>): void {
   sessionErrorCount += 1;
+  if (!Sentry) return;
   try {
-    const Sentry = require('@sentry/react-native');
     Sentry.captureException(error, {
       extra: { ...context, session_error_count: sessionErrorCount },
     });
@@ -81,8 +82,8 @@ export function captureException(error: unknown, context?: Record<string, unknow
  */
 export function captureFatalCrash(error: unknown, context?: Record<string, unknown>): void {
   sessionErrorCount += 1;
+  if (!Sentry) return;
   try {
-    const Sentry = require('@sentry/react-native');
     Sentry.withScope((scope: any) => {
       scope.setLevel('fatal');
       scope.setTag('crash_type', 'unhandled');
@@ -96,8 +97,8 @@ export function captureFatalCrash(error: unknown, context?: Record<string, unkno
 }
 
 export function capturePerformanceMetric(name: string, durationMs: number): void {
+  if (!Sentry) return;
   try {
-    const Sentry = require('@sentry/react-native');
     Sentry.addBreadcrumb({
       category: 'performance',
       message: `${name}:${durationMs}`,
@@ -113,8 +114,8 @@ export function capturePerformanceMetric(name: string, durationMs: number): void
  * Called when user withdraws consent in Legal Center.
  */
 export function disableCrashReporting(): void {
+  if (!Sentry) return;
   try {
-    const Sentry = require('@sentry/react-native');
     const client = Sentry.getClient();
     if (client) {
       client.getOptions().enabled = false;
@@ -129,8 +130,8 @@ export function disableCrashReporting(): void {
  * Called when user re-accepts consent in Legal Center.
  */
 export function enableCrashReporting(): void {
+  if (!Sentry) return;
   try {
-    const Sentry = require('@sentry/react-native');
     const client = Sentry.getClient();
     if (client) {
       client.getOptions().enabled = true;

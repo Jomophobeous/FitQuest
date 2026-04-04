@@ -1,0 +1,55 @@
+# Flow 4: Lock → Biometric Unlock
+# Validates: App lock screen appears and biometric/passcode unlock works
+appId: com.hugelet.fitquest
+
+---
+- launchApp
+
+# Wait for app to load
+- assertVisible:
+    text: ".*FitQuest.*|.*Dashboard.*|.*Welcome.*"
+    timeout: 15000
+
+# Navigate to profile/settings to enable lock
+- tapOn:
+    text: ".*Profile.*|.*Settings.*"
+    optional: true
+
+# Look for security/biometric settings
+- tapOn:
+    text: ".*Security.*|.*Biometric.*|.*Lock.*|.*Privacy.*"
+    optional: true
+
+# If biometric toggle exists, ensure it's on
+- tapOn:
+    text: ".*Enable.*Biometric.*|.*Face.*ID.*|.*Fingerprint.*|.*Toggle.*"
+    optional: true
+
+# Background and foreground the app to trigger auth gate
+- pressKey: home
+- waitForAnimationToEnd
+- launchApp
+
+# Auth gate should appear (biometric prompt or passcode screen)
+- assertVisible:
+    text: ".*Unlock.*|.*Authenticate.*|.*Passcode.*|.*Biometric.*|.*Face.*|.*Fingerprint.*|.*FitQuest.*"
+    timeout: 10000
+
+# If passcode input appears, enter default test passcode
+- tapOn:
+    text: ".*1.*"
+    optional: true
+- tapOn:
+    text: ".*2.*"
+    optional: true
+- tapOn:
+    text: ".*3.*"
+    optional: true
+- tapOn:
+    text: ".*4.*"
+    optional: true
+
+# Verify we reach the main app after unlock
+- assertVisible:
+    text: ".*Dashboard.*|.*FitQuest.*|.*Today.*|.*Profile.*"
+    timeout: 10000

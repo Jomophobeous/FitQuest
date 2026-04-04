@@ -165,8 +165,8 @@ describe('AI conversation encrypt/store/retrieve/decrypt', () => {
 
     const conversations = await db.getAIConversations('COACH');
     expect(conversations).toHaveLength(1);
-    expect(conversations[0].query).toBe(query);
-    expect(conversations[0].response).toBe(response);
+    expect(conversations[0]!.query).toBe(query);
+    expect(conversations[0]!.response).toBe(response);
   });
 
   it('stores encrypted — query and response not in plaintext', async () => {
@@ -219,9 +219,9 @@ describe('Health alerts encrypt/store/acknowledge', () => {
 
     const alerts = await db.getActiveAlerts();
     expect(alerts).toHaveLength(1);
-    expect(alerts[0].alertType).toBe('ELEVATED_HR');
-    expect(alerts[0].severity).toBe('HIGH');
-    expect(alerts[0].data).toEqual(alertData);
+    expect(alerts[0]!.alertType).toBe('ELEVATED_HR');
+    expect(alerts[0]!.severity).toBe('HIGH');
+    expect(alerts[0]!.data).toEqual(alertData);
   });
 
   it('acknowledging removes alert from active list', async () => {
@@ -305,7 +305,7 @@ describe('Cross-data-type consistency', () => {
     expect(health).toEqual({ hours: 8, quality: 'good' });
 
     const convs = await db.getAIConversations('COACH');
-    expect(convs[0].query).toBe('Sleep advice?');
+    expect(convs[0]!.query).toBe('Sleep advice?');
 
     const note = await db.getNote(noteId);
     expect(note).toBe('Great sleep last night');

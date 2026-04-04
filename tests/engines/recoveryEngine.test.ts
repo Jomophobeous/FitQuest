@@ -114,10 +114,10 @@ describe('getFatigueSnapshot', () => {
 
   it('classifies muscle status based on fatigue thresholds', async () => {
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 30, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
-      { muscle: 'quads', fatigue_level: 55, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
-      { muscle: 'lats', fatigue_level: 75, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
-      { muscle: 'biceps', fatigue_level: 90, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 30, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
+      { user_id: USER, muscle: 'quads', fatigue_level: 55, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
+      { user_id: USER, muscle: 'lats', fatigue_level: 75, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
+      { user_id: USER, muscle: 'biceps', fatigue_level: 90, last_trained_at: '2026-04-01', updated_at: '2026-04-01' },
     ]);
 
     const snapshot = await getFatigueSnapshot(USER);
@@ -144,8 +144,8 @@ describe('getAverageFatigue', () => {
   it('computes weighted average across all 22 muscles (zeroes included)', async () => {
     // Only 2 muscles with fatigue; rest are 0
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 100, last_trained_at: null, updated_at: '' },
-      { muscle: 'quads', fatigue_level: 100, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 100, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'quads', fatigue_level: 100, last_trained_at: null, updated_at: '' },
     ]);
     const avg = await getAverageFatigue(USER);
     // (100 + 100 + 0*20) / 22 ≈ 9
@@ -171,9 +171,9 @@ describe('checkDeloadStatus', () => {
   it('returns required severity when 3+ muscles are critical', async () => {
     // Need 3+ muscles at critical threshold (85 default with sensitivity=1)
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' },
-      { muscle: 'quads', fatigue_level: 88, last_trained_at: null, updated_at: '' },
-      { muscle: 'lats', fatigue_level: 92, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'quads', fatigue_level: 88, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'lats', fatigue_level: 92, last_trained_at: null, updated_at: '' },
     ]);
     vi.mocked(getRecentSessions).mockResolvedValue([]);
 
@@ -185,7 +185,7 @@ describe('checkDeloadStatus', () => {
 
   it('returns suggested severity when 1-2 muscles are critical', async () => {
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' },
     ]);
     vi.mocked(getRecentSessions).mockResolvedValue([]);
 
@@ -208,7 +208,7 @@ describe('checkDeloadStatus', () => {
 
   it('escalates to required when failures + critical muscles combine', async () => {
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' },
     ]);
     vi.mocked(getRecentSessions).mockResolvedValue([
       { id: 's3', user_id: USER, success: 0 } as any,
@@ -245,9 +245,9 @@ describe('checkDeloadStatus', () => {
 
     // Critical threshold: 85/1.25 = 68. So 70 is now critical.
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 70, last_trained_at: null, updated_at: '' },
-      { muscle: 'quads', fatigue_level: 72, last_trained_at: null, updated_at: '' },
-      { muscle: 'lats', fatigue_level: 75, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 70, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'quads', fatigue_level: 72, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'lats', fatigue_level: 75, last_trained_at: null, updated_at: '' },
     ]);
     vi.mocked(getRecentSessions).mockResolvedValue([]);
 
@@ -270,8 +270,8 @@ describe('deload lifecycle', () => {
 
   it('ends deload and resets high fatigue to 30', async () => {
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 80, last_trained_at: null, updated_at: '' },
-      { muscle: 'quads', fatigue_level: 20, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 80, last_trained_at: null, updated_at: '' },
+      { user_id: USER, muscle: 'quads', fatigue_level: 20, last_trained_at: null, updated_at: '' },
     ]);
 
     await startDeload(USER);
@@ -395,8 +395,8 @@ describe('generateRecoveryPlan', () => {
 
   it('avoids fatigued and critical muscles', async () => {
     vi.mocked(getMuscleFatigue).mockResolvedValue([
-      { muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' }, // critical
-      { muscle: 'lats', fatigue_level: 75, last_trained_at: null, updated_at: '' }, // fatigued
+      { user_id: USER, muscle: 'chest_mid', fatigue_level: 90, last_trained_at: null, updated_at: '' }, // critical
+      { user_id: USER, muscle: 'lats', fatigue_level: 75, last_trained_at: null, updated_at: '' }, // fatigued
     ]);
     const plan = await generateRecoveryPlan(USER);
     expect(plan.muscles_to_avoid).toContain('chest_mid');

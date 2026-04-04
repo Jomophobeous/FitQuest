@@ -198,7 +198,7 @@ describe('Workout state transitions', () => {
   it('complete lifecycle: idle → generating → ready → active → completing → complete → idle', () => {
     const lifecycle: WorkoutState[] = ['idle', 'generating', 'ready', 'active', 'completing', 'complete', 'idle'];
     for (let i = 0; i < lifecycle.length - 1; i++) {
-      expect(isValidTransition(lifecycle[i], lifecycle[i + 1])).toBe(true);
+      expect(isValidTransition(lifecycle[i]!, lifecycle[i + 1]!)).toBe(true);
     }
   });
 });

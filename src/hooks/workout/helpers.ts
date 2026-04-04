@@ -73,7 +73,7 @@ interface SessionExerciseRow {
  */
 export function buildDisplaysFromSessionRows(
   rows: SessionExerciseRow[],
-  t: (key: string, vars?: Record<string, unknown>) => string,
+  t: (key: string, vars?: Record<string, string | number>) => string,
   options?: { markCompleted?: boolean },
 ): WorkoutExerciseDisplay[] {
   return rows.map((se, i) => {

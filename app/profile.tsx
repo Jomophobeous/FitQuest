@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';

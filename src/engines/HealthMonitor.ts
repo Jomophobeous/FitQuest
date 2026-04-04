@@ -264,12 +264,12 @@ export class HealthMonitorService {
     const dailies = await this.getDailySummaries(7);
     if (dailies.length === 0) return null;
 
-    const totalSteps = dailies.reduce((sum, d) => sum + ((d as any).totalSteps || 0), 0);
-    const totalCalories = dailies.reduce((sum, d) => sum + ((d as any).totalCalories || 0), 0);
-    const totalWorkouts = dailies.reduce((sum, d) => sum + ((d as any).workoutCount || 0), 0);
-    const totalActive = dailies.reduce((sum, d) => sum + ((d as any).activeMinutes || 0), 0);
+    const totalSteps = dailies.reduce((sum, d) => sum + (d.totalSteps || 0), 0);
+    const totalCalories = dailies.reduce((sum, d) => sum + (d.totalCalories || 0), 0);
+    const totalWorkouts = dailies.reduce((sum, d) => sum + (d.workoutCount || 0), 0);
+    const totalActive = dailies.reduce((sum, d) => sum + (d.activeMinutes || 0), 0);
 
-    const stepsPerDay = dailies.map((d) => (d as any).totalSteps || 0);
+    const stepsPerDay = dailies.map((d) => d.totalSteps || 0);
     const maxSteps = Math.max(...stepsPerDay);
     const minSteps = Math.min(...stepsPerDay);
     const bestIdx = stepsPerDay.indexOf(maxSteps);
@@ -411,13 +411,17 @@ export class HealthMonitorService {
     try {
       const today = this.getTodayKey();
       const summaries = await encryptedDB.getRecentHealthData('daily_summary', 1);
-      const todaySummary = summaries.find((s: any) => s.date === today);
+      const todaySummary = summaries.find(
+        (s): s is Partial<DailyHealthSummary> & { date: string } =>
+          typeof (s as Partial<DailyHealthSummary>).date === 'string' &&
+          (s as Partial<DailyHealthSummary>).date === today,
+      );
 
       if (todaySummary) {
-        this.todaySteps = (todaySummary as any).totalSteps || 0;
-        this.todayCalories = (todaySummary as any).totalCalories || 0;
-        this.todayActiveMinutes = (todaySummary as any).activeMinutes || 0;
-        this.todayWorkouts = (todaySummary as any).workoutCount || 0;
+        this.todaySteps = todaySummary.totalSteps || 0;
+        this.todayCalories = todaySummary.totalCalories || 0;
+        this.todayActiveMinutes = todaySummary.activeMinutes || 0;
+        this.todayWorkouts = todaySummary.workoutCount || 0;
       }
     } catch (e) {
       if (__DEV__) console.warn("[HealthMonitor] Failed to load today's summary:", e);

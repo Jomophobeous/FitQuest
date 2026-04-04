@@ -11,6 +11,7 @@
  *   - services: xpService, dataSyncService
  */
 import { useState, useCallback, useRef, useMemo } from 'react';
+import type { ViewStyle } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { useDatabase } from '../context/DatabaseContext';
 import { useSubscription } from '../purchases/SubscriptionContext';
@@ -421,16 +422,22 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
 
   // ── Memoized style values ──
   const statPillWarning = useMemo(
-    () => [{ backgroundColor: theme.colors.warning + '15' }] as any,
+    (): ViewStyle[] => [{ backgroundColor: theme.colors.warning + '15' }],
     [theme.colors.warning],
   );
-  const statPillAccent = useMemo(() => [{ backgroundColor: theme.colors.accent + '15' }] as any, [theme.colors.accent]);
+  const statPillAccent = useMemo(
+    (): ViewStyle[] => [{ backgroundColor: theme.colors.accent + '15' }],
+    [theme.colors.accent],
+  );
   const statPillSurface = useMemo(
-    () => [{ backgroundColor: theme.colors.surfaceVariant }] as any,
+    (): ViewStyle[] => [{ backgroundColor: theme.colors.surfaceVariant }],
     [theme.colors.surfaceVariant],
   );
   const signalCardBg = useMemo(
-    () => (behavioralSignal ? { backgroundColor: (theme.colors as any)[behavioralSignal.colorKey] + '18' } : undefined),
+    (): ViewStyle | undefined =>
+      behavioralSignal && behavioralSignal.colorKey in theme.colors
+        ? { backgroundColor: theme.colors[behavioralSignal.colorKey as keyof typeof theme.colors] + '18' }
+        : undefined,
     [behavioralSignal, theme.colors],
   );
 

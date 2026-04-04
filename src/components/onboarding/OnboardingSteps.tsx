@@ -443,7 +443,7 @@ function GoalStep({ ctx }: { ctx: OnboardingStepContext }) {
           <Animated.View key={g.id} entering={FadeInRight.delay(i * 60).duration(200)}>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => setData((d) => ({ ...d, goal: g.id as any }))}
+              onPress={() => setData((d) => ({ ...d, goal: g.id as OnboardingData['goal'] }))}
               style={[
                 styles.optionCard,
                 {
@@ -498,7 +498,7 @@ function ExperienceStep({ ctx }: { ctx: OnboardingStepContext }) {
           <Animated.View key={e.id} entering={FadeInRight.delay(i * 80).duration(200)}>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => setData((d) => ({ ...d, experience: e.id as any }))}
+              onPress={() => setData((d) => ({ ...d, experience: e.id as OnboardingData['experience'] }))}
               style={[
                 styles.optionCard,
                 {

@@ -786,7 +786,7 @@ export class DualAIEngine {
       }
 
       case 'thanks': {
-        message = this.pickRandomAvoidingRepeats((COACH_TEMPLATES as any).thanks, 'coach_thanks');
+        message = this.pickRandomAvoidingRepeats(COACH_TEMPLATES.thanks, 'coach_thanks');
         break;
       }
 
@@ -1099,25 +1099,25 @@ export class DualAIEngine {
     // ---- Step 1: Extract keywords and find the closest relevant topic ----
     const topicMap: Record<string, { bucket: string[]; category: string }> = {
       'workout|train|exercise|lift|gym|session': {
-        bucket: (COACH_TEMPLATES as any).workout_motivation,
+        bucket: COACH_TEMPLATES.workout_motivation,
         category: 'coach_motivation',
       },
-      'eat|food|meal|diet|hungry': { bucket: (COACH_TEMPLATES as any).nutrition, category: 'coach_nutrition' },
-      'sore|pain|ache|recovery|rest': { bucket: (COACH_TEMPLATES as any).rest_day, category: 'coach_rest' },
+      'eat|food|meal|diet|hungry': { bucket: COACH_TEMPLATES.nutrition, category: 'coach_nutrition' },
+      'sore|pain|ache|recovery|rest': { bucket: COACH_TEMPLATES.rest_day, category: 'coach_rest' },
       'tired|exhausted|fatigued|worn out': {
-        bucket: (COACH_TEMPLATES as any).fatigue_warning,
+        bucket: COACH_TEMPLATES.fatigue_warning,
         category: 'coach_fatigue',
       },
       'muscle|strong|strength|gains': {
-        bucket: (COACH_TEMPLATES as any).progressive_overload,
+        bucket: COACH_TEMPLATES.progressive_overload,
         category: 'coach_overload',
       },
-      'lose|fat|lean|cut|slim|tone': { bucket: (COACH_TEMPLATES as any).weight_management, category: 'coach_weight' },
+      'lose|fat|lean|cut|slim|tone': { bucket: COACH_TEMPLATES.weight_management, category: 'coach_weight' },
       'run|cardio|jog|sprint|endurance': {
-        bucket: (COACH_TEMPLATES as any).sport_specific.runner,
+        bucket: COACH_TEMPLATES.sport_specific.runner,
         category: 'coach_sport',
       },
-      'plan|schedule|routine|program': { bucket: (COACH_TEMPLATES as any).frequency, category: 'coach_frequency' },
+      'plan|schedule|routine|program': { bucket: COACH_TEMPLATES.frequency, category: 'coach_frequency' },
     };
 
     let matchedTemplate: string | null = null;
@@ -1742,8 +1742,8 @@ export class DualAIEngine {
         .replace(/{name}/g, context.userProfile?.name || 'champ')
         .replace(/{streakDays}/g, String(context.userProfile?.streakDays || 0))
         .replace(/{goal}/g, context.userProfile?.goals?.join(', ') || 'fitness')
-        .replace(/{totalWorkouts}/g, String((context as any).totalWorkouts || 0))
-        .replace(/{exerciseCount}/g, String((context as any).exerciseCount || 200))
+        .replace(/{totalWorkouts}/g, String(context.totalWorkouts || 0))
+        .replace(/{exerciseCount}/g, String(context.exerciseCount || 200))
         .replace(/{setsCompleted}/g, String(context.workoutContext?.setsCompleted || 0))
         .replace(/{totalSets}/g, String(context.workoutContext?.totalSets || 0))
         .replace(

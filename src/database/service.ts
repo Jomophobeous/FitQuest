@@ -89,7 +89,7 @@ export async function getExercises(filter?: ExerciseFilter): Promise<ExerciseWit
   `;
 
   const conditions: string[] = [];
-  const params: any[] = [];
+  const params: (string | number | null)[] = [];
 
   if (filter) {
     if (filter.categories?.length) {
@@ -576,7 +576,7 @@ export async function updateUserProfile(
   updates: Partial<Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>>,
 ): Promise<boolean> {
   const fields: string[] = [];
-  const values: any[] = [];
+  const values: (string | number | null)[] = [];
 
   Object.entries(updates).forEach(([key, value]) => {
     if (value !== undefined && key !== 'locked') {
@@ -1675,9 +1675,16 @@ export async function reviewFitMindFlashcard(cardId: string, quality: number): P
   // Now delegate to FSRS
   // Map SM-2 quality (0-5) to FSRS rating:
   // 0-2 = Again, 3 = Hard, 4 = Good, 5 = Easy
-  let fsrsService: any;
+  let fsrsService:
+    | {
+        scheduleReview(
+          card: Record<string, unknown>,
+          rating: string,
+        ): { card: import('../fitmind/FSRSService').FSRSCard };
+      }
+    | undefined;
   try {
-    const mod: any = await import('../fitmind/FSRSService');
+    const mod = await import('../fitmind/FSRSService');
     fsrsService = mod.fsrsService;
   } catch {
     if (__DEV__) console.warn('[FitMind] FSRS module unavailable, skipping review');
@@ -2347,7 +2354,7 @@ export async function getActiveBodyCraftAlgorithm(userId: string): Promise<BodyC
 
   if (!row) return null;
 
-  const safeParse = (str: string, fallback: any = []) => {
+  const safeParse = (str: string, fallback: unknown = []) => {
     try {
       return JSON.parse(str);
     } catch {

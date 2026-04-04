@@ -87,6 +87,11 @@ export interface RecentWorkout {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
+interface ConsistencyProfile {
+  mode: string;
+  statusLine: string;
+}
+
 export interface DashboardState {
   loading: boolean;
   loadError: string | null;
@@ -98,7 +103,7 @@ export interface DashboardState {
   behavioralSignal: BehavioralSignal | null;
   lastImpact: LastImpact | null;
   trialSnapshot: TrialSnapshot | null;
-  consistencyProfile: Record<string, unknown> | null;
+  consistencyProfile: ConsistencyProfile | null;
   recentWorkout: RecentWorkout | null;
   workoutDates: string[];
   totalCalories: number;
@@ -164,7 +169,7 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   const [behavioralSignal, setBehavioralSignal] = useState<BehavioralSignal | null>(null);
   const [lastImpact, setLastImpact] = useState<LastImpact | null>(null);
   const [trialSnapshot, setTrialSnapshot] = useState<TrialSnapshot | null>(null);
-  const [consistencyProfile, setConsistencyProfile] = useState<Record<string, unknown> | null>(null);
+  const [consistencyProfile, setConsistencyProfile] = useState<ConsistencyProfile | null>(null);
   const [recentWorkout, setRecentWorkout] = useState<RecentWorkout | null>(null);
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);

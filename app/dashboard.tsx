@@ -33,6 +33,9 @@ export default function DashboardScreen() {
   const { t } = useLanguage();
   const router = useRouter();
   const isCompactScreen = width < 420;
+
+  // Type-safe color key accessor for dynamic theme color lookups
+  const themeColor = (key: string) => (theme.colors as Record<string, string>)[key] ?? theme.colors.accent;
   const vm = useDashboardViewModel();
 
   // Warm caches for adjacent screens (non-blocking)
@@ -397,27 +400,27 @@ export default function DashboardScreen() {
                 style={[
                   styles.signalCard,
                   {
-                    backgroundColor: theme.colors[behavioralSignal.colorKey] + '10',
-                    borderColor: theme.colors[behavioralSignal.colorKey] + '30',
+                    backgroundColor: themeColor(behavioralSignal.colorKey) + '10',
+                    borderColor: themeColor(behavioralSignal.colorKey) + '30',
                   },
                 ]}
               >
                 <View style={styles.signalInner}>
                   <View
-                    style={[styles.signalIconWrap, { backgroundColor: theme.colors[behavioralSignal.colorKey] + '18' }]}
+                    style={[styles.signalIconWrap, { backgroundColor: themeColor(behavioralSignal.colorKey) + '18' }]}
                   >
                     <MaterialCommunityIcons
                       name={behavioralSignal.icon as any}
                       size={20}
-                      color={theme.colors[behavioralSignal.colorKey]}
+                      color={themeColor(behavioralSignal.colorKey)}
                     />
-                    {behavioralSignal.pulse && <PulseDot color={theme.colors[behavioralSignal.colorKey]} />}
+                    {behavioralSignal.pulse && <PulseDot color={themeColor(behavioralSignal.colorKey)} />}
                   </View>
                   <View style={{ flex: 1 }}>
                     <ThemedText
                       variant="bodySmall"
                       weight="700"
-                      style={{ color: theme.colors[behavioralSignal.colorKey] }}
+                      style={{ color: themeColor(behavioralSignal.colorKey) }}
                     >
                       {behavioralSignal.headline}
                     </ThemedText>
@@ -616,7 +619,7 @@ export default function DashboardScreen() {
           {/* ══════════════════════════════════════════════════════════════════
             ADAPTIVE NUDGE — Churn risk or high fatigue guidance
         ══════════════════════════════════════════════════════════════════ */}
-          {userState?.churnRisk && !hasInterruptedSession && (
+          {!!userState?.churnRisk && !hasInterruptedSession && (
             <Animated.View
               entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}
               style={{ opacity: HIERARCHY.secondary }}
@@ -793,7 +796,7 @@ export default function DashboardScreen() {
                     ]}
                   >
                     <View style={[styles.exploreTileIcon, { backgroundColor: tile.color + '18' }]}>
-                      <MaterialCommunityIcons name={tile.icon} size={26} color={tile.color} />
+                      <MaterialCommunityIcons name={tile.icon as any} size={26} color={tile.color} />
                     </View>
                     <View style={styles.exploreTileContent}>
                       <ThemedText variant="bodySmall" weight="700" color="primary" style={styles.exploreTileLabel}>

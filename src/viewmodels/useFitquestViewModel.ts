@@ -38,7 +38,11 @@ interface CompletionResult {
   exerciseNames?: string[];
 }
 
-export type TrialSnapshot = Record<string, unknown>;
+export interface TrialSnapshot {
+  hasIntelligence: boolean;
+  hasMemory: boolean;
+  previewAvailable: boolean;
+}
 
 export const useFitquestViewModel = createViewModel(() => {
   // --- Audio state ---

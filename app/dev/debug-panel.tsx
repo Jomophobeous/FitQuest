@@ -288,7 +288,7 @@ export default function DebugPanel() {
                   <ThemedText variant="caption" weight="600" style={{ color: text }} numberOfLines={1}>
                     {e.label}
                   </ThemedText>
-                  {e.payload && (
+                  {!!e.payload && (
                     <ThemedText variant="caption" style={{ color: muted, fontSize: 10 }} numberOfLines={2}>
                       {JSON.stringify(e.payload).slice(0, 120)}
                     </ThemedText>

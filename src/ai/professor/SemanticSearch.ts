@@ -13,7 +13,13 @@ export interface SearchResult {
 class SemanticSearch {
   async search(
     query: string,
-    opts?: { documentId?: string; limit?: number; topK?: number; minScore?: number; documentFilter?: string },
+    opts?: {
+      documentId?: string;
+      limit?: number;
+      topK?: number;
+      minScore?: number;
+      documentFilter?: string | string[];
+    },
   ): Promise<SearchResult[]> {
     return [];
   }

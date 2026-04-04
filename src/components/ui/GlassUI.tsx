@@ -78,7 +78,7 @@ export const GlassCard = memo(function GlassCard({
       entering={FadeInDown.delay(delay).duration(theme.motion.fast)}
       style={[
         styles.glassCard,
-        theme.shadows.sm !== 'none' && theme.shadows.sm,
+        theme.shadows.sm,
         {
           backgroundColor: theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.95)',
           borderColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
@@ -173,7 +173,7 @@ export const GradientHeader = memo(function GradientHeader({
 // ============================================
 
 export const PulseDot = memo(function PulseDot({
-  color = theme.colors.accent,
+  color: colorProp,
   size = 8,
   active = true,
 }: {
@@ -181,6 +181,8 @@ export const PulseDot = memo(function PulseDot({
   size?: number;
   active?: boolean;
 }) {
+  const { theme: _theme } = useTheme();
+  const color = colorProp ?? _theme.colors.accent;
   const haloOpacity = useSharedValue(active ? 0.4 : 0);
 
   useEffect(() => {

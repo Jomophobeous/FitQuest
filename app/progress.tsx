@@ -36,7 +36,6 @@ import { GlassCard, SectionHeader, GradientButton } from '../src/components/ui/G
 import { getCardWidth, getGridColumns, ms } from '../src/utils/responsive';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLS = getGridColumns();
 const PHOTO_SIZE = getCardWidth(GRID_COLS, 16, 12);
@@ -242,8 +241,16 @@ export default function ProgressScreen() {
     return (
       <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
         <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{vm.loadError}</ThemedText>
-        <GradientButton title={t('common.retry') ?? 'Retry'} onPress={() => { setLoadError(null); loadData(); }} style={{ marginTop: spacing[4] }} />
+        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>
+          {vm.loadError}
+        </ThemedText>
+        <GradientButton
+          title={t('common.retry') ?? 'Retry'}
+          onPress={() => {
+            vm.loadData();
+          }}
+          style={{ marginTop: spacing[4] }}
+        />
       </ScreenContainer>
     );
   }
@@ -471,7 +478,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   buttonText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '600',
   },
   emptyCard: {

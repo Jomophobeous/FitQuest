@@ -30,7 +30,6 @@ import Card from '../src/components/Card';
 import ExerciseImage from '../src/components/ExerciseImage';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
-
 // ============================================
 // MEMOIZED LIST ITEM
 // ============================================
@@ -63,7 +62,7 @@ const ExerciseListItem = memo(function ExerciseListItem({
           },
         ]}
       >
-        {isSelected && <MaterialCommunityIcons name="check" size={14} color={theme.colors.onAccent} />}
+        {isSelected && <MaterialCommunityIcons name="check" size={14} color={colors.onAccent} />}
       </View>
       <ExerciseImage
         exerciseId={item.id}
@@ -73,7 +72,9 @@ const ExerciseListItem = memo(function ExerciseListItem({
         style={{ marginLeft: spacing[2.5] }}
       />
       <View style={{ flex: 1, marginLeft: spacing[3] }}>
-        <ThemedText style={{ color: colors.text, fontWeight: '600', fontSize: typography.sizes.bodySmall }}>{item.name}</ThemedText>
+        <ThemedText style={{ color: colors.text, fontWeight: '600', fontSize: typography.sizes.bodySmall }}>
+          {item.name}
+        </ThemedText>
         <ThemedText style={{ color: colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
           {item.difficulty} • {item.primary_muscles.slice(0, 2).join(', ')}
         </ThemedText>
@@ -295,18 +296,28 @@ export default function CreateWorkoutScreen() {
       <ScreenContainer>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))} accessibilityRole="button" accessibilityLabel="Go back">
+          <TouchableOpacity
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="h3">{t('createWorkout.title')}</ThemedText>
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => router.push('/saved-workouts' as any)} accessibilityRole="button" accessibilityLabel="Saved workouts">
+            <TouchableOpacity
+              onPress={() => router.push('/saved-workouts' as any)}
+              accessibilityRole="button"
+              accessibilityLabel="Saved workouts"
+            >
               <MaterialCommunityIcons name="folder-star" size={22} color={theme.colors.accent} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 haptic('buttonPress');
-                selected.length > 0 ? setStep('configure') : showToast({ message: t('createWorkout.noExercises'), type: 'info' });
+                selected.length > 0
+                  ? setStep('configure')
+                  : showToast({ message: t('createWorkout.noExercises'), type: 'info' });
               }}
               accessibilityRole="button"
               accessibilityLabel={`Next, ${selected.length} exercises selected`}
@@ -352,7 +363,9 @@ export default function CreateWorkoutScreen() {
             />
             {activeFiltersCount > 0 && (
               <View style={[styles.filterBadge, { backgroundColor: theme.colors.error }]}>
-                <ThemedText style={[styles.filterBadgeText, { color: theme.colors.text }]}>{activeFiltersCount}</ThemedText>
+                <ThemedText style={[styles.filterBadgeText, { color: theme.colors.text }]}>
+                  {activeFiltersCount}
+                </ThemedText>
               </View>
             )}
           </TouchableOpacity>
@@ -367,7 +380,11 @@ export default function CreateWorkoutScreen() {
               <ThemedText variant="body" weight="600">
                 {t('createWorkout.filters')}
               </ThemedText>
-              <TouchableOpacity onPress={clearFilters} accessibilityRole="button" accessibilityLabel="Clear all filters">
+              <TouchableOpacity
+                onPress={clearFilters}
+                accessibilityRole="button"
+                accessibilityLabel="Clear all filters"
+              >
                 <ThemedText variant="bodySmall" color="accent">
                   {t('createWorkout.clearAll')}
                 </ThemedText>
@@ -396,7 +413,7 @@ export default function CreateWorkoutScreen() {
                   <ThemedText
                     style={{
                       color: selectedDifficulty === diff.key ? theme.colors.onAccent : theme.colors.text,
-                      fontSize: typography.sizes.caption, 
+                      fontSize: typography.sizes.caption,
                       fontWeight: '600',
                     }}
                   >
@@ -428,7 +445,7 @@ export default function CreateWorkoutScreen() {
                   <ThemedText
                     style={{
                       color: selectedEquipment === eq.key ? theme.colors.onAccent : theme.colors.text,
-                      fontSize: typography.sizes.caption, 
+                      fontSize: typography.sizes.caption,
                       fontWeight: '600',
                     }}
                   >
@@ -459,7 +476,7 @@ export default function CreateWorkoutScreen() {
               <ThemedText
                 style={{
                   color: selectedCategory === cat.key ? theme.colors.onAccent : theme.colors.text,
-                  fontSize: typography.sizes.caption, 
+                  fontSize: typography.sizes.caption,
                   fontWeight: '600',
                 }}
               >
@@ -470,7 +487,11 @@ export default function CreateWorkoutScreen() {
         </ScrollView>
 
         {/* Exercise count */}
-        <ThemedText variant="bodySmall" color="secondary" style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}>
+        <ThemedText
+          variant="bodySmall"
+          color="secondary"
+          style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}
+        >
           {filteredExercises.length} {t('createWorkout.exercisesAvailable')}
         </ThemedText>
 
@@ -506,11 +527,22 @@ export default function CreateWorkoutScreen() {
     return (
       <ScreenContainer>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => setStep('select')} accessibilityRole="button" accessibilityLabel="Back to exercise selection">
+          <TouchableOpacity
+            onPress={() => setStep('select')}
+            accessibilityRole="button"
+            accessibilityLabel="Back to exercise selection"
+          >
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <ThemedText variant="h3">{t('createWorkout.configure')}</ThemedText>
-          <TouchableOpacity onPress={() => { haptic('buttonPress'); setStep('preview'); }} accessibilityRole="button" accessibilityLabel="Preview workout">
+          <TouchableOpacity
+            onPress={() => {
+              haptic('buttonPress');
+              setStep('preview');
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Preview workout"
+          >
             <ThemedText variant="body" color="accent" weight="600">
               {t('createWorkout.preview')}
             </ThemedText>
@@ -549,7 +581,12 @@ export default function CreateWorkoutScreen() {
                   </ThemedText>
                 </View>
                 <View style={styles.configActions}>
-                  <TouchableOpacity onPress={() => moveExercise(index, 'up')} disabled={index === 0} accessibilityRole="button" accessibilityLabel={`Move ${item.exercise.name} up`}>
+                  <TouchableOpacity
+                    onPress={() => moveExercise(index, 'up')}
+                    disabled={index === 0}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Move ${item.exercise.name} up`}
+                  >
                     <MaterialCommunityIcons
                       name="chevron-up"
                       size={20}
@@ -568,7 +605,11 @@ export default function CreateWorkoutScreen() {
                       color={index === selected.length - 1 ? theme.colors.textMuted : theme.colors.text}
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => removeExercise(item.exercise.id)} accessibilityRole="button" accessibilityLabel={`Remove ${item.exercise.name}`}>
+                  <TouchableOpacity
+                    onPress={() => removeExercise(item.exercise.id)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Remove ${item.exercise.name}`}
+                  >
                     <MaterialCommunityIcons name="delete-outline" size={20} color={theme.colors.error} />
                   </TouchableOpacity>
                 </View>
@@ -660,7 +701,14 @@ export default function CreateWorkoutScreen() {
                   size={16}
                   color={theme.colors.accent}
                 />
-                <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.label, fontWeight: '600', marginLeft: spacing[1.5] }}>
+                <ThemedText
+                  style={{
+                    color: theme.colors.accent,
+                    fontSize: typography.sizes.label,
+                    fontWeight: '600',
+                    marginLeft: spacing[1.5],
+                  }}
+                >
                   {expandedInstructions[item.exercise.id] ? 'Hide Instructions' : 'Show Instructions'}
                 </ThemedText>
               </TouchableOpacity>
@@ -674,10 +722,24 @@ export default function CreateWorkoutScreen() {
                 >
                   {item.exercise.instructions.map((instruction, idx) => (
                     <View key={idx} style={styles.instructionStep}>
-                      <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '700', width: 20 }}>
+                      <ThemedText
+                        style={{
+                          color: theme.colors.accent,
+                          fontSize: typography.sizes.caption,
+                          fontWeight: '700',
+                          width: 20,
+                        }}
+                      >
                         {idx + 1}.
                       </ThemedText>
-                      <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.label, flex: 1, lineHeight: 18 }}>
+                      <ThemedText
+                        style={{
+                          color: theme.colors.textSecondary,
+                          fontSize: typography.sizes.label,
+                          flex: 1,
+                          lineHeight: 18,
+                        }}
+                      >
                         {instruction}
                       </ThemedText>
                     </View>
@@ -690,7 +752,14 @@ export default function CreateWorkoutScreen() {
                     }}
                   >
                     <MaterialCommunityIcons name="volume-high" size={16} color={theme.colors.accent} />
-                    <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600', marginLeft: spacing[1.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.accent,
+                        fontSize: typography.sizes.caption,
+                        fontWeight: '600',
+                        marginLeft: spacing[1.5],
+                      }}
+                    >
                       Read Aloud
                     </ThemedText>
                   </TouchableOpacity>
@@ -746,7 +815,11 @@ export default function CreateWorkoutScreen() {
             <Card key={item.exercise.id} style={styles.previewExercise}>
               <View style={styles.previewRow}>
                 <View style={[styles.orderBadge, { backgroundColor: theme.colors.accent }]}>
-                  <ThemedText style={{ color: theme.colors.text, fontWeight: '700', fontSize: typography.sizes.caption }}>{index + 1}</ThemedText>
+                  <ThemedText
+                    style={{ color: theme.colors.text, fontWeight: '700', fontSize: typography.sizes.caption }}
+                  >
+                    {index + 1}
+                  </ThemedText>
                 </View>
                 <ExerciseImage
                   exerciseId={item.exercise.id}
@@ -764,7 +837,12 @@ export default function CreateWorkoutScreen() {
                   </ThemedText>
                   {item.exercise.instructions.length > 0 && (
                     <ThemedText
-                      style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[1], lineHeight: 16 }}
+                      style={{
+                        color: theme.colors.textMuted,
+                        fontSize: typography.sizes.caption,
+                        marginTop: spacing[1],
+                        lineHeight: 16,
+                      }}
                       numberOfLines={2}
                     >
                       {item.exercise.instructions[0]}
@@ -781,7 +859,9 @@ export default function CreateWorkoutScreen() {
             onPress={handleSaveWorkout}
           >
             <MaterialCommunityIcons name="content-save" size={20} color={theme.colors.onAccent} />
-            <ThemedText style={[styles.saveButtonText, { color: theme.colors.text }]}>{t('createWorkout.saveWorkout')}</ThemedText>
+            <ThemedText style={[styles.saveButtonText, { color: theme.colors.text }]}>
+              {t('createWorkout.saveWorkout')}
+            </ThemedText>
           </TouchableOpacity>
         </ScrollView>
       </ScreenContainer>
@@ -840,7 +920,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterBadgeText: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '600',
   },
   filtersPanel: {
@@ -865,7 +945,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: spacing[2],
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
   },
   categoryScroll: {
     flexGrow: 0,
@@ -912,7 +992,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[3],
   },
   nameField: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
   },
   configCard: {
     padding: spacing[4],
@@ -947,7 +1027,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1.5],
     textAlign: 'center',
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     marginTop: spacing[1],
     width: '100%',
   },
@@ -991,7 +1071,7 @@ const styles = StyleSheet.create({
     gap: spacing[2.5],
   },
   saveButtonText: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '600',
   },
   instructionToggle: {

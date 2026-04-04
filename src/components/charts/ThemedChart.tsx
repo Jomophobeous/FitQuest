@@ -64,6 +64,7 @@ export function DateRangeSelector({
   onChange,
   options = ['7d', '30d', '90d', '1y'],
 }: DateRangeSelectorProps) {
+  const { theme } = useTheme();
   const chartTheme = useChartTheme();
 
   return (
@@ -257,11 +258,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: typography.sizes.h4, 
+    fontSize: typography.sizes.h4,
     fontWeight: '600',
   },
   subtitle: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     marginTop: spacing[0.5],
   },
   chartContainer: {
@@ -274,11 +275,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[5],
   },
   stateIcon: {
-    fontSize: typography.sizes.h1, 
+    fontSize: typography.sizes.h1,
     marginBottom: spacing[2],
   },
   stateText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     marginTop: spacing[2],
   },
   rangeSelectorContainer: {
@@ -292,14 +293,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   rangeButtonText: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
   },
   miniStatContainer: {
     alignItems: 'center',
     paddingHorizontal: spacing[3],
   },
   miniStatLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -309,15 +310,15 @@ const styles = StyleSheet.create({
     marginTop: spacing[1],
   },
   miniStatValue: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '700',
   },
   miniStatUnit: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '400',
   },
   miniStatDelta: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     marginLeft: spacing[1.5],
   },
   legendContainer: {
@@ -343,10 +344,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   legendLabel: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
   },
   legendValue: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
 });

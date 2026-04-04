@@ -33,14 +33,17 @@ import { useRouter } from 'expo-router';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
-import { useExercisesViewModel, type ExerciseWithDetails, type Category } from '../src/viewmodels/useExercisesViewModel';
+import {
+  useExercisesViewModel,
+  type ExerciseWithDetails,
+  type Category,
+} from '../src/viewmodels/useExercisesViewModel';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { AnimatedListItem, GradientButton } from '../src/components/ui/GlassUI';
 import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
 import ExerciseImage from '../src/components/ExerciseImage';
 import ThemedText from '../src/components/ThemedText';
 import { typography, spacing, radius } from '../src/design/theme-system';
-
 
 // ============================================
 // CATEGORY FILTERS
@@ -328,8 +331,16 @@ export default function ExercisesScreen() {
       <ScreenContainer>
         <View style={styles.centered}>
           <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-          <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{vm.loadError}</ThemedText>
-          <GradientButton title={t('common.retry') ?? 'Retry'} onPress={() => { vm.loadExercises(); }} style={{ marginTop: spacing[4] }} />
+          <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>
+            {vm.loadError}
+          </ThemedText>
+          <GradientButton
+            title={t('common.retry') ?? 'Retry'}
+            onPress={() => {
+              vm.loadExercises();
+            }}
+            style={{ marginTop: spacing[4] }}
+          />
         </View>
       </ScreenContainer>
     );
@@ -366,12 +377,15 @@ export default function ExercisesScreen() {
                   {t('exercises.library') || 'Library'}
                 </ThemedText>
                 <ThemedText style={[styles.headerCount, { color: theme.colors.textSecondary }]}>
-                  {filteredExercises.length} {t('exercises.of') || 'of'} {exercises.length}{' '}
+                  {filteredExercises.length} {t('exercises.of') || 'of'} {vm.exercises.length}{' '}
                   {t('library.exercises') || 'exercises'}
                 </ThemedText>
               </View>
               <TouchableOpacity
-                onPress={() => { haptic('buttonPress'); setShowFilters(!showFilters); }}
+                onPress={() => {
+                  haptic('buttonPress');
+                  setShowFilters(!showFilters);
+                }}
                 accessibilityRole="button"
                 accessibilityLabel={`Filters${activeFilterCount > 0 ? `, ${activeFilterCount} active` : ''}`}
                 accessibilityState={{ expanded: showFilters }}
@@ -391,7 +405,7 @@ export default function ExercisesScreen() {
                 <ThemedText
                   style={{
                     color: activeFilterCount > 0 ? theme.colors.accent : theme.colors.textSecondary,
-                    fontSize: typography.sizes.caption, 
+                    fontSize: typography.sizes.caption,
                     fontWeight: '600',
                     marginLeft: spacing[0.75],
                   }}
@@ -521,7 +535,13 @@ export default function ExercisesScreen() {
                     ]}
                   >
                     <View style={[styles.filterDot, { backgroundColor: d.color }]} />
-                    <ThemedText style={{ color: isOn ? d.color : theme.colors.text, fontSize: typography.sizes.label, fontWeight: '600' }}>
+                    <ThemedText
+                      style={{
+                        color: isOn ? d.color : theme.colors.text,
+                        fontSize: typography.sizes.label,
+                        fontWeight: '600',
+                      }}
+                    >
                       {d.label}
                     </ThemedText>
                   </TouchableOpacity>
@@ -530,7 +550,9 @@ export default function ExercisesScreen() {
             </View>
 
             {/* Equipment */}
-            <ThemedText style={[styles.filterSectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[3] }]}>
+            <ThemedText
+              style={[styles.filterSectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[3] }]}
+            >
               {t('exercises.equipment') || 'Equipment'}
             </ThemedText>
             <View style={styles.filterChipsRow}>
@@ -559,7 +581,7 @@ export default function ExercisesScreen() {
                     <ThemedText
                       style={{
                         color: isOn ? theme.colors.accent : theme.colors.text,
-                        fontSize: typography.sizes.label, 
+                        fontSize: typography.sizes.label,
                         fontWeight: '600',
                         marginLeft: spacing[1],
                       }}
@@ -627,7 +649,10 @@ export default function ExercisesScreen() {
         {/* ── FAB: CREATE WORKOUT ── */}
         <TouchableOpacity
           style={[styles.fab, { backgroundColor: theme.colors.accent }]}
-          onPress={() => { haptic('buttonPress'); router.push('/create-workout' as any); }}
+          onPress={() => {
+            haptic('buttonPress');
+            router.push('/create-workout' as any);
+          }}
           activeOpacity={0.85}
           accessibilityRole="button"
           accessibilityLabel="Create new workout"
@@ -692,7 +717,12 @@ const styles = StyleSheet.create({
   muscleTags: { flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' },
   muscleTag: { paddingHorizontal: spacing[2.5], paddingVertical: spacing[1], borderRadius: radius.md },
   muscleTagText: { fontSize: typography.sizes.caption, fontWeight: '500' },
-  diffBadge: { alignItems: 'center', paddingHorizontal: spacing[2.5], paddingVertical: spacing[1.25], borderRadius: 10 },
+  diffBadge: {
+    alignItems: 'center',
+    paddingHorizontal: spacing[2.5],
+    paddingVertical: spacing[1.25],
+    borderRadius: 10,
+  },
   diffText: { fontSize: typography.sizes.caption, fontWeight: '600' },
   exerciseBottom: { flexDirection: 'row', alignItems: 'center', marginTop: spacing[3.5], gap: spacing[3.5] },
   bottomTag: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
@@ -732,7 +762,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   filterSectionLabel: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,

@@ -84,6 +84,7 @@ function WorkoutSummaryView({ data, rating, onRate, onNewWorkout }: WorkoutSumma
       -1,
       false,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- glowScale is a Reanimated SharedValue (stable mutable ref)
   }, []);
   const glowStyle = useAnimatedStyle(() => ({
     transform: [{ scale: glowScale.value }],

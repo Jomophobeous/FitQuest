@@ -45,6 +45,7 @@ export default function ExerciseCompleteBadge({ visible, message = 'Nice!', colo
       opacity.value = 0;
       translateY.value = 20;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- opacity/scale/translateY are Reanimated SharedValues (stable mutable refs)
   }, [visible]);
 
   const animStyle = useAnimatedStyle(() => ({

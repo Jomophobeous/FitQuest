@@ -367,6 +367,7 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
       isLoadingRef.current = false;
       lastLoadedAt.current = Date.now();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mountedRef is a stable ref
   }, [isSubscribed, t]);
 
   // ── Debounced loader ──

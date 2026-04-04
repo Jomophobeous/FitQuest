@@ -259,6 +259,7 @@ export default function CraftMyBodyScreen() {
     goalType,
     musclePriorities,
     timeline,
+    vm,
   ]);
 
   const goBack = useCallback(() => {

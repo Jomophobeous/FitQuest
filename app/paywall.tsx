@@ -269,7 +269,7 @@ export default function PaywallScreen() {
     if (accessState === 'SUBSCRIBED') {
       router.replace('/dashboard');
     }
-  }, [accessState]);
+  }, [accessState, router]);
 
   const handleSubscribe = async () => {
     setPurchasing(true);

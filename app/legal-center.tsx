@@ -82,7 +82,7 @@ export default function LegalCenterScreen() {
         showToast({ message: t('legal.cannotOpenLink'), type: 'error' });
       }
     },
-    [t],
+    [t, showToast],
   );
 
   const handleAccept = useCallback(async () => {
@@ -95,7 +95,7 @@ export default function LegalCenterScreen() {
     } catch (error: any) {
       showToast({ message: error?.message ?? t('legal.acceptFailed'), type: 'error' });
     }
-  }, [vm, t]);
+  }, [vm, t, showToast]);
 
   const handleWithdraw = useCallback(async () => {
     try {
@@ -104,7 +104,7 @@ export default function LegalCenterScreen() {
     } catch (error: any) {
       showToast({ message: error?.message ?? t('legal.withdrawFailed'), type: 'error' });
     }
-  }, [vm, t]);
+  }, [vm, t, showToast]);
 
   const consentStatus = vm.consent.timestamp
     ? `${t('legal.acceptedOn')} ${new Date(vm.consent.timestamp).toLocaleString()}\n${t('legal.version')}: ${vm.consent.version || '-'} · ${t(`legal.source.${vm.consent.source || 'local'}`)}`

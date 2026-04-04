@@ -102,6 +102,7 @@ function RestTimerOverlay({
       -1,
       false,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- breatheOpacity/breatheScale are Reanimated SharedValues (stable mutable refs)
   }, [visible]);
 
   const breatheStyle = useAnimatedStyle(() => ({

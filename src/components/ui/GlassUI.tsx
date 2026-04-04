@@ -198,6 +198,7 @@ export const PulseDot = memo(function PulseDot({
     } else {
       haloOpacity.value = withTiming(0, { duration: 200 });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- haloOpacity is a Reanimated SharedValue (stable mutable ref)
   }, [active]);
 
   const haloStyle = useAnimatedStyle(() => ({

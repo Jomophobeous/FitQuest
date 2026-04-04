@@ -70,6 +70,7 @@ function ConfettiParticle({ particle }: { particle: Particle }) {
     );
     rotate.value = withDelay(particle.delay, withTiming(particle.rotation, { duration: DURATION_MS }));
     opacity.value = withDelay(particle.delay + DURATION_MS * 0.6, withTiming(0, { duration: DURATION_MS * 0.4 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Reanimated SharedValues + particle props are stable on mount
   }, []);
 
   const animStyle = useAnimatedStyle(() => ({
@@ -117,6 +118,7 @@ function ConfettiBurst({ active, onComplete }: ConfettiProps) {
 
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onComplete is an optional callback prop; width used only for particle generation on activation
   }, [active]);
 
   if (!visible || particles.length === 0) return null;

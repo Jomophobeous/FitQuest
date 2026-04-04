@@ -96,40 +96,49 @@ export default function SavedWorkoutsScreen() {
   // ACTIONS
   // ------------------------------------------
 
-  const confirmDelete = (session: WorkoutSession) => {
-    const name = getWorkoutName(session);
-    Alert.alert(t('savedWorkouts.deleteTitle'), t('savedWorkouts.deleteConfirm').replace('{name}', name), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('common.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await vm.deleteWorkout(session.id);
-            if (expandedId === session.id) setExpandedId(null);
-          } catch {
-            showToast({ message: t('savedWorkouts.deleteError'), type: 'error' });
-          }
+  const confirmDelete = useCallback(
+    (session: WorkoutSession) => {
+      const name = getWorkoutName(session);
+      Alert.alert(t('savedWorkouts.deleteTitle'), t('savedWorkouts.deleteConfirm').replace('{name}', name), [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await vm.deleteWorkout(session.id);
+              if (expandedId === session.id) setExpandedId(null);
+            } catch {
+              showToast({ message: t('savedWorkouts.deleteError'), type: 'error' });
+            }
+          },
         },
-      },
-    ]);
-  };
+      ]);
+    },
+    [expandedId, vm, t, showToast],
+  );
 
-  const handleStartWorkout = (session: WorkoutSession) => {
-    router.push({
-      pathname: '/workout',
-      params: { sessionId: session.id },
-    });
-  };
+  const handleStartWorkout = useCallback(
+    (session: WorkoutSession) => {
+      router.push({
+        pathname: '/workout',
+        params: { sessionId: session.id },
+      });
+    },
+    [router],
+  );
 
-  const toggleExpand = async (id: string) => {
-    if (expandedId === id) {
-      setExpandedId(null);
-      return;
-    }
-    setExpandedId(id);
-    await vm.loadSessionExercises(id);
-  };
+  const toggleExpand = useCallback(
+    async (id: string) => {
+      if (expandedId === id) {
+        setExpandedId(null);
+        return;
+      }
+      setExpandedId(id);
+      await vm.loadSessionExercises(id);
+    },
+    [expandedId, vm],
+  );
 
   // ------------------------------------------
   // RENDER: EMPTY STATE

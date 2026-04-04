@@ -73,6 +73,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         attemptBiometricUnlock();
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only init; attemptBiometricUnlock defined below
   }, []);
 
   // ============================================
@@ -99,6 +100,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- attemptBiometricUnlock is a stable useCallback ref
   }, [gateState]);
 
   // ============================================

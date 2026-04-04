@@ -120,6 +120,7 @@ function FitQuestScreenInner() {
     if (isReady) {
       vm.loadTrialSnapshot(isSubscribed);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- vm.loadTrialSnapshot is a stable method ref
   }, [isReady, isSubscribed, vm.loadTrialSnapshot]);
 
   // Auto-generate on mount if ready and idle (once per screen visit, with global cooldown)
@@ -174,6 +175,7 @@ function FitQuestScreenInner() {
     if (status !== 'in_progress') {
       vm.cancelNarration();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- vm.cancelNarration is a stable method ref
   }, [status, vm.cancelNarration]);
 
   const handleFinish = useCallback(async () => {
@@ -216,6 +218,7 @@ function FitQuestScreenInner() {
     } else {
       if (__DEV__) console.warn('[FitQuest] finishWorkout returned null — may have already been called');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- showToast is stable; vm methods are stable method refs
   }, [finishWorkout, vm.cancelNarration, vm.resetNarrationState, vm.playWorkoutCompliment, vm.storeLastWorkout]);
 
   // Auto-trigger finish when workout reaches completed status
@@ -228,7 +231,7 @@ function FitQuestScreenInner() {
         finishTriggeredRef.current = false;
       });
     }
-  }, [status, workout, completionResult, handleFinish]);
+  }, [status, workout, completionResult, handleFinish, vm]);
 
   const wantsNewWorkoutRef = useRef(false);
   const handleNewWorkout = () => {

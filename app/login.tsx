@@ -137,6 +137,7 @@ export default function LoginScreen() {
     };
     init();
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only initialization; deps are stable refs
   }, []);
 
   // Redirect if already signed in
@@ -144,7 +145,7 @@ export default function LoginScreen() {
     if (isSignedIn) {
       router.replace('/dashboard');
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, router]);
 
   useEffect(() => {
     const handleGoogleResponse = async () => {
@@ -169,6 +170,7 @@ export default function LoginScreen() {
     };
 
     handleGoogleResponse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- router/signInWithGoogleToken/t/triggerShake are stable refs
   }, [googleResponse]);
 
   useEffect(() => {

@@ -35,6 +35,7 @@ export default function MedicalDisclaimer({ screen, compact = false }: MedicalDi
 
   useEffect(() => {
     checkAcknowledged();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- checkAcknowledged is a stable useCallback ref
   }, [screen]);
 
   const checkAcknowledged = useCallback(async () => {

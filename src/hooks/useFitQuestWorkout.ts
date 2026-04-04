@@ -712,7 +712,7 @@ export function useFitQuestWorkout() {
     } finally {
       finishingRef.current = false;
     }
-  }, [state.workout, state.status, state.startTime, userProfile?.goal, userProfile?.experience]);
+  }, [state.workout, state.status, state.startTime, userProfile?.goal]);
 
   /**
    * Cancel the current workout

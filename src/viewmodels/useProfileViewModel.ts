@@ -308,7 +308,7 @@ export const useProfileViewModel = createViewModel(() => {
       } else {
         showToast({ message: t('profile.healthConnectSuccess') || 'Health Connect linked', type: 'success' });
       }
-    } catch (error) {
+    } catch (error: any) {
       const provider = await getHealthTelemetryProvider();
       await captureHealthError(error instanceof Error ? error : String(error), {
         provider,
@@ -318,7 +318,7 @@ export const useProfileViewModel = createViewModel(() => {
     } finally {
       setHealthBusy(false);
     }
-  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
+  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, showToast, t]);
 
   const handleSyncHealth = useCallback(async () => {
     if (healthBusy) return;
@@ -333,7 +333,7 @@ export const useProfileViewModel = createViewModel(() => {
         message: `${t('profile.healthSyncSummary') || 'Synced'}: ${result.synced} | ${t('profile.healthSyncErrors') || 'Errors'}: ${result.errors}`,
         type: result.errors > 0 ? 'warning' : 'success',
       });
-    } catch (error) {
+    } catch (error: any) {
       const provider = await getHealthTelemetryProvider();
       await captureHealthError(error instanceof Error ? error : String(error), {
         provider,
@@ -343,7 +343,7 @@ export const useProfileViewModel = createViewModel(() => {
     } finally {
       setHealthBusy(false);
     }
-  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, t]);
+  }, [getHealthTelemetryProvider, healthBusy, refreshHealthIntegrationStatus, showToast, t]);
 
   const handleHealthConnectSettings = useCallback(() => {
     if (healthConnectEnabled && healthIntegrationReady) {
@@ -547,7 +547,7 @@ export const useProfileViewModel = createViewModel(() => {
       } catch {
         /* mind xp optional */
       }
-    } catch (err) {
+    } catch (err: any) {
       if (__DEV__) console.error('[Profile] Load failed:', err);
       if (mountedRef.current) setLoadError(t('profile.loadFailed') || 'Failed to load profile data');
     } finally {
@@ -555,6 +555,7 @@ export const useProfileViewModel = createViewModel(() => {
       isLoadingProfileRef.current = false;
       lastProfileLoadAt.current = Date.now();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only profile load; t used inside but stable
   }, []);
 
   const debouncedLoadProfile = useCallback(() => {
@@ -793,7 +794,7 @@ export const useProfileViewModel = createViewModel(() => {
     } finally {
       setPrivacyBusy(false);
     }
-  }, [privacyBusy, t]);
+  }, [privacyBusy, showToast, t]);
 
   const handleExportData = useCallback(async () => {
     if (privacyBusy) return;
@@ -842,7 +843,7 @@ export const useProfileViewModel = createViewModel(() => {
     } finally {
       setPrivacyBusy(false);
     }
-  }, [privacyBusy, t]);
+  }, [privacyBusy, showToast, t]);
 
   const handleDeleteCloudData = useCallback(() => {
     if (privacyBusy) return;
@@ -883,7 +884,7 @@ export const useProfileViewModel = createViewModel(() => {
         setSocialBusy(false);
       }
     },
-    [socialBusy, t],
+    [socialBusy, showToast, t],
   );
 
   const handlePickPhoto = useCallback(async () => {
@@ -899,7 +900,7 @@ export const useProfileViewModel = createViewModel(() => {
         setProfilePicUri(destUri);
         await setAppState('user.profile_pic', destUri);
       }
-    } catch (e) {
+    } catch (e: any) {
       if (__DEV__) console.warn('[Profile] Photo pick failed:', e);
     }
   }, []);
@@ -945,10 +946,10 @@ export const useProfileViewModel = createViewModel(() => {
       } else {
         showToast({ message: t('profile.biometricFailed') || 'Authentication failed', type: 'error' });
       }
-    } catch (e) {
+    } catch (e: any) {
       if (__DEV__) console.warn('[Profile] Biometric test failed:', e);
     }
-  }, [biometricAvailable, t]);
+  }, [biometricAvailable, showToast, t]);
 
   const handleDismissHealthErrors = useCallback(async () => {
     for (const err of healthSyncErrors) {

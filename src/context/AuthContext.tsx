@@ -177,11 +177,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       if (__DEV__) console.warn('[FitQuest Auth] Failed to restore session:', err);
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bioAuth is a singleton; mount-only restore
   }, []);
 
   useEffect(() => {
@@ -291,7 +292,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(null);
       setUser(null);
       setIsLocallyAuthenticated(false);
-    } catch (err) {
+    } catch (err: any) {
       if (__DEV__) console.warn('[FitQuest Auth] Failed to sign out:', err);
     } finally {
       setIsLoading(false);
@@ -424,6 +425,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       touchSession,
       resumeSession,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- callbacks are stable useCallback refs; listed deps cover state changes
     [user, token, isLoading, isLocallyAuthenticated, biometricCapability, biometricEnabled],
   );
 

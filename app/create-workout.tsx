@@ -150,6 +150,7 @@ export default function CreateWorkoutScreen() {
   // Load exercises
   useEffect(() => {
     if (dbReady) vm.loadExercises();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- vm.loadExercises is a stable method ref
   }, [dbReady, vm.loadExercises]);
 
   useEffect(() => {

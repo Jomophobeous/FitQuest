@@ -105,6 +105,7 @@ export default function WorkoutScreen() {
         true,
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- pulse is a Reanimated SharedValue (stable mutable ref)
   }, [status]);
 
   const pulseStyle = useAnimatedStyle(() => ({
@@ -136,6 +137,7 @@ export default function WorkoutScreen() {
       }, 200); // debounce
       return () => clearTimeout(t);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadCustomWorkout and router are stable refs
   }, [status, workout, sessionId]);
 
   // Auto-start custom workout when it becomes ready
@@ -143,6 +145,7 @@ export default function WorkoutScreen() {
     if (sessionId && status === 'ready' && workout) {
       startWorkout();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- startWorkout is a stable hook ref
   }, [sessionId, status, workout]);
 
   // Haptic feedback when exercise changes (exercise start)
@@ -176,6 +179,7 @@ export default function WorkoutScreen() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- startExercise and vm are stable hook refs
   }, [currentExerciseIndex, status, currentExercise]);
 
   // Rest timer completion
@@ -201,6 +205,7 @@ export default function WorkoutScreen() {
       setIsResting(true);
       startRest(currentExercise.restSeconds);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- vm.stopAudio is a stable method ref
   }, [completeExercise, currentExerciseIndex, workout, currentExercise, startRest]);
 
   // Exercise timer completion (auto-complete timed exercises)
@@ -230,7 +235,7 @@ export default function WorkoutScreen() {
     stopAll();
     setShowAllInstructions(false);
     await skipExercise();
-  }, [skipExercise, stopAll]);
+  }, [skipExercise, stopAll, vm]);
 
   const handleFinish = useCallback(async () => {
     haptic('workoutComplete');
@@ -241,7 +246,7 @@ export default function WorkoutScreen() {
     showToast({ message: t('workout.completed') ?? 'Workout complete!', type: 'success', vibrate: true });
     await finishWorkout();
     router.replace('/fitquest' as any);
-  }, [finishWorkout, router, showToast, t]);
+  }, [finishWorkout, router, showToast, stopAll, t, vm]);
 
   const handleCancel = useCallback(async () => {
     vm.stopAudio();
@@ -251,7 +256,7 @@ export default function WorkoutScreen() {
     sessionStartRef.current = null;
     await cancelWorkout();
     router.replace('/fitquest' as any);
-  }, [cancelWorkout, router]);
+  }, [cancelWorkout, router, vm, stopAll]);
 
   const formatElapsed = (s: number): string => {
     const m = Math.floor(s / 60);

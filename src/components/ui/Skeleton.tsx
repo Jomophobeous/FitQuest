@@ -31,6 +31,7 @@ export function Skeleton({ width, height, radius = 'md', style }: SkeletonProps)
 
   useEffect(() => {
     shimmer.value = withRepeat(withTiming(0.7, { duration: 800, easing: Easing.inOut(Easing.ease) }), -1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- shimmer is a Reanimated SharedValue (stable mutable ref)
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({

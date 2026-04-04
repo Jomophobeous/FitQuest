@@ -97,7 +97,7 @@ export class DualAIEngine {
       try {
         const memory = await this.loadConversationMemory(context.personality, 10);
         enrichedContext = { ...context, memory };
-      } catch (e) {
+      } catch (e: any) {
         if (__DEV__) console.warn('[DualAI] Failed to load memory:', e);
       }
     }

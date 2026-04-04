@@ -25,11 +25,9 @@
 - **Impact**: Every exercise shows a placeholder icon. Users see zero exercise illustrations.
 - **Fix**: Create the copy script, integrate into dev + release builds
 
-### GAP 2: Authority Client — STUBBED
-- **Evidence**: `src/services/authorityClient.ts` is 18 lines, returns `null` (offline mode)
-- **Root cause**: Server verification was disabled during offline-first development
-- **Impact**: No server-side AI access control, no subscription verification via backend
-- **Fix**: Wire authority client to the deployed backend at `https://fitq-56sj.onrender.com`
+### GAP 2: Authority Client — ✅ FIXED (Phase B)
+- **Evidence**: `src/services/authorityClient.ts` rebuilt to 160-line real client
+- **Resolution**: POST /ai/request + POST /verify/subscription with 8s timeout, throttling, caching, graceful null-on-failure
 
 ### GAP 3: Security Services — ALL STUBS
 - **Evidence**: `src/services/security/` contains 4 files totaling 49 lines, all no-ops:
@@ -40,12 +38,11 @@
 - **Impact**: No tamper detection, no runtime integrity checks, no security degradation
 - **Note**: These are non-critical for closed beta but must be addressed before public release
 
-### GAP 4: Four Stub Screens (28 lines each, "Coming Soon" placeholders)
-- `app/nutrition-calculator.tsx` — Stub
-- `app/meal-prep.tsx` — Stub
-- `app/health-dashboard.tsx` — Stub
-- `app/backups.tsx` — Stub
-- **Impact**: Users navigate to these and see empty placeholder screens
+### GAP 4: Stub Screens — 3 of 4 FIXED (Phase A)
+- ✅ `app/health-dashboard.tsx` — Rebuilt with health score ring, daily metrics, alerts
+- ✅ `app/nutrition-calculator.tsx` — Rebuilt with BMR/TDEE/macro calculations
+- ✅ `app/backups.tsx` — Rebuilt with export/import/delete functionality
+- ⏳ `app/meal-prep.tsx` — Deferred to v2.1 (requires food database integration)
 
 ### GAP 5: FitMind Screens — DON'T EXIST
 - **Evidence**: `app/fitmind-library.tsx`, `app/fitmind-reader.tsx`, `app/professor/index.tsx` — files not found
@@ -53,23 +50,19 @@
 - **Impact**: The entire cognitive fitness module is invisible to users
 - **Decision needed**: Ship in beta or defer to v2.1?
 
-### GAP 6: Feedback Screen — NOT IN NAVIGATION
-- **Evidence**: `app/feedback.tsx` (570 LOC) exists but is not registered in `app/_layout.tsx`
-- **Impact**: Users can't access the feedback form
+### GAP 6: Feedback Screen — ✅ FIXED (Phase A)
+- **Resolution**: Registered in `app/_layout.tsx`. Accessible from profile screen.
 
-### GAP 7: Dev Debug Panel — NOT IN NAVIGATION  
-- **Evidence**: `app/dev/debug-panel.tsx` (549 LOC) exists but not in `_layout.tsx`
-- **Impact**: Developers can't access diagnostics during testing
+### GAP 7: Dev Debug Panel — ✅ FIXED (Phase A)
+- **Resolution**: Registered in `app/_layout.tsx`. Hidden from tab bar.
 
-### GAP 8: Exercise Image Deploy Script — MISSING
-- **Evidence**: `scripts/` directory contains only `__pycache__/`
-- **Root cause**: `npm run dev:android` calls `bash scripts/copy-exercise-assets.sh` — file doesn't exist
-- **Impact**: Native Android builds will fail at the exercise asset copy step
+### GAP 8: Exercise Image Deploy Script — ✅ FIXED (Phase A)
+- **Resolution**: Created `scripts/copy-exercise-assets.sh` with WebP optimization support.
 
-### GAP 9: Backend Health Unknown
-- **Evidence**: Backend deployed to Render (`https://fitq-56sj.onrender.com`)
-- **Unknown**: Is it running? Is the Supabase project active? Are the RLS policies applied?
-- **Impact**: Auth, device binding, sync, and AI proxy may all fail at runtime
+### GAP 9: Backend Health — ✅ FIXED (Phase B)
+- **Root cause found**: 5 engine files + trustCheck middleware were in `server/_deprecated/` but routes imported from `server/engines/` and `server/middleware/`. Node crashes at module load before Express starts.
+- **Resolution**: Restored all files. All 5 routes verified loading cleanly.
+- **Email auth gap identified**: Server has /auth/challenge + /auth/verify only. Not a blocker for beta (AuthGate handles first-launch offline).
 
 ### GAP 10: .env Contains Hardcoded API Keys
 - **Evidence**: `.env` file has live API keys for Groq, Grok, OpenRouter, PostHog, authority server
@@ -192,12 +185,13 @@
 ## Execution Order
 
 ```
-PHASE A (Foundation Fixes)          ← WE START HERE
-  └→ PHASE B (Backend Verification)
-       └→ PHASE C (Manual Test — Expo Go)     ← MILESTONE: First real testing
-            └→ PHASE D (Bug Fixes)
-                 └→ PHASE E (Native Build)      ← MILESTONE: Real APK on device
-                      └→ PHASE F (Closed Beta)  ← MILESTONE: Internal testers
+PHASE A (Foundation Fixes)          ✅ COMPLETE — committed 564b91b
+  └→ PHASE B (Backend Verification)   ✅ COMPLETE — committed c7427e0
+       └→ PHASE B.5 (Pre-Launch Prep)   ✅ COMPLETE — splash routing fixed
+            └→ PHASE C (Manual Test — Expo Go)     ← YOU ARE HERE
+                 └→ PHASE D (Bug Fixes)
+                      └→ PHASE E (Native Build)      ← MILESTONE: Real APK on device
+                           └→ PHASE F (Closed Beta)  ← MILESTONE: Internal testers
 ```
 
 **Estimated effort**: 6 focused sessions (A+B: 2, C+D: 2, E+F: 2)
@@ -232,4 +226,29 @@ Every change made under this plan must satisfy:
 | Exercise catalogue | 868+ exercises, 1736 image records |
 | Exercise images on disk | 1,746 files (not bundled) |
 | Supported languages | 15 |
-| Git HEAD | `85d2613` |
+| Git HEAD | `c7427e0` (Phase B complete) |
+
+---
+
+## Phase Completion Log
+
+### PHASE A — COMPLETE (committed `564b91b`)
+- Created `scripts/copy-exercise-assets.sh`
+- Registered feedback + debug-panel in `_layout.tsx`  
+- Rebuilt health-dashboard, nutrition-calculator, backups from stubs
+- Created MASTER_PLAN.md
+
+### PHASE B — COMPLETE (committed `c7427e0`)
+- **Server 503 root cause found and fixed**: 5 engine files + trustCheck middleware were in `_deprecated/` but routes imported from original paths. Node crashes at module load.
+- Restored `server/engines/` (5 files) and `server/middleware/trustCheck.js`
+- Rebuilt `authorityClient.ts` — 160-line real client (was 18-line stub)
+- Wired SubscriptionContext to server verification
+- **Email auth routes gap identified**: authApi.ts expects /auth/email/* but server only has /auth/challenge + /auth/verify. Not a blocker (AuthGate handles first-launch auth offline).
+- **Device binding gap identified**: Client doesn't implement challenge-response flow. Authority client gracefully degrades to offline mode.
+
+### PHASE B.5 — Pre-Launch Prep
+- **CRITICAL BUG FIXED**: `splash.tsx` was a dead-end spinner that never routed to dashboard or onboarding. Now checks `onboardingComplete` flag and redirects accordingly.
+- Audited all critical screen crash paths — all safe for Expo Go
+- Verified all native modules are guarded (Sentry, RevenueCat, HealthConnect all have try/catch or no-op fallbacks)
+- Confirmed mock billing mode active (`BILLING_MODE=mock`, `MOCK_BILLING_STATE=premium`)
+- 425/425 tests pass, 0 type errors

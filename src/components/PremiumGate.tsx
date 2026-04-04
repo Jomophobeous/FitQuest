@@ -14,13 +14,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useSubscription } from '../purchases/SubscriptionContext';
 import { GradientButton } from './ui/GlassUI';
 import { logEvent } from '../services/telemetry';
-import { tamperEngine } from '../services/security/tamperEngine';
 import { typography, spacing } from '../design/theme-system';
-import {
-  sentinelRecordPremiumAccess,
-  sentinelVerifyEngine,
-  microCheckStateCoherence,
-} from '../services/security/sentinel';
 
 interface PremiumGateProps {
   children: React.ReactNode;
@@ -44,21 +38,10 @@ export default function PremiumGate({ children, featureName }: PremiumGateProps)
 
   // TRIAL_ACTIVE or SUBSCRIBED — user has access, render children
   if (accessState === 'TRIAL_ACTIVE' || accessState === 'SUBSCRIBED') {
-    tamperEngine.updateEntitlementState(true);
-    tamperEngine.recordPremiumFeatureUsed();
-    sentinelRecordPremiumAccess(true);
-    sentinelVerifyEngine(tamperEngine.getHeartbeatCounter());
-    microCheckStateCoherence();
-    // Phase 16: Entitlement check suggests verification — medium confidence
-    tamperEngine.updateVerificationConfidence('medium');
-    // Phase 18: Opportunistic bridge verification — server confirms entitlement ground truth
-    tamperEngine.requestBridgeVerification();
     return <>{children}</>;
   }
 
   // EXPIRED — show upgrade prompt
-  tamperEngine.updateEntitlementState(false);
-  sentinelRecordPremiumAccess(false);
   void logEvent('premium_gate_blocked', { feature: featureName, accessState });
 
   return (
@@ -95,17 +78,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing[6],
   },
   title: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '700',
     marginBottom: spacing[2],
   },
   feature: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '600',
     marginBottom: spacing[4],
   },
   desc: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: spacing[8],
@@ -115,6 +98,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
   },
   hint: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
   },
 });

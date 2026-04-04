@@ -42,7 +42,6 @@ import {
   type AIWorkoutResult,
 } from '../services/aiWorkoutService';
 import { haptic } from '../utils/haptics';
-import { getCurrentLocation, getDefaultLocation } from '../services/locationService';
 
 // ============================================
 // TYPES (exported for screen)
@@ -136,21 +135,28 @@ export const useCoachViewModel = createViewModel(() => {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
 
   // ── Keep refs in sync ──
-  useEffect(() => { messagesRef.current = messages; }, [messages]);
-  useEffect(() => { coachCtxRef.current = coachCtx; }, [coachCtx]);
-  useEffect(() => { languageRef.current = { language, languageName }; }, [language, languageName]);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+  useEffect(() => {
+    coachCtxRef.current = coachCtx;
+  }, [coachCtx]);
+  useEffect(() => {
+    languageRef.current = { language, languageName };
+  }, [language, languageName]);
 
   // ── Keyboard tracking ──
   useEffect(() => {
-    const showSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => setKeyboardVisible(true),
+    const showSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () =>
+      setKeyboardVisible(true),
     );
-    const hideSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => setKeyboardVisible(false),
+    const hideSub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () =>
+      setKeyboardVisible(false),
     );
-    return () => { showSub.remove(); hideSub.remove(); };
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
   }, []);
 
   // ── Scroll helper ──
@@ -166,7 +172,11 @@ export const useCoachViewModel = createViewModel(() => {
   // ── Android back button ──
   useEffect(() => {
     const backAction = () => {
-      if (router.canGoBack()) { router.back(); } else { router.replace('/dashboard'); }
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/dashboard');
+      }
       return true;
     };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -180,17 +190,28 @@ export const useCoachViewModel = createViewModel(() => {
   }, [dbReady]);
 
   // ── Cleanup streaming on unmount ──
-  useEffect(() => () => {
-    if (streamResponseRef.current) clearTimeout(streamResponseRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (streamResponseRef.current) clearTimeout(streamResponseRef.current);
+    },
+    [],
+  );
 
   // ── Load coach context + greeting + history ──
   const loadCoachContext = async () => {
     try {
       const [
-        progress, streak, fatigue, xp, profile,
-        exercises, readinessSnap, displayName,
-        injuries, equipment, bodyCraftAlgo,
+        progress,
+        streak,
+        fatigue,
+        xp,
+        profile,
+        exercises,
+        readinessSnap,
+        displayName,
+        injuries,
+        equipment,
+        bodyCraftAlgo,
       ] = await Promise.all([
         getUserProgress(),
         getStreak('user_local_001'),
@@ -211,9 +232,8 @@ export const useCoachViewModel = createViewModel(() => {
         : 999;
       const readinessStatus = readinessSnap ? formatStatusForAI(readinessSnap) : undefined;
       const userName = displayName || 'Athlete';
-      const injuryStr = injuries.length > 0
-        ? injuries.map((i) => `${i.muscle.replace(/_/g, ' ')} (${i.severity})`).join(', ')
-        : 'none';
+      const injuryStr =
+        injuries.length > 0 ? injuries.map((i) => `${i.muscle.replace(/_/g, ' ')} (${i.severity})`).join(', ') : 'none';
       const equipmentStr = equipment.length > 0 ? equipment.join(', ') : 'bodyweight';
 
       let bodyCraftSummary: string | undefined;
@@ -244,34 +264,15 @@ export const useCoachViewModel = createViewModel(() => {
         bodyCraftPlan: bodyCraftSummary,
       };
 
-      // Fetch location (non-blocking)
-      try {
-        const loc = await getCurrentLocation();
-        if (loc) {
-          ctx.location = {
-            city: loc.city ?? undefined,
-            region: loc.region ?? undefined,
-            country: loc.country ?? undefined,
-            isoCountryCode: loc.isoCountryCode ?? undefined,
-          };
-        }
-      } catch {
-        try {
-          const fallback = getDefaultLocation();
-          ctx.location = {
-            country: fallback.country ?? undefined,
-            isoCountryCode: fallback.isoCountryCode ?? undefined,
-          };
-        } catch { /* ignore */ }
-      }
-
-      setCoachCtx(ctx);
+      // Location service removed — skip location context\n\n      setCoachCtx(ctx);
 
       // Pre-cache conversation memory
       try {
         const memory = await dualAI.loadConversationMemory('COACH', 5);
         cachedMemoryRef.current = memory;
-      } catch { /* continue */ }
+      } catch {
+        /* continue */
+      }
 
       // Generate greeting
       let greeting: string;
@@ -371,7 +372,9 @@ export const useCoachViewModel = createViewModel(() => {
                     .join('\n');
                   responseText = `💪 **${raw.name || 'Your Workout'}**\n\n${lines}`;
                 }
-              } catch { /* not valid JSON */ }
+              } catch {
+                /* not valid JSON */
+              }
             }
             initialMessages.push({
               id: `hist_user_${entry.created_at}`,
@@ -401,18 +404,31 @@ export const useCoachViewModel = createViewModel(() => {
       setMessages(initialMessages);
     } catch (error) {
       if (__DEV__) console.error('[Coach] Failed to load context:', error);
-      setMessages([{
-        id: 'greeting',
-        role: 'coach',
-        text: "Hey! I'm your FitQuest coach. Ask me anything about training, nutrition, or recovery! 💪",
-        timestamp: new Date(),
-      }]);
+      setMessages([
+        {
+          id: 'greeting',
+          role: 'coach',
+          text: "Hey! I'm your FitQuest coach. Ask me anything about training, nutrition, or recovery! 💪",
+          timestamp: new Date(),
+        },
+      ]);
       setCoachCtx({
-        streak: 0, longestStreak: 0, totalWorkouts: 0, level: 1, totalXP: 0,
-        fatigueHighMuscles: [], lastWorkoutDate: null, daysSinceLastWorkout: 999,
-        goal: 'body_control', exerciseCount: 200, userName: 'Athlete',
-        experience: 'intermediate', trainingDaysPerWeek: 3, sessionMinutes: 30,
-        injuries: 'none', equipment: 'bodyweight',
+        streak: 0,
+        longestStreak: 0,
+        totalWorkouts: 0,
+        level: 1,
+        totalXP: 0,
+        fatigueHighMuscles: [],
+        lastWorkoutDate: null,
+        daysSinceLastWorkout: 999,
+        goal: 'body_control',
+        exerciseCount: 200,
+        userName: 'Athlete',
+        experience: 'intermediate',
+        trainingDaysPerWeek: 3,
+        sessionMinutes: 30,
+        injuries: 'none',
+        equipment: 'bodyweight',
       });
     }
   };
@@ -429,29 +445,33 @@ export const useCoachViewModel = createViewModel(() => {
     return {
       personality,
       conversationHistory: recentHistory,
-      userProfile: ctx ? {
-        name: ctx.userName,
-        fitnessLevel: ctx.experience,
-        goals: [ctx.goal],
-        streakDays: ctx.streak,
-        longestStreak: ctx.longestStreak,
-        level: ctx.level,
-        totalXP: ctx.totalXP,
-        weight: ctx.weight,
-        height: ctx.height,
-        trainingDaysPerWeek: ctx.trainingDaysPerWeek,
-        sessionMinutes: ctx.sessionMinutes,
-        injuries: ctx.injuries,
-        equipment: ctx.equipment,
-        bodyCraftPlan: ctx.bodyCraftPlan,
-      } : undefined,
-      workoutContext: ctx ? {
-        fatigueLevel: ctx.fatigueHighMuscles.length > 0 ? 75 : 30,
-        fatigueHighMuscles: ctx.fatigueHighMuscles,
-        lastWorkoutDate: ctx.lastWorkoutDate ?? undefined,
-        daysSinceLastWorkout: ctx.daysSinceLastWorkout,
-        readinessStatus: ctx.readinessStatus,
-      } : undefined,
+      userProfile: ctx
+        ? {
+            name: ctx.userName,
+            fitnessLevel: ctx.experience,
+            goals: [ctx.goal],
+            streakDays: ctx.streak,
+            longestStreak: ctx.longestStreak,
+            level: ctx.level,
+            totalXP: ctx.totalXP,
+            weight: ctx.weight,
+            height: ctx.height,
+            trainingDaysPerWeek: ctx.trainingDaysPerWeek,
+            sessionMinutes: ctx.sessionMinutes,
+            injuries: ctx.injuries,
+            equipment: ctx.equipment,
+            bodyCraftPlan: ctx.bodyCraftPlan,
+          }
+        : undefined,
+      workoutContext: ctx
+        ? {
+            fatigueLevel: ctx.fatigueHighMuscles.length > 0 ? 75 : 30,
+            fatigueHighMuscles: ctx.fatigueHighMuscles,
+            lastWorkoutDate: ctx.lastWorkoutDate ?? undefined,
+            daysSinceLastWorkout: ctx.daysSinceLastWorkout,
+            readinessStatus: ctx.readinessStatus,
+          }
+        : undefined,
       memory: cachedMemoryRef.current || undefined,
       totalWorkouts: ctx?.totalWorkouts || 0,
       exerciseCount: ctx?.exerciseCount || 200,
@@ -615,7 +635,8 @@ export const useCoachViewModel = createViewModel(() => {
                 .join('\n');
               response = `💪 **${workoutResult.name}** created!\n\n${exerciseLines}\n\n⏱ ~${workoutResult.durationEstimate} min · ${workoutResult.exerciseCount} exercises`;
             } catch {
-              response = "I couldn't create a workout right now. Try saying something like **Create an upper body workout** and I'll pull from the exercise library! 💪";
+              response =
+                "I couldn't create a workout right now. Try saying something like **Create an upper body workout** and I'll pull from the exercise library! 💪";
             }
           } else {
             response = "Hmm, let me try a different approach. Ask me again and I'll use my offline knowledge! 💪";
@@ -632,7 +653,9 @@ export const useCoachViewModel = createViewModel(() => {
                 .join('\n');
               response = `💪 **${raw.name || 'Your Workout'}**\n\n${lines}`;
             }
-          } catch { /* not valid JSON */ }
+          } catch {
+            /* not valid JSON */
+          }
         }
 
         encryptedDB.storeAIConversation('COACH', trimmed, response).catch(() => {});
@@ -657,7 +680,10 @@ export const useCoachViewModel = createViewModel(() => {
   }, [input, dispatchMessage]);
 
   const handleSuggestion = useCallback(
-    (text: string) => { haptic('buttonPress'); dispatchMessage(text); },
+    (text: string) => {
+      haptic('buttonPress');
+      dispatchMessage(text);
+    },
     [dispatchMessage],
   );
 
@@ -680,7 +706,11 @@ export const useCoachViewModel = createViewModel(() => {
 
   const handleShareMessage = useCallback(async () => {
     if (!actionMessage) return;
-    try { await Share.share({ message: actionMessage.text }); } catch { /* cancelled */ }
+    try {
+      await Share.share({ message: actionMessage.text });
+    } catch {
+      /* cancelled */
+    }
   }, [actionMessage]);
 
   const closeActions = useCallback(() => setShowActions(false), []);
@@ -725,7 +755,9 @@ export const useCoachViewModel = createViewModel(() => {
               .join('\n');
             response = `💪 **${raw.name || 'Your Workout'}**\n\n${lines}`;
           }
-        } catch { /* not valid JSON */ }
+        } catch {
+          /* not valid JSON */
+        }
       }
 
       streamResponse(
@@ -774,12 +806,14 @@ export const useCoachViewModel = createViewModel(() => {
     setActiveSuggestions([]);
     setLastWorkoutResult(null);
     cachedMemoryRef.current = null;
-    setMessages([{
-      id: 'greeting',
-      role: 'coach',
-      text: `${getTimeGreeting()}! Fresh conversation started. What would you like to work on? 💪`,
-      timestamp: new Date(),
-    }]);
+    setMessages([
+      {
+        id: 'greeting',
+        role: 'coach',
+        text: `${getTimeGreeting()}! Fresh conversation started. What would you like to work on? 💪`,
+        timestamp: new Date(),
+      },
+    ]);
     haptic('exerciseComplete');
   }, []);
 
@@ -791,10 +825,13 @@ export const useCoachViewModel = createViewModel(() => {
   }, []);
 
   // ── Navigate to workout ──
-  const navigateToWorkout = useCallback((sessionId: string) => {
-    router.push({ pathname: '/workout', params: { sessionId } });
-    setLastWorkoutResult(null);
-  }, [router]);
+  const navigateToWorkout = useCallback(
+    (sessionId: string) => {
+      router.push({ pathname: '/workout', params: { sessionId } });
+      setLastWorkoutResult(null);
+    },
+    [router],
+  );
 
   // ── Cloud status ──
   const cloudAvailable = aiProvider.cloudAvailable;

@@ -9,7 +9,15 @@
  */
 
 import React, { useEffect, memo } from 'react';
-import { View, StyleSheet, TouchableOpacity, ActivityIndicator, type StyleProp, ViewStyle, Dimensions } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  type StyleProp,
+  ViewStyle,
+  Dimensions,
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -30,8 +38,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../context/ThemeContext';
 import { usePressAnimation } from '../../hooks/usePressAnimation';
-import { Interaction } from '../../interactions/InteractionManager';
 import { spacing, radius } from '../../design/theme-system';
+
+// InteractionManager removed — inline stub that just executes the callback
+const Interaction = { execute: (_id: string, fn: () => void, _opts?: Record<string, unknown>) => fn() };
 import { MOTION } from '../../design/motion';
 import ThemedText from '../ThemedText';
 
@@ -89,9 +99,13 @@ export const GlassCard = memo(function GlassCard({
           onPressIn={onPressIn}
           onPressOut={onPressOut}
           onPress={() => {
-            Interaction.execute('glass_card', () => {
-              onPress();
-            }, { haptic: 'light' });
+            Interaction.execute(
+              'glass_card',
+              () => {
+                onPress();
+              },
+              { haptic: 'light' },
+            );
           }}
           accessibilityRole="button"
         >
@@ -115,7 +129,12 @@ interface GradientHeaderProps {
   rightContent?: React.ReactNode;
 }
 
-export const GradientHeader = memo(function GradientHeader({ title, subtitle, icon, rightContent }: GradientHeaderProps) {
+export const GradientHeader = memo(function GradientHeader({
+  title,
+  subtitle,
+  icon,
+  rightContent,
+}: GradientHeaderProps) {
   const { theme } = useTheme();
 
   return (
@@ -321,9 +340,13 @@ export const GradientButton = memo(function GradientButton({
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={() => {
-          Interaction.execute('btn_' + title.replace(/\s+/g, '_').toLowerCase(), () => {
-            onPress();
-          }, { haptic: 'light' });
+          Interaction.execute(
+            'btn_' + title.replace(/\s+/g, '_').toLowerCase(),
+            () => {
+              onPress();
+            },
+            { haptic: 'light' },
+          );
         }}
         disabled={isDisabled}
         accessibilityRole="button"
@@ -350,7 +373,9 @@ export const GradientButton = memo(function GradientButton({
               style={{ marginRight: 8 }}
             />
           ) : null}
-          <ThemedText style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>{loading ? 'Loading…' : title}</ThemedText>
+          <ThemedText style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>
+            {loading ? 'Loading…' : title}
+          </ThemedText>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -367,7 +392,11 @@ interface WeekCalendarProps {
   onDatePress?: (date: Date) => void;
 }
 
-export const WeekCalendar = memo(function WeekCalendar({ activeDate = new Date(), workoutDates = [], onDatePress }: WeekCalendarProps) {
+export const WeekCalendar = memo(function WeekCalendar({
+  activeDate = new Date(),
+  workoutDates = [],
+  onDatePress,
+}: WeekCalendarProps) {
   const { theme } = useTheme();
   const today = new Date();
 
@@ -408,10 +437,14 @@ export const WeekCalendar = memo(function WeekCalendar({ activeDate = new Date()
             accessibilityLabel={`${dayNames[i]}, ${day.getDate()}${isToday ? ', today' : ''}${hasWorkout ? ', workout completed' : ''}`}
             accessibilityState={{ selected: isActive }}
           >
-            <ThemedText style={[styles.calendarDayName, { color: isActive ? theme.colors.onAccent : theme.colors.textMuted }]}>
+            <ThemedText
+              style={[styles.calendarDayName, { color: isActive ? theme.colors.onAccent : theme.colors.textMuted }]}
+            >
               {dayNames[i]}
             </ThemedText>
-            <ThemedText style={[styles.calendarDayNum, { color: isActive ? theme.colors.onAccent : theme.colors.text }]}>
+            <ThemedText
+              style={[styles.calendarDayNum, { color: isActive ? theme.colors.onAccent : theme.colors.text }]}
+            >
               {day.getDate()}
             </ThemedText>
             {!!hasWorkout && (
@@ -441,7 +474,13 @@ interface ProgressRingProps {
   children?: React.ReactNode;
 }
 
-export const ProgressRing = memo(function ProgressRing({ progress, size = 80, strokeWidth = 6, color, children }: ProgressRingProps) {
+export const ProgressRing = memo(function ProgressRing({
+  progress,
+  size = 80,
+  strokeWidth = 6,
+  color,
+  children,
+}: ProgressRingProps) {
   const { theme } = useTheme();
   const ringColor = color || theme.colors.accent;
   const clampedProgress = Math.min(Math.max(progress, 0), 1);
@@ -541,7 +580,10 @@ export const AnimatedListItem = memo(function AnimatedListItem({
 
   const content = (
     <Animated.View style={animatedStyle}>
-      <Animated.View entering={FadeIn.delay(Math.min(index * MOTION.stagger, MOTION.staggerCap)).duration(MOTION.fast)} style={style}>
+      <Animated.View
+        entering={FadeIn.delay(Math.min(index * MOTION.stagger, MOTION.staggerCap)).duration(MOTION.fast)}
+        style={style}
+      >
         {children}
       </Animated.View>
     </Animated.View>
@@ -554,9 +596,13 @@ export const AnimatedListItem = memo(function AnimatedListItem({
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={() => {
-          Interaction.execute('list_item_' + index, () => {
-            onPress();
-          }, { haptic: 'light' });
+          Interaction.execute(
+            'list_item_' + index,
+            () => {
+              onPress();
+            },
+            { haptic: 'light' },
+          );
         }}
         accessibilityRole={a11yRole || 'button'}
         accessibilityLabel={accessibilityLabel}

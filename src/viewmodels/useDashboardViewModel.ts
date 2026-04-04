@@ -27,23 +27,55 @@ import {
   getUserProfile,
 } from '../database/service';
 import { RealisticHealthEngine } from '../engines/RealisticHealthEngine';
-import { getCachedReadiness, invalidateReadinessCache, getStatusDisplay, type ReadinessSnapshot } from '../engines/ReadinessEngine';
+import {
+  getCachedReadiness,
+  invalidateReadinessCache,
+  getStatusDisplay,
+  type ReadinessSnapshot,
+} from '../engines/ReadinessEngine';
 import { needsRecoveryTick, applyDailyRecoveryTick } from '../engines/recoveryEngine';
-import { getDailySignal, type BehavioralSignal } from '../engines/BehavioralSignalEngine';
-import { getLastSessionImpact, type LastSessionImpact } from '../engines/AdaptiveMemoryEngine';
-import { getTrialSnapshot, type TrialSnapshot } from '../engines/TrialProgressionEngine';
-import { classifyConsistency, type ConsistencyProfile } from '../engines/ConsistencyClassifier';
 import { getXPData } from '../services/xpService';
 import { useDataSync } from '../services/dataSyncService';
-import { getGoalProgress, type GoalProgress } from '../services/goalTracker';
-import { getCachedUserState, type UserState } from '../engines/UserStateEngine';
-import { logNextActionShown } from '../services/growthAnalytics';
 import { createViewModel } from './createViewModel';
 import { spacing, radius } from '../design/theme-system';
 import { featureFlags as featureFlagsService } from '../services/featureFlags';
 import type { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // ── Types ──
+
+interface BehavioralSignal {
+  colorKey: string;
+  icon: string;
+  headline: string;
+  subtext: string;
+  pulse: boolean;
+}
+
+interface LastImpact {
+  hasHistory: boolean;
+  trend: string;
+  trendStatement: string;
+}
+
+interface TrialMessage {
+  type: string;
+  headline: string;
+  subtext: string;
+  actionRoute?: string;
+  actionLabel?: string;
+}
+
+interface TrialSnapshot {
+  phase: string;
+  message: TrialMessage;
+}
+
+interface GoalProgress {
+  overallProgress: number;
+  workoutsDone: number;
+  activeMinutesDone: number;
+  goals: { workoutsTarget: number; activeMinutesTarget: number };
+}
 
 export interface RecentWorkout {
   id: string;
@@ -64,9 +96,9 @@ export interface DashboardState {
   fatigueLevel: number | null;
   readiness: ReadinessSnapshot | null;
   behavioralSignal: BehavioralSignal | null;
-  lastImpact: LastSessionImpact | null;
+  lastImpact: LastImpact | null;
   trialSnapshot: TrialSnapshot | null;
-  consistencyProfile: ConsistencyProfile | null;
+  consistencyProfile: Record<string, unknown> | null;
   recentWorkout: RecentWorkout | null;
   workoutDates: string[];
   totalCalories: number;
@@ -82,7 +114,7 @@ export interface DashboardState {
   selectedDate: Date;
   hasInterruptedSession: boolean;
   goalProgress: GoalProgress | null;
-  userState: UserState | null;
+  userState: Record<string, unknown> | null;
 }
 
 export interface DashboardDerived {
@@ -130,9 +162,9 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   const [fatigueLevel, setFatigueLevel] = useState<number | null>(null);
   const [readiness, setReadiness] = useState<ReadinessSnapshot | null>(null);
   const [behavioralSignal, setBehavioralSignal] = useState<BehavioralSignal | null>(null);
-  const [lastImpact, setLastImpact] = useState<LastSessionImpact | null>(null);
+  const [lastImpact, setLastImpact] = useState<LastImpact | null>(null);
   const [trialSnapshot, setTrialSnapshot] = useState<TrialSnapshot | null>(null);
-  const [consistencyProfile, setConsistencyProfile] = useState<ConsistencyProfile | null>(null);
+  const [consistencyProfile, setConsistencyProfile] = useState<Record<string, unknown> | null>(null);
   const [recentWorkout, setRecentWorkout] = useState<RecentWorkout | null>(null);
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
@@ -148,7 +180,7 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [hasInterruptedSession, setHasInterruptedSession] = useState(false);
   const [goalProgress, setGoalProgress] = useState<GoalProgress | null>(null);
-  const [userState, setUserState] = useState<UserState | null>(null);
+  const [userState, setUserState] = useState<Record<string, unknown> | null>(null);
 
   // ── Refs ──
   const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -174,9 +206,20 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
 
     try {
       const [
-        savedName, progress, streakData, fatigue, sessions,
-        stepsData, xpData, readinessSnap, signal, impact,
-        trialSnap, consistencySnap, profileSnap, activeWorkoutRaw,
+        savedName,
+        progress,
+        streakData,
+        fatigue,
+        sessions,
+        stepsData,
+        xpData,
+        readinessSnap,
+        signal,
+        impact,
+        trialSnap,
+        consistencySnap,
+        profileSnap,
+        activeWorkoutRaw,
         goalSnap,
       ] = await Promise.all([
         getAppState('user.display_name').catch(() => null as string | null),
@@ -187,13 +230,13 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
         getDailyStepsForDate('user_local_001', new Date().toISOString().split('T')[0]!).catch(() => null),
         getXPData().catch(() => ({ level: 1, totalXP: 0 })),
         getCachedReadiness('user_local_001').catch(() => null),
-        getDailySignal('user_local_001').catch(() => null as BehavioralSignal | null),
-        getLastSessionImpact('user_local_001').catch(() => null as LastSessionImpact | null),
-        getTrialSnapshot('user_local_001', isSubscribed).catch(() => null as TrialSnapshot | null),
-        classifyConsistency('user_local_001').catch(() => null as ConsistencyProfile | null),
+        Promise.resolve(null), // behavioralSignal (engine removed)
+        Promise.resolve(null), // lastImpact (engine removed)
+        Promise.resolve(null), // trialSnapshot (engine removed)
+        Promise.resolve(null), // consistencyProfile (engine removed)
         getUserProfile('user_local_001').catch(() => null),
         getAppState('active_workout_state').catch(() => null as string | null),
-        getGoalProgress('user_local_001').catch(() => null as GoalProgress | null),
+        Promise.resolve(null), // goalProgress (service removed)
       ]);
 
       if (!mountedRef.current) return;
@@ -203,7 +246,7 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
 
       // Goal progress + cached user state (non-blocking, nullable)
       setGoalProgress(goalSnap);
-      setUserState(getCachedUserState());
+      setUserState(null); // UserStateEngine removed
 
       if (savedName) setDisplayName(savedName);
 
@@ -229,18 +272,28 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
         const sessionDate = new Date(latest.started_at);
         const isToday = sessionDate.toDateString() === new Date().toDateString();
         const isYesterday = sessionDate.toDateString() === new Date(Date.now() - 86400000).toDateString();
-        const dateLabel = isToday ? (t('common.today') ?? 'Today') : isYesterday ? (t('common.yesterday') ?? 'Yesterday') : sessionDate.toLocaleDateString();
+        const dateLabel = isToday
+          ? (t('common.today') ?? 'Today')
+          : isYesterday
+            ? (t('common.yesterday') ?? 'Yesterday')
+            : sessionDate.toLocaleDateString();
 
         setRecentWorkout({
           id: latest.id,
-          name: latest.completed_exercises > 0
-            ? `${latest.completed_exercises} ${t('dashboard.of')} ${latest.total_exercises} ${(t('library.exercises') ?? 'exercises').toLowerCase()}`
-            : (t('dashboard.incompleteSession') ?? 'Incomplete session'),
+          name:
+            latest.completed_exercises > 0
+              ? `${latest.completed_exercises} ${t('dashboard.of')} ${latest.total_exercises} ${(t('library.exercises') ?? 'exercises').toLowerCase()}`
+              : (t('dashboard.incompleteSession') ?? 'Incomplete session'),
           date: dateLabel,
           duration: latest.duration_minutes || 0,
-          caloriesBurned: latest.completed_exercises > 0
-            ? RealisticHealthEngine.estimateCalories('weight_training_moderate', latest.duration_minutes || 0, profileSnap?.weight_kg || 70).grossCalories
-            : 0,
+          caloriesBurned:
+            latest.completed_exercises > 0
+              ? RealisticHealthEngine.estimateCalories(
+                  'weight_training_moderate',
+                  latest.duration_minutes || 0,
+                  profileSnap?.weight_kg || 70,
+                ).grossCalories
+              : 0,
           exercises: latest.completed_exercises || 0,
           icon: 'arm-flex' as any,
         });
@@ -251,20 +304,30 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
         });
         setTotalCalories(
           todaySessions.reduce(
-            (sum, s) => sum + RealisticHealthEngine.estimateCalories('weight_training_moderate', s.duration_minutes || 0, profileSnap?.weight_kg || 70).grossCalories,
+            (sum, s) =>
+              sum +
+              RealisticHealthEngine.estimateCalories(
+                'weight_training_moderate',
+                s.duration_minutes || 0,
+                profileSnap?.weight_kg || 70,
+              ).grossCalories,
             0,
           ),
         );
         setTotalMinutes(todaySessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0));
 
         const todayDone = todaySessions.reduce((sum, s) => sum + (s.completed_exercises || 0), 0);
-        const allTodaySessions = sessions.filter((s) => new Date(s.started_at).toDateString() === new Date().toDateString());
+        const allTodaySessions = sessions.filter(
+          (s) => new Date(s.started_at).toDateString() === new Date().toDateString(),
+        );
         const fullTarget = allTodaySessions.reduce((sum, s) => sum + (s.total_exercises || 0), 0);
         setTodayExercisesDone(todayDone);
         setTodayExercisesTarget(fullTarget);
 
         const completedCount = allTodaySessions.filter((s) => s.completed_at).length;
-        setCompletionRate(allTodaySessions.length > 0 ? Math.round((completedCount / allTodaySessions.length) * 100) : 0);
+        setCompletionRate(
+          allTodaySessions.length > 0 ? Math.round((completedCount / allTodaySessions.length) * 100) : 0,
+        );
 
         const dates = sessions.map((s) => s.started_at.split('T')[0]!);
         setWorkoutDates([...new Set(dates)]);
@@ -313,7 +376,11 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   }, [dbReady, loadProgress]);
 
   // ── Focus reload ──
-  useFocusEffect(useCallback(() => { debouncedLoad(); }, [debouncedLoad]));
+  useFocusEffect(
+    useCallback(() => {
+      debouncedLoad();
+    }, [debouncedLoad]),
+  );
 
   // ── Data sync events ──
   useDataSync(['workout_completed', 'xp_awarded', 'steps_updated', 'streak_updated', 'level_up'], debouncedLoad);
@@ -340,26 +407,63 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   const recoveryPercent = readinessScore ?? 0;
   const statusDisplay = readiness ? getStatusDisplay(readiness) : null;
 
-  const todayProgress = todayExercisesTarget > 0
-    ? Math.min(1, todayExercisesDone / todayExercisesTarget)
-    : totalMinutes > 0 ? Math.min(1, totalMinutes / 30) : 0;
+  const todayProgress =
+    todayExercisesTarget > 0
+      ? Math.min(1, todayExercisesDone / todayExercisesTarget)
+      : totalMinutes > 0
+        ? Math.min(1, totalMinutes / 30)
+        : 0;
 
   // ── Memoized style values ──
-  const statPillWarning = useMemo(() => [{ backgroundColor: theme.colors.warning + '15' }] as any, [theme.colors.warning]);
+  const statPillWarning = useMemo(
+    () => [{ backgroundColor: theme.colors.warning + '15' }] as any,
+    [theme.colors.warning],
+  );
   const statPillAccent = useMemo(() => [{ backgroundColor: theme.colors.accent + '15' }] as any, [theme.colors.accent]);
-  const statPillSurface = useMemo(() => [{ backgroundColor: theme.colors.surfaceVariant }] as any, [theme.colors.surfaceVariant]);
+  const statPillSurface = useMemo(
+    () => [{ backgroundColor: theme.colors.surfaceVariant }] as any,
+    [theme.colors.surfaceVariant],
+  );
   const signalCardBg = useMemo(
-    () => behavioralSignal ? { backgroundColor: (theme.colors as any)[behavioralSignal.colorKey] + '18' } : undefined,
+    () => (behavioralSignal ? { backgroundColor: (theme.colors as any)[behavioralSignal.colorKey] + '18' } : undefined),
     [behavioralSignal, theme.colors],
   );
 
   // ── Explore tiles — filtered by feature flags ──
   const exploreTiles = useMemo(() => {
     const allTiles = [
-      { label: t('dashboard.health') || 'Health', desc: t('dashboard.healthDesc') || 'Track vitals & wellness', icon: 'heart-pulse', color: theme.colors.error, route: '/health-dashboard', flag: 'HEALTH_DASHBOARD_MODULE' as const },
-      { label: t('dashboard.analytics') || 'Analytics', desc: t('dashboard.analyticsDesc') || 'Progress insights', icon: 'chart-bar', color: theme.colors.blue, route: '/analytics', flag: null },
-      { label: t('dashboard.coach') || 'Coach', desc: t('dashboard.coachDesc') || 'AI fitness guidance', icon: 'robot-happy', color: theme.colors.purple, route: '/coach', flag: null },
-      { label: t('dashboard.mealPrep') || 'Meal Prep', desc: t('dashboard.mealPrepDesc') || 'Nutrition planning', icon: 'food-variant', color: theme.colors.accent, route: '/meal-prep', flag: 'MEAL_PREP_MODULE' as const },
+      {
+        label: t('dashboard.health') || 'Health',
+        desc: t('dashboard.healthDesc') || 'Track vitals & wellness',
+        icon: 'heart-pulse',
+        color: theme.colors.error,
+        route: '/health-dashboard',
+        flag: 'HEALTH_DASHBOARD_MODULE' as const,
+      },
+      {
+        label: t('dashboard.analytics') || 'Analytics',
+        desc: t('dashboard.analyticsDesc') || 'Progress insights',
+        icon: 'chart-bar',
+        color: theme.colors.blue,
+        route: '/analytics',
+        flag: null,
+      },
+      {
+        label: t('dashboard.coach') || 'Coach',
+        desc: t('dashboard.coachDesc') || 'AI fitness guidance',
+        icon: 'robot-happy',
+        color: theme.colors.purple,
+        route: '/coach',
+        flag: null,
+      },
+      {
+        label: t('dashboard.mealPrep') || 'Meal Prep',
+        desc: t('dashboard.mealPrepDesc') || 'Nutrition planning',
+        icon: 'food-variant',
+        color: theme.colors.accent,
+        route: '/meal-prep',
+        flag: 'MEAL_PREP_MODULE' as const,
+      },
     ];
     return allTiles.filter((tile) => !tile.flag || featureFlagsService.isEnabled(tile.flag));
   }, [t, theme.colors]);
@@ -367,37 +471,104 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   // ── Next Action (Block W) — prioritized single recommendation ──
   const nextAction = useMemo(() => {
     if (hasInterruptedSession)
-      return { type: 'resume' as const, label: 'Resume your workout', route: '/fitquest' as const, icon: 'play-circle' as const };
+      return {
+        type: 'resume' as const,
+        label: 'Resume your workout',
+        route: '/fitquest' as const,
+        icon: 'play-circle' as const,
+      };
     if (isRecoveryBad)
-      return { type: 'rest' as const, label: 'Take a rest day — recovery is low', route: '/dashboard' as const, icon: 'bed' as const };
+      return {
+        type: 'rest' as const,
+        label: 'Take a rest day — recovery is low',
+        route: '/dashboard' as const,
+        icon: 'bed' as const,
+      };
     if (userState?.fatigueTier === 'HIGH')
-      return { type: 'mobility' as const, label: 'Try a light mobility session', route: '/fitquest' as const, icon: 'yoga' as const };
+      return {
+        type: 'mobility' as const,
+        label: 'Try a light mobility session',
+        route: '/fitquest' as const,
+        icon: 'yoga' as const,
+      };
     if (userState?.churnRisk)
-      return { type: 'quick_start' as const, label: 'Quick 10-min session?', route: '/fitquest?autostart=1' as const, icon: 'lightning-bolt' as const };
+      return {
+        type: 'quick_start' as const,
+        label: 'Quick 10-min session?',
+        route: '/fitquest?autostart=1' as const,
+        icon: 'lightning-bolt' as const,
+      };
     if (todayProgress < 0.5)
-      return { type: 'workout' as const, label: 'Start today\'s workout', route: '/fitquest?autostart=1' as const, icon: 'dumbbell' as const };
+      return {
+        type: 'workout' as const,
+        label: "Start today's workout",
+        route: '/fitquest?autostart=1' as const,
+        icon: 'dumbbell' as const,
+      };
     if (todayProgress >= 0.5 && todayProgress < 1)
-      return { type: 'finish' as const, label: 'Finish today\'s goal', route: '/fitquest' as const, icon: 'flag-checkered' as const };
-    return { type: 'explore' as const, label: 'Explore your progress', route: '/analytics' as const, icon: 'chart-line' as const };
+      return {
+        type: 'finish' as const,
+        label: "Finish today's goal",
+        route: '/fitquest' as const,
+        icon: 'flag-checkered' as const,
+      };
+    return {
+      type: 'explore' as const,
+      label: 'Explore your progress',
+      route: '/analytics' as const,
+      icon: 'chart-line' as const,
+    };
   }, [hasInterruptedSession, isRecoveryBad, userState, todayProgress]);
 
   // Fire-and-forget analytics for next action
-  useMemo(() => { logNextActionShown(nextAction.type); }, [nextAction.type]);
-
   return {
     // State
-    loading, loadError, refreshing, displayName, userProgress, fatigueLevel,
-    readiness, behavioralSignal, lastImpact, trialSnapshot, consistencyProfile,
-    recentWorkout, workoutDates, totalCalories, totalMinutes, todaySteps,
-    todayActiveMinutes, completionRate, todayExercisesDone, todayExercisesTarget,
-    realLevel, realXP, levelUpShown, selectedDate, hasInterruptedSession,
-    goalProgress, userState,
+    loading,
+    loadError,
+    refreshing,
+    displayName,
+    userProgress,
+    fatigueLevel,
+    readiness,
+    behavioralSignal,
+    lastImpact,
+    trialSnapshot,
+    consistencyProfile,
+    recentWorkout,
+    workoutDates,
+    totalCalories,
+    totalMinutes,
+    todaySteps,
+    todayActiveMinutes,
+    completionRate,
+    todayExercisesDone,
+    todayExercisesTarget,
+    realLevel,
+    realXP,
+    levelUpShown,
+    selectedDate,
+    hasInterruptedSession,
+    goalProgress,
+    userState,
     // Derived
-    streak, todayProgress, readinessScore, hasReadinessData, isRecoveryBad,
-    isRecoveryGood, recoveryPercent, statusDisplay, isSubscribed,
-    statPillWarning, statPillAccent, statPillSurface, signalCardBg, exploreTiles,
+    streak,
+    todayProgress,
+    readinessScore,
+    hasReadinessData,
+    isRecoveryBad,
+    isRecoveryGood,
+    recoveryPercent,
+    statusDisplay,
+    isSubscribed,
+    statPillWarning,
+    statPillAccent,
+    statPillSurface,
+    signalCardBg,
+    exploreTiles,
     nextAction,
     // Actions
-    handleRefresh, setSelectedDate, retryLoad,
+    handleRefresh,
+    setSelectedDate,
+    retryLoad,
   };
 });

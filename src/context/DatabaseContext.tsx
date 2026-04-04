@@ -8,11 +8,6 @@ import { initializeDatabase, resetDatabase, closeDatabase, resetInitState } from
 import { getUserProfile, createUserProfile, lockUserProfile, getAppState } from '../database/service';
 import type { UserProfile } from '../database/types';
 import { getPostHogClient } from '../services/posthogService';
-import { systemGuard } from '../services/SystemGuard';
-import { recoveryService } from '../services/RecoveryService';
-import { snapshotService } from '../services/SnapshotService';
-import { walService } from '../services/WriteAheadLogService';
-import { dataSync } from '../services/dataSyncService';
 import DatabaseRecoveryScreen from '../components/DatabaseRecoveryScreen';
 
 interface DatabaseContextType {
@@ -54,47 +49,19 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
           if (attempt > 0) {
             const delay = attempt * 1000;
             if (__DEV__) console.warn(`[FitQuest] Retrying in ${delay}ms (attempt ${attempt}/${MAX_RETRIES})`);
-            systemGuard.markRecovering(lastError instanceof Error ? lastError.message : 'Retrying');
             // Close the broken connection so retry gets a fresh native handle
-            try { await closeDatabase(); } catch { /* ignore */ }
+            try {
+              await closeDatabase();
+            } catch {
+              /* ignore */
+            }
             resetInitState();
-            await new Promise(r => setTimeout(r, delay));
+            await new Promise((r) => setTimeout(r, delay));
           }
 
           if (__DEV__) console.warn('[FitQuest] Initializing database...');
           await initializeDatabase();
           if (__DEV__) console.warn('[FitQuest] Database initialized successfully');
-
-          // Run recovery check: integrity → WAL → snapshot restore if needed
-          const recovery = await recoveryService.run();
-          if (__DEV__) console.warn(`[FitQuest] Recovery: ${recovery.outcome} (${recovery.durationMs}ms)`);
-
-          // Initialize WAL table (idempotent)
-          await walService.initialize();
-
-          // Start periodic snapshots
-          snapshotService.startPeriodicSnapshots();
-
-          // Trigger snapshot on workout completion (critical data event)
-          dataSync.subscribe('workout_completed', () => {
-            snapshotService.createSnapshot('workout_complete').catch((e) => {
-              if (__DEV__) console.warn('[DB] snapshot failed', e);
-            });
-          });
-
-          // Trigger snapshot on profile mutation (user-critical data)
-          dataSync.subscribe('profile_updated', () => {
-            snapshotService.createSnapshot('profile_updated').catch((e) => {
-              if (__DEV__) console.warn('[DB] snapshot failed', e);
-            });
-          });
-
-          // Trigger snapshot on XP milestone (level up = significant state change)
-          dataSync.subscribe('level_up', () => {
-            snapshotService.createSnapshot('xp_milestone').catch((e) => {
-              if (__DEV__) console.warn('[DB] snapshot failed', e);
-            });
-          });
 
           // Check for existing user profile
           let profile = await getUserProfile(DEFAULT_USER_ID);
@@ -132,7 +99,6 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
           setOnboardingComplete(didOnboard);
           setIsReady(true);
           retryCount.current = 0;
-          systemGuard.markReady();
 
           // Identify user in PostHog with non-PII properties
           if (profile) {
@@ -158,7 +124,8 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
         } catch (err) {
           lastError = err;
           if (attempt < MAX_RETRIES) {
-            if (__DEV__) console.warn('[FitQuest] Init attempt failed, will retry:', err instanceof Error ? err.message : err);
+            if (__DEV__)
+              console.warn('[FitQuest] Init attempt failed, will retry:', err instanceof Error ? err.message : err);
           }
         }
       }
@@ -167,7 +134,6 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
       if (lastError) {
         if (__DEV__) console.error('[FitQuest] Database initialization failed after all retries:', lastError);
         const msg = lastError instanceof Error ? lastError.message : 'Failed to initialize database';
-        systemGuard.markFailed(msg);
         setError(msg);
       }
     } finally {
@@ -178,7 +144,6 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
 
   const retry = useCallback(() => {
     retryCount.current = 0;
-    systemGuard.markBooting();
     initialize();
   }, [initialize]);
 

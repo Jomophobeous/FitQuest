@@ -7,7 +7,6 @@
  */
 
 import { Platform } from 'react-native';
-import { systemGuard } from './SystemGuard';
 
 export type ErrorSeverity = 'low' | 'medium' | 'high' | 'critical';
 export type ErrorCategory =
@@ -54,16 +53,13 @@ class ErrorTelemetryService {
     if (this.initialized) return;
 
     try {
-      // Only load stored errors if DB is available
-      if (systemGuard.isReady) {
-        const { getAppState } = await import('../database/service');
-        const stored = await getAppState(ERROR_STORAGE_KEY);
-        if (stored) {
-          try {
-            this.errors = JSON.parse(stored);
-          } catch {
-            this.errors = [];
-          }
+      const { getAppState } = await import('../database/service');
+      const stored = await getAppState(ERROR_STORAGE_KEY);
+      if (stored) {
+        try {
+          this.errors = JSON.parse(stored);
+        } catch {
+          this.errors = [];
         }
       }
       this.initialized = true;
@@ -247,7 +243,6 @@ class ErrorTelemetryService {
   }
 
   private async persistErrors(): Promise<void> {
-    if (!systemGuard.isReady) return; // DB unavailable — skip persist, keep in-memory
     try {
       const { setAppState } = await import('../database/service');
       await setAppState(ERROR_STORAGE_KEY, JSON.stringify(this.errors));

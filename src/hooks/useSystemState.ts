@@ -1,13 +1,13 @@
 /**
- * useSystemState — React hook for consuming SystemGuard state reactively.
+ * useSystemState — React hook for system readiness.
  *
- * Components that depend on DB or other core services should use this
- * to gate renders or show recovery/failure UI.
+ * SystemGuard was removed. This stub always reports READY
+ * since DatabaseContext now handles all boot gating directly.
  */
-import { useSyncExternalStore, useCallback } from 'react';
-import { systemGuard, type SystemState } from '../services/SystemGuard';
 
-/** Subscribe to SystemGuard state changes — re-renders on transition */
+export type SystemState = 'BOOTING' | 'VALIDATING' | 'READY' | 'RECOVERING' | 'FAILED';
+
+/** Always returns READY — DatabaseContext is the actual gate now */
 export function useSystemState(): {
   systemState: SystemState;
   isReady: boolean;
@@ -16,18 +16,12 @@ export function useSystemState(): {
   isFailed: boolean;
   error: string | null;
 } {
-  const subscribe = useCallback((onStoreChange: () => void) => systemGuard.subscribe(onStoreChange), []);
-
-  const getSnapshot = useCallback(() => systemGuard.state, []);
-
-  const systemState = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-
   return {
-    systemState,
-    isReady: systemState === 'READY',
-    isValidating: systemState === 'VALIDATING',
-    isRecovering: systemState === 'RECOVERING',
-    isFailed: systemState === 'FAILED',
-    error: systemGuard.error,
+    systemState: 'READY',
+    isReady: true,
+    isValidating: false,
+    isRecovering: false,
+    isFailed: false,
+    error: null,
   };
 }

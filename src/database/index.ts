@@ -22,7 +22,6 @@ import { seedExercises } from './seed';
 import { seedExternalExercises } from './external-seed';
 import { encryptedDB } from '../security/EncryptedDatabase';
 import { initializeExerciseImages } from '../services/exerciseImageService';
-import { seedExerciseTranslations } from '../i18n/exercise-translation-seed';
 import { captureException } from '../services/crashReporting';
 
 // Static language file imports removed — Phase 7 runtime translation layer.
@@ -68,13 +67,6 @@ export async function initializeDatabase(): Promise<void> {
       // Initialize new module schemas (idempotent — safe to call every start)
       await encryptedDB.initialize();
 
-      // Seed exercise translations (idempotent — checks if already populated)
-      try {
-        await seedExerciseTranslations();
-      } catch (transErr) {
-        if (__DEV__) console.warn('[FitQuest DB] Exercise translation seed skipped:', transErr);
-      }
-
       // Initialize exercise image directory and check deployment status
       try {
         await initializeExerciseImages();
@@ -103,7 +95,9 @@ export async function initializeDatabase(): Promise<void> {
         );
         await seedExercises();
         await seedExternalExercises();
-        const recount = (await getDatabase()).getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM exercises');
+        const recount = (await getDatabase()).getFirstAsync<{ count: number }>(
+          'SELECT COUNT(*) as count FROM exercises',
+        );
         if (__DEV__) console.warn(`[FitQuest DB] After re-seed: ${(await recount)?.count} exercises`);
       } else {
         // Defer external exercise seeding — don't block app startup

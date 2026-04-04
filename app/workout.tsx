@@ -7,13 +7,7 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -31,9 +25,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import {
-  Alert,
-} from 'react-native';
+import { Alert } from 'react-native';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { useTheme } from '../src/context/ThemeContext';
@@ -47,7 +39,6 @@ import ThemedText from '../src/components/ThemedText';
 import ExerciseCompleteBadge from '../src/components/ExerciseCompleteBadge';
 import ExerciseImage from '../src/components/ExerciseImage';
 import RestTimerOverlay from '../src/components/RestTimerOverlay';
-import MindExerciseView from '../src/components/MindExerciseView';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
 import {
@@ -96,7 +87,12 @@ export default function WorkoutScreen() {
   const [isResting, setIsResting] = useState(false);
   const mountedRef = useRef(true);
   const badgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => { return () => { mountedRef.current = false; if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current); }; }, []);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
+    };
+  }, []);
 
   // Pulse animation for active exercise
   const pulse = useSharedValue(1);
@@ -159,9 +155,7 @@ export default function WorkoutScreen() {
       prevExerciseIndexRef.current = currentExerciseIndex;
       // Narrate exercise name
       if (currentExercise) {
-        vm.speakNarration(
-          `${currentExercise.name}. ${currentExercise.sets} sets, ${currentExercise.reps} reps.`,
-        );
+        vm.speakNarration(`${currentExercise.name}. ${currentExercise.sets} sets, ${currentExercise.reps} reps.`);
       }
       // Start exercise timer for timed exercises (e.g. "60s hold", "3 min", "1:30")
       if (currentExercise) {
@@ -280,7 +274,8 @@ export default function WorkoutScreen() {
       // Trigger haptic for workout complete
       haptic('workoutComplete');
       // Auto-finish after a short delay to show the completion visual
-      const timer = setTimeout(() => { // debounce
+      const timer = setTimeout(() => {
+        // debounce
         handleFinish();
       }, 300);
       return () => clearTimeout(timer);
@@ -294,7 +289,9 @@ export default function WorkoutScreen() {
       <ScreenContainer>
         <View style={styles.centeredContent}>
           <MaterialCommunityIcons name="loading" size={48} color={theme.colors.accent} />
-          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('workout.generating') ?? 'Generating workout…'}</ThemedText>
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>
+            {t('workout.generating') ?? 'Generating workout…'}
+          </ThemedText>
         </View>
       </ScreenContainer>
     );
@@ -307,7 +304,9 @@ export default function WorkoutScreen() {
       <ScreenContainer>
         <View style={styles.centeredContent}>
           <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('common.error') ?? 'Something went wrong'}</ThemedText>
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>
+            {t('common.error') ?? 'Something went wrong'}
+          </ThemedText>
           <ThemedText style={[styles.emptySub, { color: theme.colors.textMuted }]}>{error}</ThemedText>
           <View style={{ marginTop: spacing[6], width: '60%' }}>
             <GradientButton
@@ -329,7 +328,9 @@ export default function WorkoutScreen() {
         <View style={styles.centeredContent}>
           <MaterialCommunityIcons name="dumbbell" size={56} color={theme.colors.textMuted} />
           <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('workout.noActive')}</ThemedText>
-          <ThemedText style={[styles.emptySub, { color: theme.colors.textMuted }]}>{t('workout.generateFromTrain')}</ThemedText>
+          <ThemedText style={[styles.emptySub, { color: theme.colors.textMuted }]}>
+            {t('workout.generateFromTrain')}
+          </ThemedText>
           <View style={{ marginTop: spacing[6], width: '60%' }}>
             <GradientButton
               title={t('workout.goToTrain')}
@@ -443,169 +444,150 @@ export default function WorkoutScreen() {
           </Animated.View>
 
           {/* ── CURRENT EXERCISE ── */}
-          {!!currentExercise && currentExercise.mindTimeline ? (
-            /* ═══ MIND EXERCISE: guided experience with phases ═══ */
+          {!!currentExercise && (
             <Animated.View entering={SlideInDown.delay(150).duration(200)}>
-              <MindExerciseView
-                exerciseName={currentExercise.name}
-                timeline={currentExercise.mindTimeline}
-                voiceEnabled={true}
-                onComplete={() => {
-                  haptic('exerciseComplete');
-                  setShowCompleteBadge(true);
-                  if (badgeTimerRef.current) clearTimeout(badgeTimerRef.current);
-                  badgeTimerRef.current = setTimeout(() => setShowCompleteBadge(false), 1300);
-                  completeExercise(5);
-                  const exs = workout?.exercises ?? [];
-                  const isLast = currentExerciseIndex === exs.length - 1;
-                  if (!isLast && currentExercise?.restSeconds) {
-                    setIsResting(true);
-                    startRest(currentExercise.restSeconds);
-                  }
-                }}
-                onCancel={() => {
-                  vm.stopAudio();
-                  Alert.alert('End Mind Session?', 'Your progress for this exercise will be saved.', [
-                    { text: 'Continue', style: 'cancel' },
-                    { text: 'End', style: 'destructive', onPress: () => completeExercise(5) },
-                  ]);
-                }}
-              />
-            </Animated.View>
-          ) : (
-            !!currentExercise && (
-              <Animated.View entering={SlideInDown.delay(150).duration(200)}>
-                <GlassCard style={styles.currentCard} gradient glowColor={theme.colors.accent}>
-                  {/* Exercise Image */}
-                  <Animated.View
-                    entering={ZoomIn.duration(200)}
-                    style={{ alignItems: 'center', marginBottom: spacing[4], width: '100%' }}
-                  >
-                    <ExerciseImage
-                      exerciseId={currentExercise.exerciseId}
-                      category={currentExercise.category}
-                      variant="hero"
-                      animate={true}
-                    />
-                  </Animated.View>
+              <GlassCard style={styles.currentCard} gradient glowColor={theme.colors.accent}>
+                {/* Exercise Image */}
+                <Animated.View
+                  entering={ZoomIn.duration(200)}
+                  style={{ alignItems: 'center', marginBottom: spacing[4], width: '100%' }}
+                >
+                  <ExerciseImage
+                    exerciseId={currentExercise.exerciseId}
+                    category={currentExercise.category}
+                    variant="hero"
+                    animate={true}
+                  />
+                </Animated.View>
 
-                  {/* Exercise Name */}
-                  <ThemedText
-                    style={[styles.currentName, { color: theme.colors.text, textAlign: 'center' }]}
-                    numberOfLines={2}
-                  >
-                    {currentExercise.name}
-                  </ThemedText>
+                {/* Exercise Name */}
+                <ThemedText
+                  style={[styles.currentName, { color: theme.colors.text, textAlign: 'center' }]}
+                  numberOfLines={2}
+                >
+                  {currentExercise.name}
+                </ThemedText>
 
-                  {/* Prescription Row: sets / reps / rest */}
-                  <View style={styles.prescriptionRow}>
-                    {[
-                      { val: currentExercise.sets, label: t('fitquest.sets') || 'Sets' },
-                      { val: currentExercise.reps, label: t('fitquest.reps') || 'Reps' },
-                      { val: `${currentExercise.restSeconds || 60}s`, label: t('train.rest') || 'Rest' },
-                    ].map((p, i) => (
-                      <Animated.View
-                        key={p.label}
-                        entering={FadeInUp.delay(i * 60).duration(150)}
-                        style={styles.prescriptionItem}
-                      >
-                        <ThemedText style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</ThemedText>
-                        <ThemedText style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>{p.label}</ThemedText>
-                      </Animated.View>
-                    ))}
-                  </View>
-
-                  {/* Exercise countdown timer for timed exercises */}
-                  {exerciseTimer.state === 'running' && (
-                    <View style={styles.exerciseTimerWrap}>
-                      <ProgressRing
-                        progress={exerciseTimer.progress}
-                        size={120}
-                        color={theme.colors.accent}
-                        strokeWidth={8}
-                      >
-                        <ThemedText style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: typography.sizes.h1 }]}>
-                          {exerciseTimer.formattedRemaining}
-                        </ThemedText>
-                        <ThemedText style={[styles.exerciseTimerLabel, { color: theme.colors.textMuted }]}>remaining</ThemedText>
-                      </ProgressRing>
-                    </View>
-                  )}
-
-                  {/* Category badge */}
-                  {!!currentExercise.category && (
-                    <View style={styles.targetRow}>
-                      <View style={[styles.targetPill, { backgroundColor: theme.colors.accent2 + '15' }]}>
-                        <ThemedText style={[styles.targetText, { color: theme.colors.accent2 }]}>
-                          {currentExercise.category.replace(/_/g, ' ')}
-                        </ThemedText>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Instructions card */}
-                  {currentExercise.instructions && currentExercise.instructions.length > 0 && (
-                    <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ marginTop: spacing[3] }}>
-                      <GlassCard>
-                        <ThemedText style={[styles.instTitle, { color: theme.colors.text }]}>
-                          {t('fitquest.formTips') || 'Form Tips'}
-                        </ThemedText>
-                        {currentExercise.instructions
-                          .slice(0, showAllInstructions ? undefined : 3)
-                          .map((inst: string, idx: number) => (
-                            <ThemedText key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
-                              {idx + 1}. {inst}
-                            </ThemedText>
-                          ))}
-                        {currentExercise.instructions.length > 3 && (
-                          <TouchableOpacity
-                            onPress={() => setShowAllInstructions(!showAllInstructions)}
-                            style={{ marginTop: spacing[2] }}
-                            accessibilityRole="button"
-                            accessibilityLabel={
-                              showAllInstructions ? 'Show fewer instructions' : 'Show all instructions'
-                            }
-                          >
-                            <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600' }}>
-                              {showAllInstructions
-                                ? t('fitquest.showLess') || 'Show less'
-                                : `+${currentExercise.instructions.length - 3} ${t('fitquest.more') || 'more'}`}
-                            </ThemedText>
-                          </TouchableOpacity>
-                        )}
-                      </GlassCard>
-                    </Animated.View>
-                  )}
-
-                  {/* Actions */}
-                  <View style={styles.actionRow}>
-                    <TouchableOpacity
-                      onPress={handleSkip}
-                      style={[
-                        styles.skipBtn,
-                        {
-                          backgroundColor: theme.colors.warning + '12',
-                          borderColor: theme.colors.warning + '30',
-                        },
-                      ]}
-                      accessibilityRole="button"
-                      accessibilityLabel="Skip exercise"
+                {/* Prescription Row: sets / reps / rest */}
+                <View style={styles.prescriptionRow}>
+                  {[
+                    { val: currentExercise.sets, label: t('fitquest.sets') || 'Sets' },
+                    { val: currentExercise.reps, label: t('fitquest.reps') || 'Reps' },
+                    { val: `${currentExercise.restSeconds || 60}s`, label: t('train.rest') || 'Rest' },
+                  ].map((p, i) => (
+                    <Animated.View
+                      key={p.label}
+                      entering={FadeInUp.delay(i * 60).duration(150)}
+                      style={styles.prescriptionItem}
                     >
-                      <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.warning} />
-                      <ThemedText style={[styles.skipText, { color: theme.colors.warning }]}>{t('common.skip')}</ThemedText>
-                    </TouchableOpacity>
+                      <ThemedText style={[styles.prescriptionVal, { color: theme.colors.text }]}>{p.val}</ThemedText>
+                      <ThemedText style={[styles.prescriptionLabel, { color: theme.colors.textMuted }]}>
+                        {p.label}
+                      </ThemedText>
+                    </Animated.View>
+                  ))}
+                </View>
 
-                    <View style={{ flex: 1 }}>
-                      <GradientButton
-                        title={isLastExercise ? t('workout.completeWorkout') : t('workout.completeSet')}
-                        onPress={handleComplete}
-                        variant="success"
-                      />
+                {/* Exercise countdown timer for timed exercises */}
+                {exerciseTimer.state === 'running' && (
+                  <View style={styles.exerciseTimerWrap}>
+                    <ProgressRing
+                      progress={exerciseTimer.progress}
+                      size={120}
+                      color={theme.colors.accent}
+                      strokeWidth={8}
+                    >
+                      <ThemedText
+                        style={[styles.exerciseTimerText, { color: theme.colors.text, fontSize: typography.sizes.h1 }]}
+                      >
+                        {exerciseTimer.formattedRemaining}
+                      </ThemedText>
+                      <ThemedText style={[styles.exerciseTimerLabel, { color: theme.colors.textMuted }]}>
+                        remaining
+                      </ThemedText>
+                    </ProgressRing>
+                  </View>
+                )}
+
+                {/* Category badge */}
+                {!!currentExercise.category && (
+                  <View style={styles.targetRow}>
+                    <View style={[styles.targetPill, { backgroundColor: theme.colors.accent2 + '15' }]}>
+                      <ThemedText style={[styles.targetText, { color: theme.colors.accent2 }]}>
+                        {currentExercise.category.replace(/_/g, ' ')}
+                      </ThemedText>
                     </View>
                   </View>
-                </GlassCard>
-              </Animated.View>
-            )
+                )}
+
+                {/* Instructions card */}
+                {currentExercise.instructions && currentExercise.instructions.length > 0 && (
+                  <Animated.View entering={FadeInDown.delay(200).duration(150)} style={{ marginTop: spacing[3] }}>
+                    <GlassCard>
+                      <ThemedText style={[styles.instTitle, { color: theme.colors.text }]}>
+                        {t('fitquest.formTips') || 'Form Tips'}
+                      </ThemedText>
+                      {currentExercise.instructions
+                        .slice(0, showAllInstructions ? undefined : 3)
+                        .map((inst: string, idx: number) => (
+                          <ThemedText key={idx} style={[styles.instStep, { color: theme.colors.textSecondary }]}>
+                            {idx + 1}. {inst}
+                          </ThemedText>
+                        ))}
+                      {currentExercise.instructions.length > 3 && (
+                        <TouchableOpacity
+                          onPress={() => setShowAllInstructions(!showAllInstructions)}
+                          style={{ marginTop: spacing[2] }}
+                          accessibilityRole="button"
+                          accessibilityLabel={showAllInstructions ? 'Show fewer instructions' : 'Show all instructions'}
+                        >
+                          <ThemedText
+                            style={{
+                              color: theme.colors.accent,
+                              fontSize: typography.sizes.caption,
+                              fontWeight: '600',
+                            }}
+                          >
+                            {showAllInstructions
+                              ? t('fitquest.showLess') || 'Show less'
+                              : `+${currentExercise.instructions.length - 3} ${t('fitquest.more') || 'more'}`}
+                          </ThemedText>
+                        </TouchableOpacity>
+                      )}
+                    </GlassCard>
+                  </Animated.View>
+                )}
+
+                {/* Actions */}
+                <View style={styles.actionRow}>
+                  <TouchableOpacity
+                    onPress={handleSkip}
+                    style={[
+                      styles.skipBtn,
+                      {
+                        backgroundColor: theme.colors.warning + '12',
+                        borderColor: theme.colors.warning + '30',
+                      },
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Skip exercise"
+                  >
+                    <MaterialCommunityIcons name="skip-next" size={20} color={theme.colors.warning} />
+                    <ThemedText style={[styles.skipText, { color: theme.colors.warning }]}>
+                      {t('common.skip')}
+                    </ThemedText>
+                  </TouchableOpacity>
+
+                  <View style={{ flex: 1 }}>
+                    <GradientButton
+                      title={isLastExercise ? t('workout.completeWorkout') : t('workout.completeSet')}
+                      onPress={handleComplete}
+                      variant="success"
+                    />
+                  </View>
+                </View>
+              </GlassCard>
+            </Animated.View>
           )}
 
           {/* ── EXERCISE LIST ── */}
@@ -617,7 +599,11 @@ export default function WorkoutScreen() {
             const statusColor = isDone ? theme.colors.success : isActive ? theme.colors.accent : theme.colors.textMuted;
 
             return (
-              <AnimatedListItem key={ex.id || `ex-${i}`} index={i} style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}>
+              <AnimatedListItem
+                key={ex.id || `ex-${i}`}
+                index={i}
+                style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}
+              >
                 <View
                   style={[
                     styles.exListItem,
@@ -769,7 +755,12 @@ const styles = StyleSheet.create({
   targetPill: { paddingHorizontal: spacing[2.5], paddingVertical: spacing[1], borderRadius: radius.md },
   targetText: { fontSize: typography.sizes.captionSm, fontWeight: '600', textTransform: 'capitalize' },
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2.5], marginTop: spacing[4.5] },
-  prescriptionRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: spacing[4], marginBottom: spacing[1] },
+  prescriptionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: spacing[4],
+    marginBottom: spacing[1],
+  },
   prescriptionItem: { alignItems: 'center', flex: 1 },
   prescriptionVal: { fontSize: typography.sizes.h3, fontWeight: '800' },
   prescriptionLabel: { fontSize: typography.sizes.captionSm, fontWeight: '500', marginTop: spacing[0.5] },

@@ -14,9 +14,6 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { unstable_batchedUpdates } from 'react-native';
 import { SubscriptionManager, type SubscriptionState, type SubscriptionOfferings } from './SubscriptionManager';
 import { useDatabase } from '../context/DatabaseContext';
-import { verifySubscription } from '../services/authorityClient';
-import { getStableDeviceId } from '../services/deviceSignature';
-import { ensureDeviceRegistered } from '../services/deviceTokenService';
 
 // ============================================
 // TYPES
@@ -143,16 +140,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setOfferings(currentOfferings);
         });
 
-        // Phase 24A + 26: Backend authority verification — fire-and-forget.
-        // Ensure device is registered (gets/caches device_token) THEN verify subscription.
-        // Non-blocking: result applied via tamper engine bridge.
-        ensureDeviceRegistered()
-          .then(async (deviceToken) => {
-            if (!deviceToken) return; // Can't verify without token — degrade gracefully
-            const deviceId = await getStableDeviceId();
-            return verifySubscription('user_local_001', deviceId, deviceToken);
-          })
-          .catch(() => {});
+        // Server verification removed — offline-only mode
       } catch (error) {
         if (__DEV__) console.warn('[SubscriptionProvider] Init failed:', error);
       } finally {

@@ -7,7 +7,6 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { createViewModel } from './createViewModel';
 import { audioService } from '../services/audioService';
 import { setAppState } from '../database/service';
-import { getTrialSnapshot, type TrialSnapshot } from '../engines/TrialProgressionEngine';
 
 interface NarrableExercise {
   id: string;
@@ -39,7 +38,7 @@ interface CompletionResult {
   exerciseNames?: string[];
 }
 
-export type { TrialSnapshot };
+export type TrialSnapshot = Record<string, unknown>;
 
 export const useFitquestViewModel = createViewModel(() => {
   // --- Audio state ---
@@ -134,14 +133,9 @@ export const useFitquestViewModel = createViewModel(() => {
     if (!newValue) audioService.stop();
   }, [voiceEnabled]);
 
-  /** Load trial snapshot for feature gating */
-  const loadTrialSnapshot = useCallback(async (isSubscribed: boolean) => {
-    try {
-      const snap = await getTrialSnapshot('user_local_001', isSubscribed);
-      setTrialSnapshot(snap);
-    } catch (e) {
-      if (__DEV__) console.warn('[FitQuest] trial snapshot failed', e);
-    }
+  /** Load trial snapshot for feature gating (engine removed — always null) */
+  const loadTrialSnapshot = useCallback(async (_isSubscribed: boolean) => {
+    setTrialSnapshot(null);
   }, []);
 
   /** Play transition audio between exercises */

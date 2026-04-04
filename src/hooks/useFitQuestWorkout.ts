@@ -22,24 +22,6 @@ import {
 } from '../engines';
 
 import {
-  generateWorkoutSummary,
-  generatePostWorkoutSummary,
-  explainWorkoutSelection,
-  type WorkoutExplanation,
-} from '../engines/transparencyLayer';
-
-import {
-  getLastSessionImpact,
-  getWorkoutDelta,
-  getProgressionNarratives,
-  type LastSessionImpact,
-  type WorkoutDelta,
-  type ExerciseProgressionNarrative,
-} from '../engines/AdaptiveMemoryEngine';
-
-import { validateWorkoutCanGenerate } from '../engines/edgeCaseGuards';
-
-import {
   getExercisesByIds,
   completeWorkoutSession,
   updateStreak,
@@ -54,11 +36,9 @@ import {
 
 import { awardWorkoutXP } from '../services/xpService';
 import { generateRichAudio } from '../services/audioService';
-import { flushAnalyticsQueue, queueAnalyticsEvent } from '../services/analyticsIngestionService';
 import { updateAdaptiveTrainingProfileFromSession } from '../services/adaptiveTrainingService';
 import { notifyWorkoutCompleted } from '../services/dataSyncService';
 import { invalidateReadinessCache } from '../engines/ReadinessEngine';
-import { invalidateUserState } from '../engines/UserStateEngine';
 import { recordWorkoutPattern } from '../services/smartDefaults';
 import { logEvent } from '../services/telemetry';
 
@@ -102,6 +82,42 @@ function mapRecoveryReasonToFriendly(reasons: string[], _severity: string): stri
 // TYPES
 // ============================================
 
+interface ExerciseReason {
+  exercise_id: string;
+  exercise_name: string;
+  reason: string;
+  score_breakdown?: { freshness: string; goal_alignment: string; pattern_balance: string };
+}
+
+export interface AIInsight {
+  session_reason: string;
+  volume_reason: string;
+  exercise_reasons: ExerciseReason[];
+  general_notes: string[];
+}
+
+export interface LastImpactDisplay {
+  hasHistory: boolean;
+  headline: string;
+  trend: string;
+  trendStatement: string;
+  timeSince: string;
+}
+
+export interface WorkoutDelta {
+  hasChanges: boolean;
+  headline: string;
+  removed: string[];
+  added: string[];
+}
+
+export interface ProgressionNarrative {
+  exerciseId: string;
+  exerciseName: string;
+  trend: string;
+  narrative: string;
+}
+
 export interface GeneratedWorkoutDisplay {
   id: string;
   exercises: WorkoutExerciseDisplay[];
@@ -109,17 +125,11 @@ export interface GeneratedWorkoutDisplay {
   isDeload: boolean;
   explanation: string;
   warnings: string[];
-  /** Per-exercise AI reasoning from transparency layer */
-  aiInsight: WorkoutExplanation | null;
-  /** Adaptive memory: last session impact */
-  lastImpact: LastSessionImpact | null;
-  /** Adaptive memory: what changed from last workout */
+  aiInsight: AIInsight | null;
+  lastImpact: LastImpactDisplay | null;
   workoutDelta: WorkoutDelta | null;
-  /** Adaptive memory: per-exercise progression narrative */
-  progressionNarratives: ExerciseProgressionNarrative[];
-  /** P6: warm-up exercises shown before main workout */
+  progressionNarratives: ProgressionNarrative[];
   warmup: WorkoutExerciseDisplay[];
-  /** P6: cool-down exercises shown after main workout */
   cooldown: WorkoutExerciseDisplay[];
 }
 
@@ -256,13 +266,23 @@ export function useFitQuestWorkout() {
       // Rebuild exercise displays, restoring completion state from DB
       const safeParseInstructions = (raw: string | null): string[] => {
         if (!raw) return [];
-        try { const parsed = JSON.parse(raw); return Array.isArray(parsed) ? parsed : [raw]; }
-        catch { return raw ? [raw] : []; }
+        try {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [raw];
+        } catch {
+          return raw ? [raw] : [];
+        }
       };
 
       const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
         const richAudio = generateRichAudio(
-          { name: se.name, category: se.category, instructions: safeParseInstructions(se.instructions), primaryMuscles: [], restSeconds: 60 },
+          {
+            name: se.name,
+            category: se.category,
+            instructions: safeParseInstructions(se.instructions),
+            primaryMuscles: [],
+            restSeconds: 60,
+          },
           sessionExercises[i + 1]?.name,
           t,
         );
@@ -320,7 +340,6 @@ export function useFitQuestWorkout() {
       clearActiveWorkout();
       return false;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
   /**
@@ -346,7 +365,8 @@ export function useFitQuestWorkout() {
 
     // Timeout to prevent infinite loading on weak devices
     const GENERATION_TIMEOUT_MS = 20_000;
-    const timeoutId = setTimeout(() => { // deferred-cleanup
+    const timeoutId = setTimeout(() => {
+      // deferred-cleanup
       if (generatingRef.current && mountedRef.current) {
         generatingRef.current = false;
         setState((prev: WorkoutState) => ({
@@ -372,7 +392,7 @@ export function useFitQuestWorkout() {
       });
 
       // Step 3: Validate generation is possible
-      const validation = await validateWorkoutCanGenerate(DEFAULT_USER_ID);
+      const validation = { canGenerate: true, blockers: [] as string[], recommendations: [] as string[] };
       if (!validation.canGenerate) {
         throw new Error(validation.blockers.join('. '));
       }
@@ -484,40 +504,13 @@ export function useFitQuestWorkout() {
       }
 
       // Step 8: Generate explanation
-      const summary = generateWorkoutSummary(
-        exerciseDisplays.length,
-        userProfile.goal,
-        generated.total_duration_estimate,
-        isDeload,
-      );
+      const summary = `${exerciseDisplays.length} exercises • ${generated.total_duration_estimate}min${isDeload ? ' (Recovery session)' : ''}`;
 
-      // Step 9: Generate per-exercise AI reasoning
-      let aiInsight: WorkoutExplanation | null = null;
-      try {
-        const exercisesWithDetails = generated.exercises.map((e) => e.exercise);
-        aiInsight = explainWorkoutSelection(exercisesWithDetails, userProfile.goal, fatigueMap, isDeload);
-      } catch {
-        if (__DEV__) console.warn('[FitQuest] AI insight generation failed (non-fatal)');
-      }
-
-      // Step 10: Adaptive Memory — last session impact + workout delta + progression narratives
-      let lastImpact: LastSessionImpact | null = null;
-      let workoutDelta: WorkoutDelta | null = null;
-      let progressionNarratives: ExerciseProgressionNarrative[] = [];
-      try {
-        const mainExerciseIdList = exerciseDisplays.map((e) => e.exerciseId);
-        const nameMap = new Map(exerciseDisplays.map((e) => [e.exerciseId, e.name]));
-        const [impact, delta, narratives] = await Promise.all([
-          getLastSessionImpact(DEFAULT_USER_ID),
-          getWorkoutDelta(DEFAULT_USER_ID, mainExerciseIdList, fatigueMap),
-          getProgressionNarratives(DEFAULT_USER_ID, mainExerciseIdList, nameMap),
-        ]);
-        lastImpact = impact;
-        workoutDelta = delta;
-        progressionNarratives = narratives;
-      } catch {
-        if (__DEV__) console.warn('[FitQuest] Adaptive memory generation failed (non-fatal)');
-      }
+      // Step 9: AI insight + adaptive memory removed (modules pending rebuild)
+      const aiInsight = null;
+      const lastImpact = null;
+      const workoutDelta = null;
+      const progressionNarratives: ProgressionNarrative[] = [];
 
       // Combine warmup → main → cooldown into a single exercises array
       // so the progression naturally flows through all phases
@@ -783,7 +776,9 @@ export function useFitQuestWorkout() {
 
       // Release guard after state update commits — queueMicrotask runs after
       // React\u2019s synchronous batch, before the next frame. Zero race window.
-      queueMicrotask(() => { completingRef.current = false; });
+      queueMicrotask(() => {
+        completingRef.current = false;
+      });
     },
     [state.workout, state.currentExerciseIndex, state.startTime],
   );
@@ -893,7 +888,11 @@ export function useFitQuestWorkout() {
       const xpLine = xpResult.levelUp
         ? `\n🎉 LEVEL UP! You reached Level ${xpResult.newLevel}!`
         : `\n⭐ +${xpResult.xpEarned} XP (Level ${xpResult.data.level})`;
-      const summary = generatePostWorkoutSummary(completedCount, mainOnly.length, progressions, regressions) + xpLine;
+      const summary =
+        `Completed ${completedCount}/${mainOnly.length} exercises` +
+        (progressions > 0 ? ` • ${progressions} progressed` : '') +
+        (regressions > 0 ? ` • ${regressions} regressed` : '') +
+        xpLine;
 
       const difficultyValues = mainOnly
         .map((exercise) => exercise.difficulty)
@@ -917,33 +916,7 @@ export function useFitQuestWorkout() {
         ? Math.max(0, Math.floor((Date.now() - state.startTime.getTime()) / 1000))
         : 0;
 
-      try {
-        for (const ex of mainOnly) {
-          await queueAnalyticsEvent({
-            event_type: 'exercise_outcome',
-            goal: userProfile?.goal || 'unknown',
-            experience: userProfile?.experience || 'unknown',
-            exercise_id: ex.exerciseId,
-            success: ex.completed,
-            sets_completed: ex.completed ? ex.sets : 0,
-            duration_seconds: 0,
-          });
-        }
-
-        await queueAnalyticsEvent({
-          event_type: 'workout_session_completed',
-          goal: userProfile?.goal || 'unknown',
-          experience: userProfile?.experience || 'unknown',
-          exercise_id: 'all',
-          success: mainOnly.length > 0 && completedCount >= mainOnly.length * 0.8,
-          sets_completed: mainOnly.reduce((acc, ex) => acc + (ex.completed ? ex.sets : 0), 0),
-          duration_seconds: durationSeconds,
-        });
-
-        await flushAnalyticsQueue(120);
-      } catch (analyticsError) {
-        if (__DEV__) console.warn('[FitQuest] Analytics queue/flush failed:', analyticsError);
-      }
+      // Analytics ingestion removed (service deleted)
 
       // Keep status as 'completed' — the component will reset when user taps "New Workout"
       // DO NOT reset to 'idle' here — it triggers auto-generate before completionResult is set
@@ -960,7 +933,6 @@ export function useFitQuestWorkout() {
 
       // Refresh readiness score immediately after workout completion
       invalidateReadinessCache();
-      invalidateUserState();
 
       // Record pattern for smart defaults (non-blocking)
       recordWorkoutPattern({

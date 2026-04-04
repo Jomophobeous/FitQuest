@@ -12,7 +12,8 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { AppState, AppStateStatus } from 'react-native';
 
 // Graceful fallback — expo-network requires native module not available in all environments
-let Network: { getNetworkStateAsync: () => Promise<{ isConnected?: boolean; isInternetReachable?: boolean }> } | null = null;
+let Network: { getNetworkStateAsync: () => Promise<{ isConnected?: boolean; isInternetReachable?: boolean }> } | null =
+  null;
 try {
   Network = require('expo-network');
 } catch {
@@ -77,32 +78,18 @@ export function ConnectivityProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // Update pending count from queue
+  // Offline queue removed — stub pending count
   const refreshPendingCount = useCallback(async () => {
-    try {
-      const { getPendingCount } = await import('../services/offlineQueue');
-      const count = await getPendingCount();
-      setPendingSyncCount(count);
-    } catch {
-      // Queue not ready yet
-    }
+    setPendingSyncCount(0);
   }, []);
 
-  // Run sync engine
+  // Sync engine removed — stub sync
   const runSync = useCallback(async () => {
     if (syncInProgressRef.current) return;
     syncInProgressRef.current = true;
     setIsSyncing(true);
-
     try {
-      const { syncPendingActions } = await import('../services/syncEngine');
-      const result = await syncPendingActions();
-      if (result.synced > 0) {
-        setLastSyncAt(Date.now());
-      }
       await refreshPendingCount();
-    } catch (e) {
-      if (__DEV__) console.warn('[Connectivity] Sync failed:', e);
     } finally {
       syncInProgressRef.current = false;
       setIsSyncing(false);

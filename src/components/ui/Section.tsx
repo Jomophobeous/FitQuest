@@ -10,11 +10,11 @@ type SectionSpacing = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const spacingMap: Record<SectionSpacing, number> = {
   none: 0,
-  xs: spacing[1],   // 4
-  sm: spacing[2],   // 8
-  md: spacing[4],   // 16
-  lg: spacing[6],   // 24
-  xl: spacing[8],   // 32
+  xs: spacing[1] ?? 4,
+  sm: spacing[2] ?? 8,
+  md: spacing[4] ?? 16,
+  lg: spacing[6] ?? 24,
+  xl: spacing[8] ?? 32,
 };
 
 interface SectionProps {
@@ -26,20 +26,6 @@ interface SectionProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export const Section = memo(function Section({
-  children,
-  gap = 'md',
-  px = 'md',
-  style,
-}: SectionProps) {
-  return (
-    <View
-      style={[
-        { marginTop: spacingMap[gap], paddingHorizontal: spacingMap[px] },
-        style,
-      ]}
-    >
-      {children}
-    </View>
-  );
+export const Section = memo(function Section({ children, gap = 'md', px = 'md', style }: SectionProps) {
+  return <View style={[{ marginTop: spacingMap[gap], paddingHorizontal: spacingMap[px] }, style]}>{children}</View>;
 });

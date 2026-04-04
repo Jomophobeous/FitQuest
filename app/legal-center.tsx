@@ -191,7 +191,7 @@ export default function LegalCenterScreen() {
                 styles.linkCard,
                 { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant },
               ]}
-              onPress={() => openUrl(links.privacyPolicyUrl)}
+              onPress={() => openUrl(vm.links.privacyPolicyUrl)}
             >
               <View style={styles.linkLeft}>
                 <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
@@ -212,7 +212,7 @@ export default function LegalCenterScreen() {
                 styles.linkCard,
                 { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceVariant },
               ]}
-              onPress={() => openUrl(links.termsOfServiceUrl)}
+              onPress={() => openUrl(vm.links.termsOfServiceUrl)}
             >
               <View style={styles.linkLeft}>
                 <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />

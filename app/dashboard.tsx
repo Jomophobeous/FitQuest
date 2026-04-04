@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  useWindowDimensions,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
 import { spacing, radius, typography } from '../src/design/theme-system';
@@ -28,8 +23,7 @@ import {
 } from '../src/components/ui/GlassUI';
 import { ScreenContainer, Spacer } from '../src/components/ui/primitives';
 import { EmptyState } from '../src/components/ui/FeedbackStates';
-import { useInteraction } from '../src/interactions/InteractionManager';
-import { useNavigationGuard } from '../src/navigation/NavigationGuard';
+import { useRouter } from 'expo-router';
 import { useDashboardViewModel } from '../src/viewmodels/useDashboardViewModel';
 import { usePrefetch } from '../src/hooks/usePrefetch';
 
@@ -37,9 +31,8 @@ export default function DashboardScreen() {
   const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const nav = useNavigationGuard();
+  const router = useRouter();
   const isCompactScreen = width < 420;
-  const exec = useInteraction();
   const vm = useDashboardViewModel();
 
   // Warm caches for adjacent screens (non-blocking)
@@ -47,15 +40,44 @@ export default function DashboardScreen() {
 
   // Destructure ViewModel for render
   const {
-    loading, loadError, refreshing, displayName, readiness,
-    behavioralSignal, lastImpact, trialSnapshot, consistencyProfile,
-    recentWorkout, workoutDates, totalCalories, totalMinutes,
-    todaySteps, todayActiveMinutes, completionRate, realLevel, realXP,
-    levelUpShown, selectedDate, streak, todayProgress, hasReadinessData,
-    isRecoveryBad, isRecoveryGood, recoveryPercent, statusDisplay,
-    statPillWarning, statPillAccent, statPillSurface, signalCardBg,
-    exploreTiles, handleRefresh, setSelectedDate, retryLoad,
-    hasInterruptedSession, goalProgress, userState,
+    loading,
+    loadError,
+    refreshing,
+    displayName,
+    readiness,
+    behavioralSignal,
+    lastImpact,
+    trialSnapshot,
+    consistencyProfile,
+    recentWorkout,
+    workoutDates,
+    totalCalories,
+    totalMinutes,
+    todaySteps,
+    todayActiveMinutes,
+    completionRate,
+    realLevel,
+    realXP,
+    levelUpShown,
+    selectedDate,
+    streak,
+    todayProgress,
+    hasReadinessData,
+    isRecoveryBad,
+    isRecoveryGood,
+    recoveryPercent,
+    statusDisplay,
+    statPillWarning,
+    statPillAccent,
+    statPillSurface,
+    signalCardBg,
+    exploreTiles,
+    handleRefresh,
+    setSelectedDate,
+    retryLoad,
+    hasInterruptedSession,
+    goalProgress,
+    userState,
   } = vm;
 
   if (loading) {
@@ -71,7 +93,9 @@ export default function DashboardScreen() {
       <ScreenContainer>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing[6] }}>
           <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-          <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{loadError}</ThemedText>
+          <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>
+            {loadError}
+          </ThemedText>
           <GradientButton title={t('common.retry') ?? 'Retry'} onPress={retryLoad} style={{ marginTop: spacing[4] }} />
         </View>
       </ScreenContainer>
@@ -81,7 +105,7 @@ export default function DashboardScreen() {
   const level = realLevel;
 
   return (
-    <ScreenErrorBoundary screenName="Dashboard" onGoBack={() => nav.back()}>
+    <ScreenErrorBoundary screenName="Dashboard" onGoBack={() => router.back()}>
       <ScreenContainer scroll onRefresh={handleRefresh} refreshing={refreshing}>
         <ScreenTutorial
           screenKey="dashboard"
@@ -98,8 +122,14 @@ export default function DashboardScreen() {
             >
               <MaterialCommunityIcons name="arrow-up-bold-circle" size={22} color={theme.colors.onAccent} />
               <View style={{ marginLeft: spacing[3], flex: 1 }}>
-                <ThemedText variant="body" weight="800" style={{ color: theme.colors.onAccent }}>Level Up!</ThemedText>
-                <ThemedText variant="caption" weight="500" style={{ color: theme.colors.onAccent + 'CC', marginTop: spacing['px'] }}>
+                <ThemedText variant="body" weight="800" style={{ color: theme.colors.onAccent }}>
+                  Level Up!
+                </ThemedText>
+                <ThemedText
+                  variant="caption"
+                  weight="500"
+                  style={{ color: theme.colors.onAccent + 'CC', marginTop: spacing['px'] }}
+                >
                   You reached Level {realLevel} 🎉
                 </ThemedText>
               </View>
@@ -111,7 +141,7 @@ export default function DashboardScreen() {
             <Animated.View entering={FadeInDown.duration(MOTION.fast)}>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => exec('dash_resume_session', () => nav.push('/fitquest'), { haptic: 'light' })}
+                onPress={() => router.push('/fitquest')}
                 style={[
                   styles.resumeBanner,
                   { backgroundColor: theme.colors.warning + '15', borderColor: theme.colors.warning + '40' },
@@ -244,7 +274,7 @@ export default function DashboardScreen() {
                       icon="lightning-bolt"
                       onPress={() => {
                         if (__DEV__) console.warn('[Dashboard] CTA:startNow → fitquest?autostart=1');
-                        exec('dash_start_workout', () => nav.push('/fitquest?autostart=1'), { haptic: 'medium' });
+                        router.push('/fitquest?autostart=1');
                       }}
                       variant="primary"
                       style={styles.primaryButton}
@@ -260,7 +290,10 @@ export default function DashboardScreen() {
             Only shown when real data exists (workouts, fatigue records).
         ══════════════════════════════════════════════════════════════════ */}
           {hasReadinessData && (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 4).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.secondary }}
+            >
               <View
                 style={[
                   styles.recoveryCard,
@@ -356,7 +389,10 @@ export default function DashboardScreen() {
             SYSTEM SIGNAL — Behavioral intelligence + last session impact
         ══════════════════════════════════════════════════════════════════ */}
           {behavioralSignal && (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 3.5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 3.5).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.secondary }}
+            >
               <View
                 style={[
                   styles.signalCard,
@@ -422,14 +458,17 @@ export default function DashboardScreen() {
             TRIAL MESSAGE — Progressive trial messaging + consistency status
         ══════════════════════════════════════════════════════════════════ */}
           {trialSnapshot?.message.type !== 'NONE' && trialSnapshot?.message.headline ? (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.tertiary }}
+            >
               <TouchableOpacity
                 activeOpacity={trialSnapshot.message.actionRoute ? 0.7 : 1}
-                onPress={() => exec('dash_trial_action', () => {
+                onPress={() => {
                   if (trialSnapshot.message.actionRoute) {
-                    nav.push(trialSnapshot.message.actionRoute as string);
+                    router.push(trialSnapshot.message.actionRoute as string);
                   }
-                })}
+                }}
                 accessibilityRole="button"
                 accessibilityLabel={trialSnapshot.message.headline}
               >
@@ -497,7 +536,10 @@ export default function DashboardScreen() {
               </TouchableOpacity>
             </Animated.View>
           ) : consistencyProfile ? (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.tertiary }}
+            >
               <View
                 style={[
                   styles.trialCard,
@@ -528,8 +570,13 @@ export default function DashboardScreen() {
             WEEKLY GOAL PROGRESS — Derived from goalTracker
         ══════════════════════════════════════════════════════════════════ */}
           {goalProgress && goalProgress.overallProgress > 0 && (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.8).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
-              <View style={[styles.goalCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 4.8).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.secondary }}
+            >
+              <View
+                style={[styles.goalCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+              >
                 <View style={styles.goalHeader}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
                     <MaterialCommunityIcons name="target" size={16} color={theme.colors.accent} />
@@ -554,10 +601,12 @@ export default function DashboardScreen() {
                 </View>
                 <View style={styles.goalDetails}>
                   <ThemedText variant="caption" color="muted">
-                    {goalProgress.workoutsDone}/{goalProgress.goals.workoutsTarget} {t('dashboard.workouts') || 'workouts'}
+                    {goalProgress.workoutsDone}/{goalProgress.goals.workoutsTarget}{' '}
+                    {t('dashboard.workouts') || 'workouts'}
                   </ThemedText>
                   <ThemedText variant="caption" color="muted">
-                    {goalProgress.activeMinutesDone}/{goalProgress.goals.activeMinutesTarget} {t('fitquest.minShort') || 'min'}
+                    {goalProgress.activeMinutesDone}/{goalProgress.goals.activeMinutesTarget}{' '}
+                    {t('fitquest.minShort') || 'min'}
                   </ThemedText>
                 </View>
               </View>
@@ -568,11 +617,17 @@ export default function DashboardScreen() {
             ADAPTIVE NUDGE — Churn risk or high fatigue guidance
         ══════════════════════════════════════════════════════════════════ */}
           {userState?.churnRisk && !hasInterruptedSession && (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.secondary }}
+            >
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => exec('dash_quick_start', () => nav.push('/fitquest?autostart=1'), { haptic: 'light' })}
-                style={[styles.nudgeCard, { backgroundColor: theme.colors.accent + '10', borderColor: theme.colors.accent + '30' }]}
+                onPress={() => router.push('/fitquest?autostart=1')}
+                style={[
+                  styles.nudgeCard,
+                  { backgroundColor: theme.colors.accent + '10', borderColor: theme.colors.accent + '30' },
+                ]}
               >
                 <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme.colors.accent} />
                 <View style={{ flex: 1, marginLeft: spacing[2] }}>
@@ -589,8 +644,16 @@ export default function DashboardScreen() {
           )}
 
           {userState?.fatigueTier === 'HIGH' && !isRecoveryBad && (
-            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
-              <View style={[styles.nudgeCard, { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '30' }]}>
+            <Animated.View
+              entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}
+              style={{ opacity: HIERARCHY.tertiary }}
+            >
+              <View
+                style={[
+                  styles.nudgeCard,
+                  { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '30' },
+                ]}
+              >
                 <MaterialCommunityIcons name="sleep" size={18} color={theme.colors.warning} />
                 <View style={{ flex: 1, marginLeft: spacing[2] }}>
                   <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.warning }}>
@@ -607,7 +670,10 @@ export default function DashboardScreen() {
           {/* ══════════════════════════════════════════════════════════════════
             DAILY ACTIVITY STATS — Steps, Active Mins, Completion Rate
         ══════════════════════════════════════════════════════════════════ */}
-          <Animated.View entering={FadeInUp.delay(MOTION.stagger * 5).duration(MOTION.fast)} style={{ opacity: HIERARCHY.secondary }}>
+          <Animated.View
+            entering={FadeInUp.delay(MOTION.stagger * 5).duration(MOTION.fast)}
+            style={{ opacity: HIERARCHY.secondary }}
+          >
             <View style={styles.dailyStatsRow}>
               <View
                 style={[
@@ -660,7 +726,7 @@ export default function DashboardScreen() {
           <SectionHeader title={t('dashboard.lastWorkout')} delay={MOTION.stagger * 6} />
           {recentWorkout ? (
             <AnimatedListItem key={recentWorkout.id} index={0} style={styles.workoutItem}>
-              <GlassCard onPress={() => nav.push('/saved-workouts')} style={styles.workoutCard}>
+              <GlassCard onPress={() => router.push('/saved-workouts')} style={styles.workoutCard}>
                 <View style={styles.workoutRow}>
                   <View style={[styles.workoutIcon, { backgroundColor: theme.colors.accent + '15' }]}>
                     <MaterialCommunityIcons name={recentWorkout.icon} size={18} color={theme.colors.accent} />
@@ -684,7 +750,7 @@ export default function DashboardScreen() {
               icon="dumbbell"
               message={t('dashboard.noWorkoutsYet') || 'No workouts yet'}
               action={t('dashboard.startNow') || 'Start First Session'}
-              onAction={() => exec('dash_empty_start', () => nav.push('/fitquest?autostart=1'), { haptic: 'light' })}
+              onAction={() => router.push('/fitquest?autostart=1')}
             />
           )}
 
@@ -695,7 +761,7 @@ export default function DashboardScreen() {
             <GradientButton
               title={t('dashboard.createCustom')}
               icon="playlist-plus"
-              onPress={() => nav.push('/create-workout')}
+              onPress={() => router.push('/create-workout')}
               variant="success"
               style={styles.secondaryButton}
             />
@@ -705,7 +771,10 @@ export default function DashboardScreen() {
             QUICK ACCESS TILES — Key features at a glance
         ══════════════════════════════════════════════════════════════════ */}
           <SectionHeader title={t('dashboard.explore') || 'Explore'} delay={MOTION.stagger * 7} />
-          <Animated.View entering={FadeInUp.delay(MOTION.stagger * 7).duration(MOTION.fast)} style={{ opacity: HIERARCHY.tertiary }}>
+          <Animated.View
+            entering={FadeInUp.delay(MOTION.stagger * 7).duration(MOTION.fast)}
+            style={{ opacity: HIERARCHY.tertiary }}
+          >
             <View style={styles.exploreGrid}>
               {exploreTiles.map((tile, idx) => (
                 <AnimatedListItem key={tile.route} index={idx} style={styles.exploreTileWrap}>
@@ -714,7 +783,7 @@ export default function DashboardScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={tile.label}
                     accessibilityHint={tile.desc}
-                    onPress={() => exec('dash_tile_' + tile.route, () => nav.push(tile.route))}
+                    onPress={() => router.push(tile.route)}
                     style={[
                       styles.exploreTile,
                       {
@@ -848,12 +917,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   statValue: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   statLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '500',
   },
 
@@ -884,15 +953,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   todayGoalPercent: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
     fontWeight: '800',
   },
   todayGoalTitle: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '700',
   },
   todayGoalSub: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     marginTop: spacing[1],
     lineHeight: 20,
   },
@@ -906,11 +975,11 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   metaValue: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '700',
   },
   metaLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '400',
   },
   primaryActionContainer: {
@@ -945,21 +1014,21 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   recoveryTitle: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
   recoveryValue: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   recoveryLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
     marginTop: spacing[0.5],
   },
   recoveryWarning: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
     marginTop: spacing[2],
     paddingTop: spacing[2],
@@ -1039,7 +1108,7 @@ const styles = StyleSheet.create({
   workoutName: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
   workoutMeta: { fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] },
   workoutCalValue: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '700',
   },
 
@@ -1066,7 +1135,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   liveText: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
 
@@ -1138,11 +1207,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exploreTileLabel: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '700',
   },
   exploreTileDesc: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
     lineHeight: 15,
   },
@@ -1169,7 +1238,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[1],
   },
   quickTileLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '600',
     textAlign: 'center',
   },

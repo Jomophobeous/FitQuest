@@ -9,12 +9,12 @@ import { spacing } from '../../design/theme-system';
 type SpacerSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 const sizeMap: Record<SpacerSize, number> = {
-  xs: spacing[1],   // 4
-  sm: spacing[2],   // 8
-  md: spacing[4],   // 16
-  lg: spacing[6],   // 24
-  xl: spacing[8],   // 32
-  xxl: spacing[12], // 48
+  xs: spacing[1] ?? 4,
+  sm: spacing[2] ?? 8,
+  md: spacing[4] ?? 16,
+  lg: spacing[6] ?? 24,
+  xl: spacing[8] ?? 32,
+  xxl: spacing[12] ?? 48,
 };
 
 interface SpacerProps {

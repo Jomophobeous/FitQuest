@@ -20,12 +20,7 @@ import { AppGate } from '../src/components/AppGate';
 import { logEvent, logPerf } from '../src/services/telemetry';
 import { initializeCrashReporting } from '../src/services/crashReporting';
 import { startSession, endSession } from '../src/services/sessionTracker';
-import { resetFrictionState } from '../src/services/frictionLogger';
-import { logDailyReturn } from '../src/services/growthAnalytics';
-import { initAnalyticsOptOut } from '../src/services/analyticsOptOut';
-import { systemGuard } from '../src/services/SystemGuard';
 import { typography, spacing, radius } from '../src/design/theme-system';
-
 
 /**
  * Global access gate — resolves subscription state before rendering.
@@ -105,7 +100,7 @@ function ThemedTabs() {
       headerTintColor: theme.colors.text,
       headerTitleStyle: {
         fontWeight: '600' as const,
-        fontSize: typography.sizes.h4, 
+        fontSize: typography.sizes.h4,
       },
       headerRight,
       // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
@@ -116,7 +111,7 @@ function ThemedTabs() {
       tabBarActiveTintColor: theme.colors.accent,
       tabBarInactiveTintColor: theme.colors.textMuted,
       tabBarLabelStyle: {
-        fontSize: typography.sizes.captionSm, 
+        fontSize: typography.sizes.captionSm,
         fontWeight: '500' as const,
         marginTop: spacing[0.5],
         marginBottom: spacing[1],
@@ -412,20 +407,16 @@ export default function RootLayout() {
 
     // Critical — must run immediately
     initializeCrashReporting();
-    void initAnalyticsOptOut();
 
     const durationMs = Date.now() - appStartRef.current;
     logPerf('app_launch', durationMs);
     logEvent('app_launch');
 
-    // ── Session + retention tracking (Block Y/W) ──
+    // ── Session tracking ──
     startSession();
-    resetFrictionState();
-    void logDailyReturn();
     const appStateSub = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
         startSession();
-        resetFrictionState();
       } else if (state === 'background' || state === 'inactive') {
         void endSession();
       }
@@ -433,145 +424,22 @@ export default function RootLayout() {
 
     // Defer non-critical startup work — sequenced to avoid CPU spikes.
     // All deferred services are dynamically imported to keep the critical parse path lean.
-    // Phase 1: lightweight telemetry + flags (sequential to avoid burst)
-    // Phase 2: deferred mutations, notifications, analytics
-    // Phase 3: background health engine (heaviest — starts last)
+    // Deferred startup — lightweight services only, sequenced to avoid CPU spikes
     let cancelled = false;
-    let bgHealthRef: { stop: () => void } | null = null;
-    const cleanupFns: Array<() => void> = [];
 
     const deferStartup = async () => {
-      // Phase 1: sequential lightweight inits
+      // Error telemetry
       try {
         const { errorTelemetry } = await import('../src/services/errorTelemetry');
         await errorTelemetry.initialize();
       } catch {}
       if (cancelled) return;
 
-      // Feature flags MUST init before anything else — all Phase 2/3 depend on them
-      let flags: { isEnabled: (f: string) => boolean } | null = null;
+      // Feature flags
       try {
         const { featureFlags } = await import('../src/services/featureFlags');
         await featureFlags.initialize();
-        flags = featureFlags;
       } catch {}
-      if (cancelled) return;
-
-      // Cloud backup — gated
-      if (flags?.isEnabled('CLOUD_BACKUP')) {
-        try {
-          const { maybeAutoCloudBackupOncePerDay } = await import('../src/services/cloudBackupService');
-          void maybeAutoCloudBackupOncePerDay().catch((e) => {
-            if (__DEV__) console.warn('[Layout] cloud backup failed', e);
-          });
-        } catch {}
-      }
-
-      if (cancelled) return;
-
-      // Phase 2: deferred mutations, notifications, analytics — after a frame yield
-      await new Promise((resolve) => setTimeout(resolve, 100)); // debounce
-      if (cancelled) return;
-
-      // Replay orchestrator — gated
-      if (flags?.isEnabled('REPLAY_ORCHESTRATOR')) {
-        try {
-          const { runReplayIfDue } = await import('../src/services/replayOrchestrator');
-          void runReplayIfDue({ reason: 'app_start', cooldownMs: 45 * 1000 }).catch((e) => {
-            if (__DEV__) console.warn('[Layout] replay failed', e);
-          });
-        } catch {}
-      }
-
-      // Notification reliability — always (lightweight, core UX)
-      try {
-        const { reconcileNotificationReliability } = await import('../src/services/notificationReliabilityService');
-        void reconcileNotificationReliability('app_start').catch((e) => {
-          if (__DEV__) console.warn('[Layout] notification reconcile failed', e);
-        });
-      } catch {}
-
-      // Engagement notifications — gated
-      if (flags?.isEnabled('ENGAGEMENT_NOTIFICATIONS')) {
-        try {
-          const { reconcileEngagementNotifications } = await import('../src/services/engagementNotificationService');
-          void reconcileEngagementNotifications().catch((e) => {
-            if (__DEV__) console.warn('[Layout] engagement notifications failed', e);
-          });
-        } catch {}
-      }
-
-      // Anti-piracy — gated
-      if (flags?.isEnabled('ANTI_PIRACY')) {
-        try {
-          const { tamperEngine } = await import('../src/services/security/tamperEngine');
-          tamperEngine.initialize();
-        } catch {}
-        try {
-          const { verifyDevice } = await import('../src/services/authorityClient');
-          void verifyDevice('user_local_001').catch(() => {});
-        } catch {}
-      }
-
-      // Analytics flush — always (lightweight, ensures queued events land)
-      try {
-        const { flushAnalyticsQueue } = await import('../src/services/analyticsIngestionService');
-        void flushAnalyticsQueue().catch((e) => {
-          if (__DEV__) console.warn('[Layout] analytics flush failed', e);
-        });
-      } catch {}
-
-      // Metrics aggregator — gated
-      if (flags?.isEnabled('METRICS_AGGREGATOR')) {
-        try {
-          const { getMetricsSummary } = await import('../src/services/metricsAggregator');
-          void getMetricsSummary('user_local_001').then((metrics) => {
-            void logEvent('metrics_snapshot', metrics);
-          }).catch(() => {});
-        } catch {}
-      }
-
-      // Phase 3: background health engine last — heaviest service (timers, DB queries, sensors)
-      // Only starts if BACKGROUND_HEALTH flag is enabled
-      if (cancelled) return;
-      if (!flags?.isEnabled('BACKGROUND_HEALTH')) {
-        if (__DEV__) console.warn('[Layout] BackgroundHealthEngine skipped (ff_background_health disabled)');
-        return;
-      }
-      const startBgHealth = async (attempt = 0) => {
-        if (cancelled) return;
-        try {
-          const { backgroundHealth } = await import('../src/engines/BackgroundHealthEngine');
-          bgHealthRef = backgroundHealth;
-          await backgroundHealth.start({
-            collectionIntervalMs: 1 * 60 * 1000,
-            anomalyCheckIntervalMs: 30 * 60 * 1000,
-            enableAlerts: true,
-          });
-        } catch (e) {
-          if (__DEV__) console.warn('[BackgroundHealth] Failed to start (attempt', attempt + 1, '):', e);
-          // Retry with exponential backoff: 2s, 4s, 8s — max 3 retries
-          if (attempt < 3 && !cancelled) {
-            const delay = Math.pow(2, attempt + 1) * 1000;
-            await new Promise((r) => setTimeout(r, delay));
-            return startBgHealth(attempt + 1);
-          }
-          if (__DEV__) console.error('[BackgroundHealth] All retry attempts exhausted — health monitoring disabled');
-        }
-      };
-      if (systemGuard.isReady) {
-        await startBgHealth();
-      } else {
-        // Subscribe and start when system becomes READY
-        const unsub = systemGuard.subscribe((state) => {
-          if (state === 'READY') {
-            unsub();
-            startBgHealth();
-          }
-        });
-        // Store unsubscribe for cleanup
-        cleanupFns.push(unsub);
-      }
     };
 
     // Use requestIdleCallback where available, fall back to setTimeout
@@ -581,17 +449,15 @@ export default function RootLayout() {
         deferStartup();
       });
     } else {
-      timeoutHandle = setTimeout(() => { // debounce
+      timeoutHandle = setTimeout(() => {
         deferStartup();
       }, 300);
     }
 
-    // Cleanup: cancel deferred chain + stop backgroundHealth (Fast Refresh safety)
+    // Cleanup
     return () => {
       cancelled = true;
       if (timeoutHandle) clearTimeout(timeoutHandle);
-      bgHealthRef?.stop();
-      cleanupFns.forEach((fn) => fn());
       appStateSub.remove();
       void endSession();
     };

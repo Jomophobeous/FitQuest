@@ -10,7 +10,6 @@
  */
 
 import type * as SQLite from 'expo-sqlite';
-import { systemGuard } from '../services/SystemGuard';
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -51,8 +50,6 @@ const CHILD_TABLES = ['exercise_muscles', 'exercise_equipment', 'exercise_traini
  * Returns a report — does NOT modify data.
  */
 export async function validateDatabaseIntegrity(db: SQLite.SQLiteDatabase): Promise<ValidationReport> {
-  systemGuard.markValidating();
-
   const issues: string[] = [];
 
   // 1. Check for duplicate (name, category) groups
@@ -134,8 +131,6 @@ export async function repairDatabaseIntegrity(
   db: SQLite.SQLiteDatabase,
   report: ValidationReport,
 ): Promise<RepairReport> {
-  systemGuard.markRecovering(report.summary);
-
   const errors: string[] = [];
   let duplicatesRemoved = 0;
   let childrenRemapped = 0;

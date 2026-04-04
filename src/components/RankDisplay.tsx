@@ -15,7 +15,6 @@ import { getUserRankInfo, getLevelQuote, type RankMilestone } from '../services/
 import { GlassCard } from './ui/GlassUI';
 import { typography, spacing } from '../design/theme-system';
 
-
 /**
  * Get theme-aware color — replaces green with gold in blackGold mode
  */
@@ -23,9 +22,8 @@ function getThemedColor(color: string, themeMode: ThemeMode): string {
   if (themeMode !== 'blackGold') return color;
   // Map green hex variants → gold hex equivalents for blackGold theme
   const greenToGoldMap: Record<string, string> = {
-    '#10B981': '#D4A843', // accent green → champagne gold
+    '#10B981': '#D4A843',
     '#10b981': '#D4A843',
-    '#059669': '#B8912C', // accentDark green → darker gold
     '#059669': '#B8912C',
   };
   return greenToGoldMap[color] || greenToGoldMap[color.toUpperCase()] || color;
@@ -349,18 +347,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rankName: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   rankTitle: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
     marginTop: spacing[0.5],
   },
   rankSubtitle: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
     marginTop: spacing[0.5],
   },
@@ -377,11 +375,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3.5],
   },
   tierText: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '700',
   },
   tierDesc: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
 
@@ -396,11 +394,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[1.5],
   },
   progressLabel: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
   progressLevels: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
   progressBar: {
@@ -415,7 +413,7 @@ const styles = StyleSheet.create({
 
   // Quote
   quote: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontStyle: 'italic',
     fontWeight: '500',
     textAlign: 'center',
@@ -438,11 +436,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   statValue: {
-    fontSize: typography.sizes.h4, 
+    fontSize: typography.sizes.h4,
     fontWeight: '800',
   },
   statLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '600',
     marginTop: spacing[0.5],
   },
@@ -481,15 +479,15 @@ const styles = StyleSheet.create({
     gap: spacing[1.5],
   },
   milestoneName: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '700',
   },
   milestoneLevel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
   milestoneTitle: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
     marginTop: spacing['px'],
   },

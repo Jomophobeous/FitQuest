@@ -260,7 +260,8 @@ export class SensorFusionEngine {
     // Auto-pause sensors when app moves to background (debounced to prevent churn from rapid flickers)
     this.appStateSub = AppState.addEventListener('change', (nextState) => {
       if (this.appStateDebounceTimer) clearTimeout(this.appStateDebounceTimer);
-      this.appStateDebounceTimer = setTimeout(() => { // debounce
+      this.appStateDebounceTimer = setTimeout(() => {
+        // debounce
         if (nextState === 'background' || nextState === 'inactive') {
           if (this.running && !this.pausedByBackground) {
             this.accelSub?.remove();
@@ -548,7 +549,7 @@ export class SensorFusionEngine {
       const window = this.rawSensorBuffer.slice(-100);
       const prediction = trainedActivityClassifier.classifyWindow(window);
 
-      if (prediction.confidence > 0.4) {
+      if (prediction && prediction.confidence > 0.4) {
         // Map ML activity type to our ActivityType (JOGGING maps to RUNNING)
         const mlActivityStr = prediction.activity;
         let mappedActivity: ActivityType;

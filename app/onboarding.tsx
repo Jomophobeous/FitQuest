@@ -18,7 +18,14 @@ import {
   Alert,
   KeyboardAvoidingView,
 } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInRight, FadeOutLeft, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInRight,
+  FadeOutLeft,
+  SlideInRight,
+  SlideOutLeft,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '../src/components/ui/primitives';
@@ -32,16 +39,13 @@ import { useToast } from '../src/context/ToastContext';
 import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
 import { useDatabase } from '../src/context/DatabaseContext';
 import ThemedText from '../src/components/ThemedText';
-import { useOnboardingViewModel, EquipmentItem, PersonalDevelopmentTopic, OnboardingData } from '../src/viewmodels/useOnboardingViewModel';
-import { typography, spacing, radius } from '../src/design/theme-system';
 import {
-  logOnboardingStepViewed,
-  logOnboardingStepCompleted,
-  logOnboardingDropOff,
-  logOnboardingCompleted,
-} from '../src/services/growthAnalytics';
-import { logFlowAbandoned } from '../src/services/frictionLogger';
-
+  useOnboardingViewModel,
+  EquipmentItem,
+  PersonalDevelopmentTopic,
+  OnboardingData,
+} from '../src/viewmodels/useOnboardingViewModel';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -157,17 +161,9 @@ export default function OnboardingScreen() {
   const onboardingCompletedRef = useRef(false);
 
   useEffect(() => {
-    logOnboardingStepViewed(step);
-  }, [step]);
-
-  useEffect(() => {
     return () => {
-      if (!onboardingCompletedRef.current) {
-        logOnboardingDropOff(step);
-        logFlowAbandoned('onboarding', step, TOTAL_STEPS);
-      }
+      // cleanup ref for unmount tracking
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const canAdvance = (): boolean => {
@@ -207,7 +203,6 @@ export default function OnboardingScreen() {
   };
 
   const next = () => {
-    logOnboardingStepCompleted(step);
     if (step < TOTAL_STEPS - 1) setStep(step + 1);
     else finishOnboarding();
   };
@@ -231,7 +226,6 @@ export default function OnboardingScreen() {
       return;
     }
     onboardingCompletedRef.current = true;
-    logOnboardingCompleted(Date.now() - onboardingStartRef.current);
     router.replace('/dashboard');
   };
 
@@ -261,7 +255,12 @@ export default function OnboardingScreen() {
             <ThemedText
               style={[
                 styles.welcomeDesc,
-                { color: theme.colors.textMuted, marginTop: spacing[3], textAlign: 'center', paddingHorizontal: spacing[5] },
+                {
+                  color: theme.colors.textMuted,
+                  marginTop: spacing[3],
+                  textAlign: 'center',
+                  paddingHorizontal: spacing[5],
+                },
               ]}
             >
               {t('onboarding.ageGate.description')}
@@ -302,7 +301,9 @@ export default function OnboardingScreen() {
             >
               <MaterialCommunityIcons name="shield-lock" size={48} color={theme.colors.accent} />
             </View>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: spacing[5] }]}>
+            <ThemedText
+              style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: spacing[5] }]}
+            >
               {t('onboarding.consent.title')}
             </ThemedText>
             <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
@@ -356,7 +357,13 @@ export default function OnboardingScreen() {
               onPress={() => router.push('/privacy-policy')}
               style={{ marginTop: spacing[3], alignSelf: 'center' }}
             >
-              <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.label, textDecorationLine: 'underline' }}>
+              <ThemedText
+                style={{
+                  color: theme.colors.accent,
+                  fontSize: typography.sizes.label,
+                  textDecorationLine: 'underline',
+                }}
+              >
                 {t('onboarding.consent.readPolicy')}
               </ThemedText>
             </TouchableOpacity>
@@ -372,7 +379,9 @@ export default function OnboardingScreen() {
             >
               <MaterialCommunityIcons name="medical-bag" size={48} color={theme.colors.warning} />
             </View>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: spacing[5] }]}>
+            <ThemedText
+              style={[styles.stepTitle, { color: theme.colors.text, textAlign: 'center', marginTop: spacing[5] }]}
+            >
               {t('onboarding.disclaimer.title')}
             </ThemedText>
             <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted, textAlign: 'center' }]}>
@@ -438,8 +447,12 @@ export default function OnboardingScreen() {
               />
               <MaterialCommunityIcons name="lightning-bolt" size={64} color={theme.colors.accent} />
             </View>
-            <ThemedText style={[styles.welcomeTitle, { color: theme.colors.text }]}>{t('onboarding.welcome')}</ThemedText>
-            <ThemedText style={[styles.welcomeDesc, { color: theme.colors.textMuted }]}>{t('onboarding.tagline')}</ThemedText>
+            <ThemedText style={[styles.welcomeTitle, { color: theme.colors.text }]}>
+              {t('onboarding.welcome')}
+            </ThemedText>
+            <ThemedText style={[styles.welcomeDesc, { color: theme.colors.textMuted }]}>
+              {t('onboarding.tagline')}
+            </ThemedText>
 
             {/* 3 Pillars */}
             <View style={styles.pillarsRow}>
@@ -536,7 +549,9 @@ export default function OnboardingScreen() {
             </ScrollView>
 
             <View style={{ marginTop: spacing[5] }}>
-              <ThemedText style={[styles.stepTitle, { color: theme.colors.text, fontSize: typography.sizes.h4 }]}>{'Your personal goal'}</ThemedText>
+              <ThemedText style={[styles.stepTitle, { color: theme.colors.text, fontSize: typography.sizes.h4 }]}>
+                {'Your personal goal'}
+              </ThemedText>
               <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
                 {'What do you want to achieve with FitQuest? Our AI coach will keep this in mind.'}
               </ThemedText>
@@ -568,8 +583,12 @@ export default function OnboardingScreen() {
       case 5:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.goalTitle')}</ThemedText>
-            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.goalSub')}</ThemedText>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+              {t('onboarding.goalTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+              {t('onboarding.goalSub')}
+            </ThemedText>
             <View style={styles.optionsList}>
               {GOALS.map((g, i) => (
                 <Animated.View key={g.id} entering={FadeInRight.delay(i * 60).duration(200)}>
@@ -621,8 +640,12 @@ export default function OnboardingScreen() {
       case 6:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.experienceTitle')}</ThemedText>
-            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.experienceSub')}</ThemedText>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+              {t('onboarding.experienceTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+              {t('onboarding.experienceSub')}
+            </ThemedText>
             <View style={styles.optionsList}>
               {EXPERIENCE_LEVELS.map((e, i) => (
                 <Animated.View key={e.id} entering={FadeInRight.delay(i * 80).duration(200)}>
@@ -674,8 +697,12 @@ export default function OnboardingScreen() {
       case 7:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.bodyProfileTitle')}</ThemedText>
-            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.bodyProfileSub')}</ThemedText>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+              {t('onboarding.bodyProfileTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+              {t('onboarding.bodyProfileSub')}
+            </ThemedText>
             <View style={styles.optionsList}>
               <View style={styles.inputRow}>
                 <View
@@ -700,7 +727,13 @@ export default function OnboardingScreen() {
                     }}
                   />
                   {!!fieldErrors.weightKg && (
-                    <ThemedText style={{ color: theme.colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.error,
+                        fontSize: typography.sizes.captionSm,
+                        marginTop: spacing[0.5],
+                      }}
+                    >
                       {fieldErrors.weightKg}
                     </ThemedText>
                   )}
@@ -727,7 +760,13 @@ export default function OnboardingScreen() {
                     }}
                   />
                   {!!fieldErrors.heightCm && (
-                    <ThemedText style={{ color: theme.colors.error, fontSize: typography.sizes.captionSm, marginTop: spacing[0.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.error,
+                        fontSize: typography.sizes.captionSm,
+                        marginTop: spacing[0.5],
+                      }}
+                    >
                       {fieldErrors.heightCm}
                     </ThemedText>
                   )}
@@ -777,8 +816,12 @@ export default function OnboardingScreen() {
       case 8:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.scheduleTitle')}</ThemedText>
-            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.scheduleSub')}</ThemedText>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+              {t('onboarding.scheduleTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+              {t('onboarding.scheduleSub')}
+            </ThemedText>
 
             <ThemedText style={[styles.sliderLabel, { color: theme.colors.text }]}>
               {t('onboarding.daysPerWeek')}{' '}
@@ -851,8 +894,12 @@ export default function OnboardingScreen() {
       case 9:
         return (
           <Animated.View entering={FadeInDown.duration(200)} style={styles.stepContainer}>
-            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{t('onboarding.equipmentTitle')}</ThemedText>
-            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>{t('onboarding.equipmentSub')}</ThemedText>
+            <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+              {t('onboarding.equipmentTitle')}
+            </ThemedText>
+            <ThemedText style={[styles.stepDesc, { color: theme.colors.textMuted }]}>
+              {t('onboarding.equipmentSub')}
+            </ThemedText>
             <View style={styles.equipGrid}>
               {EQUIPMENT_OPTIONS.map((eq, i) => {
                 const selected = data.equipment.includes(eq.id);
@@ -878,7 +925,9 @@ export default function OnboardingScreen() {
                         size={28}
                         color={selected ? theme.colors.accent : theme.colors.textMuted}
                       />
-                      <ThemedText style={[styles.equipLabel, { color: selected ? theme.colors.accent : theme.colors.text }]}>
+                      <ThemedText
+                        style={[styles.equipLabel, { color: selected ? theme.colors.accent : theme.colors.text }]}
+                      >
                         {eq.label}
                       </ThemedText>
                       {!!selected && (
@@ -1015,7 +1064,11 @@ export default function OnboardingScreen() {
               accessibilityLabel="Allow all permissions"
             >
               <MaterialCommunityIcons name="shield-check" size={18} color={theme.colors.accent} />
-              <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.bodySmall, fontWeight: '700' }}>Allow All</ThemedText>
+              <ThemedText
+                style={{ color: theme.colors.accent, fontSize: typography.sizes.bodySmall, fontWeight: '700' }}
+              >
+                Allow All
+              </ThemedText>
             </TouchableOpacity>
 
             <View style={{ gap: spacing[2.5], marginTop: spacing[3] }}>
@@ -1048,7 +1101,9 @@ export default function OnboardingScreen() {
                         />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <ThemedText style={[styles.permTitle, { color: granted ? theme.colors.accent : theme.colors.text }]}>
+                        <ThemedText
+                          style={[styles.permTitle, { color: granted ? theme.colors.accent : theme.colors.text }]}
+                        >
                           {perm.title}
                         </ThemedText>
                         <ThemedText style={[styles.permDesc, { color: theme.colors.textMuted }]} numberOfLines={2}>
@@ -1057,7 +1112,13 @@ export default function OnboardingScreen() {
                       </View>
                       {!granted && (
                         <View style={[styles.permAction, { backgroundColor: theme.colors.accent + '15' }]}>
-                          <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, fontWeight: '600' }}>
+                          <ThemedText
+                            style={{
+                              color: theme.colors.accent,
+                              fontSize: typography.sizes.caption,
+                              fontWeight: '600',
+                            }}
+                          >
                             {t('onboarding.perm.allow') || 'Allow'}
                           </ThemedText>
                         </View>
@@ -1138,7 +1199,9 @@ export default function OnboardingScreen() {
             disabled={!canAdvance() || vm.saving}
             activeOpacity={0.9}
           >
-            <ThemedText style={[styles.ctaBtnText, { color: canAdvance() ? theme.colors.onAccent : theme.colors.textMuted }]}>
+            <ThemedText
+              style={[styles.ctaBtnText, { color: canAdvance() ? theme.colors.onAccent : theme.colors.textMuted }]}
+            >
               {step === TOTAL_STEPS - 1
                 ? vm.saving
                   ? t('onboarding.saving')
@@ -1158,13 +1221,14 @@ export default function OnboardingScreen() {
             <TouchableOpacity
               onPress={async () => {
                 onboardingCompletedRef.current = true;
-                logOnboardingDropOff(step);
                 await vm.skipOnboarding(refreshProfile);
                 router.replace('/dashboard');
               }}
               style={{ marginTop: spacing[3] }}
             >
-              <ThemedText style={[styles.skipText, { color: theme.colors.textMuted }]}>{t('onboarding.skip')}</ThemedText>
+              <ThemedText style={[styles.skipText, { color: theme.colors.textMuted }]}>
+                {t('onboarding.skip')}
+              </ThemedText>
             </TouchableOpacity>
           )}
         </View>
@@ -1208,14 +1272,14 @@ const styles = StyleSheet.create({
   },
   welcomeGlow: { ...StyleSheet.absoluteFillObject },
   welcomeTitle: {
-    fontSize: typography.sizes.display, 
+    fontSize: typography.sizes.display,
     fontWeight: '900',
     textAlign: 'center',
     letterSpacing: -1,
     lineHeight: 42,
   },
   welcomeDesc: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '500',
     textAlign: 'center',
     marginTop: spacing[3],
@@ -1241,11 +1305,22 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   pillarTitle: { fontSize: typography.sizes.label, fontWeight: '800', textAlign: 'center' },
-  pillarSub: { fontSize: typography.sizes.xs, fontWeight: '500', textAlign: 'center', marginTop: spacing[0.75], lineHeight: 14 },
+  pillarSub: {
+    fontSize: typography.sizes.xs,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: spacing[0.75],
+    lineHeight: 14,
+  },
 
   // Steps
   stepTitle: { fontSize: typography.sizes.h2, fontWeight: '900', letterSpacing: -0.5 },
-  stepDesc: { fontSize: typography.sizes.bodySmall, fontWeight: '500', marginTop: spacing[1], marginBottom: spacing[5] },
+  stepDesc: {
+    fontSize: typography.sizes.bodySmall,
+    fontWeight: '500',
+    marginTop: spacing[1],
+    marginBottom: spacing[5],
+  },
 
   // Options
   optionsList: { gap: spacing[2.5] },
@@ -1262,7 +1337,13 @@ const styles = StyleSheet.create({
 
   // Metrics
   inputRow: { flexDirection: 'row', gap: spacing[3] },
-  metricInput: { flex: 1, borderRadius: 14, borderWidth: 1, paddingHorizontal: spacing[3.5], paddingVertical: spacing[3] },
+  metricInput: {
+    flex: 1,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[3],
+  },
   metricField: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
   sexRow: { flexDirection: 'row', gap: spacing[3] },
   sexBtn: {
@@ -1279,7 +1360,13 @@ const styles = StyleSheet.create({
   // Schedule
   sliderLabel: { fontSize: typography.sizes.body, fontWeight: '700', marginBottom: spacing[3.5] },
   daysRow: { flexDirection: 'row', gap: spacing[2.5], flexWrap: 'wrap' },
-  dayBtn: { paddingVertical: spacing[3], paddingHorizontal: spacing[4.5], borderRadius: 14, minWidth: 48, alignItems: 'center' },
+  dayBtn: {
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4.5],
+    borderRadius: 14,
+    minWidth: 48,
+    alignItems: 'center',
+  },
   dayBtnText: { fontSize: typography.sizes.body, fontWeight: '800' },
 
   // Equipment
@@ -1372,7 +1459,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   consentItemText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
     flex: 1,
     lineHeight: 20,
@@ -1392,7 +1479,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   consentCheckText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
     flex: 1,
     lineHeight: 20,

@@ -5,7 +5,7 @@
  * Architecture: Pure UI — all data/service access via useProfileViewModel.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   ScrollView,
@@ -39,9 +39,15 @@ import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { GlassCard, GradientButton, ProgressRing, SectionHeader } from '../src/components/ui/GlassUI';
 import { RankCard, RankBadge, MilestoneList } from '../src/components/RankDisplay';
-import { useProfileViewModel, GOAL_LABELS, MEAL_REGION_VALUES, type MealRegionValue, type ProfileData, type StatsData } from '../src/viewmodels/useProfileViewModel';
+import {
+  useProfileViewModel,
+  GOAL_LABELS,
+  MEAL_REGION_VALUES,
+  type MealRegionValue,
+  type ProfileData,
+  type StatsData,
+} from '../src/viewmodels/useProfileViewModel';
 import { typography, spacing, radius } from '../src/design/theme-system';
-import { isAnalyticsEnabled, setAnalyticsEnabled } from '../src/services/analyticsOptOut';
 import { featureFlags as featureFlagsService } from '../src/services/featureFlags';
 
 // ============================================
@@ -94,7 +100,9 @@ function ThemedPickerModal({
           onPress={(e) => e.stopPropagation()}
         >
           <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>{title}</ThemedText>
-          {!!subtitle && <ThemedText style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>{subtitle}</ThemedText>}
+          {!!subtitle && (
+            <ThemedText style={[modalStyles.subtitle, { color: theme.colors.textMuted }]}>{subtitle}</ThemedText>
+          )}
 
           <ScrollView style={modalStyles.optionsList} showsVerticalScrollIndicator={false} bounces={false}>
             {options.map((opt, i) => {
@@ -145,7 +153,9 @@ function ThemedPickerModal({
             accessibilityRole="button"
             accessibilityLabel="Cancel"
           >
-            <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.cancel')}</ThemedText>
+            <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>
+              {t('common.cancel')}
+            </ThemedText>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -170,14 +180,14 @@ const modalStyles = StyleSheet.create({
     maxHeight: '80%',
   },
   title: {
-    fontSize: typography.sizes.h4, 
+    fontSize: typography.sizes.h4,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: spacing[1],
     letterSpacing: 0.3,
   },
   subtitle: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     textAlign: 'center',
     marginBottom: spacing[4],
   },
@@ -192,7 +202,7 @@ const modalStyles = StyleSheet.create({
     borderWidth: 1,
   },
   optionText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     textAlign: 'center',
     letterSpacing: 0.2,
   },
@@ -202,7 +212,7 @@ const modalStyles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '600',
   },
 });
@@ -292,35 +302,99 @@ function adaptiveLabel(value: number): string {
 export default function ProfileScreen() {
   const vm = useProfileViewModel();
   const {
-    theme, mode, setMode, t, languageName, router, accessState,
-    profile, stats, loading, loadError, adaptiveProfile, socialSettings, socialBusy,
-    mealRegionOverride, notificationSettings, biometricAvailable, biometricEnabled,
-    healthProviderCode, healthIntegrationReady, healthBusy, healthConnectEnabled,
-    healthSyncErrors, equipmentLevel, profilePicUri, isEditingName, editNameValue,
-    totalSteps, totalDistance, recentDistance, mindXP, professionSchedule,
-    consentTimestamp, consentVersion, consentSource, privacyBusy,
-    showLanguageSelector, setShowLanguageSelector, showThemePicker, setShowThemePicker,
-    showAboutModal, setShowAboutModal, showHelpModal, setShowHelpModal,
-    showScheduleModal, setShowScheduleModal, expandedAdaptive, setExpandedAdaptive,
-    setIsEditingName, setEditNameValue, scheduleEdit, setScheduleEdit,
-    pickerModal, closePicker,
-    handleTrainingDays, handleSessionLength, handleWorkSchedule, handleExperience,
-    handleGoalChange, handleEquipmentLevel, handleMealRegion, handleNotifications,
-    handleHealthConnectSettings, handleSyncHealth, handleLogout, handleRecordConsent,
-    handleExportData, handleDeleteCloudData, handleSocialToggle, handlePickPhoto,
-    handleSaveName, handleSaveSchedule, handleBiometricTest, handleDismissHealthErrors,
+    theme,
+    mode,
+    setMode,
+    t,
+    languageName,
+    router,
+    accessState,
+    profile,
+    stats,
+    loading,
+    loadError,
+    adaptiveProfile,
+    socialSettings,
+    socialBusy,
+    mealRegionOverride,
+    notificationSettings,
+    biometricAvailable,
+    biometricEnabled,
+    healthProviderCode,
+    healthIntegrationReady,
+    healthBusy,
+    healthConnectEnabled,
+    healthSyncErrors,
+    equipmentLevel,
+    profilePicUri,
+    isEditingName,
+    editNameValue,
+    totalSteps,
+    totalDistance,
+    recentDistance,
+    mindXP,
+    professionSchedule,
+    consentTimestamp,
+    consentVersion,
+    consentSource,
+    privacyBusy,
+    showLanguageSelector,
+    setShowLanguageSelector,
+    showThemePicker,
+    setShowThemePicker,
+    showAboutModal,
+    setShowAboutModal,
+    showHelpModal,
+    setShowHelpModal,
+    showScheduleModal,
+    setShowScheduleModal,
+    expandedAdaptive,
+    setExpandedAdaptive,
+    setIsEditingName,
+    setEditNameValue,
+    scheduleEdit,
+    setScheduleEdit,
+    pickerModal,
+    closePicker,
+    handleTrainingDays,
+    handleSessionLength,
+    handleWorkSchedule,
+    handleExperience,
+    handleGoalChange,
+    handleEquipmentLevel,
+    handleMealRegion,
+    handleNotifications,
+    handleHealthConnectSettings,
+    handleSyncHealth,
+    handleLogout,
+    handleRecordConsent,
+    handleExportData,
+    handleDeleteCloudData,
+    handleSocialToggle,
+    handlePickPhoto,
+    handleSaveName,
+    handleSaveSchedule,
+    handleBiometricTest,
+    handleDismissHealthErrors,
     retryLoad,
-    goalInfo, goalLabel, xpProgress, mealRegionLabel,
-    healthConnectSublabel, healthSyncSublabel, notificationSublabel, biometricSublabel,
-    scheduleLabel, subscriptionLabel, subscriptionSublabel, subscriptionIcon,
+    goalInfo,
+    goalLabel,
+    xpProgress,
+    mealRegionLabel,
+    healthConnectSublabel,
+    healthSyncSublabel,
+    notificationSublabel,
+    biometricSublabel,
+    scheduleLabel,
+    subscriptionLabel,
+    subscriptionSublabel,
+    subscriptionIcon,
   } = vm;
 
-  // Analytics opt-out toggle (local to profile screen)
-  const [analyticsOn, setAnalyticsOn] = useState(isAnalyticsEnabled());
-  useEffect(() => { setAnalyticsOn(isAnalyticsEnabled()); }, []);
+  // Analytics opt-out toggle
+  const [analyticsOn, setAnalyticsOn] = useState(true);
   const handleAnalyticsToggle = (next: boolean) => {
     setAnalyticsOn(next);
-    void setAnalyticsEnabled(next);
   };
 
   if (loading) {
@@ -340,7 +414,9 @@ export default function ProfileScreen() {
     return (
       <ScreenContainer style={{ justifyContent: 'center', alignItems: 'center', padding: spacing[6] }}>
         <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>{loadError}</ThemedText>
+        <ThemedText variant="h3" style={{ marginTop: spacing[4], textAlign: 'center' }}>
+          {loadError}
+        </ThemedText>
         <GradientButton title="Retry" onPress={retryLoad} style={{ marginTop: spacing[4] }} />
       </ScreenContainer>
     );
@@ -469,7 +545,9 @@ export default function ProfileScreen() {
                         style={[styles.levelBadge, { backgroundColor: theme.colors.accent + '25' }]}
                         accessibilityLabel={`Level ${stats?.level || 1}`}
                       >
-                        <ThemedText style={[styles.levelText, { color: theme.colors.accent }]}>LVL {stats?.level || 1}</ThemedText>
+                        <ThemedText style={[styles.levelText, { color: theme.colors.accent }]}>
+                          LVL {stats?.level || 1}
+                        </ThemedText>
                       </View>
                       <ThemedText style={[styles.xpLabel, { color: theme.colors.textMuted }]}>
                         {stats?.currentLevelXP || 0} / {stats?.xpForNext || 100} XP
@@ -509,7 +587,9 @@ export default function ProfileScreen() {
                     <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
                   </LinearGradient>
                   <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>{stats?.streak || 0}</ThemedText>
-                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.streak')}</ThemedText>
+                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>
+                    {t('dashboard.streak')}
+                  </ThemedText>
                 </View>
                 <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.primaryStat}>
@@ -519,8 +599,12 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="dumbbell" size={20} color={theme.colors.accent} />
                   </LinearGradient>
-                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalWorkouts || 0}</ThemedText>
-                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.workouts')}</ThemedText>
+                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>
+                    {stats?.totalWorkouts || 0}
+                  </ThemedText>
+                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>
+                    {t('dashboard.workouts')}
+                  </ThemedText>
                 </View>
                 <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
                 <View style={styles.primaryStat}>
@@ -530,8 +614,12 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="lightning-bolt" size={20} color={theme.colors.purple} />
                   </LinearGradient>
-                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>{stats?.totalXP || 0}</ThemedText>
-                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>{t('dashboard.xp')}</ThemedText>
+                  <ThemedText style={[styles.statValue, { color: theme.colors.text }]}>
+                    {stats?.totalXP || 0}
+                  </ThemedText>
+                  <ThemedText style={[styles.statUnit, { color: theme.colors.textMuted }]}>
+                    {t('dashboard.xp')}
+                  </ThemedText>
                 </View>
               </View>
 
@@ -551,14 +639,18 @@ export default function ProfileScreen() {
                 </View>
                 <View style={styles.secondaryStat}>
                   <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.colors.skyBlue} />
-                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>{totalDistance}km</ThemedText>
+                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>
+                    {totalDistance}km
+                  </ThemedText>
                   <ThemedText style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
                     {t('profile.totalDistance') || 'Distance'}
                   </ThemedText>
                 </View>
                 <View style={styles.secondaryStat}>
                   <MaterialCommunityIcons name="run" size={16} color={theme.colors.orange} />
-                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>{recentDistance}km</ThemedText>
+                  <ThemedText style={[styles.secondaryValue, { color: theme.colors.text }]}>
+                    {recentDistance}km
+                  </ThemedText>
                   <ThemedText style={[styles.secondaryLabel, { color: theme.colors.textMuted }]}>
                     {t('profile.bestRun') || 'Best Run'}
                   </ThemedText>
@@ -587,7 +679,9 @@ export default function ProfileScreen() {
                   <MaterialCommunityIcons name="head-lightbulb-outline" size={22} color={theme.colors.purple} />
                 </View>
                 <View style={{ flex: 1, marginLeft: spacing[3] }}>
-                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text, fontSize: typography.sizes.body }]}>Craft My Mind</ThemedText>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text, fontSize: typography.sizes.body }]}>
+                    Craft My Mind
+                  </ThemedText>
                   <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
                     {mindXP?.total_mind_xp || 0} Mind XP
                   </ThemedText>
@@ -600,7 +694,14 @@ export default function ProfileScreen() {
                     borderRadius: 6,
                   }}
                 >
-                  <ThemedText style={{ color: theme.colors.warning, fontSize: typography.sizes.xs, fontWeight: '700', letterSpacing: 0.5 }}>
+                  <ThemedText
+                    style={{
+                      color: theme.colors.warning,
+                      fontSize: typography.sizes.xs,
+                      fontWeight: '700',
+                      letterSpacing: 0.5,
+                    }}
+                  >
                     COMING SOON
                   </ThemedText>
                 </View>
@@ -611,19 +712,25 @@ export default function ProfileScreen() {
                     <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                       {mindXP?.pages_read_total || 0}
                     </ThemedText>
-                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Pages Read</ThemedText>
+                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
+                      Pages Read
+                    </ThemedText>
                   </View>
                   <View style={styles.achievementItem}>
                     <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                       {mindXP?.flashcards_reviewed_total || 0}
                     </ThemedText>
-                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Cards Reviewed</ThemedText>
+                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
+                      Cards Reviewed
+                    </ThemedText>
                   </View>
                   <View style={styles.achievementItem}>
                     <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
                       {mindXP?.documents_completed || 0}
                     </ThemedText>
-                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>Books Done</ThemedText>
+                    <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
+                      Books Done
+                    </ThemedText>
                   </View>
                 </View>
               </View>
@@ -676,8 +783,12 @@ export default function ProfileScreen() {
                   >
                     <MaterialCommunityIcons name="star" size={20} color={theme.colors.accent} />
                   </ProgressRing>
-                  <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>LVL {stats?.level || 1}</ThemedText>
-                  <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>{t('dashboard.level')}</ThemedText>
+                  <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
+                    LVL {stats?.level || 1}
+                  </ThemedText>
+                  <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
+                    {t('dashboard.level')}
+                  </ThemedText>
                 </View>
               </View>
             </GlassCard>
@@ -740,14 +851,14 @@ export default function ProfileScreen() {
               onPress={handleEquipmentLevel}
             />
             {featureFlagsService.isEnabled('BODY_CRAFT_MODULE') && (
-            <MenuItem
-              icon="human-edit"
-              label={t('profile.craftMyBody')}
-              sublabel={t('profile.craftMyBodySub')}
-              color={theme.colors.pink}
-              delay={520}
-              onPress={() => router.push('/craft-my-body')}
-            />
+              <MenuItem
+                icon="human-edit"
+                label={t('profile.craftMyBody')}
+                sublabel={t('profile.craftMyBodySub')}
+                color={theme.colors.pink}
+                delay={520}
+                onPress={() => router.push('/craft-my-body')}
+              />
             )}
             <MenuItem
               icon="briefcase-clock-outline"
@@ -763,7 +874,14 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <SectionHeader title={t('profile.adaptiveTraining')} delay={530} />
             <GlassCard delay={560}>
-              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginBottom: spacing[3], lineHeight: 18 }}>
+              <ThemedText
+                style={{
+                  color: theme.colors.textMuted,
+                  fontSize: typography.sizes.caption,
+                  marginBottom: spacing[3],
+                  lineHeight: 18,
+                }}
+              >
                 {t('profile.adaptiveExplanation')}
               </ThemedText>
 
@@ -793,8 +911,13 @@ export default function ProfileScreen() {
                 </View>
               </TouchableOpacity>
               {expandedAdaptive === 'fatigue' && (
-                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}>
+                <Animated.View
+                  entering={FadeInDown.duration(150)}
+                  style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}
+                >
+                  <ThemedText
+                    style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}
+                  >
                     {t('profile.fatigueSensitivityDesc')}
                   </ThemedText>
                 </Animated.View>
@@ -826,8 +949,13 @@ export default function ProfileScreen() {
                 </View>
               </TouchableOpacity>
               {expandedAdaptive === 'progression' && (
-                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}>
+                <Animated.View
+                  entering={FadeInDown.duration(150)}
+                  style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}
+                >
+                  <ThemedText
+                    style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}
+                  >
                     {t('profile.progressionPaceDesc')}
                   </ThemedText>
                 </Animated.View>
@@ -859,8 +987,13 @@ export default function ProfileScreen() {
                 </View>
               </TouchableOpacity>
               {expandedAdaptive === 'volume' && (
-                <Animated.View entering={FadeInDown.duration(150)} style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}>
+                <Animated.View
+                  entering={FadeInDown.duration(150)}
+                  style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}
+                >
+                  <ThemedText
+                    style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}
+                  >
                     {t('profile.volumeToleranceDesc')}
                   </ThemedText>
                 </Animated.View>
@@ -1055,7 +1188,11 @@ export default function ProfileScreen() {
             <MenuItem
               icon="chart-timeline-variant-shimmer"
               label={t('profile.analytics') || 'Usage Analytics'}
-              sublabel={analyticsOn ? (t('profile.analyticsOn') || 'Sending anonymized usage data') : (t('profile.analyticsOff') || 'Usage data collection disabled')}
+              sublabel={
+                analyticsOn
+                  ? t('profile.analyticsOn') || 'Sending anonymized usage data'
+                  : t('profile.analyticsOff') || 'Usage data collection disabled'
+              }
               color={theme.colors.accent}
               delay={655}
               onPress={() => handleAnalyticsToggle(!analyticsOn)}
@@ -1214,7 +1351,7 @@ export default function ProfileScreen() {
                 <ThemedText
                   style={{
                     color: theme.colors.textSecondary,
-                    fontSize: typography.sizes.caption, 
+                    fontSize: typography.sizes.caption,
                     fontWeight: '600',
                     marginBottom: spacing[1.5],
                     marginTop: spacing[3],
@@ -1247,7 +1384,7 @@ export default function ProfileScreen() {
                       <ThemedText
                         style={{
                           color: scheduleEdit.startHour === h ? theme.colors.accent : theme.colors.text,
-                          fontSize: typography.sizes.label, 
+                          fontSize: typography.sizes.label,
                           fontWeight: '600',
                         }}
                       >
@@ -1258,7 +1395,14 @@ export default function ProfileScreen() {
                 </ScrollView>
 
                 {/* End Time */}
-                <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.caption, fontWeight: '600', marginBottom: spacing[1.5] }}>
+                <ThemedText
+                  style={{
+                    color: theme.colors.textSecondary,
+                    fontSize: typography.sizes.caption,
+                    fontWeight: '600',
+                    marginBottom: spacing[1.5],
+                  }}
+                >
                   END TIME
                 </ThemedText>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing[3] }}>
@@ -1282,7 +1426,7 @@ export default function ProfileScreen() {
                         <ThemedText
                           style={{
                             color: scheduleEdit.endHour === h ? theme.colors.accent : theme.colors.text,
-                            fontSize: typography.sizes.label, 
+                            fontSize: typography.sizes.label,
                             fontWeight: '600',
                           }}
                         >
@@ -1293,7 +1437,14 @@ export default function ProfileScreen() {
                 </ScrollView>
 
                 {/* Shift Type */}
-                <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.caption, fontWeight: '600', marginBottom: spacing[1.5] }}>
+                <ThemedText
+                  style={{
+                    color: theme.colors.textSecondary,
+                    fontSize: typography.sizes.caption,
+                    fontWeight: '600',
+                    marginBottom: spacing[1.5],
+                  }}
+                >
                   SHIFT TYPE
                 </ThemedText>
                 <View style={{ flexDirection: 'row', gap: spacing[2], marginBottom: spacing[3] }}>
@@ -1320,7 +1471,7 @@ export default function ProfileScreen() {
                       <ThemedText
                         style={{
                           color: scheduleEdit.shiftType === s ? theme.colors.accent : theme.colors.text,
-                          fontSize: typography.sizes.caption, 
+                          fontSize: typography.sizes.caption,
                           fontWeight: '600',
                           marginTop: spacing[1],
                         }}
@@ -1332,7 +1483,14 @@ export default function ProfileScreen() {
                 </View>
 
                 {/* Commute */}
-                <ThemedText style={{ color: theme.colors.textSecondary, fontSize: typography.sizes.caption, fontWeight: '600', marginBottom: spacing[1.5] }}>
+                <ThemedText
+                  style={{
+                    color: theme.colors.textSecondary,
+                    fontSize: typography.sizes.caption,
+                    fontWeight: '600',
+                    marginBottom: spacing[1.5],
+                  }}
+                >
                   COMMUTE (minutes)
                 </ThemedText>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing[4] }}>
@@ -1354,7 +1512,7 @@ export default function ProfileScreen() {
                       <ThemedText
                         style={{
                           color: scheduleEdit.commute === m ? theme.colors.accent : theme.colors.text,
-                          fontSize: typography.sizes.label, 
+                          fontSize: typography.sizes.label,
                           fontWeight: '600',
                         }}
                       >
@@ -1366,11 +1524,7 @@ export default function ProfileScreen() {
               </ScrollView>
 
               {/* Save Button */}
-              <GradientButton
-                title="Save Schedule"
-                variant="primary"
-                onPress={handleSaveSchedule}
-              />
+              <GradientButton title="Save Schedule" variant="primary" onPress={handleSaveSchedule} />
             </Pressable>
           </Pressable>
         </Modal>
@@ -1396,17 +1550,27 @@ export default function ProfileScreen() {
                 >
                   <MaterialCommunityIcons name="help-circle-outline" size={28} color={theme.colors.warning} />
                 </View>
-                <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>{t('profile.helpSupport')}</ThemedText>
+                <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>
+                  {t('profile.helpSupport')}
+                </ThemedText>
               </View>
 
               <View style={{ gap: spacing[3], marginBottom: spacing[4] }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="frequently-asked-questions" size={20} color={theme.colors.accent} />
                   <View style={{ flex: 1 }}>
-                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
+                    <ThemedText
+                      style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}
+                    >
                       {t('help.faqTitle')}
                     </ThemedText>
-                    <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.textMuted,
+                        fontSize: typography.sizes.caption,
+                        marginTop: spacing[0.5],
+                      }}
+                    >
                       {t('help.faqDesc')}
                     </ThemedText>
                   </View>
@@ -1414,10 +1578,18 @@ export default function ProfileScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.accent2} />
                   <View style={{ flex: 1 }}>
-                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
+                    <ThemedText
+                      style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}
+                    >
                       {t('help.contactTitle')}
                     </ThemedText>
-                    <ThemedText style={{ color: theme.colors.accent, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.accent,
+                        fontSize: typography.sizes.caption,
+                        marginTop: spacing[0.5],
+                      }}
+                    >
                       fitquestsupp0rt@gmail.com
                     </ThemedText>
                   </View>
@@ -1425,10 +1597,18 @@ export default function ProfileScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="bug-outline" size={20} color={theme.colors.error} />
                   <View style={{ flex: 1 }}>
-                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
+                    <ThemedText
+                      style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}
+                    >
                       {t('help.bugTitle')}
                     </ThemedText>
-                    <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.textMuted,
+                        fontSize: typography.sizes.caption,
+                        marginTop: spacing[0.5],
+                      }}
+                    >
                       {t('help.bugDesc')}
                     </ThemedText>
                   </View>
@@ -1436,17 +1616,32 @@ export default function ProfileScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
                   <MaterialCommunityIcons name="lightbulb-outline" size={20} color={theme.colors.warning} />
                   <View style={{ flex: 1 }}>
-                    <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}>
+                    <ThemedText
+                      style={{ color: theme.colors.text, fontSize: typography.sizes.bodySmall, fontWeight: '600' }}
+                    >
                       {t('help.featureTitle')}
                     </ThemedText>
-                    <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
+                    <ThemedText
+                      style={{
+                        color: theme.colors.textMuted,
+                        fontSize: typography.sizes.caption,
+                        marginTop: spacing[0.5],
+                      }}
+                    >
                       {t('help.featureDesc')}
                     </ThemedText>
                   </View>
                 </View>
               </View>
 
-              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.captionSm, textAlign: 'center', marginBottom: spacing[3] }}>
+              <ThemedText
+                style={{
+                  color: theme.colors.textMuted,
+                  fontSize: typography.sizes.captionSm,
+                  textAlign: 'center',
+                  marginBottom: spacing[3],
+                }}
+              >
                 {t('help.responseTime')}
               </ThemedText>
 
@@ -1455,7 +1650,9 @@ export default function ProfileScreen() {
                 onPress={() => setShowHelpModal(false)}
                 activeOpacity={0.7}
               >
-                <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</ThemedText>
+                <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>
+                  {t('common.close')}
+                </ThemedText>
               </TouchableOpacity>
             </Pressable>
           </Pressable>
@@ -1488,7 +1685,9 @@ export default function ProfileScreen() {
                   <MaterialCommunityIcons name="lightning-bolt" size={32} color={theme.colors.onAccent} />
                 </LinearGradient>
                 <ThemedText style={[modalStyles.title, { color: theme.colors.text }]}>FitQuest 2.0</ThemedText>
-                <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.label, marginTop: spacing[0.5] }}>
+                <ThemedText
+                  style={{ color: theme.colors.textMuted, fontSize: typography.sizes.label, marginTop: spacing[0.5] }}
+                >
                   {t('profile.version')} 1.0.0
                 </ThemedText>
               </View>
@@ -1496,7 +1695,7 @@ export default function ProfileScreen() {
               <ThemedText
                 style={{
                   color: theme.colors.textSecondary,
-                  fontSize: typography.sizes.label, 
+                  fontSize: typography.sizes.label,
                   textAlign: 'center',
                   lineHeight: 20,
                   marginBottom: spacing[4],
@@ -1507,28 +1706,55 @@ export default function ProfileScreen() {
 
               <View style={{ gap: spacing[2], marginBottom: spacing[4] }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.platform')}</ThemedText>
-                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>React Native / Expo</ThemedText>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>
+                    {t('about.platform')}
+                  </ThemedText>
+                  <ThemedText
+                    style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}
+                  >
+                    React Native / Expo
+                  </ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.dataStorage')}</ThemedText>
-                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>
+                    {t('about.dataStorage')}
+                  </ThemedText>
+                  <ThemedText
+                    style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}
+                  >
                     {t('about.onDevice')}
                   </ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.encryption')}</ThemedText>
-                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>AES-256-GCM</ThemedText>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>
+                    {t('about.encryption')}
+                  </ThemedText>
+                  <ThemedText
+                    style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}
+                  >
+                    AES-256-GCM
+                  </ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>{t('about.security')}</ThemedText>
-                  <ThemedText style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}>
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption }}>
+                    {t('about.security')}
+                  </ThemedText>
+                  <ThemedText
+                    style={{ color: theme.colors.text, fontSize: typography.sizes.caption, fontWeight: '600' }}
+                  >
                     {t('about.biometric')}
                   </ThemedText>
                 </View>
               </View>
 
-              <ThemedText style={{ color: theme.colors.textMuted, fontSize: typography.sizes.captionSm, textAlign: 'center', marginBottom: spacing[3] }}>
+              <ThemedText
+                style={{
+                  color: theme.colors.textMuted,
+                  fontSize: typography.sizes.captionSm,
+                  textAlign: 'center',
+                  marginBottom: spacing[3],
+                }}
+              >
                 {t('about.madeWith')}
               </ThemedText>
 
@@ -1537,7 +1763,9 @@ export default function ProfileScreen() {
                 onPress={() => setShowAboutModal(false)}
                 activeOpacity={0.7}
               >
-                <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>{t('common.close')}</ThemedText>
+                <ThemedText style={[modalStyles.cancelText, { color: theme.colors.accent }]}>
+                  {t('common.close')}
+                </ThemedText>
               </TouchableOpacity>
             </Pressable>
           </Pressable>
@@ -1599,12 +1827,12 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   avatarInitials: {
-    fontSize: typography.sizes.h1, 
+    fontSize: typography.sizes.h1,
     fontWeight: '700',
     letterSpacing: 1,
   },
   profileName: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
     fontWeight: '700',
     letterSpacing: 0.3,
     marginBottom: spacing[2],
@@ -1621,7 +1849,7 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
   },
   goalBadgeText: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
     letterSpacing: 0.3,
     flexShrink: 1,
@@ -1644,12 +1872,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   levelText: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   xpLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
   xpBarBg: {
@@ -1690,12 +1918,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   statValue: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   statUnit: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '600',
     marginTop: spacing[0.5],
   },
@@ -1721,11 +1949,11 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   secondaryValue: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
   },
   secondaryLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '600',
   },
 
@@ -1740,11 +1968,11 @@ const styles = StyleSheet.create({
     gap: spacing[1.5],
   },
   achievementLabel: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '700',
   },
   achievementSub: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '400',
   },
 
@@ -1775,12 +2003,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuLabel: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '600',
     letterSpacing: 0.2,
   },
   menuSublabel: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '400',
     marginTop: spacing[1],
     lineHeight: 18,
@@ -1793,11 +2021,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   adaptiveLabel: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '500',
   },
   adaptiveValue: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
   },
   adaptiveConfidenceTrack: {
@@ -1812,12 +2040,12 @@ const styles = StyleSheet.create({
   },
   adaptiveConfidenceText: {
     marginTop: spacing[2],
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
   },
   adaptiveReason: {
     marginTop: spacing[1.5],
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     lineHeight: 16,
   },
 
@@ -1837,19 +2065,19 @@ const styles = StyleSheet.create({
   },
   healthErrorsTitle: {
     flex: 1,
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
   healthErrorsDismiss: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
   healthErrorItem: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     marginBottom: spacing[0.5],
   },
   healthErrorMore: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     marginTop: spacing[1],
     fontStyle: 'italic',
   },
@@ -1869,7 +2097,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   logoutText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '500',
   },
 });

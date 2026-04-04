@@ -14,7 +14,6 @@
 import { SensorFusionEngine, type ActivityType, type MotionSnapshot } from './SensorFusionEngine';
 import { encryptedDB } from '../security/EncryptedDatabase';
 import { getAppState, setAppState } from '../database/service';
-import { systemGuard } from '../services/SystemGuard';
 
 // ============================================
 // TYPES
@@ -127,10 +126,6 @@ export class HealthMonitorService {
    */
   async initialize(): Promise<void> {
     if (this.initialized) return;
-    if (!systemGuard.isReady) {
-      if (__DEV__) console.warn('[HealthMonitor] Cannot initialize — system not READY');
-      return;
-    }
 
     // Load saved goals
     await this.loadGoals();

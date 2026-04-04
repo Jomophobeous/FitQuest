@@ -1,11 +1,16 @@
-/**
- * FitQuest Splash Screen — Thin route entry point.
- * All rendering delegates to src/features/splash/SplashScreen (Skia GPU-driven).
- */
 import React from 'react';
-import { SplashScreen } from '../src/features/splash';
+import { View, ActivityIndicator } from 'react-native';
+import ThemedText from '../src/components/ThemedText';
+import { useTheme } from '../src/context/ThemeContext';
 
 export default function Splash() {
-  return <SplashScreen />;
+  const { theme } = useTheme();
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }}>
+      <ThemedText variant="h2" color="accent" style={{ marginBottom: 16 }}>
+        FitQuest
+      </ThemedText>
+      <ActivityIndicator size="large" color={theme.colors.accent} />
+    </View>
+  );
 }
-

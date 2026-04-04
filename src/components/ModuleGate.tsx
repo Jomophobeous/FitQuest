@@ -49,7 +49,7 @@ export default function ModuleGate({ flag, children, moduleName }: ModuleGatePro
         title="Go Back"
         variant="primary"
         size="md"
-        onPress={() => router.canGoBack() ? router.back() : router.replace('/dashboard')}
+        onPress={() => (router.canGoBack() ? router.back() : router.replace('/dashboard'))}
       />
     </View>
   );

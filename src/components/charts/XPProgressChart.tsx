@@ -11,7 +11,6 @@ import { ThemedChartWrapper, useChartTheme, MiniStat } from './ThemedChart';
 import type { XPProgressChartProps, XPDataPoint } from './types';
 import { typography, spacing } from '../../design/theme-system';
 
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
@@ -236,7 +235,7 @@ const styles = StyleSheet.create({
     paddingRight: spacing[1],
   },
   yLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
   },
   xAxisLabels: {
     flexDirection: 'row',
@@ -246,7 +245,7 @@ const styles = StyleSheet.create({
     paddingRight: spacing[2],
   },
   xLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
   },
 });
 

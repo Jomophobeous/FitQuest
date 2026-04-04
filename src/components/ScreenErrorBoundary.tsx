@@ -13,7 +13,6 @@ import { useTheme } from '../context/ThemeContext';
 import { logCrash } from '../services/telemetry';
 import { typography, spacing } from '../design/theme-system';
 
-
 interface ScreenErrorBoundaryProps {
   children: React.ReactNode;
   screenName: string;
@@ -128,13 +127,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
   },
   title: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '800',
     marginBottom: spacing[2],
     textAlign: 'center',
   },
   message: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     textAlign: 'center',
     marginBottom: spacing[6],
     lineHeight: 18,
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     color: '#fff',
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '700',
   },
   secondaryBtn: {
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   secondaryBtnText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
 });

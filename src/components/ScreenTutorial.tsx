@@ -13,7 +13,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { getAppState, setAppState } from '../database/service';
 import { typography, spacing } from '../design/theme-system';
 
-
 interface ScreenTutorialProps {
   /** Unique key for this screen (e.g. 'dashboard', 'exercises') */
   screenKey: string;
@@ -114,13 +113,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
   },
   title: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: spacing[2],
   },
   description: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     lineHeight: 21,
     textAlign: 'center',
     marginBottom: spacing[6],
@@ -131,7 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
   },
   buttonText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '700',
   },
 });

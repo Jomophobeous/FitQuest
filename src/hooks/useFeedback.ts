@@ -29,25 +29,13 @@ export interface FeedbackAPI {
 export function useFeedback(): FeedbackAPI {
   const { showToast } = useToast();
 
-  const success = useCallback(
-    (message: string) => showToast({ message, type: 'success' }),
-    [showToast],
-  );
+  const success = useCallback((message: string) => showToast({ message, type: 'success' }), [showToast]);
 
-  const error = useCallback(
-    (message: string) => showToast({ message, type: 'error', vibrate: true }),
-    [showToast],
-  );
+  const error = useCallback((message: string) => showToast({ message, type: 'error', vibrate: true }), [showToast]);
 
-  const info = useCallback(
-    (message: string) => showToast({ message, type: 'info' }),
-    [showToast],
-  );
+  const info = useCallback((message: string) => showToast({ message, type: 'info' }), [showToast]);
 
-  const warn = useCallback(
-    (message: string) => showToast({ message, type: 'warning' }),
-    [showToast],
-  );
+  const warn = useCallback((message: string) => showToast({ message, type: 'warning' }), [showToast]);
 
   return { success, error, info, warn };
 }

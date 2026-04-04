@@ -461,7 +461,9 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
       parts.push(`- Readiness: ${workout.readinessStatus}`);
     }
     if (workout?.lastWorkoutDate) {
-      const daysSince = workout.daysSinceLastWorkout ?? Math.floor((Date.now() - new Date(workout.lastWorkoutDate).getTime()) / (1000 * 60 * 60 * 24));
+      const daysSince =
+        workout.daysSinceLastWorkout ??
+        Math.floor((Date.now() - new Date(workout.lastWorkoutDate).getTime()) / (1000 * 60 * 60 * 24));
       if (daysSince >= 7)
         parts.push(`- Last workout: ${daysSince} days ago. Be encouraging about coming back, no judgment.`);
       else if (daysSince >= 3) parts.push(`- Last workout: ${daysSince} days ago (gently encourage comeback)`);

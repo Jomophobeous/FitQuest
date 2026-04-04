@@ -25,7 +25,6 @@ import type { ExerciseWithDetails } from '../database/types';
 import ExerciseImage from './ExerciseImage';
 import { typography, spacing } from '../design/theme-system';
 
-
 // ─── Muscle → Icon mapping ───
 
 const MUSCLE_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
@@ -496,7 +495,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
   },
   exerciseName: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
     fontWeight: '800',
     lineHeight: 30,
     letterSpacing: -0.3,
@@ -512,7 +511,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   categoryText: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
   diffTag: {
@@ -521,7 +520,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   diffTagText: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
   closeBtn: {
@@ -546,7 +545,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   diffLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
     marginLeft: spacing[2],
   },
@@ -567,7 +566,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   statLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
     flexShrink: 1,
   },
@@ -589,7 +588,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   muscleText: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     textTransform: 'capitalize',
   },
   primaryDot: {
@@ -609,7 +608,7 @@ const styles = StyleSheet.create({
     gap: spacing[2.5],
   },
   equipText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '500',
     flex: 1,
   },
@@ -619,7 +618,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   requiredText: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -634,7 +633,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[6],
   },
   noEquipText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '500',
   },
 
@@ -657,12 +656,12 @@ const styles = StyleSheet.create({
     marginTop: spacing['px'],
   },
   stepNumText: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '700',
   },
   instructionText: {
     flex: 1,
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     lineHeight: 22,
     fontWeight: '400',
   },
@@ -681,7 +680,7 @@ const styles = StyleSheet.create({
     gap: spacing[1.5],
   },
   trainingLabel: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
@@ -703,7 +702,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3.5],
   },
   sectionTitle: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
     letterSpacing: -0.2,
   },
@@ -723,7 +722,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   addBtnText: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
   },
 });

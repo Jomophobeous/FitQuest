@@ -43,7 +43,11 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
     if (await isDbAlive(db)) return db;
     // Handle is stale/closed — close it properly, then discard and reopen
     if (__DEV__) console.warn('[FitQuest DB] Stale connection detected — closing and reopening');
-    try { await db.closeAsync(); } catch { /* already closed */ }
+    try {
+      await db.closeAsync();
+    } catch {
+      /* already closed */
+    }
     db = null;
     _global.__fitquest_db = null;
     dbInitPromise = null;

@@ -107,7 +107,7 @@ export default function SavedWorkoutsScreen() {
           try {
             await vm.deleteWorkout(session.id);
             if (expandedId === session.id) setExpandedId(null);
-          } catch (_err) {
+          } catch {
             showToast({ message: t('savedWorkouts.deleteError'), type: 'error' });
           }
         },

@@ -31,7 +31,6 @@ import { useTheme } from '../context/ThemeContext';
 import { timerService } from '../services/timerService';
 import { typography, spacing } from '../design/theme-system';
 
-
 // ============================================
 // TYPES
 // ============================================
@@ -283,7 +282,8 @@ export function DropdownMenu({ onClose }: DropdownMenuProps) {
     (item: MenuItem) => {
       handleClose();
       if (timeoutRef.current) clearTimeout(timeoutRef.current); // Clear any pending action
-      timeoutRef.current = setTimeout(() => { // debounce
+      timeoutRef.current = setTimeout(() => {
+        // debounce
         if (item.action) item.action();
         else if (item.route) router.push(item.route as any);
       }, 200);
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuTitle: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '700',
   },
   workoutBadge: {
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   workoutBadgeText: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '700',
   },
   menuList: {
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuItemLabel: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '500',
     flex: 1,
   },

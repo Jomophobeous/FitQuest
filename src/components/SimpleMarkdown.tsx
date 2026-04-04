@@ -9,7 +9,6 @@ import React from 'react';
 import { Text, View, StyleSheet, Platform, type TextStyle, type StyleProp } from 'react-native';
 import { typography, spacing } from '../design/theme-system';
 
-
 interface SimpleMarkdownProps {
   text: string;
   style?: StyleProp<TextStyle>;
@@ -213,21 +212,21 @@ export default function SimpleMarkdown({ text, style, boldStyle, italicStyle, ac
 
 const mdStyles = StyleSheet.create({
   h1: {
-    fontSize: typography.sizes.h4, 
+    fontSize: typography.sizes.h4,
     fontWeight: '800',
     marginTop: spacing[2],
     marginBottom: spacing[1],
     lineHeight: 24,
   },
   h2: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
     marginTop: spacing[1.5],
     marginBottom: spacing[0.75],
     lineHeight: 22,
   },
   h3: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '700',
     marginTop: spacing[1],
     marginBottom: spacing[0.5],
@@ -239,12 +238,12 @@ const mdStyles = StyleSheet.create({
     marginVertical: spacing['px'],
   },
   bullet: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     lineHeight: 21,
     fontWeight: '700',
   },
   number: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     lineHeight: 21,
     fontWeight: '600',
     minWidth: 30,
@@ -256,7 +255,7 @@ const mdStyles = StyleSheet.create({
   },
   code: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '500',
     letterSpacing: -0.3,
   },

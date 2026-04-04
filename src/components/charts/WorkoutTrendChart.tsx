@@ -12,7 +12,6 @@ import { ThemedChartWrapper, useChartTheme, MiniStat, ChartLegend } from './Them
 import type { WorkoutTrendChartProps, WorkoutDataPoint } from './types';
 import { typography, spacing } from '../../design/theme-system';
 
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barLabel: {
-    fontSize: typography.sizes.micro, 
+    fontSize: typography.sizes.micro,
     marginTop: spacing[1],
     textAlign: 'center',
   },
@@ -220,7 +219,7 @@ const styles = StyleSheet.create({
     paddingRight: spacing[1],
   },
   yLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
   },
 });
 

@@ -43,9 +43,7 @@ export const EmptyState = memo(function EmptyState({ icon, message, action, onAc
       <ThemedText variant="body" color="muted" style={styles.emptyMessage}>
         {message}
       </ThemedText>
-      {action && onAction && (
-        <GradientButton title={action} onPress={onAction} size="sm" style={styles.emptyAction} />
-      )}
+      {action && onAction && <GradientButton title={action} onPress={onAction} size="sm" style={styles.emptyAction} />}
     </Animated.View>
   );
 });
@@ -65,7 +63,10 @@ export const InlineError = memo(function InlineError({ message, onRetry }: Inlin
   return (
     <Animated.View
       entering={FadeIn.duration(MOTION.fast)}
-      style={[styles.errorContainer, { backgroundColor: theme.colors.error + '10', borderColor: theme.colors.error + '30' }]}
+      style={[
+        styles.errorContainer,
+        { backgroundColor: theme.colors.error + '10', borderColor: theme.colors.error + '30' },
+      ]}
       accessibilityRole="alert"
     >
       <View style={styles.errorInner}>

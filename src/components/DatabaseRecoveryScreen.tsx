@@ -11,7 +11,6 @@ import { useTheme } from '../context/ThemeContext';
 import { GradientButton } from './ui/GlassUI';
 import { typography, spacing } from '../design/theme-system';
 
-
 interface Props {
   error: string | null;
   isRecovering: boolean;
@@ -70,17 +69,17 @@ const styles = StyleSheet.create({
     maxWidth: 340,
   },
   icon: {
-    fontSize: typography.sizes.hero, 
+    fontSize: typography.sizes.hero,
     marginBottom: spacing[4],
   },
   title: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '700',
     marginBottom: spacing[3],
     textAlign: 'center',
   },
   message: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     lineHeight: 22,
     textAlign: 'center',
     marginBottom: spacing[8],
@@ -91,14 +90,14 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   spinnerText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
   },
   buttons: {
     width: '100%',
     alignItems: 'center',
   },
   resetWarning: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     marginTop: spacing[3],
     textAlign: 'center',
   },

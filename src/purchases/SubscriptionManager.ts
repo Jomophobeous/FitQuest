@@ -115,7 +115,11 @@ export class SubscriptionManager {
         // it causes a fatal SimulatedStoreErrorDialogActivity crash
         const isTestKey = apiKey?.startsWith('test_');
         if (!apiKey || (isTestKey && !__DEV__)) {
-          safeWarn('[SubscriptionManager] Subscriptions disabled: ' + (!apiKey ? 'no API key' : 'test key in production') + '. App runs in trial/free mode.');
+          safeWarn(
+            '[SubscriptionManager] Subscriptions disabled: ' +
+              (!apiKey ? 'no API key' : 'test key in production') +
+              '. App runs in trial/free mode.',
+          );
           this.revenueCatAvailable = false;
         } else if (apiKey && !apiKey.includes('your_key_here')) {
           // Guard: RevenueCat native SDK retains state across JS reloads (HMR).

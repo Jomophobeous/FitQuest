@@ -11,7 +11,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { SUPPORTED_LANGUAGES, LanguageInfo } from '../i18n/translations';
 import { typography, spacing } from '../design/theme-system';
 
-
 interface LanguageSelectorProps {
   visible: boolean;
   onClose: () => void;
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
   },
   title: {
-    fontSize: typography.sizes.h4, 
+    fontSize: typography.sizes.h4,
     fontWeight: '700',
     letterSpacing: 0.3,
   },
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '400',
     padding: spacing[0],
   },
@@ -194,17 +193,17 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   flag: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
   },
   langTextWrap: {
     flex: 1,
   },
   langName: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     letterSpacing: 0.2,
   },
   langCode: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '400',
     marginTop: spacing[0.5],
   },

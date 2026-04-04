@@ -984,10 +984,11 @@ export async function updateSessionExerciseProgress(
   skipped: boolean,
 ): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    `UPDATE session_exercises SET completed_sets = ?, skipped = ? WHERE id = ?`,
-    [completedSets, skipped ? 1 : 0, sessionExerciseId],
-  );
+  await db.runAsync(`UPDATE session_exercises SET completed_sets = ?, skipped = ? WHERE id = ?`, [
+    completedSets,
+    skipped ? 1 : 0,
+    sessionExerciseId,
+  ]);
 }
 
 // ============================================

@@ -28,12 +28,4 @@ export {
 } from './theme-system';
 
 // ── Motion tokens (animation constants, spring configs, presets) ──
-export {
-  MOTION,
-  HIERARCHY,
-  PRESS_SPRING,
-  stepEnter,
-  stepExit,
-  stepExitBack,
-  staggerChild,
-} from './motion';
+export { MOTION, HIERARCHY, PRESS_SPRING, stepEnter, stepExit, stepExitBack, staggerChild } from './motion';

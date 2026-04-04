@@ -17,7 +17,13 @@ export default function ThemeToggle() {
             <MaterialCommunityIcons
               name={mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'moon-waning-crescent' : 'white-balance-sunny'}
               size={24}
-              color={mode === 'blackGold' ? theme.colors.accent : mode === 'dark' ? theme.colors.warning : theme.colors.orange}
+              color={
+                mode === 'blackGold'
+                  ? theme.colors.accent
+                  : mode === 'dark'
+                    ? theme.colors.warning
+                    : theme.colors.orange
+              }
             />
           </View>
           <View style={styles.textContainer}>

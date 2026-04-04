@@ -11,7 +11,15 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { Image, View, type ImageProps, type StyleProp, type ImageStyle, type ViewStyle, StyleSheet } from 'react-native';
+import {
+  Image,
+  View,
+  type ImageProps,
+  type StyleProp,
+  type ImageStyle,
+  type ViewStyle,
+  StyleSheet,
+} from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -24,12 +32,7 @@ interface SafeImageProps extends Omit<ImageProps, 'source' | 'style'> {
   style?: StyleProp<ImageStyle> | StyleProp<ViewStyle>;
 }
 
-export default React.memo(function SafeImage({
-  source,
-  fallbackIcon = 'image-off',
-  style,
-  ...props
-}: SafeImageProps) {
+export default React.memo(function SafeImage({ source, fallbackIcon = 'image-off', style, ...props }: SafeImageProps) {
   const { theme } = useTheme();
   const [failed, setFailed] = useState(false);
 
@@ -39,29 +42,14 @@ export default React.memo(function SafeImage({
   if (!source || failed) {
     return (
       <View
-        style={[
-          styles.placeholder,
-          { backgroundColor: theme.colors.surfaceVariant },
-          style as StyleProp<ViewStyle>,
-        ]}
+        style={[styles.placeholder, { backgroundColor: theme.colors.surfaceVariant }, style as StyleProp<ViewStyle>]}
       >
-        <MaterialCommunityIcons
-          name={fallbackIcon}
-          size={24}
-          color={theme.colors.textMuted}
-        />
+        <MaterialCommunityIcons name={fallbackIcon} size={24} color={theme.colors.textMuted} />
       </View>
     );
   }
 
-  return (
-    <Image
-      source={source}
-      onError={handleError}
-      style={style as StyleProp<ImageStyle>}
-      {...props}
-    />
-  );
+  return <Image source={source} onError={handleError} style={style as StyleProp<ImageStyle>} {...props} />;
 });
 
 const styles = StyleSheet.create({

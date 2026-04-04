@@ -267,7 +267,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           onPress={handleSetupPassword}
           disabled={isProcessing}
         >
-          {isProcessing ? <ActivityIndicator color={theme.colors.onAccent} /> : <Text style={styles.buttonText}>Set Password</Text>}
+          {isProcessing ? (
+            <ActivityIndicator color={theme.colors.onAccent} />
+          ) : (
+            <Text style={styles.buttonText}>Set Password</Text>
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -298,7 +302,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         onPress={handlePasswordUnlock}
         disabled={isProcessing || lockoutUntil > Date.now()}
       >
-        {isProcessing ? <ActivityIndicator color={theme.colors.onAccent} /> : <Text style={styles.buttonText}>Unlock</Text>}
+        {isProcessing ? (
+          <ActivityIndicator color={theme.colors.onAccent} />
+        ) : (
+          <Text style={styles.buttonText}>Unlock</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.biometricButton} onPress={attemptBiometricUnlock}>
@@ -321,13 +329,13 @@ const styles = StyleSheet.create({
     padding: spacing[8],
   },
   title: {
-    fontSize: typography.sizes.h1Sm, 
+    fontSize: typography.sizes.h1Sm,
     fontWeight: '700',
     color: '#FFFFFF',
     marginBottom: spacing[2],
   },
   subtitle: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     color: '#9BA1B0',
     textAlign: 'center',
     marginBottom: spacing[8],
@@ -340,14 +348,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: spacing[4],
     color: '#FFFFFF',
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     marginBottom: spacing[4],
     borderWidth: 1,
     borderColor: '#1A1F2E',
   },
   error: {
     color: '#EF4444',
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     marginBottom: spacing[3],
     textAlign: 'center',
   },
@@ -365,7 +373,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '600',
   },
   biometricButton: {
@@ -374,7 +382,7 @@ const styles = StyleSheet.create({
   },
   biometricText: {
     color: '#10B981',
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '500',
   },
 });

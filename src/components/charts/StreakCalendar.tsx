@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[1],
   },
   dayLabel: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
   weekRow: {
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   dayNumber: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
   },
   checkmark: {
     position: 'absolute',
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     right: 2,
   },
   checkmarkText: {
-    fontSize: typography.sizes.xxs, 
+    fontSize: typography.sizes.xxs,
     color: '#FFFFFF',
   },
   statsContainer: {
@@ -338,11 +338,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statValue: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
     fontWeight: '700',
   },
   statLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     marginTop: spacing[0.5],
     textTransform: 'uppercase',
     letterSpacing: 0.5,

@@ -12,7 +12,9 @@ export function useMountedGuard() {
 
   useEffect(() => {
     ref.current = true;
-    return () => { ref.current = false; };
+    return () => {
+      ref.current = false;
+    };
   }, []);
 
   const isMounted = useCallback(() => ref.current, []);

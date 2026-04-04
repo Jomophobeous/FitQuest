@@ -17,7 +17,6 @@ import { useTheme } from '../context/ThemeContext';
 import type { GeoPoint } from '../engines/DistanceEngine';
 import { typography, spacing } from '../design/theme-system';
 
-
 // Lazy-import MapLibre — native module may not be registered on first run
 let MapView: any;
 let Camera: any;
@@ -518,7 +517,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '500',
   },
 
@@ -564,12 +563,12 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   distanceText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
   },
   paceText: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
   },
 
@@ -593,7 +592,7 @@ const styles = StyleSheet.create({
   },
   liveText: {
     color: '#FFFFFF',
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '800',
     letterSpacing: 1,
   },
@@ -606,7 +605,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   loadingText: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
   },
 
@@ -644,12 +643,12 @@ const styles = StyleSheet.create({
     gap: spacing[0.5],
   },
   fallbackStatValue: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
   },
   fallbackStatLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '600',
     letterSpacing: 0.3,
   },

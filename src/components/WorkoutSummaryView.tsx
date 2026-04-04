@@ -35,7 +35,6 @@ import type { WorkoutCompletionData } from '../hooks/useFitQuestWorkout';
 import { formatMuscleName } from '../utils/formatMuscle';
 import { typography, spacing } from '../design/theme-system';
 
-
 // ─── Types ────────────────────────────────────────────
 interface WorkoutSummaryViewProps {
   data: WorkoutCompletionData;
@@ -394,7 +393,12 @@ const styles = StyleSheet.create({
   xpCard: { alignItems: 'center', paddingVertical: spacing[5], width: '100%', marginBottom: spacing[3] },
   xpValue: { fontSize: typography.sizes.hero, fontWeight: '900', fontVariant: ['tabular-nums'] as any },
   xpLabel: { fontSize: typography.sizes.bodySmall, fontWeight: '600', marginTop: spacing[0.5] },
-  levelBadge: { marginTop: spacing[2.5], paddingHorizontal: spacing[3.5], paddingVertical: spacing[1.25], borderRadius: 20 },
+  levelBadge: {
+    marginTop: spacing[2.5],
+    paddingHorizontal: spacing[3.5],
+    paddingVertical: spacing[1.25],
+    borderRadius: 20,
+  },
   levelBadgeText: { fontSize: typography.sizes.label, fontWeight: '700' },
 
   // Stat grid
@@ -417,7 +421,7 @@ const styles = StyleSheet.create({
   phaseBar: { flex: 1, height: 6, borderRadius: 3, overflow: 'hidden' as const },
   phaseBarFill: { height: 6, borderRadius: 3 },
   phaseCount: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
     fontVariant: ['tabular-nums'] as any,
     width: 30,

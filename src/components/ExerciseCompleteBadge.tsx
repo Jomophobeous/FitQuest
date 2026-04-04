@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   text: {
-    fontSize: typography.sizes.h4, 
+    fontSize: typography.sizes.h4,
     fontWeight: '700',
   },
 });

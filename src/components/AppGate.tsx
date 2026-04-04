@@ -32,15 +32,9 @@ export function AppGate({ children }: AppGateProps) {
   if (error) {
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <Text style={[styles.errorTitle, { color: theme.colors.error }]}>
-          System Error
-        </Text>
-        <Text style={[styles.errorText, { color: theme.colors.textMuted }]}>
-          {error}
-        </Text>
-        <Text style={[styles.stateText, { color: theme.colors.textMuted }]}>
-          State: {systemState}
-        </Text>
+        <Text style={[styles.errorTitle, { color: theme.colors.error }]}>System Error</Text>
+        <Text style={[styles.errorText, { color: theme.colors.textMuted }]}>{error}</Text>
+        <Text style={[styles.stateText, { color: theme.colors.textMuted }]}>State: {systemState}</Text>
       </View>
     );
   }

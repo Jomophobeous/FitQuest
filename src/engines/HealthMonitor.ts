@@ -430,7 +430,7 @@ export class HealthMonitorService {
       if (value) {
         this.goals = { ...DEFAULT_GOALS, ...JSON.parse(value) };
       }
-    } catch (_e) {
+    } catch {
       if (__DEV__) console.warn('[HealthMonitor] Failed to load goals, using defaults');
     }
   }

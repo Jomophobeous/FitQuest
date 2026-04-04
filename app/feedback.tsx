@@ -35,7 +35,6 @@ import { useTheme } from '../src/context/ThemeContext';
 import ThemedText from '../src/components/ThemedText';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
-
 const SUPPORT_EMAIL = 'fitquestsupp0rt@gmail.com';
 const WEBSITE_URL = 'https://jomo-playground.github.io/FitQ/';
 
@@ -137,50 +136,64 @@ export default function FeedbackScreen() {
   if (submitted) {
     return (
       <ScreenContainer>
-          <Animated.View entering={FadeIn.duration(300)} style={styles.thankYouCenter}>
-            <Animated.View style={checkStyle}>
+        <Animated.View entering={FadeIn.duration(300)} style={styles.thankYouCenter}>
+          <Animated.View style={checkStyle}>
+            <LinearGradient
+              colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
+              style={styles.thankYouCircle}
+            >
+              <MaterialCommunityIcons name="check" size={48} color={theme.colors.onAccent} />
+            </LinearGradient>
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(200).duration(300)}>
+            <ThemedText style={[styles.thankYouTitle, { color: theme.colors.text }]}>Thank You!</ThemedText>
+            <ThemedText style={[styles.thankYouMessage, { color: theme.colors.textSecondary }]}>
+              Your feedback has been submitted. Every issue will be reviewed carefully and considered in the next
+              update.
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.thankYouMessage,
+                { color: theme.colors.textMuted, marginTop: spacing[2], fontSize: typography.sizes.label },
+              ]}
+            >
+              We truly appreciate you taking the time to help improve FitQuest.
+            </ThemedText>
+          </Animated.View>
+
+          <Animated.View entering={FadeInUp.delay(400).duration(200)} style={styles.thankYouActions}>
+            <TouchableOpacity
+              style={[styles.thankYouBtn, { backgroundColor: theme.colors.surfaceVariant }]}
+              onPress={handleVisitWebsite}
+              activeOpacity={0.7}
+              accessibilityRole="link"
+              accessibilityLabel="Visit our website"
+            >
+              <MaterialCommunityIcons name="web" size={18} color={theme.colors.accent} />
+              <ThemedText style={[styles.thankYouBtnText, { color: theme.colors.accent }]}>
+                Visit Our Website
+              </ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Back to profile"
+            >
               <LinearGradient
                 colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
-                style={styles.thankYouCircle}
+                style={styles.thankYouPrimaryBtn}
               >
-                <MaterialCommunityIcons name="check" size={48} color={theme.colors.onAccent} />
+                <MaterialCommunityIcons name="arrow-left" size={18} color={theme.colors.onAccent} />
+                <ThemedText style={[styles.thankYouPrimaryText, { color: theme.colors.onAccent }]}>
+                  Back to Profile
+                </ThemedText>
               </LinearGradient>
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(200).duration(300)}>
-              <ThemedText style={[styles.thankYouTitle, { color: theme.colors.text }]}>Thank You!</ThemedText>
-              <ThemedText style={[styles.thankYouMessage, { color: theme.colors.textSecondary }]}>
-                Your feedback has been submitted. Every issue will be reviewed carefully and considered in the next
-                update.
-              </ThemedText>
-              <ThemedText style={[styles.thankYouMessage, { color: theme.colors.textMuted, marginTop: spacing[2], fontSize: typography.sizes.label }]}>
-                We truly appreciate you taking the time to help improve FitQuest.
-              </ThemedText>
-            </Animated.View>
-
-            <Animated.View entering={FadeInUp.delay(400).duration(200)} style={styles.thankYouActions}>
-              <TouchableOpacity
-                style={[styles.thankYouBtn, { backgroundColor: theme.colors.surfaceVariant }]}
-                onPress={handleVisitWebsite}
-                activeOpacity={0.7}
-                accessibilityRole="link"
-                accessibilityLabel="Visit our website"
-              >
-                <MaterialCommunityIcons name="web" size={18} color={theme.colors.accent} />
-                <ThemedText style={[styles.thankYouBtnText, { color: theme.colors.accent }]}>Visit Our Website</ThemedText>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="Back to profile">
-                <LinearGradient
-                  colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
-                  style={styles.thankYouPrimaryBtn}
-                >
-                  <MaterialCommunityIcons name="arrow-left" size={18} color={theme.colors.onAccent} />
-                  <ThemedText style={[styles.thankYouPrimaryText, { color: theme.colors.onAccent }]}>Back to Profile</ThemedText>
-                </LinearGradient>
-              </TouchableOpacity>
-            </Animated.View>
+            </TouchableOpacity>
           </Animated.View>
+        </Animated.View>
       </ScreenContainer>
     );
   }
@@ -188,168 +201,181 @@ export default function FeedbackScreen() {
   // ─── FEEDBACK FORM ───
   return (
     <ScreenContainer>
-        <KeyboardAvoidingView
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
+        {/* Header */}
+        <Animated.View entering={FadeIn.duration(200)} style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
+          </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>Feedback & Bug Report</ThemedText>
+            <ThemedText style={[styles.headerSub, { color: theme.colors.textMuted }]}>
+              Help us improve FitQuest
+            </ThemedText>
+          </View>
+        </Animated.View>
+
+        <ScrollView
           style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
-          <Animated.View entering={FadeIn.duration(200)} style={styles.header}>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={[styles.backBtn, { backgroundColor: theme.colors.surfaceVariant }]}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel="Go back"
-            >
-              <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.text} />
-            </TouchableOpacity>
-            <View style={{ flex: 1 }}>
-              <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>Feedback & Bug Report</ThemedText>
-              <ThemedText style={[styles.headerSub, { color: theme.colors.textMuted }]}>Help us improve FitQuest</ThemedText>
+          {/* Category Selection */}
+          <Animated.View entering={FadeInDown.delay(100).duration(200)}>
+            <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary }]}>
+              What's this about?
+            </ThemedText>
+            <View style={styles.categoryGrid}>
+              {categories.map((cat, i) => {
+                const selected = category === cat.key;
+                return (
+                  <Animated.View key={cat.key} entering={FadeInDown.delay(150 + i * 60).duration(200)}>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => setCategory(cat.key)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${cat.label} category${selected ? ', selected' : ''}`}
+                      style={[
+                        styles.categoryCard,
+                        {
+                          backgroundColor: selected ? cat.color + '18' : theme.colors.surfaceVariant,
+                          borderColor: selected ? cat.color : theme.colors.border,
+                          borderWidth: selected ? 1.5 : 1,
+                        },
+                      ]}
+                    >
+                      <View style={[styles.categoryIcon, { backgroundColor: cat.color + '20' }]}>
+                        <MaterialCommunityIcons name={cat.icon as any} size={22} color={cat.color} />
+                      </View>
+                      <ThemedText style={[styles.categoryLabel, { color: theme.colors.text }]}>{cat.label}</ThemedText>
+                      <ThemedText style={[styles.categorySub, { color: theme.colors.textMuted }]}>
+                        {cat.sublabel}
+                      </ThemedText>
+                      {selected && <View style={[styles.selectedDot, { backgroundColor: cat.color }]} />}
+                    </TouchableOpacity>
+                  </Animated.View>
+                );
+              })}
             </View>
           </Animated.View>
 
-          <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            {/* Category Selection */}
-            <Animated.View entering={FadeInDown.delay(100).duration(200)}>
-              <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary }]}>What's this about?</ThemedText>
-              <View style={styles.categoryGrid}>
-                {categories.map((cat, i) => {
-                  const selected = category === cat.key;
-                  return (
-                    <Animated.View key={cat.key} entering={FadeInDown.delay(150 + i * 60).duration(200)}>
-                      <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => setCategory(cat.key)}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${cat.label} category${selected ? ', selected' : ''}`}
-                        style={[
-                          styles.categoryCard,
-                          {
-                            backgroundColor: selected ? cat.color + '18' : theme.colors.surfaceVariant,
-                            borderColor: selected ? cat.color : theme.colors.border,
-                            borderWidth: selected ? 1.5 : 1,
-                          },
-                        ]}
-                      >
-                        <View style={[styles.categoryIcon, { backgroundColor: cat.color + '20' }]}>
-                          <MaterialCommunityIcons name={cat.icon as any} size={22} color={cat.color} />
-                        </View>
-                        <ThemedText style={[styles.categoryLabel, { color: theme.colors.text }]}>{cat.label}</ThemedText>
-                        <ThemedText style={[styles.categorySub, { color: theme.colors.textMuted }]}>{cat.sublabel}</ThemedText>
-                        {selected && <View style={[styles.selectedDot, { backgroundColor: cat.color }]} />}
-                      </TouchableOpacity>
-                    </Animated.View>
-                  );
-                })}
+          {/* Message Input */}
+          {category && (
+            <Animated.View entering={FadeInDown.duration(200)}>
+              <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[5] }]}>
+                Tell us more
+              </ThemedText>
+              <View
+                style={[
+                  styles.inputWrap,
+                  {
+                    backgroundColor: theme.colors.surfaceVariant,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
+              >
+                <TextInput
+                  ref={inputRef}
+                  style={[styles.inputField, { color: theme.colors.text }]}
+                  placeholder={
+                    category === 'bug'
+                      ? 'Describe the issue: what happened, what you expected, and steps to reproduce...'
+                      : category === 'review'
+                        ? 'Share your thoughts about your FitQuest experience...'
+                        : category === 'suggestion'
+                          ? 'What feature would make FitQuest better for you?'
+                          : 'What would you like to tell us?'
+                  }
+                  placeholderTextColor={theme.colors.textMuted}
+                  value={message}
+                  onChangeText={setMessage}
+                  multiline
+                  textAlignVertical="top"
+                  maxLength={2000}
+                />
+                <ThemedText style={[styles.charCount, { color: theme.colors.textMuted }]}>
+                  {message.length}/2000
+                </ThemedText>
               </View>
             </Animated.View>
+          )}
 
-            {/* Message Input */}
-            {category && (
-              <Animated.View entering={FadeInDown.duration(200)}>
-                <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[5] }]}>
-                  Tell us more
-                </ThemedText>
-                <View
-                  style={[
-                    styles.inputWrap,
-                    {
-                      backgroundColor: theme.colors.surfaceVariant,
-                      borderColor: theme.colors.border,
-                    },
-                  ]}
+          {/* Submit Button */}
+          {category && message.trim().length > 10 && (
+            <Animated.View entering={FadeInUp.duration(200)} style={{ marginTop: spacing[5] }}>
+              <TouchableOpacity
+                onPress={handleSubmit}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Submit feedback"
+              >
+                <LinearGradient
+                  colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
+                  style={styles.submitBtn}
                 >
-                  <TextInput
-                    ref={inputRef}
-                    style={[styles.inputField, { color: theme.colors.text }]}
-                    placeholder={
-                      category === 'bug'
-                        ? 'Describe the issue: what happened, what you expected, and steps to reproduce...'
-                        : category === 'review'
-                          ? 'Share your thoughts about your FitQuest experience...'
-                          : category === 'suggestion'
-                            ? 'What feature would make FitQuest better for you?'
-                            : 'What would you like to tell us?'
-                    }
-                    placeholderTextColor={theme.colors.textMuted}
-                    value={message}
-                    onChangeText={setMessage}
-                    multiline
-                    textAlignVertical="top"
-                    maxLength={2000}
-                  />
-                  <ThemedText style={[styles.charCount, { color: theme.colors.textMuted }]}>{message.length}/2000</ThemedText>
-                </View>
-              </Animated.View>
-            )}
-
-            {/* Submit Button */}
-            {category && message.trim().length > 10 && (
-              <Animated.View entering={FadeInUp.duration(200)} style={{ marginTop: spacing[5] }}>
-                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel="Submit feedback">
-                  <LinearGradient
-                    colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
-                    style={styles.submitBtn}
-                  >
-                    <MaterialCommunityIcons name="send" size={18} color={theme.colors.onAccent} />
-                    <ThemedText style={[styles.submitText, { color: theme.colors.onAccent }]}>Submit Feedback</ThemedText>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </Animated.View>
-            )}
-
-            {/* Quick Links */}
-            <Animated.View entering={FadeInDown.delay(300).duration(200)} style={styles.quickLinks}>
-              <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[6] }]}>
-                Quick Links
-              </ThemedText>
-              <TouchableOpacity
-                style={[
-                  styles.linkRow,
-                  { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.border },
-                ]}
-                onPress={handleVisitWebsite}
-                activeOpacity={0.7}
-                accessibilityRole="link"
-                accessibilityLabel="Visit official website"
-              >
-                <MaterialCommunityIcons name="web" size={20} color={theme.colors.accent} />
-                <View style={{ flex: 1 }}>
-                  <ThemedText style={[styles.linkLabel, { color: theme.colors.text }]}>Official Website</ThemedText>
-                  <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
-                    jomo-playground.github.io/FitQ
-                  </ThemedText>
-                </View>
-                <MaterialCommunityIcons name="open-in-new" size={16} color={theme.colors.textMuted} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.linkRow,
-                  { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.border },
-                ]}
-                onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`).catch(() => {})}
-                activeOpacity={0.7}
-                accessibilityRole="link"
-                accessibilityLabel="Email support"
-              >
-                <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.accent} />
-                <View style={{ flex: 1 }}>
-                  <ThemedText style={[styles.linkLabel, { color: theme.colors.text }]}>Email Support</ThemedText>
-                  <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>{SUPPORT_EMAIL}</ThemedText>
-                </View>
-                <MaterialCommunityIcons name="open-in-new" size={16} color={theme.colors.textMuted} />
+                  <MaterialCommunityIcons name="send" size={18} color={theme.colors.onAccent} />
+                  <ThemedText style={[styles.submitText, { color: theme.colors.onAccent }]}>Submit Feedback</ThemedText>
+                </LinearGradient>
               </TouchableOpacity>
             </Animated.View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+          )}
+
+          {/* Quick Links */}
+          <Animated.View entering={FadeInDown.delay(300).duration(200)} style={styles.quickLinks}>
+            <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[6] }]}>
+              Quick Links
+            </ThemedText>
+            <TouchableOpacity
+              style={[
+                styles.linkRow,
+                { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.border },
+              ]}
+              onPress={handleVisitWebsite}
+              activeOpacity={0.7}
+              accessibilityRole="link"
+              accessibilityLabel="Visit official website"
+            >
+              <MaterialCommunityIcons name="web" size={20} color={theme.colors.accent} />
+              <View style={{ flex: 1 }}>
+                <ThemedText style={[styles.linkLabel, { color: theme.colors.text }]}>Official Website</ThemedText>
+                <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>
+                  jomo-playground.github.io/FitQ
+                </ThemedText>
+              </View>
+              <MaterialCommunityIcons name="open-in-new" size={16} color={theme.colors.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.linkRow,
+                { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.border },
+              ]}
+              onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`).catch(() => {})}
+              activeOpacity={0.7}
+              accessibilityRole="link"
+              accessibilityLabel="Email support"
+            >
+              <MaterialCommunityIcons name="email-outline" size={20} color={theme.colors.accent} />
+              <View style={{ flex: 1 }}>
+                <ThemedText style={[styles.linkLabel, { color: theme.colors.text }]}>Email Support</ThemedText>
+                <ThemedText style={[styles.linkSub, { color: theme.colors.textMuted }]}>{SUPPORT_EMAIL}</ThemedText>
+              </View>
+              <MaterialCommunityIcons name="open-in-new" size={16} color={theme.colors.textMuted} />
+            </TouchableOpacity>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ScreenContainer>
   );
 }
@@ -373,19 +399,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '700',
     letterSpacing: 0.3,
   },
   headerSub: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     marginTop: spacing['px'],
   },
   scrollContent: {
     paddingHorizontal: spacing[4],
   },
   sectionLabel: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '600',
     letterSpacing: 0.5,
     textTransform: 'uppercase',
@@ -415,11 +441,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   categoryLabel: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
   categorySub: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     marginTop: spacing[0.5],
   },
   selectedDot: {
@@ -436,13 +462,13 @@ const styles = StyleSheet.create({
     padding: spacing[3.5],
   },
   inputField: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     lineHeight: 22,
     minHeight: 140,
     maxHeight: 250,
   },
   charCount: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     textAlign: 'right',
     marginTop: spacing[1.5],
   },
@@ -456,7 +482,7 @@ const styles = StyleSheet.create({
   },
   submitText: {
     color: '#FAFAFA',
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
     letterSpacing: 0.3,
   },
@@ -473,11 +499,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   linkLabel: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
   linkSub: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     marginTop: spacing['px'],
   },
   // Thank you screen
@@ -499,14 +525,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing[6],
   },
   thankYouTitle: {
-    fontSize: typography.sizes.h1Sm, 
+    fontSize: typography.sizes.h1Sm,
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0.5,
     marginBottom: spacing[3],
   },
   thankYouMessage: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     lineHeight: 22,
     textAlign: 'center',
   },
@@ -524,7 +550,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   thankYouBtnText: {
-    fontSize: typography.sizes.bodyMid, 
+    fontSize: typography.sizes.bodyMid,
     fontWeight: '600',
   },
   thankYouPrimaryBtn: {
@@ -537,7 +563,7 @@ const styles = StyleSheet.create({
   },
   thankYouPrimaryText: {
     color: '#FAFAFA',
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
     letterSpacing: 0.3,
   },

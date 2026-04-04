@@ -125,26 +125,20 @@ export const useAnalyticsViewModel = createViewModel(() => {
     setRefreshing(false);
   }, [loadData]);
 
-  useDataSync(
-    ['workout_completed', 'xp_awarded', 'jog_completed', 'steps_updated', 'streak_updated'],
-    debouncedLoad,
-  );
+  useDataSync(['workout_completed', 'xp_awarded', 'jog_completed', 'steps_updated', 'streak_updated'], debouncedLoad);
 
-  const loadDaySessions = useCallback(
-    async (dateStr: string) => {
-      setDayLoading(true);
-      try {
-        const sessions = await fetchDaySessions(dateStr);
-        setDaySessions(sessions);
-      } catch (e) {
-        if (__DEV__) console.warn('[Analytics] Day sessions load error:', e);
-        setDaySessions([]);
-      } finally {
-        setDayLoading(false);
-      }
-    },
-    [],
-  );
+  const loadDaySessions = useCallback(async (dateStr: string) => {
+    setDayLoading(true);
+    try {
+      const sessions = await fetchDaySessions(dateStr);
+      setDaySessions(sessions);
+    } catch (e) {
+      if (__DEV__) console.warn('[Analytics] Day sessions load error:', e);
+      setDaySessions([]);
+    } finally {
+      setDayLoading(false);
+    }
+  }, []);
 
   return {
     range,

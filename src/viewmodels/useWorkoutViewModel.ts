@@ -12,7 +12,9 @@ import { audioService } from '../services/audioService';
 export const useWorkoutViewModel = createViewModel(() => {
   // Stop narration on unmount
   useEffect(() => {
-    return () => { audioService.stop(); };
+    return () => {
+      audioService.stop();
+    };
   }, []);
 
   const stopAudio = useCallback(() => {

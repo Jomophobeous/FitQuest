@@ -464,7 +464,7 @@ describe('Lockout Logic', () => {
   it('triggers lockout after 5 failed attempts', async () => {
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
 
     const svc = getService();
@@ -484,7 +484,7 @@ describe('Lockout Logic', () => {
   it('lockout uses exponential backoff durations', async () => {
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
 
     const svc = getService();
@@ -528,7 +528,7 @@ describe('Lockout Logic', () => {
   it('passcode lockout shares counter with biometric', async () => {
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
 
     const svc = getService();
@@ -554,7 +554,7 @@ describe('Lockout Logic', () => {
   it('getRemainingAttempts counts down correctly', async () => {
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
 
     const svc = getService();
@@ -578,7 +578,7 @@ describe('Emergency Wipe', () => {
   it('triggers emergency wipe after 15 failed attempts', async () => {
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
 
     const svc = getService();
@@ -609,7 +609,7 @@ describe('Emergency Wipe', () => {
   it('clears session after emergency wipe', async () => {
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
 
     const svc = getService();
@@ -623,7 +623,7 @@ describe('Emergency Wipe', () => {
     // Now fail 15 times
     vi.mocked(LocalAuthentication.authenticateAsync).mockResolvedValue({
       success: false,
-      error: 'auth_failure',
+      error: 'authentication_failed',
     });
     for (let i = 0; i < 15; i++) {
       secureStorage.delete('fitquest_lockout_until');

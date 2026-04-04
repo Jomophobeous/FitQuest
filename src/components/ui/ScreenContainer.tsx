@@ -50,11 +50,7 @@ export const ScreenContainer = memo(function ScreenContainer({
           keyboardShouldPersistTaps="handled"
           refreshControl={
             onRefresh ? (
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor={theme.colors.accent}
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.accent} />
             ) : undefined
           }
         >
@@ -66,9 +62,7 @@ export const ScreenContainer = memo(function ScreenContainer({
 
   return (
     <SafeAreaView style={[styles.root, bg, style]} edges={edges}>
-      <View style={[styles.inner, px, contentStyle]}>
-        {children}
-      </View>
+      <View style={[styles.inner, px, contentStyle]}>{children}</View>
     </SafeAreaView>
   );
 });

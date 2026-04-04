@@ -12,7 +12,6 @@ import { useConnectivity } from '../context/ConnectivityContext';
 import ThemedText from './ThemedText';
 import { typography, spacing } from '../design/theme-system';
 
-
 function OfflineBannerInner() {
   const { theme } = useTheme();
   const { isOnline, pendingSyncCount, isSyncing } = useConnectivity();
@@ -56,7 +55,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#FFFFFF',
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
   },
 });

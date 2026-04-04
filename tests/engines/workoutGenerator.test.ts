@@ -134,14 +134,15 @@ vi.mock('../../src/services/adaptiveTrainingService', () => ({
 }));
 
 vi.mock('../../src/engines/ReadinessEngine', () => ({
-  getCachedReadiness: vi.fn().mockResolvedValue({ score: 80 }),
+  getCachedReadiness: vi.fn().mockResolvedValue({ score: 80 } as any),
 }));
 
 vi.mock('../../src/engines/progressionEngine', () => ({
   calculateProgression: vi.fn().mockResolvedValue({
+    exercise_id: 'test_ex',
     action: 'maintain',
     reason: 'Insufficient data or mixed results → maintain current prescription',
-    recommendation: { sets: 3, reps: '8-12' },
+    recommendation: { sets: 3, reps: '8-12', notes: '' },
   }),
 }));
 
@@ -193,11 +194,12 @@ beforeEach(() => {
   appState.clear();
   // Re-apply default adaptive mock (clearAllMocks resets implementations)
   vi.mocked(getAdaptiveTrainingProfile).mockResolvedValue(DEFAULT_ADAPTIVE);
-  vi.mocked(getCachedReadiness).mockResolvedValue({ score: 80 });
+  vi.mocked(getCachedReadiness).mockResolvedValue({ score: 80 } as any);
   vi.mocked(calculateProgression).mockResolvedValue({
+    exercise_id: 'test_ex',
     action: 'maintain',
     reason: 'Insufficient data or mixed results → maintain current prescription',
-    recommendation: { sets: 3, reps: '8-12' },
+    recommendation: { sets: 3, reps: '8-12', notes: '' },
   });
 });
 
@@ -696,9 +698,10 @@ describe('Volume Prescription', () => {
 
   it('applies progression-based volume when history exists', async () => {
     vi.mocked(calculateProgression).mockResolvedValue({
-      action: 'progress_reps',
+      exercise_id: 'test_ex',
+      action: 'progress',
       reason: 'Consistent performance → increase reps',
-      recommendation: { sets: 4, reps: '10-15' },
+      recommendation: { sets: 4, reps: '10-15', notes: '' },
     });
     setupStandardMocks();
     const result = await generateWorkout(USER);
@@ -725,7 +728,7 @@ describe('Volume Prescription', () => {
   });
 
   it('reduces volume when readiness score is low', async () => {
-    vi.mocked(getCachedReadiness).mockResolvedValue({ score: 30 }); // low readiness
+    vi.mocked(getCachedReadiness).mockResolvedValue({ score: 30 } as any); // low readiness
     setupStandardMocks();
     const result = await generateWorkout(USER);
     expect(result).not.toBeNull();
@@ -756,9 +759,10 @@ describe('Volume Prescription', () => {
 
   it('posture exercises use hold-based reps regardless of progression', async () => {
     vi.mocked(calculateProgression).mockResolvedValue({
-      action: 'progress_reps',
+      exercise_id: 'test_ex',
+      action: 'progress',
       reason: 'Increase reps',
-      recommendation: { sets: 4, reps: '12-15' },
+      recommendation: { sets: 4, reps: '12-15', notes: '' },
     });
     const postureExercises = [
       makeExercise({ id: 'p1', name: 'Wall Angels', category: 'posture', difficulty: 'beginner', primary_muscles: ['deltoids_rear'], training_types: [{ type: 'posture', effectiveness: 8 }] }),
@@ -783,7 +787,7 @@ describe('Volume Prescription', () => {
   });
 
   it('ensures minimum of 2 sets even with extreme reductions', async () => {
-    vi.mocked(getCachedReadiness).mockResolvedValue({ score: 5 }); // very low readiness
+    vi.mocked(getCachedReadiness).mockResolvedValue({ score: 5 } as any); // very low readiness
     vi.mocked(getAdaptiveTrainingProfile).mockResolvedValue({
       ...DEFAULT_ADAPTIVE,
       volumeTolerance: 0.5, // Low tolerance

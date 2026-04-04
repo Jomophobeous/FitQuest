@@ -22,7 +22,12 @@ export const useExercisesViewModel = createViewModel(() => {
   const [refreshing, setRefreshing] = useState(false);
 
   const mountedRef = useRef(true);
-  useEffect(() => () => { mountedRef.current = false; }, []);
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+    },
+    [],
+  );
 
   const loadExercises = useCallback(async () => {
     try {

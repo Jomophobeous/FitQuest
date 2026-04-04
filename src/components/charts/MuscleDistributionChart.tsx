@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   muscleLabel: {
     width: 80,
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '500',
   },
   barWrapper: {
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   },
   setsLabel: {
     width: 70,
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     textAlign: 'right',
   },
   pieContainer: {
@@ -233,11 +233,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pieCenterText: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
     fontWeight: '700',
   },
   pieCenterLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
   },
   pieLegend: {
     position: 'absolute',
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendText: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
   },
 });
 

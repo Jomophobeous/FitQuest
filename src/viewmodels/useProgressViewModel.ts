@@ -56,7 +56,12 @@ export const useProgressViewModel = createViewModel(() => {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const mountedRef = useRef(true);
-  useEffect(() => () => { mountedRef.current = false; }, []);
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+    },
+    [],
+  );
 
   const loadData = useCallback(async () => {
     setLoadError(null);

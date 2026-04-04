@@ -21,7 +21,6 @@ import ExerciseImage from './ExerciseImage';
 import { audioService } from '../services/audioService';
 import { typography, spacing } from '../design/theme-system';
 
-
 // ─── Types ────────────────────────────────────────────
 export interface GetReadyExercise {
   exerciseId: string;
@@ -201,7 +200,7 @@ const styles = StyleSheet.create({
 
   // Label
   label: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '700',
     letterSpacing: 4,
     textTransform: 'uppercase',
@@ -211,7 +210,7 @@ const styles = StyleSheet.create({
   // Countdown digit
   countWrap: { marginBottom: spacing[8] },
   countDigit: {
-    fontSize: typography.sizes.mega, 
+    fontSize: typography.sizes.mega,
     fontWeight: '900',
     fontVariant: ['tabular-nums'] as any,
     textAlign: 'center',

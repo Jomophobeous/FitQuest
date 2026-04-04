@@ -19,13 +19,7 @@ interface TitleProps extends Omit<TextProps, 'style'> {
   style?: StyleProp<TextStyle>;
 }
 
-export const Title = memo(function Title({
-  children,
-  level = 'h2',
-  color = 'primary',
-  style,
-  ...rest
-}: TitleProps) {
+export const Title = memo(function Title({ children, level = 'h2', color = 'primary', style, ...rest }: TitleProps) {
   return (
     <ThemedText variant={level} color={color} style={style} {...rest}>
       {children}

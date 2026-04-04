@@ -21,7 +21,16 @@ import {
   type TimelineMonths,
 } from '../engines/bodyCraftEngine';
 
-export type { BodyCraftAlgorithm, BodyCraftInputs, BodyType, GoalType, FitnessLevel, ActivityLevel, MusclePriority, TimelineMonths };
+export type {
+  BodyCraftAlgorithm,
+  BodyCraftInputs,
+  BodyType,
+  GoalType,
+  FitnessLevel,
+  ActivityLevel,
+  MusclePriority,
+  TimelineMonths,
+};
 
 interface ProfilePrefill {
   heightCm?: string;
@@ -34,7 +43,12 @@ export const useCraftMyBodyViewModel = createViewModel(() => {
   const [applied, setApplied] = useState(false);
   const mountedRef = useRef(true);
 
-  useEffect(() => () => { mountedRef.current = false; }, []);
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+    },
+    [],
+  );
 
   const loadProfilePrefill = useCallback(async () => {
     try {

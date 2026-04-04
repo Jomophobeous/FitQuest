@@ -11,7 +11,6 @@ import { ThemedChartWrapper, useChartTheme, MiniStat } from './ThemedChart';
 import type { StepsChartProps, StepDataPoint } from './types';
 import { typography, spacing } from '../../design/theme-system';
 
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============================================
@@ -207,7 +206,7 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barLabel: {
-    fontSize: typography.sizes.micro, 
+    fontSize: typography.sizes.micro,
     marginTop: spacing[1],
     textAlign: 'center',
   },
@@ -223,7 +222,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: -14,
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
     fontWeight: '500',
   },
   yAxisLabels: {
@@ -237,7 +236,7 @@ const styles = StyleSheet.create({
     paddingRight: spacing[1],
   },
   yLabel: {
-    fontSize: typography.sizes.xs, 
+    fontSize: typography.sizes.xs,
   },
 });
 

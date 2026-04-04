@@ -121,7 +121,11 @@ export function usePedometer(): UsePedometerReturn {
   const usingFallbackRef = useRef(false);
   const pedometerFiredRef = useRef(false);
   const mountedRef = useRef(true);
-  useEffect(() => { return () => { mountedRef.current = false; }; }, []);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // Check availability on mount
   useEffect(() => {
@@ -295,7 +299,8 @@ export function usePedometer(): UsePedometerReturn {
     jogUsingGPSRef.current = false;
     if (useGPS) {
       // Use setTimeout(0) to let the UI settle before requesting GPS permission // deferred-ui
-      setTimeout(async () => { // deferred-ui
+      setTimeout(async () => {
+        // deferred-ui
         try {
           const gpsStarted = await distanceEngine.startTracking();
           if (gpsStarted) {

@@ -27,20 +27,11 @@ interface SafeTextProps extends TextProps {
   children?: React.ReactNode;
 }
 
-export default React.memo(function SafeText({
-  maxLines,
-  fallback = '',
-  children,
-  ...props
-}: SafeTextProps) {
+export default React.memo(function SafeText({ maxLines, fallback = '', children, ...props }: SafeTextProps) {
   const content = children ?? fallback;
 
   return (
-    <ThemedText
-      numberOfLines={maxLines}
-      ellipsizeMode={maxLines ? 'tail' : undefined}
-      {...props}
-    >
+    <ThemedText numberOfLines={maxLines} ellipsizeMode={maxLines ? 'tail' : undefined} {...props}>
       {content}
     </ThemedText>
   );

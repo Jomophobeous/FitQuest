@@ -80,7 +80,8 @@ export default function FitQuestLogo({ size = 80, showText = false }: Props) {
           fill={theme.colors.text}
           letterSpacing={8}
         >
-          FQ
+          {/* eslint-disable-next-line react-native/no-raw-text */}
+          {'FQ'}
         </SvgText>
       )}
     </Svg>

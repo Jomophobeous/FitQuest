@@ -63,7 +63,12 @@ export const useMoveViewModel = createViewModel(() => {
   // ── Refs ──
   const mountedRef = useRef(true);
   const startingJogRef = useRef(false);
-  useEffect(() => () => { mountedRef.current = false; }, []);
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+    },
+    [],
+  );
 
   // ── Helpers ──
   const formatDuration = useCallback((start: Date, end: Date): string => {
@@ -218,7 +223,7 @@ export const useMoveViewModel = createViewModel(() => {
     setJogCompletionData(null);
   }, []);
 
-  const toggleHistory = useCallback(() => setShowHistory(prev => !prev), []);
+  const toggleHistory = useCallback(() => setShowHistory((prev) => !prev), []);
   const toggleLiveMap = useCallback((show: boolean) => setShowLiveMap(show), []);
 
   const retryJog = useCallback(() => {
@@ -256,19 +261,38 @@ export const useMoveViewModel = createViewModel(() => {
     stopSensor: sensor.stop,
     // State
     dbReady,
-    stepHistory, jogHistory, showHistory, jogElapsed,
-    showJogComplete, jogCompletionData, jogError,
-    showLiveMap, reviewJogId, reviewRoute, reviewJog, loadError,
+    stepHistory,
+    jogHistory,
+    showHistory,
+    jogElapsed,
+    showJogComplete,
+    jogCompletionData,
+    jogError,
+    showLiveMap,
+    reviewJogId,
+    reviewRoute,
+    reviewJog,
+    loadError,
     // Derived
-    stepProgress, distKm, calories, activeMin,
+    stepProgress,
+    distKm,
+    calories,
+    activeMin,
     // Handlers
-    handleStartTracking, handleStopTracking,
-    handleStartJog, handleStopJog,
-    handleReviewJog, closeRouteReview,
-    dismissJogComplete, toggleHistory, toggleLiveMap,
-    retryJog, retryLoad,
+    handleStartTracking,
+    handleStopTracking,
+    handleStartJog,
+    handleStopJog,
+    handleReviewJog,
+    closeRouteReview,
+    dismissJogComplete,
+    toggleHistory,
+    toggleLiveMap,
+    retryJog,
+    retryLoad,
     // Helpers (needed by JSX)
-    formatDuration, formatPace,
+    formatDuration,
+    formatPace,
   };
 });
 

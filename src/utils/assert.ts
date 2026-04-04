@@ -12,10 +12,7 @@
  * - DB write preconditions
  * - Critical function arguments
  */
-export function invariant(
-  condition: unknown,
-  message: string,
-): asserts condition {
+export function invariant(condition: unknown, message: string): asserts condition {
   if (!condition) {
     throw new Error(`[Invariant] ${message}`);
   }
@@ -26,10 +23,7 @@ export function invariant(
  * Useful for inline assertions:
  *   const user = assertDefined(getUser(), 'user must exist');
  */
-export function assertDefined<T>(
-  value: T | null | undefined,
-  message: string,
-): T {
+export function assertDefined<T>(value: T | null | undefined, message: string): T {
   invariant(value != null, message);
   return value;
 }

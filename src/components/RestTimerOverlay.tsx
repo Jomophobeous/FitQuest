@@ -31,7 +31,6 @@ import CountdownRing from './CountdownRing';
 import ExerciseImage from './ExerciseImage';
 import { typography, spacing } from '../design/theme-system';
 
-
 // ─── Types ────────────────────────────────────────────
 export interface NextExerciseInfo {
   exerciseId: string;
@@ -253,13 +252,13 @@ const styles = StyleSheet.create({
   // Ring
   ringWrap: { marginBottom: spacing[3] },
   timerDigits: {
-    fontSize: typography.sizes.jumbo, 
+    fontSize: typography.sizes.jumbo,
     fontWeight: '800',
     fontVariant: ['tabular-nums'] as any,
     letterSpacing: 2,
   },
   restLabel: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '600',
     letterSpacing: 3,
     textTransform: 'uppercase',
@@ -268,7 +267,7 @@ const styles = StyleSheet.create({
 
   // Breathe
   breatheLabel: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '500',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
@@ -298,7 +297,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[7],
   },
   nextLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '600',
     letterSpacing: 1.5,
     textTransform: 'uppercase',

@@ -108,7 +108,8 @@ function ConfettiBurst({ active, onComplete }: ConfettiProps) {
       setParticles(generateParticles(width));
       setVisible(true);
 
-      const timer = setTimeout(() => { // debounce
+      const timer = setTimeout(() => {
+        // debounce
         setVisible(false);
         setParticles([]);
         onComplete?.();

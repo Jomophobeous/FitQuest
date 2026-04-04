@@ -306,7 +306,9 @@ function CoachScreenInner() {
                           marginBottom: spacing[3.5],
                         }}
                       >
-                        {vm.lastWorkoutResult.exerciseCount} exercises · ~{vm.lastWorkoutResult.durationEstimate} min
+                        {t('coach.exercisesMin')
+                          .replace('{{count}}', String(vm.lastWorkoutResult.exerciseCount))
+                          .replace('{{min}}', String(vm.lastWorkoutResult.durationEstimate))}
                       </ThemedText>
                       <TouchableOpacity
                         activeOpacity={0.8}

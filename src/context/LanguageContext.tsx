@@ -81,7 +81,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Fallback to English
         const enStrings = translations.en;
-        result = enStrings && enStrings[key] ? enStrings[key] : key;
+        if (enStrings && enStrings[key]) {
+          result = enStrings[key];
+        } else {
+          // Key missing from all translations — return empty string so || fallback chains work
+          if (__DEV__) console.warn(`[i18n] Missing translation key: "${key}"`);
+          result = '';
+        }
       }
       // Interpolation: replace {{var}} with value
       if (vars) {
@@ -127,7 +133,7 @@ export function useLanguage() {
       setLanguage: () => {},
       t: (key: string, vars?: Record<string, string | number>) => {
         const enStrings = translations.en;
-        let result = enStrings?.[key] || key;
+        let result = enStrings?.[key] || '';
         if (vars) {
           for (const [k, v] of Object.entries(vars)) {
             result = result.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));

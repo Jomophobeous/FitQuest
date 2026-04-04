@@ -351,9 +351,9 @@ export default function WorkoutActiveView({
         <ThemedText style={[styles.clockExerciseCount, { color: theme.colors.textMuted }]}>
           {currentExerciseIndex + 1} / {workout.exercises.length}
           {currentExercise.phase === 'warmup'
-            ? ' · Warm Up'
+            ? ` · ${t('fitquest.warmUp')}`
             : currentExercise.phase === 'cooldown'
-              ? ' · Cool Down'
+              ? ` · ${t('fitquest.coolDown')}`
               : ''}
         </ThemedText>
       </View>

@@ -330,7 +330,7 @@ export default function ProgressScreen() {
                   {vm.stats.workouts}
                 </ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
-                  Workouts
+                  {t('progress.workouts')}
                 </ThemedText>
               </GlassCard>
               <GlassCard gradient glowColor={theme.colors.warning} style={styles.statCard}>
@@ -338,7 +338,7 @@ export default function ProgressScreen() {
                   {vm.stats.streak}
                 </ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
-                  Streak
+                  {t('progress.streak')}
                 </ThemedText>
               </GlassCard>
               <GlassCard gradient glowColor={theme.colors.purple} style={styles.statCard}>
@@ -346,7 +346,7 @@ export default function ProgressScreen() {
                   {vm.stats.exercises}
                 </ThemedText>
                 <ThemedText variant="bodySmall" color="secondary">
-                  Exercises
+                  {t('progress.exercises')}
                 </ThemedText>
               </GlassCard>
             </View>

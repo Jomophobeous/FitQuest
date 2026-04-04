@@ -371,10 +371,19 @@ export default function DashboardScreen() {
                       {readiness?.timeSinceLastWorkoutMinutes != null && (
                         <ThemedText variant="caption" color="muted" style={{ marginLeft: spacing[2] }}>
                           {readiness.timeSinceLastWorkoutMinutes < 60
-                            ? `Last trained ${readiness.timeSinceLastWorkoutMinutes}m ago`
+                            ? t('dashboard.lastTrainedMin').replace(
+                                '{{count}}',
+                                String(readiness.timeSinceLastWorkoutMinutes),
+                              )
                             : readiness.timeSinceLastWorkoutMinutes < 1440
-                              ? `Last trained ${Math.floor(readiness.timeSinceLastWorkoutMinutes / 60)}h ago`
-                              : `Last trained ${Math.floor(readiness.timeSinceLastWorkoutMinutes / 1440)}d ago`}
+                              ? t('dashboard.lastTrainedHour').replace(
+                                  '{{count}}',
+                                  String(Math.floor(readiness.timeSinceLastWorkoutMinutes / 60)),
+                                )
+                              : t('dashboard.lastTrainedDay').replace(
+                                  '{{count}}',
+                                  String(Math.floor(readiness.timeSinceLastWorkoutMinutes / 1440)),
+                                )}
                         </ThemedText>
                       )}
                     </View>

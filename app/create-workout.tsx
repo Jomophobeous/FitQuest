@@ -13,6 +13,7 @@ import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useToast } from '../src/context/ToastContext';
 import { useDatabase } from '../src/context/DatabaseContext';
+import { formatMuscleName } from '../src/utils/formatMuscle';
 import { useCreateWorkoutViewModel } from '../src/viewmodels/useCreateWorkoutViewModel';
 import { haptic } from '../src/utils/haptics';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
@@ -68,7 +69,7 @@ const ExerciseListItem = memo(function ExerciseListItem({
           {item.name}
         </ThemedText>
         <ThemedText style={{ color: colors.textMuted, fontSize: typography.sizes.caption, marginTop: spacing[0.5] }}>
-          {item.difficulty} • {item.primary_muscles.slice(0, 2).join(', ')}
+          {item.difficulty} • {item.primary_muscles.slice(0, 2).map(formatMuscleName).join(', ')}
         </ThemedText>
       </View>
       <View style={[styles.diffBadge, { backgroundColor: colors.surface }]}>
@@ -570,7 +571,7 @@ export default function CreateWorkoutScreen() {
                     {item.exercise.name}
                   </ThemedText>
                   <ThemedText variant="bodySmall" color="secondary">
-                    {item.exercise.primary_muscles.slice(0, 2).join(', ')}
+                    {item.exercise.primary_muscles.slice(0, 2).map(formatMuscleName).join(', ')}
                   </ThemedText>
                 </View>
                 <View style={styles.configActions}>

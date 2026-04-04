@@ -60,20 +60,9 @@ const DEFAULT_SETTINGS: AudioSettings = {
  */
 const APP_LANG_TO_TTS_LOCALE: Record<string, string> = {
   en: 'en-US',
-  af: 'af-ZA',
-  zu: 'zu-ZA',
-  xh: 'xh-ZA',
-  st: 'st-ZA',
   es: 'es-ES',
   fr: 'fr-FR',
-  de: 'de-DE',
-  pt: 'pt-BR',
   zh: 'zh-CN',
-  ja: 'ja-JP',
-  ko: 'ko-KR',
-  ar: 'ar-SA',
-  hi: 'hi-IN',
-  sw: 'sw-KE',
 };
 
 /**

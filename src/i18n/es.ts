@@ -1400,6 +1400,23 @@ const es: Record<string, string> = {
 
   // Saved Workouts
   'savedWorkouts.loading': 'Cargando entrenamientos guardados...',
+
+  // Profile — inline sections
+  'profile.mindXP': 'Mente XP',
+  'profile.craftMyMind': 'Entrena tu Mente',
+  'profile.comingSoon': 'PRÓXIMAMENTE',
+  'profile.pagesRead': 'Páginas Leídas',
+  'profile.cardsReviewed': 'Tarjetas Revisadas',
+  'profile.booksDone': 'Libros Terminados',
+  'profile.workSchedule': 'Horario de Trabajo',
+  'profile.learningPatterns': 'Aprendiendo tus patrones ({{count}} entrenamientos analizados)',
+  'profile.appSitemap': 'Mapa de la App',
+  'profile.appSitemapSub': 'Todas las pantallas y navegación',
+  'profile.feedback': 'Comentarios',
+  'profile.reviewBugReport': 'Reseña e Informe de Errores',
+  'profile.reviewBugReportSub': 'Ayúdanos a mejorar FitQuest',
+  'profile.theme': 'Tema',
+  'profile.healthSecurity': 'Salud y Seguridad',
 };
 
 export default es;

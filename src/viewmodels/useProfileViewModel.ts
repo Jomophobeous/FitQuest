@@ -137,7 +137,7 @@ export interface MindXPData {
 
 export const useProfileViewModel = createViewModel(() => {
   const { theme, mode, setMode } = useTheme();
-  const { t, languageName } = useLanguage();
+  const { t, language, setLanguage, languageName } = useLanguage();
   const { showToast } = useToast();
   const { refreshProfile, isReady: dbReady } = useDatabase();
   const { signOut } = useAuth();
@@ -1005,6 +1005,8 @@ export const useProfileViewModel = createViewModel(() => {
     mode,
     setMode,
     t,
+    language,
+    setLanguage,
     languageName,
     router,
     accessState,

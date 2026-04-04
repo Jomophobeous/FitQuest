@@ -11,7 +11,6 @@ import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import ThemedText from '../src/components/ThemedText';
-import { LanguageSelector } from '../src/components/LanguageSelector';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
@@ -23,6 +22,9 @@ import { ThemedPickerModal, MenuItem, adaptiveLabel } from '../src/components/pr
 import { ScheduleModal, HelpModal, AboutModal } from '../src/components/profile/ProfileModals';
 import { ProfileHeader } from '../src/components/profile/ProfileHeader';
 import { StatsGrid, AchievementsCard } from '../src/components/profile/ProfileStats';
+import { LanguagePillGrid, ThemePillRow } from '../src/components/profile/InlinePickers';
+import { SUPPORTED_LANGUAGES } from '../src/i18n/translations';
+import type { ThemeMode } from '../src/design/theme-system';
 
 // ============================================
 // SCREEN
@@ -35,6 +37,8 @@ export default function ProfileScreen() {
     mode,
     setMode,
     t,
+    language,
+    setLanguage,
     languageName,
     router,
     accessState,
@@ -58,10 +62,6 @@ export default function ProfileScreen() {
     mindXP,
     consentTimestamp,
     consentVersion,
-    showLanguageSelector,
-    setShowLanguageSelector,
-    showThemePicker,
-    setShowThemePicker,
     showAboutModal,
     setShowAboutModal,
     showHelpModal,
@@ -192,7 +192,7 @@ export default function ProfileScreen() {
 
           {/* ── MIND XP ── */}
           <View style={styles.section}>
-            <SectionHeader title={'Mind XP'} delay={275} />
+            <SectionHeader title={t('profile.mindXP') || 'Mind XP'} delay={275} />
             <GlassCard gradient delay={280}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing[3] }}>
                 <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.purple + '18' }]}>
@@ -200,7 +200,7 @@ export default function ProfileScreen() {
                 </View>
                 <View style={{ flex: 1, marginLeft: spacing[3] }}>
                   <ThemedText style={[styles.menuLabel, { color: theme.colors.text, fontSize: typography.sizes.body }]}>
-                    Craft My Mind
+                    {t('profile.craftMyMind') || 'Craft My Mind'}
                   </ThemedText>
                   <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
                     {mindXP?.total_mind_xp || 0} Mind XP
@@ -222,7 +222,7 @@ export default function ProfileScreen() {
                       letterSpacing: 0.5,
                     }}
                   >
-                    COMING SOON
+                    {t('profile.comingSoon') || 'COMING SOON'}
                   </ThemedText>
                 </View>
               </View>
@@ -233,7 +233,7 @@ export default function ProfileScreen() {
                       {mindXP?.pages_read_total || 0}
                     </ThemedText>
                     <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
-                      Pages Read
+                      {t('profile.pagesRead') || 'Pages Read'}
                     </ThemedText>
                   </View>
                   <View style={styles.achievementItem}>
@@ -241,7 +241,7 @@ export default function ProfileScreen() {
                       {mindXP?.flashcards_reviewed_total || 0}
                     </ThemedText>
                     <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
-                      Cards Reviewed
+                      {t('profile.cardsReviewed') || 'Cards Reviewed'}
                     </ThemedText>
                   </View>
                   <View style={styles.achievementItem}>
@@ -249,7 +249,7 @@ export default function ProfileScreen() {
                       {mindXP?.documents_completed || 0}
                     </ThemedText>
                     <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
-                      Books Done
+                      {t('profile.booksDone') || 'Books Done'}
                     </ThemedText>
                   </View>
                 </View>
@@ -328,7 +328,7 @@ export default function ProfileScreen() {
             )}
             <MenuItem
               icon="briefcase-clock-outline"
-              label="Work Schedule"
+              label={t('profile.workSchedule') || 'Work Schedule'}
               sublabel={scheduleLabel}
               color={theme.colors.blue}
               delay={530}
@@ -477,7 +477,8 @@ export default function ProfileScreen() {
                 />
               </View>
               <ThemedText style={[styles.adaptiveConfidenceText, { color: theme.colors.textMuted }]}>
-                Learning your patterns ({adaptiveProfile?.samples ?? 0} workouts analyzed)
+                {t('profile.learningPatterns', { count: String(adaptiveProfile?.samples ?? 0) }) ||
+                  `Learning your patterns (${adaptiveProfile?.samples ?? 0} workouts analyzed)`}
               </ThemedText>
 
               {adaptiveProfile?.rationale?.map((line, index) => (
@@ -488,19 +489,58 @@ export default function ProfileScreen() {
             </GlassCard>
           </View>
 
-          {/* ── PREFERENCES ── */}
+          {/* ── PREFERENCES (Compact Card) ── */}
           <View style={styles.section}>
             <SectionHeader title={t('profile.preferences')} delay={500} />
-            <MenuItem
-              icon="account-group-outline"
-              label={t('profile.socialLayer')}
-              sublabel={socialSettings?.enabled ? t('profile.socialLayerOn') : t('profile.socialLayerOff')}
-              color={theme.colors.blue}
-              delay={535}
-              onPress={() => {
-                void handleSocialToggle(!(socialSettings?.enabled ?? false));
-              }}
-              rightContent={
+            <GlassCard delay={510}>
+              {/* ── Theme Picker (inline pills) ── */}
+              <View style={styles.inlineSettingRow}>
+                <View
+                  style={[
+                    styles.menuIconWrap,
+                    { backgroundColor: (mode === 'blackGold' ? theme.colors.accent3 : theme.colors.purple) + '18' },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={(mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'weather-night' : 'weather-sunny') as any}
+                    size={18}
+                    color={mode === 'blackGold' ? theme.colors.accent3 : theme.colors.purple}
+                  />
+                </View>
+                <ThemedText style={[styles.menuLabel, { color: theme.colors.text, flex: 1 }]}>
+                  {t('profile.theme') || 'Theme'}
+                </ThemedText>
+              </View>
+              <ThemePillRow current={mode as ThemeMode} onSelect={(m) => setMode(m as any)} />
+
+              <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
+
+              {/* ── Language Picker (inline 2×2 grid) ── */}
+              <View style={styles.inlineSettingRow}>
+                <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.blue + '18' }]}>
+                  <MaterialCommunityIcons name="translate" size={18} color={theme.colors.blue} />
+                </View>
+                <ThemedText style={[styles.menuLabel, { color: theme.colors.text, flex: 1 }]}>
+                  {t('profile.language')}
+                </ThemedText>
+              </View>
+              <LanguagePillGrid current={language} onSelect={setLanguage} languages={SUPPORTED_LANGUAGES} />
+
+              <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
+
+              {/* ── Social Toggle ── */}
+              <View style={styles.inlineSettingRow}>
+                <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.blue + '18' }]}>
+                  <MaterialCommunityIcons name="account-group-outline" size={18} color={theme.colors.blue} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                    {t('profile.socialLayer')}
+                  </ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                    {socialSettings?.enabled ? t('profile.socialLayerOn') : t('profile.socialLayerOff')}
+                  </ThemedText>
+                </View>
                 <Switch
                   value={socialSettings?.enabled ?? false}
                   onValueChange={(next) => {
@@ -510,61 +550,124 @@ export default function ProfileScreen() {
                   trackColor={{ false: theme.colors.border, true: theme.colors.blue + '60' }}
                   thumbColor={(socialSettings?.enabled ?? false) ? theme.colors.blue : theme.colors.surface}
                   accessibilityRole="switch"
-                  accessibilityLabel="Social layer"
+                  accessibilityLabel={t('profile.socialLayer')}
                   accessibilityState={{ checked: socialSettings?.enabled ?? false }}
                 />
-              }
-            />
-            <MenuItem
-              icon={mode === 'blackGold' ? 'crown' : mode === 'dark' ? 'weather-night' : 'weather-sunny'}
-              label="Theme"
-              sublabel={mode === 'blackGold' ? 'Premium' : mode === 'dark' ? 'Charcoal' : 'Light'}
-              color={mode === 'blackGold' ? theme.colors.accent3 : theme.colors.purple}
-              delay={550}
-              onPress={() => setShowThemePicker(true)}
-            />
-            <MenuItem
-              icon="translate"
-              label={t('profile.language')}
-              sublabel={languageName}
-              color={theme.colors.blue}
-              delay={575}
-              onPress={() => setShowLanguageSelector(true)}
-            />
-            <MenuItem
-              icon="map-marker-radius-outline"
-              label={t('profile.mealRegion.title')}
-              sublabel={mealRegionLabel(mealRegionOverride)}
-              color={theme.colors.accent}
-              delay={590}
-              onPress={handleMealRegion}
-            />
-            <MenuItem
-              icon="bell-outline"
-              label={t('profile.notifications')}
-              sublabel={notificationSublabel}
-              color={theme.colors.pink}
-              delay={600}
-              onPress={handleNotifications}
-            />
-            <MenuItem
-              icon="heart-pulse"
-              label={t('profile.healthConnect')}
-              sublabel={healthConnectSublabel}
-              color={healthConnectEnabled ? theme.colors.accent : theme.colors.textMuted}
-              delay={605}
-              onPress={handleHealthConnectSettings}
-            />
-            <MenuItem
-              icon="sync"
-              label={t('profile.healthSync')}
-              sublabel={healthSyncSublabel}
-              color={theme.colors.blue}
-              delay={608}
-              onPress={() => {
-                void handleSyncHealth();
-              }}
-            />
+              </View>
+
+              <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
+
+              {/* ── Notifications (picker) ── */}
+              <TouchableOpacity activeOpacity={0.7} onPress={handleNotifications} style={styles.inlineSettingRow}>
+                <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.pink + '18' }]}>
+                  <MaterialCommunityIcons name="bell-outline" size={18} color={theme.colors.pink} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                    {t('profile.notifications')}
+                  </ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                    {notificationSublabel}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+
+              <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
+
+              {/* ── Meal Region (picker) ── */}
+              <TouchableOpacity activeOpacity={0.7} onPress={handleMealRegion} style={styles.inlineSettingRow}>
+                <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.accent + '18' }]}>
+                  <MaterialCommunityIcons name="map-marker-radius-outline" size={18} color={theme.colors.accent} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                    {t('profile.mealRegion.title')}
+                  </ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                    {mealRegionLabel(mealRegionOverride)}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+            </GlassCard>
+          </View>
+
+          {/* ── HEALTH & SECURITY (Expandable Card) ── */}
+          <View style={styles.section}>
+            <SectionHeader title={t('profile.healthSecurity') || 'Health & Security'} delay={600} />
+            <GlassCard delay={610}>
+              {/* ── Biometric Lock ── */}
+              <TouchableOpacity activeOpacity={0.7} onPress={handleBiometricTest} style={styles.inlineSettingRow}>
+                <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.indigo + '18' }]}>
+                  <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.indigo} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                    {t('profile.biometricLock') || 'Biometric Lock'}
+                  </ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                    {biometricSublabel}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+
+              <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
+
+              {/* ── Health Connect ── */}
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleHealthConnectSettings}
+                style={styles.inlineSettingRow}
+              >
+                <View
+                  style={[
+                    styles.menuIconWrap,
+                    { backgroundColor: (healthConnectEnabled ? theme.colors.accent : theme.colors.textMuted) + '18' },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="heart-pulse"
+                    size={18}
+                    color={healthConnectEnabled ? theme.colors.accent : theme.colors.textMuted}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                    {t('profile.healthConnect')}
+                  </ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                    {healthConnectSublabel}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+
+              <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
+
+              {/* ── Health Sync ── */}
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  void handleSyncHealth();
+                }}
+                style={styles.inlineSettingRow}
+              >
+                <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.blue + '18' }]}>
+                  <MaterialCommunityIcons name="sync" size={18} color={theme.colors.blue} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                    {t('profile.healthSync')}
+                  </ThemedText>
+                  <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                    {healthSyncSublabel}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="sync" size={18} color={theme.colors.textMuted} />
+              </TouchableOpacity>
+            </GlassCard>
 
             {/* Compact Health Sync Errors */}
             {healthSyncErrors.length > 0 && (
@@ -584,7 +687,7 @@ export default function ProfileScreen() {
                     onPress={handleDismissHealthErrors}
                     hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
                     accessibilityRole="button"
-                    accessibilityLabel="Dismiss sync errors"
+                    accessibilityLabel={t('common.dismiss') || 'Dismiss'}
                   >
                     <ThemedText style={[styles.healthErrorsDismiss, { color: theme.colors.textMuted }]}>
                       {t('common.dismiss') || 'Dismiss'}
@@ -607,15 +710,6 @@ export default function ProfileScreen() {
                 )}
               </Animated.View>
             )}
-
-            <MenuItem
-              icon="fingerprint"
-              label={t('profile.biometricLock') || 'Biometric Lock'}
-              sublabel={biometricSublabel}
-              color={theme.colors.indigo}
-              delay={610}
-              onPress={handleBiometricTest}
-            />
           </View>
 
           {/* ── PRIVACY & LEGAL ── */}
@@ -723,8 +817,8 @@ export default function ProfileScreen() {
             />
             <MenuItem
               icon="sitemap"
-              label="App Sitemap"
-              sublabel="All screens & navigation"
+              label={t('profile.appSitemap') || 'App Sitemap'}
+              sublabel={t('profile.appSitemapSub') || 'All screens & navigation'}
               color={theme.colors.indigo}
               delay={740}
               onPress={() => router.push('/sitemap' as any)}
@@ -733,11 +827,11 @@ export default function ProfileScreen() {
 
           {/* ── FEEDBACK & BUG REPORT ── */}
           <View style={styles.section}>
-            <SectionHeader title="Feedback" delay={750} />
+            <SectionHeader title={t('profile.feedback') || 'Feedback'} delay={750} />
             <MenuItem
               icon="message-star-outline"
-              label="Review & Bug Report"
-              sublabel="Help us improve FitQuest"
+              label={t('profile.reviewBugReport') || 'Review & Bug Report'}
+              sublabel={t('profile.reviewBugReportSub') || 'Help us improve FitQuest'}
               color={theme.colors.accent}
               delay={760}
               onPress={() => router.push('/feedback' as any)}
@@ -766,23 +860,6 @@ export default function ProfileScreen() {
           {/* Bottom spacing */}
           <View style={{ height: 100 }} />
         </ScrollView>
-
-        {/* Theme Picker Modal */}
-        <ThemedPickerModal
-          visible={showThemePicker}
-          title="Choose Theme"
-          subtitle="Select your preferred app appearance"
-          options={[
-            { label: '🖤  Charcoal', value: 'dark' },
-            { label: '☀️  Light', value: 'light' },
-            { label: '👑  Premium', value: 'blackGold' },
-          ]}
-          onSelect={(value) => setMode(value as 'dark' | 'light' | 'blackGold')}
-          onClose={() => setShowThemePicker(false)}
-        />
-
-        {/* Language Selector Modal */}
-        <LanguageSelector visible={showLanguageSelector} onClose={() => setShowLanguageSelector(false)} />
 
         {/* Themed Picker Modal (replaces native Alert.alert) */}
         <ThemedPickerModal
@@ -845,6 +922,19 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: spacing[4],
     marginBottom: spacing[3],
+  },
+
+  // Inline settings (inside GlassCard)
+  inlineSettingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingVertical: spacing[1],
+  },
+  inlineDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginVertical: spacing[3],
+    opacity: 0.5,
   },
 
   // Menu (shared with Mind XP inline usage)

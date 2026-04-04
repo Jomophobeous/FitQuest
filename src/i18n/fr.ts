@@ -1410,6 +1410,23 @@ const fr: Record<string, string> = {
 
   // Saved Workouts
   'savedWorkouts.loading': 'Chargement des entraînements sauvegardés...',
+
+  // Profile — inline sections
+  'profile.mindXP': 'XP Mental',
+  'profile.craftMyMind': 'Entraîner mon Esprit',
+  'profile.comingSoon': 'BIENTÔT DISPONIBLE',
+  'profile.pagesRead': 'Pages Lues',
+  'profile.cardsReviewed': 'Cartes Révisées',
+  'profile.booksDone': 'Livres Terminés',
+  'profile.workSchedule': 'Horaire de Travail',
+  'profile.learningPatterns': 'Apprentissage de vos habitudes ({{count}} entraînements analysés)',
+  'profile.appSitemap': "Plan de l'App",
+  'profile.appSitemapSub': 'Tous les écrans et navigation',
+  'profile.feedback': 'Commentaires',
+  'profile.reviewBugReport': 'Avis et Rapport de Bugs',
+  'profile.reviewBugReportSub': 'Aidez-nous à améliorer FitQuest',
+  'profile.theme': 'Thème',
+  'profile.healthSecurity': 'Santé et Sécurité',
 };
 
 export default fr;

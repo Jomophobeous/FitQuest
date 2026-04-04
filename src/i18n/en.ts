@@ -1550,6 +1550,23 @@ const en = {
 
   // Coach
   'coach.exercisesMin': '{{count}} exercises · ~{{min}} min',
+
+  // Profile — inline sections
+  'profile.mindXP': 'Mind XP',
+  'profile.craftMyMind': 'Craft My Mind',
+  'profile.comingSoon': 'COMING SOON',
+  'profile.pagesRead': 'Pages Read',
+  'profile.cardsReviewed': 'Cards Reviewed',
+  'profile.booksDone': 'Books Done',
+  'profile.workSchedule': 'Work Schedule',
+  'profile.learningPatterns': 'Learning your patterns ({{count}} workouts analyzed)',
+  'profile.appSitemap': 'App Sitemap',
+  'profile.appSitemapSub': 'All screens & navigation',
+  'profile.feedback': 'Feedback',
+  'profile.reviewBugReport': 'Review & Bug Report',
+  'profile.reviewBugReportSub': 'Help us improve FitQuest',
+  'profile.theme': 'Theme',
+  'profile.healthSecurity': 'Health & Security',
 };
 
 export default en;

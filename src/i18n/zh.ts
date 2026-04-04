@@ -1363,6 +1363,23 @@ const zh: Record<string, string> = {
 
   // Saved Workouts
   'savedWorkouts.loading': '加载已保存的锻炼...',
+
+  // Profile — inline sections
+  'profile.mindXP': '心智经验值',
+  'profile.craftMyMind': '训练大脑',
+  'profile.comingSoon': '即将推出',
+  'profile.pagesRead': '已读页数',
+  'profile.cardsReviewed': '已复习卡片',
+  'profile.booksDone': '已完成书籍',
+  'profile.workSchedule': '工作日程',
+  'profile.learningPatterns': '学习您的训练模式（{{count}}次训练已分析）',
+  'profile.appSitemap': '应用地图',
+  'profile.appSitemapSub': '所有页面和导航',
+  'profile.feedback': '反馈',
+  'profile.reviewBugReport': '评价和错误报告',
+  'profile.reviewBugReportSub': '帮助我们改进FitQuest',
+  'profile.theme': '主题',
+  'profile.healthSecurity': '健康与安全',
 };
 
 export default zh;

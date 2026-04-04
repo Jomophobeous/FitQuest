@@ -359,39 +359,6 @@ function ThemedTabs() {
           title: t('nav.termsOfService'),
         }}
       />
-
-      <Tabs.Screen
-        name="professor/index"
-        options={{
-          href: null,
-          lazy: true,
-          title: t('nav.professor'),
-        }}
-      />
-      <Tabs.Screen
-        name="fitmind-library"
-        options={{
-          href: null,
-          lazy: true,
-          title: 'FitMind Library',
-        }}
-      />
-      <Tabs.Screen
-        name="fitmind-reader"
-        options={{
-          href: null,
-          lazy: true,
-          title: 'FitMind Reader',
-        }}
-      />
-      <Tabs.Screen
-        name="dev/ui-preview"
-        options={{
-          href: null,
-          lazy: true,
-          title: 'UI Preview',
-        }}
-      />
     </Tabs>
   );
 }

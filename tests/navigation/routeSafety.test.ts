@@ -41,6 +41,10 @@ const HIDDEN_SCREENS = [
   'craft-my-body',
   'paywall',
   'dev/debug-panel',
+  'meal-prep',
+  'backups',
+  'health-dashboard',
+  'nutrition-calculator',
 ] as const;
 
 /**
@@ -49,14 +53,9 @@ const HIDDEN_SCREENS = [
  * App will crash if user navigates to these routes.
  */
 const ORPHANED_ROUTES = [
-  'meal-prep',
-  'backups',
-  'health-dashboard',
-  'nutrition-calculator',
-  'professor/index',
-  'fitmind-library',
-  'fitmind-reader',
-  'dev/ui-preview',
+  // All previously orphaned routes have been resolved:
+  // - meal-prep, backups, health-dashboard, nutrition-calculator: stub screens created
+  // - professor/index, fitmind-library, fitmind-reader, dev/ui-preview: removed from layout
 ] as const;
 
 const ALL_ROUTES = [...TAB_SCREENS, ...HIDDEN_SCREENS];
@@ -195,8 +194,8 @@ describe('Orphaned routes (registered in _layout.tsx but missing screen files)',
         confirmed.push(route);
       }
     }
-    // These routes are KNOWN to be missing — test passes as documentation
-    expect(confirmed.length).toBeGreaterThan(0);
+    // All orphaned routes have been resolved
+    expect(confirmed.length).toBe(0);
   });
 
   it('counts exactly the expected number of orphaned routes', () => {
@@ -208,7 +207,7 @@ describe('Orphaned routes (registered in _layout.tsx but missing screen files)',
         missing++;
       }
     }
-    // Update this count as screens are created
-    expect(missing).toBeGreaterThanOrEqual(6);
+    // All orphaned routes resolved — none should be missing
+    expect(missing).toBe(0);
   });
 });

@@ -1,6 +1,7 @@
 /**
- * FitQuest Workout Hook
- * Integrates all three engines for workout generation, progression, and recovery
+ * FitQuest Workout Hook — Orchestrator
+ * Composes workout generation, progression, recovery, and persistence.
+ * Types, helpers, and persistence extracted to ./workout/ modules.
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -28,10 +29,6 @@ import {
   getSessionExercises,
   getWorkoutSession,
   getActiveWorkoutSession,
-  updateSessionExerciseProgress,
-  setAppState,
-  getAppState,
-  getUserProgress,
 } from '../database/service';
 
 import { awardWorkoutXP } from '../services/xpService';
@@ -52,160 +49,40 @@ import {
   type MindTimeline,
 } from '../engines/MindSessionEngine';
 
-// ============================================
-// RECOVERY REASON MAPPER
-// ============================================
+// Extracted modules
+import {
+  type WorkoutState,
+  type WorkoutExerciseDisplay,
+  type WorkoutCompletionData,
+  type GeneratedWorkoutDisplay,
+  type ProgressionNarrative,
+} from './workout/types';
+import {
+  persistWorkoutProgress,
+  persistExerciseCompletion,
+  clearActiveWorkout,
+  readActiveWorkout,
+} from './workout/persistence';
+import {
+  mapRecoveryReasonToFriendly,
+  buildDisplaysFromSessionRows,
+  overlayLocalization,
+  buildPhaseDisplays,
+  collectMusclesWorked,
+  computePhaseBreakdown,
+} from './workout/helpers';
 
-/** Map raw recovery engine reasons to user-friendly messages */
-function mapRecoveryReasonToFriendly(reasons: string[], _severity: string): string {
-  if (reasons.length === 0) return 'All systems healthy — ready to train';
-
-  const friendly: string[] = [];
-  for (const r of reasons) {
-    if (/consecutive workout failures/i.test(r)) {
-      friendly.push('Take a recovery day — your body needs rest');
-    } else if (/muscle group.*critical fatigue/i.test(r)) {
-      friendly.push('Some muscles need more recovery time');
-    } else if (/average fatigue.*exceeds/i.test(r)) {
-      friendly.push('Overall fatigue is high — a lighter session is recommended');
-    } else if (/scheduled deload/i.test(r)) {
-      friendly.push('Scheduled recovery week — time to recharge');
-    } else {
-      friendly.push(r);
-    }
-  }
-
-  return friendly.join('. ');
-}
-
-// ============================================
-// TYPES
-// ============================================
-
-interface ExerciseReason {
-  exercise_id: string;
-  exercise_name: string;
-  reason: string;
-  score_breakdown?: { freshness: string; goal_alignment: string; pattern_balance: string };
-}
-
-export interface AIInsight {
-  session_reason: string;
-  volume_reason: string;
-  exercise_reasons: ExerciseReason[];
-  general_notes: string[];
-}
-
-export interface LastImpactDisplay {
-  hasHistory: boolean;
-  headline: string;
-  trend: string;
-  trendStatement: string;
-  timeSince: string;
-}
-
-export interface WorkoutDelta {
-  hasChanges: boolean;
-  headline: string;
-  removed: string[];
-  added: string[];
-}
-
-export interface ProgressionNarrative {
-  exerciseId: string;
-  exerciseName: string;
-  trend: string;
-  narrative: string;
-}
-
-export interface GeneratedWorkoutDisplay {
-  id: string;
-  exercises: WorkoutExerciseDisplay[];
-  totalDuration: number;
-  isDeload: boolean;
-  explanation: string;
-  warnings: string[];
-  aiInsight: AIInsight | null;
-  lastImpact: LastImpactDisplay | null;
-  workoutDelta: WorkoutDelta | null;
-  progressionNarratives: ProgressionNarrative[];
-  warmup: WorkoutExerciseDisplay[];
-  cooldown: WorkoutExerciseDisplay[];
-}
-
-export interface WorkoutExerciseDisplay {
-  id: string;
-  exerciseId: string;
-  name: string;
-  category: string;
-  sets: number;
-  reps: string;
-  restSeconds: number;
-  instructions: string[];
-  completed: boolean;
-  difficulty?: number;
-  /** Phase of the workout this exercise belongs to */
-  phase?: 'warmup' | 'main' | 'cooldown';
-  // Audio instruction fields for TTS
-  audioIntro: string;
-  audioSetup: string;
-  audioExecution: string;
-  audioTransition: string;
-  /** Mind exercise timeline (only set for focus/mindfulness exercises) */
-  mindTimeline?: MindTimeline;
-}
-
-export interface WorkoutState {
-  status: 'idle' | 'generating' | 'ready' | 'in_progress' | 'completed' | 'error';
-  workout: GeneratedWorkoutDisplay | null;
-  currentExerciseIndex: number;
-  startTime: Date | null;
-  error: string | null;
-}
-
-/** Rich completion data returned by finishWorkout() */
-export interface WorkoutCompletionData {
-  summary: string;
-  streak: { current: number; longest: number };
-  completedCount: number;
-  totalCount: number;
-  durationSeconds: number;
-  xpEarned: number;
-  level: number;
-  levelUp: boolean;
-  newLevel?: number;
-  progressions: number;
-  regressions: number;
-  exerciseNames: string[];
-  musclesWorked: string[];
-  /** Phase breakdown for summary display */
-  phaseBreakdown?: {
-    warmup: { total: number; completed: number };
-    main: { total: number; completed: number };
-    cooldown: { total: number; completed: number };
-  };
-}
-
-// ============================================
-// WORKOUT SESSION PERSISTENCE
-// ============================================
-
-const ACTIVE_WORKOUT_KEY = 'active_workout_state';
-
-/** Fire-and-forget write — never blocks UI, never throws */
-function persistWorkoutProgress(sessionId: string, exerciseIndex: number, startTime: string): void {
-  setAppState(ACTIVE_WORKOUT_KEY, JSON.stringify({ sessionId, exerciseIndex, startTime })).catch(() => {});
-}
-
-/** Fire-and-forget exercise persistence — update the DB row for a session_exercise */
-function persistExerciseCompletion(sessionExerciseId: string, sets: number, skipped: boolean): void {
-  updateSessionExerciseProgress(sessionExerciseId, sets, skipped).catch(() => {});
-}
-
-/** Clear active workout marker */
-function clearActiveWorkout(): void {
-  setAppState(ACTIVE_WORKOUT_KEY, '').catch(() => {});
-}
+// Re-export types for consumers
+export type {
+  WorkoutExerciseDisplay,
+  WorkoutCompletionData,
+  GeneratedWorkoutDisplay,
+  WorkoutState,
+  AIInsight,
+  LastImpactDisplay,
+  WorkoutDelta,
+  ProgressionNarrative,
+} from './workout/types';
 
 // ============================================
 // HOOK
@@ -245,12 +122,9 @@ export function useFitQuestWorkout() {
     if (recoveryAttemptedRef.current) return false;
     recoveryAttemptedRef.current = true;
     try {
-      const raw = await getAppState(ACTIVE_WORKOUT_KEY);
-      if (!raw) return false;
-      const saved = JSON.parse(raw) as { sessionId: string; exerciseIndex: number; startTime: string };
-      if (!saved.sessionId) return false;
+      const saved = await readActiveWorkout();
+      if (!saved) return false;
 
-      // Verify session still exists and is incomplete
       const session = await getActiveWorkoutSession(DEFAULT_USER_ID);
       if (!session || session.id !== saved.sessionId) {
         clearActiveWorkout();
@@ -263,46 +137,7 @@ export function useFitQuestWorkout() {
         return false;
       }
 
-      // Rebuild exercise displays, restoring completion state from DB
-      const safeParseInstructions = (raw: string | null): string[] => {
-        if (!raw) return [];
-        try {
-          const parsed = JSON.parse(raw);
-          return Array.isArray(parsed) ? parsed : [raw];
-        } catch {
-          return raw ? [raw] : [];
-        }
-      };
-
-      const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
-        const richAudio = generateRichAudio(
-          {
-            name: se.name,
-            category: se.category,
-            instructions: safeParseInstructions(se.instructions),
-            primaryMuscles: [],
-            restSeconds: 60,
-          },
-          sessionExercises[i + 1]?.name,
-          t,
-        );
-        return {
-          id: se.id,
-          exerciseId: se.exercise_id,
-          name: se.name,
-          category: se.category,
-          sets: se.prescribed_sets,
-          reps: se.prescribed_reps,
-          restSeconds: 60,
-          instructions: safeParseInstructions(se.instructions),
-          completed: se.completed_sets > 0 || (se.skipped ? true : false),
-          phase: 'main' as const,
-          audioIntro: se.audio_intro || richAudio.intro,
-          audioSetup: se.audio_setup || richAudio.setup,
-          audioExecution: se.audio_execution || richAudio.execution,
-          audioTransition: se.audio_transition || richAudio.transition,
-        };
-      });
+      const exerciseDisplays = buildDisplaysFromSessionRows(sessionExercises, t, { markCompleted: true });
 
       const workout: GeneratedWorkoutDisplay = {
         id: saved.sessionId,
@@ -319,7 +154,6 @@ export function useFitQuestWorkout() {
         cooldown: [],
       };
 
-      // Clamp index to valid range
       const restoredIndex = Math.min(saved.exerciseIndex, exerciseDisplays.length - 1);
       const allComplete = restoredIndex >= exerciseDisplays.length;
 
@@ -467,38 +301,8 @@ export function useFitQuestWorkout() {
       let cooldownDisplays: WorkoutExerciseDisplay[] = [];
       try {
         const wcResult = await generateWarmupCooldown(generated.exercises, mainExerciseIds);
-        warmupDisplays = wcResult.warmup.map((w, i) => ({
-          id: `warmup_${i}_${Date.now()}`,
-          exerciseId: w.exercise.id,
-          name: w.exercise.name,
-          category: w.exercise.category,
-          sets: w.sets,
-          reps: w.reps,
-          restSeconds: 15,
-          instructions: w.exercise.instructions || [],
-          completed: false,
-          phase: 'warmup' as const,
-          audioIntro: w.exercise.audio_intro || '',
-          audioSetup: w.exercise.audio_setup || '',
-          audioExecution: w.exercise.audio_execution || '',
-          audioTransition: w.exercise.audio_transition || '',
-        }));
-        cooldownDisplays = wcResult.cooldown.map((c, i) => ({
-          id: `cooldown_${i}_${Date.now()}`,
-          exerciseId: c.exercise.id,
-          name: c.exercise.name,
-          category: c.exercise.category,
-          sets: c.sets,
-          reps: c.reps,
-          restSeconds: 15,
-          instructions: c.exercise.instructions || [],
-          completed: false,
-          phase: 'cooldown' as const,
-          audioIntro: c.exercise.audio_intro || '',
-          audioSetup: c.exercise.audio_setup || '',
-          audioExecution: c.exercise.audio_execution || '',
-          audioTransition: c.exercise.audio_transition || '',
-        }));
+        warmupDisplays = buildPhaseDisplays(wcResult.warmup, 'warmup');
+        cooldownDisplays = buildPhaseDisplays(wcResult.cooldown, 'cooldown');
       } catch (wcErr) {
         if (__DEV__) console.warn('[FitQuest] Warmup/cooldown generation failed (non-fatal):', wcErr);
       }
@@ -524,25 +328,9 @@ export function useFitQuestWorkout() {
             ...cooldownDisplays.map((e) => e.exerciseId),
           ];
           const localized = await translationResolver.resolveBatch(allIds, language);
-          const overlayLocalization = (displays: WorkoutExerciseDisplay[]) => {
-            for (let i = 0; i < displays.length; i++) {
-              const loc = localized.get(displays[i]!.exerciseId);
-              if (loc && !loc.isFallback) {
-                displays[i] = {
-                  ...displays[i]!,
-                  name: loc.name,
-                  instructions: loc.instructions,
-                  audioIntro: loc.audioIntro || displays[i]!.audioIntro,
-                  audioSetup: loc.audioSetup || displays[i]!.audioSetup,
-                  audioExecution: loc.audioExecution || displays[i]!.audioExecution,
-                  audioTransition: loc.audioTransition || displays[i]!.audioTransition,
-                };
-              }
-            }
-          };
-          overlayLocalization(exerciseDisplays);
-          overlayLocalization(warmupDisplays);
-          overlayLocalization(cooldownDisplays);
+          overlayLocalization(exerciseDisplays, localized);
+          overlayLocalization(warmupDisplays, localized);
+          overlayLocalization(cooldownDisplays, localized);
         } catch (locErr) {
           if (__DEV__) console.warn('[FitQuest] Exercise localization overlay failed (non-fatal):', locErr);
         }
@@ -610,65 +398,14 @@ export function useFitQuestWorkout() {
         }
 
         // Parse instructions safely (may be JSON array or plain text)
-        const safeParseInstructions = (raw: string | null): string[] => {
-          if (!raw) return [];
-          try {
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [raw];
-          } catch {
-            return raw ? [raw] : [];
-          }
-        };
-
-        const exerciseDisplays: WorkoutExerciseDisplay[] = sessionExercises.map((se, i) => {
-          const richAudio = generateRichAudio(
-            {
-              name: se.name,
-              category: se.category,
-              instructions: safeParseInstructions(se.instructions),
-              primaryMuscles: [],
-              restSeconds: 60,
-            },
-            sessionExercises[i + 1]?.name,
-            t,
-          );
-
-          return {
-            id: se.id,
-            exerciseId: se.exercise_id,
-            name: se.name,
-            category: se.category,
-            sets: se.prescribed_sets,
-            reps: se.prescribed_reps,
-            restSeconds: 60,
-            instructions: safeParseInstructions(se.instructions),
-            completed: false,
-            audioIntro: se.audio_intro || richAudio.intro,
-            audioSetup: se.audio_setup || richAudio.setup,
-            audioExecution: se.audio_execution || richAudio.execution,
-            audioTransition: se.audio_transition || richAudio.transition,
-          };
-        });
+        const exerciseDisplays = buildDisplaysFromSessionRows(sessionExercises, t);
 
         // Overlay localized exercise data for non-English users
         if (language !== 'en') {
           try {
             const allIds = exerciseDisplays.map((e) => e.exerciseId);
             const localized = await translationResolver.resolveBatch(allIds, language);
-            for (let i = 0; i < exerciseDisplays.length; i++) {
-              const loc = localized.get(exerciseDisplays[i]!.exerciseId);
-              if (loc && !loc.isFallback) {
-                exerciseDisplays[i] = {
-                  ...exerciseDisplays[i]!,
-                  name: loc.name,
-                  instructions: loc.instructions,
-                  audioIntro: loc.audioIntro || exerciseDisplays[i]!.audioIntro,
-                  audioSetup: loc.audioSetup || exerciseDisplays[i]!.audioSetup,
-                  audioExecution: loc.audioExecution || exerciseDisplays[i]!.audioExecution,
-                  audioTransition: loc.audioTransition || exerciseDisplays[i]!.audioTransition,
-                };
-              }
-            }
+            overlayLocalization(exerciseDisplays, localized);
           } catch (locErr) {
             if (__DEV__) console.warn('[FitQuest] Custom workout localization failed (non-fatal):', locErr);
           }
@@ -940,30 +677,9 @@ export function useFitQuestWorkout() {
         durationMinutes: Math.round(durationSeconds / 60),
       }).catch(() => {});
 
-      // Collect muscles worked from completed main exercises (reuse batch-loaded data)
-      const musclesWorkedSet = new Set<string>();
-      for (const ex of completedMainExercises) {
-        const exercise = exerciseMap.get(ex.exerciseId);
-        if (exercise) {
-          exercise.primary_muscles.forEach((m: string) => musclesWorkedSet.add(m));
-        }
-      }
-
-      // Compute phase breakdown
-      const allExercises = state.workout.exercises;
-      const warmupExercises = allExercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'warmup');
-      const cooldownExercises = allExercises.filter((e: WorkoutExerciseDisplay) => e.phase === 'cooldown');
-      const phaseBreakdown = {
-        warmup: {
-          total: warmupExercises.length,
-          completed: warmupExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length,
-        },
-        main: { total: mainOnly.length, completed: completedCount },
-        cooldown: {
-          total: cooldownExercises.length,
-          completed: cooldownExercises.filter((e: WorkoutExerciseDisplay) => e.completed).length,
-        },
-      };
+      // Collect muscles worked + phase breakdown
+      const musclesWorked = collectMusclesWorked(completedMainExercises, exerciseMap);
+      const phaseBreakdown = computePhaseBreakdown(state.workout.exercises, completedCount);
 
       return {
         summary: finalSummary,
@@ -978,7 +694,7 @@ export function useFitQuestWorkout() {
         progressions,
         regressions,
         exerciseNames: mainOnly.filter((e: WorkoutExerciseDisplay) => e.completed).map((e) => e.name),
-        musclesWorked: Array.from(musclesWorkedSet),
+        musclesWorked,
         phaseBreakdown,
       };
     } catch (err) {

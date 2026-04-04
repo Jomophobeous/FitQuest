@@ -2,7 +2,7 @@
  * Legal Center Screen ViewModel
  * Encapsulates consent record loading, policy acceptance/withdrawal, legal links, and replay orchestration.
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { createViewModel } from './createViewModel';
 import {
   LEGAL_POLICY_VERSION,

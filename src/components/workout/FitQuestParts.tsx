@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import Animated, { FadeInRight, FadeInDown, FadeIn } from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeInDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../ThemedText';
 import ExerciseImage from '../ExerciseImage';

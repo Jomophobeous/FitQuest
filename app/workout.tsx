@@ -25,7 +25,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Alert } from 'react-native';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { useTheme } from '../src/context/ThemeContext';
@@ -64,7 +63,6 @@ export default function WorkoutScreen() {
     workout,
     currentExercise,
     currentExerciseIndex,
-    progressPercentage,
     error,
     completeExercise,
     skipExercise,

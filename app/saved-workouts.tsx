@@ -5,15 +5,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  RefreshControl,
-} from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn, SlideInRight } from 'react-native-reanimated';
+import { View, FlatList, StyleSheet, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import Animated, { FadeIn, FadeInDown, ZoomIn, SlideInRight } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -29,7 +22,6 @@ import ExerciseImage from '../src/components/ExerciseImage';
 import { GlassCard, GradientButton, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { typography, spacing, radius } from '../src/design/theme-system';
-
 
 // ============================================
 // CONSTANTS
@@ -115,7 +107,7 @@ export default function SavedWorkoutsScreen() {
           try {
             await vm.deleteWorkout(session.id);
             if (expandedId === session.id) setExpandedId(null);
-          } catch (err) {
+          } catch (_err) {
             showToast({ message: t('savedWorkouts.deleteError'), type: 'error' });
           }
         },
@@ -153,7 +145,9 @@ export default function SavedWorkoutsScreen() {
             </View>
           </Animated.View>
 
-          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('savedWorkouts.emptyTitle')}</ThemedText>
+          <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>
+            {t('savedWorkouts.emptyTitle')}
+          </ThemedText>
           <ThemedText style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
             {t('savedWorkouts.emptySubtitle')}
           </ThemedText>
@@ -172,7 +166,9 @@ export default function SavedWorkoutsScreen() {
                 <View style={[styles.emptyFeatureIcon, { backgroundColor: theme.colors.accent + '14' }]}>
                   <MaterialCommunityIcons name={f.icon} size={18} color={theme.colors.accent} />
                 </View>
-                <ThemedText style={[styles.emptyFeatureText, { color: theme.colors.textSecondary }]}>{f.text}</ThemedText>
+                <ThemedText style={[styles.emptyFeatureText, { color: theme.colors.textSecondary }]}>
+                  {f.text}
+                </ThemedText>
               </Animated.View>
             ))}
           </View>
@@ -295,11 +291,15 @@ export default function SavedWorkoutsScreen() {
                 <View style={styles.expandedDetails}>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons name="calendar-clock" size={16} color={theme.colors.textMuted} />
-                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>Created {dateLabel}</ThemedText>
+                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>
+                      Created {dateLabel}
+                    </ThemedText>
                   </View>
                   <View style={styles.detailRow}>
                     <MaterialCommunityIcons name="timer-sand" size={16} color={theme.colors.textMuted} />
-                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>Estimated {duration}</ThemedText>
+                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>
+                      Estimated {duration}
+                    </ThemedText>
                   </View>
                 </View>
 
@@ -309,7 +309,9 @@ export default function SavedWorkoutsScreen() {
                   if (!exList || exList.length === 0) return null;
                   return (
                     <View style={styles.expandedExerciseList}>
-                      <ThemedText style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>Exercises</ThemedText>
+                      <ThemedText style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>
+                        Exercises
+                      </ThemedText>
                       {exList.map((ex, idx) => (
                         <View
                           key={ex.exercise_id + idx}
@@ -322,7 +324,10 @@ export default function SavedWorkoutsScreen() {
                             animate={false}
                           />
                           <View style={{ flex: 1, marginLeft: spacing[2.5] }}>
-                            <ThemedText style={[styles.exerciseRowName, { color: theme.colors.text }]} numberOfLines={1}>
+                            <ThemedText
+                              style={[styles.exerciseRowName, { color: theme.colors.text }]}
+                              numberOfLines={1}
+                            >
                               {ex.name}
                             </ThemedText>
                             <ThemedText style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
@@ -439,13 +444,25 @@ export default function SavedWorkoutsScreen() {
         {vm.loading ? (
           <Animated.View entering={FadeIn.duration(150)} style={styles.loadingContainer}>
             <MaterialCommunityIcons name="loading" size={36} color={theme.colors.accent} />
-            <ThemedText style={[styles.loadingText, { color: theme.colors.textMuted }]}>{t('savedWorkouts.loading') || 'Loading workouts…'}</ThemedText>
+            <ThemedText style={[styles.loadingText, { color: theme.colors.textMuted }]}>
+              {t('savedWorkouts.loading') || 'Loading workouts…'}
+            </ThemedText>
           </Animated.View>
         ) : vm.loadError ? (
           <View style={[styles.loadingContainer, { alignItems: 'center' }]}>
             <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-            <ThemedText style={[styles.loadingText, { color: theme.colors.error, textAlign: 'center', marginTop: spacing[4] }]}>{vm.loadError}</ThemedText>
-            <GradientButton title="Retry" onPress={() => { vm.loadWorkouts(); }} style={{ marginTop: spacing[4] }} />
+            <ThemedText
+              style={[styles.loadingText, { color: theme.colors.error, textAlign: 'center', marginTop: spacing[4] }]}
+            >
+              {vm.loadError}
+            </ThemedText>
+            <GradientButton
+              title="Retry"
+              onPress={() => {
+                vm.loadWorkouts();
+              }}
+              style={{ marginTop: spacing[4] }}
+            />
           </View>
         ) : vm.workouts.length === 0 ? (
           renderEmptyState()
@@ -478,7 +495,12 @@ export default function SavedWorkoutsScreen() {
         {/* Floating Action Button */}
         {!vm.loading && (
           <Animated.View entering={ZoomIn.delay(100).duration(150)} style={styles.fabContainer}>
-            <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/create-workout')} accessibilityRole="button" accessibilityLabel="Create new workout">
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => router.push('/create-workout')}
+              accessibilityRole="button"
+              accessibilityLabel="Create new workout"
+            >
               <LinearGradient
                 colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                 start={{ x: 0, y: 0 }}
@@ -551,11 +573,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   heroTitle: {
-    fontSize: typography.sizes.h2, 
+    fontSize: typography.sizes.h2,
     fontWeight: '800',
   },
   heroSubtitle: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '600',
     marginTop: spacing[0.5],
   },
@@ -583,7 +605,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   loadingText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
 
@@ -607,13 +629,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing[5],
   },
   emptyTitle: {
-    fontSize: typography.sizes.h3, 
+    fontSize: typography.sizes.h3,
     fontWeight: '800',
     textAlign: 'center',
     marginBottom: spacing[2.5],
   },
   emptySubtitle: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '500',
     textAlign: 'center',
     lineHeight: 21,
@@ -637,7 +659,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyFeatureText: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
 
@@ -665,11 +687,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: typography.sizes.body, 
+    fontSize: typography.sizes.body,
     fontWeight: '700',
   },
   cardDate: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
     marginTop: spacing[0.5],
   },
@@ -682,7 +704,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   statusText: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '700',
   },
   deleteBtn: {
@@ -705,11 +727,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   statPillValue: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '700',
   },
   statPillLabel: {
-    fontSize: typography.sizes.captionSm, 
+    fontSize: typography.sizes.captionSm,
     fontWeight: '500',
   },
 
@@ -732,7 +754,7 @@ const styles = StyleSheet.create({
     gap: spacing[2.5],
   },
   detailText: {
-    fontSize: typography.sizes.label, 
+    fontSize: typography.sizes.label,
     fontWeight: '500',
   },
   expandedExerciseList: {
@@ -740,7 +762,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   exerciseListHeader: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -753,11 +775,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   exerciseRowName: {
-    fontSize: typography.sizes.bodySmall, 
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '600',
   },
   exerciseRowMeta: {
-    fontSize: typography.sizes.caption, 
+    fontSize: typography.sizes.caption,
     marginTop: spacing[0.5],
   },
   expandedActions: {

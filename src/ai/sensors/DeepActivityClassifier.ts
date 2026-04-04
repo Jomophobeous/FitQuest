@@ -10,7 +10,7 @@ class DeepActivityClassifier {
     return false;
   }
 
-  addSample(features: number[]): { activity: string; confidence: number } | null {
+  addSample(_features: number[]): { activity: string; confidence: number } | null {
     return null;
   }
 }

@@ -12,8 +12,8 @@ export interface SearchResult {
 
 class SemanticSearch {
   async search(
-    query: string,
-    opts?: {
+    _query: string,
+    _opts?: {
       documentId?: string;
       limit?: number;
       topK?: number;
@@ -24,7 +24,7 @@ class SemanticSearch {
     return [];
   }
 
-  async indexDocument(documentId: string, content: string, _chunkSize?: number, _overlap?: number): Promise<number> {
+  async indexDocument(_documentId: string, _content: string, _chunkSize?: number, _overlap?: number): Promise<number> {
     return 0;
   }
 }

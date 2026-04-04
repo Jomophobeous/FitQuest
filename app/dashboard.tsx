@@ -74,7 +74,6 @@ export default function DashboardScreen() {
     statPillWarning,
     statPillAccent,
     statPillSurface,
-    signalCardBg,
     exploreTiles,
     handleRefresh,
     setSelectedDate,

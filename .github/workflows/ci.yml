@@ -30,7 +30,7 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Lint check (ratchet — warnings can only decrease)
-        run: npx eslint app/ src/ --max-warnings 804
+        run: npx eslint app/ src/ --max-warnings 250
 
       - name: Format check
         run: npx prettier --check "app/**/*.{ts,tsx}" "src/**/*.{ts,tsx}"

@@ -24,7 +24,6 @@ import {
   getAppState,
   setAppState,
   getUserEquipment,
-  setUserEquipment,
   getRecentSessions,
   getMuscleFatigue,
   getStepHistory,
@@ -34,7 +33,7 @@ import {
   deleteAllUserData,
   getJogTotals,
 } from '../database/service';
-import { getXPData, type XPData } from '../services/xpService';
+import { getXPData } from '../services/xpService';
 import { useDataSync } from '../services/dataSyncService';
 import { getAdaptiveTrainingProfile, type AdaptiveTrainingProfile } from '../services/adaptiveTrainingService';
 import {
@@ -212,7 +211,9 @@ export const useProfileViewModel = createViewModel(() => {
   const profileLoadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    return () => { mountedRef.current = false; };
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   // ── Helpers ──
@@ -874,7 +875,10 @@ export const useProfileViewModel = createViewModel(() => {
         const next = await setSocialLayerEnabled('user_local_001', enabled);
         setSocialSettings(next);
       } catch (e: any) {
-        showToast({ message: e?.message ?? t('profile.alert.updateSocialFailedBody') ?? 'Update failed', type: 'error' });
+        showToast({
+          message: e?.message ?? t('profile.alert.updateSocialFailedBody') ?? 'Update failed',
+          type: 'error',
+        });
       } finally {
         setSocialBusy(false);
       }
@@ -925,7 +929,10 @@ export const useProfileViewModel = createViewModel(() => {
 
   const handleBiometricTest = useCallback(async () => {
     if (!biometricAvailable) {
-      showToast({ message: t('profile.biometricUnavailable') || 'Biometric not available on this device', type: 'info' });
+      showToast({
+        message: t('profile.biometricUnavailable') || 'Biometric not available on this device',
+        type: 'info',
+      });
       return;
     }
     try {
@@ -976,21 +983,20 @@ export const useProfileViewModel = createViewModel(() => {
   const scheduleLabel = professionSchedule
     ? `${professionSchedule.work_start_hour.toString().padStart(2, '0')}:00–${professionSchedule.work_end_hour.toString().padStart(2, '0')}:00 · ${professionSchedule.shift_type} shift`
     : 'Set your work hours for smarter scheduling';
-  const subscriptionLabel = accessState === 'SUBSCRIBED'
-    ? t('profile.subscribed') || 'Subscribed'
-    : accessState === 'TRIAL_ACTIVE'
-      ? `${t('profile.trial') || 'Trial'} — ${trialDaysRemaining} ${t('paywall.trialDaysLeft') || 'days left'}`
-      : t('profile.expired') || 'Expired';
-  const subscriptionSublabel = accessState === 'SUBSCRIBED'
-    ? t('profile.fullAccess') || 'Full access to every feature'
-    : accessState === 'TRIAL_ACTIVE'
-      ? t('profile.trialAccess') || 'Full access during trial'
-      : t('profile.subscribeToUnlock') || 'Subscribe to unlock all features';
-  const subscriptionIcon = accessState === 'SUBSCRIBED'
-    ? 'check-decagram'
-    : accessState === 'TRIAL_ACTIVE'
-      ? 'clock-outline'
-      : 'lock';
+  const subscriptionLabel =
+    accessState === 'SUBSCRIBED'
+      ? t('profile.subscribed') || 'Subscribed'
+      : accessState === 'TRIAL_ACTIVE'
+        ? `${t('profile.trial') || 'Trial'} — ${trialDaysRemaining} ${t('paywall.trialDaysLeft') || 'days left'}`
+        : t('profile.expired') || 'Expired';
+  const subscriptionSublabel =
+    accessState === 'SUBSCRIBED'
+      ? t('profile.fullAccess') || 'Full access to every feature'
+      : accessState === 'TRIAL_ACTIVE'
+        ? t('profile.trialAccess') || 'Full access during trial'
+        : t('profile.subscribeToUnlock') || 'Subscribe to unlock all features';
+  const subscriptionIcon =
+    accessState === 'SUBSCRIBED' ? 'check-decagram' : accessState === 'TRIAL_ACTIVE' ? 'clock-outline' : 'lock';
 
   return {
     // Theme & i18n

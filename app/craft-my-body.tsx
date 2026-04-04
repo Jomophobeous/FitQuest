@@ -9,7 +9,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 
-import { View, ScrollView, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

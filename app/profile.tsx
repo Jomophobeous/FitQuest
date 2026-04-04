@@ -10,15 +10,13 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, Switch } from 'react-na
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
-import { useTheme } from '../src/context/ThemeContext';
-import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import { LanguageSelector } from '../src/components/LanguageSelector';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import { RankCard, MilestoneList } from '../src/components/RankDisplay';
-import { useProfileViewModel, GOAL_LABELS, type MealRegionValue } from '../src/viewmodels/useProfileViewModel';
+import { useProfileViewModel } from '../src/viewmodels/useProfileViewModel';
 import { typography, spacing, radius } from '../src/design/theme-system';
 import { featureFlags as featureFlagsService } from '../src/services/featureFlags';
 import { ThemedPickerModal, MenuItem, adaptiveLabel } from '../src/components/profile/ProfileParts';
@@ -48,12 +46,6 @@ export default function ProfileScreen() {
     socialSettings,
     socialBusy,
     mealRegionOverride,
-    notificationSettings,
-    biometricAvailable,
-    biometricEnabled,
-    healthProviderCode,
-    healthIntegrationReady,
-    healthBusy,
     healthConnectEnabled,
     healthSyncErrors,
     equipmentLevel,
@@ -64,11 +56,8 @@ export default function ProfileScreen() {
     totalDistance,
     recentDistance,
     mindXP,
-    professionSchedule,
     consentTimestamp,
     consentVersion,
-    consentSource,
-    privacyBusy,
     showLanguageSelector,
     setShowLanguageSelector,
     showThemePicker,

@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp, FadeInRight, ZoomIn, SlideInUp } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenContainer } from '../src/components/ui/primitives';
@@ -29,8 +29,8 @@ import {
   AnimatedListItem,
 } from '../src/components/ui/GlassUI';
 import JogMap from '../src/components/JogMap';
-import { typography, spacing, radius } from '../src/design/theme-system';
-import { useMoveViewModel, type ActivityType } from '../src/viewmodels/useMoveViewModel';
+import { typography, spacing } from '../src/design/theme-system';
+import { useMoveViewModel } from '../src/viewmodels/useMoveViewModel';
 import { moveStyles as styles, sensorStyles, getActivityIcon, formatActivity } from '../src/components/move/styles';
 
 export default function MoveScreen() {

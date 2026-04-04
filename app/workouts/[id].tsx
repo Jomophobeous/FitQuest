@@ -24,7 +24,7 @@ export default function WorkoutDetail() {
   const router = useRouter();
   const { isReady: dbReady } = useDatabase();
   const [session, setSession] = useState<any | null>(null);
-  const [exercises, setExercises] = useState<SessionExerciseRow[]>([]);
+  const [_exercises, _setExercises] = useState<SessionExerciseRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -3,7 +3,7 @@
  * Custom workout builder - users pick exercises to create their own workout
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { View, ScrollView, TouchableOpacity, Alert, TextInput, FlatList, ActivityIndicator } from 'react-native';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +19,7 @@ import type { ExerciseWithDetails, Category } from '../src/database/types';
 import ThemedText from '../src/components/ThemedText';
 import Card from '../src/components/Card';
 import ExerciseImage from '../src/components/ExerciseImage';
-import { typography, spacing, radius } from '../src/design/theme-system';
+import { typography, spacing } from '../src/design/theme-system';
 import { createWorkoutStyles as styles } from '../src/components/create-workout/styles';
 
 // ============================================

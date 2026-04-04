@@ -8,7 +8,7 @@ import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard } from '../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
-import { typography, spacing, radius } from '../src/design/theme-system';
+import { typography, spacing } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -215,9 +215,7 @@ export default function PrivacyPolicyScreen() {
               never shared or transmitted.
             </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Analytics & Usage Data
-            </ThemedText>
+            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>Analytics & Usage Data</ThemedText>
             <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
               FitQuest collects anonymized usage analytics to improve the app experience. This includes:
             </ThemedText>
@@ -235,8 +233,8 @@ export default function PrivacyPolicyScreen() {
             </ThemedText>
             <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
               You can disable usage analytics at any time in Profile → Privacy & Legal → Usage Analytics. Critical
-              events (app crashes and launch diagnostics) are always recorded regardless of this setting to maintain
-              app stability.
+              events (app crashes and launch diagnostics) are always recorded regardless of this setting to maintain app
+              stability.
             </ThemedText>
 
             <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
@@ -245,8 +243,8 @@ export default function PrivacyPolicyScreen() {
             <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
               FitQuest uses on-device behavioral analysis to personalize your experience. This includes consistency
               scoring, engagement level assessment, and fatigue tracking. All personalization data is computed and
-              stored exclusively on your device — it is never uploaded to any server of ours. This analysis drives workout
-              recommendations, recovery guidance, and adaptive UI features.
+              stored exclusively on your device — it is never uploaded to any server of ours. This analysis drives
+              workout recommendations, recovery guidance, and adaptive UI features.
             </ThemedText>
 
             <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>

@@ -53,7 +53,7 @@ export function ConnectivityProvider({ children }: { children: React.ReactNode }
   const [isOnline, setIsOnline] = useState(true);
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
+  const [lastSyncAt, _setLastSyncAt] = useState<number | null>(null);
 
   const wasOfflineRef = useRef(false);
   const syncInProgressRef = useRef(false);

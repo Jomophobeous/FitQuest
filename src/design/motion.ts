@@ -7,14 +7,7 @@
  *   <Animated.View entering={stepEnter()} exiting={stepExit()}>
  *   <Animated.View entering={staggerChild(index)}>
  */
-import {
-  FadeInDown,
-  FadeInRight,
-  FadeOutLeft,
-  FadeOutUp,
-  Easing,
-  withSpring,
-} from 'react-native-reanimated';
+import { FadeInDown, FadeInRight, FadeOutLeft, FadeOutUp, Easing } from 'react-native-reanimated';
 
 // ── Duration constants (ms) — aligned with theme.motion ──
 export const MOTION = {
@@ -56,22 +49,18 @@ const EASE_EXIT = Easing.in(Easing.quad);
 // ── Step-level transitions (onboarding, wizard flows) ──
 
 /** Step container enter — slide down + fade */
-export const stepEnter = (duration = MOTION.base) =>
-  FadeInDown.duration(duration).easing(EASE_ENTER);
+export const stepEnter = (duration = MOTION.base) => FadeInDown.duration(duration).easing(EASE_ENTER);
 
 /** Step container exit — slide left + fade (forward navigation feel) */
-export const stepExit = (duration = MOTION.fast) =>
-  FadeOutLeft.duration(duration).easing(EASE_EXIT);
+export const stepExit = (duration = MOTION.fast) => FadeOutLeft.duration(duration).easing(EASE_EXIT);
 
 /** Step container exit upward — for "back" navigation */
-export const stepExitBack = (duration = MOTION.fast) =>
-  FadeOutUp.duration(duration).easing(EASE_EXIT);
+export const stepExitBack = (duration = MOTION.fast) => FadeOutUp.duration(duration).easing(EASE_EXIT);
 
 // ── Child-level stagger (list items, cards, options) ──
 
 /** Staggered child enter — slide right + fade with index-based delay */
 export const staggerChild = (index: number, duration = MOTION.fast) =>
-  FadeInRight
-    .delay(Math.min(index * MOTION.stagger, MOTION.staggerCap))
+  FadeInRight.delay(Math.min(index * MOTION.stagger, MOTION.staggerCap))
     .duration(duration)
     .easing(EASE_ENTER);

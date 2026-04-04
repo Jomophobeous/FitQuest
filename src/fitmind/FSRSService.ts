@@ -13,7 +13,7 @@ export interface FSRSCard {
 }
 
 class FSRSService {
-  scheduleReview(card: Record<string, unknown>, rating: string): { card: FSRSCard } {
+  scheduleReview(_card: Record<string, unknown>, _rating: string): { card: FSRSCard } {
     return {
       card: {
         difficulty: 2.5,

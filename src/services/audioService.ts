@@ -369,7 +369,7 @@ class AudioService {
           this.consecutiveSpeechFailures = 0; // Reset on success
           resolve();
         },
-        onError: (error: { message?: string }) => {
+        onError: (_error: { message?: string }) => {
           this.consecutiveSpeechFailures += 1;
           if (this.consecutiveSpeechFailures === AudioService.MAX_SPEECH_FAILURES && __DEV__) {
             console.warn(`[AudioService] TTS failed ${AudioService.MAX_SPEECH_FAILURES}x — disabling until next init`);

@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Dimensions,
 } from 'react-native';
 import Animated, {
@@ -40,7 +39,7 @@ import { GradientButton } from '../src/components/ui/GlassUI';
 import { validateEmail, validatePassword, validateName } from '../src/utils/validation';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
-const { width } = Dimensions.get('window');
+const { width: _width } = Dimensions.get('window');
 
 export default function RegisterScreen() {
   const { theme } = useTheme();
@@ -171,7 +170,9 @@ export default function RegisterScreen() {
 
             <Animated.View entering={FadeInDown.delay(200).duration(200)}>
               <ThemedText style={[styles.title, { color: theme.colors.text }]}>{t('register.title')}</ThemedText>
-              <ThemedText style={[styles.subtitle, { color: theme.colors.textMuted }]}>{t('register.subtitle')}</ThemedText>
+              <ThemedText style={[styles.subtitle, { color: theme.colors.textMuted }]}>
+                {t('register.subtitle')}
+              </ThemedText>
             </Animated.View>
 
             {/* Error message */}
@@ -190,7 +191,9 @@ export default function RegisterScreen() {
             <Animated.View entering={FadeInUp.delay(300).duration(200)} style={styles.form}>
               {/* Name */}
               <View style={styles.inputGroup}>
-                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.fullName')}</ThemedText>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>
+                  {t('register.fullName')}
+                </ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="account-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -210,7 +213,9 @@ export default function RegisterScreen() {
 
               {/* Email */}
               <View style={styles.inputGroup}>
-                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.email')}</ThemedText>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>
+                  {t('register.email')}
+                </ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -232,7 +237,9 @@ export default function RegisterScreen() {
 
               {/* Password */}
               <View style={styles.inputGroup}>
-                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>{t('register.password')}</ThemedText>
+                <ThemedText style={[styles.label, { color: theme.colors.textSecondary }]}>
+                  {t('register.password')}
+                </ThemedText>
                 <View style={[styles.inputWrap, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                   <MaterialCommunityIcons name="lock-outline" size={18} color={theme.colors.textMuted} />
                   <TextInput
@@ -248,7 +255,11 @@ export default function RegisterScreen() {
                     returnKeyType="next"
                     onSubmitEditing={() => confirmRef.current?.focus()}
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    accessibilityRole="button"
+                    accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  >
                     <MaterialCommunityIcons
                       name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                       size={18}
@@ -313,7 +324,9 @@ export default function RegisterScreen() {
               </ThemedText>
               <Link href="/login" asChild>
                 <TouchableOpacity>
-                  <ThemedText style={[styles.footerLink, { color: theme.colors.accent }]}>{t('register.signIn')}</ThemedText>
+                  <ThemedText style={[styles.footerLink, { color: theme.colors.accent }]}>
+                    {t('register.signIn')}
+                  </ThemedText>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
@@ -343,7 +356,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: { fontSize: typography.sizes.h1Sm, fontWeight: '800', textAlign: 'center' },
-  subtitle: { fontSize: typography.sizes.bodySmall, textAlign: 'center', marginTop: spacing[1.5], marginBottom: spacing[6] },
+  subtitle: {
+    fontSize: typography.sizes.bodySmall,
+    textAlign: 'center',
+    marginTop: spacing[1.5],
+    marginBottom: spacing[6],
+  },
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',

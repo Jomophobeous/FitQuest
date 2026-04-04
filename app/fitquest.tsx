@@ -39,7 +39,7 @@ function FitQuestScreenInner() {
   const { t } = useLanguage();
   const { showToast } = useToast();
   const { autostart } = useLocalSearchParams<{ autostart?: string }>();
-  const router = useRouter();
+  const _router = useRouter();
   const { isReady, isLoading: dbLoading, error: dbError, userProfile, resetAll } = useDatabase();
   const {
     status,

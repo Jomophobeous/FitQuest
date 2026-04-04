@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -10,12 +10,8 @@ import { useDatabase } from '../src/context/DatabaseContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import { useToast } from '../src/context/ToastContext';
-import {
-  useLegalCenterViewModel,
-  LEGAL_POLICY_VERSION,
-  type ConsentRecord,
-} from '../src/viewmodels/useLegalCenterViewModel';
-import { typography, spacing, radius } from '../src/design/theme-system';
+import { useLegalCenterViewModel, LEGAL_POLICY_VERSION } from '../src/viewmodels/useLegalCenterViewModel';
+import { typography, spacing } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

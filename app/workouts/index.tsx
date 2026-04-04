@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { ScreenContainer } from '../../src/components/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
@@ -198,7 +198,12 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   listContent: { paddingHorizontal: spacing[4], paddingBottom: spacing[25] },
   diagnosticsCard: { marginBottom: spacing[4], padding: spacing[3] },
-  diagnosticsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing[3] },
+  diagnosticsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing[3],
+  },
   diagnosticsActions: { gap: spacing[2], marginBottom: spacing[3] },
   diagnosticsLoading: { paddingVertical: spacing[2] },
   diagnosticsError: { marginTop: spacing[1] },

@@ -33,7 +33,6 @@ type DebugEntry = {
   data?: unknown;
 };
 const getDebugEntries = (): DebugEntry[] => [];
-const getDebugEntriesByType = (_type: string): DebugEntry[] => [];
 const subscribeDebugBuffer =
   (_cb: () => void): (() => void) =>
   () => {};
@@ -152,7 +151,7 @@ export default function DebugPanel() {
   const fmtDate = (ts: string | null) => (ts ? new Date(ts).toLocaleString() : '—');
 
   const bg = theme.colors.background;
-  const surface = theme.colors.surface;
+  const _surface = theme.colors.surface;
   const accent = theme.colors.accent;
   const error = theme.colors.error;
   const warning = theme.colors.warning;

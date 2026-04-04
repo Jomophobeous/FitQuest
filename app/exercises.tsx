@@ -12,7 +12,6 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
-  Alert,
   TextInput,
   TouchableOpacity,
 } from 'react-native';

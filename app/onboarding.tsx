@@ -129,7 +129,7 @@ export default function OnboardingScreen() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   // ── Analytics ──
-  const onboardingStartRef = useRef(Date.now());
+  const _onboardingStartRef = useRef(Date.now());
   const onboardingCompletedRef = useRef(false);
 
   useEffect(() => {

@@ -21,12 +21,10 @@ import Animated, {
   FadeIn,
   FadeInDown,
   FadeInUp,
-  ZoomIn,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withSequence,
-  withRepeat,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenContainer } from '../src/components/ui/primitives';
@@ -41,12 +39,11 @@ import { useTheme } from '../src/context/ThemeContext';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
-import { GlassCard, GradientButton } from '../src/components/ui/GlassUI';
 import { rateLimiter, RATE_LIMITS, formatRetryAfter } from '../src/utils/rateLimiter';
 import { getApiBaseUrl } from '../src/services/apiBaseUrl';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
+const { width: _SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
 type AuthMode = 'biometric' | 'passcode' | 'email';
 
@@ -60,7 +57,6 @@ export default function LoginScreen() {
     signIn,
     signInWithGoogleToken,
     signInWithAppleToken,
-    isLoading,
     isSignedIn,
     biometricCapability,
     biometricEnabled,
@@ -473,7 +469,9 @@ export default function LoginScreen() {
                     accessibilityLabel="Switch to email login"
                   >
                     <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                    <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.useEmail')}</ThemedText>
+                    <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                      {t('login.useEmail')}
+                    </ThemedText>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -482,7 +480,9 @@ export default function LoginScreen() {
             {/* ── Passcode Mode ── */}
             {mode === 'passcode' && (
               <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-                <ThemedText style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.enterPasscode')}</ThemedText>
+                <ThemedText style={[styles.modeTitle, { color: theme.colors.text }]}>
+                  {t('login.enterPasscode')}
+                </ThemedText>
 
                 {/* Passcode dots */}
                 <Animated.View style={[styles.dotsRow, shakeStyle]}>
@@ -541,7 +541,8 @@ export default function LoginScreen() {
                               const next = passcode + String(digit);
                               setPasscode(next);
                               if (next.length === 4) {
-                                setTimeout(() => { // debounce
+                                setTimeout(() => {
+                                  // debounce
                                   handlePasscode(next);
                                 }, 100);
                               }
@@ -569,7 +570,9 @@ export default function LoginScreen() {
                       accessibilityLabel="Switch to biometric login"
                     >
                       <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</ThemedText>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                        {t('login.biometric')}
+                      </ThemedText>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity
@@ -582,7 +585,9 @@ export default function LoginScreen() {
                     accessibilityLabel="Switch to email login"
                   >
                     <MaterialCommunityIcons name="email-outline" size={18} color={theme.colors.textMuted} />
-                    <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.email')}</ThemedText>
+                    <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                      {t('login.email')}
+                    </ThemedText>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -591,7 +596,9 @@ export default function LoginScreen() {
             {/* ── Email Mode ── */}
             {mode === 'email' && (
               <Animated.View entering={FadeInUp.delay(200).duration(150)} style={styles.authSection}>
-                <ThemedText style={[styles.modeTitle, { color: theme.colors.text }]}>{t('login.welcomeBack')}</ThemedText>
+                <ThemedText style={[styles.modeTitle, { color: theme.colors.text }]}>
+                  {t('login.welcomeBack')}
+                </ThemedText>
 
                 <Animated.View style={shakeStyle}>
                   <View
@@ -752,7 +759,9 @@ export default function LoginScreen() {
                 </View>
 
                 <View style={styles.registerRow}>
-                  <ThemedText style={[styles.registerText, { color: theme.colors.textMuted }]}>{t('login.noAccount')} </ThemedText>
+                  <ThemedText style={[styles.registerText, { color: theme.colors.textMuted }]}>
+                    {t('login.noAccount')}{' '}
+                  </ThemedText>
                   <TouchableOpacity onPress={() => router.push('/register')}>
                     <ThemedText style={[styles.registerLink, { color: accentColor }]}>{t('login.register')}</ThemedText>
                   </TouchableOpacity>
@@ -768,7 +777,9 @@ export default function LoginScreen() {
                       style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                     >
                       <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
-                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.biometric')}</ThemedText>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                        {t('login.biometric')}
+                      </ThemedText>
                     </TouchableOpacity>
                   )}
                   {!!hasExistingPasscode && (
@@ -780,7 +791,9 @@ export default function LoginScreen() {
                       style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
                     >
                       <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
-                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>{t('login.passcode')}</ThemedText>
+                      <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
+                        {t('login.passcode')}
+                      </ThemedText>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -812,9 +825,22 @@ const styles = StyleSheet.create({
 
   // Brand
   brandSection: { alignItems: 'center', marginBottom: spacing[10] },
-  logoBg: { width: 88, height: 88, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginBottom: spacing[4] },
+  logoBg: {
+    width: 88,
+    height: 88,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing[4],
+  },
   appName: { fontSize: typography.sizes.display, fontWeight: '900', letterSpacing: -1 },
-  tagline: { fontSize: typography.sizes.bodySmall, fontWeight: '500', marginTop: spacing[1], textTransform: 'uppercase', letterSpacing: 2 },
+  tagline: {
+    fontSize: typography.sizes.bodySmall,
+    fontWeight: '500',
+    marginTop: spacing[1],
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+  },
 
   // Auth section
   authSection: { alignItems: 'center', gap: spacing[4] },

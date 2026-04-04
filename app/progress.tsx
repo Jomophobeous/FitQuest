@@ -4,7 +4,7 @@
  * Users take and store progress photos over time
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -13,7 +13,6 @@ import {
   Image,
   Alert,
   Dimensions,
-  FlatList,
   ActivityIndicator,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -28,7 +27,7 @@ import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { useRouter } from 'expo-router';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useDatabase } from '../src/context/DatabaseContext';
-import { useProgressViewModel, type XPData, type ProgressPhoto } from '../src/viewmodels/useProgressViewModel';
+import { useProgressViewModel, type ProgressPhoto } from '../src/viewmodels/useProgressViewModel';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import ThemedText from '../src/components/ThemedText';
 import ProgressBar from '../src/components/ProgressBar';
@@ -36,7 +35,7 @@ import { GlassCard, SectionHeader, GradientButton } from '../src/components/ui/G
 import { getCardWidth, getGridColumns, ms } from '../src/utils/responsive';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLS = getGridColumns();
 const PHOTO_SIZE = getCardWidth(GRID_COLS, 16, 12);
 
@@ -171,7 +170,7 @@ export default function ProgressScreen() {
           <View style={{ width: 24 }} />
         </View>
         <View style={styles.compareContainer}>
-          {comparePhotos.map((photo, idx) => (
+          {comparePhotos.map((photo, _idx) => (
             <View key={photo.id} style={styles.comparePhotoWrap}>
               <Image source={{ uri: photo.uri }} style={styles.comparePhoto} />
               <ThemedText variant="bodySmall" color="secondary" style={{ textAlign: 'center', marginTop: spacing[1] }}>

@@ -10,15 +10,7 @@
  */
 
 import React, { createContext, useContext, useCallback, useRef, useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated as RNAnimated,
-  PanResponder,
-  AccessibilityInfo,
-  Vibration,
-} from 'react-native';
+import { Text, StyleSheet, Animated as RNAnimated, PanResponder, AccessibilityInfo, Vibration } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
@@ -139,12 +131,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             },
           ]}
         >
-          <MaterialCommunityIcons
-            name={TOAST_ICONS[type]}
-            size={22}
-            color={accentColor}
-            style={styles.icon}
-          />
+          <MaterialCommunityIcons name={TOAST_ICONS[type]} size={22} color={accentColor} style={styles.icon} />
           <Text
             style={[
               styles.message,

@@ -8,7 +8,7 @@ import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard } from '../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
-import { typography, spacing, radius } from '../src/design/theme-system';
+import { typography, spacing } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -131,8 +131,8 @@ export default function TermsOfServiceScreen() {
             </ThemedText>
             <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
               FitQuest does not guarantee any specific fitness outcomes, health improvements, or physical results.
-              Workout recommendations, health scores, and recovery assessments are algorithmic estimates and should
-              not be treated as medical or professional fitness advice. Always consult a qualified healthcare provider
+              Workout recommendations, health scores, and recovery assessments are algorithmic estimates and should not
+              be treated as medical or professional fitness advice. Always consult a qualified healthcare provider
               before starting any exercise program.
             </ThemedText>
 
@@ -142,8 +142,8 @@ export default function TermsOfServiceScreen() {
             <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
               By using FitQuest, you acknowledge that anonymized usage analytics may be collected to improve the
               service. You may opt out of non-essential analytics at any time via Profile → Privacy & Legal → Usage
-              Analytics. Behavioral personalization (consistency scoring, engagement tracking) is computed entirely
-              on your device and is not transmitted to external servers at any point.
+              Analytics. Behavioral personalization (consistency scoring, engagement tracking) is computed entirely on
+              your device and is not transmitted to external servers at any point.
             </ThemedText>
           </GlassCard>
         </ScrollView>

@@ -27,7 +27,6 @@ import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../../src/components/ScreenTutorial';
 import PremiumGate from '../../src/components/PremiumGate';
 import { useCoachViewModel, type ChatMessage } from '../../src/viewmodels/useCoachViewModel';
-import { haptic } from '../../src/utils/haptics';
 import { typography, spacing, radius } from '../../src/design/theme-system';
 import ThemedText from '../../src/components/ThemedText';
 import { coachStyles as styles } from '../../src/components/coach/styles';

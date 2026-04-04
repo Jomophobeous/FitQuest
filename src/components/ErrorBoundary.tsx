@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { logCrash } from '../services/telemetry';
-import { typography, spacing } from '../design/theme-system';
-
+import { typography } from '../design/theme-system';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -24,14 +23,14 @@ function createFallbackStyles(theme: ReturnType<typeof useTheme>['theme']) {
       padding: theme.spacing[6],
     },
     title: {
-      fontSize: typography.sizes.h3, 
+      fontSize: typography.sizes.h3,
       fontWeight: '800',
       color: theme.colors.text,
       marginBottom: theme.spacing[2],
       textAlign: 'center',
     },
     message: {
-      fontSize: typography.sizes.label, 
+      fontSize: typography.sizes.label,
       color: theme.colors.textMuted,
       textAlign: 'center',
       marginBottom: theme.spacing[4],
@@ -44,7 +43,7 @@ function createFallbackStyles(theme: ReturnType<typeof useTheme>['theme']) {
     },
     buttonText: {
       color: theme.colors.background,
-      fontSize: typography.sizes.bodySmall, 
+      fontSize: typography.sizes.bodySmall,
       fontWeight: '700',
     },
   });

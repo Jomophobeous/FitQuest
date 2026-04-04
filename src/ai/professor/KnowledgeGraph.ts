@@ -16,13 +16,13 @@ export interface GraphQueryResult {
 
 class KnowledgeGraph {
   processDocument(
-    documentId: string,
-    content: string,
+    _documentId: string,
+    _content: string,
   ): { entities: number; relationships: number; entitiesFound: number; relationsFound: number } {
     return { entities: 0, relationships: 0, entitiesFound: 0, relationsFound: 0 };
   }
 
-  queryRelated(query: string, depth?: number, limit?: number): GraphQueryResult {
+  queryRelated(_query: string, _depth?: number, _limit?: number): GraphQueryResult {
     return { entities: [], relationships: [] };
   }
 }

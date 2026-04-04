@@ -37,7 +37,6 @@ import { needsRecoveryTick, applyDailyRecoveryTick } from '../engines/recoveryEn
 import { getXPData } from '../services/xpService';
 import { useDataSync } from '../services/dataSyncService';
 import { createViewModel } from './createViewModel';
-import { spacing, radius } from '../design/theme-system';
 import { featureFlags as featureFlagsService } from '../services/featureFlags';
 import type { MaterialCommunityIcons } from '@expo/vector-icons';
 

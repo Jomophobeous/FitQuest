@@ -28,7 +28,7 @@ interface AppReadyState {
 }
 
 export function useAppReady(): AppReadyState {
-  const { isReady: dbReady, isLoading: dbLoading, error: dbError, userProfile } = useDatabase();
+  const { isReady: dbReady, error: dbError, userProfile } = useDatabase();
   const { systemState, isReady: systemReady, error: systemError } = useSystemState();
 
   // All three conditions must be true:

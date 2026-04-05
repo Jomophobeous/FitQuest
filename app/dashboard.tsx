@@ -35,9 +35,11 @@ import {
 } from '../src/components/ui/GlassUI';
 import { ScreenContainer, Spacer } from '../src/components/ui/primitives';
 import { EmptyState } from '../src/components/ui/FeedbackStates';
+import { LongPressMenu } from '../src/components/ui/LongPressMenu';
 import { useRouter } from 'expo-router';
 import { useDashboardViewModel } from '../src/viewmodels/useDashboardViewModel';
 import { usePrefetch } from '../src/hooks/usePrefetch';
+import { useNavigationState } from '../src/hooks/useNavigationState';
 
 export default function DashboardScreen() {
   const { width } = useWindowDimensions();
@@ -66,6 +68,13 @@ export default function DashboardScreen() {
 
   // Warm caches for adjacent screens (non-blocking)
   usePrefetch(vm.isSubscribed);
+
+  // Navigation state persistence — preserve selected date across tab switches
+  const navState = useNavigationState('dashboard');
+  const handleDateSelect = (date: Date) => {
+    navState.setSelection('selectedDate', date.toISOString());
+    vm.setSelectedDate(date);
+  };
 
   // Destructure ViewModel for render
   const {
@@ -643,7 +652,7 @@ export default function DashboardScreen() {
           ) : null}
 
           {/* ── WEEK CALENDAR (Minimal) ── */}
-          <WeekCalendar activeDate={selectedDate} workoutDates={workoutDates} onDatePress={setSelectedDate} />
+          <WeekCalendar activeDate={selectedDate} workoutDates={workoutDates} onDatePress={handleDateSelect} />
 
           {/* ══════════════════════════════════════════════════════════════════
             WEEKLY GOAL PROGRESS — Derived from goalTracker
@@ -749,48 +758,88 @@ export default function DashboardScreen() {
           <Animated.View entering={FadeInUp.delay(MOTION.stagger * 5).duration(MOTION.fast)}>
             <View style={{ opacity: HIERARCHY.secondary }}>
               <View style={styles.dailyStatsRow}>
-                <View
-                  style={[
-                    styles.dailyStatCard,
-                    { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                <LongPressMenu
+                  items={[
+                    {
+                      label: 'View Step History',
+                      icon: 'shoe-print',
+                      color: theme.colors.blue,
+                      onPress: () => router.push('/health-dashboard'),
+                    },
                   ]}
+                  title="Steps"
                 >
-                  <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
-                  <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: spacing[1] }}>
-                    {todaySteps > 0 ? todaySteps.toLocaleString() : '0'}
-                  </ThemedText>
-                  <ThemedText variant="caption" color="muted">
-                    {t('dashboard.stepsToday') || 'Steps'}
-                  </ThemedText>
-                </View>
-                <View
-                  style={[
-                    styles.dailyStatCard,
-                    { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                  <View
+                    style={[
+                      styles.dailyStatCard,
+                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                    ]}
+                  >
+                    <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
+                    <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: spacing[1] }}>
+                      {todaySteps > 0 ? todaySteps.toLocaleString() : '0'}
+                    </ThemedText>
+                    <ThemedText variant="caption" color="muted">
+                      {t('dashboard.stepsToday') || 'Steps'}
+                    </ThemedText>
+                  </View>
+                </LongPressMenu>
+                <LongPressMenu
+                  items={[
+                    {
+                      label: 'View Activity',
+                      icon: 'timer-outline',
+                      color: theme.colors.purple,
+                      onPress: () => router.push('/health-dashboard'),
+                    },
                   ]}
+                  title="Active Minutes"
                 >
-                  <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
-                  <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: spacing[1] }}>
-                    {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '0'}
-                  </ThemedText>
-                  <ThemedText variant="caption" color="muted">
-                    {t('dashboard.activeMin') || 'Active min'}
-                  </ThemedText>
-                </View>
-                <View
-                  style={[
-                    styles.dailyStatCard,
-                    { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                  <View
+                    style={[
+                      styles.dailyStatCard,
+                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                    ]}
+                  >
+                    <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
+                    <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: spacing[1] }}>
+                      {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '0'}
+                    </ThemedText>
+                    <ThemedText variant="caption" color="muted">
+                      {t('dashboard.activeMin') || 'Active min'}
+                    </ThemedText>
+                  </View>
+                </LongPressMenu>
+                <LongPressMenu
+                  items={[
+                    {
+                      label: 'View All Workouts',
+                      icon: 'check-circle-outline',
+                      color: theme.colors.success,
+                      onPress: () => router.push('/saved-workouts'),
+                    },
                   ]}
+                  title="Completion Rate"
                 >
-                  <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
-                  <ThemedText variant="h4" weight="800" style={{ color: theme.colors.success, marginTop: spacing[1] }}>
-                    {completionRate > 0 ? `${completionRate}%` : '0%'}
-                  </ThemedText>
-                  <ThemedText variant="caption" color="muted">
-                    {t('dashboard.completionRate') || 'Completion'}
-                  </ThemedText>
-                </View>
+                  <View
+                    style={[
+                      styles.dailyStatCard,
+                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                    ]}
+                  >
+                    <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
+                    <ThemedText
+                      variant="h4"
+                      weight="800"
+                      style={{ color: theme.colors.success, marginTop: spacing[1] }}
+                    >
+                      {completionRate > 0 ? `${completionRate}%` : '0%'}
+                    </ThemedText>
+                    <ThemedText variant="caption" color="muted">
+                      {t('dashboard.completionRate') || 'Completion'}
+                    </ThemedText>
+                  </View>
+                </LongPressMenu>
               </View>
             </View>
           </Animated.View>

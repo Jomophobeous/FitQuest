@@ -3,7 +3,7 @@
  * Extracted from profile.tsx.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,7 +29,7 @@ interface ProfileHeaderProps {
   onPickPhoto: () => void;
 }
 
-export function ProfileHeader({
+export const ProfileHeader = memo(function ProfileHeader({
   profile,
   stats,
   xpProgress,
@@ -168,7 +168,7 @@ export function ProfileHeader({
       </LinearGradient>
     </Animated.View>
   );
-}
+});
 
 const s = StyleSheet.create({
   headerGradient: { paddingBottom: spacing[6] },

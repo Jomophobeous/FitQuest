@@ -20,6 +20,8 @@ import { useToast } from '../src/context/ToastContext';
 import ThemedText from '../src/components/ThemedText';
 import ExerciseImage from '../src/components/ExerciseImage';
 import { GlassCard, GradientButton, SectionHeader, AnimatedListItem } from '../src/components/ui/GlassUI';
+import { SwipeableRow } from '../src/components/ui/SwipeableRow';
+import { LongPressMenu, type ContextMenuItem } from '../src/components/ui/LongPressMenu';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
@@ -218,175 +220,210 @@ export default function SavedWorkoutsScreen() {
         theme.colors.warning,
       ];
       const accentColor = cardAccents[index % cardAccents.length]!;
+      const onEdit = undefined; // Future: edit support
+
+      const menuItems: ContextMenuItem[] = [
+        {
+          label: t('savedWorkouts.startWorkout') || 'Start Workout',
+          icon: 'play-circle-outline',
+          color: accentColor,
+          onPress: () => handleStartWorkout(session),
+        },
+        ...(onEdit
+          ? [
+              {
+                label: 'Edit',
+                icon: 'pencil-outline',
+                color: theme.colors.blue,
+                onPress: () => {},
+              },
+            ]
+          : []),
+        {
+          label: t('common.delete') || 'Delete',
+          icon: 'trash-can-outline',
+          destructive: true,
+          onPress: () => confirmDelete(session),
+        },
+      ];
 
       return (
         <AnimatedListItem key={session.id} index={index} style={styles.cardOuter}>
-          <GlassCard
-            style={styles.workoutCard}
-            gradient
-            glowColor={accentColor}
-            delay={index * 80}
-            onPress={() => toggleExpand(session.id)}
+          <SwipeableRow
+            onQuickStart={() => handleStartWorkout(session)}
+            quickStartLabel={t('savedWorkouts.startWorkout') || 'Start'}
+            quickStartIcon="play-circle-outline"
+            onDelete={() => confirmDelete(session)}
           >
-            {/* Card Header */}
-            <View style={styles.cardHeader}>
-              <View style={[styles.cardIconWrap, { backgroundColor: accentColor + '20' }]}>
-                <MaterialCommunityIcons name="lightning-bolt" size={22} color={accentColor} />
-              </View>
-
-              <View style={styles.cardTitleArea}>
-                <ThemedText style={[styles.cardTitle, { color: theme.colors.text }]} numberOfLines={1}>
-                  {name}
-                </ThemedText>
-                <ThemedText style={[styles.cardDate, { color: theme.colors.textMuted }]}>{dateLabel}</ThemedText>
-              </View>
-
-              {/* Status badge */}
-              {!!wasSuccessful && (
-                <View style={[styles.statusBadge, { backgroundColor: theme.colors.success + '18' }]}>
-                  <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.success} />
-                  <ThemedText style={[styles.statusText, { color: theme.colors.success }]}>Done</ThemedText>
-                </View>
-              )}
-
-              {/* Delete (long-press alternative trigger) */}
-              <TouchableOpacity
-                onPress={() => confirmDelete(session)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={styles.deleteBtn}
-                accessibilityRole="button"
-                accessibilityLabel="Delete workout session"
+            <LongPressMenu items={menuItems} title={name}>
+              <GlassCard
+                style={styles.workoutCard}
+                gradient
+                glowColor={accentColor}
+                delay={index * 80}
+                onPress={() => toggleExpand(session.id)}
               >
-                <MaterialCommunityIcons name="trash-can-outline" size={20} color={theme.colors.error} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Stats Row */}
-            <View style={styles.statsRow}>
-              <StatPill
-                icon="dumbbell"
-                value={`${exerciseCount}`}
-                label="exercises"
-                color={accentColor}
-                textColor={theme.colors.textSecondary}
-                bgColor={accentColor + '12'}
-              />
-              <StatPill
-                icon="clock-outline"
-                value={duration}
-                label=""
-                color={accentColor}
-                textColor={theme.colors.textSecondary}
-                bgColor={accentColor + '12'}
-              />
-              {completed > 0 && (
-                <StatPill
-                  icon="check-bold"
-                  value={`${completed}/${exerciseCount}`}
-                  label="done"
-                  color={theme.colors.success}
-                  textColor={theme.colors.textSecondary}
-                  bgColor={theme.colors.success + '12'}
-                />
-              )}
-            </View>
-
-            {/* Expanded Area */}
-            {!!isExpanded && (
-              <Animated.View entering={FadeInDown.duration(150)} style={styles.expandedArea}>
-                <View style={[styles.expandedDivider, { backgroundColor: theme.colors.border }]} />
-
-                {/* Session details */}
-                <View style={styles.expandedDetails}>
-                  <View style={styles.detailRow}>
-                    <MaterialCommunityIcons name="calendar-clock" size={16} color={theme.colors.textMuted} />
-                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>
-                      Created {dateLabel}
-                    </ThemedText>
+                {/* Card Header */}
+                <View style={styles.cardHeader}>
+                  <View style={[styles.cardIconWrap, { backgroundColor: accentColor + '20' }]}>
+                    <MaterialCommunityIcons name="lightning-bolt" size={22} color={accentColor} />
                   </View>
-                  <View style={styles.detailRow}>
-                    <MaterialCommunityIcons name="timer-sand" size={16} color={theme.colors.textMuted} />
-                    <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>
-                      Estimated {duration}
-                    </ThemedText>
-                  </View>
-                </View>
 
-                {/* Exercise list with images */}
-                {(() => {
-                  const exList = vm.expandedExercises[session.id];
-                  if (!exList || exList.length === 0) return null;
-                  return (
-                    <View style={styles.expandedExerciseList}>
-                      <ThemedText style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>
-                        Exercises
-                      </ThemedText>
-                      {exList.map((ex, idx) => (
-                        <View
-                          key={ex.exercise_id + idx}
-                          style={[styles.exerciseRow, { borderColor: theme.colors.border }]}
-                        >
-                          <ExerciseImage
-                            exerciseId={ex.exercise_id}
-                            category={ex.category as any}
-                            variant="thumbnail"
-                            animate={false}
-                          />
-                          <View style={{ flex: 1, marginLeft: spacing[2.5] }}>
-                            <ThemedText
-                              style={[styles.exerciseRowName, { color: theme.colors.text }]}
-                              numberOfLines={1}
-                            >
-                              {ex.name}
-                            </ThemedText>
-                            <ThemedText style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
-                              {ex.prescribed_sets} sets × {ex.prescribed_reps}
-                            </ThemedText>
-                          </View>
-                        </View>
-                      ))}
+                  <View style={styles.cardTitleArea}>
+                    <ThemedText style={[styles.cardTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                      {name}
+                    </ThemedText>
+                    <ThemedText style={[styles.cardDate, { color: theme.colors.textMuted }]}>{dateLabel}</ThemedText>
+                  </View>
+
+                  {/* Status badge */}
+                  {!!wasSuccessful && (
+                    <View style={[styles.statusBadge, { backgroundColor: theme.colors.success + '18' }]}>
+                      <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.success} />
+                      <ThemedText style={[styles.statusText, { color: theme.colors.success }]}>Done</ThemedText>
                     </View>
-                  );
-                })()}
+                  )}
 
-                {/* Action Buttons */}
-                <View style={styles.expandedActions}>
-                  <View style={{ flex: 1 }}>
-                    <GradientButton
-                      title={t('savedWorkouts.startWorkout')}
-                      icon="play"
-                      onPress={() => handleStartWorkout(session)}
-                      variant="primary"
-                      size="md"
-                    />
-                  </View>
+                  {/* Delete (long-press alternative trigger) */}
                   <TouchableOpacity
-                    style={[
-                      styles.deleteActionBtn,
-                      {
-                        borderColor: theme.colors.error + '30',
-                        backgroundColor: theme.colors.error + '0A',
-                      },
-                    ]}
                     onPress={() => confirmDelete(session)}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    style={styles.deleteBtn}
                     accessibilityRole="button"
-                    accessibilityLabel="Delete workout"
+                    accessibilityLabel="Delete workout session"
                   >
-                    <MaterialCommunityIcons name="delete-outline" size={22} color={theme.colors.error} />
+                    <MaterialCommunityIcons name="trash-can-outline" size={20} color={theme.colors.error} />
                   </TouchableOpacity>
                 </View>
-              </Animated.View>
-            )}
 
-            {/* Expand chevron */}
-            <View style={styles.chevronRow}>
-              <MaterialCommunityIcons
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                size={20}
-                color={theme.colors.textMuted}
-              />
-            </View>
-          </GlassCard>
+                {/* Stats Row */}
+                <View style={styles.statsRow}>
+                  <StatPill
+                    icon="dumbbell"
+                    value={`${exerciseCount}`}
+                    label="exercises"
+                    color={accentColor}
+                    textColor={theme.colors.textSecondary}
+                    bgColor={accentColor + '12'}
+                  />
+                  <StatPill
+                    icon="clock-outline"
+                    value={duration}
+                    label=""
+                    color={accentColor}
+                    textColor={theme.colors.textSecondary}
+                    bgColor={accentColor + '12'}
+                  />
+                  {completed > 0 && (
+                    <StatPill
+                      icon="check-bold"
+                      value={`${completed}/${exerciseCount}`}
+                      label="done"
+                      color={theme.colors.success}
+                      textColor={theme.colors.textSecondary}
+                      bgColor={theme.colors.success + '12'}
+                    />
+                  )}
+                </View>
+
+                {/* Expanded Area */}
+                {!!isExpanded && (
+                  <Animated.View entering={FadeInDown.duration(150)} style={styles.expandedArea}>
+                    <View style={[styles.expandedDivider, { backgroundColor: theme.colors.border }]} />
+
+                    {/* Session details */}
+                    <View style={styles.expandedDetails}>
+                      <View style={styles.detailRow}>
+                        <MaterialCommunityIcons name="calendar-clock" size={16} color={theme.colors.textMuted} />
+                        <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>
+                          Created {dateLabel}
+                        </ThemedText>
+                      </View>
+                      <View style={styles.detailRow}>
+                        <MaterialCommunityIcons name="timer-sand" size={16} color={theme.colors.textMuted} />
+                        <ThemedText style={[styles.detailText, { color: theme.colors.textSecondary }]}>
+                          Estimated {duration}
+                        </ThemedText>
+                      </View>
+                    </View>
+
+                    {/* Exercise list with images */}
+                    {(() => {
+                      const exList = vm.expandedExercises[session.id];
+                      if (!exList || exList.length === 0) return null;
+                      return (
+                        <View style={styles.expandedExerciseList}>
+                          <ThemedText style={[styles.exerciseListHeader, { color: theme.colors.textMuted }]}>
+                            Exercises
+                          </ThemedText>
+                          {exList.map((ex, idx) => (
+                            <View
+                              key={ex.exercise_id + idx}
+                              style={[styles.exerciseRow, { borderColor: theme.colors.border }]}
+                            >
+                              <ExerciseImage
+                                exerciseId={ex.exercise_id}
+                                category={ex.category as any}
+                                variant="thumbnail"
+                                animate={false}
+                              />
+                              <View style={{ flex: 1, marginLeft: spacing[2.5] }}>
+                                <ThemedText
+                                  style={[styles.exerciseRowName, { color: theme.colors.text }]}
+                                  numberOfLines={1}
+                                >
+                                  {ex.name}
+                                </ThemedText>
+                                <ThemedText style={[styles.exerciseRowMeta, { color: theme.colors.textMuted }]}>
+                                  {ex.prescribed_sets} sets × {ex.prescribed_reps}
+                                </ThemedText>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      );
+                    })()}
+
+                    {/* Action Buttons */}
+                    <View style={styles.expandedActions}>
+                      <View style={{ flex: 1 }}>
+                        <GradientButton
+                          title={t('savedWorkouts.startWorkout')}
+                          icon="play"
+                          onPress={() => handleStartWorkout(session)}
+                          variant="primary"
+                          size="md"
+                        />
+                      </View>
+                      <TouchableOpacity
+                        style={[
+                          styles.deleteActionBtn,
+                          {
+                            borderColor: theme.colors.error + '30',
+                            backgroundColor: theme.colors.error + '0A',
+                          },
+                        ]}
+                        onPress={() => confirmDelete(session)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Delete workout"
+                      >
+                        <MaterialCommunityIcons name="delete-outline" size={22} color={theme.colors.error} />
+                      </TouchableOpacity>
+                    </View>
+                  </Animated.View>
+                )}
+
+                {/* Expand chevron */}
+                <View style={styles.chevronRow}>
+                  <MaterialCommunityIcons
+                    name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color={theme.colors.textMuted}
+                  />
+                </View>
+              </GlassCard>
+            </LongPressMenu>
+          </SwipeableRow>
         </AnimatedListItem>
       );
     },

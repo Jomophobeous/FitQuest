@@ -3,7 +3,7 @@
  * Extracted from profile.tsx.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -22,7 +22,7 @@ interface StatsGridProps {
   recentDistance: number;
 }
 
-export function StatsGrid({ stats, totalSteps, totalDistance, recentDistance }: StatsGridProps) {
+export const StatsGrid = memo(function StatsGrid({ stats, totalSteps, totalDistance, recentDistance }: StatsGridProps) {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
@@ -96,13 +96,13 @@ export function StatsGrid({ stats, totalSteps, totalDistance, recentDistance }: 
       </GlassCard>
     </Animated.View>
   );
-}
+});
 
 interface AchievementsCardProps {
   stats: StatsData | null;
 }
 
-export function AchievementsCard({ stats }: AchievementsCardProps) {
+export const AchievementsCard = memo(function AchievementsCard({ stats }: AchievementsCardProps) {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
@@ -161,7 +161,7 @@ export function AchievementsCard({ stats }: AchievementsCardProps) {
       </GlassCard>
     </View>
   );
-}
+});
 
 const s = StyleSheet.create({
   statsContainer: {

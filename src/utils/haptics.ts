@@ -9,6 +9,17 @@ import { Vibration, Platform } from 'react-native';
 
 /** Vibration patterns (ms: [pause, vibrate, pause, vibrate, ...]) */
 const PATTERNS = {
+  // ── Gesture-specific patterns (Phase 9) ──
+  /** Swipe confirm — soft single tap */
+  swipeConfirm: Platform.OS === 'android' ? [0, 20] : [0, 20],
+  /** Swipe open actions — lighter tap */
+  swipeOpen: Platform.OS === 'android' ? [0, 15] : [0, 15],
+  /** Delete action — medium/heavy impact */
+  deleteAction: Platform.OS === 'android' ? [0, 80, 40, 60] : [0, 80],
+  /** Long press activation — subtle tap */
+  longPress: Platform.OS === 'android' ? [0, 25] : [0, 25],
+  /** Pull to refresh release — snap feedback */
+  pullRefresh: Platform.OS === 'android' ? [0, 30, 30, 20] : [0, 30],
   /** Workout starts — double tap */
   workoutStart: Platform.OS === 'android' ? [0, 60, 80, 60] : [0, 60],
   /** Exercise starts — single firm tap */

@@ -18,6 +18,8 @@ import { RankCard, MilestoneList } from '../src/components/RankDisplay';
 import { useProfileViewModel } from '../src/viewmodels/useProfileViewModel';
 import { typography, spacing, radius } from '../src/design/theme-system';
 import { featureFlags as featureFlagsService } from '../src/services/featureFlags';
+import { preloadFromProfile } from '../src/services/preloadService';
+import { useNavigationState } from '../src/hooks/useNavigationState';
 import { ThemedPickerModal, MenuItem, adaptiveLabel } from '../src/components/profile/ProfileParts';
 import { ScheduleModal, HelpModal, AboutModal } from '../src/components/profile/ProfileModals';
 import { ProfileHeader } from '../src/components/profile/ProfileHeader';
@@ -34,6 +36,11 @@ import { RippleButton } from '../src/components/ui/InteractionFeedback';
 
 export default function ProfileScreen() {
   const vm = useProfileViewModel();
+  // Preload adjacent screens + persist scroll position
+  const navState = useNavigationState('profile');
+  React.useEffect(() => {
+    preloadFromProfile();
+  }, []);
   const {
     theme,
     mode,

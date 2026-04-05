@@ -370,14 +370,6 @@ function ThemedTabs() {
           title: t('nav.feedback'),
         }}
       />
-      <Tabs.Screen
-        name="dev/debug-panel"
-        options={{
-          href: null,
-          lazy: true,
-          title: 'Debug Panel',
-        }}
-      />
     </Tabs>
   );
 }

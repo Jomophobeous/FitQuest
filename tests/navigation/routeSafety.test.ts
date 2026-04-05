@@ -40,7 +40,6 @@ const HIDDEN_SCREENS = [
   'feedback',
   'craft-my-body',
   'paywall',
-  'dev/debug-panel',
   'meal-prep',
   'backups',
   'health-dashboard',

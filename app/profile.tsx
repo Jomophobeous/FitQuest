@@ -25,6 +25,7 @@ import { ScheduleModal, HelpModal, AboutModal } from '../src/components/profile/
 import { ProfileHeader } from '../src/components/profile/ProfileHeader';
 import { StatsGrid, AchievementsCard } from '../src/components/profile/ProfileStats';
 import { LanguagePillGrid, ThemePillRow } from '../src/components/profile/InlinePickers';
+import { AccountSection } from '../src/components/profile/AccountSection';
 import { SUPPORTED_LANGUAGES } from '../src/i18n/translations';
 import type { ThemeMode } from '../src/design/theme-system';
 import { SkeletonProfile } from '../src/components/ui/Skeleton';
@@ -863,6 +864,14 @@ export default function ProfileScreen() {
                 onPress={() => router.push('/feedback' as any)}
               />
             </View>
+
+            {/* ── ACCOUNT SECTION ── */}
+            <AccountSection
+              email={'jomophobeous@gmail.com'}
+              onLogout={handleLogout}
+              onDeleteAccount={handleDeleteCloudData}
+              delay={770}
+            />
 
             {/* ── LOGOUT ── */}
             <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.logoutSection}>

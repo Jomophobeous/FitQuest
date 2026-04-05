@@ -39,12 +39,13 @@ export default ({ config: _config }: ConfigContext): ExpoConfig => {
         requestPermissionsOnFirstLaunch: false,
       },
     ],
-    // Sentry crash reporting — always included for native builds
+    // Sentry crash reporting — source map upload disabled until SENTRY_AUTH_TOKEN is set
     [
       '@sentry/react-native',
       {
         organization: 'fitquest-x4',
         project: 'react-native',
+        uploadSourceMaps: false,
       },
     ],
   ];

@@ -369,3 +369,94 @@ export const lightTheme = createTheme('light');
 export const blackGoldTheme = createTheme('blackGold');
 
 export type Theme = ReturnType<typeof createTheme>;
+
+// ============================================================================
+// THEME CONFIG TYPE (re-exported from themes/themeConfigs for convenience)
+// ============================================================================
+
+export type {
+  ThemeConfig,
+  ThemeColorPalette,
+  ThemeAnimationSettings,
+  ThemeAccessibility,
+  ThemeCategory,
+} from './themes/themeConfigs';
+
+// ============================================================================
+// WCAG CONTRAST VALIDATION
+// ============================================================================
+
+/**
+ * Converts a hex color string to relative luminance (WCAG 2.1 definition).
+ * Accepts #RRGGBB or #RGB.
+ */
+export function hexToRelativeLuminance(hex: string): number {
+  const normalized = hex.replace('#', '');
+  const full =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : normalized;
+
+  const r = parseInt(full.slice(0, 2), 16) / 255;
+  const g = parseInt(full.slice(2, 4), 16) / 255;
+  const b = parseInt(full.slice(4, 6), 16) / 255;
+
+  const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+/**
+ * Calculates the WCAG contrast ratio between two hex colors.
+ * Returns a value between 1 (no contrast) and 21 (max contrast).
+ */
+export function getContrastRatio(hex1: string, hex2: string): number {
+  const l1 = hexToRelativeLuminance(hex1);
+  const l2 = hexToRelativeLuminance(hex2);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+export interface ContrastCheckResult {
+  ratio: number;
+  passesAA: boolean;
+  passesAAA: boolean;
+}
+
+/**
+ * Check contrast ratio between text and background colors.
+ * WCAG AA requires ≥ 4.5:1 for normal text, ≥ 3:1 for large text.
+ * WCAG AAA requires ≥ 7:1 for normal text.
+ */
+export function checkColorContrast(textColor: string, bgColor: string): ContrastCheckResult {
+  const ratio = getContrastRatio(textColor, bgColor);
+  return {
+    ratio,
+    passesAA: ratio >= 4.5,
+    passesAAA: ratio >= 7.0,
+  };
+}
+
+/**
+ * Validate that a theme's primary text/accent colors meet WCAG AA (4.5:1)
+ * against the background. Returns a map of color key → ContrastCheckResult.
+ */
+export function validateThemeColors(
+  colors: import('./themes/themeConfigs').ThemeColorPalette,
+): Record<string, ContrastCheckResult> {
+  const pairs: Array<[string, string]> = [
+    ['text', colors.text],
+    ['textSecondary', colors.textSecondary],
+    ['accent', colors.accent],
+  ];
+
+  const results: Record<string, ContrastCheckResult> = {};
+  for (const [label, textColor] of pairs) {
+    results[label] = checkColorContrast(textColor, colors.background);
+  }
+  return results;
+}

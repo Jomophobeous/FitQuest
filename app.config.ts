@@ -12,7 +12,8 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
  */
 
 const IS_DEV_CLIENT = process.env.FITQUEST_DEV_CLIENT === '1';
-const APP_ENV = process.env.EXPO_PUBLIC_ENV || (__DEV__ ? 'development' : 'production');
+const IS_DEV = process.env.NODE_ENV !== 'production';
+const APP_ENV = process.env.EXPO_PUBLIC_ENV || (IS_DEV ? 'development' : 'production');
 
 export default ({ config: _config }: ConfigContext): ExpoConfig => {
   // ── Plugins common to both profiles ──

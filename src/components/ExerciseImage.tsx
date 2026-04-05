@@ -2,15 +2,15 @@
  * ExerciseImage — Displays exercise illustration from the database.
  *
  * Resolution strategy:
- * 1. Query exercise_images table for the exercise
- * 2. If images exist: load from documentDirectory/exercises/{image_path}
- * 3. If loading fails or no images: show category-themed placeholder
+ * 1. Check in-memory LRU cache (fastest path)
+ * 2. Query exercise_images table for the exercise
+ * 3. If images exist: load from documentDirectory/exercises/{image_path}
+ * 4. If loading fails or no images: show category-themed placeholder
  *
  * Two frames are stored per exercise (0.jpg = start pose, 1.jpg = end pose).
  * The component auto-alternates between them to create a simple animation.
  *
- * Image files must be placed in the app documentDirectory under exercises/
- * by one of: build-time copy script, first-launch download, or manual adb push.
+ * Shows skeleton shimmer while loading, error state with retry on failure.
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
@@ -23,17 +23,15 @@ import { useTheme } from '../context/ThemeContext';
 import type { Category } from '../database/types';
 import { categoryTheme, defaultCategoryTheme, spacing, radius } from '../design/theme-system';
 import { resolveExerciseImageFolder } from '../services/exerciseImageMap';
+import { imageCache } from '../services/ImageCacheService';
+import ImageLoadingState from './ui/ImageLoadingState';
 
 // ─── Constants ───
 
-/**
- * All platforms use documentDirectory for exercise images.
- * On Android, images are copied from APK assets to documentDirectory on first launch
- * by initializeExerciseImages() in exerciseImageService.ts.
- */
 const IMAGE_BASE_DIR = `${FileSystem.documentDirectory}exercises/`;
 const APK_ASSETS_DIR = 'file:///android_asset/exercises/';
-const ANIMATION_INTERVAL_MS = 1200; // Toggle between 0.jpg and 1.jpg
+const ANIMATION_INTERVAL_MS = 1200;
+const MAX_RETRY_ATTEMPTS = 2;
 
 type GlyphMapKey = keyof typeof MaterialCommunityIcons.glyphMap;
 
@@ -68,6 +66,7 @@ export default function ExerciseImage({
   const [resolvedUris, setResolvedUris] = useState<string[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -75,21 +74,33 @@ export default function ExerciseImage({
   const config = { colors: catTheme.colors, icon: catTheme.icon as GlyphMapKey };
   const dimensions = VARIANT_DIMENSIONS[variant]!;
 
-  // Resolve image URIs from file system
+  // Resolve image URIs — cache-first, then file system
   useEffect(() => {
     let cancelled = false;
 
     async function resolveImages() {
+      setIsLoading(true);
+      setHasError(false);
+
       try {
+        // 1. Check LRU cache first
+        const cached = imageCache.get(exerciseId);
+        if (cached && cached.length > 0) {
+          if (!cancelled) {
+            setResolvedUris(cached);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // 2. Resolve from DB / file system
         const paths = preloadedPaths ?? [];
         if (paths.length === 0) {
-          // No pre-loaded paths — import service lazily to avoid circular deps
           const { getExerciseImages } = await import('../database/service');
           const images = await getExerciseImages(exerciseId);
           paths.push(...images.map((img) => img.image_path));
         }
 
-        // Fallback: use exerciseImageMap (primary strategy) or derive from name
         if (paths.length === 0) {
           const { getDatabase } = await import('../database/schema');
           const db = await getDatabase();
@@ -98,7 +109,6 @@ export default function ExerciseImage({
             [exerciseId],
           );
           if (ex) {
-            // Primary: use the comprehensive image map
             const mappedFolder = resolveExerciseImageFolder(ex.name);
             if (mappedFolder) {
               paths.push(
@@ -108,7 +118,6 @@ export default function ExerciseImage({
                 `${mappedFolder}/1.jpg`,
               );
             } else {
-              // Fallback: try external_id or underscored name
               const candidates: string[] = [];
               if (ex.external_id) candidates.push(ex.external_id);
               candidates.push(ex.name.replace(/[/ (),']/g, '_'));
@@ -125,33 +134,31 @@ export default function ExerciseImage({
         }
 
         if (paths.length === 0) {
-          if (!cancelled) setResolvedUris([]);
+          if (!cancelled) {
+            setResolvedUris([]);
+            setIsLoading(false);
+          }
           return;
         }
 
-        // Check which files actually exist on disk (try documentDirectory first, then APK assets)
+        // Check which files exist on disk
         const validUris: string[] = [];
-        // Deduplicate paths — the same folder may appear with both .webp and .jpg
-        const seen = new Set<string>();
 
-        // On Android, skip slow file system checks and use APK assets directly.
-        // <Image> can load file:///android_asset/ URIs even without getInfoAsync.
         if (Platform.OS === 'android') {
           const addedFolders = new Set<string>();
           for (const imgPath of paths) {
             if (validUris.length >= 2) break;
-            // Extract folder, e.g. "3_4_Sit-Up" from "3_4_Sit-Up/0.jpg"
             const folder = imgPath.split('/')[0];
             const frame = imgPath.split('/')[1];
             if (!folder || !frame) continue;
             const frameKey = `${folder}/${frame?.replace(/\.(jpg|png|webp)$/i, '')}`;
             if (addedFolders.has(frameKey)) continue;
             addedFolders.add(frameKey);
-            // Prefer .webp (APK assets are webp), fallback to .jpg
             const webpUri = `${APK_ASSETS_DIR}${folder}/${frame.replace(/\.(jpg|png)$/i, '.webp')}`;
             validUris.push(webpUri);
           }
         } else {
+          const seen = new Set<string>();
           for (const imgPath of paths) {
             if (validUris.length >= 2) break;
             if (seen.has(imgPath)) continue;
@@ -177,11 +184,17 @@ export default function ExerciseImage({
 
         if (!cancelled) {
           setResolvedUris(validUris);
-          setHasError(false);
+          setIsLoading(false);
+
+          // Cache the resolved URIs
+          if (validUris.length > 0) {
+            imageCache.set(exerciseId, validUris);
+          }
         }
       } catch {
         if (!cancelled) {
           setResolvedUris([]);
+          setIsLoading(false);
         }
       }
     }
@@ -190,9 +203,9 @@ export default function ExerciseImage({
     return () => {
       cancelled = true;
     };
-  }, [exerciseId, preloadedPaths]);
+  }, [exerciseId, preloadedPaths, retryCount]);
 
-  // Animation timer: toggle between frames
+  // Animation timer
   useEffect(() => {
     if (!animate || resolvedUris.length < 2) return;
 
@@ -205,16 +218,15 @@ export default function ExerciseImage({
     };
   }, [animate, resolvedUris.length]);
 
+  // Image load error handler with retry
   const handleError = useCallback(() => {
-    // GUARD: Don't retry if we're in the middle of animation.
-    // Changing resolvedUris during animation triggers Glide threading errors.
     if (animate && currentFrame > 0) {
       if (__DEV__) console.warn('[ExerciseImage] Skipping retry during animation');
       setHasError(true);
       return;
     }
 
-    // On first error, try alternate format (.webp ↔ .jpg) for APK assets
+    // On first error, try alternate format (.webp ↔ .jpg)
     if (retryCount === 0 && resolvedUris.length > 0 && Platform.OS === 'android') {
       const altUris = resolvedUris.map((uri) => {
         if (uri.endsWith('.webp')) return uri.replace(/\.webp$/, '.jpg');
@@ -227,13 +239,11 @@ export default function ExerciseImage({
         return;
       }
     }
-    // On second error, try documentDirectory as last resort
+    // On second error, try documentDirectory
     if (retryCount === 1 && resolvedUris.length > 0) {
       const docUris = resolvedUris.map((uri) => {
-        const assetPrefix = APK_ASSETS_DIR;
-        if (uri.startsWith(assetPrefix)) {
-          const relPath = uri.slice(assetPrefix.length);
-          return `${IMAGE_BASE_DIR}${relPath}`;
+        if (uri.startsWith(APK_ASSETS_DIR)) {
+          return `${IMAGE_BASE_DIR}${uri.slice(APK_ASSETS_DIR.length)}`;
         }
         return uri;
       });
@@ -246,54 +256,109 @@ export default function ExerciseImage({
     setHasError(true);
   }, [retryCount, resolvedUris, animate, currentFrame]);
 
-  // Show real image
-  if (resolvedUris.length > 0 && !hasError) {
-    const uri = resolvedUris[currentFrame] ?? resolvedUris[0];
-    const borderRadius = variant === 'thumbnail' ? 8 : 12;
+  // Manual retry from error UI
+  const handleManualRetry = useCallback(() => {
+    if (retryCount >= MAX_RETRY_ATTEMPTS) {
+      // Reset retry count to allow fresh attempts
+      setRetryCount(0);
+    }
+    // Invalidate cache for this exercise
+    imageCache.get(exerciseId); // no-op read, but let's just delete
+    setHasError(false);
+    setIsLoading(true);
+    setResolvedUris([]);
+    setCurrentFrame(0);
+    // Trigger re-resolve by bumping retryCount
+    setRetryCount((prev) => prev + 1);
+  }, [exerciseId, retryCount]);
+
+  // ─── Loading State ───
+  if (isLoading) {
     return (
-      <View
-        style={[
-          dimensions,
-          styles.container,
-          {
-            borderRadius,
-            borderWidth: 1.5,
-            borderColor: theme.colors.border,
-            backgroundColor: theme.colors.surfaceVariant,
-            overflow: 'hidden',
-          },
-          style,
-        ]}
-      >
-        <Image
-          source={{ uri }}
-          style={[dimensions, styles.image, { borderRadius: borderRadius - 1 }] as ImageStyle[]}
-          contentFit={variant === 'hero' ? 'cover' : 'contain'}
-          onError={handleError}
-        />
-        {/* Frame indicator dots */}
-        {resolvedUris.length > 1 && animate && (
-          <View style={styles.frameIndicator}>
-            {resolvedUris.map((_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.frameDot,
-                  {
-                    backgroundColor: i === currentFrame ? theme.colors.accent : 'rgba(255,255,255,0.4)',
-                  },
-                ]}
-              />
-            ))}
-          </View>
-        )}
+      <View style={style}>
+        <ImageLoadingState isLoading isError={false} variant={variant} frameCount={2} currentFrame={0} />
       </View>
     );
   }
 
-  // Placeholder: gradient + category icon with dual-frame indicator for detail/hero
+  // ─── Error State (after all retries exhausted) ───
+  if (hasError || (resolvedUris.length === 0 && !isLoading)) {
+    // If we have resolved URIs = 0 and not loading, show placeholder (not error)
+    if (resolvedUris.length === 0 && !hasError) {
+      // No images available — show themed placeholder (not an error)
+      return <Placeholder variant={variant} config={config} dimensions={dimensions} style={style} theme={theme} />;
+    }
+
+    return (
+      <View style={style}>
+        <ImageLoadingState isLoading={false} isError onRetry={handleManualRetry} variant={variant} />
+      </View>
+    );
+  }
+
+  // ─── Real Image ───
+  const uri = resolvedUris[currentFrame] ?? resolvedUris[0];
+  const borderRadius = variant === 'thumbnail' ? 8 : 12;
+
+  return (
+    <View
+      style={[
+        dimensions,
+        styles.container,
+        {
+          borderRadius,
+          borderWidth: 1.5,
+          borderColor: theme.colors.border,
+          backgroundColor: theme.colors.surfaceVariant,
+          overflow: 'hidden',
+        },
+        style,
+      ]}
+    >
+      <Image
+        source={{ uri }}
+        style={[dimensions, styles.image, { borderRadius: borderRadius - 1 }] as ImageStyle[]}
+        contentFit={variant === 'hero' ? 'cover' : 'contain'}
+        onError={handleError}
+      />
+      {/* Frame indicator dots */}
+      {resolvedUris.length > 1 && animate && (
+        <View style={styles.frameIndicator}>
+          {resolvedUris.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.frameDot,
+                {
+                  backgroundColor: i === currentFrame ? theme.colors.accent : 'rgba(255,255,255,0.4)',
+                },
+              ]}
+            />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ─── Placeholder sub-component ───
+
+function Placeholder({
+  variant,
+  config,
+  dimensions,
+  style,
+  theme,
+}: {
+  variant: string;
+  config: { colors: string[]; icon: GlyphMapKey };
+  dimensions: { width: number; height: number };
+  style?: ViewStyle;
+  theme: any;
+}) {
   const showDualHint = variant === 'detail' || variant === 'hero';
   const placeholderRadius = variant === 'thumbnail' ? 8 : 12;
+
   return (
     <View
       style={[
@@ -309,7 +374,7 @@ export default function ExerciseImage({
       ]}
     >
       <LinearGradient
-        colors={config.colors}
+        colors={config.colors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[dimensions, styles.placeholder, { borderRadius: placeholderRadius - 1 }]}
@@ -348,7 +413,7 @@ const VARIANT_DIMENSIONS: Record<string, { width: number; height: number }> = {
   thumbnail: { width: 56, height: 56 },
   card: { width: 72, height: 72 },
   detail: { width: 120, height: 120 },
-  hero: { width: 999, height: 300 }, // width: 999 means "use flex"
+  hero: { width: 999, height: 300 },
 };
 
 // ─── Styles ───

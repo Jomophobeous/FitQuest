@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import SimpleMarkdown from '../SimpleMarkdown';
 import Animated, {
   FadeIn,
+  FadeInUp,
   FadeInDown,
   FadeInRight,
   SlideInDown,

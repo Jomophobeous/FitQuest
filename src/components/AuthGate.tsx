@@ -7,8 +7,11 @@
  * States:
  *   INITIALIZING → checking if password is set up
  *   SETUP        → first-time password setup screen
- *   LOCKED       → authentication required (biometric prompt or password input)
+ *   LOCKED       → authentication required (password input only in dev)
  *   UNLOCKED     → children rendered normally
+ *
+ * Dev flags:
+ *   EXPO_PUBLIC_AUTH_BYPASS=true  → skip gate entirely (auto-unlock with mock user)
  *
  * Placement: Wraps DatabaseProvider in _layout.tsx.
  * DB must NOT initialize before UNLOCKED state.
@@ -40,6 +43,10 @@ const MAX_FAILED_ATTEMPTS = 5;
 const BASE_BACKOFF_MS = 2000; // 2s, 4s, 8s, 16s, 32s…
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes after MAX_FAILED_ATTEMPTS
 
+// CONTROLLED AUTH BYPASS — toggled via EXPO_PUBLIC_AUTH_BYPASS=true in .env.local
+// Never ships to production (env flag not set in .env or EAS production profile)
+const AUTH_BYPASS = process.env.EXPO_PUBLIC_AUTH_BYPASS === 'true';
+
 // ============================================
 // COMPONENT
 // ============================================
@@ -67,17 +74,22 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     if (initRef.current) return;
     initRef.current = true;
 
+    // AUTH_BYPASS: skip gate entirely for E2E / UI testing
+    if (AUTH_BYPASS) {
+      setGateState('UNLOCKED');
+      return;
+    }
+
     (async () => {
       const state = await authService.initialize();
       if (state === 'NO_PASSWORD') {
         setGateState('SETUP');
       } else {
         setGateState('LOCKED');
-        // Attempt biometric unlock automatically
-        attemptBiometricUnlock();
+        // Biometrics HARD OFF in dev — password field only
+        // Production: re-enable with if (!__DEV__) attemptBiometricUnlock();
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only init; attemptBiometricUnlock defined below
   }, []);
 
   // ============================================
@@ -96,15 +108,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           setGateState('LOCKED');
           setPassword('');
           setError('');
-          // Attempt biometric re-auth
-          attemptBiometricUnlock();
+          // Biometrics HARD OFF in dev — password field only
+          // if (!__DEV__) attemptBiometricUnlock();
         }
       }
     };
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- attemptBiometricUnlock is a stable useCallback ref
   }, [gateState]);
 
   // ============================================

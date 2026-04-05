@@ -230,7 +230,9 @@ export function MilestoneList({ currentLevel, maxVisible = 6 }: MilestoneListPro
                     },
                   ]}
                 >
-                  {achieved && <MaterialCommunityIcons name={milestone.icon as any} size={14} color="#fff" />}
+                  {achieved && (
+                    <MaterialCommunityIcons name={milestone.icon as any} size={14} color={theme.colors.onAccent} />
+                  )}
                 </View>
                 {i < visibleRanks.length - 1 && (
                   <View

@@ -36,7 +36,8 @@
         "ACCESS_COARSE_LOCATION",
         "ACTIVITY_RECOGNITION",
         "com.android.vending.BILLING"
-      ]
+      ],
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"

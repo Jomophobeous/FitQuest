@@ -173,12 +173,12 @@ export const SwipeableRow = forwardRef<SwipeableRowActions, SwipeableRowProps>(f
       <Animated.View style={[styles.leftActions, leftActionsStyle]}>
         {onEdit && (
           <View style={[styles.actionBtn, { backgroundColor: theme.colors.blue, width: ACTION_WIDTH }]}>
-            <MaterialCommunityIcons name="pencil-outline" size={20} color="#fff" />
+            <MaterialCommunityIcons name="pencil-outline" size={20} color={theme.colors.onAccent} />
           </View>
         )}
         {onDelete && (
           <View style={[styles.actionBtn, { backgroundColor: theme.colors.error, width: ACTION_WIDTH }]}>
-            <MaterialCommunityIcons name="trash-can-outline" size={20} color="#fff" />
+            <MaterialCommunityIcons name="trash-can-outline" size={20} color={theme.colors.onAccent} />
           </View>
         )}
       </Animated.View>

@@ -11,9 +11,31 @@
 
 import React from 'react';
 import PostHog, { PostHogProvider } from 'posthog-react-native';
+import { Platform } from 'react-native';
 
 const POSTHOG_API_KEY = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || '';
 const POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com';
+
+/**
+ * In-memory storage fallback for web/test environments.
+ * Prevents: "No storage available" error when expo-file-system isn't available.
+ */
+const memoryStorage: Record<string, string> = {};
+const webStorage = {
+  getItem: (key: string) => Promise.resolve(memoryStorage[key] ?? null),
+  setItem: (key: string, value: string) => {
+    memoryStorage[key] = value;
+    return Promise.resolve();
+  },
+  removeItem: (key: string) => {
+    delete memoryStorage[key];
+    return Promise.resolve();
+  },
+  clear: () => {
+    Object.keys(memoryStorage).forEach((k) => delete memoryStorage[k]);
+    return Promise.resolve();
+  },
+};
 
 let _client: PostHog | null = null;
 
@@ -39,6 +61,8 @@ export function getPostHogClient(): Promise<PostHog | null> {
     _initPromise = (async () => {
       const client = new PostHog(POSTHOG_API_KEY, {
         host: POSTHOG_HOST,
+        // Use memory storage on web, native on mobile
+        storage: Platform.OS === 'web' ? webStorage : undefined,
         enableSessionReplay: true,
         sessionReplayConfig: {
           maskAllTextInputs: true,
@@ -77,6 +101,8 @@ export function PostHogAnalyticsProvider({ children }: { children: React.ReactNo
       apiKey={POSTHOG_API_KEY}
       options={{
         host: POSTHOG_HOST,
+        // Use memory storage on web, native on mobile
+        storage: Platform.OS === 'web' ? webStorage : undefined,
         enableSessionReplay: isNativeBuild,
         sessionReplayConfig: isNativeBuild
           ? {

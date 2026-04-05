@@ -47,7 +47,7 @@ function isPublicRoute(pathname: string): boolean {
  * immediately redirects to /login.
  */
 export function useNavigationGuard(): void {
-  const { isSignedIn, isLoading, isServerConfigured } = useAuth();
+  const { isSignedIn, isAuthenticated, isLoading, isServerConfigured } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const hasRedirected = useRef(false);
@@ -62,8 +62,9 @@ export function useNavigationGuard(): void {
     // If no server configured, auth is local-only (AuthGate handles it)
     if (!isServerConfigured) return;
 
-    // If signed in, allow access everywhere + allow navigation to login for sign-out
-    if (isSignedIn) {
+    // If authenticated (local OR server token), allow access everywhere
+    // isAuthenticated = !!token || isLocallyAuthenticated
+    if (isAuthenticated) {
       hasRedirected.current = false;
       return;
     }
@@ -71,12 +72,12 @@ export function useNavigationGuard(): void {
     // Not signed in — check if current route is public
     if (isPublicRoute(pathname)) return;
 
-    // ENFORCEMENT: Not signed in + on protected route = redirect to login
+    // ENFORCEMENT: Not authenticated + on protected route = redirect to login
     // Prevent redirect loops
     if (!hasRedirected.current) {
       hasRedirected.current = true;
       if (__DEV__) console.warn(`[NavigationGuard] Unauthorized access to ${pathname} — redirecting to /login`);
       router.replace('/login');
     }
-  }, [isSignedIn, isLoading, isServerConfigured, pathname, router]);
+  }, [isAuthenticated, isLoading, isServerConfigured, pathname, router]);
 }

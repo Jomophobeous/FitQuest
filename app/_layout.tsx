@@ -9,6 +9,7 @@ import { DatabaseProvider } from '../src/context/DatabaseContext';
 import { SubscriptionProvider, useSubscription } from '../src/purchases/SubscriptionContext';
 import { AuthProvider } from '../src/context/AuthContext';
 import { AuthGate } from '../src/components/AuthGate';
+import { AuthGateBridge } from '../src/components/AuthGateBridge';
 import { useNavigationGuard } from '../src/components/NavigationGuard';
 import { PostHogAnalyticsProvider } from '../src/services/posthogService';
 import { ConnectivityProvider } from '../src/context/ConnectivityContext';
@@ -450,6 +451,7 @@ export default function RootLayout() {
               <DatabaseProvider>
                 <AppGate>
                   <AuthProvider>
+                    <AuthGateBridge />
                     <SubscriptionProvider>
                       <ConnectivityProvider>
                         <ToastProvider>

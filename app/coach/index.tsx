@@ -37,6 +37,7 @@ import {
   StreamingBubble,
   MessageActionSheet,
 } from '../../src/components/coach/ChatComponents';
+import CoachActivationModal from '../../src/components/coach/CoachActivationModal';
 
 // ============================================
 // SCREEN
@@ -512,6 +513,7 @@ export default function CoachScreen() {
           title="AI Coach"
           description="Chat with your AI fitness coach for personalised workout advice, form tips, and motivation. Start a new chat anytime to keep things fresh."
         />
+        <CoachActivationModal onActivated={() => {}} />
         <CoachScreenInner />
       </PremiumGate>
     </ScreenErrorBoundary>

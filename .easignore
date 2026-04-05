@@ -1,14 +1,18 @@
-# EAS Build — reduce upload size
-# DO NOT exclude node_modules (EAS needs it for managed builds)
+# EAS Build archive — optimize for remote build
+# EAS will do npm ci on the build server, so exclude node_modules
+node_modules/
 .expo/
 .git/
 android/
 ios/
-*.log
-*.tgz
-__tests__/
+dist/
+build/
 coverage/
+*.log
+__tests__/
 .maestro/
 .env.local
 .env.backup
 .env.staging
+.DS_Store
+Thumbs.db

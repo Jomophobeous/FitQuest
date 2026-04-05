@@ -552,7 +552,7 @@ async function runVersionedMigrations(database: SQLite.SQLiteDatabase, currentVe
       ];
       for (const ex of focusExercises) {
         await db.runAsync(
-          `INSERT OR IGNORE INTO exercises (id, name, category, difficulty, equipment_level, impact_level, space_required, time_per_set_seconds, instructions, order_in_category) VALUES (?, ?, 'focus', ?, 'none', 'low_impact', 'tight', ?, ?, ?)`,
+          `INSERT OR IGNORE INTO exercises (id, name, category, difficulty, equipment_level, impact_level, space_required, time_per_set_seconds, instructions, order_in_category) VALUES (?, ?, 'focus', ?, 'none', 'no_impact', 'mat_only_1x1', ?, ?, ?)`,
           [ex.id, ex.name, ex.diff, ex.t, ex.instr, ex.ord],
         );
         await db.runAsync(

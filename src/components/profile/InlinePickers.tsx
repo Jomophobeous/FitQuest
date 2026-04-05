@@ -4,13 +4,14 @@
  */
 
 import React, { memo } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
 import type { ThemeMode } from '../../design/theme-system';
 import ThemedText from '../ThemedText';
 import { typography, spacing, radius } from '../../design/theme-system';
+import { PressableScale } from '../ui/InteractionFeedback';
 
 // ─── Language Pill Grid ──────────────────────────────────
 
@@ -32,9 +33,10 @@ export const LanguagePillGrid = memo(function LanguagePillGrid({
       {languages.map((lang) => {
         const isActive = lang.code === current;
         return (
-          <TouchableOpacity
+          <PressableScale
             key={lang.code}
-            activeOpacity={0.7}
+            scaleTo={0.95}
+            hapticEvent="buttonPress"
             onPress={() => onSelect(lang.code)}
             accessibilityRole="radio"
             accessibilityState={{ selected: isActive }}
@@ -60,7 +62,7 @@ export const LanguagePillGrid = memo(function LanguagePillGrid({
               {lang.code.toUpperCase()}
             </ThemedText>
             {isActive && <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.accent} />}
-          </TouchableOpacity>
+          </PressableScale>
         );
       })}
     </Animated.View>
@@ -89,9 +91,10 @@ export const ThemePillRow = memo(function ThemePillRow({ current, onSelect }: Th
         const isActive = opt.mode === current;
         const accentColor = opt.mode === 'blackGold' ? theme.colors.accent3 : theme.colors.accent;
         return (
-          <TouchableOpacity
+          <PressableScale
             key={opt.mode}
-            activeOpacity={0.7}
+            scaleTo={0.95}
+            hapticEvent="buttonPress"
             onPress={() => onSelect(opt.mode)}
             accessibilityRole="radio"
             accessibilityState={{ selected: isActive }}
@@ -120,7 +123,7 @@ export const ThemePillRow = memo(function ThemePillRow({ current, onSelect }: Th
             >
               {opt.label}
             </ThemedText>
-          </TouchableOpacity>
+          </PressableScale>
         );
       })}
     </Animated.View>

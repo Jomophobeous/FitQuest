@@ -103,9 +103,8 @@ function ThemedTabs() {
         fontSize: typography.sizes.h4,
       },
       headerRight,
-      // Smooth tab switch — 'shift' keeps screens mounted to avoid re-triggering
-      // Reanimated entering animations (which causes visible twitching with 'fade')
-      animation: 'shift' as const,
+      // Smooth tab switch — 'fade' gives clean cross-fades between tabs
+      animation: 'fade' as const,
       tabBarStyle,
       tabBarHideOnKeyboard: true,
       tabBarActiveTintColor: theme.colors.accent,

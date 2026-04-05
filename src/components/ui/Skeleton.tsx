@@ -210,3 +210,39 @@ const skeletonStyles = StyleSheet.create({
     marginTop: spacing[4],
   },
 });
+
+// ============================================
+// SKELETON PROFILE — Profile screen placeholder
+// ============================================
+
+export function SkeletonProfile() {
+  return (
+    <View style={{ paddingTop: spacing[4] }}>
+      {/* Avatar + Name + XP bar */}
+      <View style={{ alignItems: 'center', paddingVertical: spacing[6] }}>
+        <Skeleton width={80} height={80} radius="full" />
+        <Skeleton width={140} height={20} radius="md" style={{ marginTop: spacing[3] }} />
+        <Skeleton width={100} height={12} radius="sm" style={{ marginTop: spacing[2] }} />
+        {/* XP bar */}
+        <Skeleton width="70%" height={8} radius="full" style={{ marginTop: spacing[3] }} />
+      </View>
+
+      {/* Stats grid (2x2) */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3], paddingHorizontal: spacing[4] }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <View key={i} style={{ flex: 1, minWidth: '44%' }}>
+            <Skeleton width="100%" height={72} radius="lg" />
+          </View>
+        ))}
+      </View>
+
+      {/* Section cards */}
+      {Array.from({ length: 3 }).map((_, i) => (
+        <View key={i} style={{ paddingHorizontal: spacing[4], marginTop: spacing[4] }}>
+          <Skeleton width={120} height={14} radius="sm" style={{ marginBottom: spacing[2] }} />
+          <Skeleton width="100%" height={80} radius="lg" />
+        </View>
+      ))}
+    </View>
+  );
+}

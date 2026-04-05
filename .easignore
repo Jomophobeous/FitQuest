@@ -11,6 +11,11 @@ __tests__
 workspace-repos
 Screenshots-Expo
 agents
+.venv
+logo_drafts
+website
+ui-intelligence
+tests
 .env.local
 .env.backup
 .env.staging

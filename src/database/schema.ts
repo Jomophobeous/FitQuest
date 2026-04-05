@@ -436,7 +436,9 @@ async function runVersionedMigrations(database: SQLite.SQLiteDatabase, currentVe
   }
   // v22: Seed focus category exercises (was 0 — missing from all seed sources)
   if (currentVersion < 22) {
+    if (!database) throw new Error('[FitQuest DB] v22: database is null during migration');
     await runMigrationSandboxed(database, '22', async (db) => {
+      if (!db) throw new Error('[FitQuest DB] v22: db callback parameter is null');
       if (__DEV__) console.warn('[FitQuest DB] v22: seeding focus category exercises');
       const focusExercises: Array<{ id: string; name: string; diff: string; t: number; ord: number; instr: string }> = [
         {
@@ -563,6 +565,9 @@ async function runVersionedMigrations(database: SQLite.SQLiteDatabase, currentVe
         );
       }
       if (__DEV__) console.warn('[FitQuest DB] v22: seeded 12 focus exercises');
+    }).catch((e) => {
+      console.error('[FitQuest DB] v22 migration failed:', e);
+      // Don't re-throw — allow the app to recover with Reset Database button
     });
   }
 }

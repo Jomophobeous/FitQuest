@@ -210,7 +210,7 @@ export const dashboardStyles = StyleSheet.create({
     marginTop: spacing[2],
     paddingTop: spacing[2],
     borderTopWidth: 1,
-    borderTopColor: 'rgba(239,68,68,0.15)',
+    borderTopColor: 'rgba(239,68,68,0.15)', // error@15% — thematically correct for recovery warning,
   },
 
   // ── BEHAVIORAL SIGNAL CARD ──
@@ -241,7 +241,7 @@ export const dashboardStyles = StyleSheet.create({
     marginTop: spacing[2],
     paddingTop: spacing[2],
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255,255,255,0.08)',
+    borderTopColor: 'rgba(255,255,255,0.08)', // subtle separator — thematically neutral,
   },
   trialCard: {
     marginHorizontal: spacing[4],
@@ -380,7 +380,7 @@ export const dashboardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   exploreTileLabel: {
-    fontSize: typography.sizes.bodyMid,
+    fontSize: typography.sizes.bodySmall,
     fontWeight: '700',
   },
   exploreTileDesc: {

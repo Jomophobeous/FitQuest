@@ -1,0 +1,14 @@
+# EAS Build — reduce upload size
+# DO NOT exclude node_modules (EAS needs it for managed builds)
+.expo/
+.git/
+android/
+ios/
+*.log
+*.tgz
+__tests__/
+coverage/
+.maestro/
+.env.local
+.env.backup
+.env.staging

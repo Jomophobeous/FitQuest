@@ -39,7 +39,7 @@ function OfflineBannerInner() {
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-      <ThemedText variant="caption" style={styles.text}>
+      <ThemedText variant="caption" style={[styles.text, { color: theme.colors.onAccent }]}>
         {label}
       </ThemedText>
     </View>

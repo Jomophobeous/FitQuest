@@ -168,7 +168,7 @@ export default function DashboardScreen() {
           pointerEvents="none"
         >
           <LinearGradient
-            colors={['#10B98114', '#10B98106', 'transparent']}
+            colors={[theme.colors.accent + '14', theme.colors.accent + '06', 'transparent']}
             start={{ x: 1, y: 0 }}
             end={{ x: 0.2, y: 1 }}
             style={{ flex: 1 }}

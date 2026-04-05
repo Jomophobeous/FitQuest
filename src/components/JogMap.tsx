@@ -326,8 +326,8 @@ const JogMap = memo(function JogMap({
 
           {isLive && (
             <View style={[styles.fallbackLiveBadge, { backgroundColor: theme.colors.error }]}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveText}>TRACKING</Text>
+              <View style={[styles.liveDot, { backgroundColor: theme.colors.onAccent }]} />
+              <Text style={[styles.liveText, { color: theme.colors.onAccent }]}>TRACKING</Text>
             </View>
           )}
         </View>
@@ -452,8 +452,14 @@ const JogMap = memo(function JogMap({
           {/* Start marker */}
           {startPoint && (
             <PointAnnotation id="startMarker" coordinate={startPoint}>
-              <View style={[styles.marker, styles.startMarker, { backgroundColor: accentColor }]}>
-                <View style={styles.markerInner} />
+              <View
+                style={[
+                  styles.marker,
+                  styles.startMarker,
+                  { backgroundColor: accentColor, borderColor: theme.colors.onAccent },
+                ]}
+              >
+                <View style={[styles.markerInner, { backgroundColor: theme.colors.surface }]} />
               </View>
             </PointAnnotation>
           )}
@@ -461,8 +467,14 @@ const JogMap = memo(function JogMap({
           {/* End / current position marker (review mode) */}
           {!isLive && endPoint && coords.length > 1 && (
             <PointAnnotation id="endMarker" coordinate={endPoint}>
-              <View style={[styles.marker, styles.endMarker, { backgroundColor: theme.colors.error }]}>
-                <View style={styles.markerInner} />
+              <View
+                style={[
+                  styles.marker,
+                  styles.endMarker,
+                  { backgroundColor: theme.colors.error, borderColor: theme.colors.onAccent },
+                ]}
+              >
+                <View style={[styles.markerInner, { backgroundColor: theme.colors.surface }]} />
               </View>
             </PointAnnotation>
           )}
@@ -479,8 +491,8 @@ const JogMap = memo(function JogMap({
         {/* LIVE indicator */}
         {isLive && (
           <View style={[styles.liveBadge, { backgroundColor: theme.colors.error }]}>
-            <View style={styles.liveDot} />
-            <Text style={styles.liveText}>LIVE</Text>
+            <View style={[styles.liveDot, { backgroundColor: theme.colors.onAccent }]} />
+            <Text style={[styles.liveText, { color: theme.colors.onAccent }]}>LIVE</Text>
           </View>
         )}
 

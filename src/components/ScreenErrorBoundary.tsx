@@ -52,8 +52,8 @@ function ScreenFallback({
         accessibilityRole="button"
         accessibilityLabel="Try again"
       >
-        <MaterialCommunityIcons name="refresh" size={18} color="#fff" />
-        <Text style={styles.primaryBtnText}>Try Again</Text>
+        <MaterialCommunityIcons name="refresh" size={18} color={theme.colors.onAccent} />
+        <Text style={[styles.primaryBtnText, { color: theme.colors.onAccent }]}>Try Again</Text>
       </TouchableOpacity>
 
       {onGoBack && (

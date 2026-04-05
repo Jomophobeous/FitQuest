@@ -18,15 +18,14 @@ import { typography, spacing, radius } from '../design/theme-system';
 /**
  * Get theme-aware color — replaces green with gold in blackGold mode
  */
-function getThemedColor(color: string, themeMode: ThemeMode): string {
+function getThemedColor(color: string, themeMode: ThemeMode, themeAccent: string): string {
   if (themeMode !== 'blackGold') return color;
-  // Map green hex variants → gold hex equivalents for blackGold theme
-  const greenToGoldMap: Record<string, string> = {
-    '#10B981': '#D4A843',
-    '#10b981': '#D4A843',
-    '#059669': '#B8912C',
-  };
-  return greenToGoldMap[color] || greenToGoldMap[color.toUpperCase()] || color;
+  // Map green hex variants → theme accent for blackGold theme
+  const greenVariants = ['#10B981', '#10b981', '#059669'];
+  if (greenVariants.includes(color) || greenVariants.includes(color.toUpperCase())) {
+    return themeAccent;
+  }
+  return color;
 }
 
 interface RankBadgeProps {
@@ -41,7 +40,7 @@ export function RankBadge({ level, size = 'md' }: RankBadgeProps) {
   const { theme, mode } = useTheme();
   const rankInfo = getUserRankInfo(level);
   const { currentRank } = rankInfo;
-  const rankColor = getThemedColor(currentRank.color, mode);
+  const rankColor = getThemedColor(currentRank.color, mode, theme.colors.accent);
 
   const sizes = {
     sm: { icon: 14, font: 10, pad: 6, height: 26 },
@@ -102,8 +101,8 @@ export function RankCard({ level, totalXP, showQuote = true }: RankCardProps) {
   const { theme, mode } = useTheme();
   const rankInfo = getUserRankInfo(level);
   const { currentRank, nextRank, tier, progressToNext, levelsToNext, milestonesAchieved, totalMilestones } = rankInfo;
-  const rankColor = getThemedColor(currentRank.color, mode);
-  const tierColor = getThemedColor(tier.color, mode);
+  const rankColor = getThemedColor(currentRank.color, mode, theme.colors.accent);
+  const tierColor = getThemedColor(tier.color, mode, theme.colors.accent);
 
   return (
     <Animated.View entering={FadeInDown.delay(100).duration(200)}>
@@ -204,7 +203,7 @@ export function MilestoneList({ currentLevel, maxVisible = 6 }: MilestoneListPro
       {visibleRanks.map((milestone, i) => {
         const achieved = currentLevel >= milestone.level;
         const isCurrent = getCurrentRankForMilestone(currentLevel, allRanks) === milestone;
-        const milestoneColor = getThemedColor(milestone.color, mode);
+        const milestoneColor = getThemedColor(milestone.color, mode, theme.colors.accent);
 
         return (
           <Animated.View key={milestone.level} entering={FadeInDown.delay(i * 80).duration(150)}>

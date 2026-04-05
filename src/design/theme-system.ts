@@ -344,7 +344,6 @@ export type {
   ThemeAnimationSettings,
   ThemeAccessibility,
   ThemeCategory,
-  ThemeEffects,
   GlassSpec,
   ElevationSpec,
   GradientPair,

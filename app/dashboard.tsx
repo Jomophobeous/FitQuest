@@ -49,7 +49,7 @@ export default function DashboardScreen() {
   const isCompactScreen = width < 420;
 
   // Type-safe color key accessor for dynamic theme color lookups
-  const themeColor = (key: string) => (theme.colors as Record<string, string>)[key] ?? theme.colors.accent;
+  const themeColor = (key: string) => (theme.colors as unknown as Record<string, string>)[key] ?? theme.colors.accent;
   const vm = useDashboardViewModel();
 
   // CTA breathing pulse animation

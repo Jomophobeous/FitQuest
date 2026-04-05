@@ -26,7 +26,7 @@ function isValidMode(value: string | null): value is ThemeMode {
 const CYCLE_MAP = (() => {
   const map = {} as Record<ThemeMode, ThemeMode>;
   ALL_MODES.forEach((mode, i) => {
-    map[mode] = ALL_MODES[(i + 1) % ALL_MODES.length];
+    map[mode] = ALL_MODES[(i + 1) % ALL_MODES.length]!;
   });
   return map;
 })();
@@ -61,7 +61,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setMode(CYCLE_MAP[mode]);
+    setMode(CYCLE_MAP[mode] ?? 'dark');
   }, [mode, setMode]);
 
   const theme = allThemeInstances[mode];

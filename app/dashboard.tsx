@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../src/context/ThemeContext';
 import { spacing } from '../src/design/theme-system';
 import { MOTION, HIERARCHY } from '../src/design/motion';
@@ -38,6 +49,20 @@ export default function DashboardScreen() {
   // Type-safe color key accessor for dynamic theme color lookups
   const themeColor = (key: string) => (theme.colors as Record<string, string>)[key] ?? theme.colors.accent;
   const vm = useDashboardViewModel();
+
+  // CTA breathing pulse animation
+  const ctaScale = useSharedValue(1);
+  useEffect(() => {
+    ctaScale.value = withRepeat(
+      withSequence(
+        withTiming(1.035, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1.0, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+      true,
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const ctaAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: ctaScale.value }] }));
 
   // Warm caches for adjacent screens (non-blocking)
   usePrefetch(vm.isSubscribed);
@@ -137,6 +162,18 @@ export default function DashboardScreen() {
   return (
     <ScreenErrorBoundary screenName="Dashboard" onGoBack={() => router.back()}>
       <ScreenContainer scroll onRefresh={handleRefresh} refreshing={refreshing}>
+        {/* ── AMBIENT HERO GLOW — subtle emerald radiance from top-right — */}
+        <View
+          style={{ position: 'absolute', top: 0, right: 0, width: '100%', height: 200, zIndex: 0 }}
+          pointerEvents="none"
+        >
+          <LinearGradient
+            colors={['#10B98114', '#10B98106', 'transparent']}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0.2, y: 1 }}
+            style={{ flex: 1 }}
+          />
+        </View>
         <ScreenTutorial
           screenKey="dashboard"
           icon="view-dashboard"
@@ -303,16 +340,18 @@ export default function DashboardScreen() {
                   </View>
                   {/* PRIMARY ACTION: Start Workout - MOST PROMINENT */}
                   <View style={styles.primaryActionContainer}>
-                    <GradientButton
-                      title={t('dashboard.startNow') || 'START NOW'}
-                      icon="lightning-bolt"
-                      onPress={() => {
-                        if (__DEV__) console.warn('[Dashboard] CTA:startNow → fitquest?autostart=1');
-                        router.push('/fitquest?autostart=1');
-                      }}
-                      variant="primary"
-                      style={styles.primaryButton}
-                    />
+                    <Animated.View style={ctaAnimStyle}>
+                      <GradientButton
+                        title={t('dashboard.startNow') || 'START NOW'}
+                        icon="lightning-bolt"
+                        onPress={() => {
+                          if (__DEV__) console.warn('[Dashboard] CTA:startNow → fitquest?autostart=1');
+                          router.push('/fitquest?autostart=1');
+                        }}
+                        variant="primary"
+                        style={styles.primaryButton}
+                      />
+                    </Animated.View>
                   </View>
                 </View>
               </View>
@@ -324,106 +363,105 @@ export default function DashboardScreen() {
             Only shown when real data exists (workouts, fatigue records).
         ══════════════════════════════════════════════════════════════════ */}
           {hasReadinessData && (
-            <Animated.View
-              entering={FadeInDown.delay(MOTION.stagger * 4).duration(MOTION.fast)}
-              style={{ opacity: HIERARCHY.secondary }}
-            >
-              <View
-                style={[
-                  styles.recoveryCard,
-                  {
-                    backgroundColor: isRecoveryBad
-                      ? theme.colors.error + '15'
-                      : theme.isDark
-                        ? theme.colors.surfaceVariant
-                        : theme.colors.surface,
-                    borderColor: isRecoveryBad ? theme.colors.error + '40' : theme.colors.border,
-                  },
-                ]}
-              >
-                <View style={styles.recoveryInner}>
-                  <View style={styles.recoveryLeft}>
-                    <MaterialCommunityIcons
-                      name={
-                        (statusDisplay?.icon ||
-                          (isRecoveryBad ? 'battery-low' : isRecoveryGood ? 'battery-high' : 'battery-medium')) as any
-                      }
-                      size={24}
-                      color={
-                        isRecoveryBad
-                          ? theme.colors.error
-                          : isRecoveryGood
-                            ? theme.colors.success
-                            : theme.colors.warning
-                      }
-                    />
-                    <View>
-                      <ThemedText
-                        variant="bodySmall"
-                        weight="600"
-                        style={[
-                          styles.recoveryTitle,
-                          { color: isRecoveryBad ? theme.colors.error : theme.colors.text },
-                        ]}
-                      >
-                        {statusDisplay?.label || t('dashboard.recovery')}
-                      </ThemedText>
-                      {readiness?.timeSinceLastWorkoutMinutes != null && (
-                        <ThemedText variant="caption" color="muted" style={{ marginLeft: spacing[2] }}>
-                          {readiness.timeSinceLastWorkoutMinutes < 60
-                            ? t('dashboard.lastTrainedMin').replace(
-                                '{{count}}',
-                                String(readiness.timeSinceLastWorkoutMinutes),
-                              )
-                            : readiness.timeSinceLastWorkoutMinutes < 1440
-                              ? t('dashboard.lastTrainedHour').replace(
-                                  '{{count}}',
-                                  String(Math.floor(readiness.timeSinceLastWorkoutMinutes / 60)),
-                                )
-                              : t('dashboard.lastTrainedDay').replace(
-                                  '{{count}}',
-                                  String(Math.floor(readiness.timeSinceLastWorkoutMinutes / 1440)),
-                                )}
-                        </ThemedText>
-                      )}
-                    </View>
-                  </View>
-                  <View style={styles.recoveryRight}>
-                    <ThemedText
-                      variant="h3"
-                      weight="800"
-                      style={[
-                        styles.recoveryValue,
-                        {
-                          color: isRecoveryBad
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4).duration(MOTION.fast)}>
+              <View style={{ opacity: HIERARCHY.secondary }}>
+                <View
+                  style={[
+                    styles.recoveryCard,
+                    {
+                      backgroundColor: isRecoveryBad
+                        ? theme.colors.error + '15'
+                        : theme.isDark
+                          ? theme.colors.surfaceVariant
+                          : theme.colors.surface,
+                      borderColor: isRecoveryBad ? theme.colors.error + '40' : theme.colors.border,
+                    },
+                  ]}
+                >
+                  <View style={styles.recoveryInner}>
+                    <View style={styles.recoveryLeft}>
+                      <MaterialCommunityIcons
+                        name={
+                          (statusDisplay?.icon ||
+                            (isRecoveryBad ? 'battery-low' : isRecoveryGood ? 'battery-high' : 'battery-medium')) as any
+                        }
+                        size={24}
+                        color={
+                          isRecoveryBad
                             ? theme.colors.error
                             : isRecoveryGood
                               ? theme.colors.success
-                              : theme.colors.warning,
-                        },
-                      ]}
-                    >
-                      {recoveryPercent}%
-                    </ThemedText>
-                    <ThemedText variant="caption" color="muted">
-                      {isRecoveryBad
-                        ? t('dashboard.restRecommended')
-                        : isRecoveryGood
-                          ? t('dashboard.readyToTrain')
-                          : t('dashboard.recoveryModerate')}
-                    </ThemedText>
+                              : theme.colors.warning
+                        }
+                      />
+                      <View>
+                        <ThemedText
+                          variant="bodySmall"
+                          weight="600"
+                          style={[
+                            styles.recoveryTitle,
+                            { color: isRecoveryBad ? theme.colors.error : theme.colors.text },
+                          ]}
+                        >
+                          {statusDisplay?.label || t('dashboard.recovery')}
+                        </ThemedText>
+                        {readiness?.timeSinceLastWorkoutMinutes != null && (
+                          <ThemedText variant="caption" color="muted" style={{ marginLeft: spacing[2] }}>
+                            {readiness.timeSinceLastWorkoutMinutes < 60
+                              ? t('dashboard.lastTrainedMin').replace(
+                                  '{{count}}',
+                                  String(readiness.timeSinceLastWorkoutMinutes),
+                                )
+                              : readiness.timeSinceLastWorkoutMinutes < 1440
+                                ? t('dashboard.lastTrainedHour').replace(
+                                    '{{count}}',
+                                    String(Math.floor(readiness.timeSinceLastWorkoutMinutes / 60)),
+                                  )
+                                : t('dashboard.lastTrainedDay').replace(
+                                    '{{count}}',
+                                    String(Math.floor(readiness.timeSinceLastWorkoutMinutes / 1440)),
+                                  )}
+                          </ThemedText>
+                        )}
+                      </View>
+                    </View>
+                    <View style={styles.recoveryRight}>
+                      <ThemedText
+                        variant="h3"
+                        weight="800"
+                        style={[
+                          styles.recoveryValue,
+                          {
+                            color: isRecoveryBad
+                              ? theme.colors.error
+                              : isRecoveryGood
+                                ? theme.colors.success
+                                : theme.colors.warning,
+                          },
+                        ]}
+                      >
+                        {recoveryPercent}%
+                      </ThemedText>
+                      <ThemedText variant="caption" color="muted">
+                        {isRecoveryBad
+                          ? t('dashboard.restRecommended')
+                          : isRecoveryGood
+                            ? t('dashboard.readyToTrain')
+                            : t('dashboard.recoveryModerate')}
+                      </ThemedText>
+                    </View>
                   </View>
+                  {readiness?.recommendedIntensity && (
+                    <ThemedText variant="caption" color="secondary" style={styles.recoveryWarning}>
+                      {readiness.recommendation}
+                    </ThemedText>
+                  )}
+                  {!readiness && !!isRecoveryBad && (
+                    <ThemedText variant="caption" color="error" style={styles.recoveryWarning}>
+                      {t('dashboard.recoveryWarning')}
+                    </ThemedText>
+                  )}
                 </View>
-                {readiness?.recommendedIntensity && (
-                  <ThemedText variant="caption" color="secondary" style={styles.recoveryWarning}>
-                    {readiness.recommendation}
-                  </ThemedText>
-                )}
-                {!readiness && !!isRecoveryBad && (
-                  <ThemedText variant="caption" color="error" style={styles.recoveryWarning}>
-                    {t('dashboard.recoveryWarning')}
-                  </ThemedText>
-                )}
               </View>
             </Animated.View>
           )}
@@ -432,67 +470,66 @@ export default function DashboardScreen() {
             SYSTEM SIGNAL — Behavioral intelligence + last session impact
         ══════════════════════════════════════════════════════════════════ */}
           {behavioralSignal && (
-            <Animated.View
-              entering={FadeInDown.delay(MOTION.stagger * 3.5).duration(MOTION.fast)}
-              style={{ opacity: HIERARCHY.secondary }}
-            >
-              <View
-                style={[
-                  styles.signalCard,
-                  {
-                    backgroundColor: themeColor(behavioralSignal.colorKey) + '10',
-                    borderColor: themeColor(behavioralSignal.colorKey) + '30',
-                  },
-                ]}
-              >
-                <View style={styles.signalInner}>
-                  <View
-                    style={[styles.signalIconWrap, { backgroundColor: themeColor(behavioralSignal.colorKey) + '18' }]}
-                  >
-                    <MaterialCommunityIcons
-                      name={behavioralSignal.icon as any}
-                      size={20}
-                      color={themeColor(behavioralSignal.colorKey)}
-                    />
-                    {behavioralSignal.pulse && <PulseDot color={themeColor(behavioralSignal.colorKey)} />}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <ThemedText
-                      variant="bodySmall"
-                      weight="700"
-                      style={{ color: themeColor(behavioralSignal.colorKey) }}
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 3.5).duration(MOTION.fast)}>
+              <View style={{ opacity: HIERARCHY.secondary }}>
+                <View
+                  style={[
+                    styles.signalCard,
+                    {
+                      backgroundColor: themeColor(behavioralSignal.colorKey) + '10',
+                      borderColor: themeColor(behavioralSignal.colorKey) + '30',
+                    },
+                  ]}
+                >
+                  <View style={styles.signalInner}>
+                    <View
+                      style={[styles.signalIconWrap, { backgroundColor: themeColor(behavioralSignal.colorKey) + '18' }]}
                     >
-                      {behavioralSignal.headline}
-                    </ThemedText>
-                    <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
-                      {behavioralSignal.subtext}
-                    </ThemedText>
+                      <MaterialCommunityIcons
+                        name={behavioralSignal.icon as any}
+                        size={20}
+                        color={themeColor(behavioralSignal.colorKey)}
+                      />
+                      {behavioralSignal.pulse && <PulseDot color={themeColor(behavioralSignal.colorKey)} />}
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText
+                        variant="bodySmall"
+                        weight="700"
+                        style={{ color: themeColor(behavioralSignal.colorKey) }}
+                      >
+                        {behavioralSignal.headline}
+                      </ThemedText>
+                      <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                        {behavioralSignal.subtext}
+                      </ThemedText>
+                    </View>
                   </View>
+                  {lastImpact?.hasHistory && (
+                    <View style={styles.signalImpact}>
+                      <MaterialCommunityIcons
+                        name={
+                          lastImpact.trend === 'improving'
+                            ? 'trending-up'
+                            : lastImpact.trend === 'declining'
+                              ? 'trending-down'
+                              : ('trending-neutral' as any)
+                        }
+                        size={14}
+                        color={
+                          lastImpact.trend === 'improving'
+                            ? theme.colors.success
+                            : lastImpact.trend === 'declining'
+                              ? theme.colors.warning
+                              : theme.colors.textMuted
+                        }
+                      />
+                      <ThemedText variant="caption" color="secondary" style={{ flex: 1 }}>
+                        {lastImpact.trendStatement}
+                      </ThemedText>
+                    </View>
+                  )}
                 </View>
-                {lastImpact?.hasHistory && (
-                  <View style={styles.signalImpact}>
-                    <MaterialCommunityIcons
-                      name={
-                        lastImpact.trend === 'improving'
-                          ? 'trending-up'
-                          : lastImpact.trend === 'declining'
-                            ? 'trending-down'
-                            : ('trending-neutral' as any)
-                      }
-                      size={14}
-                      color={
-                        lastImpact.trend === 'improving'
-                          ? theme.colors.success
-                          : lastImpact.trend === 'declining'
-                            ? theme.colors.warning
-                            : theme.colors.textMuted
-                      }
-                    />
-                    <ThemedText variant="caption" color="secondary" style={{ flex: 1 }}>
-                      {lastImpact.trendStatement}
-                    </ThemedText>
-                  </View>
-                )}
               </View>
             </Animated.View>
           )}
@@ -501,82 +538,81 @@ export default function DashboardScreen() {
             TRIAL MESSAGE — Progressive trial messaging + consistency status
         ══════════════════════════════════════════════════════════════════ */}
           {trialSnapshot?.message.type !== 'NONE' && trialSnapshot?.message.headline ? (
-            <Animated.View
-              entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)}
-              style={{ opacity: HIERARCHY.tertiary }}
-            >
-              <TouchableOpacity
-                activeOpacity={trialSnapshot.message.actionRoute ? 0.7 : 1}
-                onPress={() => {
-                  if (trialSnapshot.message.actionRoute) {
-                    router.push(trialSnapshot.message.actionRoute as string);
-                  }
-                }}
-                accessibilityRole="button"
-                accessibilityLabel={trialSnapshot.message.headline}
-              >
-                <View
-                  style={[
-                    styles.trialCard,
-                    {
-                      backgroundColor: theme.colors.accent + '08',
-                      borderColor:
-                        trialSnapshot.phase === 'DECISION' ? theme.colors.warning + '40' : theme.colors.accent + '20',
-                    },
-                  ]}
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.5).duration(MOTION.fast)}>
+              <View style={{ opacity: HIERARCHY.tertiary }}>
+                <TouchableOpacity
+                  activeOpacity={trialSnapshot.message.actionRoute ? 0.7 : 1}
+                  onPress={() => {
+                    if (trialSnapshot.message.actionRoute) {
+                      router.push(trialSnapshot.message.actionRoute as string);
+                    }
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={trialSnapshot.message.headline}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
-                    <View style={[styles.trialIconWrap, { backgroundColor: theme.colors.accent + '14' }]}>
-                      <MaterialCommunityIcons
-                        name={
-                          trialSnapshot.phase === 'DECISION'
-                            ? 'timer-sand'
-                            : trialSnapshot.phase === 'EXPIRED'
-                              ? 'lock-outline'
-                              : 'shield-check'
-                        }
-                        size={18}
-                        color={trialSnapshot.phase === 'DECISION' ? theme.colors.warning : theme.colors.accent}
-                      />
+                  <View
+                    style={[
+                      styles.trialCard,
+                      {
+                        backgroundColor: theme.colors.accent + '08',
+                        borderColor:
+                          trialSnapshot.phase === 'DECISION' ? theme.colors.warning + '40' : theme.colors.accent + '20',
+                      },
+                    ]}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
+                      <View style={[styles.trialIconWrap, { backgroundColor: theme.colors.accent + '14' }]}>
+                        <MaterialCommunityIcons
+                          name={
+                            trialSnapshot.phase === 'DECISION'
+                              ? 'timer-sand'
+                              : trialSnapshot.phase === 'EXPIRED'
+                                ? 'lock-outline'
+                                : 'shield-check'
+                          }
+                          size={18}
+                          color={trialSnapshot.phase === 'DECISION' ? theme.colors.warning : theme.colors.accent}
+                        />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <ThemedText variant="bodySmall" weight="600" color="primary">
+                          {trialSnapshot.message.headline}
+                        </ThemedText>
+                        <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                          {trialSnapshot.message.subtext}
+                        </ThemedText>
+                      </View>
+                      {trialSnapshot.message.actionLabel && (
+                        <ThemedText variant="caption" weight="700" style={{ color: theme.colors.accent }}>
+                          {trialSnapshot.message.actionLabel}
+                        </ThemedText>
+                      )}
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <ThemedText variant="bodySmall" weight="600" color="primary">
-                        {trialSnapshot.message.headline}
-                      </ThemedText>
-                      <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
-                        {trialSnapshot.message.subtext}
-                      </ThemedText>
-                    </View>
-                    {trialSnapshot.message.actionLabel && (
-                      <ThemedText variant="caption" weight="700" style={{ color: theme.colors.accent }}>
-                        {trialSnapshot.message.actionLabel}
-                      </ThemedText>
+                    {consistencyProfile && (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: spacing[1.5],
+                          marginTop: spacing[2],
+                          paddingTop: spacing[2],
+                          borderTopWidth: StyleSheet.hairlineWidth,
+                          borderTopColor: theme.colors.border,
+                        }}
+                      >
+                        <MaterialCommunityIcons
+                          name={consistencyProfile.mode === 'DISCIPLINED' ? 'chart-line' : 'tune-vertical'}
+                          size={12}
+                          color={theme.colors.textMuted}
+                        />
+                        <ThemedText variant="caption" color="muted">
+                          {consistencyProfile.statusLine}
+                        </ThemedText>
+                      </View>
                     )}
                   </View>
-                  {consistencyProfile && (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: spacing[1.5],
-                        marginTop: spacing[2],
-                        paddingTop: spacing[2],
-                        borderTopWidth: StyleSheet.hairlineWidth,
-                        borderTopColor: theme.colors.border,
-                      }}
-                    >
-                      <MaterialCommunityIcons
-                        name={consistencyProfile.mode === 'DISCIPLINED' ? 'chart-line' : 'tune-vertical'}
-                        size={12}
-                        color={theme.colors.textMuted}
-                      />
-                      <ThemedText variant="caption" color="muted">
-                        {consistencyProfile.statusLine}
-                      </ThemedText>
-                    </View>
-                  )}
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </View>
             </Animated.View>
           ) : consistencyProfile ? (
             <Animated.View
@@ -613,44 +649,43 @@ export default function DashboardScreen() {
             WEEKLY GOAL PROGRESS — Derived from goalTracker
         ══════════════════════════════════════════════════════════════════ */}
           {goalProgress && goalProgress.overallProgress > 0 && (
-            <Animated.View
-              entering={FadeInDown.delay(MOTION.stagger * 4.8).duration(MOTION.fast)}
-              style={{ opacity: HIERARCHY.secondary }}
-            >
-              <View
-                style={[styles.goalCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-              >
-                <View style={styles.goalHeader}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-                    <MaterialCommunityIcons name="target" size={16} color={theme.colors.accent} />
-                    <ThemedText variant="bodySmall" weight="700" color="primary">
-                      {t('dashboard.weeklyGoal') || 'Weekly Goal'}
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.8).duration(MOTION.fast)}>
+              <View style={{ opacity: HIERARCHY.secondary }}>
+                <View
+                  style={[styles.goalCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                >
+                  <View style={styles.goalHeader}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
+                      <MaterialCommunityIcons name="target" size={16} color={theme.colors.accent} />
+                      <ThemedText variant="bodySmall" weight="700" color="primary">
+                        {t('dashboard.weeklyGoal') || 'Weekly Goal'}
+                      </ThemedText>
+                    </View>
+                    <ThemedText variant="bodySmall" weight="800" style={{ color: theme.colors.accent }}>
+                      {Math.round(goalProgress.overallProgress * 100)}%
                     </ThemedText>
                   </View>
-                  <ThemedText variant="bodySmall" weight="800" style={{ color: theme.colors.accent }}>
-                    {Math.round(goalProgress.overallProgress * 100)}%
-                  </ThemedText>
-                </View>
-                <View style={[styles.goalBarBg, { backgroundColor: theme.colors.border }]}>
-                  <View
-                    style={[
-                      styles.goalBarFill,
-                      {
-                        backgroundColor: theme.colors.accent,
-                        width: `${Math.min(100, Math.round(goalProgress.overallProgress * 100))}%`,
-                      },
-                    ]}
-                  />
-                </View>
-                <View style={styles.goalDetails}>
-                  <ThemedText variant="caption" color="muted">
-                    {goalProgress.workoutsDone}/{goalProgress.goals.workoutsTarget}{' '}
-                    {t('dashboard.workouts') || 'workouts'}
-                  </ThemedText>
-                  <ThemedText variant="caption" color="muted">
-                    {goalProgress.activeMinutesDone}/{goalProgress.goals.activeMinutesTarget}{' '}
-                    {t('fitquest.minShort') || 'min'}
-                  </ThemedText>
+                  <View style={[styles.goalBarBg, { backgroundColor: theme.colors.border }]}>
+                    <View
+                      style={[
+                        styles.goalBarFill,
+                        {
+                          backgroundColor: theme.colors.accent,
+                          width: `${Math.min(100, Math.round(goalProgress.overallProgress * 100))}%`,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <View style={styles.goalDetails}>
+                    <ThemedText variant="caption" color="muted">
+                      {goalProgress.workoutsDone}/{goalProgress.goals.workoutsTarget}{' '}
+                      {t('dashboard.workouts') || 'workouts'}
+                    </ThemedText>
+                    <ThemedText variant="caption" color="muted">
+                      {goalProgress.activeMinutesDone}/{goalProgress.goals.activeMinutesTarget}{' '}
+                      {t('fitquest.minShort') || 'min'}
+                    </ThemedText>
+                  </View>
                 </View>
               </View>
             </Animated.View>
@@ -660,51 +695,49 @@ export default function DashboardScreen() {
             ADAPTIVE NUDGE — Churn risk or high fatigue guidance
         ══════════════════════════════════════════════════════════════════ */}
           {!!userState?.churnRisk && !hasInterruptedSession && (
-            <Animated.View
-              entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}
-              style={{ opacity: HIERARCHY.secondary }}
-            >
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => router.push('/fitquest?autostart=1')}
-                style={[
-                  styles.nudgeCard,
-                  { backgroundColor: theme.colors.accent + '10', borderColor: theme.colors.accent + '30' },
-                ]}
-              >
-                <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme.colors.accent} />
-                <View style={{ flex: 1, marginLeft: spacing[2] }}>
-                  <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.accent }}>
-                    {t('dashboard.quickStartNudge') || 'Quick 10-min session?'}
-                  </ThemedText>
-                  <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
-                    {t('dashboard.quickStartSub') || 'A short workout keeps your momentum going'}
-                  </ThemedText>
-                </View>
-                <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.accent} />
-              </TouchableOpacity>
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}>
+              <View style={{ opacity: HIERARCHY.secondary }}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => router.push('/fitquest?autostart=1')}
+                  style={[
+                    styles.nudgeCard,
+                    { backgroundColor: theme.colors.accent + '10', borderColor: theme.colors.accent + '30' },
+                  ]}
+                >
+                  <MaterialCommunityIcons name="lightning-bolt" size={18} color={theme.colors.accent} />
+                  <View style={{ flex: 1, marginLeft: spacing[2] }}>
+                    <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.accent }}>
+                      {t('dashboard.quickStartNudge') || 'Quick 10-min session?'}
+                    </ThemedText>
+                    <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                      {t('dashboard.quickStartSub') || 'A short workout keeps your momentum going'}
+                    </ThemedText>
+                  </View>
+                  <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.accent} />
+                </TouchableOpacity>
+              </View>
             </Animated.View>
           )}
 
           {userState?.fatigueTier === 'HIGH' && !isRecoveryBad && (
-            <Animated.View
-              entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}
-              style={{ opacity: HIERARCHY.tertiary }}
-            >
-              <View
-                style={[
-                  styles.nudgeCard,
-                  { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '30' },
-                ]}
-              >
-                <MaterialCommunityIcons name="sleep" size={18} color={theme.colors.warning} />
-                <View style={{ flex: 1, marginLeft: spacing[2] }}>
-                  <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.warning }}>
-                    {t('dashboard.recoveryDay') || 'Recovery recommended'}
-                  </ThemedText>
-                  <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
-                    {t('dashboard.recoverySub') || 'Your muscles need rest — try a mobility session'}
-                  </ThemedText>
+            <Animated.View entering={FadeInDown.delay(MOTION.stagger * 4.9).duration(MOTION.fast)}>
+              <View style={{ opacity: HIERARCHY.tertiary }}>
+                <View
+                  style={[
+                    styles.nudgeCard,
+                    { backgroundColor: theme.colors.warning + '10', borderColor: theme.colors.warning + '30' },
+                  ]}
+                >
+                  <MaterialCommunityIcons name="sleep" size={18} color={theme.colors.warning} />
+                  <View style={{ flex: 1, marginLeft: spacing[2] }}>
+                    <ThemedText variant="bodySmall" weight="600" style={{ color: theme.colors.warning }}>
+                      {t('dashboard.recoveryDay') || 'Recovery recommended'}
+                    </ThemedText>
+                    <ThemedText variant="caption" color="muted" style={{ marginTop: spacing['px'] }}>
+                      {t('dashboard.recoverySub') || 'Your muscles need rest — try a mobility session'}
+                    </ThemedText>
+                  </View>
                 </View>
               </View>
             </Animated.View>
@@ -713,52 +746,51 @@ export default function DashboardScreen() {
           {/* ══════════════════════════════════════════════════════════════════
             DAILY ACTIVITY STATS — Steps, Active Mins, Completion Rate
         ══════════════════════════════════════════════════════════════════ */}
-          <Animated.View
-            entering={FadeInUp.delay(MOTION.stagger * 5).duration(MOTION.fast)}
-            style={{ opacity: HIERARCHY.secondary }}
-          >
-            <View style={styles.dailyStatsRow}>
-              <View
-                style={[
-                  styles.dailyStatCard,
-                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                ]}
-              >
-                <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
-                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: spacing[1] }}>
-                  {todaySteps > 0 ? todaySteps.toLocaleString() : '0'}
-                </ThemedText>
-                <ThemedText variant="caption" color="muted">
-                  {t('dashboard.stepsToday') || 'Steps'}
-                </ThemedText>
-              </View>
-              <View
-                style={[
-                  styles.dailyStatCard,
-                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                ]}
-              >
-                <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
-                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: spacing[1] }}>
-                  {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '0'}
-                </ThemedText>
-                <ThemedText variant="caption" color="muted">
-                  {t('dashboard.activeMin') || 'Active min'}
-                </ThemedText>
-              </View>
-              <View
-                style={[
-                  styles.dailyStatCard,
-                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                ]}
-              >
-                <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
-                <ThemedText variant="h4" weight="800" style={{ color: theme.colors.success, marginTop: spacing[1] }}>
-                  {completionRate > 0 ? `${completionRate}%` : '0%'}
-                </ThemedText>
-                <ThemedText variant="caption" color="muted">
-                  {t('dashboard.completionRate') || 'Completion'}
-                </ThemedText>
+          <Animated.View entering={FadeInUp.delay(MOTION.stagger * 5).duration(MOTION.fast)}>
+            <View style={{ opacity: HIERARCHY.secondary }}>
+              <View style={styles.dailyStatsRow}>
+                <View
+                  style={[
+                    styles.dailyStatCard,
+                    { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                  ]}
+                >
+                  <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
+                  <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: spacing[1] }}>
+                    {todaySteps > 0 ? todaySteps.toLocaleString() : '0'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted">
+                    {t('dashboard.stepsToday') || 'Steps'}
+                  </ThemedText>
+                </View>
+                <View
+                  style={[
+                    styles.dailyStatCard,
+                    { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                  ]}
+                >
+                  <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
+                  <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: spacing[1] }}>
+                    {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '0'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted">
+                    {t('dashboard.activeMin') || 'Active min'}
+                  </ThemedText>
+                </View>
+                <View
+                  style={[
+                    styles.dailyStatCard,
+                    { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                  ]}
+                >
+                  <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
+                  <ThemedText variant="h4" weight="800" style={{ color: theme.colors.success, marginTop: spacing[1] }}>
+                    {completionRate > 0 ? `${completionRate}%` : '0%'}
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted">
+                    {t('dashboard.completionRate') || 'Completion'}
+                  </ThemedText>
+                </View>
               </View>
             </View>
           </Animated.View>
@@ -814,44 +846,48 @@ export default function DashboardScreen() {
             QUICK ACCESS TILES — Key features at a glance
         ══════════════════════════════════════════════════════════════════ */}
           <SectionHeader title={t('dashboard.explore') || 'Explore'} delay={MOTION.stagger * 7} />
-          <Animated.View
-            entering={FadeInUp.delay(MOTION.stagger * 7).duration(MOTION.fast)}
-            style={{ opacity: HIERARCHY.tertiary }}
-          >
-            <View style={styles.exploreGrid}>
-              {exploreTiles.map((tile, idx) => (
-                <AnimatedListItem key={tile.route} index={idx} style={styles.exploreTileWrap}>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    accessibilityRole="button"
-                    accessibilityLabel={tile.label}
-                    accessibilityHint={tile.desc}
-                    onPress={() => router.push(tile.route)}
-                    style={[
-                      styles.exploreTile,
-                      {
-                        backgroundColor: theme.colors.surface,
-                        borderColor: theme.colors.border,
-                      },
-                    ]}
-                  >
-                    <View style={[styles.exploreTileIcon, { backgroundColor: tile.color + '18' }]}>
-                      <MaterialCommunityIcons name={tile.icon as any} size={26} color={tile.color} />
-                    </View>
-                    <View style={styles.exploreTileContent}>
-                      <ThemedText variant="bodySmall" weight="700" color="primary" style={styles.exploreTileLabel}>
-                        {tile.label}
-                      </ThemedText>
-                      <ThemedText variant="caption" color="secondary" style={styles.exploreTileDesc} numberOfLines={1}>
-                        {tile.desc}
-                      </ThemedText>
-                    </View>
-                    <View style={styles.exploreTileArrowRow}>
-                      <MaterialCommunityIcons name="arrow-right" size={16} color={theme.colors.textMuted} />
-                    </View>
-                  </TouchableOpacity>
-                </AnimatedListItem>
-              ))}
+          <Animated.View entering={FadeInUp.delay(MOTION.stagger * 7).duration(MOTION.fast)}>
+            <View style={{ opacity: HIERARCHY.tertiary }}>
+              <View style={styles.exploreGrid}>
+                {exploreTiles.map((tile, idx) => (
+                  <AnimatedListItem key={tile.route} index={idx} style={styles.exploreTileWrap}>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel={tile.label}
+                      accessibilityHint={tile.desc}
+                      onPress={() => router.push(tile.route)}
+                      style={[
+                        styles.exploreTile,
+                        {
+                          backgroundColor: theme.colors.surface,
+                          borderColor: theme.colors.border,
+                        },
+                      ]}
+                    >
+                      <View style={[styles.exploreTileIcon, { backgroundColor: tile.color + '18' }]}>
+                        <MaterialCommunityIcons name={tile.icon as any} size={26} color={tile.color} />
+                      </View>
+                      <View style={styles.exploreTileContent}>
+                        <ThemedText variant="bodySmall" weight="700" color="primary" style={styles.exploreTileLabel}>
+                          {tile.label}
+                        </ThemedText>
+                        <ThemedText
+                          variant="caption"
+                          color="secondary"
+                          style={styles.exploreTileDesc}
+                          numberOfLines={1}
+                        >
+                          {tile.desc}
+                        </ThemedText>
+                      </View>
+                      <View style={styles.exploreTileArrowRow}>
+                        <MaterialCommunityIcons name="arrow-right" size={16} color={theme.colors.textMuted} />
+                      </View>
+                    </TouchableOpacity>
+                  </AnimatedListItem>
+                ))}
+              </View>
             </View>
           </Animated.View>
 

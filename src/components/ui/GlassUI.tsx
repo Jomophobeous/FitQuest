@@ -33,9 +33,13 @@ import Animated, {
   SlideInDown,
   SlideInUp,
   ZoomIn,
+  useAnimatedProps,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
+import Reanimated from 'react-native-reanimated';
+const AnimatedCircle = Reanimated.createAnimatedComponent(Circle);
 import { useTheme } from '../../context/ThemeContext';
 import { usePressAnimation } from '../../hooks/usePressAnimation';
 import { spacing, radius } from '../../design/theme-system';
@@ -486,11 +490,26 @@ export const ProgressRing = memo(function ProgressRing({
 }: ProgressRingProps) {
   const { theme } = useTheme();
   const ringColor = color || theme.colors.accent;
-  const clampedProgress = Math.min(Math.max(progress, 0), 1);
-  const progressPercent = Math.round(clampedProgress * 100);
+  const clampedTarget = Math.min(Math.max(progress, 0), 1);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - clampedProgress);
+
+  // Animated progress value — counts up from 0 on mount
+  const animatedProgress = useSharedValue(0);
+
+  useEffect(() => {
+    animatedProgress.value = withTiming(clampedTarget, {
+      duration: 1200,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [clampedTarget]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const animatedCircleProps = useAnimatedProps(() => ({
+    strokeDashoffset: circumference * (1 - animatedProgress.value),
+  }));
+
+  // Derived integer percent for accessibility
+  const progressPercent = Math.round(clampedTarget * 100);
 
   return (
     <Animated.View
@@ -510,8 +529,8 @@ export const ProgressRing = memo(function ProgressRing({
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Progress arc */}
-        <Circle
+        {/* Progress arc — animated */}
+        <AnimatedCircle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -519,9 +538,9 @@ export const ProgressRing = memo(function ProgressRing({
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={`${circumference}`}
-          strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          animatedProps={animatedCircleProps}
         />
       </Svg>
       <View style={{ position: 'absolute', width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>

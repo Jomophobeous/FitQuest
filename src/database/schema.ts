@@ -434,6 +434,137 @@ async function runVersionedMigrations(database: SQLite.SQLiteDatabase, currentVe
       `);
     });
   }
+  // v22: Seed focus category exercises (was 0 — missing from all seed sources)
+  if (currentVersion < 22) {
+    await runMigrationSandboxed(database, '22', async (db) => {
+      if (__DEV__) console.warn('[FitQuest DB] v22: seeding focus category exercises');
+      const focusExercises: Array<{ id: string; name: string; diff: string; t: number; ord: number; instr: string }> = [
+        {
+          id: 'fq_focus_001',
+          name: 'Box Breathing',
+          diff: 'beginner',
+          t: 60,
+          ord: 1,
+          instr:
+            '["Sit upright in a comfortable position.","Inhale slowly through your nose for 4 seconds.","Hold your breath for 4 seconds.","Exhale slowly through your mouth for 4 seconds.","Hold again for 4 seconds.","Repeat for 4-8 cycles."]',
+        },
+        {
+          id: 'fq_focus_002',
+          name: 'Diaphragmatic Breathing',
+          diff: 'beginner',
+          t: 90,
+          ord: 2,
+          instr:
+            '["Lie flat or sit comfortably.","Place one hand on your chest, one on your belly.","Breathe in through your nose — only your belly should rise.","Exhale slowly through pursed lips.","Chest stays still throughout.","Repeat for 10-15 breaths."]',
+        },
+        {
+          id: 'fq_focus_003',
+          name: 'Body Scan Meditation',
+          diff: 'beginner',
+          t: 120,
+          ord: 3,
+          instr:
+            '["Lie down or sit comfortably and close your eyes.","Bring attention to the top of your head.","Slowly move attention down: face, neck, shoulders, arms, hands.","Continue to chest, belly, lower back, hips, legs, feet.","Notice sensation without judgment.","If the mind wanders, gently return to the scan."]',
+        },
+        {
+          id: 'fq_focus_004',
+          name: 'Mindful Breath Focus',
+          diff: 'beginner',
+          t: 60,
+          ord: 4,
+          instr:
+            '["Sit in a comfortable position with spine tall.","Close eyes or soften gaze downward.","Focus entirely on the sensation of breathing.","Notice the inhale: air entering nostrils, chest or belly rising.","Notice the exhale: air leaving, body softening.","When the mind wanders, label the thought and return to breath."]',
+        },
+        {
+          id: 'fq_focus_005',
+          name: '4-7-8 Breathing',
+          diff: 'beginner',
+          t: 90,
+          ord: 5,
+          instr:
+            '["Exhale completely through your mouth.","Close mouth and inhale quietly through the nose for 4 seconds.","Hold your breath for 7 seconds.","Exhale completely through your mouth for 8 seconds.","This completes one breath cycle.","Repeat 4 times maximum per session."]',
+        },
+        {
+          id: 'fq_focus_006',
+          name: 'Visualization Focus',
+          diff: 'beginner',
+          t: 120,
+          ord: 6,
+          instr:
+            '["Close your eyes and take 3 slow breaths.","Visualize yourself completing todays workout perfectly.","See each movement, feel the muscle engagement.","Imagine finishing strong and feeling proud.","Hold that feeling for 10-15 seconds.","Open eyes and begin your session with that energy."]',
+        },
+        {
+          id: 'fq_focus_007',
+          name: 'Progressive Muscle Relaxation',
+          diff: 'beginner',
+          t: 120,
+          ord: 7,
+          instr:
+            '["Lie down comfortably.","Tense the muscles in your feet for 5 seconds then release.","Move up to calves: tense 5 seconds, release.","Continue up through thighs, glutes, abs, hands, forearms, shoulders.","At each release, notice the feeling of tension leaving the body.","End with face muscles: scrunch, then fully relax."]',
+        },
+        {
+          id: 'fq_focus_008',
+          name: 'Focus Anchor Breathing',
+          diff: 'intermediate',
+          t: 90,
+          ord: 8,
+          instr:
+            '["Sit tall with both feet on the floor.","Place your dominant hand on your heart.","Breathe in for 5 seconds, feeling your heartbeat.","Exhale for 5 seconds, maintaining focus on the sensation.","Silently repeat an anchor word on the exhale: focus, strong, or present.","Continue for 6-10 cycles before a training session."]',
+        },
+        {
+          id: 'fq_focus_009',
+          name: 'Concentration Gaze',
+          diff: 'intermediate',
+          t: 90,
+          ord: 9,
+          instr:
+            '["Set a single fixed point at eye level on the wall.","Sit in a steady position with a tall spine.","Fix your gaze on that single point without blinking for as long as comfortable.","Breathe naturally.","When eyes water or you blink, gently close them and visualize the point.","Practice for 2-5 minutes to build concentration capacity."]',
+        },
+        {
+          id: 'fq_focus_010',
+          name: 'Wim Hof Breath Prep',
+          diff: 'intermediate',
+          t: 90,
+          ord: 10,
+          instr:
+            '["Sit upright. Take 30 deep, rhythmic breaths in fully, out naturally.","After breath 30, exhale fully and hold out as long as comfortable.","Inhale fully and hold for 15 seconds.","Exhale and resume normal breathing.","Repeat 3 rounds.","This activates the nervous system and builds mental resilience for intense training."]',
+        },
+        {
+          id: 'fq_focus_011',
+          name: 'Countdown Focus Reset',
+          diff: 'beginner',
+          t: 60,
+          ord: 11,
+          instr:
+            '["Sit or stand. Close your eyes.","Count down slowly from 10 to 1 in your mind.","With each number, let distracting thoughts go.","At 1, open your eyes and bring full awareness to the present moment.","Notice 3 physical sensations — feet on floor, breath in chest, hands at sides.","You are now fully present. Begin training."]',
+        },
+        {
+          id: 'fq_focus_012',
+          name: 'Intention Setting',
+          diff: 'beginner',
+          t: 60,
+          ord: 12,
+          instr:
+            '["Before your workout, pause for 60 seconds.","Ask yourself: What do I want to get out of this session?","Name one quality you want to embody today: patience, power, or consistency.","Say it clearly in your mind or aloud.","Connect that intention to your breathing, one breath per word.","Carry this intention through every rep."]',
+        },
+      ];
+      for (const ex of focusExercises) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO exercises (id, name, category, difficulty, equipment_level, impact_level, space_required, time_per_set_seconds, instructions, order_in_category) VALUES (?, ?, 'focus', ?, 'none', 'low_impact', 'tight', ?, ?, ?)`,
+          [ex.id, ex.name, ex.diff, ex.t, ex.instr, ex.ord],
+        );
+        await db.runAsync(
+          `INSERT OR IGNORE INTO exercise_muscles (exercise_id, muscle, is_primary) VALUES (?, 'diaphragm', 1)`,
+          [ex.id],
+        );
+        await db.runAsync(
+          `INSERT OR IGNORE INTO exercise_training_types (exercise_id, training_type, effectiveness) VALUES (?, 'coordination', 90)`,
+          [ex.id],
+        );
+      }
+      if (__DEV__) console.warn('[FitQuest DB] v22: seeded 12 focus exercises');
+    });
+  }
 }
 
 async function hasTableColumn(

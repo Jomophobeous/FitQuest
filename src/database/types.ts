@@ -391,7 +391,7 @@ export interface ExerciseImageRecord {
 // DATABASE SCHEMA VERSION
 // ============================================
 
-export const SCHEMA_VERSION = 21; // v21: offline_queue table for Phase 25B sync
+export const SCHEMA_VERSION = 22; // v22: focus category exercises seeded
 
 // ============================================
 // v17 TYPES

@@ -76,10 +76,10 @@ interface ThemePillRowProps {
   onSelect: (mode: ThemeMode) => void;
 }
 
-const THEME_OPTIONS: { mode: ThemeMode; icon: string; label: string }[] = [
-  { mode: 'dark', icon: 'weather-night', label: 'Charcoal' },
-  { mode: 'light', icon: 'weather-sunny', label: 'Light' },
-  { mode: 'blackGold', icon: 'crown', label: 'Premium' },
+const THEME_OPTIONS: { mode: ThemeMode; icon: string; label: string; dots: string[] }[] = [
+  { mode: 'dark', icon: 'weather-night', label: 'Charcoal', dots: ['#10B981', '#F4A427', '#050507'] },
+  { mode: 'light', icon: 'weather-sunny', label: 'Light', dots: ['#10B981', '#F4A427', '#F5F6F8'] },
+  { mode: 'blackGold', icon: 'crown', label: 'Premium', dots: ['#D4AF37', '#10B981', '#0A0A0F'] },
 ];
 
 export const ThemePillRow = memo(function ThemePillRow({ current, onSelect }: ThemePillRowProps) {
@@ -123,6 +123,11 @@ export const ThemePillRow = memo(function ThemePillRow({ current, onSelect }: Th
             >
               {opt.label}
             </ThemedText>
+            <View style={styles.themeDots}>
+              {opt.dots.map((dotColor, i) => (
+                <View key={i} style={[styles.themeDot, { backgroundColor: dotColor }]} />
+              ))}
+            </View>
           </PressableScale>
         );
       })}
@@ -178,5 +183,15 @@ const styles = StyleSheet.create({
   },
   themeLabel: {
     fontSize: typography.sizes.caption,
+  },
+  themeDots: {
+    flexDirection: 'row',
+    gap: spacing[0.75],
+    marginLeft: spacing[1],
+  },
+  themeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });

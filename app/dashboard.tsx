@@ -19,7 +19,7 @@ import { dashboardStyles as styles } from '../src/components/dashboard/styles';
 import { useLanguage } from '../src/context/LanguageContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ThemedText from '../src/components/ThemedText';
-import FQLogoMark from '../src/components/FQLogoMark';
+import AnimatedFQLogoMark from '../src/components/AnimatedFQLogoMark';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { SkeletonDashboard } from '../src/components/ui/Skeleton';
@@ -242,7 +242,7 @@ export default function DashboardScreen() {
             <View style={[styles.heroHeader, { backgroundColor: theme.colors.background }]}>
               <View style={styles.heroTop}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] }}>
-                  <FQLogoMark size={36} showGlow={false} />
+                  <AnimatedFQLogoMark size={56} showGlow={true} />
                   <View>
                     <ThemedText variant="caption" color="secondary" style={styles.greeting}>
                       {typedGreeting}
@@ -769,12 +769,7 @@ export default function DashboardScreen() {
                   ]}
                   title="Steps"
                 >
-                  <View
-                    style={[
-                      styles.dailyStatCard,
-                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                    ]}
-                  >
+                  <GlassCard style={styles.dailyStatCard}>
                     <MaterialCommunityIcons name="shoe-print" size={20} color={theme.colors.blue} />
                     <ThemedText variant="h4" weight="800" style={{ color: theme.colors.blue, marginTop: spacing[1] }}>
                       {todaySteps > 0 ? todaySteps.toLocaleString() : '0'}
@@ -782,7 +777,7 @@ export default function DashboardScreen() {
                     <ThemedText variant="caption" color="muted">
                       {t('dashboard.stepsToday') || 'Steps'}
                     </ThemedText>
-                  </View>
+                  </GlassCard>
                 </LongPressMenu>
                 <LongPressMenu
                   items={[
@@ -795,12 +790,7 @@ export default function DashboardScreen() {
                   ]}
                   title="Active Minutes"
                 >
-                  <View
-                    style={[
-                      styles.dailyStatCard,
-                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                    ]}
-                  >
+                  <GlassCard style={styles.dailyStatCard}>
                     <MaterialCommunityIcons name="timer-outline" size={20} color={theme.colors.purple} />
                     <ThemedText variant="h4" weight="800" style={{ color: theme.colors.purple, marginTop: spacing[1] }}>
                       {todayActiveMinutes > 0 ? `${todayActiveMinutes}` : totalMinutes > 0 ? `${totalMinutes}` : '0'}
@@ -808,7 +798,7 @@ export default function DashboardScreen() {
                     <ThemedText variant="caption" color="muted">
                       {t('dashboard.activeMin') || 'Active min'}
                     </ThemedText>
-                  </View>
+                  </GlassCard>
                 </LongPressMenu>
                 <LongPressMenu
                   items={[
@@ -821,12 +811,7 @@ export default function DashboardScreen() {
                   ]}
                   title="Completion Rate"
                 >
-                  <View
-                    style={[
-                      styles.dailyStatCard,
-                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                    ]}
-                  >
+                  <GlassCard style={styles.dailyStatCard}>
                     <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
                     <ThemedText
                       variant="h4"
@@ -838,7 +823,7 @@ export default function DashboardScreen() {
                     <ThemedText variant="caption" color="muted">
                       {t('dashboard.completionRate') || 'Completion'}
                     </ThemedText>
-                  </View>
+                  </GlassCard>
                 </LongPressMenu>
               </View>
             </View>

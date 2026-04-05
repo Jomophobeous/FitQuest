@@ -174,7 +174,7 @@ function CoachScreenInner() {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
       >
         {/* ── MESSAGES ── */}
@@ -233,7 +233,7 @@ function CoachScreenInner() {
                             styles.suggestionChip,
                             {
                               backgroundColor: theme.colors.surfaceVariant,
-                              borderColor: theme.colors.border,
+                              borderColor: theme.colors.accent + '33',
                             },
                           ]}
                           activeOpacity={0.7}
@@ -362,7 +362,7 @@ function CoachScreenInner() {
                           styles.followUpChip,
                           {
                             backgroundColor: theme.colors.surfaceVariant,
-                            borderColor: theme.colors.border,
+                            borderColor: theme.colors.accent + '33',
                           },
                         ]}
                         activeOpacity={0.7}

@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    color: '#FFFFFF',
     fontSize: typography.sizes.caption,
     fontWeight: '600',
   },

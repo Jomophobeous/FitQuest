@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
     maxWidth: 240,
   },
   primaryBtnText: {
-    color: '#fff',
     fontSize: typography.sizes.bodyMid,
     fontWeight: '700',
   },

@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+
     // Shadow
     ...Platform.select({
       android: { elevation: 4 },
@@ -559,7 +559,6 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: radius.sm,
-    backgroundColor: '#FFFFFF',
   },
 
   // Distance badge (bottom-left)
@@ -600,10 +599,8 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: radius.sm,
-    backgroundColor: '#FFFFFF',
   },
   liveText: {
-    color: '#FFFFFF',
     fontSize: typography.sizes.captionSm,
     fontWeight: '800',
     letterSpacing: 1,

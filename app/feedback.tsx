@@ -481,7 +481,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   submitText: {
-    color: '#FAFAFA',
     fontSize: typography.sizes.body,
     fontWeight: '700',
     letterSpacing: 0.3,
@@ -562,7 +561,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   thankYouPrimaryText: {
-    color: '#FAFAFA',
     fontSize: typography.sizes.body,
     fontWeight: '700',
     letterSpacing: 0.3,

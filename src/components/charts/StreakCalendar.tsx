@@ -324,7 +324,6 @@ const styles = StyleSheet.create({
   },
   checkmarkText: {
     fontSize: typography.sizes.xxs,
-    color: '#FFFFFF',
   },
   statsContainer: {
     flexDirection: 'row',

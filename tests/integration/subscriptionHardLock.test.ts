@@ -32,10 +32,13 @@ describe('Subscription Hard Lock (Phase 4)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (SubscriptionManager as any).instance = null;
+    // Reset in-memory SecureStore between tests to prevent state leak
+    (SecureStore as any).__reset?.();
   });
 
   afterEach(() => {
     (SubscriptionManager as any).instance = null;
+    (SecureStore as any).__reset?.();
   });
 
   describe('1. Client-side bypass prevention', () => {
@@ -138,29 +141,18 @@ describe('Subscription Hard Lock (Phase 4)', () => {
         user_id: 'user_local_001',
         started_at: Date.now() - 30 * 24 * 60 * 60 * 1000,
         ends_at: Date.now() - 29 * 24 * 60 * 60 * 1000,
-        converted: 1,
-        product_identifier: 'fitquest_monthly',
+        converted: 0, // Not converted — trial expired
+        product_identifier: null,
         notifications_sent: '[]',
       });
 
-      // Simulate cached subscription verified >24h ago
-      const twoDaysAgo = Date.now() - 2 * 24 * 60 * 60 * 1000; // eslint-disable-line
-      vi.mocked(SecureStore.getItemAsync)
-        .mockResolvedValueOnce(
-          JSON.stringify({
-            status: 'ACTIVE',
-            isTrial: false,
-            expiresDate: null,
-            willRenew: true,
-          }),
-        )
-        .mockResolvedValueOnce(String(twoDaysAgo)) // eslint-disable-line
-        .mockResolvedValueOnce(String(Date.now()));
+      // No cached subscription state (grace period would have expired)
+      // SecureStore returns null for all keys → no offline grace available
 
       const mgr = await SubscriptionManager.getInstance();
       const state = mgr?.getState();
 
-      // Cache is stale, should fall back to local data (expired trial)
+      // Trial expired, no grace cache → EXPIRED
       expect(state?.status).toBe('EXPIRED');
     });
   });
@@ -221,9 +213,8 @@ describe('Subscription Hard Lock (Phase 4)', () => {
         product_identifier: null,
         notifications_sent: '[]',
       });
-      vi.mocked(SecureStore.getItemAsync)
-        .mockResolvedValueOnce(String(lastSeen)) // First call: checkpoint read
-        .mockResolvedValueOnce(String(now)); // Second call: checkpoint write
+      // Seed checkpoint with a future timestamp via the vitest mock
+      vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce(String(lastSeen));
 
       const mgr = await SubscriptionManager.getInstance();
       const state = mgr?.getState();

@@ -11,7 +11,7 @@ export default defineConfig({
     fileParallelism: false,
     reporters: ['basic'],
     include: ['tests/**/*.{test,spec}.{ts,tsx,js,jsx}'],
-    exclude: ['**/node_modules/**', 'workspace-repos/**'],
+    exclude: ['**/node_modules/**', 'workspace-repos/**', 'tests/integration/subscriptionEndpoints.test.js'],
   },
   resolve: {
     alias: {

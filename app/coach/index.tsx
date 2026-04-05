@@ -21,6 +21,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '../../src/context/ThemeContext';
+import { MOTION } from '../../src/design/motion';
 import { useLanguage } from '../../src/context/LanguageContext';
 import { PulseDot } from '../../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
@@ -431,10 +432,10 @@ function CoachScreenInner() {
                 <TouchableOpacity
                   onPress={vm.handleStopGeneration}
                   onPressIn={() => {
-                    inputScale.value = withTiming(0.92, { duration: 120 });
+                    inputScale.value = withTiming(0.92, { duration: MOTION.press });
                   }}
                   onPressOut={() => {
-                    inputScale.value = withTiming(1, { duration: 120 });
+                    inputScale.value = withTiming(1, { duration: MOTION.press });
                   }}
                   activeOpacity={0.7}
                 >
@@ -445,7 +446,12 @@ function CoachScreenInner() {
                     ]}
                   >
                     <View
-                      style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: theme.colors.background }}
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: radius.sm,
+                        backgroundColor: theme.colors.background,
+                      }}
                     />
                   </View>
                 </TouchableOpacity>
@@ -454,10 +460,10 @@ function CoachScreenInner() {
                   onPress={vm.sendMessage}
                   disabled={!vm.input.trim()}
                   onPressIn={() => {
-                    inputScale.value = withTiming(0.92, { duration: 120 });
+                    inputScale.value = withTiming(0.92, { duration: MOTION.press });
                   }}
                   onPressOut={() => {
-                    inputScale.value = withTiming(1, { duration: 120 });
+                    inputScale.value = withTiming(1, { duration: MOTION.press });
                   }}
                   activeOpacity={1}
                 >

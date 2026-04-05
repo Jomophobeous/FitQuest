@@ -16,7 +16,8 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { darkTheme as theme, typography, spacing } from '../design/theme-system';
+import { darkTheme as theme, typography, spacing, radius } from '../design/theme-system';
+import { MOTION } from '../design/motion';
 
 interface Props {
   visible: boolean;
@@ -31,15 +32,15 @@ export default function ExerciseCompleteBadge({ visible, message = 'Nice!', colo
 
   useEffect(() => {
     if (visible) {
-      opacity.value = withTiming(1, { duration: 150 });
-      translateY.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.back(2)) });
+      opacity.value = withTiming(1, { duration: MOTION.fast });
+      translateY.value = withTiming(0, { duration: MOTION.swift, easing: Easing.out(Easing.back(2)) });
       scale.value = withSequence(
-        withTiming(1.3, { duration: 200, easing: Easing.out(Easing.back(3)) }),
-        withTiming(1, { duration: 150 }),
+        withTiming(1.3, { duration: MOTION.swift, easing: Easing.out(Easing.back(3)) }),
+        withTiming(1, { duration: MOTION.fast }),
       );
       // Auto-hide
-      opacity.value = withDelay(900, withTiming(0, { duration: 300 }));
-      scale.value = withDelay(900, withTiming(0.5, { duration: 300 }));
+      opacity.value = withDelay(900, withTiming(0, { duration: MOTION.medium }));
+      scale.value = withDelay(900, withTiming(0.5, { duration: MOTION.medium }));
     } else {
       scale.value = 0;
       opacity.value = 0;
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[3],
-    borderRadius: 24,
+    borderRadius: radius.xl,
     zIndex: 100,
   },
   text: {

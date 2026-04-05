@@ -12,7 +12,8 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
-import { spacing } from '../../design/theme-system';
+import { spacing, radius } from '../../design/theme-system';
+import { MOTION } from '../../design/motion';
 
 // ============================================
 // BASE SKELETON BONE
@@ -30,7 +31,11 @@ export function Skeleton({ width, height, radius = 'md', style }: SkeletonProps)
   const shimmer = useSharedValue(0.3);
 
   useEffect(() => {
-    shimmer.value = withRepeat(withTiming(0.7, { duration: 800, easing: Easing.inOut(Easing.ease) }), -1, true);
+    shimmer.value = withRepeat(
+      withTiming(0.7, { duration: MOTION.breathe, easing: Easing.inOut(Easing.ease) }),
+      -1,
+      true,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- shimmer is a Reanimated SharedValue (stable mutable ref)
   }, []);
 
@@ -170,7 +175,7 @@ export function SkeletonDashboard() {
 
 const skeletonStyles = StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
     padding: spacing[4],
   },

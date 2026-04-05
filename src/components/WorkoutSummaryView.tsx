@@ -33,7 +33,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { GlassCard, GradientButton } from '../components/ui/GlassUI';
 import type { WorkoutCompletionData } from '../hooks/useFitQuestWorkout';
 import { formatMuscleName } from '../utils/formatMuscle';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
+import { animationSpecs } from '../design/animations/animationSpecs';
 
 // ─── Types ────────────────────────────────────────────
 interface WorkoutSummaryViewProps {
@@ -78,8 +79,8 @@ function WorkoutSummaryView({ data, rating, onRate, onNewWorkout }: WorkoutSumma
   useEffect(() => {
     glowScale.value = withRepeat(
       withSequence(
-        withTiming(1.08, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1.08, { duration: animationSpecs.progressCountUp.duration, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: animationSpecs.progressCountUp.duration, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
       false,
@@ -372,7 +373,7 @@ const styles = StyleSheet.create({
   trophyGlow: {
     width: 130,
     height: 130,
-    borderRadius: 65,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -385,7 +386,7 @@ const styles = StyleSheet.create({
     gap: spacing[2.5],
     paddingVertical: spacing[2.5],
     paddingHorizontal: spacing[5],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     marginBottom: spacing[4],
   },
   levelUpText: { fontSize: typography.sizes.h4, fontWeight: '800', letterSpacing: 1 },
@@ -398,7 +399,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[2.5],
     paddingHorizontal: spacing[3.5],
     paddingVertical: spacing[1.25],
-    borderRadius: 20,
+    borderRadius: radius.xl,
   },
   levelBadgeText: { fontSize: typography.sizes.label, fontWeight: '700' },
 
@@ -419,8 +420,8 @@ const styles = StyleSheet.create({
   phaseCard: { width: '100%', padding: spacing[4], marginBottom: spacing[3], gap: spacing[3] },
   phaseRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2.5] },
   phaseLabel: { fontSize: typography.sizes.label, fontWeight: '600', width: 72 },
-  phaseBar: { flex: 1, height: 6, borderRadius: 3, overflow: 'hidden' as const },
-  phaseBarFill: { height: 6, borderRadius: 3 },
+  phaseBar: { flex: 1, height: 6, borderRadius: radius.sm, overflow: 'hidden' as const },
+  phaseBarFill: { height: 6, borderRadius: radius.sm },
   phaseCount: {
     fontSize: typography.sizes.caption,
     fontWeight: '600',
@@ -433,7 +434,7 @@ const styles = StyleSheet.create({
   musclesCard: { width: '100%', padding: spacing[4], marginBottom: spacing[3] },
   sectionLabel: { fontSize: typography.sizes.bodyMid, fontWeight: '700', marginBottom: spacing[3] },
   tagCloud: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
-  muscleTag: { paddingHorizontal: spacing[3], paddingVertical: spacing[1.5], borderRadius: 20, borderWidth: 1 },
+  muscleTag: { paddingHorizontal: spacing[3], paddingVertical: spacing[1.5], borderRadius: radius.xl, borderWidth: 1 },
   muscleTagText: { fontSize: typography.sizes.caption, fontWeight: '600' },
 
   // Streak

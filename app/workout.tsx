@@ -40,6 +40,7 @@ import ExerciseImage from '../src/components/ExerciseImage';
 import RestTimerOverlay from '../src/components/RestTimerOverlay';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
+import { MOTION } from '../src/design/motion';
 import {
   GlassCard,
   GradientButton,
@@ -98,8 +99,8 @@ export default function WorkoutScreen() {
     if (status === 'in_progress') {
       pulse.value = withRepeat(
         withSequence(
-          withTiming(1.04, { duration: 800, easing: Easing.inOut(Easing.ease) }),
-          withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1.04, { duration: MOTION.breathe, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: MOTION.breathe, easing: Easing.inOut(Easing.ease) }),
         ),
         -1,
         true,
@@ -793,7 +794,7 @@ const styles = StyleSheet.create({
   exStatusDot: {
     width: 26,
     height: 26,
-    borderRadius: 13,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -815,7 +816,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '100%',
     maxWidth: 340,
-    borderRadius: 24,
+    borderRadius: radius.xl,
     padding: spacing[7],
     alignItems: 'center',
     overflow: 'hidden',
@@ -830,7 +831,7 @@ const styles = StyleSheet.create({
   modalIconWrap: {
     width: 72,
     height: 72,
-    borderRadius: 36,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[4],
@@ -841,7 +842,7 @@ const styles = StyleSheet.create({
   modalBtn: {
     flex: 1,
     paddingVertical: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     alignItems: 'center',
   },
   modalBtnText: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },

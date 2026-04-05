@@ -42,6 +42,7 @@ import ThemedText from '../src/components/ThemedText';
 import { rateLimiter, RATE_LIMITS, formatRetryAfter } from '../src/utils/rateLimiter';
 import { getApiBaseUrl } from '../src/services/apiBaseUrl';
 import { typography, spacing, radius } from '../src/design/theme-system';
+import { MOTION } from '../src/design/motion';
 
 const { width: _SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -193,7 +194,10 @@ export default function LoginScreen() {
   // ── Biometric Prompt ──
   const promptBiometric = async () => {
     setError('');
-    pulseScale.value = withSequence(withTiming(1.1, { duration: 200 }), withTiming(1, { duration: 200 }));
+    pulseScale.value = withSequence(
+      withTiming(1.1, { duration: MOTION.swift }),
+      withTiming(1, { duration: MOTION.swift }),
+    );
 
     const result = await authenticateWithBiometrics(t('login.unlockPrompt'));
     if (result.success) {
@@ -358,11 +362,11 @@ export default function LoginScreen() {
 
   const triggerShake = () => {
     shakeX.value = withSequence(
-      withTiming(-10, { duration: 50 }),
-      withTiming(10, { duration: 50 }),
-      withTiming(-8, { duration: 50 }),
-      withTiming(8, { duration: 50 }),
-      withTiming(0, { duration: 50 }),
+      withTiming(-10, { duration: MOTION.shake }),
+      withTiming(10, { duration: MOTION.shake }),
+      withTiming(-8, { duration: MOTION.shake }),
+      withTiming(8, { duration: MOTION.shake }),
+      withTiming(0, { duration: MOTION.shake }),
     );
   };
 
@@ -830,7 +834,7 @@ const styles = StyleSheet.create({
   logoBg: {
     width: 88,
     height: 88,
-    borderRadius: 28,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[4],
@@ -852,7 +856,7 @@ const styles = StyleSheet.create({
   biometricBtn: {
     width: 120,
     height: 120,
-    borderRadius: 40,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -882,7 +886,7 @@ const styles = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     paddingHorizontal: spacing[3.5],
     paddingVertical: spacing[3.5],
@@ -894,7 +898,7 @@ const styles = StyleSheet.create({
   emailBtn: {
     width: '100%',
     paddingVertical: spacing[4],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     alignItems: 'center',
     marginTop: spacing[1],
   },
@@ -907,7 +911,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     paddingVertical: spacing[3.5],
   },

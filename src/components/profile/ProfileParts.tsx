@@ -13,6 +13,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import ThemedText from '../ThemedText';
 import { typography, spacing, radius } from '../../design/theme-system';
+import { MOTION } from '../../design/motion';
 
 // ─── Types ───────────────────────────────────────────────
 export interface PickerOption {
@@ -202,10 +203,10 @@ export function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rig
           activeOpacity={0.7}
           onPress={onPress}
           onPressIn={() => {
-            scale.value = withTiming(0.97, { duration: 120 });
+            scale.value = withTiming(0.97, { duration: MOTION.press });
           }}
           onPressOut={() => {
-            scale.value = withTiming(1, { duration: 120 });
+            scale.value = withTiming(1, { duration: MOTION.press });
           }}
           accessibilityRole="button"
           accessibilityLabel={sublabel ? `${label}, ${sublabel}` : label}
@@ -248,7 +249,7 @@ export const menuStyles = StyleSheet.create({
   menuIconWrap: {
     width: 38,
     height: 38,
-    borderRadius: 11,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },

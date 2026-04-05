@@ -23,9 +23,11 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { TIER_LABELS, type ChatMessage, type ModelTier } from '../../viewmodels/useCoachViewModel';
 import { haptic } from '../../utils/haptics';
-import { typography, spacing } from '../../design/theme-system';
+import { typography, spacing, radius } from '../../design/theme-system';
 import ThemedText from '../ThemedText';
 import { coachStyles as styles } from './styles';
+import { MOTION } from '../../design/motion';
+import { animationSpecs } from '../../design/animations/animationSpecs';
 
 // ============================================
 // PULSING DOT (typing indicator element)
@@ -35,7 +37,11 @@ export function PulsingDot({ delay, color }: { delay: number; color: string }) {
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withRepeat(withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.ease) }), -1, true);
+    progress.value = withRepeat(
+      withTiming(1, { duration: animationSpecs.progressCountUp.duration, easing: Easing.inOut(Easing.ease) }),
+      -1,
+      true,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- progress is a Reanimated shared value (stable ref)
   }, []);
 
@@ -56,7 +62,7 @@ export function PulsingDot({ delay, color }: { delay: number; color: string }) {
         {
           width: 10,
           height: 10,
-          borderRadius: 5,
+          borderRadius: radius.sm,
           backgroundColor: color,
           marginHorizontal: spacing[1],
         },
@@ -76,7 +82,7 @@ export function TypingIndicator({ modelName }: { modelName?: string }) {
   // Breathing glow for the whole bubble
   const glow = useSharedValue(0);
   useEffect(() => {
-    glow.value = withRepeat(withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }), -1, true);
+    glow.value = withRepeat(withTiming(1, { duration: MOTION.glow, easing: Easing.inOut(Easing.ease) }), -1, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- glow is a Reanimated shared value (stable ref)
   }, []);
 

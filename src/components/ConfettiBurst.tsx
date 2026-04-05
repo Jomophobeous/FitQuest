@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, useWindowDimensions, Text } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay, Easing } from 'react-native-reanimated';
 import { typography } from '../design/theme-system';
+import { MOTION } from '../design/motion';
 
 const EMOJIS = ['🎉', '⭐', '💪', '🔥', '✨', '🏆', '🥇', '💥'];
 const PARTICLE_COUNT = 18;
@@ -58,7 +59,7 @@ function ConfettiParticle({ particle }: { particle: Particle }) {
   useEffect(() => {
     scale.value = withDelay(
       particle.delay,
-      withTiming(particle.scale, { duration: 200, easing: Easing.out(Easing.back(2)) }),
+      withTiming(particle.scale, { duration: MOTION.swift, easing: Easing.out(Easing.back(2)) }),
     );
     translateY.value = withDelay(
       particle.delay,

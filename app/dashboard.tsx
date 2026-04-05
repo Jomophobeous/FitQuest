@@ -55,8 +55,8 @@ export default function DashboardScreen() {
   useEffect(() => {
     ctaScale.value = withRepeat(
       withSequence(
-        withTiming(1.035, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
-        withTiming(1.0, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1.035, { duration: MOTION.pulse, easing: Easing.inOut(Easing.sin) }),
+        withTiming(1.0, { duration: MOTION.pulse, easing: Easing.inOut(Easing.sin) }),
       ),
       -1,
       true,

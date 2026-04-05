@@ -43,6 +43,7 @@ import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
 import ExerciseImage from '../src/components/ExerciseImage';
 import ThemedText from '../src/components/ThemedText';
 import { typography, spacing, radius } from '../src/design/theme-system';
+import { MOTION } from '../src/design/motion';
 
 // ============================================
 // CATEGORY FILTERS
@@ -182,9 +183,9 @@ export default function ExercisesScreen() {
       const diff = y - lastScrollY.value;
       // Scrolling down past 60px → hide header; scrolling up → show
       if (diff > 5 && y > 60) {
-        headerVisible.value = withTiming(0, { duration: 250 });
+        headerVisible.value = withTiming(0, { duration: MOTION.base });
       } else if (diff < -5) {
-        headerVisible.value = withTiming(1, { duration: 200 });
+        headerVisible.value = withTiming(1, { duration: MOTION.swift });
       }
       lastScrollY.value = y;
       scrollY.value = y;
@@ -706,7 +707,7 @@ const styles = StyleSheet.create({
   resultsText: { fontSize: typography.sizes.label, fontWeight: '500' },
   list: { paddingBottom: spacing[25] },
   exerciseCard: {
-    borderRadius: 18,
+    borderRadius: radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -720,7 +721,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[1.25],
-    borderRadius: 10,
+    borderRadius: radius.md,
   },
   diffText: { fontSize: typography.sizes.caption, fontWeight: '600' },
   exerciseBottom: { flexDirection: 'row', alignItems: 'center', marginTop: spacing[3.5], gap: spacing[3.5] },
@@ -735,11 +736,11 @@ const styles = StyleSheet.create({
     right: 24,
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: '#000', // TODO: theme-aware shadows
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -777,7 +778,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[3.5],
     paddingVertical: spacing[2],
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     gap: spacing[1],
   },

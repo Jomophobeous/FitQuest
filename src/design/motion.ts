@@ -19,6 +19,20 @@ export const MOTION = {
   slow: 350,
   /** Press-in duration (tight, responsive) */
   pressIn: 80,
+  /** Press feedback — button/card scale animations */
+  press: 120,
+  /** Swift transition — slightly faster than base */
+  swift: 200,
+  /** Medium transition — screen enters, card reveals */
+  medium: 300,
+  /** Breathing / gentle oscillation step */
+  breathe: 800,
+  /** Slow pulse — ambient breathing UI */
+  pulse: 1300,
+  /** Glow cycle — ambient glow loops */
+  glow: 2000,
+  /** Shake animation per-step */
+  shake: 50,
   /** Stagger gap between children (ms) */
   stagger: 50,
   /** Max stagger cap (prevents slow cascade on long lists) */

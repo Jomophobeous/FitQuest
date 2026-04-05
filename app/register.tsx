@@ -38,6 +38,7 @@ import ThemedText from '../src/components/ThemedText';
 import { GradientButton } from '../src/components/ui/GlassUI';
 import { validateEmail, validatePassword, validateName } from '../src/utils/validation';
 import { typography, spacing, radius } from '../src/design/theme-system';
+import { MOTION } from '../src/design/motion';
 
 const { width: _width } = Dimensions.get('window');
 
@@ -68,11 +69,11 @@ export default function RegisterScreen() {
 
   const triggerShake = () => {
     shakeX.value = withSequence(
-      withTiming(-12, { duration: 50 }),
-      withTiming(12, { duration: 50 }),
-      withTiming(-8, { duration: 50 }),
-      withTiming(8, { duration: 50 }),
-      withTiming(0, { duration: 50 }),
+      withTiming(-12, { duration: MOTION.shake }),
+      withTiming(12, { duration: MOTION.shake }),
+      withTiming(-8, { duration: MOTION.shake }),
+      withTiming(8, { duration: MOTION.shake }),
+      withTiming(0, { duration: MOTION.shake }),
     );
   };
 
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
   logoCircle: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
     gap: spacing[2.5],
     paddingHorizontal: spacing[3.5],
     paddingVertical: Platform.OS === 'ios' ? 14 : 10,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   input: { flex: 1, fontSize: typography.sizes.bodyMid },
@@ -394,10 +395,10 @@ const styles = StyleSheet.create({
   strengthTrack: {
     flex: 1,
     height: 3,
-    borderRadius: 2,
+    borderRadius: radius.sm,
     overflow: 'hidden',
   },
-  strengthFill: { height: '100%', borderRadius: 2 },
+  strengthFill: { height: '100%', borderRadius: radius.sm },
   strengthLabel: { fontSize: typography.sizes.captionSm, fontWeight: '600' },
   submitWrap: { marginTop: spacing[2] },
   footer: {

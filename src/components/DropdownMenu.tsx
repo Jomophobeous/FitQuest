@@ -29,7 +29,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 import { timerService } from '../services/timerService';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
+import { MOTION } from '../design/motion';
 
 // ============================================
 // TYPES
@@ -168,10 +169,10 @@ export function DropdownTrigger({ onPress }: DropdownTriggerProps) {
       <TouchableOpacity
         onPress={onPress}
         onPressIn={() => {
-          scale.value = withTiming(0.92, { duration: 120 });
+          scale.value = withTiming(0.92, { duration: MOTION.press });
         }}
         onPressOut={() => {
-          scale.value = withTiming(1, { duration: 120 });
+          scale.value = withTiming(1, { duration: MOTION.press });
         }}
         style={styles.trigger}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -220,10 +221,10 @@ function AnimatedMenuItem({
         <TouchableOpacity
           style={[styles.menuItem, isDisabled && styles.menuItemDisabled]}
           onPressIn={() => {
-            scale.value = withTiming(0.97, { duration: 120 });
+            scale.value = withTiming(0.97, { duration: MOTION.press });
           }}
           onPressOut={() => {
-            scale.value = withTiming(1, { duration: 120 });
+            scale.value = withTiming(1, { duration: MOTION.press });
           }}
           onPress={() => !isDisabled && onPress()}
           disabled={isDisabled}
@@ -373,7 +374,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     marginTop: spacing[14],
     marginRight: spacing[3.5],
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
     minWidth: 220,
     maxWidth: 280,
@@ -399,7 +400,7 @@ const styles = StyleSheet.create({
   workoutBadge: {
     paddingHorizontal: spacing[2],
     paddingVertical: spacing[0.75],
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
   workoutBadgeText: {
     fontSize: typography.sizes.xs,
@@ -424,7 +425,7 @@ const styles = StyleSheet.create({
   menuItemIcon: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },

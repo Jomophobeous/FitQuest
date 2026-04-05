@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { darkTheme, lightTheme, blackGoldTheme, type Theme, type ThemeMode } from '../design/theme-system';
+import { allThemeInstances, type Theme, type ThemeMode, type ThemeEffects } from '../design/theme-system';
+import { getThemeEffects } from '../design/themes/themeEffects';
 
 interface ThemeContextType {
   mode: ThemeMode;
   theme: Theme;
+  themeEffects: ThemeEffects | undefined;
   toggleTheme: () => void;
   setMode: (mode: ThemeMode) => void;
 }
@@ -14,17 +16,20 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'fitquest.theme.mode';
 
-const VALID_MODES: ThemeMode[] = ['dark', 'light', 'blackGold'];
+const ALL_MODES: ThemeMode[] = ['dark', 'light', 'blackGold', 'neon', 'energy', 'wellness', 'elite', 'sunset'];
 
 function isValidMode(value: string | null): value is ThemeMode {
-  return value !== null && VALID_MODES.includes(value as ThemeMode);
+  return value !== null && ALL_MODES.includes(value as ThemeMode);
 }
 
-const themeMap: Record<ThemeMode, Theme> = {
-  dark: darkTheme,
-  light: lightTheme,
-  blackGold: blackGoldTheme,
-};
+// Build theme cycle map
+const CYCLE_MAP = (() => {
+  const map = {} as Record<ThemeMode, ThemeMode>;
+  ALL_MODES.forEach((mode, i) => {
+    map[mode] = ALL_MODES[(i + 1) % ALL_MODES.length];
+  });
+  return map;
+})();
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
@@ -55,29 +60,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Cycle: dark → light → blackGold → dark
   const toggleTheme = useCallback(() => {
-    const next: Record<ThemeMode, ThemeMode> = {
-      dark: 'light',
-      light: 'blackGold',
-      blackGold: 'dark',
-    };
-    setMode(next[mode]);
+    setMode(CYCLE_MAP[mode]);
   }, [mode, setMode]);
 
-  const theme = themeMap[mode];
+  const theme = allThemeInstances[mode];
+
+  let effects: ThemeEffects | undefined;
+  try {
+    effects = getThemeEffects(mode);
+  } catch {
+    effects = undefined;
+  }
 
   const contextValue = useMemo(
     () => ({
       mode,
       theme,
+      themeEffects: effects,
       toggleTheme,
       setMode,
     }),
-    [mode, theme, toggleTheme, setMode],
+    [mode, theme, effects, toggleTheme, setMode],
   );
 
-  // Always provide context, even during loading (use default dark theme)
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }
 
@@ -94,8 +100,14 @@ export function useColors() {
   return theme.colors;
 }
 
+export function useThemeEffects(): ThemeEffects | undefined {
+  const { themeEffects } = useTheme();
+  return themeEffects;
+}
+
 export function useThemeValue<T>(darkValue: T, lightValue: T, blackGoldValue?: T): T {
   const { mode } = useTheme();
   if (mode === 'blackGold') return blackGoldValue ?? darkValue;
-  return mode === 'dark' ? darkValue : lightValue;
+  const lightModes: ThemeMode[] = ['light', 'wellness'];
+  return lightModes.includes(mode) ? lightValue : darkValue;
 }

@@ -4,47 +4,39 @@
  * Philosophy:
  * - Dark Mode: Emotion, immersion, focus (glowing accents, visual drama)
  * - Light Mode: Speed, analysis, accuracy (clinical, sharp, zero glare)
+ * - Premium: Luxury and authority (gold, platinum)
+ * - Vibrant: Energy and engagement (neon, saturation)
+ * - Wellness: Calm and restoration (natural palette)
  */
 
-// ============================================================================
-// COLOR SYSTEM
-// ============================================================================
+import { themeConfigs, type ThemeEffects } from './themes/themeConfigs';
+import { animationEasing, getThemeEffect, getThemeEffects } from './themes/themeEffects';
 
-// ONE accent color: Green (#10B981) for all primary actions
-// Warnings: Amber (#F4A427) / Red (#EF4444)
-// Everything else: Grayscale
+export { animationEasing, getThemeEffect, getThemeEffects };
+export type { ThemeEffects };
+
+// ============================================================================
+// COLOR SYSTEM (Legacy - for backward compatibility)
+// ============================================================================
 
 export const colorSystem = {
   dark: {
-    // Base
-    background: '#050507', // Pure charcoal black
-    surface: '#0E0E12', // Elevated surface
-    surfaceVariant: '#161619', // Secondary surface (cards)
-
-    // Text
-    text: '#F4F5F9', // Primary text (crisp white)
-    textSecondary: '#A8B0C0', // Secondary text
-    textMuted: '#6B7590', // Tertiary/meta text
-
-    // Dividers
-    border: '#1E1E24', // Hairline borders
-    divider: '#18181D', // Internal dividers
-
-    // Single accent color - GREEN for all primary actions
+    background: '#050507',
+    surface: '#0E0E12',
+    surfaceVariant: '#161619',
+    text: '#F4F5F9',
+    textSecondary: '#A8B0C0',
+    textMuted: '#6B7590',
+    border: '#1E1E24',
+    divider: '#18181D',
     accent: '#10B981',
-
-    // Semantic
     error: '#EF4444',
     warning: '#F4A427',
     success: '#10B981',
     info: '#3B82F6',
     accentDark: '#059669',
-
-    // Backward compatibility aliases (use warning/success instead)
-    accent2: '#F4A427', // → use warning
-    accent3: '#10B981', // → use success/accent
-
-    // Category accent colors
+    accent2: '#F4A427',
+    accent3: '#10B981',
     purple: '#8B5CF6',
     indigo: '#5F63FF',
     pink: '#EC4899',
@@ -53,44 +45,27 @@ export const colorSystem = {
     skyBlue: '#38BDF8',
     purpleLight: '#A78BFA',
     pinkLight: '#F472B6',
-
-    // Contrast text on accent-colored surfaces
     onAccent: '#FFFFFF',
-
-    // Chrome
     overlay: 'rgba(0,0,0,0.65)',
   },
 
   light: {
-    // Base
-    background: '#F5F6F8', // Soft cool gray
-    surface: '#FFFFFF', // Primary surface (cards)
-    surfaceVariant: '#EBEDF2', // Secondary surface
-
-    // Text
-    text: '#111318', // Primary text (near-black)
-    textSecondary: '#4A4F5C', // Secondary text
-    textMuted: '#6D7385', // Tertiary/meta text
-
-    // Dividers
-    border: '#D0D5DE', // Hairline borders
-    divider: '#DCE0E8', // Internal dividers
-
-    // Single accent color - GREEN for all primary actions
-    accent: '#10B981',
-
-    // Semantic
+    background: '#F5F6F8',
+    surface: '#FFFFFF',
+    surfaceVariant: '#EBEDF2',
+    text: '#111318',
+    textSecondary: '#4A4F5C',
+    textMuted: '#6D7385',
+    border: '#D0D5DE',
+    divider: '#DCE0E8',
+    accent: '#047857',
     error: '#DC2626',
     warning: '#F4A427',
-    success: '#10B981',
+    success: '#047857',
     info: '#3B82F6',
-    accentDark: '#059669',
-
-    // Backward compatibility aliases (use warning/success instead)
-    accent2: '#F4A427', // → use warning
-    accent3: '#10B981', // → use success/accent
-
-    // Category accent colors
+    accentDark: '#065F46',
+    accent2: '#F4A427',
+    accent3: '#047857',
     purple: '#8B5CF6',
     indigo: '#5F63FF',
     pink: '#EC4899',
@@ -99,44 +74,27 @@ export const colorSystem = {
     skyBlue: '#38BDF8',
     purpleLight: '#A78BFA',
     pinkLight: '#F472B6',
-
-    // Contrast text on accent-colored surfaces
     onAccent: '#FFFFFF',
-
-    // Chrome
     overlay: 'rgba(0,0,0,0.60)',
   },
 
   blackGold: {
-    // Base — deep true black for maximum luxury contrast
     background: '#020204',
     surface: '#0A0A0C',
     surfaceVariant: '#121214',
-
-    // Text — crisp platinum/silver (no warm parchment)
     text: '#F2F2F5',
     textSecondary: '#ACACB2',
     textMuted: '#6E6E76',
-
-    // Dividers — cool charcoal
     border: '#252528',
     divider: '#1A1A1E',
-
-    // Single accent color — refined warm gold (not blinding)
     accent: '#D4A843',
-
-    // Semantic — distinct colors, not all gold
     error: '#B83240',
     warning: '#C8943A',
-    success: '#D4A843', // Gold for success in blackGold theme
+    success: '#D4A843',
     info: '#5A8FBF',
     accentDark: '#B8912C',
-
-    // Backward compatibility aliases
     accent2: '#C8943A',
-    accent3: '#D4A843', // Warm gold
-
-    // Category accent colors — understated luxury palette
+    accent3: '#D4A843',
     purple: '#9B86C7',
     indigo: '#7B7FCC',
     pink: '#C77090',
@@ -145,11 +103,7 @@ export const colorSystem = {
     skyBlue: '#5AADC7',
     purpleLight: '#B49AE0',
     pinkLight: '#D499B0',
-
-    // Contrast text on accent-colored (gold) surfaces
     onAccent: '#050507',
-
-    // Chrome
     overlay: 'rgba(0,0,0,0.85)',
   },
 };
@@ -303,28 +257,39 @@ export const motion = {
     fast: 150,
     base: 250,
     slow: 350,
-    easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Material easing
+    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
   light: {
     fast: 150,
-    base: 200, // Shorter, more snappy
-    slow: 300, // Motion is quieter
+    base: 200,
+    slow: 300,
     easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
 };
 
 // ============================================================================
-// COMPLETE THEME OBJECTS
+// THEME BUILDER
 // ============================================================================
 
-export type ThemeMode = 'dark' | 'light' | 'blackGold';
+export type ThemeMode = 'dark' | 'light' | 'blackGold' | 'neon' | 'energy' | 'wellness' | 'elite' | 'sunset';
+
+const LIGHT_THEMES: ThemeMode[] = ['light', 'wellness'];
+const DARK_THEMES: ThemeMode[] = ['dark', 'blackGold', 'neon', 'energy', 'elite', 'sunset'];
 
 export const createTheme = (mode: ThemeMode) => {
-  const colors = colorSystem[mode];
-  // Black & Gold is a dark variant — reuse dark shadow/motion configs
-  const baseMode = mode === 'blackGold' ? 'dark' : mode;
-  const animationConfig = motion[baseMode];
-  const shadowConfig = shadows[baseMode];
+  const config = themeConfigs[mode];
+  if (!config) {
+    throw new Error(`Unknown theme mode: ${mode}`);
+  }
+
+  const colors = config.colors;
+  const isDark = DARK_THEMES.includes(mode);
+  const baseMode = isDark ? 'dark' : 'light';
+  const animationConfig = {
+    ...motion[baseMode as keyof typeof motion],
+    base: config.animations.animationSpeed,
+  };
+  const shadowConfig = shadows[baseMode as keyof typeof shadows];
 
   return {
     colors,
@@ -334,13 +299,118 @@ export const createTheme = (mode: ThemeMode) => {
     borderRadius: radius,
     shadows: shadowConfig,
     motion: animationConfig,
+    effects: config.effects,
 
-    // Utilities for theme switching
-    isDark: mode === 'dark' || mode === 'blackGold',
-    isLight: mode === 'light',
+    isDark,
+    isLight: !isDark,
     isBlackGold: mode === 'blackGold',
+    themeId: mode,
   };
 };
+
+// ============================================================================
+// PRE-BUILT THEMES
+// ============================================================================
+
+export const darkTheme = createTheme('dark');
+export const lightTheme = createTheme('light');
+export const blackGoldTheme = createTheme('blackGold');
+export const neonTheme = createTheme('neon');
+export const energyTheme = createTheme('energy');
+export const wellnessTheme = createTheme('wellness');
+export const eliteTheme = createTheme('elite');
+export const sunsetTheme = createTheme('sunset');
+
+export const allThemeInstances: Record<ThemeMode, ReturnType<typeof createTheme>> = {
+  dark: darkTheme,
+  light: lightTheme,
+  blackGold: blackGoldTheme,
+  neon: neonTheme,
+  energy: energyTheme,
+  wellness: wellnessTheme,
+  elite: eliteTheme,
+  sunset: sunsetTheme,
+};
+
+export type Theme = ReturnType<typeof createTheme>;
+
+// ============================================================================
+// TYPE EXPORTS
+// ============================================================================
+
+export type {
+  ThemeConfig,
+  ThemeColorPalette,
+  ThemeAnimationSettings,
+  ThemeAccessibility,
+  ThemeCategory,
+  ThemeEffects,
+  GlassSpec,
+  ElevationSpec,
+  GradientPair,
+} from './themes/themeConfigs';
+
+// ============================================================================
+// WCAG CONTRAST VALIDATION
+// ============================================================================
+
+export function hexToRelativeLuminance(hex: string): number {
+  const normalized = hex.replace('#', '');
+  const full =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : normalized;
+
+  const r = parseInt(full.slice(0, 2), 16) / 255;
+  const g = parseInt(full.slice(2, 4), 16) / 255;
+  const b = parseInt(full.slice(4, 6), 16) / 255;
+
+  const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+export function getContrastRatio(hex1: string, hex2: string): number {
+  const l1 = hexToRelativeLuminance(hex1);
+  const l2 = hexToRelativeLuminance(hex2);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+export interface ContrastCheckResult {
+  ratio: number;
+  passesAA: boolean;
+  passesAAA: boolean;
+}
+
+export function checkColorContrast(textColor: string, bgColor: string): ContrastCheckResult {
+  const ratio = getContrastRatio(textColor, bgColor);
+  return {
+    ratio,
+    passesAA: ratio >= 4.5,
+    passesAAA: ratio >= 7.0,
+  };
+}
+
+export function validateThemeColors(
+  colors: import('./themes/themeConfigs').ThemeColorPalette,
+): Record<string, ContrastCheckResult> {
+  const pairs: Array<[string, string]> = [
+    ['text', colors.text],
+    ['textSecondary', colors.textSecondary],
+    ['accent', colors.accent],
+  ];
+
+  const results: Record<string, ContrastCheckResult> = {};
+  for (const [label, textColor] of pairs) {
+    results[label] = checkColorContrast(textColor, colors.background);
+  }
+  return results;
+}
 
 // ============================================================================
 // EXERCISE CATEGORY GRADIENTS & ICONS
@@ -362,101 +432,3 @@ export const categoryTheme: Record<
 };
 
 export const defaultCategoryTheme = { colors: ['#64748B', '#475569'] as [string, string], icon: 'dumbbell' };
-
-// Export default theme (dark mode by default)
-export const darkTheme = createTheme('dark');
-export const lightTheme = createTheme('light');
-export const blackGoldTheme = createTheme('blackGold');
-
-export type Theme = ReturnType<typeof createTheme>;
-
-// ============================================================================
-// THEME CONFIG TYPE (re-exported from themes/themeConfigs for convenience)
-// ============================================================================
-
-export type {
-  ThemeConfig,
-  ThemeColorPalette,
-  ThemeAnimationSettings,
-  ThemeAccessibility,
-  ThemeCategory,
-} from './themes/themeConfigs';
-
-// ============================================================================
-// WCAG CONTRAST VALIDATION
-// ============================================================================
-
-/**
- * Converts a hex color string to relative luminance (WCAG 2.1 definition).
- * Accepts #RRGGBB or #RGB.
- */
-export function hexToRelativeLuminance(hex: string): number {
-  const normalized = hex.replace('#', '');
-  const full =
-    normalized.length === 3
-      ? normalized
-          .split('')
-          .map((c) => c + c)
-          .join('')
-      : normalized;
-
-  const r = parseInt(full.slice(0, 2), 16) / 255;
-  const g = parseInt(full.slice(2, 4), 16) / 255;
-  const b = parseInt(full.slice(4, 6), 16) / 255;
-
-  const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
-
-  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
-}
-
-/**
- * Calculates the WCAG contrast ratio between two hex colors.
- * Returns a value between 1 (no contrast) and 21 (max contrast).
- */
-export function getContrastRatio(hex1: string, hex2: string): number {
-  const l1 = hexToRelativeLuminance(hex1);
-  const l2 = hexToRelativeLuminance(hex2);
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-  return (lighter + 0.05) / (darker + 0.05);
-}
-
-export interface ContrastCheckResult {
-  ratio: number;
-  passesAA: boolean;
-  passesAAA: boolean;
-}
-
-/**
- * Check contrast ratio between text and background colors.
- * WCAG AA requires ≥ 4.5:1 for normal text, ≥ 3:1 for large text.
- * WCAG AAA requires ≥ 7:1 for normal text.
- */
-export function checkColorContrast(textColor: string, bgColor: string): ContrastCheckResult {
-  const ratio = getContrastRatio(textColor, bgColor);
-  return {
-    ratio,
-    passesAA: ratio >= 4.5,
-    passesAAA: ratio >= 7.0,
-  };
-}
-
-/**
- * Validate that a theme's primary text/accent colors meet WCAG AA (4.5:1)
- * against the background. Returns a map of color key → ContrastCheckResult.
- */
-export function validateThemeColors(
-  colors: import('./themes/themeConfigs').ThemeColorPalette,
-): Record<string, ContrastCheckResult> {
-  const pairs: Array<[string, string]> = [
-    ['text', colors.text],
-    ['textSecondary', colors.textSecondary],
-    ['accent', colors.accent],
-  ];
-
-  const results: Record<string, ContrastCheckResult> = {};
-  for (const [label, textColor] of pairs) {
-    results[label] = checkColorContrast(textColor, colors.background);
-  }
-  return results;
-}

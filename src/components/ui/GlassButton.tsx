@@ -55,9 +55,9 @@ interface SizeSpec {
 }
 
 const SIZE_SPECS: Record<GlassButtonSize, SizeSpec> = {
-  sm: { height: 32, paddingHorizontal: spacing[3], fontSize: 13, borderRadius: radius.md, hitSlop: 8 },
-  md: { height: 44, paddingHorizontal: spacing[5], fontSize: 15, borderRadius: radius.lg, hitSlop: 2 },
-  lg: { height: 56, paddingHorizontal: spacing[6], fontSize: 17, borderRadius: radius.xl, hitSlop: 0 },
+  sm: { height: 32, paddingHorizontal: 12, fontSize: 13, borderRadius: radius.md, hitSlop: 8 }, // spacing[3]
+  md: { height: 44, paddingHorizontal: 20, fontSize: 15, borderRadius: radius.lg, hitSlop: 2 }, // spacing[5]
+  lg: { height: 56, paddingHorizontal: 24, fontSize: 17, borderRadius: radius.xl, hitSlop: 0 }, // spacing[6]
 };
 
 // ============================================================================

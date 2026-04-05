@@ -175,7 +175,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   return (
     <NotificationContext.Provider value={{ notify, dismiss }}>
       {children}
-      <View style={[styles.container, { top: insets.top + spacing[2] }]} pointerEvents="box-none">
+      <View style={[styles.container, { top: insets.top + (spacing[2] ?? 8) }]} pointerEvents="box-none">
         {notifications.map((n) => (
           <Toast key={n.id} notification={n} onDismiss={dismiss} />
         ))}

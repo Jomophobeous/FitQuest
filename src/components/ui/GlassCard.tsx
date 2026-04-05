@@ -59,7 +59,7 @@ const VARIANT_SPECS: Record<GlassCardVariant, VariantSpec> = {
     shadowRadius: 20,
     shadowOpacity: 0.08,
     borderRadius: radius.xl,
-    padding: spacing[4],
+    padding: 16, // spacing[4]
   },
   modal: {
     blur: 20,
@@ -68,7 +68,7 @@ const VARIANT_SPECS: Record<GlassCardVariant, VariantSpec> = {
     shadowRadius: 24,
     shadowOpacity: 0.15,
     borderRadius: radius.xl,
-    padding: spacing[5],
+    padding: 20, // spacing[5]
   },
   navbar: {
     blur: 10,
@@ -77,7 +77,7 @@ const VARIANT_SPECS: Record<GlassCardVariant, VariantSpec> = {
     shadowRadius: 16,
     shadowOpacity: 0.06,
     borderRadius: 0,
-    padding: spacing[4],
+    padding: 16, // spacing[4]
   },
   overlay: {
     blur: 16,
@@ -86,7 +86,7 @@ const VARIANT_SPECS: Record<GlassCardVariant, VariantSpec> = {
     shadowRadius: 12,
     shadowOpacity: 0.1,
     borderRadius: radius.lg,
-    padding: spacing[4],
+    padding: 16, // spacing[4]
   },
 };
 

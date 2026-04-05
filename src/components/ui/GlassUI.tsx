@@ -371,13 +371,13 @@ export const GradientButton = memo(function GradientButton({
           ]}
         >
           {loading ? (
-            <ActivityIndicator size="small" color={theme.colors.onAccent} style={{ marginRight: 8 }} />
+            <ActivityIndicator size="small" color={theme.colors.onAccent} style={{ marginRight: spacing[2] }} />
           ) : !!icon ? (
             <MaterialCommunityIcons
               name={icon}
               size={fontSize + 4}
               color={theme.colors.onAccent}
-              style={{ marginRight: 8 }}
+              style={{ marginRight: spacing[2] }}
             />
           ) : null}
           <ThemedText style={[styles.gradientButtonText, { fontSize, color: theme.colors.onAccent }]}>

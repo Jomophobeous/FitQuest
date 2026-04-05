@@ -63,40 +63,14 @@ app.use(express.json({ limit: '100kb' }));
 // ── Global Middleware ──
 
 /**
- * S2 fix: API key validation for all POST routes.
- * The mobile client must send Authorization: Bearer <API_KEY>.
- * Health check (GET) is exempt.
+ * Auth enforcement middleware — validates authentication on all protected routes.
+ * Uses requireAuth middleware (server/middleware/requireAuth.js).
+ * Public routes (health, auth registration/login) are exempt.
+ * ENFORCEMENT: No unguarded paths.
  */
-const API_KEY = process.env.API_KEY;
+const { requireAuth } = require('./middleware/requireAuth');
 
-app.use((req, res, next) => {
-  // GET requests (health check, etc.) are exempt
-  if (req.method !== 'POST') return next();
-
-  // If API_KEY is not configured, skip check (development mode)
-  if (!API_KEY) return next();
-
-  const authHeader = req.headers['authorization'];
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return respond(res, 401, null, 'Missing or invalid Authorization header.');
-  }
-
-  const token = authHeader.slice(7);
-  if (token.length !== API_KEY.length) {
-    return respond(res, 401, null, 'Invalid API key.');
-  }
-
-  // Constant-time comparison to prevent timing attacks
-  const valid = crypto.timingSafeEqual(
-    Buffer.from(token, 'utf8'),
-    Buffer.from(API_KEY, 'utf8')
-  );
-  if (!valid) {
-    return respond(res, 401, null, 'Invalid API key.');
-  }
-
-  next();
-});
+app.use(requireAuth());
 
 /**
  * Reject POST requests without a JSON body.
@@ -185,7 +159,8 @@ app.use(require('./routes/user'));
 app.use(require('./routes/subscription'));
 app.use(require('./routes/device'));
 app.use(require('./routes/deviceBinding'));
-app.use(require('./routes/auth'));
+app.use(require('./routes/authJwt'));  // JWT auth (register, login, refresh, logout)
+app.use(require('./routes/auth'));     // Challenge-response auth (legacy)
 app.use(require('./routes/ai'));
 app.use(require('./routes/sync'));
 app.use(require('./routes/admin'));  // Phase 30: Adaptive Response + Reputation + Enforcement

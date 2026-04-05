@@ -18,6 +18,7 @@
 const { Router } = require('express');
 const trustCheck = require('../middleware/trustCheck');
 const { validateDeviceToken } = require('../middleware/validateDeviceToken');
+const { requireSubscription } = require('../middleware/requireSubscription');
 const supabase = require('../utils/supabaseClient');
 const logEvent = require('../utils/logEvent');
 const respond = require('../utils/respond');
@@ -72,7 +73,9 @@ function checkAIRateLimit(userId, deviceId) {
 
 // ── POST /ai/request ──
 
-router.post('/ai/request', validateDeviceToken(), trustCheck, async (req, res) => {
+// Phase 31: Subscription check is FIRST — before any business logic.
+// requireSubscription() returns 402 if no active subscription/trial.
+router.post('/ai/request', validateDeviceToken(), trustCheck, requireSubscription(), async (req, res) => {
   const { user_id, device_id, prompt } = req.body;
   const ip = req.ip || req.connection.remoteAddress || 'unknown';
 

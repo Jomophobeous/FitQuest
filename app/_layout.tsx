@@ -9,6 +9,7 @@ import { DatabaseProvider } from '../src/context/DatabaseContext';
 import { SubscriptionProvider, useSubscription } from '../src/purchases/SubscriptionContext';
 import { AuthProvider } from '../src/context/AuthContext';
 import { AuthGate } from '../src/components/AuthGate';
+import { useNavigationGuard } from '../src/components/NavigationGuard';
 import { PostHogAnalyticsProvider } from '../src/services/posthogService';
 import { ConnectivityProvider } from '../src/context/ConnectivityContext';
 import OfflineBanner from '../src/components/OfflineBanner';
@@ -52,6 +53,9 @@ function ThemedTabs() {
   const { t } = useLanguage();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  // ENFORCEMENT: Navigation guard — redirects to login if not authenticated
+  useNavigationGuard();
 
   // Memoize tab bar style to avoid re-creating the style object on every render
   // (prevents layout recalculation that causes visible twitching)

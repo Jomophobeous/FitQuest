@@ -19,6 +19,7 @@ import {
   registerWithEmail,
 } from '../services/authApi';
 import { getApiBaseUrl } from '../services/apiBaseUrl';
+import { authEventBus, type AuthFailureReason } from '../services/security/authEventBus';
 
 // ============================================
 // TYPES
@@ -395,6 +396,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const touchSession = async (): Promise<void> => {
     await bioAuth.touchSession();
   };
+
+  // ============================================
+  // AUTH EVENT BUS — FORCED LOGOUT ON FAILURE
+  // ============================================
+
+  useEffect(() => {
+    const unsubscribe = authEventBus.subscribe(async (reason: AuthFailureReason) => {
+      if (__DEV__) console.warn(`[AuthProvider] Forced logout triggered: ${reason}`);
+      // Clear all auth state — no silent failures
+      try {
+        await bioAuth.endSession();
+      } catch {
+        /* best effort */
+      }
+      await clearAuthCredentials();
+      setToken(null);
+      setUser(null);
+      setIsLocallyAuthenticated(false);
+    });
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only
+  }, []);
 
   // ============================================
   // CONTEXT VALUE

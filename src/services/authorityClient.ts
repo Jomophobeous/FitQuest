@@ -150,3 +150,34 @@ export function clearSubscriptionCache(): void {
   _cachedSubStatus = null;
   _lastSubVerifyAt = 0;
 }
+
+/**
+ * Verify a receipt with the server (RevenueCat server-side verification).
+ * Call after a successful RevenueCat purchase to register it server-side.
+ */
+export async function verifyReceipt(
+  userId: string,
+  receiptToken: string,
+  productId: string,
+): Promise<{ valid: boolean; entitlements: string[]; expiry: string | null } | null> {
+  clearSubscriptionCache();
+  return authorityPost<{ valid: boolean; entitlements: string[]; expiry: string | null }>('/subscriptions/verify', {
+    user_id: userId,
+    receipt_token: receiptToken,
+    product_id: productId,
+  });
+}
+
+/**
+ * Get authoritative subscription status from server.
+ * This is the DEFINITIVE check — client cache is cosmetic only.
+ */
+export async function getServerSubscriptionStatus(
+  userId: string,
+  deviceId: string,
+): Promise<{ status: string; has_access: boolean; expires_at: string | null } | null> {
+  return authorityPost<{ status: string; has_access: boolean; expires_at: string | null }>('/subscriptions/status', {
+    user_id: userId,
+    device_id: deviceId,
+  });
+}

@@ -94,8 +94,9 @@ export class SubscriptionManager {
   // ── Initialization ──
 
   private async initialize(): Promise<void> {
-    // Mock billing mode — simulate subscription states without RevenueCat
-    if (BILLING_MODE === 'mock') {
+    // Mock billing mode — ONLY in __DEV__ + explicit env flag.
+    // SECURITY: Mock mode is IMPOSSIBLE in production builds.
+    if (__DEV__ && BILLING_MODE === 'mock') {
       this.isMockMode = true;
       this.revenueCatAvailable = false;
       const mockState = this.buildMockState(MOCK_BILLING_STATE || 'premium');
@@ -200,10 +201,11 @@ export class SubscriptionManager {
 
   /**
    * Switch mock billing state at runtime (for testing all paths).
-   * Only works when BILLING_MODE=mock.
+   * Only works when BILLING_MODE=mock AND __DEV__.
+   * SECURITY: No-op in production.
    */
   setMockState(mode: 'premium' | 'trial' | 'expired'): void {
-    if (!this.isMockMode) {
+    if (!this.isMockMode || !__DEV__) {
       safeWarn('[SubscriptionManager] setMockState ignored — not in mock mode');
       return;
     }
@@ -554,7 +556,12 @@ export class SubscriptionManager {
   }
 
   private async purchaseLocal(productId: string): Promise<boolean> {
-    // Local purchase simulation for development
+    // Local purchase simulation — ONLY in __DEV__ mode.
+    // SECURITY: In production, if RevenueCat is unavailable, purchase fails.
+    if (!__DEV__) {
+      safeWarn('[SubscriptionManager] purchaseLocal blocked — not in dev mode');
+      return false;
+    }
     const userId = 'user_local_001';
 
     await updateTrialConverted(userId, productId);

@@ -8,6 +8,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import { requireApiBaseUrl } from './apiBaseUrl';
+import { authEventBus } from './security/authEventBus';
 
 export interface ServerUser {
   id: string;
@@ -147,12 +148,25 @@ export async function logoutEverywhere(): Promise<void> {
 
 /**
  * Fetch helper that:
- * 1) sends current access token
- * 2) if 401, tries a single refresh-rotation then retries once
+ * 1) validates session is still active (30-min timeout)
+ * 2) sends current access token
+ * 3) if 401, tries a single refresh-rotation then retries once
+ * 4) on unrecoverable failure, emits AUTH_FAILURE for forced logout
+ *
+ * ENFORCEMENT: Every API call goes through here. No bypass.
  */
 export async function fetchWithAuth(input: string, init?: RequestInit): Promise<Response> {
   const baseUrl = requireApiBaseUrl();
   const accessToken = await getAuthToken();
+
+  // SESSION TIMEOUT ENFORCEMENT: If no valid token, fail immediately
+  if (!accessToken) {
+    authEventBus.emit('TOKEN_EXPIRED');
+    return new Response(JSON.stringify({ error: 'No auth token' }), {
+      status: 401,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
 
   const doFetch = async (token: string | null): Promise<Response> => {
     const headers: Record<string, string> = {
@@ -168,14 +182,25 @@ export async function fetchWithAuth(input: string, init?: RequestInit): Promise<
   const first = await doFetch(accessToken);
   if (first.status !== 401) return first;
 
+  // Token expired — attempt single refresh
   try {
     await refreshWithStoredToken();
   } catch {
+    // Refresh failed — this is an unrecoverable auth failure
+    // Emit forced logout — no silent failures allowed
+    authEventBus.emit('REFRESH_FAILED');
     return first;
   }
 
   const newToken = await getAuthToken();
-  return doFetch(newToken);
+  const retry = await doFetch(newToken);
+
+  // If STILL 401 after refresh — token is fundamentally invalid
+  if (retry.status === 401) {
+    authEventBus.emit('TOKEN_INVALID');
+  }
+
+  return retry;
 }
 
 export async function getStoredUser(): Promise<ServerUser | null> {

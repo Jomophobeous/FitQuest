@@ -1,11 +1,16 @@
 /**
- * POST /verify/subscription — Authoritative subscription check.
- * Trust middleware enforced — unknown/suspended users blocked before reaching this.
- * Phase 22.3: Anti-abuse hardening.
+ * Subscription routes — Authoritative subscription verification.
+ *
+ * Phase 31 (Step 4): Server is SINGLE SOURCE OF TRUTH.
+ *   - POST /verify/subscription — Check subscription status
+ *   - POST /subscriptions/verify — RevenueCat receipt verification
+ *   - POST /subscriptions/status — Get authoritative subscription state for client
+ *
+ * SECURITY:
  *   - trust_score, anomaly_score, effective_trust: INTERNAL ONLY, never in response
- *   - Enriched anomaly metadata
- *   - computeEffectiveScore computed once per request server-side
- *   - Anomaly evaluation on every subscription event
+ *   - Receipt tokens NEVER logged
+ *   - Invalid receipts → 402 Payment Required (not 403)
+ *   - No data leakage on denial
  */
 'use strict';
 
@@ -17,6 +22,8 @@ const logEvent = require('../utils/logEvent');
 const trustCheck = require('../middleware/trustCheck');
 const { validateDeviceToken } = require('../middleware/validateDeviceToken');
 const { evaluateUserActivity } = require('../engines/anomalyEngine');
+const { verifyReceipt, postReceipt, clearCache } = require('../utils/revenueCatClient');
+const { checkSubscriptionStatus } = require('../middleware/requireSubscription');
 
 router.post('/verify/subscription', validateDeviceToken(), trustCheck, async (req, res) => {
   try {
@@ -98,6 +105,116 @@ router.post('/verify/subscription', validateDeviceToken(), trustCheck, async (re
     });
   } catch (err) {
     console.error('[/verify/subscription] Unexpected error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
+// ── POST /subscriptions/verify — RevenueCat receipt verification ──
+// Client sends receipt_token after purchase → server verifies with RevenueCat
+// → updates subscription in Supabase → returns authoritative status.
+
+router.post('/subscriptions/verify', validateDeviceToken(), trustCheck, async (req, res) => {
+  try {
+    const { user_id, receipt_token, product_id } = req.body;
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const sanitizedUserId = req.user?.id || user_id;
+
+    if (!sanitizedUserId) {
+      return respond(res, 402, null, 'Payment required.');
+    }
+
+    // SECURITY: Never log receipt_token
+    logEvent(sanitizedUserId, req.device?.device_id, 'receipt_verify_attempt', ip, {
+      product_id: product_id || 'unknown',
+    });
+
+    // Tamper detection: user_id in body must match authenticated user
+    if (user_id && req.user?.sub && user_id !== req.user.sub) {
+      logEvent(sanitizedUserId, req.device?.device_id, 'subscription_tamper_detected', ip, {
+        claimed_user: user_id,
+        actual_user: req.user.sub,
+      });
+      return respond(res, 402, null, 'Payment required.');
+    }
+
+    let result;
+
+    if (receipt_token && product_id) {
+      // Post receipt to RevenueCat for verification
+      result = await postReceipt(sanitizedUserId, receipt_token, product_id);
+    } else {
+      // No receipt — just check current entitlements
+      result = await verifyReceipt(sanitizedUserId);
+    }
+
+    if (!result.valid) {
+      logEvent(sanitizedUserId, req.device?.device_id, 'receipt_verify_failed', ip, {
+        source: result.source,
+      });
+      return respond(res, 402, null, 'Payment required.');
+    }
+
+    // Update Supabase subscription record
+    if (result.valid && result.source === 'revenuecat') {
+      const { error: upsertErr } = await supabase
+        .from('subscriptions')
+        .upsert({
+          user_id: sanitizedUserId,
+          status: 'active',
+          expires_at: result.expiry,
+          plan_type: product_id || 'unknown',
+          verified_at: new Date().toISOString(),
+          verification_source: 'revenuecat',
+        }, { onConflict: 'user_id' });
+
+      if (upsertErr) {
+        console.error('[/subscriptions/verify] Upsert error:', upsertErr.message);
+      }
+    }
+
+    logEvent(sanitizedUserId, req.device?.device_id, 'receipt_verify_success', ip);
+
+    return respond(res, 200, {
+      valid: true,
+      entitlements: result.entitlements,
+      expiry: result.expiry,
+      verified_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[/subscriptions/verify] Unexpected error:', err.message);
+    return respond(res, 402, null, 'Payment required.');
+  }
+});
+
+// ── POST /subscriptions/status — Authoritative subscription state for client ──
+// Client calls this to get definitive subscription status.
+// Returns: { status, expiresAt, hasAccess }
+// Client uses this to update its cosmetic UI cache.
+
+router.post('/subscriptions/status', validateDeviceToken(), trustCheck, async (req, res) => {
+  try {
+    const sanitizedUserId = req.user?.id || req.user?.sub || req.body?.user_id;
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+
+    if (!sanitizedUserId) {
+      return respond(res, 402, null, 'Payment required.');
+    }
+
+    const result = await checkSubscriptionStatus(sanitizedUserId);
+
+    logEvent(sanitizedUserId, req.device?.device_id, 'subscription_status_check', ip, {
+      hasAccess: result.hasAccess,
+      status: result.status,
+    });
+
+    return respond(res, 200, {
+      status: result.status,
+      has_access: result.hasAccess,
+      expires_at: result.expiresAt,
+      verified_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('[/subscriptions/status] Unexpected error:', err.message);
     return respond(res, 500, null, 'Internal server error.');
   }
 });

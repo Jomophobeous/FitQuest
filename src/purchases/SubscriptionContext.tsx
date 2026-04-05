@@ -14,7 +14,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { unstable_batchedUpdates } from 'react-native';
 import { SubscriptionManager, type SubscriptionState, type SubscriptionOfferings } from './SubscriptionManager';
 import { useDatabase } from '../context/DatabaseContext';
-import { verifySubscription } from '../services/authorityClient';
+import { verifySubscription, getServerSubscriptionStatus } from '../services/authorityClient';
 
 // ============================================
 // TYPES
@@ -141,10 +141,27 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setOfferings(currentOfferings);
         });
 
-        // Server verification (fire-and-forget — does not block UI)
-        verifySubscription('user_local_001', 'device_default').catch(() => {
-          // Non-fatal: backend may be unreachable or device not registered
-        });
+        // Server verification — update client state from server truth.
+        // This is NOT fire-and-forget: if server says expired, we update.
+        try {
+          const serverStatus = await getServerSubscriptionStatus('user_local_001', 'device_default');
+          if (serverStatus && !cancelled) {
+            // Server is authoritative — override client state if server disagrees
+            if (!serverStatus.has_access && currentState.status !== 'EXPIRED') {
+              const expiredState: SubscriptionState = {
+                ...currentState,
+                status: 'EXPIRED',
+                isTrial: false,
+                willRenew: false,
+                verificationSource: 'local',
+                lastVerifiedAt: Date.now(),
+              };
+              if (!cancelled) setState(expiredState);
+            }
+          }
+        } catch {
+          // Non-fatal: backend may be unreachable
+        }
       } catch (error) {
         if (__DEV__) console.warn('[SubscriptionProvider] Init failed:', error);
       } finally {

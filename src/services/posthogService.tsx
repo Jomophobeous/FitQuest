@@ -69,20 +69,25 @@ export function PostHogAnalyticsProvider({ children }: { children: React.ReactNo
     return <>{children}</>;
   }
 
+  // Session replay requires native build — disabled in Expo Go (__DEV__) to prevent crash
+  const isNativeBuild = !__DEV__;
+
   return (
     <PostHogProvider
       apiKey={POSTHOG_API_KEY}
       options={{
         host: POSTHOG_HOST,
-        enableSessionReplay: true,
-        sessionReplayConfig: {
-          maskAllTextInputs: true,
-          maskAllImages: true,
-          captureLog: false,
-          captureNetworkTelemetry: false,
-          sampleRate: 0.1,
-          throttleDelayMs: 1000,
-        },
+        enableSessionReplay: isNativeBuild,
+        sessionReplayConfig: isNativeBuild
+          ? {
+              maskAllTextInputs: true,
+              maskAllImages: true,
+              captureLog: false,
+              captureNetworkTelemetry: false,
+              sampleRate: 0.1,
+              throttleDelayMs: 1000,
+            }
+          : undefined,
         flushInterval: 30,
         flushAt: 20,
       }}

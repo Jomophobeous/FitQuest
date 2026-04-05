@@ -1,18 +1,20 @@
-# EAS Build archive — optimize for remote build
-# EAS will do npm ci on the build server, so exclude node_modules
-node_modules/
-.expo/
-.git/
-android/
-ios/
-dist/
-build/
-coverage/
-*.log
-__tests__/
-.maestro/
+node_modules
+.expo
+.git
+android
+ios
+dist
+build
+coverage
+__tests__
+.maestro
+workspace-repos
+Screenshots-Expo
+agents
 .env.local
 .env.backup
 .env.staging
+*.log
+*.tgz
 .DS_Store
 Thumbs.db

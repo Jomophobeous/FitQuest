@@ -203,7 +203,7 @@ export function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rig
           activeOpacity={0.7}
           onPress={onPress}
           onPressIn={() => {
-            scale.value = withTiming(0.97, { duration: MOTION.press });
+            scale.value = withTiming(0.98, { duration: MOTION.press });
           }}
           onPressOut={() => {
             scale.value = withTiming(1, { duration: MOTION.press });
@@ -213,13 +213,13 @@ export function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rig
           style={[
             menuStyles.menuItem,
             {
-              backgroundColor: theme.colors.surfaceVariant,
+              backgroundColor: 'rgba(255,255,255,0.06)',
               borderColor: theme.colors.border,
             },
           ]}
         >
           <View style={[menuStyles.menuIconWrap, { backgroundColor: color + '18' }]}>
-            <MaterialCommunityIcons name={icon as any} size={18} color={color} />
+            <MaterialCommunityIcons name={icon as any} size={20} color={color} />
           </View>
           <View style={menuStyles.menuTextWrap}>
             <ThemedText style={[menuStyles.menuLabel, { color: theme.colors.text }]}>{label}</ThemedText>
@@ -229,7 +229,7 @@ export function MenuItem({ icon, label, sublabel, color, onPress, delay = 0, rig
               </ThemedText>
             )}
           </View>
-          {rightContent || <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />}
+          {rightContent || <MaterialCommunityIcons name="chevron-right" size={24} color={theme.colors.textMuted} />}
         </TouchableOpacity>
       </Animated.View>
     </Animated.View>
@@ -240,15 +240,17 @@ export const menuStyles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing[4],
-    borderRadius: radius.xl,
+    paddingVertical: spacing[2.5],
+    paddingHorizontal: spacing[3.5],
+    borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing[2.5],
+    marginBottom: spacing[1],
     gap: spacing[3],
+    minHeight: 56,
   },
   menuIconWrap: {
-    width: 38,
-    height: 38,
+    width: 40,
+    height: 40,
     borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
@@ -257,7 +259,7 @@ export const menuStyles = StyleSheet.create({
     flex: 1,
   },
   menuLabel: {
-    fontSize: typography.sizes.bodyMid,
+    fontSize: typography.sizes.body,
     fontWeight: '600',
     letterSpacing: 0.2,
   },

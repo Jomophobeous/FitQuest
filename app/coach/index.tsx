@@ -232,7 +232,7 @@ function CoachScreenInner() {
                             styles.suggestionChip,
                             {
                               backgroundColor: theme.colors.surfaceVariant,
-                              borderColor: theme.colors.border,
+                              borderColor: theme.colors.accent + '33',
                             },
                           ]}
                           activeOpacity={0.7}
@@ -361,7 +361,7 @@ function CoachScreenInner() {
                           styles.followUpChip,
                           {
                             backgroundColor: theme.colors.surfaceVariant,
-                            borderColor: theme.colors.border,
+                            borderColor: theme.colors.accent + '33',
                           },
                         ]}
                         activeOpacity={0.7}

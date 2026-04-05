@@ -69,6 +69,15 @@ const getDifficultyColors = (colors: { accent: string; warning: string; error: s
 // MEMOIZED EXERCISE CARD
 // ============================================
 
+const CATEGORY_COLORS: Record<string, string> = {
+  body_control: '#8B5CF6',
+  strength: '#EF4444',
+  mobility: '#10B981',
+  speed: '#F97316',
+  posture: '#3B82F6',
+  focus: '#EC4899',
+};
+
 const ExerciseCard = React.memo(function ExerciseCard({
   item,
   index,
@@ -83,13 +92,14 @@ const ExerciseCard = React.memo(function ExerciseCard({
   onPress: (exercise: ExerciseWithDetails) => void;
 }) {
   const diffColor = getDifficultyColors(theme.colors)[item.difficulty] || theme.colors.textMuted;
+  const categoryColor = CATEGORY_COLORS[item.category] || theme.colors.accent;
   const handlePress = useCallback(() => onPress(item), [onPress, item]);
 
   return (
     <AnimatedListItem
       index={index}
       onPress={handlePress}
-      style={{ paddingHorizontal: spacing[4], marginBottom: spacing[2] }}
+      style={{ paddingHorizontal: spacing[4], marginBottom: spacing[3] }}
       accessibilityRole="button"
       accessibilityLabel={`${item.name}, ${item.difficulty}, ${item.category}`}
       accessibilityHint="Double tap to view exercise details"
@@ -98,8 +108,10 @@ const ExerciseCard = React.memo(function ExerciseCard({
         style={[
           styles.exerciseCard,
           {
-            backgroundColor: theme.colors.surfaceVariant,
+            backgroundColor: 'rgba(255,255,255,0.06)',
             borderColor: theme.colors.border,
+            borderLeftWidth: 2,
+            borderLeftColor: categoryColor,
           },
         ]}
       >
@@ -707,7 +719,7 @@ const styles = StyleSheet.create({
   resultsText: { fontSize: typography.sizes.label, fontWeight: '500' },
   list: { paddingBottom: spacing[25] },
   exerciseCard: {
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     borderWidth: 1,
     overflow: 'hidden',
   },

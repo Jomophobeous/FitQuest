@@ -73,7 +73,7 @@ export const coachStyles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '88%',
-    marginBottom: spacing[3.5],
+    marginBottom: spacing[2],
   },
   coachBubble: {
     alignSelf: 'flex-start',
@@ -113,7 +113,7 @@ export const coachStyles = StyleSheet.create({
     fontWeight: '400',
   },
   timestamp: {
-    fontSize: typography.sizes.xs,
+    fontSize: typography.sizes.caption,
   },
 
   // Bubble footer (timestamp + reactions)
@@ -169,7 +169,7 @@ export const coachStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2.5],
-    borderRadius: radius.xl,
+    borderRadius: radius.md,
     borderWidth: 1,
     gap: spacing[2],
   },

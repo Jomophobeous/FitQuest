@@ -169,7 +169,7 @@ export const MessageBubble = React.memo(
         delayLongPress={400}
       >
         <Animated.View
-          entering={isCoach ? FadeInDown.duration(120) : FadeInRight.duration(100)}
+          entering={isCoach ? FadeInUp.duration(120) : FadeInUp.duration(100)}
           style={[
             styles.messageBubble,
             isCoach ? styles.coachBubble : styles.userBubble,

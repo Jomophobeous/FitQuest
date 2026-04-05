@@ -14,15 +14,12 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-// @ts-expect-error — mock
 import * as SecureStore from 'expo-secure-store';
-// @ts-expect-error — test file
-import { SubscriptionManager } from '../src/purchases/SubscriptionManager';
-// @ts-expect-error — test file
-import { getTrialState, upsertTrialState, updateTrialConverted } from '../src/database/service';
+import { SubscriptionManager } from '../../src/purchases/SubscriptionManager';
+import { getTrialState, upsertTrialState, updateTrialConverted } from '../../src/database/service';
 
 vi.mock('expo-secure-store');
-vi.mock('../src/database/service');
+vi.mock('../../src/database/service');
 vi.mock('react-native-purchases', () => ({
   default: {
     isConfigured: () => false,
@@ -34,13 +31,11 @@ vi.mock('react-native-purchases', () => ({
 describe('Subscription Hard Lock (Phase 4)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // @ts-expect-error — accessing private property
-    SubscriptionManager.instance = null;
+    (SubscriptionManager as any).instance = null;
   });
 
   afterEach(() => {
-    // @ts-expect-error — accessing private property
-    SubscriptionManager.instance = null;
+    (SubscriptionManager as any).instance = null;
   });
 
   describe('1. Client-side bypass prevention', () => {
@@ -50,9 +45,7 @@ describe('Subscription Hard Lock (Phase 4)', () => {
       process.env.EXPO_PUBLIC_MOCK_BILLING_STATE = 'premium';
 
       // Define __DEV__ as false to simulate production
-      // @ts-expect-error — modifying global
       const originalDev = (global as any).__DEV__;
-      // @ts-expect-error — modifying global
       Object.defineProperty(global, '__DEV__', {
         value: false,
         writable: true,
@@ -76,7 +69,6 @@ describe('Subscription Hard Lock (Phase 4)', () => {
         expect(state?.status).not.toBe('ACTIVE');
         expect(state?.verificationSource).not.toBe('mock');
       } finally {
-        // @ts-expect-error — modifying global
         Object.defineProperty(global, '__DEV__', {
           value: originalDev,
           writable: true,
@@ -87,7 +79,6 @@ describe('Subscription Hard Lock (Phase 4)', () => {
     });
 
     it('FAIL: purchaseLocal should be blocked in production', async () => {
-      // @ts-expect-error — modifying global
       Object.defineProperty(global, '__DEV__', {
         value: false,
         writable: true,
@@ -103,7 +94,6 @@ describe('Subscription Hard Lock (Phase 4)', () => {
         // purchaseLocal is dev-only, so this should fail
         expect(result).toBe(false);
       } finally {
-        // @ts-expect-error — modifying global
         Object.defineProperty(global, '__DEV__', {
           value: true,
           writable: true,

@@ -20,6 +20,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useConnectivity } from '../../src/context/ConnectivityContext';
 import ThemedText from '../../src/components/ThemedText';
+import { getChurnRisk, type ChurnRisk } from '../../src/services/churnService';
 import { spacing, radius, typography } from '../../src/design/theme-system';
 
 // debugBuffer removed — stub types and functions
@@ -97,8 +98,16 @@ export default function DebugPanel() {
 
   const loadData = useCallback(async () => {
     try {
-      // User state (UserStateEngine removed)
-      setUserState(null);
+      // User state from churn service
+      const churn = await getChurnRisk('user_local_001');
+      setUserState({
+        consistencyScore: null,
+        engagementLevel: churn.tier === 'low' ? 'HIGH' : churn.tier === 'medium' ? 'MEDIUM' : 'LOW',
+        fatigueTier: null,
+        churnRisk: churn.tier === 'high',
+        daysSinceLastWorkout: null,
+        streak: null,
+      });
     } catch {
       setUserState(null);
     }

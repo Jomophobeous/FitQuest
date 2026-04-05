@@ -155,6 +155,7 @@ app.get('/health', (_req, res) => {
 
 // ── Routes ──
 
+app.use(require('./routes/webhooks'));  // Public — RevenueCat webhook (no JWT)
 app.use(require('./routes/user'));
 app.use(require('./routes/subscription'));
 app.use(require('./routes/device'));

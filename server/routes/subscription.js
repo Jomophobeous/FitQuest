@@ -219,4 +219,59 @@ router.post('/subscriptions/status', validateDeviceToken(), trustCheck, async (r
   }
 });
 
+// ── POST /subscriptions/attribute — Revenue attribution tracking ──
+// Protected: requires JWT. Best-effort attribution data from client.
+
+router.post('/subscriptions/attribute', validateDeviceToken(), trustCheck, async (req, res) => {
+  try {
+    const sanitizedUserId = req.user?.id || req.user?.sub;
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+
+    if (!sanitizedUserId) {
+      return respond(res, 401, null, 'Authentication required.');
+    }
+
+    const { source, campaign, install_referrer, event_type } = req.body;
+
+    // Upsert attribution record
+    const upsertData = {
+      user_id: sanitizedUserId,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (source) upsertData.install_source = source;
+    if (campaign) upsertData.install_campaign = campaign;
+    if (install_referrer) upsertData.install_referrer = install_referrer;
+
+    // Update lifecycle timestamps based on event type
+    if (event_type === 'first_open') {
+      upsertData.first_open_at = new Date().toISOString();
+    } else if (event_type === 'trial_started') {
+      upsertData.trial_started_at = new Date().toISOString();
+    } else if (event_type === 'converted') {
+      upsertData.converted_at = new Date().toISOString();
+    } else if (event_type === 'churned') {
+      upsertData.churn_at = new Date().toISOString();
+    }
+
+    const { error: upsertErr } = await supabase
+      .from('user_attribution')
+      .upsert(upsertData, { onConflict: 'user_id' });
+
+    if (upsertErr) {
+      console.error('[/subscriptions/attribute] Upsert error:', upsertErr.message);
+      return respond(res, 500, null, 'Failed to store attribution.');
+    }
+
+    logEvent(sanitizedUserId, req.device?.device_id, 'attribution_update', ip, {
+      source, campaign, event_type,
+    });
+
+    return respond(res, 200, { stored: true });
+  } catch (err) {
+    console.error('[/subscriptions/attribute] Unexpected error:', err.message);
+    return respond(res, 500, null, 'Internal server error.');
+  }
+});
+
 module.exports = router;

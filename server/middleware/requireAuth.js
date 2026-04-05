@@ -27,6 +27,7 @@ const PUBLIC_ROUTES = new Set([
   '/auth/refresh',
   '/auth/logout',
   '/user/create',
+  '/subscriptions/webhook',
 ]);
 
 /**

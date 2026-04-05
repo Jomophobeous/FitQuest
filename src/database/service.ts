@@ -581,7 +581,7 @@ export async function updateUserProfile(
   Object.entries(updates).forEach(([key, value]) => {
     if (value !== undefined && key !== 'locked') {
       fields.push(`${key} = ?`);
-      values.push(value);
+      values.push(typeof value === 'boolean' ? (value ? 1 : 0) : (value as string | number | null));
     }
   });
 
@@ -1701,7 +1701,7 @@ export async function reviewFitMindFlashcard(cardId: string, quality: number): P
     rating = 'easy';
   }
 
-  const result = fsrsService.scheduleReview(card, rating);
+  const result = fsrsService.scheduleReview(card as unknown as Record<string, unknown>, rating);
   await updateFitMindFlashcardFSRS(cardId, result.card);
 }
 

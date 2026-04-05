@@ -10,6 +10,9 @@ export interface FSRSCard {
   reps: number;
   lapses: number;
   state: number;
+  scheduled_days: number;
+  learning_steps: number;
+  last_review: number;
 }
 
 class FSRSService {
@@ -22,6 +25,9 @@ class FSRSService {
         reps: 0,
         lapses: 0,
         state: 0,
+        scheduled_days: 1,
+        learning_steps: 0,
+        last_review: Date.now(),
       },
     };
   }

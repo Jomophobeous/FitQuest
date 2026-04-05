@@ -133,10 +133,10 @@ export interface DashboardDerived {
   statusDisplay: ReturnType<typeof getStatusDisplay> | null;
   isSubscribed: boolean;
   /** Memoized style arrays for stat pills */
-  statPillWarning: readonly [any, { backgroundColor: string }];
-  statPillAccent: readonly [any, { backgroundColor: string }];
-  statPillSurface: readonly [any, { backgroundColor: string }];
-  signalCardBg: { backgroundColor: string } | undefined;
+  statPillWarning: ViewStyle[];
+  statPillAccent: ViewStyle[];
+  statPillSurface: ViewStyle[];
+  signalCardBg: ViewStyle | undefined;
   exploreTiles: Array<{ label: string; desc: string; icon: string; color: string; route: string }>;
   nextAction: { type: string; label: string; route: string; icon: string };
 }

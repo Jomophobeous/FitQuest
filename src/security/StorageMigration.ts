@@ -11,6 +11,7 @@
  * Run once on app startup. Idempotent — safe to call multiple times.
  */
 import * as SecureStore from 'expo-secure-store';
+import { assertValidSession } from './SafeSecureStore';
 
 // ============================================
 // CONSTANTS
@@ -118,10 +119,16 @@ export async function getUserProfile(): Promise<object | null> {
  * Store auth credentials in SecureStore (new writes always go to SecureStore).
  */
 export async function setAuthCredentials(token: string, user: object, refreshToken?: string): Promise<void> {
+  // Runtime validation: API responses can return undefined/null fields even when TypeScript says otherwise.
+  // Catch bad values BEFORE they reach SecureStore to get a useful error location.
+  assertValidSession({ accessToken: token, user }, 'setAuthCredentials');
+
   await Promise.all([
     SecureStore.setItemAsync(KEY_MAP.authToken, token),
     SecureStore.setItemAsync(KEY_MAP.user, JSON.stringify(user)),
-    refreshToken ? SecureStore.setItemAsync(KEY_MAP.refreshToken, refreshToken) : Promise.resolve(),
+    refreshToken && typeof refreshToken === 'string'
+      ? SecureStore.setItemAsync(KEY_MAP.refreshToken, refreshToken)
+      : Promise.resolve(),
   ]);
 }
 

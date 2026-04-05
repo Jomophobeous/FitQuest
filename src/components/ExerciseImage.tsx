@@ -206,6 +206,14 @@ export default function ExerciseImage({
   }, [animate, resolvedUris.length]);
 
   const handleError = useCallback(() => {
+    // GUARD: Don't retry if we're in the middle of animation.
+    // Changing resolvedUris during animation triggers Glide threading errors.
+    if (animate && currentFrame > 0) {
+      if (__DEV__) console.warn('[ExerciseImage] Skipping retry during animation');
+      setHasError(true);
+      return;
+    }
+
     // On first error, try alternate format (.webp ↔ .jpg) for APK assets
     if (retryCount === 0 && resolvedUris.length > 0 && Platform.OS === 'android') {
       const altUris = resolvedUris.map((uri) => {
@@ -236,7 +244,7 @@ export default function ExerciseImage({
       }
     }
     setHasError(true);
-  }, [retryCount, resolvedUris]);
+  }, [retryCount, resolvedUris, animate, currentFrame]);
 
   // Show real image
   if (resolvedUris.length > 0 && !hasError) {
@@ -260,7 +268,7 @@ export default function ExerciseImage({
         <Image
           source={{ uri }}
           style={[dimensions, styles.image, { borderRadius: borderRadius - 1 }] as ImageStyle[]}
-          resizeMode={variant === 'hero' ? 'cover' : 'contain'}
+          contentFit={variant === 'hero' ? 'cover' : 'contain'}
           onError={handleError}
         />
         {/* Frame indicator dots */}

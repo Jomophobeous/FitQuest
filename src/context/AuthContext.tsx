@@ -9,6 +9,7 @@ import {
   setAuthCredentials,
   clearAuthCredentials,
 } from '../security/StorageMigration';
+import { assertValidSession } from '../security/SafeSecureStore';
 import {
   loginWithAppleIdToken,
   loginWithEmail,
@@ -227,6 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const session = await loginWithEmail({ email, password });
+      assertValidSession(session, 'signIn');
       await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
       await bioAuth.startCredentialSession();
       setToken(session.accessToken);
@@ -256,6 +258,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const session = await registerWithEmail({ email, password, name });
+      // Validate session fields before writing to SecureStore — server may return
+      // malformed JSON during cold start or error states.
+      assertValidSession(session, 'signUp');
       await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
       await bioAuth.startCredentialSession();
       setToken(session.accessToken);
@@ -305,6 +310,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
 
       const session = await loginWithGoogleIdToken({ idToken });
+      assertValidSession(session, 'signInWithGoogleToken');
       await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
       await bioAuth.startCredentialSession();
       setToken(session.accessToken);
@@ -326,6 +332,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
 
       const session = await loginWithAppleIdToken({ idToken });
+      assertValidSession(session, 'signInWithAppleToken');
       await setAuthCredentials(session.accessToken, session.user, session.refreshToken);
       await bioAuth.startCredentialSession();
       setToken(session.accessToken);

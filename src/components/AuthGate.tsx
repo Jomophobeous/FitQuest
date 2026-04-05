@@ -73,8 +73,8 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         setGateState('SETUP');
       } else {
         setGateState('LOCKED');
-        // Attempt biometric unlock automatically
-        attemptBiometricUnlock();
+        // Attempt biometric unlock automatically (skip in __DEV__ so test flows can reach password field)
+        if (!__DEV__) attemptBiometricUnlock();
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only init; attemptBiometricUnlock defined below

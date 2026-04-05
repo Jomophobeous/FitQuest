@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import ThemedText from '../src/components/ThemedText';
-import FQLogoMark from '../src/components/FQLogoMark';
+import AnimatedFQLogoMark from '../src/components/AnimatedFQLogoMark';
 import { useTheme } from '../src/context/ThemeContext';
 import { useDatabase } from '../src/context/DatabaseContext';
 import { spacing } from '../src/design/theme-system';
@@ -26,11 +26,10 @@ export default function Splash() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }}>
-      <FQLogoMark size={96} showGlow />
-      <ThemedText variant="h2" color="accent" style={{ marginTop: spacing[4], marginBottom: spacing[4] }}>
+      <AnimatedFQLogoMark size={96} showGlow />
+      <ThemedText variant="h2" color="accent" style={{ marginTop: spacing[4] }}>
         FitQuest
       </ThemedText>
-      <ActivityIndicator size="large" color={theme.colors.accent} />
     </View>
   );
 }

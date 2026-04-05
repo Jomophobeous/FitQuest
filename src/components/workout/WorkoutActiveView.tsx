@@ -603,12 +603,12 @@ const styles = StyleSheet.create({
   segmentedBarSegment: {
     height: 5,
     backgroundColor: 'rgba(128,128,128,0.12)',
-    borderRadius: 3,
+    borderRadius: radius.sm,
     overflow: 'hidden',
     position: 'relative',
   },
-  segmentedBarFill: { height: 5, borderRadius: 3 },
-  segmentedBarPulse: { position: 'absolute', right: 0, top: 0, width: 8, height: 5, borderRadius: 3 },
+  segmentedBarFill: { height: 5, borderRadius: radius.sm },
+  segmentedBarPulse: { position: 'absolute', right: 0, top: 0, width: 8, height: 5, borderRadius: radius.sm },
   exerciseContent: { padding: spacing[4], paddingBottom: spacing[25] },
   exerciseContentCompact: { paddingBottom: spacing[25] },
   currentExercise: { alignItems: 'center', marginTop: spacing[6] },
@@ -629,10 +629,10 @@ const styles = StyleSheet.create({
   skipButton: {
     width: 80,
     height: 56,
-    borderRadius: 28,
+    borderRadius: radius.full,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  skipButtonCompact: { width: '100%', borderRadius: 14, height: 48 },
+  skipButtonCompact: { width: '100%', borderRadius: radius.lg, height: 48 },
 });

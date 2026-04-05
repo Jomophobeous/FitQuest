@@ -30,7 +30,7 @@ export const coachStyles = StyleSheet.create({
   headerAvatar: {
     width: 40,
     height: 40,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -78,8 +78,8 @@ export const coachStyles = StyleSheet.create({
   coachBubble: {
     alignSelf: 'flex-start',
     padding: spacing[4],
-    borderRadius: 18,
-    borderBottomLeftRadius: 6,
+    borderRadius: radius.xl,
+    borderBottomLeftRadius: radius.sm,
   },
   coachAvatarRow: {
     flexDirection: 'row',
@@ -90,7 +90,7 @@ export const coachStyles = StyleSheet.create({
   coachAvatarIcon: {
     width: 20,
     height: 20,
-    borderRadius: 7,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -104,8 +104,8 @@ export const coachStyles = StyleSheet.create({
   },
   userBubbleGradient: {
     padding: spacing[3.5],
-    borderRadius: 18,
-    borderBottomRightRadius: 6,
+    borderRadius: radius.xl,
+    borderBottomRightRadius: radius.sm,
   },
   messageText: {
     fontSize: typography.sizes.bodySmall,
@@ -146,7 +146,7 @@ export const coachStyles = StyleSheet.create({
     gap: spacing[1],
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[1.25],
-    borderRadius: 10,
+    borderRadius: radius.md,
   },
 
   // Suggestions
@@ -169,14 +169,14 @@ export const coachStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2.5],
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     gap: spacing[2],
   },
   suggestionIcon: {
     width: 26,
     height: 26,
-    borderRadius: 13,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -218,7 +218,7 @@ export const coachStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[1.5],
     paddingVertical: spacing[1],
-    borderRadius: 24,
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   textInput: {
@@ -231,7 +231,7 @@ export const coachStyles = StyleSheet.create({
   sendButton: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -243,8 +243,8 @@ export const coachStyles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   actionSheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: radius.xl,
+    borderTopRightRadius: radius.xl,
     paddingHorizontal: spacing[5],
     paddingBottom: spacing[8],
     paddingTop: spacing[3],
@@ -252,7 +252,7 @@ export const coachStyles = StyleSheet.create({
   actionSheetHandle: {
     width: 36,
     height: 4,
-    borderRadius: 2,
+    borderRadius: radius.sm,
     alignSelf: 'center',
     marginBottom: spacing[4],
   },
@@ -284,12 +284,12 @@ export const coachStyles = StyleSheet.create({
   scrollFab: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: '#000', // TODO: theme-aware shadows
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -297,7 +297,7 @@ export const coachStyles = StyleSheet.create({
   modelLabelBadge: {
     paddingHorizontal: spacing[1.5],
     paddingVertical: spacing[0.5],
-    borderRadius: 6,
+    borderRadius: radius.sm,
     marginLeft: spacing[1.5],
   },
 });

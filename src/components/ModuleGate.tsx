@@ -22,6 +22,7 @@ import { useTheme } from '../context/ThemeContext';
 import ThemedText from './ThemedText';
 import { GradientButton } from './ui/GlassUI';
 import { featureFlags, type FeatureFlagKey } from '../services/featureFlags';
+import { spacing } from '../design/theme-system';
 
 interface ModuleGateProps {
   flag: FeatureFlagKey;
@@ -60,14 +61,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
   },
   title: {
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: spacing[3],
   },
   desc: {
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: spacing[6],
   },
 });

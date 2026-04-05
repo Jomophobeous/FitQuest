@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   readyTitle: { fontSize: typography.sizes.h2, fontWeight: '700' },
   deloadBadge: { paddingHorizontal: spacing[3], paddingVertical: spacing[1.25], borderRadius: radius.md },
   deloadBadgeText: { fontSize: typography.sizes.captionSm, fontWeight: '700' },
-  hintIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+  hintIcon: { width: 36, height: 36, borderRadius: radius.md, justifyContent: 'center', alignItems: 'center' },
   explanationText: { flex: 1, fontSize: typography.sizes.bodySmall, lineHeight: 21 },
   insightHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3.5] },
   insightTitle: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },

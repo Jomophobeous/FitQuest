@@ -754,8 +754,8 @@ export default function CraftMyBodyScreen() {
               style={{
                 flex: proteinPct,
                 backgroundColor: colors.error,
-                borderTopLeftRadius: 4,
-                borderBottomLeftRadius: 4,
+                borderTopLeftRadius: radius.sm,
+                borderBottomLeftRadius: radius.sm,
               }}
             />
             <View style={{ flex: carbsPct, backgroundColor: colors.warning }} />
@@ -763,8 +763,8 @@ export default function CraftMyBodyScreen() {
               style={{
                 flex: fatsPct,
                 backgroundColor: colors.purple,
-                borderTopRightRadius: 4,
-                borderBottomRightRadius: 4,
+                borderTopRightRadius: radius.sm,
+                borderBottomRightRadius: radius.sm,
               }}
             />
           </View>

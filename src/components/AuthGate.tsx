@@ -27,7 +27,9 @@ import {
 } from 'react-native';
 import { authService } from '../security/AuthService';
 import { BiometricAuthService } from '../security/BiometricAuth';
-import { darkTheme as theme, typography, spacing } from '../design/theme-system';
+import { useTheme } from '../context/ThemeContext';
+import type { Theme } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 // ============================================
 // CONSTANTS
@@ -45,6 +47,8 @@ const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes after MAX_FAILED_ATTEMPT
 type GateState = 'INITIALIZING' | 'SETUP' | 'LOCKED' | 'UNLOCKED';
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [gateState, setGateState] = useState<GateState>('INITIALIZING');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -322,69 +326,70 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 // STYLES
 // ============================================
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0A0E17',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing[8],
-  },
-  title: {
-    fontSize: typography.sizes.h1Sm,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: spacing[2],
-  },
-  subtitle: {
-    fontSize: typography.sizes.bodySmall,
-    color: '#9BA1B0',
-    textAlign: 'center',
-    marginBottom: spacing[8],
-    lineHeight: 20,
-  },
-  input: {
-    width: '100%',
-    height: 52,
-    backgroundColor: '#131720',
-    borderRadius: 12,
-    paddingHorizontal: spacing[4],
-    color: '#FFFFFF',
-    fontSize: typography.sizes.body,
-    marginBottom: spacing[4],
-    borderWidth: 1,
-    borderColor: '#1A1F2E',
-  },
-  error: {
-    color: '#EF4444',
-    fontSize: typography.sizes.label,
-    marginBottom: spacing[3],
-    textAlign: 'center',
-  },
-  button: {
-    width: '100%',
-    height: 52,
-    backgroundColor: '#10B981',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: spacing[2],
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: typography.sizes.body,
-    fontWeight: '600',
-  },
-  biometricButton: {
-    marginTop: spacing[6],
-    padding: spacing[3],
-  },
-  biometricText: {
-    color: '#10B981',
-    fontSize: typography.sizes.bodySmall,
-    fontWeight: '500',
-  },
-});
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing[8],
+    },
+    title: {
+      fontSize: typography.sizes.h1Sm,
+      fontWeight: '700',
+      color: theme.colors.text,
+      marginBottom: spacing[2],
+    },
+    subtitle: {
+      fontSize: typography.sizes.bodySmall,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: spacing[8],
+      lineHeight: 20,
+    },
+    input: {
+      width: '100%',
+      height: 52,
+      backgroundColor: theme.colors.surface,
+      borderRadius: radius.lg,
+      paddingHorizontal: spacing[4],
+      color: theme.colors.text,
+      fontSize: typography.sizes.body,
+      marginBottom: spacing[4],
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    error: {
+      color: theme.colors.error,
+      fontSize: typography.sizes.label,
+      marginBottom: spacing[3],
+      textAlign: 'center',
+    },
+    button: {
+      width: '100%',
+      height: 52,
+      backgroundColor: theme.colors.accent,
+      borderRadius: radius.lg,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: spacing[2],
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      color: theme.colors.onAccent,
+      fontSize: typography.sizes.body,
+      fontWeight: '600',
+    },
+    biometricButton: {
+      marginTop: spacing[6],
+      padding: spacing[3],
+    },
+    biometricText: {
+      color: theme.colors.accent,
+      fontSize: typography.sizes.bodySmall,
+      fontWeight: '500',
+    },
+  });

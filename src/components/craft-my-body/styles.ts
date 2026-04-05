@@ -19,8 +19,8 @@ export const craftMyBodyStyles = StyleSheet.create({
     marginBottom: spacing[1],
   },
   progressLabel: { fontSize: typography.sizes.xs, textAlign: 'center' },
-  progressLine: { height: 3, borderRadius: 2, marginHorizontal: spacing[8] },
-  progressLineFill: { height: 3, borderRadius: 2 },
+  progressLine: { height: 3, borderRadius: radius.sm, marginHorizontal: spacing[8] },
+  progressLineFill: { height: 3, borderRadius: radius.sm },
 
   // Cards
   card: { marginBottom: spacing[4], padding: spacing[4] },
@@ -49,7 +49,7 @@ export const craftMyBodyStyles = StyleSheet.create({
     gap: spacing[1.5],
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[2],
-    borderRadius: 24,
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   chipText: { fontSize: typography.sizes.bodySmall, fontWeight: '500' },
@@ -77,7 +77,7 @@ export const craftMyBodyStyles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing[2],
   },
-  goalIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  goalIcon: { width: 48, height: 48, borderRadius: radius.xl, alignItems: 'center', justifyContent: 'center' },
   goalTitle: { fontSize: typography.sizes.body, fontWeight: '700' },
   goalDesc: { fontSize: typography.sizes.caption, marginTop: spacing[0.5] },
 

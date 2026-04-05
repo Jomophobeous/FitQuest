@@ -11,7 +11,7 @@ import ThemedText from '../src/components/ThemedText';
 import { GlassCard, GradientButton, SectionHeader } from '../src/components/ui/GlassUI';
 import { useToast } from '../src/context/ToastContext';
 import { useLegalCenterViewModel, LEGAL_POLICY_VERSION } from '../src/viewmodels/useLegalCenterViewModel';
-import { typography, spacing } from '../src/design/theme-system';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     marginBottom: spacing[2],
     gap: spacing[2.5],

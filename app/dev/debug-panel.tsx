@@ -20,7 +20,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useConnectivity } from '../../src/context/ConnectivityContext';
 import ThemedText from '../../src/components/ThemedText';
-import { spacing } from '../../src/design/theme-system';
+import { spacing, radius, typography } from '../../src/design/theme-system';
 
 // debugBuffer removed — stub types and functions
 type DebugEntry = {
@@ -288,12 +288,19 @@ export default function DebugPanel() {
                     {e.label}
                   </ThemedText>
                   {!!e.payload && (
-                    <ThemedText variant="caption" style={{ color: muted, fontSize: 10 }} numberOfLines={2}>
+                    <ThemedText
+                      variant="caption"
+                      style={{ color: muted, fontSize: typography.sizes.xs }}
+                      numberOfLines={2}
+                    >
                       {JSON.stringify(e.payload).slice(0, 120)}
                     </ThemedText>
                   )}
                 </View>
-                <ThemedText variant="caption" style={{ color: muted, fontSize: 9, marginLeft: spacing[2] }}>
+                <ThemedText
+                  variant="caption"
+                  style={{ color: muted, fontSize: typography.sizes.micro, marginLeft: spacing[2] }}
+                >
                   {fmt(e.timestamp)}
                 </ThemedText>
               </View>
@@ -326,7 +333,7 @@ export default function DebugPanel() {
                 <ThemedText variant="caption" style={{ color: text, flex: 1 }} numberOfLines={1}>
                   {e.label}
                 </ThemedText>
-                <ThemedText variant="caption" style={{ color: muted, fontSize: 9 }}>
+                <ThemedText variant="caption" style={{ color: muted, fontSize: typography.sizes.micro }}>
                   {fmt(e.timestamp)}
                 </ThemedText>
               </View>
@@ -365,7 +372,7 @@ export default function DebugPanel() {
                 <ThemedText variant="caption" style={{ color: text, flex: 1 }} numberOfLines={1}>
                   {e.label}
                 </ThemedText>
-                <ThemedText variant="caption" style={{ color: muted, fontSize: 9 }}>
+                <ThemedText variant="caption" style={{ color: muted, fontSize: typography.sizes.micro }}>
                   {fmt(e.timestamp)}
                 </ThemedText>
               </View>
@@ -394,7 +401,7 @@ export default function DebugPanel() {
                 <ThemedText variant="caption" style={{ color: text, flex: 1 }} numberOfLines={1}>
                   {e.label}
                 </ThemedText>
-                <ThemedText variant="caption" style={{ color: muted, fontSize: 9 }}>
+                <ThemedText variant="caption" style={{ color: muted, fontSize: typography.sizes.micro }}>
                   {fmt(e.timestamp)}
                 </ThemedText>
               </View>
@@ -420,7 +427,7 @@ export default function DebugPanel() {
                 <ThemedText variant="caption" style={{ color: text, flex: 1 }} numberOfLines={1}>
                   {e.label}
                 </ThemedText>
-                <ThemedText variant="caption" style={{ color: muted, fontSize: 9 }}>
+                <ThemedText variant="caption" style={{ color: muted, fontSize: typography.sizes.micro }}>
                   {fmt(e.timestamp)}
                 </ThemedText>
               </View>
@@ -503,7 +510,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   card: {
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     marginBottom: spacing[3],
     overflow: 'hidden',
@@ -521,17 +528,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 3,
+    paddingVertical: spacing[0.75],
   },
   miniRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 2,
+    paddingVertical: spacing[0.5],
   },
   eventRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: 3,
+    paddingVertical: spacing[0.75],
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(128,128,128,0.1)',
   },
@@ -539,11 +546,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
-    paddingVertical: 2,
+    paddingVertical: spacing[0.5],
   },
   statusDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
 });

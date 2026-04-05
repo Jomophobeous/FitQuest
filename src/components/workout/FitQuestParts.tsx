@@ -107,7 +107,7 @@ const listStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   name: { fontSize: typography.sizes.bodyMid, fontWeight: '600' },
@@ -223,7 +223,7 @@ export function AIInsightPanel({
 
 const insightStyles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], padding: spacing[3.5] },
-  hintIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+  hintIcon: { width: 36, height: 36, borderRadius: radius.md, justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
   sub: { fontSize: typography.sizes.caption, marginTop: spacing[0.5], lineHeight: 17 },
   body: {
@@ -239,7 +239,7 @@ const insightStyles = StyleSheet.create({
   exName: { fontSize: typography.sizes.label, fontWeight: '600' },
   exReason: { fontSize: typography.sizes.caption, lineHeight: 17, marginTop: spacing['px'] },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[1], marginTop: spacing[1] },
-  chip: { paddingHorizontal: spacing[2], paddingVertical: spacing[0.5], borderRadius: 6 },
+  chip: { paddingHorizontal: spacing[2], paddingVertical: spacing[0.5], borderRadius: radius.sm },
   chipText: { fontSize: typography.sizes.xs, fontWeight: '600' },
 });
 
@@ -402,5 +402,5 @@ export function AdaptiveMemoryPanel({
 const memoryStyles = StyleSheet.create({
   label: { fontSize: typography.sizes.label, fontWeight: '700' },
   time: { fontSize: typography.sizes.captionSm, fontWeight: '500' },
-  dot: { width: 6, height: 6, borderRadius: 3, marginTop: spacing[1.5] },
+  dot: { width: 6, height: 6, borderRadius: radius.sm, marginTop: spacing[1.5] },
 });

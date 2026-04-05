@@ -31,7 +31,8 @@ function ActionCard({
   bgColor: string;
   accentColor: string;
 }) {
-  const color = destructive ? '#EF4444' : accentColor;
+  const { theme } = useTheme();
+  const color = destructive ? theme.colors.error : accentColor;
 
   return (
     <Pressable
@@ -46,7 +47,7 @@ function ActionCard({
         )}
       </View>
       <View style={styles.actionContent}>
-        <ThemedText variant="h4" style={destructive ? { color: '#EF4444' } : undefined}>
+        <ThemedText variant="h4" style={destructive ? { color: theme.colors.error } : undefined}>
           {title}
         </ThemedText>
         <ThemedText variant="caption" color="muted" style={styles.actionDesc}>

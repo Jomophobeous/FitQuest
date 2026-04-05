@@ -16,7 +16,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import ThemedText from './ThemedText';
 import { getAppState, setAppState } from '../database/service';
-import { spacing } from '../design/theme-system';
+import { spacing, radius } from '../design/theme-system';
 
 const DISCLAIMER_STATE_KEY = 'medical.disclaimer.acknowledged';
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing[4],
     marginVertical: spacing[2],
     padding: spacing[3.5],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     gap: spacing[2],
   },
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 32,
     height: 32,
-    borderRadius: 10,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[2],
-    borderRadius: 8,
+    borderRadius: radius.md,
     marginTop: spacing[0.5],
   },
   compactBanner: {
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     marginVertical: spacing[1.5],
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2],
-    borderRadius: 8,
+    borderRadius: radius.md,
     borderWidth: 1,
   },
 });

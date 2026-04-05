@@ -8,7 +8,7 @@ import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
 import { GlassCard } from '../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
-import { typography, spacing } from '../src/design/theme-system';
+import { typography, spacing, radius } from '../src/design/theme-system';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

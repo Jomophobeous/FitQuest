@@ -5,7 +5,7 @@ import { useTheme } from '../src/context/ThemeContext';
 import ThemedText from '../src/components/ThemedText';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { ScreenContainer } from '../src/components/ui/primitives';
-import { spacing, radius } from '../src/design/theme-system';
+import { spacing, radius, typography } from '../src/design/theme-system';
 import { useDatabase } from '../src/context/DatabaseContext';
 import {
   RealisticHealthEngine,
@@ -33,6 +33,7 @@ function OptionRow({
   surfaceColor: string;
   textColor: string;
 }) {
+  const { theme } = useTheme();
   return (
     <View style={styles.optionRow}>
       <ThemedText variant="body" color="secondary" style={styles.optionLabel}>
@@ -47,7 +48,7 @@ function OptionRow({
               onPress={() => onSelect(opt.value)}
               style={[styles.optionBtn, { backgroundColor: isActive ? accentColor : surfaceColor }]}
             >
-              <ThemedText variant="caption" style={{ color: isActive ? '#FFFFFF' : textColor }}>
+              <ThemedText variant="caption" style={{ color: isActive ? theme.colors.onAccent : textColor }}>
                 {opt.label}
               </ThemedText>
             </Pressable>
@@ -340,7 +341,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     borderRadius: radius.md,
     borderWidth: 1,
-    fontSize: 16,
+    fontSize: typography.sizes.body,
   },
   optionRow: { marginBottom: spacing[3] },
   optionLabel: { marginBottom: spacing[1] },

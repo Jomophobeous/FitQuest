@@ -25,7 +25,7 @@ import ThemedText from '../src/components/ThemedText';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import PremiumGate from '../src/components/PremiumGate';
-import { typography, spacing } from '../src/design/theme-system';
+import { typography, spacing, radius } from '../src/design/theme-system';
 import WorkoutReadyView from '../src/components/workout/WorkoutReadyView';
 import WorkoutActiveView from '../src/components/workout/WorkoutActiveView';
 
@@ -484,13 +484,13 @@ function FitQuestScreenInner() {
 
 const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing[6] },
-  loadingIcon: { width: 80, height: 80, borderRadius: 24, justifyContent: 'center', alignItems: 'center' },
+  loadingIcon: { width: 80, height: 80, borderRadius: radius.xl, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: spacing[4], fontSize: typography.sizes.bodySmall },
   errorTitle: { fontSize: typography.sizes.h3, fontWeight: '600', marginTop: spacing[4], textAlign: 'center' },
   errorSub: { fontSize: typography.sizes.bodySmall, marginTop: spacing[2], textAlign: 'center' },
   genTitle: { fontSize: typography.sizes.h4, fontWeight: '600', marginTop: spacing[4], textAlign: 'center' },
   genSub: { fontSize: typography.sizes.label, marginTop: spacing[1.5], textAlign: 'center' },
-  idleIconWrap: { width: 140, height: 140, borderRadius: 48, justifyContent: 'center', alignItems: 'center' },
+  idleIconWrap: { width: 140, height: 140, borderRadius: radius.full, justifyContent: 'center', alignItems: 'center' },
   idleTitle: { fontSize: typography.sizes.h1, fontWeight: '800', marginTop: spacing[6] },
   idleSub: { fontSize: typography.sizes.bodySmall, textAlign: 'center', marginTop: spacing[2], lineHeight: 21 },
   profileLabel: { fontSize: typography.sizes.caption },

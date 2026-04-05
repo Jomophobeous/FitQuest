@@ -13,7 +13,7 @@ import { useTheme } from '../context/ThemeContext';
 import type { ThemeMode } from '../design/theme-system';
 import { getUserRankInfo, getLevelQuote, type RankMilestone } from '../services/rankingService';
 import { GlassCard } from './ui/GlassUI';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 /**
  * Get theme-aware color — replaces green with gold in blackGold mode
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[1.25],
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   badgeText: {
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   rankIconCircle: {
     width: 72,
     height: 72,
-    borderRadius: 36,
+    borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[3],
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
     marginBottom: spacing[3.5],
   },
@@ -403,12 +403,12 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: radius.sm,
   },
 
   // Quote
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   timelineDot: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },

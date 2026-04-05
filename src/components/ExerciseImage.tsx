@@ -14,13 +14,14 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Image, StyleSheet, Platform, type ViewStyle, type ImageStyle } from 'react-native';
+import { View, StyleSheet, Platform, type ViewStyle, type ImageStyle } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useTheme } from '../context/ThemeContext';
 import type { Category } from '../database/types';
-import { categoryTheme, defaultCategoryTheme, spacing } from '../design/theme-system';
+import { categoryTheme, defaultCategoryTheme, spacing, radius } from '../design/theme-system';
 import { resolveExerciseImageFolder } from '../services/exerciseImageMap';
 
 // ─── Constants ───
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
   frameDot: {
     width: 4,
     height: 4,
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
   dualPlaceholder: {
     flexDirection: 'row',
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
   dualLabel: {
     position: 'absolute',
     bottom: 4,
-    borderRadius: 8,
+    borderRadius: radius.md,
     paddingHorizontal: spacing[0.5],
     paddingVertical: spacing['px'],
   },

@@ -29,7 +29,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import CountdownRing from './CountdownRing';
 import ExerciseImage from './ExerciseImage';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 // ─── Types ────────────────────────────────────────────
 export interface NextExerciseInfo {
@@ -160,7 +160,7 @@ function RestTimerOverlay({
                 backgroundColor: ringColor + '15',
                 width: 260,
                 height: 260,
-                borderRadius: 130,
+                borderRadius: radius.full,
               },
               breatheStyle,
             ]}
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[2.5],
-    borderRadius: 24,
+    borderRadius: radius.xl,
     borderWidth: 1,
     gap: spacing[1.5],
   },
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   nextCard: {
     width: '100%',
     maxWidth: 320,
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
     padding: spacing[4],
     marginBottom: spacing[7],
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing[3.5],
     paddingHorizontal: spacing[9],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1.5,
     gap: spacing[2],
   },

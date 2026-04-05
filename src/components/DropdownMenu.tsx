@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
     minWidth: 220,
     maxWidth: 280,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: '#000', // TODO: theme-aware shadows
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 24,

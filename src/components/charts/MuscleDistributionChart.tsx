@@ -7,7 +7,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
-import { darkTheme as theme, typography, spacing } from '../../design/theme-system';
+import { darkTheme as theme, typography, spacing, radius } from '../../design/theme-system';
 import type { MuscleDistributionChartProps, MuscleGroupDataPoint } from './types';
 import { formatMuscleName } from '../../utils/formatMuscle';
 
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   horizontalBar: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
   setsLabel: {
     width: 70,
@@ -223,12 +223,12 @@ const styles = StyleSheet.create({
   },
   pieSegment: {
     position: 'absolute',
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
   pieCenter: {
     position: 'absolute',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 999,
+    borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   legendDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
   legendText: {
     fontSize: typography.sizes.captionSm,

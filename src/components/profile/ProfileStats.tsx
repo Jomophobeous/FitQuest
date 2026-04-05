@@ -12,7 +12,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import ThemedText from '../ThemedText';
 import { GlassCard, ProgressRing, SectionHeader } from '../ui/GlassUI';
-import { typography, spacing } from '../../design/theme-system';
+import { typography, spacing, radius } from '../../design/theme-system';
 import type { StatsData } from '../../viewmodels/useProfileViewModel';
 
 interface StatsGridProps {
@@ -175,7 +175,7 @@ const s = StyleSheet.create({
   statIconCircle: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing[2],

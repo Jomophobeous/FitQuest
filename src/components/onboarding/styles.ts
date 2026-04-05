@@ -17,8 +17,8 @@ export const onboardingStyles = StyleSheet.create({
     gap: spacing[2.5],
   },
   backBtn: { padding: spacing[1] },
-  progressTrack: { flex: 1, height: 4, borderRadius: 2, overflow: 'hidden' },
-  progressFill: { height: '100%', borderRadius: 2 },
+  progressTrack: { flex: 1, height: 4, borderRadius: radius.sm, overflow: 'hidden' },
+  progressFill: { height: '100%', borderRadius: radius.sm },
   stepIndicator: { fontSize: typography.sizes.label, fontWeight: '700', minWidth: 30, textAlign: 'right' },
 
   // Content
@@ -29,7 +29,7 @@ export const onboardingStyles = StyleSheet.create({
   welcomeIconWrap: {
     width: 120,
     height: 120,
-    borderRadius: 40,
+    borderRadius: radius.full,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
@@ -65,7 +65,7 @@ export const onboardingStyles = StyleSheet.create({
   pillarIconWrap: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[2],
@@ -97,7 +97,7 @@ export const onboardingStyles = StyleSheet.create({
     borderRadius: radius.xl,
     gap: spacing[3],
   },
-  optionIcon: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  optionIcon: { width: 44, height: 44, borderRadius: radius.lg, justifyContent: 'center', alignItems: 'center' },
   optionLabel: { fontSize: typography.sizes.body, fontWeight: '800' },
   optionDesc: { fontSize: typography.sizes.caption, fontWeight: '500', marginTop: spacing['px'] },
 
@@ -105,7 +105,7 @@ export const onboardingStyles = StyleSheet.create({
   inputRow: { flexDirection: 'row', gap: spacing[3] },
   metricInput: {
     flex: 1,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     paddingHorizontal: spacing[3.5],
     paddingVertical: spacing[3],
@@ -119,7 +119,7 @@ export const onboardingStyles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingVertical: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
   },
   sexLabel: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
 
@@ -129,7 +129,7 @@ export const onboardingStyles = StyleSheet.create({
   dayBtn: {
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     minWidth: 48,
     alignItems: 'center',
   },
@@ -151,7 +151,7 @@ export const onboardingStyles = StyleSheet.create({
     right: 8,
     width: 22,
     height: 22,
-    borderRadius: 11,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -175,7 +175,7 @@ export const onboardingStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     gap: spacing[3],
   },
   permAllBtn: {
@@ -208,7 +208,7 @@ export const onboardingStyles = StyleSheet.create({
   consentIconWrap: {
     width: 88,
     height: 88,
-    borderRadius: 28,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -239,7 +239,7 @@ export const onboardingStyles = StyleSheet.create({
   consentCheckbox: {
     width: 24,
     height: 24,
-    borderRadius: 6,
+    borderRadius: radius.sm,
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',

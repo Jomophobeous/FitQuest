@@ -280,7 +280,12 @@ export default function ProgressScreen() {
                       string,
                     ])
               }
-              style={{ paddingTop: spacing[2], paddingBottom: spacing[4], borderRadius: 20, marginBottom: spacing[1] }}
+              style={{
+                paddingTop: spacing[2],
+                paddingBottom: spacing[4],
+                borderRadius: radius.xl,
+                marginBottom: spacing[1],
+              }}
             >
               <View style={styles.header}>
                 <ThemedText variant="h2">Progress</ThemedText>

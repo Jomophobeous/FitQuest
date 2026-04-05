@@ -253,7 +253,7 @@ export function HelpModal({ visible, onClose }: HelpModalProps) {
               style={{
                 width: 56,
                 height: 56,
-                borderRadius: 28,
+                borderRadius: radius.full,
                 backgroundColor: theme.colors.warning + '20',
                 alignItems: 'center',
                 justifyContent: 'center',

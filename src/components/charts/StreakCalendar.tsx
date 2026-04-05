@@ -8,7 +8,8 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { formatDate, startOfMonth, getDaysInMonth, getDay, addDays, isSameDay, parseISO } from './dateUtils';
 import { ThemedChartWrapper, useChartTheme } from './ThemedChart';
-import { darkTheme as theme, typography, spacing } from '../../design/theme-system';
+import { useTheme } from '../../context/ThemeContext';
+import { darkTheme as theme, typography, spacing, radius } from '../../design/theme-system';
 import type { StreakCalendarProps, StreakDay } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -47,6 +48,7 @@ function CalendarGrid({
   surfaceColor: _surfaceColor,
   onDayPress,
 }: CalendarGridProps) {
+  const { theme } = useTheme();
   const today = new Date();
   const firstDayOfMonth = startOfMonth(new Date(year, month));
   const daysInMonth = getDaysInMonth(firstDayOfMonth);
@@ -136,7 +138,7 @@ function CalendarGrid({
                 </Text>
                 {isCompleted && (
                   <View style={styles.checkmark}>
-                    <Text style={styles.checkmarkText}>✓</Text>
+                    <Text style={[styles.checkmarkText, { color: theme.colors.onAccent }]}>✓</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -306,7 +308,7 @@ const styles = StyleSheet.create({
   dayCell: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: radius.md,
     margin: spacing[0.5],
   },
   todayCell: {

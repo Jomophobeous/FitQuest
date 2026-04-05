@@ -5,6 +5,7 @@ import ThemedText from '../src/components/ThemedText';
 import FQLogoMark from '../src/components/FQLogoMark';
 import { useTheme } from '../src/context/ThemeContext';
 import { useDatabase } from '../src/context/DatabaseContext';
+import { spacing } from '../src/design/theme-system';
 
 export default function Splash() {
   const { theme } = useTheme();
@@ -26,7 +27,7 @@ export default function Splash() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }}>
       <FQLogoMark size={96} showGlow />
-      <ThemedText variant="h2" color="accent" style={{ marginTop: 16, marginBottom: 16 }}>
+      <ThemedText variant="h2" color="accent" style={{ marginTop: spacing[4], marginBottom: spacing[4] }}>
         FitQuest
       </ThemedText>
       <ActivityIndicator size="large" color={theme.colors.accent} />

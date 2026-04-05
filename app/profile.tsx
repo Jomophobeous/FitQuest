@@ -211,7 +211,7 @@ export default function ProfileScreen() {
                     backgroundColor: theme.colors.warning + '25',
                     paddingHorizontal: spacing[2],
                     paddingVertical: spacing[0.75],
-                    borderRadius: 6,
+                    borderRadius: radius.sm,
                   }}
                 >
                   <ThemedText
@@ -941,7 +941,7 @@ const styles = StyleSheet.create({
   menuIconWrap: {
     width: 38,
     height: 38,
-    borderRadius: 11,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -974,12 +974,12 @@ const styles = StyleSheet.create({
   adaptiveConfidenceTrack: {
     marginTop: spacing[1.5],
     height: 6,
-    borderRadius: 999,
+    borderRadius: radius.full,
     overflow: 'hidden',
   },
   adaptiveConfidenceFill: {
     height: '100%',
-    borderRadius: 999,
+    borderRadius: radius.full,
   },
   adaptiveConfidenceText: {
     marginTop: spacing[2],

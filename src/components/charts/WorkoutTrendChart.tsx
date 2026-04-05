@@ -10,7 +10,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
 import { ThemedChartWrapper, useChartTheme, MiniStat, ChartLegend } from './ThemedChart';
 import type { WorkoutTrendChartProps, WorkoutDataPoint } from './types';
-import { typography, spacing } from '../../design/theme-system';
+import { typography, spacing, radius } from '../../design/theme-system';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bar: {
-    borderRadius: 4,
+    borderRadius: radius.sm,
     minHeight: 4,
   },
   barLabel: {

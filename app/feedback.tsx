@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: spacing[3.5],
     paddingHorizontal: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     flexBasis: '46%',
     position: 'relative',
   },
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
   },
   inputWrap: {
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing[3.5],
   },
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingVertical: spacing[4],
-    borderRadius: 14,
+    borderRadius: radius.lg,
   },
   submitText: {
     color: '#FAFAFA',
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
   thankYouCircle: {
     width: 96,
     height: 96,
-    borderRadius: 48,
+    borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing[6],
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingVertical: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
   },
   thankYouBtnText: {
     fontSize: typography.sizes.bodyMid,
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingVertical: spacing[4],
-    borderRadius: 14,
+    borderRadius: radius.lg,
   },
   thankYouPrimaryText: {
     color: '#FAFAFA',

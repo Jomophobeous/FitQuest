@@ -514,7 +514,7 @@ export default function SavedWorkoutsScreen() {
                 colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.fab}
+                style={[styles.fab, { shadowColor: theme.colors.indigo }]}
               >
                 <MaterialCommunityIcons name="plus" size={28} color={theme.colors.onAccent} />
               </LinearGradient>
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4.5],
-    borderRadius: 18,
+    borderRadius: radius.xl,
   },
   backBtn: {
     width: 38,
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
   headerIconWrap: {
     width: 46,
     height: 46,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
   emptyIconCircle: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[5],
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
   emptyFeatureIcon: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -733,7 +733,7 @@ const styles = StyleSheet.create({
     gap: spacing[1.25],
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[1.5],
-    borderRadius: 20,
+    borderRadius: radius.xl,
   },
   statPillValue: {
     fontSize: typography.sizes.label,
@@ -799,7 +799,7 @@ const styles = StyleSheet.create({
   deleteActionBtn: {
     width: 48,
     height: 48,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
   fab: {
     width: 58,
     height: 58,
-    borderRadius: 29,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#7B7FCC',

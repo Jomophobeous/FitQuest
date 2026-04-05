@@ -19,6 +19,7 @@ import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { useAppReady } from '../hooks/useAppReady';
 import { useTheme } from '../context/ThemeContext';
+import { typography, spacing } from '../design/theme-system';
 
 interface AppGateProps {
   children: React.ReactNode;
@@ -57,20 +58,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: spacing[6],
   },
   errorTitle: {
-    fontSize: 18,
+    fontSize: typography.sizes.h4,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: spacing[2],
   },
   errorText: {
-    fontSize: 14,
+    fontSize: typography.sizes.bodySmall,
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: spacing[1],
   },
   stateText: {
-    fontSize: 12,
+    fontSize: typography.sizes.caption,
     opacity: 0.6,
   },
 });

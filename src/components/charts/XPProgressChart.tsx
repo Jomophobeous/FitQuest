@@ -9,7 +9,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { formatDate, parseISO } from './dateUtils';
 import { ThemedChartWrapper, useChartTheme, MiniStat } from './ThemedChart';
 import type { XPProgressChartProps, XPDataPoint } from './types';
-import { typography, spacing } from '../../design/theme-system';
+import { typography, spacing, radius } from '../../design/theme-system';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -214,15 +214,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
   areaFill: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    borderTopLeftRadius: radius.md,
+    borderTopRightRadius: radius.md,
   },
   yAxisLabels: {
     position: 'absolute',

@@ -19,7 +19,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import ExerciseImage from './ExerciseImage';
 import { audioService } from '../services/audioService';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 // ─── Types ────────────────────────────────────────────
 export interface GetReadyExercise {
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     paddingVertical: spacing[2.5],
     paddingHorizontal: spacing[5],
-    borderRadius: 12,
+    borderRadius: radius.lg,
   },
   equipText: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
 
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[4],
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   cueText: { flex: 1, fontSize: typography.sizes.label, lineHeight: 19 },

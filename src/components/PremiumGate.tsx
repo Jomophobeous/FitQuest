@@ -14,7 +14,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useSubscription } from '../purchases/SubscriptionContext';
 import { GradientButton } from './ui/GlassUI';
 import { logEvent } from '../services/telemetry';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 interface PremiumGateProps {
   children: React.ReactNode;
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 96,
     height: 96,
-    borderRadius: 48,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[6],

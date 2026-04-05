@@ -46,12 +46,12 @@ export const dashboardStyles = StyleSheet.create({
   },
   goalBarBg: {
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
     overflow: 'hidden' as const,
   },
   goalBarFill: {
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
   },
   goalDetails: {
     flexDirection: 'row',
@@ -230,7 +230,7 @@ export const dashboardStyles = StyleSheet.create({
   signalIconWrap: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
   },

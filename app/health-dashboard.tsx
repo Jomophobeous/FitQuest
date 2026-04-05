@@ -264,14 +264,14 @@ const styles = StyleSheet.create({
   metricValue: { marginTop: spacing[1] },
   progressBarBg: {
     height: 4,
-    borderRadius: 2,
+    borderRadius: radius.sm,
     backgroundColor: 'rgba(255,255,255,0.1)',
     marginTop: spacing[2],
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
   summaryCard: {
     padding: spacing[4],

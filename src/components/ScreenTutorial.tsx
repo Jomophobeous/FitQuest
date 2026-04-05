@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getAppState, setAppState } from '../database/service';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 interface ScreenTutorialProps {
   /** Unique key for this screen (e.g. 'dashboard', 'exercises') */
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 340,
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     padding: spacing[7],
     alignItems: 'center',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[4],
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   button: {
     paddingHorizontal: spacing[8],
     paddingVertical: spacing[3],
-    borderRadius: 24,
+    borderRadius: radius.xl,
   },
   buttonText: {
     fontSize: typography.sizes.bodyMid,

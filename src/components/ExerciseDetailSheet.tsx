@@ -23,7 +23,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { ExerciseWithDetails } from '../database/types';
 import ExerciseImage from './ExerciseImage';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 // ─── Muscle → Icon mapping ───
 
@@ -147,8 +147,8 @@ export function ExerciseDetailSheet({ exercise, visible, onClose, onAddToWorkout
           {
             backgroundColor: theme.colors.surface,
             maxHeight: screenHeight * 0.88,
-            borderTopLeftRadius: 28,
-            borderTopRightRadius: 28,
+            borderTopLeftRadius: radius.full,
+            borderTopRightRadius: radius.full,
           },
         ]}
       >
@@ -165,7 +165,7 @@ export function ExerciseDetailSheet({ exercise, visible, onClose, onAddToWorkout
               category={exercise.category}
               variant="detail"
               animate={true}
-              style={{ alignSelf: 'center', marginBottom: spacing[4], borderRadius: 16 }}
+              style={{ alignSelf: 'center', marginBottom: spacing[4], borderRadius: radius.xl }}
             />
           </Animated.View>
 
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     elevation: 24,
-    shadowColor: '#000',
+    shadowColor: '#000', // TODO: theme-aware shadows
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
   handle: {
     width: 40,
     height: 4,
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
   scrollContent: {
     paddingHorizontal: spacing[5],
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   categoryTag: {
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1.25],
-    borderRadius: 10,
+    borderRadius: radius.md,
   },
   categoryText: {
     fontSize: typography.sizes.caption,
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
   diffTag: {
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1.25],
-    borderRadius: 10,
+    borderRadius: radius.md,
   },
   diffTagText: {
     fontSize: typography.sizes.caption,
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   closeBtn: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: spacing[1],
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
   diffDot: {
     width: 28,
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
   },
   diffLabel: {
     fontSize: typography.sizes.captionSm,
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
     gap: spacing[1.5],
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[2.5],
-    borderRadius: 12,
+    borderRadius: radius.lg,
   },
   statLabel: {
     fontSize: typography.sizes.captionSm,
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     gap: spacing[1.5],
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2],
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
   },
   muscleText: {
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
   primaryDot: {
     width: 5,
     height: 5,
-    borderRadius: 2.5,
+    borderRadius: radius.sm,
   },
 
   // Equipment
@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
   requiredBadge: {
     paddingHorizontal: spacing[2],
     paddingVertical: spacing[0.75],
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
   requiredText: {
     fontSize: typography.sizes.xs,
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
     gap: spacing[2.5],
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     marginBottom: spacing[6],
   },
   noEquipText: {
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
   stepNumber: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: spacing['px'],
@@ -676,7 +676,7 @@ const styles = StyleSheet.create({
   trainingChip: {
     paddingHorizontal: spacing[3.5],
     paddingVertical: spacing[2.5],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     gap: spacing[1.5],
   },
   trainingLabel: {
@@ -691,7 +691,7 @@ const styles = StyleSheet.create({
   effectDot: {
     width: 8,
     height: 4,
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
 
   // Section titles
@@ -718,7 +718,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[2],
     paddingVertical: spacing[4],
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
   },
   addBtnText: {

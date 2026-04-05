@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
-import { typography, spacing } from '../../design/theme-system';
+import { typography, spacing, radius } from '../../design/theme-system';
 import {
   DateRangeOption,
   DATE_RANGE_LABELS,
@@ -241,7 +241,7 @@ export function ChartLegend({ items, orientation = 'horizontal' }: ChartLegendPr
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
     marginVertical: spacing[2],
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   rangeButton: {
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[1.5],
-    borderRadius: 8,
+    borderRadius: radius.md,
     borderWidth: 1,
   },
   rangeButtonText: {
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   legendDot: {
     width: 10,
     height: 10,
-    borderRadius: 5,
+    borderRadius: radius.sm,
   },
   legendLabel: {
     fontSize: typography.sizes.caption,

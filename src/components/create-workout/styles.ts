@@ -19,7 +19,7 @@ export const createWorkoutStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2.5],
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
   },
   searchRow: {
@@ -32,7 +32,7 @@ export const createWorkoutStyles = StyleSheet.create({
   filterButton: {
     width: 44,
     height: 44,
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -43,7 +43,7 @@ export const createWorkoutStyles = StyleSheet.create({
     right: -4,
     width: 18,
     height: 18,
-    borderRadius: 9,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -84,7 +84,7 @@ export const createWorkoutStyles = StyleSheet.create({
   categoryChip: {
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[2.5],
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     marginRight: spacing[2.5],
     minWidth: 70,
@@ -94,7 +94,7 @@ export const createWorkoutStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing[3.5],
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
     marginBottom: spacing[2],
   },
@@ -109,13 +109,13 @@ export const createWorkoutStyles = StyleSheet.create({
   diffBadge: {
     paddingHorizontal: spacing[2],
     paddingVertical: spacing[1],
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
   nameInput: {
     marginHorizontal: spacing[4],
     marginBottom: spacing[2],
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: radius.md,
     paddingHorizontal: spacing[3.5],
     paddingVertical: spacing[3],
   },
@@ -185,7 +185,7 @@ export const createWorkoutStyles = StyleSheet.create({
   orderBadge: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -194,7 +194,7 @@ export const createWorkoutStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing[4.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     marginTop: spacing[4],
     gap: spacing[2.5],
   },
@@ -212,7 +212,7 @@ export const createWorkoutStyles = StyleSheet.create({
   instructionBox: {
     marginTop: spacing[2.5],
     padding: spacing[3],
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
   },
   instructionStep: {

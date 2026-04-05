@@ -93,7 +93,12 @@ export default function AnalyticsScreen() {
                 ? ([theme.colors.accent + '12', theme.colors.purple + '08', 'transparent'] as [string, string, string])
                 : ([theme.colors.accent + '0A', theme.colors.purple + '05', 'transparent'] as [string, string, string])
             }
-            style={{ paddingTop: spacing[2], paddingBottom: spacing[5], borderRadius: 20, marginBottom: spacing[1] }}
+            style={{
+              paddingTop: spacing[2],
+              paddingBottom: spacing[5],
+              borderRadius: radius.xl,
+              marginBottom: spacing[1],
+            }}
           >
             <ThemedText style={s.heroTitle} numberOfLines={1} adjustsFontSizeToFit>
               {t('analytics.title')}
@@ -303,8 +308,8 @@ export default function AnalyticsScreen() {
                                 colors={[theme.colors.accent3 + '40', theme.colors.accent3 + '05']}
                                 style={{
                                   height: `${pct * 85}%`,
-                                  borderTopLeftRadius: 4,
-                                  borderTopRightRadius: 4,
+                                  borderTopLeftRadius: radius.sm,
+                                  borderTopRightRadius: radius.sm,
                                 }}
                               />
                             </View>
@@ -826,7 +831,7 @@ const styles = (theme: any) =>
     heroStatIcon: {
       width: 38,
       height: 38,
-      borderRadius: 19,
+      borderRadius: radius.xl,
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: spacing[1.5],
@@ -837,7 +842,7 @@ const styles = (theme: any) =>
     toggleRow: {
       flexDirection: 'row',
       padding: spacing[1],
-      borderRadius: 14,
+      borderRadius: radius.lg,
       marginBottom: spacing[2],
       gap: spacing[1.5],
     },
@@ -857,12 +862,12 @@ const styles = (theme: any) =>
     barTrack: {
       width: 28,
       height: 110,
-      borderRadius: 14,
+      borderRadius: radius.lg,
       backgroundColor: theme.colors.border + '30',
       justifyContent: 'flex-end',
       overflow: 'hidden',
     },
-    barFill: { width: '100%', borderRadius: 14 },
+    barFill: { width: '100%', borderRadius: radius.lg },
     barLabel: { fontSize: typography.sizes.captionSm, fontWeight: '700', marginTop: spacing[2] },
 
     trendContainer: { flexDirection: 'row', height: 140 },
@@ -878,7 +883,7 @@ const styles = (theme: any) =>
     gridLine: { position: 'absolute', left: 0, right: 0, height: StyleSheet.hairlineWidth },
     trendPointsRow: { flexDirection: 'row', flex: 1, zIndex: 2 },
     trendCol: { flex: 1, alignItems: 'center' },
-    trendDot: { width: 10, height: 10, borderRadius: 5 },
+    trendDot: { width: 10, height: 10, borderRadius: radius.sm },
     trendLabel: { fontSize: typography.sizes.captionSm, fontWeight: '600', marginTop: spacing[1] },
     trendAreaRow: { ...StyleSheet.absoluteFillObject, flexDirection: 'row', zIndex: 1, paddingBottom: spacing[4.5] },
     trendAreaCol: { flex: 1, paddingHorizontal: spacing[0.5] },
@@ -895,7 +900,7 @@ const styles = (theme: any) =>
       paddingHorizontal: spacing[2],
     },
     muscleBadge: { width: (SCREEN_W - 80) / 4, marginBottom: spacing[1] },
-    muscleBadgeInner: { alignItems: 'center', paddingVertical: spacing[2.5], borderRadius: 14 },
+    muscleBadgeInner: { alignItems: 'center', paddingVertical: spacing[2.5], borderRadius: radius.lg },
     muscleName: {
       fontSize: typography.sizes.captionSm,
       fontWeight: '700',
@@ -905,7 +910,7 @@ const styles = (theme: any) =>
     muscleCount: { fontSize: typography.sizes.caption, fontWeight: '800', marginTop: spacing[0.5] },
     legendRow: { flexDirection: 'row', justifyContent: 'center', gap: spacing[4], marginTop: spacing[2] },
     legendItem: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
-    legendDot: { width: 10, height: 10, borderRadius: 5 },
+    legendDot: { width: 10, height: 10, borderRadius: radius.sm },
     legendLabel: { fontSize: typography.sizes.xs, fontWeight: '600' },
 
     statsRow: { flexDirection: 'row', gap: spacing[2.5] },
@@ -928,7 +933,7 @@ const styles = (theme: any) =>
     calendarRow: { flexDirection: 'row' },
     calendarCell: { flex: 1, alignItems: 'center', paddingVertical: spacing[0.75] },
     calDayHeader: { fontSize: typography.sizes.xs, fontWeight: '700', marginBottom: spacing[1] },
-    calDay: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    calDay: { width: 32, height: 32, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
     calDayText: { fontSize: typography.sizes.caption },
 
     prCard: {
@@ -956,7 +961,13 @@ const styles = (theme: any) =>
     ringValue: { fontSize: typography.sizes.body, fontWeight: '800' },
     streakNumber: { fontSize: typography.sizes.h4, fontWeight: '800', marginTop: -4 },
     streakHeroLabel: { fontSize: typography.sizes.caption, fontWeight: '600', marginTop: spacing[2.5] },
-    streakStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 14, borderWidth: 1, overflow: 'hidden' },
+    streakStatsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      overflow: 'hidden',
+    },
     streakStatItem: {
       width: '50%',
       flexDirection: 'row',
@@ -965,7 +976,7 @@ const styles = (theme: any) =>
       paddingHorizontal: spacing[3.5],
       gap: spacing[2.5],
     },
-    streakStatIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    streakStatIcon: { width: 32, height: 32, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
     streakStatText: { flex: 1 },
     tileValue: { fontSize: typography.sizes.h4, fontWeight: '800' },
     tileLabel: { fontSize: typography.sizes.xs, fontWeight: '600', textAlign: 'left' },
@@ -974,8 +985,8 @@ const styles = (theme: any) =>
     // Day session detail modal
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
     modalContent: {
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
+      borderTopLeftRadius: radius.xl,
+      borderTopRightRadius: radius.xl,
       paddingHorizontal: spacing[5],
       paddingTop: spacing[5],
       paddingBottom: spacing[10],
@@ -990,7 +1001,7 @@ const styles = (theme: any) =>
     modalTitle: { fontSize: typography.sizes.h4, fontWeight: '800' },
     modalEmpty: { alignItems: 'center', paddingVertical: spacing[10], gap: spacing[3] },
     modalEmptyText: { fontSize: typography.sizes.bodySmall, fontWeight: '600' },
-    sessionCard: { borderRadius: 14, padding: spacing[3.5], marginBottom: spacing[2.5] },
+    sessionCard: { borderRadius: radius.lg, padding: spacing[3.5], marginBottom: spacing[2.5] },
     sessionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     sessionTime: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
     sessionDuration: { fontSize: typography.sizes.label, fontWeight: '600' },

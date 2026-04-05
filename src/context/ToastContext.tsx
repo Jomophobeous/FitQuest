@@ -14,7 +14,7 @@ import { Text, StyleSheet, Animated as RNAnimated, PanResponder, AccessibilityIn
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 // ─── Types ──────────────────────────────────────────────
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderLeftWidth: 4,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,

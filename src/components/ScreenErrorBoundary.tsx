@@ -11,7 +11,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { logCrash } from '../services/telemetry';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 interface ScreenErrorBoundaryProps {
   children: React.ReactNode;
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 72,
     height: 72,
-    borderRadius: 36,
+    borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing[4],
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing[6],
     paddingVertical: spacing[3.5],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     gap: spacing[2],
     width: '100%',
     maxWidth: 240,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[3],
     paddingHorizontal: spacing[6],
     paddingVertical: spacing[3],
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
   },
   secondaryBtnText: {

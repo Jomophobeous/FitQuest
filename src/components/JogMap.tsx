@@ -15,7 +15,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Platform } from 'react-nativ
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import type { GeoPoint } from '../engines/DistanceEngine';
-import { typography, spacing } from '../design/theme-system';
+import { typography, spacing, radius } from '../design/theme-system';
 
 // Lazy-import MapLibre — native module may not be registered on first run
 let MapView: any;
@@ -504,7 +504,7 @@ export default JogMap;
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyContainer: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
   marker: {
     width: 16,
     height: 16,
-    borderRadius: 8,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
   markerInner: {
     width: 6,
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
     backgroundColor: '#FFFFFF',
   },
 
@@ -557,7 +557,7 @@ const styles = StyleSheet.create({
     left: 12,
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1.5],
-    borderRadius: 10,
+    borderRadius: radius.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
@@ -582,12 +582,12 @@ const styles = StyleSheet.create({
     gap: spacing[1.25],
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[1.25],
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   liveDot: {
     width: 6,
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
     backgroundColor: '#FFFFFF',
   },
   liveText: {
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
 
   // Fallback card (no MapLibre)
   fallbackCard: {
-    borderRadius: 16,
+    borderRadius: radius.xl,
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing[4],
@@ -620,7 +620,7 @@ const styles = StyleSheet.create({
   fallbackIconCircle: {
     width: 52,
     height: 52,
-    borderRadius: 26,
+    borderRadius: radius.full,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -630,7 +630,7 @@ const styles = StyleSheet.create({
     gap: spacing[1.25],
     paddingHorizontal: spacing[2.5],
     paddingVertical: spacing[1],
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   fallbackStatsRow: {
     flexDirection: 'row',

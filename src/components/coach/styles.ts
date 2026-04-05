@@ -220,17 +220,18 @@ export const coachStyles = StyleSheet.create({
     paddingVertical: spacing[1],
     borderRadius: radius.xl,
     borderWidth: 1,
+    minHeight: 48,
   },
   textInput: {
     flex: 1,
-    fontSize: typography.sizes.bodyMid,
-    paddingVertical: spacing[2.5],
+    fontSize: typography.sizes.body,
+    paddingVertical: spacing[2],
     paddingHorizontal: spacing[3.5],
     maxHeight: 100,
   },
   sendButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: radius.lg,
     justifyContent: 'center',
     alignItems: 'center',
@@ -270,7 +271,7 @@ export const coachStyles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   actionSheetLabel: {
-    fontSize: typography.sizes.bodyMid,
+    fontSize: typography.sizes.body,
     fontWeight: '500',
   },
 

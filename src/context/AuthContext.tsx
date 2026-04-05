@@ -65,6 +65,8 @@ interface AuthContextType {
   verifyPasscode: (passcode: string) => Promise<AuthResult>;
   /** Check if user has a passcode set */
   hasPasscode: () => Promise<boolean>;
+  /** Mark user as locally authenticated (called after AuthGate unlock) */
+  markAsLocallyAuthenticated: () => void;
   /** Enable/disable biometric preference */
   setBiometricEnabled: (enabled: boolean) => Promise<void>;
   /** Check if current session is still valid (30-min expiry) */
@@ -99,6 +101,7 @@ const AuthContext = createContext<AuthContextType>({
   setupPasscode: async () => {},
   verifyPasscode: async () => ({ success: false, method: 'PASSCODE' }),
   hasPasscode: async () => false,
+  markAsLocallyAuthenticated: () => {},
   setBiometricEnabled: async () => {},
   isSessionValid: async () => false,
   touchSession: async () => {},
@@ -391,6 +394,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return bioAuth.hasPasscode();
   };
 
+  const markAsLocallyAuthenticated = (): void => {
+    setIsLocallyAuthenticated(true);
+  };
+
   const setBiometricEnabled = async (enabled: boolean): Promise<void> => {
     await bioAuth.setBiometricEnabled(enabled);
     setBiometricEnabledState(enabled);
@@ -450,6 +457,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setupPasscode,
       verifyPasscode,
       hasPasscode,
+      markAsLocallyAuthenticated,
       setBiometricEnabled,
       isSessionValid,
       touchSession,

@@ -51,6 +51,7 @@ type AuthMode = 'biometric' | 'passcode' | 'email';
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
+  console.warn('[LoginScreen] Rendering login screen');
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();

@@ -498,7 +498,7 @@ export default function CoachScreen() {
       <PremiumGate featureName="AI Coach">
         <ScreenTutorial
           screenKey="ai-coach"
-          icon="robot-happy"
+          icon="head-flash-outline"
           title="AI Coach"
           description="Chat with your AI fitness coach for personalised workout advice, form tips, and motivation. Start a new chat anytime to keep things fresh."
         />

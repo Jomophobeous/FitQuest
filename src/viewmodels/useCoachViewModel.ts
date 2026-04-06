@@ -425,7 +425,7 @@ export const useCoachViewModel = createViewModel(() => {
         daysSinceLastWorkout: 999,
         goal: 'body_control',
         exerciseCount: 200,
-        userName: 'Athlete',
+        userName: '',
         experience: 'intermediate',
         trainingDaysPerWeek: 3,
         sessionMinutes: 30,

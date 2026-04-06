@@ -417,7 +417,7 @@ export const WeekCalendar = memo(function WeekCalendar({
     weekDays.push(d);
   }
 
-  const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const dayNames = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
   return (
     <Animated.View entering={FadeInDown.delay(100).duration(MOTION.fast)} style={styles.weekCalendar}>

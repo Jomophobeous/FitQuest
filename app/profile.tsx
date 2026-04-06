@@ -506,6 +506,10 @@ export default function ProfileScreen() {
             <View style={styles.section}>
               <SectionHeader title={t('profile.preferences')} delay={500} />
               <GlassCard delay={510}>
+                {/* ── APPEARANCE ── */}
+                <ThemedText style={{ fontSize: typography.sizes.caption, fontWeight: '700', color: theme.colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: spacing[2] }}>
+                  {t('profile.appearance') || 'APPEARANCE'}
+                </ThemedText>
                 {/* ── Theme Picker (inline pills) ── */}
                 <View style={styles.inlineSettingRow}>
                   <View
@@ -543,6 +547,10 @@ export default function ProfileScreen() {
 
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
+                {/* ── SOCIAL ── */}
+                <ThemedText style={{ fontSize: typography.sizes.caption, fontWeight: '700', color: theme.colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, paddingTop: spacing[2], paddingBottom: spacing[2] }}>
+                  {t('profile.social') || 'SOCIAL'}
+                </ThemedText>
                 {/* ── Social Toggle ── */}
                 <View style={styles.inlineSettingRow}>
                   <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.blue + '18' }]}>

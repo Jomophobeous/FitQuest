@@ -214,7 +214,7 @@ export default function MoveScreen() {
                 const maxVal = Math.max(vm.DAILY_STEP_GOAL, ...days.map((d) => d.steps));
                 const goalPct = (vm.DAILY_STEP_GOAL / maxVal) * 80;
                 return days.map((day, idx) => {
-                  const barH = Math.max(4, (day.steps / maxVal) * 80);
+                  const barH = day.steps > 0 ? Math.max(4, (day.steps / maxVal) * 80) : 4;
                   const hitGoal = day.steps >= vm.DAILY_STEP_GOAL;
                   return (
                     <View key={idx} style={styles.weeklyBarCol}>
@@ -230,7 +230,7 @@ export default function MoveScreen() {
                           ? day.steps >= 1000
                             ? (day.steps / 1000).toFixed(1) + 'k'
                             : String(day.steps)
-                          : '–'}
+                          : day.label}
                       </ThemedText>
                       <View style={[styles.weeklyBarTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
                         <View
@@ -243,9 +243,11 @@ export default function MoveScreen() {
                           colors={
                             hitGoal
                               ? [theme.colors.accent3, theme.colors.accent3 + '70']
-                              : day.isToday
-                                ? [theme.colors.accent, theme.colors.accent + '60']
-                                : [theme.colors.accent + '80', theme.colors.accent + '40']
+                              : day.steps === 0
+                                ? [theme.colors.accent + '20', theme.colors.accent + '10']
+                                : day.isToday
+                                  ? [theme.colors.accent, theme.colors.accent + '60']
+                                  : [theme.colors.accent + '80', theme.colors.accent + '40']
                           }
                           style={[styles.weeklyBarFill, { height: barH }]}
                         />
@@ -266,6 +268,13 @@ export default function MoveScreen() {
                 });
               })()}
             </View>
+            {vm.stepHistory.length === 0 && (
+              <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+                <ThemedText style={{ fontSize: typography.sizes.bodySmall, color: theme.colors.textMuted, textAlign: 'center' }}>
+                  {t('move.startMoving') || 'Start moving to see your progress'}
+                </ThemedText>
+              </View>
+            )}
           </GlassCard>
         </Animated.View>
 

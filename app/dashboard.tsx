@@ -812,7 +812,7 @@ export default function DashboardScreen() {
                   title="Completion Rate"
                 >
                   <GlassCard style={styles.dailyStatCard}>
-                    <MaterialCommunityIcons name="check-circle-outline" size={20} color={theme.colors.success} />
+                    <MaterialCommunityIcons name={completionRate > 0 ? 'check-circle-outline' : 'circle-outline'} size={20} color={completionRate > 0 ? theme.colors.success : theme.colors.textMuted} />
                     <ThemedText
                       variant="h4"
                       weight="800"

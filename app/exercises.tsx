@@ -39,6 +39,7 @@ import {
 } from '../src/viewmodels/useExercisesViewModel';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { AnimatedListItem, GradientButton } from '../src/components/ui/GlassUI';
+import GlassButton from '../src/components/ui/GlassButton';
 import { GlassCard } from '../src/components/ui/GlassCard';
 import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
 import ExerciseImage from '../src/components/ExerciseImage';
@@ -648,14 +649,21 @@ export default function ExercisesScreen() {
             <RefreshControl refreshing={vm.refreshing} onRefresh={vm.handleRefresh} tintColor={theme.colors.accent} />
           }
           ListEmptyComponent={
-            <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.emptyState}>
+            <Animated.View entering={FadeIn.duration(200)} style={{ alignItems: 'center', paddingVertical: spacing[10], paddingHorizontal: spacing[6] }}>
               <MaterialCommunityIcons name="magnify-close" size={48} color={theme.colors.textMuted} />
-              <ThemedText style={[styles.emptyTitle, { color: theme.colors.text }]}>
+              <ThemedText style={{ fontSize: typography.sizes.h4, fontWeight: '600', color: theme.colors.text, marginTop: spacing[3], textAlign: 'center' }}>
                 {t('exercises.noResults') || 'No exercises found'}
               </ThemedText>
-              <ThemedText style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
-                {t('exercises.adjustFilters') || 'Try adjusting your search or filters'}
+              <ThemedText style={{ fontSize: typography.sizes.body, color: theme.colors.textMuted, marginTop: spacing[2], textAlign: 'center' }}>
+                {t('exercises.adjustFilters') || 'Try adjusting your filters or search for something different'}
               </ThemedText>
+              <GlassButton
+                variant="secondary"
+                size="md"
+                label={t('exercises.clearFilters') || 'Clear Filters'}
+                onPress={clearAllFilters}
+                style={{ marginTop: spacing[4] }}
+              />
             </Animated.View>
           }
         />

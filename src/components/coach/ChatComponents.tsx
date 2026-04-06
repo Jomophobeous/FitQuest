@@ -189,7 +189,7 @@ export const MessageBubble = React.memo(
                 colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
                 style={styles.coachAvatarIcon}
               >
-                <MaterialCommunityIcons name="robot-happy" size={12} color={theme.colors.onAccent} />
+                <MaterialCommunityIcons name="head-flash-outline" size={12} color={theme.colors.onAccent} />
               </LinearGradient>
               <ThemedText style={[styles.coachLabel, { color: theme.colors.accent }]}>
                 {t('coach.coachLabel')}
@@ -341,7 +341,7 @@ export const StreamingBubble = React.memo(function StreamingBubble({ text }: { t
           colors={[theme.colors.accent, theme.colors.indigo] as [string, string]}
           style={styles.coachAvatarIcon}
         >
-          <MaterialCommunityIcons name="robot-happy" size={12} color={theme.colors.onAccent} />
+          <MaterialCommunityIcons name="head-flash-outline" size={12} color={theme.colors.onAccent} />
         </LinearGradient>
         <ThemedText style={[styles.coachLabel, { color: theme.colors.accent }]}>{t('coach.coachLabel')}</ThemedText>
       </View>

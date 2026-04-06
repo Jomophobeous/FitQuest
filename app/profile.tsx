@@ -29,7 +29,6 @@ import { AccountSection } from '../src/components/profile/AccountSection';
 import { SUPPORTED_LANGUAGES } from '../src/i18n/translations';
 import type { ThemeMode } from '../src/design/theme-system';
 import { SkeletonProfile } from '../src/components/ui/Skeleton';
-import { RippleButton } from '../src/components/ui/InteractionFeedback';
 
 // ============================================
 // SCREEN
@@ -93,6 +92,7 @@ export default function ProfileScreen() {
     handleGoalChange,
     handleEquipmentLevel,
     handleMealRegion,
+    handleLanguage,
     handleNotifications,
     handleHealthConnectSettings,
     handleSyncHealth,
@@ -269,13 +269,9 @@ export default function ProfileScreen() {
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
                 {/* ── Language Picker (single MenuItem) ── */}
-                <RippleButton
-                  onPress={() => {
-                    closePicker();
-                    // Language selection via menu touch — TODO: open language picker
-                  }}
-                  rippleColor={theme.colors.blue + '40'}
-                  hapticEvent="buttonPress"
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={handleLanguage}
                   style={styles.inlineSettingRow}
                   accessibilityLabel={t('profile.language')}
                 >
@@ -291,7 +287,7 @@ export default function ProfileScreen() {
                     </ThemedText>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
-                </RippleButton>
+                </TouchableOpacity>
 
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
@@ -325,10 +321,9 @@ export default function ProfileScreen() {
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
                 {/* ── Notifications (picker) ── */}
-                <RippleButton
+                <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={handleNotifications}
-                  rippleColor={theme.colors.pink + '40'}
-                  hapticEvent="buttonPress"
                   style={styles.inlineSettingRow}
                   accessibilityLabel={t('profile.notifications')}
                 >
@@ -344,15 +339,14 @@ export default function ProfileScreen() {
                     </ThemedText>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
-                </RippleButton>
+                </TouchableOpacity>
 
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
                 {/* ── Meal Region (picker) ── */}
-                <RippleButton
+                <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={handleMealRegion}
-                  rippleColor={theme.colors.accent + '40'}
-                  hapticEvent="buttonPress"
                   style={styles.inlineSettingRow}
                   accessibilityLabel={t('profile.mealRegion.title')}
                 >
@@ -368,7 +362,7 @@ export default function ProfileScreen() {
                     </ThemedText>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
-                </RippleButton>
+                </TouchableOpacity>
               </GlassCard>
             </View>
 

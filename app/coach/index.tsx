@@ -23,7 +23,6 @@ import Animated, {
 import { useTheme } from '../../src/context/ThemeContext';
 import { MOTION } from '../../src/design/motion';
 import { useLanguage } from '../../src/context/LanguageContext';
-import { PulseDot } from '../../src/components/ui/GlassUI';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../../src/components/ScreenTutorial';
 import PremiumGate from '../../src/components/PremiumGate';
@@ -132,21 +131,10 @@ function CoachScreenInner() {
                 colors={[theme.colors.accent, theme.colors.purple] as [string, string]}
                 style={styles.headerAvatar}
               >
-                <MaterialCommunityIcons name="robot-happy" size={22} color={theme.colors.onAccent} />
+                <MaterialCommunityIcons name="head-flash-outline" size={22} color={theme.colors.onAccent} />
               </LinearGradient>
               <View>
                 <ThemedText style={[styles.headerTitle, { color: theme.colors.text }]}>{t('coach.title')}</ThemedText>
-                <View style={styles.headerStatusRow}>
-                  <PulseDot color={vm.cloudAvailable ? theme.colors.accent : theme.colors.warning} size={6} />
-                  <ThemedText
-                    style={[
-                      styles.headerStatus,
-                      { color: vm.cloudAvailable ? theme.colors.accent : theme.colors.warning },
-                    ]}
-                  >
-                    {vm.cloudAvailable ? 'Online' : 'Offline'}
-                  </ThemedText>
-                </View>
               </View>
             </View>
 
@@ -404,9 +392,7 @@ function CoachScreenInner() {
               borderTopColor: theme.colors.border,
               // When keyboard hidden: account for floating tab bar (height + bottom offset)
               // Tab bar: height = 64 + max(0, insets.bottom-4), bottom = max(8, insets.bottom+2)
-              paddingBottom: vm.keyboardVisible
-                ? 12
-                : Math.max(12, Math.max(8, insets.bottom + 2) + 64 + Math.max(0, insets.bottom - 4) + 4),
+              paddingBottom: vm.keyboardVisible ? 12 : Math.max(80, insets.bottom + 80),
             },
           ]}
         >

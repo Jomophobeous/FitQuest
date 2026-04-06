@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { typography, spacing, radius } from '../../design/theme-system';
 
 export const coachStyles = StyleSheet.create({
@@ -210,7 +210,7 @@ export const coachStyles = StyleSheet.create({
   inputBarWrap: {
     paddingHorizontal: spacing[3.5],
     paddingTop: spacing[2.5],
-    paddingBottom: Platform.OS === 'ios' ? 28 : 16,
+    paddingBottom: 0, // Dynamic value set inline
     borderTopWidth: 1,
   },
   inputRow: {

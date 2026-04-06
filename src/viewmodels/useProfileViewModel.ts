@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useDatabase } from '../context/DatabaseContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { SUPPORTED_LANGUAGES } from '../i18n/translations';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { useSubscription } from '../purchases/SubscriptionContext';
@@ -701,6 +702,20 @@ export const useProfileViewModel = createViewModel(() => {
     });
   };
 
+  const handleLanguage = () => {
+    setPickerModal({
+      visible: true,
+      title: t('profile.language'),
+      options: SUPPORTED_LANGUAGES.map((lang) => ({
+        label: `${lang.flag} ${lang.name}`,
+        value: lang.code,
+      })),
+      onSelect: (val) => {
+        setLanguage(val);
+      },
+    });
+  };
+
   const handleMealRegion = () => {
     setPickerModal({
       visible: true,
@@ -1066,6 +1081,7 @@ export const useProfileViewModel = createViewModel(() => {
     handleExperience,
     handleGoalChange,
     handleEquipmentLevel,
+    handleLanguage,
     handleMealRegion,
     handleNotifications,
     handleHealthConnectSettings,

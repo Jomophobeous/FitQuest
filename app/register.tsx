@@ -139,8 +139,8 @@ export default function RegisterScreen() {
 
   const strength = getPasswordStrength();
 
-  const inputBg = theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)';
-  const inputBorder = theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+  const inputBg = theme.colors.surfaceVariant;
+  const inputBorder = theme.colors.border;
 
   return (
     <ScreenErrorBoundary screenName="Register" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>

@@ -69,14 +69,15 @@ const getDifficultyColors = (colors: { accent: string; warning: string; error: s
 // MEMOIZED EXERCISE CARD
 // ============================================
 
-const CATEGORY_COLORS: Record<string, string> = {
-  body_control: '#8B5CF6',
-  strength: '#EF4444',
-  mobility: '#10B981',
-  speed: '#F97316',
-  posture: '#3B82F6',
-  focus: '#EC4899',
-};
+// Category colors resolved from theme inside component via getCategoryColors()
+const getCategoryColors = (colors: ReturnType<typeof useTheme>['theme']['colors']): Record<string, string> => ({
+  body_control: colors.purple,
+  strength: colors.error,
+  mobility: colors.accent,
+  speed: colors.orange,
+  posture: colors.blue,
+  focus: colors.pink,
+});
 
 const ExerciseCard = React.memo(function ExerciseCard({
   item,
@@ -92,7 +93,8 @@ const ExerciseCard = React.memo(function ExerciseCard({
   onPress: (exercise: ExerciseWithDetails) => void;
 }) {
   const diffColor = getDifficultyColors(theme.colors)[item.difficulty] || theme.colors.textMuted;
-  const categoryColor = CATEGORY_COLORS[item.category] || theme.colors.accent;
+  const categoryColors = getCategoryColors(theme.colors);
+  const categoryColor = categoryColors[item.category] || theme.colors.accent;
   const handlePress = useCallback(() => onPress(item), [onPress, item]);
 
   return (
@@ -752,7 +754,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
-    shadowColor: '#000', // TODO: theme-aware shadows
+    shadowColor: theme.colors.accentDark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,

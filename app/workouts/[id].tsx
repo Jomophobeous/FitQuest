@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useDatabase } from '../../src/context/DatabaseContext';
 import ThemedText from '../../src/components/ThemedText';
 import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
+import { ScreenContainer } from '../../src/components/ui/primitives';
+import { GlassCard } from '../../src/components/ui/GlassCard';
 import { getRecentSessions } from '../../src/database/service';
+import { spacing } from '../../src/design/theme-system';
 
 interface SessionExerciseRow {
   id: string;
@@ -31,7 +35,6 @@ export default function WorkoutDetail() {
     if (!dbReady) return;
     (async () => {
       try {
-        // Try to find session in recent history
         const sessions = await getRecentSessions('user_local_001', 50);
         const found = sessions.find((s) => s.id === id);
         if (found) {
@@ -50,37 +53,45 @@ export default function WorkoutDetail() {
 
   if (loading) {
     return (
-      <View
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}
-      >
-        <ActivityIndicator color={theme.colors.accent} size="large" />
-      </View>
+      <ScreenContainer>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator color={theme.colors.accent} size="large" />
+        </View>
+      </ScreenContainer>
     );
   }
 
   return (
     <ScreenErrorBoundary screenName="WorkoutDetail" onGoBack={() => (router.canGoBack() ? router.back() : undefined)}>
-      <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing[4] }}>
-        <ThemedText variant="h2" color="primary">
-          Workout Session
-        </ThemedText>
-        {session?.duration_minutes != null && (
-          <ThemedText variant="body" color="secondary" style={{ marginTop: theme.spacing[1] }}>
-            Duration: {session.duration_minutes} min · Exercises: {session.completed_exercises}/
-            {session.total_exercises}
-          </ThemedText>
-        )}
-        {session?.notes ? (
-          <ThemedText variant="caption" color="muted" style={{ marginTop: theme.spacing[2] }}>
-            {session.notes}
-          </ThemedText>
-        ) : null}
-        {session?.started_at && (
-          <ThemedText variant="caption" color="muted" style={{ marginTop: theme.spacing[1] }}>
-            {new Date(session.started_at).toLocaleDateString()}
-          </ThemedText>
-        )}
-      </ScrollView>
+      <ScreenContainer>
+        <ScrollView style={{ flex: 1, padding: spacing[4] }}>
+          <Animated.View entering={FadeInDown.delay(50).duration(200)}>
+            <ThemedText variant="h2" color="primary">
+              Workout Session
+            </ThemedText>
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(100).duration(200)}>
+            <GlassCard style={{ marginTop: spacing[4], padding: spacing[4] }}>
+              {session?.duration_minutes != null && (
+                <ThemedText variant="body" color="secondary" style={{ marginTop: spacing[1] }}>
+                  Duration: {session.duration_minutes} min · Exercises: {session.completed_exercises}/
+                  {session.total_exercises}
+                </ThemedText>
+              )}
+              {session?.notes ? (
+                <ThemedText variant="caption" color="muted" style={{ marginTop: spacing[2] }}>
+                  {session.notes}
+                </ThemedText>
+              ) : null}
+              {session?.started_at && (
+                <ThemedText variant="caption" color="muted" style={{ marginTop: spacing[1] }}>
+                  {new Date(session.started_at).toLocaleDateString()}
+                </ThemedText>
+              )}
+            </GlassCard>
+          </Animated.View>
+        </ScrollView>
+      </ScreenContainer>
     </ScreenErrorBoundary>
   );
 }

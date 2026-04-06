@@ -417,9 +417,13 @@ export default function ProgressScreen() {
                       accessibilityLabel={`Progress photo from ${photo.date}${photo.label ? `, ${photo.label}` : ''}`}
                     >
                       <Image source={{ uri: photo.uri }} style={styles.photoImage} />
-                      <View style={[styles.photoOverlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
+                      <View style={[styles.photoOverlay, { backgroundColor: theme.colors.background + 'AA' }]}>
                         <ThemedText style={[styles.photoDate, { color: theme.colors.text }]}>{photo.date}</ThemedText>
-                        {photo.label && <ThemedText style={styles.photoLabel}>{photo.label}</ThemedText>}
+                        {photo.label && (
+                          <ThemedText style={[styles.photoLabel, { color: theme.colors.textSecondary }]}>
+                            {photo.label}
+                          </ThemedText>
+                        )}
                       </View>
                     </TouchableOpacity>
                   );
@@ -516,7 +520,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   photoLabel: {
-    color: 'rgba(255,255,255,0.8)',
     fontSize: ms(10),
     textTransform: 'uppercase',
   },

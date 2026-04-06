@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, TextInput, Pressable } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import ThemedText from '../src/components/ThemedText';
@@ -7,6 +8,7 @@ import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { spacing, radius, typography } from '../src/design/theme-system';
 import { useDatabase } from '../src/context/DatabaseContext';
+import { GlassCard } from '../src/components/ui/GlassCard';
 import {
   RealisticHealthEngine,
   type BiologicalSex,
@@ -64,32 +66,34 @@ function OptionRow({
 function ResultCard({
   title,
   items,
-  bgColor,
+  delay,
 }: {
   title: string;
   items: Array<{ label: string; value: string; highlight?: boolean }>;
-  bgColor: string;
+  delay?: number;
 }) {
   const { theme } = useTheme();
   return (
-    <View style={[styles.resultCard, { backgroundColor: bgColor }]}>
-      <ThemedText variant="h4" style={styles.resultTitle}>
-        {title}
-      </ThemedText>
-      {items.map((item) => (
-        <View key={item.label} style={styles.resultRow}>
-          <ThemedText variant="body" color="secondary">
-            {item.label}
-          </ThemedText>
-          <ThemedText
-            variant="body"
-            style={item.highlight ? { color: theme.colors.accent, fontWeight: '600' } : undefined}
-          >
-            {item.value}
-          </ThemedText>
-        </View>
-      ))}
-    </View>
+    <Animated.View entering={FadeInDown.delay(delay ?? 0).duration(200)}>
+      <GlassCard style={styles.resultCard}>
+        <ThemedText variant="h4" style={styles.resultTitle}>
+          {title}
+        </ThemedText>
+        {items.map((item) => (
+          <View key={item.label} style={[styles.resultRow, { borderBottomColor: theme.colors.divider }]}>
+            <ThemedText variant="body" color="secondary">
+              {item.label}
+            </ThemedText>
+            <ThemedText
+              variant="body"
+              style={item.highlight ? { color: theme.colors.accent, fontWeight: '600' } : undefined}
+            >
+              {item.value}
+            </ThemedText>
+          </View>
+        ))}
+      </GlassCard>
+    </Animated.View>
   );
 }
 
@@ -146,12 +150,12 @@ function NutritionCalculatorContent() {
     <ScreenContainer>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {/* Header */}
-        <View style={styles.header}>
+        <Animated.View entering={FadeInDown.delay(50).duration(200)} style={styles.header}>
           <MaterialCommunityIcons name="calculator-variant-outline" size={28} color={theme.colors.accent} />
           <ThemedText variant="h2" style={styles.headerTitle}>
             Nutrition Calculator
           </ThemedText>
-        </View>
+        </Animated.View>
 
         {/* Inputs */}
         <View style={styles.inputGrid}>
@@ -245,7 +249,7 @@ function NutritionCalculatorContent() {
           <>
             <ResultCard
               title="Energy"
-              bgColor={cardBg}
+              delay={100}
               items={[
                 { label: 'BMR', value: `${Math.round(results.profile.bmr)} kcal/day` },
                 { label: 'TDEE', value: `${Math.round(results.profile.tdee)} kcal/day` },
@@ -260,7 +264,7 @@ function NutritionCalculatorContent() {
 
             <ResultCard
               title="Macros"
-              bgColor={cardBg}
+              delay={150}
               items={[
                 {
                   label: `Protein (${results.macros.proteinPercent}%)`,
@@ -281,7 +285,7 @@ function NutritionCalculatorContent() {
 
             <ResultCard
               title="Body Composition"
-              bgColor={cardBg}
+              delay={200}
               items={[
                 {
                   label: 'Est. Body Fat',
@@ -294,7 +298,7 @@ function NutritionCalculatorContent() {
 
             <ResultCard
               title="Hydration"
-              bgColor={cardBg}
+              delay={250}
               items={[
                 {
                   label: 'Daily Water',
@@ -357,7 +361,6 @@ const styles = StyleSheet.create({
   },
   resultCard: {
     padding: spacing[4],
-    borderRadius: radius.lg,
     marginTop: spacing[4],
   },
   resultTitle: { marginBottom: spacing[3] },
@@ -366,7 +369,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: spacing[1.5],
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   spacer: { height: spacing[12] },
 });

@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Alert, Pressable, ActivityIndicator } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import ThemedText from '../src/components/ThemedText';
+import { GlassCard } from '../src/components/ui/GlassCard';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { spacing, radius } from '../src/design/theme-system';
@@ -35,26 +37,25 @@ function ActionCard({
   const color = destructive ? theme.colors.error : accentColor;
 
   return (
-    <Pressable
-      onPress={loading ? undefined : onPress}
-      style={[styles.actionCard, { backgroundColor: bgColor, opacity: loading ? 0.6 : 1 }]}
-    >
-      <View style={styles.actionIcon}>
-        {loading ? (
-          <ActivityIndicator size="small" color={color} />
-        ) : (
-          <MaterialCommunityIcons name={icon} size={28} color={color} />
-        )}
-      </View>
-      <View style={styles.actionContent}>
-        <ThemedText variant="h4" style={destructive ? { color: theme.colors.error } : undefined}>
-          {title}
-        </ThemedText>
-        <ThemedText variant="caption" color="muted" style={styles.actionDesc}>
-          {description}
-        </ThemedText>
-      </View>
-      <MaterialCommunityIcons name="chevron-right" size={20} color={color} />
+    <Pressable onPress={loading ? undefined : onPress} style={[styles.actionCard, { opacity: loading ? 0.6 : 1 }]}>
+      <GlassCard variant="card" noPadding style={styles.actionCardInner}>
+        <View style={styles.actionIcon}>
+          {loading ? (
+            <ActivityIndicator size="small" color={color} />
+          ) : (
+            <MaterialCommunityIcons name={icon} size={28} color={color} />
+          )}
+        </View>
+        <View style={styles.actionContent}>
+          <ThemedText variant="h4" style={destructive ? { color: theme.colors.error } : undefined}>
+            {title}
+          </ThemedText>
+          <ThemedText variant="caption" color="muted" style={styles.actionDesc}>
+            {description}
+          </ThemedText>
+        </View>
+        <MaterialCommunityIcons name="chevron-right" size={20} color={color} />
+      </GlassCard>
     </Pressable>
   );
 }
@@ -131,19 +132,19 @@ function BackupsContent() {
     <ScreenContainer>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {/* Header */}
-        <View style={styles.header}>
+        <Animated.View entering={FadeInDown.delay(100).duration(200)} style={styles.header}>
           <MaterialCommunityIcons name="cloud-upload-outline" size={28} color={theme.colors.accent} />
           <ThemedText variant="h2" style={styles.headerTitle}>
             Backup & Restore
           </ThemedText>
-        </View>
+        </Animated.View>
 
         <ThemedText variant="body" color="muted" style={styles.subtitle}>
           Your data is stored locally on this device. Use these tools to manage your data.
         </ThemedText>
 
         {/* Storage info */}
-        <View style={[styles.infoCard, { backgroundColor: cardBg }]}>
+        <GlassCard variant="card" style={styles.infoCard}>
           <MaterialCommunityIcons name="database" size={20} color={theme.colors.accent} />
           <View style={styles.infoContent}>
             <ThemedText variant="body">Local SQLite Database</ThemedText>
@@ -151,9 +152,7 @@ function BackupsContent() {
               All data encrypted on device — Schema v21
             </ThemedText>
           </View>
-        </View>
-
-        {/* Actions */}
+        </GlassCard>
         <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
           Actions
         </ThemedText>
@@ -213,11 +212,12 @@ const styles = StyleSheet.create({
   },
   infoContent: { flex: 1 },
   actionCard: {
+    marginBottom: spacing[2],
+  },
+  actionCardInner: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing[4],
-    borderRadius: radius.lg,
-    marginBottom: spacing[2],
   },
   actionIcon: { width: 40, alignItems: 'center' },
   actionContent: { flex: 1, marginLeft: spacing[2] },

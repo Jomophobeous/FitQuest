@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ScreenContainer } from '../../src/components/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
@@ -116,57 +117,64 @@ export default function WorkoutsScreen() {
         <SectionHeader title="My Workouts" delay={0} />
 
         <ScrollView contentContainerStyle={styles.listContent}>
-          <GlassCard style={styles.diagnosticsCard}>
-            <View style={styles.diagnosticsHeader}>
-              <View>
-                <ThemedText variant="body" color="primary">
-                  Workout Generator Diagnostics
-                </ThemedText>
-                <ThemedText variant="caption" color="muted">
-                  Runs the real generator against the on-device database for {userId}
-                </ThemedText>
+          <Animated.View entering={FadeInDown.delay(50).duration(200)}>
+            <GlassCard style={styles.diagnosticsCard}>
+              <View style={styles.diagnosticsHeader}>
+                <View>
+                  <ThemedText variant="body" color="primary">
+                    Workout Generator Diagnostics
+                  </ThemedText>
+                  <ThemedText variant="caption" color="muted">
+                    Runs the real generator against the on-device database for {userId}
+                  </ThemedText>
+                </View>
+                <MaterialCommunityIcons name="flask-outline" size={20} color={theme.colors.accent} />
               </View>
-              <MaterialCommunityIcons name="flask-outline" size={20} color={theme.colors.accent} />
-            </View>
 
-            <View style={styles.diagnosticsActions}>
-              <GradientButton
-                title="Preview Workout"
-                size="sm"
-                variant="primary"
-                onPress={() => runDiagnostics(false)}
-              />
-              <GradientButton title="Preview Deload" size="sm" variant="warning" onPress={() => runDiagnostics(true)} />
-            </View>
-
-            {diagnosticsLoading ? (
-              <View style={styles.diagnosticsLoading}>
-                <ActivityIndicator size="small" color={theme.colors.accent} />
+              <View style={styles.diagnosticsActions}>
+                <GradientButton
+                  title="Preview Workout"
+                  size="sm"
+                  variant="primary"
+                  onPress={() => runDiagnostics(false)}
+                />
+                <GradientButton
+                  title="Preview Deload"
+                  size="sm"
+                  variant="warning"
+                  onPress={() => runDiagnostics(true)}
+                />
               </View>
-            ) : null}
 
-            {diagnosticsError ? (
-              <ThemedText variant="caption" color="muted" style={styles.diagnosticsError}>
-                {diagnosticsError}
-              </ThemedText>
-            ) : null}
+              {diagnosticsLoading ? (
+                <View style={styles.diagnosticsLoading}>
+                  <ActivityIndicator size="small" color={theme.colors.accent} />
+                </View>
+              ) : null}
 
-            {diagnostics ? (
-              <View style={styles.diagnosticsBody}>
-                <ThemedText variant="caption" color="muted">
-                  Focus: {diagnostics.intent.focus_pattern || 'none'} · Candidates: {diagnostics.candidate_count} ·
-                  Selected: {diagnostics.selected_count}/{diagnostics.target_count}
+              {diagnosticsError ? (
+                <ThemedText variant="caption" color="muted" style={styles.diagnosticsError}>
+                  {diagnosticsError}
                 </ThemedText>
-                {diagnostics.selected.map((entry) => (
-                  <View key={entry.id} style={styles.diagnosticRow}>
-                    <ThemedText variant="caption" color={entry.matches_focus_pattern ? 'accent' : 'secondary'}>
-                      {entry.order}. {entry.name} · {entry.category} · {entry.score}
-                    </ThemedText>
-                  </View>
-                ))}
-              </View>
-            ) : null}
-          </GlassCard>
+              ) : null}
+
+              {diagnostics ? (
+                <View style={styles.diagnosticsBody}>
+                  <ThemedText variant="caption" color="muted">
+                    Focus: {diagnostics.intent.focus_pattern || 'none'} · Candidates: {diagnostics.candidate_count} ·
+                    Selected: {diagnostics.selected_count}/{diagnostics.target_count}
+                  </ThemedText>
+                  {diagnostics.selected.map((entry) => (
+                    <View key={entry.id} style={styles.diagnosticRow}>
+                      <ThemedText variant="caption" color={entry.matches_focus_pattern ? 'accent' : 'secondary'}>
+                        {entry.order}. {entry.name} · {entry.category} · {entry.score}
+                      </ThemedText>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
+            </GlassCard>
+          </Animated.View>
 
           {sessions.length > 0 ? (
             sessions.map((item) => <View key={item.id}>{renderWorkout({ item })}</View>)

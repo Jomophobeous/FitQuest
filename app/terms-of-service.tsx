@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -22,13 +23,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[2],
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  spacer: { width: 36 },
+  spacer: { width: 48 },
   title: { fontSize: typography.sizes.h3, fontWeight: '800' },
   card: { marginHorizontal: spacing[4], marginTop: spacing[2], padding: spacing[4], gap: spacing[2.5] },
   sectionTitle: { fontSize: typography.sizes.bodyMid, fontWeight: '700' },
@@ -56,96 +57,98 @@ export default function TermsOfServiceScreen() {
             <View style={styles.spacer} />
           </View>
 
-          <GlassCard style={styles.card}>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textMuted }]}>
-              {t('legal.lastUpdated')} 2026-03-13
-            </ThemedText>
+          <Animated.View entering={FadeInDown.delay(100).duration(300)}>
+            <GlassCard style={styles.card}>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textMuted }]}>
+                {t('legal.lastUpdated')} 2026-03-13
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.useTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.useBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.useTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.useBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.medicalTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.medicalBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.medicalTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.medicalBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.subscriptionTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.subscriptionBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.subscriptionTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.subscriptionBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.ipTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.ipBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.ipTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.ipBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.liabilityTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.liabilityBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.liabilityTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.liabilityBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.terminationTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.terminationBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.terminationTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.terminationBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('legal.terms.sections.governingLawTitle')}
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              {t('legal.terms.sections.governingLawBody')}
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                {t('legal.terms.sections.governingLawTitle')}
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                {t('legal.terms.sections.governingLawBody')}
+              </ThemedText>
 
-            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
-              • {t('legal.terms.bullets.compliance')}
-            </ThemedText>
-            <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
-              • {t('legal.terms.bullets.accountDelete')}
-            </ThemedText>
+              <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+                • {t('legal.terms.bullets.compliance')}
+              </ThemedText>
+              <ThemedText style={[styles.bullet, { color: theme.colors.textSecondary }]}>
+                • {t('legal.terms.bullets.accountDelete')}
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Disclaimer of Warranties
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, either
-              express or implied, including but not limited to implied warranties of merchantability, fitness for a
-              particular purpose, and non-infringement.
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                Disclaimer of Warranties
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, either
+                express or implied, including but not limited to implied warranties of merchantability, fitness for a
+                particular purpose, and non-infringement.
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              No Fitness or Medical Guarantees
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              FitQuest does not guarantee any specific fitness outcomes, health improvements, or physical results.
-              Workout recommendations, health scores, and recovery assessments are algorithmic estimates and should not
-              be treated as medical or professional fitness advice. Always consult a qualified healthcare provider
-              before starting any exercise program.
-            </ThemedText>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                No Fitness or Medical Guarantees
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                FitQuest does not guarantee any specific fitness outcomes, health improvements, or physical results.
+                Workout recommendations, health scores, and recovery assessments are algorithmic estimates and should
+                not be treated as medical or professional fitness advice. Always consult a qualified healthcare provider
+                before starting any exercise program.
+              </ThemedText>
 
-            <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Analytics & Data Processing
-            </ThemedText>
-            <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
-              By using FitQuest, you acknowledge that anonymized usage analytics may be collected to improve the
-              service. You may opt out of non-essential analytics at any time via Profile → Privacy & Legal → Usage
-              Analytics. Behavioral personalization (consistency scoring, engagement tracking) is computed entirely on
-              your device and is not transmitted to external servers at any point.
-            </ThemedText>
-          </GlassCard>
+              <ThemedText style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                Analytics & Data Processing
+              </ThemedText>
+              <ThemedText style={[styles.paragraph, { color: theme.colors.textSecondary }]}>
+                By using FitQuest, you acknowledge that anonymized usage analytics may be collected to improve the
+                service. You may opt out of non-essential analytics at any time via Profile → Privacy & Legal → Usage
+                Analytics. Behavioral personalization (consistency scoring, engagement tracking) is computed entirely on
+                your device and is not transmitted to external servers at any point.
+              </ThemedText>
+            </GlassCard>
+          </Animated.View>
         </ScrollView>
       </ScreenContainer>
     </ScreenErrorBoundary>

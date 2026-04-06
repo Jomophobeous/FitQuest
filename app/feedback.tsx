@@ -33,6 +33,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '../src/context/ThemeContext';
 import ThemedText from '../src/components/ThemedText';
+import { GlassCard } from '../src/components/ui/GlassCard';
 import { typography, spacing, radius } from '../src/design/theme-system';
 
 const SUPPORT_EMAIL = 'fitquestsupp0rt@gmail.com';
@@ -276,15 +277,7 @@ export default function FeedbackScreen() {
               <ThemedText style={[styles.sectionLabel, { color: theme.colors.textSecondary, marginTop: spacing[5] }]}>
                 Tell us more
               </ThemedText>
-              <View
-                style={[
-                  styles.inputWrap,
-                  {
-                    backgroundColor: theme.colors.surfaceVariant,
-                    borderColor: theme.colors.border,
-                  },
-                ]}
-              >
+              <GlassCard variant="card" noPadding style={[styles.inputWrap]}>
                 <TextInput
                   ref={inputRef}
                   style={[styles.inputField, { color: theme.colors.text }]}
@@ -307,7 +300,7 @@ export default function FeedbackScreen() {
                 <ThemedText style={[styles.charCount, { color: theme.colors.textMuted }]}>
                   {message.length}/2000
                 </ThemedText>
-              </View>
+              </GlassCard>
             </Animated.View>
           )}
 

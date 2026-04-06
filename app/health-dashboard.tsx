@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import ThemedText from '../src/components/ThemedText';
+import { GlassCard } from '../src/components/ui/GlassCard';
 import { ScreenErrorBoundary } from '../src/components/ScreenErrorBoundary';
 import { ScreenContainer } from '../src/components/ui/primitives';
 import { spacing, radius } from '../src/design/theme-system';
@@ -32,7 +34,7 @@ function MetricRing({
   const percent = Math.round(progress * 100);
 
   return (
-    <View style={[styles.metricCard, { backgroundColor: bgColor }]}>
+    <GlassCard variant="card" style={styles.metricCard}>
       <View style={styles.metricHeader}>
         <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} size={20} color={color} />
         <ThemedText variant="caption" color="muted" style={styles.metricLabel}>
@@ -49,7 +51,7 @@ function MetricRing({
       <View style={styles.progressBarBg}>
         <View style={[styles.progressBarFill, { width: `${percent}%` as `${number}%`, backgroundColor: color }]} />
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
@@ -65,7 +67,7 @@ function SummaryCard({
   bgColor: string;
 }) {
   return (
-    <View style={[styles.summaryCard, { backgroundColor: bgColor }]}>
+    <GlassCard variant="card" style={styles.summaryCard}>
       <ThemedText variant="h4" style={styles.summaryTitle}>
         {title}
       </ThemedText>
@@ -77,7 +79,7 @@ function SummaryCard({
           <ThemedText variant="body">{item.value}</ThemedText>
         </View>
       ))}
-    </View>
+    </GlassCard>
   );
 }
 
@@ -160,67 +162,73 @@ function HealthDashboardContent() {
         </View>
 
         {/* Today's Metrics */}
-        <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
-          Today
-        </ThemedText>
-        <View style={styles.metricsGrid}>
-          <MetricRing
-            label="Steps"
-            value={steps}
-            target={goals?.dailySteps ?? 10000}
-            unit="steps"
-            icon="shoe-print"
-            color="#10B981"
-            bgColor={cardBg}
-          />
-          <MetricRing
-            label="Calories"
-            value={calories}
-            target={goals?.dailyCalories ?? 500}
-            unit="kcal"
-            icon="fire"
-            color="#F4A427"
-            bgColor={cardBg}
-          />
-          <MetricRing
-            label="Active"
-            value={activeMin}
-            target={goals?.dailyActiveMinutes ?? 30}
-            unit="min"
-            icon="run"
-            color="#3B82F6"
-            bgColor={cardBg}
-          />
-        </View>
+        <Animated.View entering={FadeInDown.delay(100).duration(200)}>
+          <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
+            Today
+          </ThemedText>
+          <View style={styles.metricsGrid}>
+            <MetricRing
+              label="Steps"
+              value={steps}
+              target={goals?.dailySteps ?? 10000}
+              unit="steps"
+              icon="shoe-print"
+              color={theme.colors.success}
+              bgColor={cardBg}
+            />
+            <MetricRing
+              label="Calories"
+              value={calories}
+              target={goals?.dailyCalories ?? 500}
+              unit="kcal"
+              icon="fire"
+              color={theme.colors.warning}
+              bgColor={cardBg}
+            />
+            <MetricRing
+              label="Active"
+              value={activeMin}
+              target={goals?.dailyActiveMinutes ?? 30}
+              unit="min"
+              icon="run"
+              color={theme.colors.blue}
+              bgColor={cardBg}
+            />
+          </View>
+        </Animated.View>
 
         {/* Goal Progress */}
-        <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
-          Goal Progress
-        </ThemedText>
-        <SummaryCard
-          title="Daily Goals"
-          bgColor={cardBg}
-          items={[
-            { label: 'Steps', value: `${Math.round((goalProgress.steps ?? 0) * 100)}%` },
-            { label: 'Calories', value: `${Math.round((goalProgress.calories ?? 0) * 100)}%` },
-            { label: 'Active Minutes', value: `${Math.round((goalProgress.activeMinutes ?? 0) * 100)}%` },
-          ]}
-        />
+        <Animated.View entering={FadeInDown.delay(200).duration(200)}>
+          <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
+            Goal Progress
+          </ThemedText>
+          <SummaryCard
+            title="Daily Goals"
+            bgColor={cardBg}
+            items={[
+              { label: 'Steps', value: `${Math.round((goalProgress.steps ?? 0) * 100)}%` },
+              { label: 'Calories', value: `${Math.round((goalProgress.calories ?? 0) * 100)}%` },
+              { label: 'Active Minutes', value: `${Math.round((goalProgress.activeMinutes ?? 0) * 100)}%` },
+            ]}
+          />
+        </Animated.View>
 
         {/* Weekly Summary */}
-        <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
-          This Week
-        </ThemedText>
-        <SummaryCard
-          title="7-Day Totals"
-          bgColor={cardBg}
-          items={[
-            { label: 'Total Steps', value: weekSteps.toLocaleString() },
-            { label: 'Total Calories', value: `${weekCalories.toLocaleString()} kcal` },
-            { label: 'Workouts', value: String(weekWorkouts) },
-            { label: 'Days Tracked', value: String(weekSummaries.length) },
-          ]}
-        />
+        <Animated.View entering={FadeInDown.delay(300).duration(200)}>
+          <ThemedText variant="h4" color="secondary" style={styles.sectionLabel}>
+            This Week
+          </ThemedText>
+          <SummaryCard
+            title="7-Day Totals"
+            bgColor={cardBg}
+            items={[
+              { label: 'Total Steps', value: weekSteps.toLocaleString() },
+              { label: 'Total Calories', value: `${weekCalories.toLocaleString()} kcal` },
+              { label: 'Workouts', value: String(weekWorkouts) },
+              { label: 'Days Tracked', value: String(weekSummaries.length) },
+            ]}
+          />
+        </Animated.View>
 
         {/* Streak */}
         <SummaryCard
@@ -265,7 +273,7 @@ const styles = StyleSheet.create({
   progressBarBg: {
     height: 4,
     borderRadius: radius.sm,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(128,128,128,0.12)',
     marginTop: spacing[2],
     overflow: 'hidden',
   },
@@ -284,7 +292,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: spacing[1.5],
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+    borderBottomColor: 'rgba(128,128,128,0.08)',
   },
   spacer: { height: spacing[12] },
 });

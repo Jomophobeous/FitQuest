@@ -25,13 +25,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[2],
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  spacer: { width: 36 },
+  spacer: { width: 48 },
   title: { fontSize: typography.sizes.h3, fontWeight: '800' },
   summaryCard: { marginHorizontal: spacing[4], marginTop: spacing[2], padding: spacing[4], gap: spacing[2] },
   summaryRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
@@ -190,7 +190,7 @@ export default function LegalCenterScreen() {
               onPress={() => openUrl(vm.links.privacyPolicyUrl)}
             >
               <View style={styles.linkLeft}>
-                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
+                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.blue} />
                 <View>
                   <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>
                     {t('legal.privacyPolicyExternal')}
@@ -211,7 +211,7 @@ export default function LegalCenterScreen() {
               onPress={() => openUrl(vm.links.termsOfServiceUrl)}
             >
               <View style={styles.linkLeft}>
-                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.accent2} />
+                <MaterialCommunityIcons name="open-in-new" size={18} color={theme.colors.blue} />
                 <View>
                   <ThemedText style={[styles.linkTitle, { color: theme.colors.text }]}>
                     {t('legal.termsOfServiceExternal')}

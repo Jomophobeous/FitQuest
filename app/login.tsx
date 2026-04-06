@@ -742,7 +742,7 @@ export default function LoginScreen() {
                       styles.oauthDiag,
                       {
                         borderColor: hasOAuthConfigIssue ? theme.colors.warning : theme.colors.border,
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : theme.colors.surface,
+                        backgroundColor: theme.isDark ? theme.colors.surfaceVariant : theme.colors.surface,
                       },
                     ]}
                   >
@@ -781,7 +781,7 @@ export default function LoginScreen() {
                         setMode('biometric');
                         setError('');
                       }}
-                      style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                      style={[styles.altBtn, { borderColor: theme.colors.border }]}
                     >
                       <MaterialCommunityIcons name="fingerprint" size={18} color={theme.colors.textMuted} />
                       <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>
@@ -795,7 +795,7 @@ export default function LoginScreen() {
                         setMode('passcode');
                         setError('');
                       }}
-                      style={[styles.altBtn, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}
+                      style={[styles.altBtn, { borderColor: theme.colors.border }]}
                     >
                       <MaterialCommunityIcons name="dialpad" size={18} color={theme.colors.textMuted} />
                       <ThemedText style={[styles.altBtnText, { color: theme.colors.textMuted }]}>

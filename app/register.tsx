@@ -40,6 +40,17 @@ import { validateEmail, validatePassword, validateName } from '../src/utils/vali
 import { typography, spacing, radius } from '../src/design/theme-system';
 import { MOTION } from '../src/design/motion';
 
+function sanitizeAuthError(raw: string): string {
+  if (__DEV__) return raw;
+  if (raw.includes('SecureStore') || raw.includes('accessToken')) {
+    return 'Authentication error. Please try again.';
+  }
+  if (raw.includes('network') || raw.includes('fetch')) {
+    return 'Connection error. Check your internet and try again.';
+  }
+  return raw;
+}
+
 const { width: _width } = Dimensions.get('window');
 
 export default function RegisterScreen() {
@@ -114,7 +125,7 @@ export default function RegisterScreen() {
       await signUp(email, password, name);
       router.replace('/dashboard');
     } catch (err: any) {
-      setErrorMsg(err.message || t('register.failed'));
+      setErrorMsg(sanitizeAuthError(err.message || t('register.failed')));
       triggerShake();
     } finally {
       setIsLoading(false);
@@ -316,6 +327,20 @@ export default function RegisterScreen() {
                   variant="primary"
                 />
               </View>
+
+              {/* Continue Offline */}
+              <TouchableOpacity
+                style={[styles.offlineBtn, { borderColor: theme.colors.accent }]}
+                onPress={() => router.replace('/dashboard')}
+                activeOpacity={0.9}
+                accessibilityRole="button"
+                accessibilityLabel="Continue offline"
+              >
+                <MaterialCommunityIcons name="account-check" size={18} color={theme.colors.accent} />
+                <ThemedText style={[styles.offlineBtnText, { color: theme.colors.accent }]}>
+                  {t('login.continueOffline') ?? 'Continue Offline'}
+                </ThemedText>
+              </TouchableOpacity>
             </Animated.View>
 
             {/* Footer */}
@@ -401,6 +426,17 @@ const styles = StyleSheet.create({
   strengthFill: { height: '100%', borderRadius: radius.sm },
   strengthLabel: { fontSize: typography.sizes.captionSm, fontWeight: '600' },
   submitWrap: { marginTop: spacing[2] },
+  offlineBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[2],
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    paddingVertical: spacing[3.5],
+    marginTop: spacing[3],
+  },
+  offlineBtnText: { fontSize: typography.sizes.bodySmall, fontWeight: '700' },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',

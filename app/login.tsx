@@ -50,6 +50,17 @@ type AuthMode = 'biometric' | 'passcode' | 'email';
 
 WebBrowser.maybeCompleteAuthSession();
 
+function sanitizeAuthError(raw: string): string {
+  if (__DEV__) return raw;
+  if (raw.includes('SecureStore') || raw.includes('accessToken')) {
+    return 'Authentication error. Please try again.';
+  }
+  if (raw.includes('network') || raw.includes('fetch')) {
+    return 'Connection error. Check your internet and try again.';
+  }
+  return raw;
+}
+
 export default function LoginScreen() {
   console.warn('[LoginScreen] Rendering login screen');
   const { theme } = useTheme();
@@ -164,7 +175,7 @@ export default function LoginScreen() {
         await signInWithGoogleToken(idToken);
         router.replace('/dashboard');
       } catch (err: any) {
-        setError(err.message || t('login.error.googleFailed'));
+        setError(sanitizeAuthError(err.message || t('login.error.googleFailed')));
         triggerShake();
       } finally {
         setSocialSubmitting(false);
@@ -280,7 +291,7 @@ export default function LoginScreen() {
       rateLimiter.reset('email_signin');
       router.replace('/dashboard');
     } catch (err: any) {
-      setError(err.message || t('login.error.signInFailed'));
+      setError(sanitizeAuthError(err.message || t('login.error.signInFailed')));
       triggerShake();
     } finally {
       setSubmitting(false);
@@ -305,7 +316,7 @@ export default function LoginScreen() {
         setSocialSubmitting(false);
       }
     } catch (err: any) {
-      setError(err?.message || t('login.error.googleFailed'));
+      setError(sanitizeAuthError(err?.message || t('login.error.googleFailed')));
       setSocialSubmitting(false);
     }
   };
@@ -327,7 +338,7 @@ export default function LoginScreen() {
       const onboardingDone = await getState('onboarding_complete').catch(() => null);
       router.replace(onboardingDone === 'true' ? '/dashboard' : '/onboarding');
     } catch (err: any) {
-      setError(err?.message || 'Failed to start offline mode');
+      setError(sanitizeAuthError(err?.message || 'Failed to start offline mode'));
     }
   };
 
@@ -353,7 +364,7 @@ export default function LoginScreen() {
     } catch (err: any) {
       const cancelled = err?.code === 'ERR_REQUEST_CANCELED';
       if (!cancelled) {
-        setError(err.message || t('login.error.appleFailed'));
+        setError(sanitizeAuthError(err.message || t('login.error.appleFailed')));
         triggerShake();
       }
     } finally {
@@ -440,6 +451,11 @@ export default function LoginScreen() {
                 <ThemedText style={[styles.biometricLabel, { color: theme.colors.text }]}>
                   {Platform.OS === 'ios' ? t('login.tapToUnlockFaceId') : t('login.tapToUnlockFingerprint')}
                 </ThemedText>
+                {!biometricCapability?.isAvailable && (
+                  <ThemedText style={{ color: theme.colors.textMuted, fontSize: 12, textAlign: 'center', marginTop: spacing[1] }}>
+                    Set up biometrics in device settings to enable
+                  </ThemedText>
+                )}
 
                 {failedAttempts > 0 && failedAttempts < 5 && (
                   <Animated.View entering={FadeIn.duration(150)}>
@@ -737,6 +753,7 @@ export default function LoginScreen() {
                     </TouchableOpacity>
                   )}
 
+                  {__DEV__ && (
                   <View
                     style={[
                       styles.oauthDiag,
@@ -763,6 +780,7 @@ export default function LoginScreen() {
                       </ThemedText>
                     ))}
                   </View>
+                  )}
                 </View>
 
                 <View style={styles.registerRow}>
@@ -903,7 +921,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing[1],
   },
-  emailBtnText: { fontSize: typography.sizes.body, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
+  emailBtnText: { fontSize: typography.sizes.body, fontWeight: '900', letterSpacing: 1 },
 
   socialWrap: { width: '100%', gap: spacing[2.5], marginTop: spacing[2] },
   socialBtn: {

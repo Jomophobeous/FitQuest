@@ -40,6 +40,7 @@ import {
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { AnimatedListItem, GradientButton } from '../src/components/ui/GlassUI';
 import { GlassCard } from '../src/components/ui/GlassCard';
+import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
 import ExerciseImage from '../src/components/ExerciseImage';
 import ThemedText from '../src/components/ThemedText';
 import { typography, spacing, radius } from '../src/design/theme-system';
@@ -162,6 +163,13 @@ const ExerciseCard = React.memo(function ExerciseCard({
           </View>
         </View>
       </GlassCard>
+    </AnimatedListItem>
+  );
+});
+
+// ============================================
+// COMPONENT
+// ============================================
 
 export default function ExercisesScreen() {
   const { theme } = useTheme();
@@ -654,7 +662,7 @@ export default function ExercisesScreen() {
 
         {/* ── FAB: CREATE WORKOUT ── */}
         <TouchableOpacity
-          style={[styles.fab, { backgroundColor: theme.colors.accent }]}
+          style={[styles.fab, { backgroundColor: theme.colors.accent, shadowColor: theme.colors.accentDark }]}
           onPress={() => {
             haptic('buttonPress');
             router.push('/create-workout' as any);
@@ -746,7 +754,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
-    shadowColor: theme.colors.accentDark,
+    shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,

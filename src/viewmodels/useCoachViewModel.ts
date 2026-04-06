@@ -8,6 +8,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import type { CoachStatusData } from '../components/coach/CoachStatusCard';
 import { FlatList, Keyboard, Platform, Share, BackHandler } from 'react-native';
 import type { TextInput, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -118,6 +119,7 @@ export const useCoachViewModel = createViewModel(() => {
   const stopRequestedRef = useRef(false);
   const lastUserInputRef = useRef<string>('');
   const editingMsgIdRef = useRef<string | null>(null);
+  const coachStatusDataRef = useRef<CoachStatusData | null>(null);
   const streamResponseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── State ──
@@ -340,10 +342,10 @@ export const useCoachViewModel = createViewModel(() => {
           }
 
           if (ctx.readinessStatus) {
-            greeting = `📊 **${language !== 'en' ? ctx.readinessStatus : 'Your Status: ' + ctx.readinessStatus}**\n\n${baseGreeting}`;
-          } else {
-            greeting = baseGreeting;
+            const parsed = parseReadinessStatus(ctx.readinessStatus);
+            if (parsed) coachStatusDataRef.current = parsed;
           }
+          greeting = baseGreeting;
         }
       } catch (e) {
         if (__DEV__) console.warn('[Coach] Greeting generation failed, using fallback:', e);
@@ -879,7 +881,29 @@ export const useCoachViewModel = createViewModel(() => {
     scrollToBottom,
     closeActions,
     navigateToWorkout,
+    coachStatusData: coachStatusDataRef.current,
   };
 });
+
+function parseReadinessStatus(status: string): CoachStatusData | null {
+  try {
+    const readinessMatch = status.match(/Readiness:\s*(\d+)\/100/);
+    const lastWorkoutMatch = status.match(/Last workout:\s*([^.]+)\./);
+    const fatigueMatch = status.match(/Fatigue:\s*(\d+)%/);
+    const musclesMatch = status.match(/\((\d+)\s*fresh,\s*(\d+)\s*fatigued\)/);
+    const intensityMatch = status.match(/Recommended intensity:\s*(\w+)/);
+
+    return {
+      readiness: readinessMatch ? parseInt(readinessMatch[1]!, 10) : 50,
+      lastWorkout: lastWorkoutMatch ? lastWorkoutMatch[1]!.trim() : null,
+      fatiguePercent: fatigueMatch ? parseInt(fatigueMatch[1]!, 10) : 0,
+      freshMuscles: musclesMatch ? parseInt(musclesMatch[1]!, 10) : 0,
+      fatiguedMuscles: musclesMatch ? parseInt(musclesMatch[2]!, 10) : 0,
+      recommendedIntensity: intensityMatch ? intensityMatch[1]! : 'moderate',
+    };
+  } catch {
+    return null;
+  }
+}
 
 export type CoachViewModel = ReturnType<typeof useCoachViewModel>;

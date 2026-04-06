@@ -28,6 +28,7 @@ import { ScreenErrorBoundary } from '../../src/components/ScreenErrorBoundary';
 import ScreenTutorial from '../../src/components/ScreenTutorial';
 import PremiumGate from '../../src/components/PremiumGate';
 import { useCoachViewModel, type ChatMessage } from '../../src/viewmodels/useCoachViewModel';
+import { CoachStatusCard } from '../../src/components/coach/CoachStatusCard';
 import { typography, spacing, radius } from '../../src/design/theme-system';
 import ThemedText from '../../src/components/ThemedText';
 import { coachStyles as styles } from '../../src/components/coach/styles';
@@ -177,6 +178,8 @@ function CoachScreenInner() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
       >
+        {/* ── STATUS CARD ── */}
+        {vm.coachStatusData && <CoachStatusCard data={vm.coachStatusData} />}
         {/* ── MESSAGES ── */}
         <FlatList
           ref={vm.scrollRef}
@@ -471,7 +474,7 @@ function CoachScreenInner() {
                   <LinearGradient
                     colors={
                       vm.input.trim()
-                        ? ([theme.colors.accent, theme.colors.indigo] as [string, string])
+                        ? ([theme.colors.accent, theme.colors.accentDark] as [string, string])
                         : ([theme.colors.surfaceVariant, theme.colors.surface] as [string, string])
                     }
                     style={styles.sendButton}

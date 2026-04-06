@@ -448,7 +448,7 @@ export const useProfileViewModel = createViewModel(() => {
       setEquipmentLevel(eqLevel);
       if (scheduleData) setProfessionSchedule(scheduleData);
 
-      const displayName = savedName || 'Athlete';
+      const displayName = savedName || '';
       if (savedProfilePic) setProfilePicUri(savedProfilePic);
 
       try {
@@ -476,7 +476,7 @@ export const useProfileViewModel = createViewModel(() => {
       }
 
       setProfile((prev) => ({
-        name: savedName || prev?.name || 'Athlete',
+        name: savedName || prev?.name || '',
         email: '',
         goal: userProfile?.goal || 'body_control',
         experience: userProfile?.experience || 'beginner',

@@ -425,7 +425,7 @@ function buildAdaptiveSystemPrompt(context: AIContext, input: string): string {
       if (profile.streakDays >= 30) parts.push('  → Amazing consistency! Celebrate this milestone.');
       else if (profile.streakDays >= 7) parts.push('  → Solid streak going! Encourage them to keep it up.');
     }
-    if (profile?.name && profile.name !== 'Athlete') parts.push(`- Name: ${profile.name}`);
+    if (profile?.name && profile.name !== '') parts.push(`- Name: ${profile.name}`);
     if (profile?.goals?.length) parts.push(`- Goal: ${profile.goals.join(', ')}`);
     if (profile?.fitnessLevel) parts.push(`- Experience: ${profile.fitnessLevel}`);
     if (profile?.level) parts.push(`- Level: ${profile.level} (${profile.totalXP || 0} XP)`);

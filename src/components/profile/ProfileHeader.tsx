@@ -117,16 +117,14 @@ export const ProfileHeader = memo(function ProfileHeader({
               ) : (
                 <TouchableOpacity
                   onPress={() => {
-                    setEditNameValue(profile?.name || 'Athlete');
+                    setEditNameValue(profile?.name || '');
                     setIsEditingName(true);
                   }}
                   accessibilityRole="button"
                   accessibilityLabel="Edit profile name"
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
-                    <ThemedText style={[s.profileName, { color: theme.colors.text }]}>
-                      {profile?.name || 'Athlete'}
-                    </ThemedText>
+                    <ThemedText style={[s.profileName, { color: theme.colors.text }]}>{profile?.name || ''}</ThemedText>
                     <MaterialCommunityIcons name="pencil-outline" size={16} color={theme.colors.textMuted} />
                   </View>
                 </TouchableOpacity>

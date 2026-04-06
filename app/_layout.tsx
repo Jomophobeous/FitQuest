@@ -171,7 +171,7 @@ function ThemedTabs() {
           title: t('nav.aiCoach'),
           tabBarAccessibilityLabel: 'AI Coach tab',
           headerShown: false,
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="robot-happy" size={22} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="head-flash-outline" size={22} color={color} />,
         }}
       />
 

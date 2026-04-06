@@ -463,7 +463,7 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
       {
         label: t('dashboard.coach') || 'Coach',
         desc: t('dashboard.coachDesc') || 'AI fitness guidance',
-        icon: 'robot-happy',
+        icon: 'head-flash-outline',
         color: theme.colors.purple,
         route: '/coach',
         flag: null,

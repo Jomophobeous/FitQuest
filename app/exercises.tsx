@@ -39,7 +39,7 @@ import {
 } from '../src/viewmodels/useExercisesViewModel';
 import ScreenTutorial from '../src/components/ScreenTutorial';
 import { AnimatedListItem, GradientButton } from '../src/components/ui/GlassUI';
-import { ExerciseDetailSheet } from '../src/components/ExerciseDetailSheet';
+import { GlassCard } from '../src/components/ui/GlassCard';
 import ExerciseImage from '../src/components/ExerciseImage';
 import ThemedText from '../src/components/ThemedText';
 import { typography, spacing, radius } from '../src/design/theme-system';
@@ -106,12 +106,11 @@ const ExerciseCard = React.memo(function ExerciseCard({
       accessibilityLabel={`${item.name}, ${item.difficulty}, ${item.category}`}
       accessibilityHint="Double tap to view exercise details"
     >
-      <View
+      <GlassCard
+        variant="card"
         style={[
           styles.exerciseCard,
           {
-            backgroundColor: 'rgba(255,255,255,0.06)',
-            borderColor: theme.colors.border,
             borderLeftWidth: 2,
             borderLeftColor: categoryColor,
           },
@@ -162,14 +161,7 @@ const ExerciseCard = React.memo(function ExerciseCard({
             <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
           </View>
         </View>
-      </View>
-    </AnimatedListItem>
-  );
-});
-
-// ============================================
-// COMPONENT
-// ============================================
+      </GlassCard>
 
 export default function ExercisesScreen() {
   const { theme } = useTheme();

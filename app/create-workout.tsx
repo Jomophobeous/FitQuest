@@ -18,8 +18,10 @@ import { useCreateWorkoutViewModel } from '../src/viewmodels/useCreateWorkoutVie
 import { haptic } from '../src/utils/haptics';
 import type { ExerciseWithDetails, Category } from '../src/database/types';
 import ThemedText from '../src/components/ThemedText';
-import Card from '../src/components/Card';
+import { GlassCard } from '../src/components/ui/GlassCard';
+import { GlassButton } from '../src/components/ui/GlassButton';
 import ExerciseImage from '../src/components/ExerciseImage';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { typography, spacing } from '../src/design/theme-system';
 import { createWorkoutStyles as styles } from '../src/components/create-workout/styles';
 
@@ -557,7 +559,8 @@ export default function CreateWorkoutScreen() {
 
         <ScrollView contentContainerStyle={{ padding: spacing[4], paddingBottom: spacing[25] }}>
           {selected.map((item, index) => (
-            <Card key={item.exercise.id} style={styles.configCard}>
+            <Animated.View key={item.exercise.id} entering={FadeInDown.delay(index * 50).duration(300)}>
+            <GlassCard variant="card" style={styles.configCard}>
               <View style={styles.configHeader}>
                 <ExerciseImage
                   exerciseId={item.exercise.id}
@@ -759,7 +762,8 @@ export default function CreateWorkoutScreen() {
                   </TouchableOpacity>
                 </View>
               )}
-            </Card>
+            </GlassCard>
+            </Animated.View>
           ))}
         </ScrollView>
       </ScreenContainer>
@@ -780,7 +784,8 @@ export default function CreateWorkoutScreen() {
 
         <ScrollView contentContainerStyle={{ padding: spacing[4], paddingBottom: spacing[25] }}>
           {/* Summary */}
-          <Card style={styles.summaryCard}>
+          <Animated.View entering={FadeInDown.duration(300)}>
+          <GlassCard variant="card" style={styles.summaryCard}>
             <ThemedText variant="h3">{workoutName.trim() || t('createWorkout.customWorkout')}</ThemedText>
             <View style={styles.summaryRow}>
               <View style={styles.summaryItem}>
@@ -802,11 +807,13 @@ export default function CreateWorkoutScreen() {
                 </ThemedText>
               </View>
             </View>
-          </Card>
+          </GlassCard>
+          </Animated.View>
 
           {/* Exercise List */}
           {selected.map((item, index) => (
-            <Card key={item.exercise.id} style={styles.previewExercise}>
+            <Animated.View key={item.exercise.id} entering={FadeInDown.delay(index * 50).duration(300)}>
+            <GlassCard variant="card" style={styles.previewExercise}>
               <View style={styles.previewRow}>
                 <View style={[styles.orderBadge, { backgroundColor: theme.colors.accent }]}>
                   <ThemedText
@@ -844,19 +851,19 @@ export default function CreateWorkoutScreen() {
                   )}
                 </View>
               </View>
-            </Card>
+            </GlassCard>
+            </Animated.View>
           ))}
 
           {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: theme.colors.success }]}
+          <GlassButton
+            label={t('createWorkout.saveWorkout')}
             onPress={handleSaveWorkout}
-          >
-            <MaterialCommunityIcons name="content-save" size={20} color={theme.colors.onAccent} />
-            <ThemedText style={[styles.saveButtonText, { color: theme.colors.text }]}>
-              {t('createWorkout.saveWorkout')}
-            </ThemedText>
-          </TouchableOpacity>
+            variant="primary"
+            size="lg"
+            icon={<MaterialCommunityIcons name="content-save" size={20} color={theme.colors.onAccent} />}
+            style={{ marginTop: spacing[4] }}
+          />
         </ScrollView>
       </ScreenContainer>
     </ScreenErrorBoundary>

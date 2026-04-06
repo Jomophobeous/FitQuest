@@ -70,6 +70,7 @@ const bioAuth = BiometricAuthService.getInstance();
 
 export interface ProfileData {
   name: string;
+  email: string;
   goal: string;
   experience: string;
   trainingDays: number;
@@ -475,6 +476,7 @@ export const useProfileViewModel = createViewModel(() => {
 
       setProfile((prev) => ({
         name: savedName || prev?.name || 'Athlete',
+        email: '',
         goal: userProfile?.goal || 'body_control',
         experience: userProfile?.experience || 'beginner',
         trainingDays: userProfile?.training_days_per_week || 3,
@@ -506,6 +508,7 @@ export const useProfileViewModel = createViewModel(() => {
       await setCached('profile', 'main', {
         profile: {
           name: displayName,
+          email: '',
           goal: userProfile?.goal || 'body_control',
           experience: userProfile?.experience || 'beginner',
           trainingDays: userProfile?.training_days_per_week || 3,

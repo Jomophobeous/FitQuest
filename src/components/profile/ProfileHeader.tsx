@@ -133,6 +133,13 @@ export const ProfileHeader = memo(function ProfileHeader({
               )}
             </Animated.View>
 
+            {/* Email */}
+            <Animated.View entering={FadeInDown.delay(65).duration(150)}>
+              <ThemedText style={[s.profileEmail, { color: theme.colors.textMuted }]}>
+                {profile?.email || ''}
+              </ThemedText>
+            </Animated.View>
+
             {/* Goal badge */}
             <Animated.View entering={FadeInDown.delay(80).duration(150)}>
               <View style={[s.goalBadge, { backgroundColor: goalInfo.color + '20' }]}>
@@ -203,6 +210,11 @@ const s = StyleSheet.create({
     fontSize: typography.sizes.h2,
     fontWeight: '700',
     letterSpacing: 0.3,
+    marginBottom: spacing[2],
+  },
+  profileEmail: {
+    fontSize: typography.sizes.caption,
+    fontWeight: '400',
     marginBottom: spacing[2],
   },
   goalBadge: {

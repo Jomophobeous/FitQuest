@@ -24,7 +24,7 @@ import { ThemedPickerModal, MenuItem, adaptiveLabel } from '../src/components/pr
 import { ScheduleModal, HelpModal, AboutModal } from '../src/components/profile/ProfileModals';
 import { ProfileHeader } from '../src/components/profile/ProfileHeader';
 import { StatsGrid, AchievementsCard } from '../src/components/profile/ProfileStats';
-import { LanguagePillGrid, ThemePillRow } from '../src/components/profile/InlinePickers';
+import { ThemePillRow } from '../src/components/profile/InlinePickers';
 import { AccountSection } from '../src/components/profile/AccountSection';
 import { SUPPORTED_LANGUAGES } from '../src/i18n/translations';
 import type { ThemeMode } from '../src/design/theme-system';
@@ -198,75 +198,6 @@ export default function ProfileScreen() {
               </View>
             </View>
 
-            {/* ── MIND XP ── */}
-            <View style={styles.section}>
-              <SectionHeader title={t('profile.mindXP') || 'Mind XP'} delay={275} />
-              <GlassCard gradient delay={280}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing[3] }}>
-                  <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.purple + '18' }]}>
-                    <MaterialCommunityIcons name="head-lightbulb-outline" size={22} color={theme.colors.purple} />
-                  </View>
-                  <View style={{ flex: 1, marginLeft: spacing[3] }}>
-                    <ThemedText
-                      style={[styles.menuLabel, { color: theme.colors.text, fontSize: typography.sizes.body }]}
-                    >
-                      {t('profile.craftMyMind') || 'Craft My Mind'}
-                    </ThemedText>
-                    <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
-                      {mindXP?.total_mind_xp || 0} Mind XP
-                    </ThemedText>
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: theme.colors.warning + '25',
-                      paddingHorizontal: spacing[2],
-                      paddingVertical: spacing[0.75],
-                      borderRadius: radius.sm,
-                    }}
-                  >
-                    <ThemedText
-                      style={{
-                        color: theme.colors.warning,
-                        fontSize: typography.sizes.xs,
-                        fontWeight: '700',
-                        letterSpacing: 0.5,
-                      }}
-                    >
-                      {t('profile.comingSoon') || 'COMING SOON'}
-                    </ThemedText>
-                  </View>
-                </View>
-                <View style={{ opacity: 0.5 }}>
-                  <View style={styles.achievementRow}>
-                    <View style={styles.achievementItem}>
-                      <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
-                        {mindXP?.pages_read_total || 0}
-                      </ThemedText>
-                      <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
-                        {t('profile.pagesRead') || 'Pages Read'}
-                      </ThemedText>
-                    </View>
-                    <View style={styles.achievementItem}>
-                      <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
-                        {mindXP?.flashcards_reviewed_total || 0}
-                      </ThemedText>
-                      <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
-                        {t('profile.cardsReviewed') || 'Cards Reviewed'}
-                      </ThemedText>
-                    </View>
-                    <View style={styles.achievementItem}>
-                      <ThemedText style={[styles.achievementLabel, { color: theme.colors.text }]}>
-                        {mindXP?.documents_completed || 0}
-                      </ThemedText>
-                      <ThemedText style={[styles.achievementSub, { color: theme.colors.textMuted }]}>
-                        {t('profile.booksDone') || 'Books Done'}
-                      </ThemedText>
-                    </View>
-                  </View>
-                </View>
-              </GlassCard>
-            </View>
-
             {/* ── ACHIEVEMENTS CARD ── */}
             <AchievementsCard stats={stats} />
 
@@ -287,229 +218,32 @@ export default function ProfileScreen() {
             <View style={styles.section}>
               <SectionHeader title={t('profile.trainingProfile')} delay={400} />
               <MenuItem
-                icon="target"
-                label={t('profile.trainingGoal')}
-                sublabel={`${goalLabel} — ${t('profile.trainingGoalSub')}`}
-                color={goalInfo.color}
-                delay={440}
-                onPress={handleGoalChange}
-              />
-              <MenuItem
-                icon="calendar-week"
-                label={t('profile.trainingDays')}
-                sublabel={`${profile?.trainingDays || 3} ${t('profile.daysPerWeek')} — ${t('profile.trainingDaysSub')}`}
-                color={theme.colors.indigo}
-                delay={460}
-                onPress={handleTrainingDays}
-              />
-              <MenuItem
-                icon="clock-outline"
-                label={t('profile.sessionLength')}
-                sublabel={`${profile?.sessionMinutes || 30} ${t('common.minutes')} — ${t('profile.sessionLengthSub')}`}
-                color={theme.colors.accent}
-                delay={480}
-                onPress={handleSessionLength}
-              />
-              <MenuItem
-                icon="signal-cellular-3"
-                label={t('profile.experience')}
-                sublabel={`${(profile?.experience || 'beginner').charAt(0).toUpperCase() + (profile?.experience || 'beginner').slice(1)} — ${t('profile.experienceSub')}`}
-                color={theme.colors.warning}
-                delay={500}
-                onPress={handleExperience}
-              />
-              <MenuItem
                 icon="dumbbell"
-                label={t('profile.equipmentLevel')}
-                sublabel={`${t(`profile.equipment.${equipmentLevel}`)} — ${t('profile.equipmentLevelSub')}`}
-                color={theme.colors.accent2}
-                delay={510}
-                onPress={handleEquipmentLevel}
-              />
-              {featureFlagsService.isEnabled('BODY_CRAFT_MODULE') && (
-                <MenuItem
-                  icon="human-edit"
-                  label={t('profile.craftMyBody')}
-                  sublabel={t('profile.craftMyBodySub')}
-                  color={theme.colors.pink}
-                  delay={520}
-                  onPress={() => router.push('/craft-my-body')}
-                />
-              )}
-              <MenuItem
-                icon="briefcase-clock-outline"
-                label={t('profile.workSchedule') || 'Work Schedule'}
-                sublabel={scheduleLabel}
-                color={theme.colors.blue}
-                delay={530}
-                onPress={handleWorkSchedule}
+                label={t('profile.trainingProfile')}
+                sublabel={`${goalLabel} · ${profile?.trainingDays || 3} ${t('common.daysPerWeek')} · ${profile?.sessionMinutes || 30} ${t('common.minutes')}`}
+                color={theme.colors.accent}
+                delay={420}
+                onPress={() => router.push('/training-profile' as any)}
               />
             </View>
 
-            {/* ── ADAPTIVE PROFILE ── */}
+            {/* ── ADAPTIVE TRAINING ── */}
             <View style={styles.section}>
-              <SectionHeader title={t('profile.adaptiveTraining')} delay={530} />
-              <GlassCard delay={560}>
-                <ThemedText
-                  style={{
-                    color: theme.colors.textMuted,
-                    fontSize: typography.sizes.caption,
-                    marginBottom: spacing[3],
-                    lineHeight: 18,
-                  }}
-                >
-                  {t('profile.adaptiveExplanation')}
-                </ThemedText>
-
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setExpandedAdaptive(expandedAdaptive === 'fatigue' ? null : 'fatigue')}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Fatigue sensitivity${expandedAdaptive === 'fatigue' ? ', expanded' : ''}`}
-                >
-                  <View style={styles.adaptiveRow}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-                      <MaterialCommunityIcons name="heart-pulse" size={16} color={theme.colors.error} />
-                      <ThemedText style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
-                        {t('profile.fatigueSensitivity')}
-                      </ThemedText>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
-                      <ThemedText style={[styles.adaptiveValue, { color: theme.colors.text }]}>
-                        {adaptiveLabel(adaptiveProfile ? adaptiveProfile.fatigueSensitivity : 1)}
-                      </ThemedText>
-                      <MaterialCommunityIcons
-                        name={expandedAdaptive === 'fatigue' ? 'chevron-up' : 'chevron-down'}
-                        size={14}
-                        color={theme.colors.textMuted}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-                {expandedAdaptive === 'fatigue' && (
-                  <Animated.View
-                    entering={FadeInDown.duration(150)}
-                    style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}
-                  >
-                    <ThemedText
-                      style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}
-                    >
-                      {t('profile.fatigueSensitivityDesc')}
-                    </ThemedText>
-                  </Animated.View>
-                )}
-
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setExpandedAdaptive(expandedAdaptive === 'progression' ? null : 'progression')}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Progression pace${expandedAdaptive === 'progression' ? ', expanded' : ''}`}
-                >
-                  <View style={styles.adaptiveRow}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-                      <MaterialCommunityIcons name="trending-up" size={16} color={theme.colors.accent} />
-                      <ThemedText style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
-                        {t('profile.progressionPace')}
-                      </ThemedText>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
-                      <ThemedText style={[styles.adaptiveValue, { color: theme.colors.text }]}>
-                        {adaptiveLabel(adaptiveProfile ? adaptiveProfile.progressionAggressiveness : 1)}
-                      </ThemedText>
-                      <MaterialCommunityIcons
-                        name={expandedAdaptive === 'progression' ? 'chevron-up' : 'chevron-down'}
-                        size={14}
-                        color={theme.colors.textMuted}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-                {expandedAdaptive === 'progression' && (
-                  <Animated.View
-                    entering={FadeInDown.duration(150)}
-                    style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}
-                  >
-                    <ThemedText
-                      style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}
-                    >
-                      {t('profile.progressionPaceDesc')}
-                    </ThemedText>
-                  </Animated.View>
-                )}
-
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setExpandedAdaptive(expandedAdaptive === 'volume' ? null : 'volume')}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Volume tolerance${expandedAdaptive === 'volume' ? ', expanded' : ''}`}
-                >
-                  <View style={styles.adaptiveRow}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}>
-                      <MaterialCommunityIcons name="weight-lifter" size={16} color={theme.colors.warning} />
-                      <ThemedText style={[styles.adaptiveLabel, { color: theme.colors.textSecondary }]}>
-                        {t('profile.volumeTolerance')}
-                      </ThemedText>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[1.5] }}>
-                      <ThemedText style={[styles.adaptiveValue, { color: theme.colors.text }]}>
-                        {adaptiveLabel(adaptiveProfile ? adaptiveProfile.volumeTolerance : 1)}
-                      </ThemedText>
-                      <MaterialCommunityIcons
-                        name={expandedAdaptive === 'volume' ? 'chevron-up' : 'chevron-down'}
-                        size={14}
-                        color={theme.colors.textMuted}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-                {expandedAdaptive === 'volume' && (
-                  <Animated.View
-                    entering={FadeInDown.duration(150)}
-                    style={{ paddingLeft: spacing[6], paddingBottom: spacing[2] }}
-                  >
-                    <ThemedText
-                      style={{ color: theme.colors.textMuted, fontSize: typography.sizes.caption, lineHeight: 18 }}
-                    >
-                      {t('profile.volumeToleranceDesc')}
-                    </ThemedText>
-                  </Animated.View>
-                )}
-
-                <View style={[styles.adaptiveConfidenceTrack, { backgroundColor: theme.colors.surfaceVariant }]}>
-                  <View
-                    style={[
-                      styles.adaptiveConfidenceFill,
-                      {
-                        width: `${Math.round((adaptiveProfile?.confidence ?? 0) * 100)}%` as any,
-                        backgroundColor: theme.colors.accent,
-                      },
-                    ]}
-                  />
-                </View>
-                <ThemedText style={[styles.adaptiveConfidenceText, { color: theme.colors.textMuted }]}>
-                  {t('profile.learningPatterns', { count: String(adaptiveProfile?.samples ?? 0) }) ||
-                    `Learning your patterns (${adaptiveProfile?.samples ?? 0} workouts analyzed)`}
-                </ThemedText>
-
-                {adaptiveProfile?.rationale?.map((line, index) => (
-                  <ThemedText
-                    key={`${line}_${index}`}
-                    style={[styles.adaptiveReason, { color: theme.colors.textMuted }]}
-                  >
-                    • {line}
-                  </ThemedText>
-                ))}
-              </GlassCard>
+              <SectionHeader title={t('profile.adaptiveTraining')} delay={440} />
+              <MenuItem
+                icon="chart-line-variant"
+                label={t('profile.adaptiveTraining')}
+                sublabel={`${adaptiveProfile?.samples || 0} ${t('profile.workoutsAnalyzed') || 'workouts analyzed'} · ${Math.round((adaptiveProfile?.confidence ?? 0) * 100)}% ${t('profile.confidence') || 'confidence'}`}
+                color={theme.colors.accent}
+                delay={460}
+                onPress={() => router.push('/adaptive-training' as any)}
+              />
             </View>
 
             {/* ── PREFERENCES (Compact Card) ── */}
             <View style={styles.section}>
               <SectionHeader title={t('profile.preferences')} delay={500} />
               <GlassCard delay={510}>
-                {/* ── APPEARANCE ── */}
-                <ThemedText style={{ fontSize: typography.sizes.caption, fontWeight: '700', color: theme.colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: spacing[2] }}>
-                  {t('profile.appearance') || 'APPEARANCE'}
-                </ThemedText>
                 {/* ── Theme Picker (inline pills) ── */}
                 <View style={styles.inlineSettingRow}>
                   <View
@@ -534,23 +268,33 @@ export default function ProfileScreen() {
 
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
-                {/* ── Language Picker (inline 2×2 grid) ── */}
-                <View style={styles.inlineSettingRow}>
+                {/* ── Language Picker (single MenuItem) ── */}
+                <RippleButton
+                  onPress={() => {
+                    closePicker();
+                    // Language selection via menu touch — TODO: open language picker
+                  }}
+                  rippleColor={theme.colors.blue + '40'}
+                  hapticEvent="buttonPress"
+                  style={styles.inlineSettingRow}
+                  accessibilityLabel={t('profile.language')}
+                >
                   <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.blue + '18' }]}>
                     <MaterialCommunityIcons name="translate" size={18} color={theme.colors.blue} />
                   </View>
-                  <ThemedText style={[styles.menuLabel, { color: theme.colors.text, flex: 1 }]}>
-                    {t('profile.language')}
-                  </ThemedText>
-                </View>
-                <LanguagePillGrid current={language} onSelect={setLanguage} languages={SUPPORTED_LANGUAGES} />
+                  <View style={{ flex: 1 }}>
+                    <ThemedText style={[styles.menuLabel, { color: theme.colors.text }]}>
+                      {t('profile.language')}
+                    </ThemedText>
+                    <ThemedText style={[styles.menuSublabel, { color: theme.colors.textSecondary }]}>
+                      {languageName}
+                    </ThemedText>
+                  </View>
+                  <MaterialCommunityIcons name="chevron-right" size={18} color={theme.colors.textMuted} />
+                </RippleButton>
 
                 <View style={[styles.inlineDivider, { backgroundColor: theme.colors.border }]} />
 
-                {/* ── SOCIAL ── */}
-                <ThemedText style={{ fontSize: typography.sizes.caption, fontWeight: '700', color: theme.colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, paddingTop: spacing[2], paddingBottom: spacing[2] }}>
-                  {t('profile.social') || 'SOCIAL'}
-                </ThemedText>
                 {/* ── Social Toggle ── */}
                 <View style={styles.inlineSettingRow}>
                   <View style={[styles.menuIconWrap, { backgroundColor: theme.colors.blue + '18' }]}>
@@ -766,20 +510,7 @@ export default function ProfileScreen() {
                 delay={640}
                 onPress={() => router.push('/privacy-policy')}
               />
-              <MenuItem
-                icon="check-decagram-outline"
-                label={t('profile.recordConsent') || 'Data Consent'}
-                sublabel={
-                  consentTimestamp
-                    ? `${t('profile.consentAccepted') || 'Accepted'} ${new Date(consentTimestamp).toLocaleDateString()} · v${consentVersion || '-'}`
-                    : t('profile.recordConsentSub') || 'Accept privacy policy & terms to use all features'
-                }
-                color={theme.colors.accent}
-                delay={650}
-                onPress={() => {
-                  void handleRecordConsent();
-                }}
-              />
+
               <MenuItem
                 icon="chart-timeline-variant-shimmer"
                 label={t('profile.analytics') || 'Usage Analytics'}
@@ -850,14 +581,6 @@ export default function ProfileScreen() {
                 delay={720}
                 onPress={() => setShowAboutModal(true)}
               />
-              <MenuItem
-                icon="sitemap"
-                label={t('profile.appSitemap') || 'App Sitemap'}
-                sublabel={t('profile.appSitemapSub') || 'All screens & navigation'}
-                color={theme.colors.indigo}
-                delay={740}
-                onPress={() => router.push('/sitemap' as any)}
-              />
             </View>
 
             {/* ── FEEDBACK & BUG REPORT ── */}
@@ -880,27 +603,6 @@ export default function ProfileScreen() {
               onDeleteAccount={handleDeleteCloudData}
               delay={770}
             />
-
-            {/* ── LOGOUT ── */}
-            <Animated.View entering={FadeInUp.delay(150).duration(150)} style={styles.logoutSection}>
-              <TouchableOpacity
-                style={[
-                  styles.logoutBtn,
-                  {
-                    backgroundColor: theme.colors.error + '10',
-                  },
-                ]}
-                onPress={handleLogout}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel="Log out"
-              >
-                <MaterialCommunityIcons name="logout" size={18} color={theme.colors.error} />
-                <ThemedText style={[styles.logoutText, { color: theme.colors.error }]}>
-                  {t('profile.logout')}
-                </ThemedText>
-              </TouchableOpacity>
-            </Animated.View>
 
             {/* Bottom spacing */}
             <View style={{ height: 100 }} />
@@ -944,25 +646,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContent: { paddingBottom: spacing[25] },
-
-  // Achievements (shared with Mind XP section)
-  achievementRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: spacing[2],
-  },
-  achievementItem: {
-    alignItems: 'center',
-    gap: spacing[1.5],
-  },
-  achievementLabel: {
-    fontSize: typography.sizes.bodySmall,
-    fontWeight: '700',
-  },
-  achievementSub: {
-    fontSize: typography.sizes.captionSm,
-    fontWeight: '400',
-  },
 
   // Sections
   section: {
@@ -1069,24 +752,5 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xs,
     marginTop: spacing[1],
     fontStyle: 'italic',
-  },
-
-  // Logout
-  logoutSection: {
-    paddingHorizontal: spacing[4],
-    marginTop: spacing[2],
-  },
-  logoutBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing[2],
-    paddingVertical: spacing[3.5],
-    borderRadius: radius.xl,
-    borderWidth: 1,
-  },
-  logoutText: {
-    fontSize: typography.sizes.bodyMid,
-    fontWeight: '500',
   },
 });

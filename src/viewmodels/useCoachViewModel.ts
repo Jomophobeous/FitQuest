@@ -233,7 +233,7 @@ export const useCoachViewModel = createViewModel(() => {
         ? Math.floor((Date.now() - new Date(progress.last_workout_date).getTime()) / 86400000)
         : 999;
       const readinessStatus = readinessSnap ? formatStatusForAI(readinessSnap) : undefined;
-      const userName = displayName || 'Athlete';
+      const userName = displayName || (profile as any)?.name || '';
       const injuryStr =
         injuries.length > 0 ? injuries.map((i) => `${i.muscle.replace(/_/g, ' ')} (${i.severity})`).join(', ') : 'none';
       const equipmentStr = equipment.length > 0 ? equipment.join(', ') : 'bodyweight';

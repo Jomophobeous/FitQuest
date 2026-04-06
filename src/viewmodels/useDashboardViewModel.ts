@@ -162,7 +162,7 @@ export const useDashboardViewModel = createViewModel((): DashboardViewModel => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [displayName, setDisplayName] = useState('Athlete');
+  const [displayName, setDisplayName] = useState('');
   const [userProgress, setUserProgress] = useState<any>(null);
   const [fatigueLevel, setFatigueLevel] = useState<number | null>(null);
   const [readiness, setReadiness] = useState<ReadinessSnapshot | null>(null);

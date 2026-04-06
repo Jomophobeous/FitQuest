@@ -7,12 +7,12 @@
 export const COACH_TEMPLATES = {
   greeting: [
     'Hey {name}! Ready to crush it today? 💪',
-    'Welcome back, {name}! Your {streakDays}-day streak is impressive!',
     "Let's go, {name}! Every rep counts.",
     "{name}, your body is ready for this. Let's make it happen!",
     "What's up, {name}! Time to turn potential into progress.",
     'Hey champion! Another day, another opportunity to grow.',
     "{name}, you showed up. That's already 90% of the battle.",
+    'Ready when you are! What are we working on today? 💪',
   ],
   greeting_morning: [
     "Early bird gets the gains! Let's start the day strong, {name}. 🌅",

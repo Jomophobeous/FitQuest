@@ -1737,46 +1737,55 @@ export class DualAIEngine {
   }
 
   private fillTemplate(template: string, context: AIContext): string {
-    return (
-      template
-        .replace(/{name}/g, context.userProfile?.name || 'champ')
-        .replace(/{streakDays}/g, String(context.userProfile?.streakDays || 0))
-        .replace(/{goal}/g, context.userProfile?.goals?.join(', ') || 'fitness')
-        .replace(/{totalWorkouts}/g, String(context.totalWorkouts || 0))
-        .replace(/{exerciseCount}/g, String(context.exerciseCount || 200))
-        .replace(/{setsCompleted}/g, String(context.workoutContext?.setsCompleted || 0))
-        .replace(/{totalSets}/g, String(context.workoutContext?.totalSets || 0))
-        .replace(
-          /{setsRemaining}/g,
-          String((context.workoutContext?.totalSets || 0) - (context.workoutContext?.setsCompleted || 0)),
-        )
-        .replace(/{muscleGroup}/g, context.workoutContext?.muscleGroup || 'muscles')
-        .replace(/{muscle}/g, context.workoutContext?.muscleGroup || 'that area')
-        .replace(/{fatigueLevel}/g, String(context.workoutContext?.fatigueLevel || 0))
-        .replace(/{fatigueMuscles}/g, context.workoutContext?.fatigueHighMuscles?.join(', ') || 'none')
-        .replace(/{readiness}/g, context.workoutContext?.readinessStatus || 'unknown')
-        .replace(/{daysSinceWorkout}/g, String(context.workoutContext?.daysSinceLastWorkout ?? 0))
-        .replace(/{documentTitle}/g, context.readingContext?.documentTitle || 'your book')
-        .replace(/{text}/g, context.readingContext?.selectedText?.slice(0, 100) || 'this passage')
-        .replace(/{pagesRead}/g, String(context.readingContext?.currentPage || 0))
-        .replace(/{page}/g, String(context.readingContext?.currentPage || 0))
-        .replace(/{level}/g, String(context.userProfile?.level || 1))
-        .replace(/{totalXP}/g, String(context.userProfile?.totalXP || 0))
-        .replace(/{longestStreak}/g, String(context.userProfile?.longestStreak || 0))
-        .replace(/{experience}/g, context.userProfile?.fitnessLevel || 'beginner')
-        .replace(/{trainingDays}/g, String(context.userProfile?.trainingDaysPerWeek || 3))
-        .replace(/{sessionTime}/g, String(context.userProfile?.sessionMinutes || 30))
-        .replace(/{weight}/g, context.userProfile?.weight ? `${context.userProfile.weight} kg` : 'unknown')
-        .replace(/{height}/g, context.userProfile?.height ? `${context.userProfile.height} cm` : 'unknown')
-        .replace(/{injuries}/g, context.userProfile?.injuries || 'none')
-        .replace(/{equipment}/g, context.userProfile?.equipment || 'bodyweight')
-        // Placeholders with no direct context — remove gracefully
-        .replace(/{days}/g, '0')
-        .replace(/{improvement}/g, '')
-        .replace(/{insight}/g, 'an important concept')
-        .replace(/{relatedTopic}/g, 'a related idea')
-        .replace(/{observation}/g, 'a deliberate word choice')
-    );
+    const name = context.userProfile?.name || '';
+    let result = template
+      .replace(/{name}/g, name)
+      .replace(/{streakDays}/g, String(context.userProfile?.streakDays || 0))
+      .replace(/{goal}/g, context.userProfile?.goals?.join(', ') || 'fitness')
+      .replace(/{totalWorkouts}/g, String(context.totalWorkouts || 0))
+      .replace(/{exerciseCount}/g, String(context.exerciseCount || 200))
+      .replace(/{setsCompleted}/g, String(context.workoutContext?.setsCompleted || 0))
+      .replace(/{totalSets}/g, String(context.workoutContext?.totalSets || 0))
+      .replace(
+        /{setsRemaining}/g,
+        String((context.workoutContext?.totalSets || 0) - (context.workoutContext?.setsCompleted || 0)),
+      )
+      .replace(/{muscleGroup}/g, context.workoutContext?.muscleGroup || 'muscles')
+      .replace(/{muscle}/g, context.workoutContext?.muscleGroup || 'that area')
+      .replace(/{fatigueLevel}/g, String(context.workoutContext?.fatigueLevel || 0))
+      .replace(/{fatigueMuscles}/g, context.workoutContext?.fatigueHighMuscles?.join(', ') || 'none')
+      .replace(/{readiness}/g, context.workoutContext?.readinessStatus || 'unknown')
+      .replace(/{daysSinceWorkout}/g, String(context.workoutContext?.daysSinceLastWorkout ?? 0))
+      .replace(/{documentTitle}/g, context.readingContext?.documentTitle || 'your book')
+      .replace(/{text}/g, context.readingContext?.selectedText?.slice(0, 100) || 'this passage')
+      .replace(/{pagesRead}/g, String(context.readingContext?.currentPage || 0))
+      .replace(/{page}/g, String(context.readingContext?.currentPage || 0))
+      .replace(/{level}/g, String(context.userProfile?.level || 1))
+      .replace(/{totalXP}/g, String(context.userProfile?.totalXP || 0))
+      .replace(/{longestStreak}/g, String(context.userProfile?.longestStreak || 0))
+      .replace(/{experience}/g, context.userProfile?.fitnessLevel || 'beginner')
+      .replace(/{trainingDays}/g, String(context.userProfile?.trainingDaysPerWeek || 3))
+      .replace(/{sessionTime}/g, String(context.userProfile?.sessionMinutes || 30))
+      .replace(/{weight}/g, context.userProfile?.weight ? `${context.userProfile.weight} kg` : 'unknown')
+      .replace(/{height}/g, context.userProfile?.height ? `${context.userProfile.height} cm` : 'unknown')
+      .replace(/{injuries}/g, context.userProfile?.injuries || 'none')
+      .replace(/{equipment}/g, context.userProfile?.equipment || 'bodyweight')
+      // Placeholders with no direct context — remove gracefully
+      .replace(/{days}/g, '0')
+      .replace(/{improvement}/g, '')
+      .replace(/{insight}/g, 'an important concept')
+      .replace(/{relatedTopic}/g, 'a related idea')
+      .replace(/{observation}/g, 'a deliberate word choice');
+    // Clean up artifacts when name is empty: "Hey !" → "Hey!", ", !" → "!"
+    if (!name) {
+      result = result
+        .replace(/,\s*!/g, '!')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/Hey\s+!/g, 'Hey!')
+        .replace(/,\s*\./g, '.')
+        .trim();
+    }
+    return result;
   }
 
   private pickRandom<T>(arr: T[]): T {
